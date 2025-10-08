@@ -152,7 +152,6 @@ function getSessionRuntimeScopes() {
   addScope(typeof global !== 'undefined' ? global : null);
   return scopes;
 }
-
 function normalizeVersionValue(value) {
   if (typeof value !== 'string') {
     return null;
@@ -160,13 +159,11 @@ function normalizeVersionValue(value) {
   var trimmed = value.trim();
   return trimmed ? trimmed : null;
 }
-
 function resolveKnownAppVersion(explicitVersion) {
   var normalizedExplicit = normalizeVersionValue(explicitVersion);
   if (normalizedExplicit) {
     return normalizedExplicit;
   }
-
   try {
     if (typeof APP_VERSION === 'string') {
       var normalized = normalizeVersionValue(APP_VERSION);
@@ -177,10 +174,8 @@ function resolveKnownAppVersion(explicitVersion) {
   } catch (appVersionError) {
     void appVersionError;
   }
-
   var seen = new Set();
   var queue = [];
-
   var enqueueCandidate = function enqueueCandidate(value) {
     if (!value) {
       return;
@@ -195,12 +190,10 @@ function resolveKnownAppVersion(explicitVersion) {
     seen.add(value);
     queue.push(value);
   };
-
   var scopes = getSessionRuntimeScopes();
   for (var index = 0; index < scopes.length; index += 1) {
     enqueueCandidate(scopes[index]);
   }
-
   try {
     if (typeof CORE_SHARED !== 'undefined' && CORE_SHARED) {
       enqueueCandidate(CORE_SHARED);
@@ -208,7 +201,6 @@ function resolveKnownAppVersion(explicitVersion) {
   } catch (coreSharedError) {
     void coreSharedError;
   }
-
   try {
     if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
       enqueueCandidate(CORE_GLOBAL_SCOPE);
@@ -216,34 +208,30 @@ function resolveKnownAppVersion(explicitVersion) {
   } catch (coreGlobalError) {
     void coreGlobalError;
   }
-
   var versionKeys = ['APP_VERSION', 'appVersion', 'applicationVersion', 'version'];
   var nestedKeys = ['CORE_SHARED', 'CORE_GLOBAL_SCOPE', 'CORE_AGGREGATED_EXPORTS', 'CORE_RUNTIME_SCOPE', 'CORE_PART2_RUNTIME_SCOPE', 'CORE_SCOPE', 'CORE_SHARED_SCOPE_PART2', 'cineCoreShared', 'cineModules', 'cineModuleGlobals', 'cineModuleBase', 'cineModuleContext', 'cineRuntime', 'cinePersistence', 'cineOffline', 'cineUi', 'cineGlobals', 'cine', 'APP', 'app', 'globalScope', 'scope', 'exports', 'module', 'modules', 'environment', 'context', 'runtime', 'shared', 'globals', '__cineGlobal', '__cineScope', '__cineModules', '__cineExports', '__cineRuntime', 'details', 'meta', 'metadata', 'build', 'buildInfo'];
-
   while (queue.length) {
     var candidate = queue.shift();
     if (!candidate) {
       continue;
     }
-
-    for (var keyIndex = 0; keyIndex < versionKeys.length; keyIndex += 1) {
-      var key = versionKeys[keyIndex];
-      var value;
+    for (var _index = 0; _index < versionKeys.length; _index += 1) {
+      var key = versionKeys[_index];
+      var value = void 0;
       try {
         value = candidate[key];
       } catch (readError) {
         value = undefined;
         void readError;
       }
-      var normalizedValue = normalizeVersionValue(value);
-      if (normalizedValue) {
-        return normalizedValue;
+      var _normalized = normalizeVersionValue(value);
+      if (_normalized) {
+        return _normalized;
       }
     }
-
-    for (var nestedIndex = 0; nestedIndex < nestedKeys.length; nestedIndex += 1) {
-      var nestedKey = nestedKeys[nestedIndex];
-      var nestedValue;
+    for (var _index2 = 0; _index2 < nestedKeys.length; _index2 += 1) {
+      var nestedKey = nestedKeys[_index2];
+      var nestedValue = void 0;
       try {
         nestedValue = candidate[nestedKey];
       } catch (nestedError) {
@@ -252,7 +240,6 @@ function resolveKnownAppVersion(explicitVersion) {
       }
       enqueueCandidate(nestedValue);
     }
-
     var keys = [];
     try {
       keys = Object.keys(candidate);
@@ -260,15 +247,15 @@ function resolveKnownAppVersion(explicitVersion) {
       keys = [];
       void keysError;
     }
-    var limit = keys.length > 50 ? 50 : keys.length;
-    for (var dynamicIndex = 0; dynamicIndex < limit; dynamicIndex += 1) {
-      var dynamicKey = keys[dynamicIndex];
-      if (!/(version|core|cine|shared|global|app)/i.test(dynamicKey)) {
+    var limitedKeys = keys.length > 50 ? keys.slice(0, 50) : keys;
+    for (var _index3 = 0; _index3 < limitedKeys.length; _index3 += 1) {
+      var _key = limitedKeys[_index3];
+      if (!/(version|core|cine|shared|global|app)/i.test(_key)) {
         continue;
       }
-      var nested;
+      var nested = void 0;
       try {
-        nested = candidate[dynamicKey];
+        nested = candidate[_key];
       } catch (valueError) {
         nested = null;
         void valueError;
@@ -276,10 +263,8 @@ function resolveKnownAppVersion(explicitVersion) {
       enqueueCandidate(nested);
     }
   }
-
   return null;
 }
-
 var ACTIVE_APP_VERSION = resolveKnownAppVersion(typeof APP_VERSION === 'string' ? APP_VERSION : null);
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
@@ -1273,8 +1258,8 @@ function ensureSessionRuntimeFunction(functionName) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   return ensureSessionRuntimePlaceholder(functionName, function () {
     return function () {
-      for (var _len = arguments.length, invocationArgs = new Array(_len), _key = 0; _key < _len; _key++) {
-        invocationArgs[_key] = arguments[_key];
+      for (var _len = arguments.length, invocationArgs = new Array(_len), _key2 = 0; _key2 < _len; _key2++) {
+        invocationArgs[_key2] = arguments[_key2];
       }
       return callSessionCoreFunction(functionName, invocationArgs, options);
     };
@@ -1288,8 +1273,8 @@ for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   });
 }
 var AUTO_GEAR_RUNTIME_FUNCTIONS = ['setAutoGearSummaryFocus', 'focusAutoGearRuleById', 'setAutoGearSearchQuery', 'setAutoGearScenarioFilter', 'clearAutoGearFilters'];
-for (var _index = 0; _index < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index += 1) {
-  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index];
+for (var _index4 = 0; _index4 < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index4 += 1) {
+  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index4];
   ensureSessionRuntimeFunction(functionName, {
     defer: true
   });
@@ -1812,8 +1797,8 @@ function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
   }
-  for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
-    var key = keys[_index2];
+  for (var _index5 = 0; _index5 < keys.length; _index5 += 1) {
+    var key = keys[_index5];
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       return true;
     }
@@ -2765,7 +2750,7 @@ function autoSaveCurrentSetup() {
       skipGearList: true
     });
     checkSetupChanged();
-    return;
+    return false;
   }
   var selectedName = setupSelect ? setupSelect.value : '';
   if (setupSelect && (!selectedName || name !== selectedName)) {
@@ -2773,8 +2758,11 @@ function autoSaveCurrentSetup() {
       skipGearList: true
     });
     checkSetupChanged();
-    return;
+    return false;
   }
+  var setups = getSetups();
+  var existingSetup = setups && _typeof(setups) === 'object' ? setups[name] : undefined;
+  var existingSetupSignature = existingSetup ? stableStringify(existingSetup) : '';
   var currentSetup = _objectSpread({}, getCurrentSetupState());
   var gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
@@ -2788,7 +2776,6 @@ function autoSaveCurrentSetup() {
       delete currentSetup.diagramPositions;
     }
   }
-  var setups = getSetups();
   setups[name] = currentSetup;
   storeSetups(setups);
   populateSetupSelect();
@@ -2796,6 +2783,8 @@ function autoSaveCurrentSetup() {
   saveCurrentSession();
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
+  var updatedSignature = stableStringify(currentSetup);
+  return existingSetupSignature !== updatedSignature;
 }
 var PROJECT_AUTOSAVE_BASE_DELAY_MS = 300;
 var PROJECT_AUTOSAVE_RETRY_DELAY_MS = 900;
@@ -2806,6 +2795,18 @@ var projectAutoSaveFailureCount = 0;
 var projectAutoSavePendingWhileRestoring = null;
 var factoryResetInProgress = false;
 var projectAutoSaveOverrides = null;
+var projectAutoSaveLastRequestContext = null;
+function notifyAutoBackupChange(details) {
+  try {
+    var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
+    var notifier = scope && typeof scope.__cineNoteAutoBackupChange === 'function' ? scope.__cineNoteAutoBackupChange : null;
+    if (notifier) {
+      notifier(details || {});
+    }
+  } catch (changeError) {
+    console.warn('Failed to record auto backup change context', changeError);
+  }
+}
 function setProjectAutoSaveOverrides(overrides) {
   if (!overrides || _typeof(overrides) !== 'object') {
     projectAutoSaveOverrides = null;
@@ -2858,35 +2859,63 @@ function runProjectAutoSave() {
   }
   projectAutoSaveTimer = null;
   projectAutoSavePendingWhileRestoring = null;
+  var pendingRequestContext = projectAutoSaveLastRequestContext;
+  projectAutoSaveLastRequestContext = null;
   var encounteredError = false;
-  var guard = function guard(fn, context) {
+  var guard = function guard(fn, context, onSuccess) {
     if (typeof fn !== 'function') {
-      return true;
+      return {
+        ok: true,
+        result: undefined
+      };
     }
     try {
-      fn();
-      return true;
+      var result = fn();
+      if (typeof onSuccess === 'function') {
+        try {
+          onSuccess(result);
+        } catch (callbackError) {
+          console.warn('Auto backup mutation observer callback failed', callbackError);
+        }
+      }
+      return {
+        ok: true,
+        result: result
+      };
     } catch (error) {
       encounteredError = true;
       console.error("Project autosave failed while ".concat(context, "."), error);
-      return false;
+      return {
+        ok: false,
+        result: undefined
+      };
     }
   };
+  var setupMutationDetected = false;
+  var gearListMutationDetected = false;
   var hasSetupName = Boolean(setupNameInput && typeof setupNameInput.value === 'string' && setupNameInput.value.trim());
   if (!hasSetupName) {
     guard(function () {
       return saveCurrentSession();
     }, 'saving the current session state');
   }
-  var setupSaved = guard(autoSaveCurrentSetup, 'saving the current setup');
-  if (!setupSaved) {
+  var setupSaveResult = guard(autoSaveCurrentSetup, 'saving the current setup', function (result) {
+    if (result === true) {
+      setupMutationDetected = true;
+    }
+  });
+  if (!setupSaveResult.ok) {
     guard(function () {
       return saveCurrentSession({
         skipGearList: true
       });
     }, 'saving the current session state as a fallback');
   }
-  guard(saveCurrentGearList, 'saving the gear list');
+  guard(saveCurrentGearList, 'saving the gear list', function (result) {
+    if (result === true) {
+      gearListMutationDetected = true;
+    }
+  });
   if (encounteredError) {
     if (projectAutoSaveFailureCount < PROJECT_AUTOSAVE_MAX_RETRIES) {
       projectAutoSaveFailureCount += 1;
@@ -2899,6 +2928,19 @@ function runProjectAutoSave() {
   }
   projectAutoSaveFailureCount = 0;
   clearProjectAutoSaveOverrides();
+  if (!encounteredError && (setupMutationDetected || gearListMutationDetected)) {
+    var contextNow = Date.now();
+    var requestTimestamp = pendingRequestContext && typeof pendingRequestContext.requestedAt === 'number' && Number.isFinite(pendingRequestContext.requestedAt) ? pendingRequestContext.requestedAt : contextNow;
+    notifyAutoBackupChange({
+      commit: true,
+      context: {
+        immediate: Boolean(pendingRequestContext && pendingRequestContext.immediate),
+        overrides: Boolean(pendingRequestContext && pendingRequestContext.overrides),
+        requestedAt: requestTimestamp,
+        completedAt: contextNow
+      }
+    });
+  }
 }
 function scheduleProjectAutoSave() {
   var immediateOrOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -2911,7 +2953,8 @@ function scheduleProjectAutoSave() {
     immediate = Boolean(immediateOrOptions);
     overrides = undefined;
   }
-  if (overrides !== undefined) {
+  var overridesProvided = overrides !== undefined;
+  if (overridesProvided) {
     setProjectAutoSaveOverrides(overrides);
   }
   if (factoryResetInProgress) {
@@ -2934,21 +2977,17 @@ function scheduleProjectAutoSave() {
     return;
   }
   projectAutoSavePendingWhileRestoring = null;
-  var noteAutoBackupChange = function noteAutoBackupChange() {
-    try {
-      var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
-      var notifier = scope && typeof scope.__cineNoteAutoBackupChange === 'function' ? scope.__cineNoteAutoBackupChange : null;
-      if (notifier) {
-        notifier({
-          immediate: immediate,
-          overrides: overrides !== undefined
-        });
-      }
-    } catch (changeError) {
-      console.warn('Failed to record auto backup change context', changeError);
-    }
+  var requestTimestamp = Date.now();
+  projectAutoSaveLastRequestContext = {
+    immediate: immediate,
+    overrides: overridesProvided,
+    requestedAt: requestTimestamp
   };
-  noteAutoBackupChange();
+  notifyAutoBackupChange({
+    immediate: immediate,
+    overrides: overridesProvided,
+    pending: true
+  });
   if (immediate) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
@@ -3090,16 +3129,26 @@ if (projectForm) {
     sel.addEventListener('change', handleUpdate);
     handleUpdate();
   });
+  var noteProjectFormDirty = function noteProjectFormDirty() {
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+  };
   var queueProjectAutoSave = function queueProjectAutoSave() {
-    return scheduleProjectAutoSave();
+    noteProjectFormDirty();
+    scheduleProjectAutoSave();
   };
   var flushProjectAutoSave = function flushProjectAutoSave() {
-    return scheduleProjectAutoSave(true);
+    noteProjectFormDirty();
+    scheduleProjectAutoSave(true);
   };
   projectForm.addEventListener('input', queueProjectAutoSave);
   projectForm.addEventListener('change', flushProjectAutoSave);
   projectForm.querySelectorAll('input, textarea, select').forEach(function (el) {
-    el.addEventListener('change', saveCurrentSession);
+    el.addEventListener('change', function (event) {
+      noteProjectFormDirty();
+      saveCurrentSession(event);
+    });
   });
 }
 function setSelectValue(select, value) {
@@ -3229,6 +3278,9 @@ function restoreSessionState() {
       projectRequirementsOutput.innerHTML = '';
       projectRequirementsOutput.classList.add('hidden');
     }
+  }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
   }
   if (gearListOutput || projectRequirementsOutput) {
     var typedName = getCurrentProjectName();
@@ -3653,8 +3705,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var _index3 = 0; _index3 < pairs.length; _index3 += 1) {
-    var pair = pairs[_index3];
+  for (var _index6 = 0; _index6 < pairs.length; _index6 += 1) {
+    var pair = pairs[_index6];
     if (!pair) {
       continue;
     }
@@ -3867,13 +3919,12 @@ var flushProjectAutoSaveOnExit = function flushProjectAutoSaveOnExit() {
       hideIndicator = null;
     }
   }
+  notifyAutoBackupChange({
+    immediate: true,
+    reason: 'before-exit',
+    pending: true
+  });
   try {
-    if (scope && typeof scope.__cineNoteAutoBackupChange === 'function') {
-      scope.__cineNoteAutoBackupChange({
-        immediate: true,
-        reason: 'before-exit'
-      });
-    }
     if (scope && typeof scope.autoBackup === 'function') {
       scope.autoBackup({
         suppressSuccess: true,
@@ -4225,8 +4276,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var _index4 = 0; _index4 < candidateScopes.length; _index4 += 1) {
-    var scope = candidateScopes[_index4];
+  for (var _index7 = 0; _index7 < candidateScopes.length; _index7 += 1) {
+    var scope = candidateScopes[_index7];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -4827,11 +4878,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var _index5 = list.findIndex(function (item) {
+        var _index8 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (_index5 >= 0) {
-          list.splice(_index5, 1);
+        if (_index8 >= 0) {
+          list.splice(_index8, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -5002,20 +5053,9 @@ var showAutoBackupActivityIndicator = function showAutoBackupActivityIndicator(m
     }
   };
 };
-try {
-  var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
-  if (scope) {
-    scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
-    scope.__cineShowGlobalLoadingIndicator = showGlobalLoadingIndicator;
-  }
-} catch (indicatorExposeError) {
-  console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
-}
-
 var GLOBAL_LOADING_INDICATOR_ID = 'cineGlobalLoadingIndicator';
 var globalLoadingIndicatorRefCount = 0;
-
-function resolveGlobalLoadingIndicatorMessage(fallbackMessage) {
+var resolveGlobalLoadingIndicatorMessage = function resolveGlobalLoadingIndicatorMessage(fallbackMessage) {
   if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
     return fallbackMessage.trim();
   }
@@ -5030,9 +5070,8 @@ function resolveGlobalLoadingIndicatorMessage(fallbackMessage) {
     return fallback;
   }
   return 'Loading…';
-}
-
-function refreshGlobalLoadingIndicatorText() {
+};
+var refreshGlobalLoadingIndicatorText = function refreshGlobalLoadingIndicatorText() {
   if (typeof document === 'undefined') {
     return;
   }
@@ -5055,9 +5094,8 @@ function refreshGlobalLoadingIndicatorText() {
   var message = resolveGlobalLoadingIndicatorMessage();
   textTarget.textContent = message;
   indicator.dataset.currentMessage = message;
-}
-
-function showGlobalLoadingIndicator(message) {
+};
+var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
   if (typeof document === 'undefined') {
     return function () {};
   }
@@ -5123,21 +5161,29 @@ function showGlobalLoadingIndicator(message) {
       }
     }
   };
+};
+try {
+  var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
+  if (scope) {
+    scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
+    scope.__cineShowGlobalLoadingIndicator = showGlobalLoadingIndicator;
+  }
+} catch (indicatorExposeError) {
+  console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
 }
-
-function installGlobalFetchLoadingIndicator() {
-  var fetchScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
-  if (!fetchScope || typeof fetchScope.fetch !== 'function') {
+var installGlobalFetchLoadingIndicator = function installGlobalFetchLoadingIndicator() {
+  var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
+  if (!scope || typeof scope.fetch !== 'function') {
     return;
   }
-  if (fetchScope.__cineFetchWithLoadingIndicatorInstalled) {
+  if (scope.__cineFetchWithLoadingIndicatorInstalled) {
     return;
   }
-  var originalFetch = fetchScope.fetch;
+  var originalFetch = scope.fetch;
   var getMessage = function getMessage() {
     return resolveGlobalLoadingIndicatorMessage();
   };
-  var showIndicator = typeof fetchScope.__cineShowGlobalLoadingIndicator === 'function' ? fetchScope.__cineShowGlobalLoadingIndicator : showGlobalLoadingIndicator;
+  var showIndicator = typeof scope.__cineShowGlobalLoadingIndicator === 'function' ? scope.__cineShowGlobalLoadingIndicator : showGlobalLoadingIndicator;
   var finalizeHide = function finalizeHide(hide) {
     if (typeof hide === 'function') {
       try {
@@ -5147,7 +5193,7 @@ function installGlobalFetchLoadingIndicator() {
       }
     }
   };
-  fetchScope.fetch = function fetchWithLoadingIndicator(input, init) {
+  scope.fetch = function fetchWithLoadingIndicator(input, init) {
     var hide = null;
     try {
       hide = showIndicator(getMessage());
@@ -5179,15 +5225,13 @@ function installGlobalFetchLoadingIndicator() {
       throw error;
     });
   };
-  fetchScope.__cineFetchWithLoadingIndicatorInstalled = true;
-}
-
+  scope.__cineFetchWithLoadingIndicatorInstalled = true;
+};
 try {
   installGlobalFetchLoadingIndicator();
 } catch (loadingInstallError) {
   console.warn('Failed to install global loading indicator for fetch', loadingInstallError);
 }
-
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
   window.addEventListener('languagechange', function () {
     try {
@@ -5607,12 +5651,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index6 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index6) || _index6 < 0) {
+    var _index9 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index9) || _index9 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index6 + 1));
+    return template.replace('%s', formatNumberForComparison(_index9 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -5796,26 +5840,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index7 = 0; _index7 < maxLength; _index7 += 1) {
-        var hasBase = _index7 < baseValue.length;
-        var hasCompare = _index7 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index7, "]"));
+      for (var _index0 = 0; _index0 < maxLength; _index0 += 1) {
+        var hasBase = _index0 < baseValue.length;
+        var hasCompare = _index0 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index0, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index7]
+            after: compareValue[_index0]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index7],
+            before: baseValue[_index0],
             after: undefined
           });
         } else {
-          walk(baseValue[_index7], compareValue[_index7], nextPath);
+          walk(baseValue[_index0], compareValue[_index0], nextPath);
         }
       }
       return;
@@ -6932,8 +6976,8 @@ function resolveLoggingApi() {
   if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
   if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
   if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
-  for (var _index8 = 0; _index8 < scopes.length; _index8 += 1) {
-    var _scope = scopes[_index8];
+  for (var _index1 = 0; _index1 < scopes.length; _index1 += 1) {
+    var _scope = scopes[_index1];
     if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
       continue;
     }
@@ -8623,14 +8667,16 @@ function readLocationOriginSafe(locationLike) {
 }
 function getForceReloadBaseCandidates(locationLike, originalHref) {
   var candidates = [];
+  var unique = new Set();
   var addCandidate = function addCandidate(value) {
     if (typeof value !== 'string') {
       return;
     }
     var trimmed = value.trim();
-    if (!trimmed || candidates.indexOf(trimmed) !== -1) {
+    if (!trimmed || unique.has(trimmed)) {
       return;
     }
+    unique.add(trimmed);
     candidates.push(trimmed);
   };
   var safeHref = readLocationHrefSafe(locationLike);
@@ -8694,11 +8740,11 @@ function buildForceReloadHref(locationLike, paramName) {
     };
   }
   if (typeof URL === 'function') {
-    var urlCandidates = [originalHref].concat(baseCandidates);
-    for (var index = 0; index < urlCandidates.length; index += 1) {
-      var candidate = urlCandidates[index];
+    var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
+    for (var _index10 = 0; _index10 < urlCandidates.length; _index10 += 1) {
+      var candidate = urlCandidates[_index10];
       try {
-        var url = index === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index10 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -8728,10 +8774,10 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var absoluteIndex = 0; absoluteIndex < baseCandidates.length; absoluteIndex += 1) {
-      var baseCandidate = baseCandidates[absoluteIndex];
+    for (var _index11 = 0; _index11 < baseCandidates.length; _index11 += 1) {
+      var _candidate = baseCandidates[_index11];
       try {
-        var absolute = new URL(href + hash, baseCandidate).toString();
+        var absolute = new URL(href + hash, _candidate).toString();
         return {
           originalHref: originalHref,
           nextHref: absolute,
@@ -11458,8 +11504,8 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index9 = 0; _index9 < scopes.length; _index9 += 1) {
-    var _scope2 = scopes[_index9];
+  for (var _index12 = 0; _index12 < scopes.length; _index12 += 1) {
+    var _scope2 = scopes[_index12];
     if (!_scope2 || _typeof(_scope2) !== 'object') {
       continue;
     }
@@ -11772,9 +11818,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index0 = 0; _index0 < lensNames.length; _index0 += 1) {
+  for (var _index13 = 0; _index13 < lensNames.length; _index13 += 1) {
     var _ref23, _lens$minFocusMeters;
-    var name = lensNames[_index0];
+    var name = lensNames[_index13];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -11837,8 +11883,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index1 = 0; _index1 < devices.filterOptions.length; _index1 += 1) {
-      var value = devices.filterOptions[_index1];
+    for (var _index14 = 0; _index14 < devices.filterOptions.length; _index14 += 1) {
+      var value = devices.filterOptions[_index14];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -11933,8 +11979,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index10 = 0; _index10 < opts.length; _index10 += 1) {
-    var value = opts[_index10];
+  for (var _index15 = 0; _index15 < opts.length; _index15 += 1) {
+    var value = opts[_index15];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -11951,7 +11997,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index11];
+    var value = opts[_index16];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -11972,7 +12018,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index11 = 0; _index11 < opts.length; _index11 += 1) {
+  for (var _index16 = 0; _index16 < opts.length; _index16 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -12656,8 +12702,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index12 = 0; _index12 < items.length; _index12 += 1) {
-      var _items$_index = items[_index12],
+    for (var _index17 = 0; _index17 < items.length; _index17 += 1) {
+      var _items$_index = items[_index17],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {

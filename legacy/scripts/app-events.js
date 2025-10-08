@@ -60,14 +60,17 @@ function getGlobalScope() {
 }
 var AUTO_BACKUP_CHANGE_THRESHOLD = 50;
 var AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
-var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold', 'safeguard'];
+var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold'];
 var AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
-var AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'safeguard']);
+var AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'before-reload', 'project-switch']);
 var AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 var lastAutoBackupReasonState = new Map();
+var AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS = 800;
 var autoBackupChangesSinceSnapshot = 0;
 var autoBackupThresholdInProgress = false;
+var autoBackupChangePendingCommit = false;
 var lastAutoBackupCompletedAtMs = 0;
+var lastImmediateAutoBackupCommitAtMs = 0;
 function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
 }
@@ -146,6 +149,45 @@ function noteAutoBackupRelevantChange() {
   var details = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (details && details.reset === true) {
     resetAutoBackupChangeCounter();
+    autoBackupChangePendingCommit = false;
+    lastImmediateAutoBackupCommitAtMs = 0;
+    return;
+  }
+  var pendingNotification = Boolean(details && details.pending === true);
+  var commitRequested = Boolean(details && details.commit === true);
+  var commitContext = details && _typeof(details.context) === 'object' && details.context !== null ? details.context : null;
+  if (pendingNotification) {
+    autoBackupChangePendingCommit = true;
+    return;
+  }
+  if (commitRequested && !autoBackupChangePendingCommit && details.force !== true) {
+    return;
+  }
+  if (commitRequested || autoBackupChangePendingCommit) {
+    autoBackupChangePendingCommit = false;
+    var immediateCommit = Boolean(commitContext && commitContext.immediate === true);
+    if (immediateCommit) {
+      var commitTimestamp = null;
+      if (commitContext && typeof commitContext.completedAt === 'number' && Number.isFinite(commitContext.completedAt)) {
+        commitTimestamp = commitContext.completedAt;
+      } else if (commitContext && typeof commitContext.requestedAt === 'number' && Number.isFinite(commitContext.requestedAt)) {
+        commitTimestamp = commitContext.requestedAt;
+      }
+      if (!Number.isFinite(commitTimestamp)) {
+        commitTimestamp = Date.now();
+      }
+      if (details.force !== true && lastImmediateAutoBackupCommitAtMs > 0 && commitTimestamp >= lastImmediateAutoBackupCommitAtMs && commitTimestamp - lastImmediateAutoBackupCommitAtMs < AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS) {
+        lastImmediateAutoBackupCommitAtMs = commitTimestamp;
+        return;
+      }
+      if (commitTimestamp >= lastImmediateAutoBackupCommitAtMs || lastImmediateAutoBackupCommitAtMs <= 0) {
+        lastImmediateAutoBackupCommitAtMs = commitTimestamp;
+      }
+    }
+    autoBackupChangesSinceSnapshot = Math.min(AUTO_BACKUP_CHANGE_THRESHOLD, autoBackupChangesSinceSnapshot + 1);
+    if (autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD) {
+      triggerAutoBackupForChangeThreshold(details);
+    }
     return;
   }
   autoBackupChangesSinceSnapshot = Math.min(AUTO_BACKUP_CHANGE_THRESHOLD, autoBackupChangesSinceSnapshot + 1);
@@ -1462,6 +1504,41 @@ function autoBackup() {
       currentSetup.gearSelectors = gearSelectors;
     }
     var currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    var _resolveLatestAutoBac2 = resolveLatestAutoBackupEntry(setupsSnapshot),
+      latestStoredName = _resolveLatestAutoBac2.name,
+      latestStoredEntry = _resolveLatestAutoBac2.entry;
+    if (!force && latestStoredName && latestStoredEntry) {
+      try {
+        var latestStoredSignature = computeStoredAutoBackupSignature(latestStoredName, latestStoredEntry);
+        if (latestStoredSignature === currentSignature) {
+          var latestMetadata = readAutoBackupMetadata(latestStoredEntry);
+          var latestCreatedAt = latestMetadata && typeof latestMetadata.createdAt === 'string' ? latestMetadata.createdAt : null;
+          lastAutoBackupSignature = currentSignature;
+          lastAutoBackupName = latestStoredName;
+          lastAutoBackupCreatedAtIso = latestCreatedAt;
+          recordAutoBackupRun({
+            status: 'skipped',
+            reason: 'unchanged',
+            name: latestStoredName,
+            createdAt: latestCreatedAt,
+            context: reason
+          });
+          lastAutoBackupReasonState.set(reason, {
+            timestamp: now.valueOf(),
+            signature: currentSignature
+          });
+          return {
+            status: 'skipped',
+            reason: 'unchanged',
+            name: latestStoredName,
+            createdAt: latestCreatedAt,
+            context: reason
+          };
+        }
+      } catch (signatureCompareError) {
+        console.warn('Failed to compare current auto backup against latest snapshot before saving', signatureCompareError);
+      }
+    }
     if (!force) {
       var lastReasonState = lastAutoBackupReasonState.get(reason);
       if (lastReasonState) {
@@ -1574,57 +1651,64 @@ function ensureAutoBackupBeforeDeletion(context) {
   var fallbackTexts = texts.en || {};
   var successMessage = config.successMessage || langTexts.preDeleteBackupSuccess || fallbackTexts.preDeleteBackupSuccess || 'Automatic backup saved. Restore it anytime from Saved Projects.';
   var failureMessage = config.failureMessage || langTexts.preDeleteBackupFailed || fallbackTexts.preDeleteBackupFailed || 'Automatic backup failed. The action was cancelled.';
-  var autoBackupOptions = _objectSpread({
-    suppressSuccess: true,
-    suppressError: true
-  }, config.autoBackupOptions || {});
-  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'reason')) {
-    autoBackupOptions.reason = 'safeguard';
-  }
-  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'force')) {
-    autoBackupOptions.force = true;
-  }
-  var backupResult = null;
-  if (typeof autoBackup === 'function') {
-    try {
-      backupResult = autoBackup(autoBackupOptions);
-    } catch (error) {
-      console.error("Automatic backup before ".concat(context || 'deletion', " failed"), error);
-      backupResult = null;
+  var setupSelectElement = getSetupSelectElement();
+  var normalizeProjectName = function normalizeProjectName(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  };
+  var selectedName = setupSelectElement && typeof setupSelectElement.value === 'string' ? normalizeProjectName(setupSelectElement.value) : '';
+  var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? normalizeProjectName(setupNameInput.value) : '';
+  var rememberedName = normalizeProjectName(typeof lastSetupName === 'string' ? lastSetupName : '');
+  var isAutoBackupName = function isAutoBackupName(name) {
+    return typeof name === 'string' && name.startsWith('auto-backup-');
+  };
+  var candidateNames = [selectedName, typedName, rememberedName];
+  var activeProjectName = candidateNames.find(function (name) {
+    return name && !isAutoBackupName(name);
+  }) || '';
+  if (!activeProjectName) {
+    if (config.notifyFailure !== false) {
+      showNotification('error', failureMessage);
     }
-  }
-  var backupName = null;
-  var backupSkipped = null;
-  if (typeof backupResult === 'string') {
-    backupName = backupResult;
-  } else if (backupResult && _typeof(backupResult) === 'object') {
-    if (backupResult.status === 'skipped') {
-      backupSkipped = backupResult;
-    }
-    if (typeof backupResult.name === 'string' && backupResult.name) {
-      backupName = backupResult.name;
-    }
-  }
-  if (!backupName) {
-    if (backupSkipped) {
-      var reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason ? backupSkipped.reason : 'unspecified';
-      if (reason === 'unchanged' && typeof backupSkipped.name === 'string' && backupSkipped.name) {
-        if (config.notifySuccess !== false) {
-          showNotification('success', successMessage);
-        }
-        return backupSkipped.name;
-      }
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn("Automatic backup before ".concat(context || 'deletion', " was skipped (").concat(reason, "). The action was cancelled to protect user data."));
-      }
-    }
-    showNotification('error', failureMessage);
     return null;
   }
-  if (config.notifySuccess !== false) {
-    showNotification('success', successMessage);
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+    } catch (autoSaveError) {
+      console.warn('Failed to flush project autosave before deletion backup', autoSaveError);
+    }
   }
-  return backupName;
+  var backupOutcome = {
+    status: 'unsupported'
+  };
+  if (typeof createProjectDeletionBackup === 'function') {
+    try {
+      backupOutcome = createProjectDeletionBackup(activeProjectName);
+    } catch (error) {
+      console.error("Automatic backup before ".concat(context || 'deletion', " failed"), error);
+      backupOutcome = {
+        status: 'failed'
+      };
+    }
+  }
+  if (backupOutcome.status === 'created' || backupOutcome.status === 'skipped') {
+    if (backupOutcome.status === 'created') {
+      noteAutoBackupRelevantChange({
+        reset: true
+      });
+    }
+    if (config.notifySuccess !== false) {
+      showNotification('success', successMessage);
+    }
+    return typeof backupOutcome.backupName === 'string' && backupOutcome.backupName ? backupOutcome.backupName : activeProjectName;
+  }
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn("Automatic backup before ".concat(context || 'deletion', " failed."), backupOutcome);
+  }
+  if (config.notifyFailure !== false) {
+    showNotification('error', failureMessage);
+  }
+  return null;
 }
 var autoBackupInterval = setInterval(function () {
   autoBackup({

@@ -17,6 +17,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
 var projectPersistenceSuspendedCount = 0;
+var PROJECT_FORM_FREEZE = typeof Object.freeze === 'function' ? Object.freeze : function (value) {
+  return value;
+};
+var projectFormDataCache = null;
+var projectFormDataCacheDirty = true;
+function markProjectFormDataDirty() {
+  projectFormDataCacheDirty = true;
+  projectFormDataCache = null;
+}
 function suspendProjectPersistence() {
   projectPersistenceSuspendedCount += 1;
 }
@@ -1863,9 +1872,55 @@ function collectAccessories() {
     rigging: riggingUnique
   };
 }
+function cloneProjectFormDataSnapshot(snapshot) {
+  if (!snapshot || _typeof(snapshot) !== 'object') {
+    return {};
+  }
+  var clone = _objectSpread({}, snapshot);
+  if (Array.isArray(snapshot.people)) {
+    clone.people = snapshot.people.map(function (person) {
+      return _objectSpread({}, person);
+    });
+  }
+  if (Array.isArray(snapshot.prepDays)) {
+    clone.prepDays = _toConsumableArray(snapshot.prepDays);
+  }
+  if (Array.isArray(snapshot.shootingDays)) {
+    clone.shootingDays = _toConsumableArray(snapshot.shootingDays);
+  }
+  if (Array.isArray(snapshot.storageRequirements)) {
+    clone.storageRequirements = snapshot.storageRequirements.map(function (entry) {
+      return _objectSpread({}, entry);
+    });
+  }
+  return clone;
+}
+function freezeProjectFormDataSnapshot(info) {
+  var snapshot = _objectSpread({}, info);
+  if (Array.isArray(info.people)) {
+    snapshot.people = PROJECT_FORM_FREEZE(info.people.map(function (person) {
+      return PROJECT_FORM_FREEZE(_objectSpread({}, person));
+    }));
+  }
+  if (Array.isArray(info.prepDays)) {
+    snapshot.prepDays = PROJECT_FORM_FREEZE(_toConsumableArray(info.prepDays));
+  }
+  if (Array.isArray(info.shootingDays)) {
+    snapshot.shootingDays = PROJECT_FORM_FREEZE(_toConsumableArray(info.shootingDays));
+  }
+  if (Array.isArray(info.storageRequirements)) {
+    snapshot.storageRequirements = PROJECT_FORM_FREEZE(info.storageRequirements.map(function (entry) {
+      return PROJECT_FORM_FREEZE(_objectSpread({}, entry));
+    }));
+  }
+  return PROJECT_FORM_FREEZE(snapshot);
+}
 function collectProjectFormData() {
   var _crewContainer, _storageNeedsContaine;
   if (!projectForm) return {};
+  if (!projectFormDataCacheDirty && projectFormDataCache) {
+    return cloneProjectFormDataSnapshot(projectFormDataCache);
+  }
   var formData = new FormData(projectForm);
   var getValue = function getValue(name) {
     var raw = formData.get(name);
@@ -2034,7 +2089,10 @@ function collectProjectFormData() {
   if (currentProjectName) {
     info.projectName = currentProjectName;
   }
-  return info;
+  var snapshot = freezeProjectFormDataSnapshot(info);
+  projectFormDataCache = snapshot;
+  projectFormDataCacheDirty = false;
+  return cloneProjectFormDataSnapshot(snapshot);
 }
 function populateProjectForm() {
   var info = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -2151,6 +2209,7 @@ function populateProjectForm() {
       });
     }
   });
+  markProjectFormDataDirty();
 }
 function ensureZoomRemoteSetup(info) {
   if (!info || !info.tripodPreferences || !info.tripodPreferences.includes('Zoom Remote handle')) return;
@@ -3731,6 +3790,178 @@ function getCustomItemsContainer(key) {
   if (!gearListOutput || typeof key !== 'string') return null;
   return gearListOutput.querySelector(".gear-custom-items[data-gear-custom-list=\"".concat(key, "\"]"));
 }
+var CUSTOM_CATEGORY_SUGGESTION_SOURCES = {
+  camera: ['cameras'],
+  'camera-support': ['accessories.cameraSupport'],
+  media: ['media', 'accessories.media', 'accessories.cardReaders'],
+  lens: ['lenses'],
+  'lens-support': ['accessories.cameraSupport', 'accessories.rigging'],
+  'matte-box-filter': ['accessories.matteboxes', 'accessories.filters'],
+  'lds-fiz': ['fiz', 'accessories.cables.fiz'],
+  'camera-batteries': ['batteries', 'accessories.batteries'],
+  'monitoring-batteries': ['batteries', 'accessories.batteries'],
+  chargers: ['accessories.chargers'],
+  monitoring: ['monitors', 'directorMonitors', 'video', 'videoAssist', 'iosVideo'],
+  'monitoring-support': ['accessories.rigging', 'accessories.grip', 'accessories.carts'],
+  rigging: ['accessories.rigging', 'accessories.grip'],
+  power: ['accessories.power', 'accessories.powerPlates'],
+  grip: ['accessories.grip'],
+  'carts-and-transportation': ['accessories.carts'],
+  miscellaneous: ['accessories.matteboxes', 'accessories.filters', 'accessories.cables'],
+  consumables: []
+};
+function isSuggestionDeviceEntry(entry) {
+  if (!entry || _typeof(entry) !== 'object' || Array.isArray(entry)) return false;
+  return Object.values(entry).some(function (val) {
+    if (val === null) return true;
+    var valueType = _typeof(val);
+    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      return true;
+    }
+    if (Array.isArray(val)) {
+      return true;
+    }
+    return false;
+  });
+}
+function collectDeviceSuggestionNames(source) {
+  if (!source || _typeof(source) !== 'object') return [];
+  var names = [];
+  Object.entries(source).forEach(function (_ref15) {
+    var _ref16 = _slicedToArray(_ref15, 2),
+      name = _ref16[0],
+      value = _ref16[1];
+    if (!value || _typeof(value) !== 'object') {
+      return;
+    }
+    if (isSuggestionDeviceEntry(value)) {
+      names.push(name);
+      return;
+    }
+    names.push.apply(names, _toConsumableArray(collectDeviceSuggestionNames(value)));
+  });
+  return names;
+}
+function getDeviceSuggestionNamesForPath(path) {
+  if (!path || typeof path !== 'string') return [];
+  var parts = path.split('.');
+  var scope = devices;
+  for (var i = 0; i < parts.length; i += 1) {
+    var part = parts[i];
+    if (!scope || _typeof(scope) !== 'object') {
+      return [];
+    }
+    scope = scope[part];
+  }
+  if (!scope || _typeof(scope) !== 'object') {
+    return [];
+  }
+  return collectDeviceSuggestionNames(scope);
+}
+function collectStandardItemSuggestions(categoryKey) {
+  if (!gearListOutput || typeof categoryKey !== 'string') return [];
+  var group = gearListOutput.querySelector(".category-group[data-gear-custom-key=\"".concat(categoryKey, "\"]"));
+  if (!group) return [];
+  var names = new Set();
+  var addName = function addName(raw) {
+    if (typeof raw !== 'string') return;
+    var trimmed = raw.trim();
+    if (!trimmed) return;
+    var match = trimmed.match(/^(?:\d+\s*x\s+)?(.+)$/i);
+    var normalized = match ? match[1].trim() : trimmed;
+    if (!normalized || /^none$/i.test(normalized)) return;
+    names.add(normalized);
+  };
+  group.querySelectorAll('.gear-standard-items .gear-item').forEach(function (item) {
+    var dataName = item.getAttribute('data-gear-name');
+    if (dataName) {
+      addName(dataName);
+    } else {
+      addName(item.textContent || '');
+    }
+  });
+  group.querySelectorAll('select option').forEach(function (option) {
+    if (!option || typeof option.value !== 'string') return;
+    var value = option.value.trim();
+    if (!value) return;
+    addName(value);
+  });
+  return Array.from(names);
+}
+function getCustomCategorySuggestions(categoryKey, categoryLabel) {
+  var key = categoryKey || createCustomCategoryKey(categoryLabel || '');
+  var seen = new Set();
+  var results = [];
+  var paths = CUSTOM_CATEGORY_SUGGESTION_SOURCES[key] || [];
+  paths.forEach(function (path) {
+    getDeviceSuggestionNamesForPath(path).forEach(function (name) {
+      if (typeof name !== 'string') return;
+      var trimmed = name.trim();
+      if (!trimmed || /^none$/i.test(trimmed)) return;
+      var normalized = trimmed.toLowerCase();
+      if (seen.has(normalized)) return;
+      seen.add(normalized);
+      results.push(trimmed);
+    });
+  });
+  collectStandardItemSuggestions(key).forEach(function (name) {
+    var trimmed = name.trim();
+    if (!trimmed || /^none$/i.test(trimmed)) return;
+    var normalized = trimmed.toLowerCase();
+    if (seen.has(normalized)) return;
+    seen.add(normalized);
+    results.push(trimmed);
+  });
+  var sorter = typeof localeSort === 'function' ? localeSort : function (a, b) {
+    return a.localeCompare(b, undefined, {
+      sensitivity: 'base'
+    });
+  };
+  return results.sort(sorter);
+}
+function ensureCustomCategorySuggestionList(categoryKey, categoryLabel) {
+  var container = getCustomItemsContainer(categoryKey);
+  if (!container) return null;
+  var doc = container.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  var suggestions = getCustomCategorySuggestions(categoryKey, categoryLabel);
+  var existing = container.querySelector("datalist[data-gear-custom-suggestions=\"".concat(categoryKey, "\"]"));
+  if (!suggestions.length) {
+    if (existing) {
+      existing.remove();
+    }
+    return null;
+  }
+  var datalistId = "gear-custom-suggestions-".concat(categoryKey);
+  var optionsHtml = suggestions.map(function (value) {
+    return "<option value=\"".concat(escapeHtml(value), "\"></option>");
+  }).join('');
+  var datalist = existing;
+  if (!datalist) {
+    datalist = doc.createElement('datalist');
+    datalist.id = datalistId;
+    datalist.setAttribute('data-gear-custom-suggestions', categoryKey);
+    container.appendChild(datalist);
+  } else if (datalist.id !== datalistId) {
+    datalist.id = datalistId;
+  }
+  if (datalist._lastRenderedOptions !== optionsHtml) {
+    datalist.innerHTML = optionsHtml;
+    datalist._lastRenderedOptions = optionsHtml;
+  }
+  return datalistId;
+}
+function attachCustomItemSuggestions(entry, categoryKey, categoryLabel) {
+  if (!entry) return;
+  var nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+  if (!nameInput) return;
+  var datalistId = ensureCustomCategorySuggestionList(categoryKey, categoryLabel);
+  if (datalistId) {
+    nameInput.setAttribute('list', datalistId);
+  } else {
+    nameInput.removeAttribute('list');
+  }
+}
 function updateCustomItemPreview(entry) {
   var _quantityInput$value, _nameInput$value;
   if (!entry) return;
@@ -3803,6 +4034,7 @@ function addCustomItemEntry(categoryKey, categoryLabel) {
   var entry = buildCustomItemEntryElement(categoryKey, categoryLabel, data);
   if (!entry) return null;
   container.appendChild(entry);
+  attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
   updateCustomItemPreview(entry);
   if (!options.skipFocus) {
     var nameInput = entry.querySelector('[data-gear-custom-input="name"]');
@@ -3879,10 +4111,10 @@ function applyCustomItemsState(state) {
       });
     }
   });
-  Object.entries(normalizedState).forEach(function (_ref15) {
-    var _ref16 = _slicedToArray(_ref15, 2),
-      key = _ref16[0],
-      entries = _ref16[1];
+  Object.entries(normalizedState).forEach(function (_ref17) {
+    var _ref18 = _slicedToArray(_ref17, 2),
+      key = _ref18[0],
+      entries = _ref18[1];
     var container = getCustomItemsContainer(key);
     if (!container) return;
     container.querySelectorAll('.gear-custom-item').forEach(function (item) {
@@ -4251,16 +4483,16 @@ function gearListGenerateHtmlImpl() {
   var projectTitle = escapeHtml(projectTitleSource);
   var projectLabels = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref17) {
-    var _ref18 = _slicedToArray(_ref17, 2),
-      k = _ref18[0],
-      v = _ref18[1];
-    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
-  });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref19) {
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref19) {
     var _ref20 = _slicedToArray(_ref19, 2),
       k = _ref20[0],
       v = _ref20[1];
+    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
+  });
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref21) {
+    var _ref22 = _slicedToArray(_ref21, 2),
+      k = _ref22[0],
+      v = _ref22[1];
     var value = formatRequirementValue(v);
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -4291,21 +4523,21 @@ function gearListGenerateHtmlImpl() {
       var current = counts[base].ctxCounts[ctx] || 0;
       counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
     });
-    return Object.entries(counts).sort(function (_ref21, _ref22) {
-      var _ref23 = _slicedToArray(_ref21, 1),
-        a = _ref23[0];
-      var _ref24 = _slicedToArray(_ref22, 1),
-        b = _ref24[0];
+    return Object.entries(counts).sort(function (_ref23, _ref24) {
+      var _ref25 = _slicedToArray(_ref23, 1),
+        a = _ref25[0];
+      var _ref26 = _slicedToArray(_ref24, 1),
+        b = _ref26[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref25) {
+    }).map(function (_ref27) {
       var _gearItemTranslations;
-      var _ref26 = _slicedToArray(_ref25, 2),
-        base = _ref26[0],
-        _ref26$ = _ref26[1],
-        total = _ref26$.total,
-        ctxCounts = _ref26$.ctxCounts;
+      var _ref28 = _slicedToArray(_ref27, 2),
+        base = _ref28[0],
+        _ref28$ = _ref28[1],
+        total = _ref28$.total,
+        ctxCounts = _ref28$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -4313,41 +4545,41 @@ function gearListGenerateHtmlImpl() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref27) {
-            var _ref28 = _slicedToArray(_ref27, 1),
-              c = _ref28[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref29) {
+            var _ref30 = _slicedToArray(_ref29, 1),
+              c = _ref30[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref29, _ref30) {
-            var _ref31 = _slicedToArray(_ref29, 1),
-              a = _ref31[0];
-            var _ref32 = _slicedToArray(_ref30, 1),
-              b = _ref32[0];
+          }).sort(function (_ref31, _ref32) {
+            var _ref33 = _slicedToArray(_ref31, 1),
+              a = _ref33[0];
+            var _ref34 = _slicedToArray(_ref32, 1),
+              b = _ref34[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref33) {
-            var _ref34 = _slicedToArray(_ref33, 2),
-              count = _ref34[1];
+          var usedCount = realEntries.reduce(function (sum, _ref35) {
+            var _ref36 = _slicedToArray(_ref35, 2),
+              count = _ref36[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref35) {
-            var _ref36 = _slicedToArray(_ref35, 2),
-              c = _ref36[0],
-              count = _ref36[1];
+          ctxParts = realEntries.map(function (_ref37) {
+            var _ref38 = _slicedToArray(_ref37, 2),
+              c = _ref38[0],
+              count = _ref38[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 1),
-              c = _ref38[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref39) {
+            var _ref40 = _slicedToArray(_ref39, 1),
+              c = _ref40[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref39) {
-            var _ref40 = _slicedToArray(_ref39, 2),
-              c = _ref40[0],
-              count = _ref40[1];
+          }).map(function (_ref41) {
+            var _ref42 = _slicedToArray(_ref41, 2),
+              c = _ref42[0],
+              count = _ref42[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -4359,63 +4591,63 @@ function gearListGenerateHtmlImpl() {
               }
             }
             return [c, count];
-          }).sort(function (_ref41, _ref42) {
-            var _ref43 = _slicedToArray(_ref41, 1),
-              a = _ref43[0];
-            var _ref44 = _slicedToArray(_ref42, 1),
-              b = _ref44[0];
+          }).sort(function (_ref43, _ref44) {
+            var _ref45 = _slicedToArray(_ref43, 1),
+              a = _ref45[0];
+            var _ref46 = _slicedToArray(_ref44, 1),
+              b = _ref46[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref45) {
-            var _ref46 = _slicedToArray(_ref45, 2),
-              count = _ref46[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref47) {
+            var _ref48 = _slicedToArray(_ref47, 2),
+              count = _ref48[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref47) {
-            var _ref48 = _slicedToArray(_ref47, 2),
-              c = _ref48[0],
-              count = _ref48[1];
+          ctxParts = _realEntries.map(function (_ref49) {
+            var _ref50 = _slicedToArray(_ref49, 2),
+              c = _ref50[0],
+              count = _ref50[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref49) {
-            var _ref50 = _slicedToArray(_ref49, 1),
-              c = _ref50[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref51) {
+            var _ref52 = _slicedToArray(_ref51, 1),
+              c = _ref52[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref51, _ref52) {
-            var _ref53 = _slicedToArray(_ref51, 1),
-              a = _ref53[0];
-            var _ref54 = _slicedToArray(_ref52, 1),
-              b = _ref54[0];
+          }).sort(function (_ref53, _ref54) {
+            var _ref55 = _slicedToArray(_ref53, 1),
+              a = _ref55[0];
+            var _ref56 = _slicedToArray(_ref54, 1),
+              b = _ref56[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          ctxParts = _realEntries2.map(function (_ref55) {
-            var _ref56 = _slicedToArray(_ref55, 2),
-              c = _ref56[0],
-              count = _ref56[1];
+          ctxParts = _realEntries2.map(function (_ref57) {
+            var _ref58 = _slicedToArray(_ref57, 2),
+              c = _ref58[0],
+              count = _ref58[1];
             return "".concat(count, "x ").concat(c);
           });
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref57) {
-            var _ref58 = _slicedToArray(_ref57, 1),
-              c = _ref58[0];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref59) {
+            var _ref60 = _slicedToArray(_ref59, 1),
+              c = _ref60[0];
             return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref59) {
-            var _ref60 = _slicedToArray(_ref59, 2),
-              count = _ref60[1];
+          }).reduce(function (sum, _ref61) {
+            var _ref62 = _slicedToArray(_ref61, 2),
+              count = _ref62[1];
             return sum + count;
           }, 0);
           if (_spareCount2 > 0) {
             ctxParts.push("".concat(_spareCount2, "x Spare"));
           } else if (base === 'D-Tap Extension 50 cm') {
-            var _usedCount2 = _realEntries2.reduce(function (sum, _ref61) {
-              var _ref62 = _slicedToArray(_ref61, 2),
-                count = _ref62[1];
+            var _usedCount2 = _realEntries2.reduce(function (sum, _ref63) {
+              var _ref64 = _slicedToArray(_ref63, 2),
+                count = _ref64[1];
               return sum + count;
             }, 0);
             var remaining = total - _usedCount2;
@@ -4538,7 +4770,7 @@ function gearListGenerateHtmlImpl() {
   }
   addRow('Media', mediaItems);
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref63, _lens$minFocusMeters;
+    var _ref65, _lens$minFocusMeters;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
@@ -4549,7 +4781,7 @@ function gearListGenerateHtmlImpl() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref63 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref63 !== void 0 ? _ref63 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref65 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref65 !== void 0 ? _ref65 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
@@ -4665,9 +4897,9 @@ function gearListGenerateHtmlImpl() {
     var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
   }
-  handheldPrefs.forEach(function (_ref64) {
-    var role = _ref64.role,
-      size = _ref64.size;
+  handheldPrefs.forEach(function (_ref66) {
+    var role = _ref66.role,
+      size = _ref66.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -4746,9 +4978,9 @@ function gearListGenerateHtmlImpl() {
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
     if (selectedSize) monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref65) {
+  largeMonitorPrefs.forEach(function (_ref67) {
     var _dirDb$resolvedName, _dirDb$defaultName, _dirDb$candidate;
-    var role = _ref65.role;
+    var role = _ref67.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -4898,10 +5130,10 @@ function gearListGenerateHtmlImpl() {
     var source = info.monitorBatteries;
     if (!source || _typeof(source) !== 'object' || Array.isArray(source)) return {};
     var entries = {};
-    Object.entries(source).forEach(function (_ref66) {
-      var _ref67 = _slicedToArray(_ref66, 2),
-        key = _ref67[0],
-        value = _ref67[1];
+    Object.entries(source).forEach(function (_ref68) {
+      var _ref69 = _slicedToArray(_ref68, 2),
+        key = _ref69[0],
+        value = _ref69[1];
       if (typeof key !== 'string') return;
       if (typeof value !== 'string') return;
       var trimmed = value.trim();
@@ -5239,14 +5471,14 @@ function gearListGenerateHtmlImpl() {
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref68) {
-    var id = _ref68.id,
-      color = _ref68.color,
-      width = _ref68.width;
-    var colorOpts = gaffColors.map(function (_ref69) {
-      var _ref70 = _slicedToArray(_ref69, 2),
-        val = _ref70[0],
-        label = _ref70[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref70) {
+    var id = _ref70.id,
+      color = _ref70.color,
+      width = _ref70.width;
+    var colorOpts = gaffColors.map(function (_ref71) {
+      var _ref72 = _slicedToArray(_ref71, 2),
+        val = _ref72[0],
+        label = _ref72[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -5257,10 +5489,10 @@ function gearListGenerateHtmlImpl() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref71) {
-      var _ref72 = _slicedToArray(_ref71, 2),
-        val = _ref72[0],
-        label = _ref72[1];
+    var _options3 = colors.map(function (_ref73) {
+      var _ref74 = _slicedToArray(_ref73, 2),
+        val = _ref74[0],
+        label = _ref74[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\">".concat(eyeLeatherCount, "x Bluestar eye leather made of microfiber oval, large <select id=\"gearListEyeLeatherColor\">").concat(_options3, "</select></span>");
@@ -5427,6 +5659,7 @@ function gearListGetCurrentHtmlImpl() {
         input.setAttribute('value', input.value);
       }
     });
+    convertCustomItemsForStaticOutput(clone);
     var table = clone.querySelector('.gear-table');
     gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
   }
@@ -5465,10 +5698,10 @@ function cloneGearListSelectors(selectors) {
     }
     if (value && _typeof(value) === 'object') {
       var nested = {};
-      Object.entries(value).forEach(function (_ref73) {
-        var _ref74 = _slicedToArray(_ref73, 2),
-          key = _ref74[0],
-          nestedValue = _ref74[1];
+      Object.entries(value).forEach(function (_ref75) {
+        var _ref76 = _slicedToArray(_ref75, 2),
+          key = _ref76[0],
+          nestedValue = _ref76[1];
         nested[key] = _cloneValue(nestedValue);
       });
       return nested;
@@ -5479,10 +5712,10 @@ function cloneGearListSelectors(selectors) {
     return typeof value === 'string' ? value : String(value);
   };
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref75) {
-    var _ref76 = _slicedToArray(_ref75, 2),
-      id = _ref76[0],
-      value = _ref76[1];
+  Object.entries(selectors).forEach(function (_ref77) {
+    var _ref78 = _slicedToArray(_ref77, 2),
+      id = _ref78[0],
+      value = _ref78[1];
     if (!id || typeof id !== 'string') return;
     clone[id] = _cloneValue(value);
   });
@@ -5490,10 +5723,10 @@ function cloneGearListSelectors(selectors) {
 }
 function applyGearListSelectors(selectors) {
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref77) {
-    var _ref78 = _slicedToArray(_ref77, 2),
-      id = _ref78[0],
-      value = _ref78[1];
+  Object.entries(selectors).forEach(function (_ref79) {
+    var _ref80 = _slicedToArray(_ref79, 2),
+      id = _ref80[0],
+      value = _ref80[1];
     if (id === '__customItems') return;
     var sel = gearListOutput.querySelector("#".concat(id));
     if (sel) {
@@ -5510,6 +5743,51 @@ function applyGearListSelectors(selectors) {
     }
   });
   applyCustomItemsState(selectors.__customItems || {});
+}
+function convertCustomItemsForStaticOutput(root) {
+  if (!root) return;
+  var doc = root.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var sections = root.querySelectorAll('.gear-custom-section');
+  sections.forEach(function (section) {
+    var itemsContainer = section.querySelector('.gear-custom-items');
+    var parent = section.parentElement;
+    if (!itemsContainer || !parent) {
+      section.remove();
+      return;
+    }
+    var previews = Array.from(itemsContainer.querySelectorAll('.gear-custom-item-preview'));
+    var values = previews.map(function (preview) {
+      return (preview.textContent || '').replace(/\s+/g, ' ').trim();
+    }).filter(Boolean);
+    var standardContainer = section.previousElementSibling;
+    if (!standardContainer || !standardContainer.classList.contains('gear-standard-items')) {
+      standardContainer = doc.createElement('div');
+      standardContainer.className = 'gear-standard-items';
+      parent.insertBefore(standardContainer, section);
+    }
+    if (values.length) {
+      values.forEach(function (value) {
+        if (standardContainer.childNodes.length) {
+          var last = standardContainer.lastChild;
+          var isBreak = last && last.nodeType === 1 && last.tagName === 'BR';
+          if (!isBreak) {
+            standardContainer.appendChild(doc.createElement('br'));
+          }
+        }
+        var span = doc.createElement('span');
+        span.className = 'gear-item';
+        span.textContent = value;
+        span.setAttribute('data-gear-name', value);
+        span.setAttribute('data-gear-custom-output', 'true');
+        standardContainer.appendChild(span);
+      });
+    }
+    section.remove();
+  });
+  root.querySelectorAll('.gear-custom-add-btn').forEach(function (btn) {
+    return btn.remove();
+  });
 }
 function cloneProjectInfoForStorage(info) {
   if (info === undefined || info === null) {
@@ -5824,6 +6102,7 @@ function saveCurrentGearList() {
     setups[selectedStorageKey] = setup;
     storeSetups(setups);
   }
+  return changed;
 }
 function deleteCurrentGearList() {
   if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;

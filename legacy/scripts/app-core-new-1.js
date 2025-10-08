@@ -1144,107 +1144,96 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var pinkModeLottieRuntime = null;
   var pinkModeLottiePromise = null;
-
   function disablePinkModeLottieWebWorkers(instance) {
     if (!instance || typeof instance.useWebWorker !== 'function') {
       return;
     }
-
     try {
       instance.useWebWorker(false);
     } catch (error) {
       console.warn('Unable to disable Lottie web workers', error);
     }
   }
-
   function resolvePinkModeLottieRuntime() {
     if (pinkModeLottieRuntime && typeof pinkModeLottieRuntime.loadAnimation === 'function') {
       return pinkModeLottieRuntime;
     }
-
     if (typeof window !== 'undefined' && window && window.lottie && typeof window.lottie.loadAnimation === 'function') {
       pinkModeLottieRuntime = window.lottie;
       disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
       return pinkModeLottieRuntime;
     }
-
     return null;
   }
-
   function ensurePinkModeLottieRuntime() {
     var existing = resolvePinkModeLottieRuntime();
     if (existing) {
       return Promise.resolve(existing);
     }
-
     if (typeof document === 'undefined') {
       return Promise.resolve(null);
     }
-
     if (pinkModeLottiePromise) {
       return pinkModeLottiePromise;
     }
-
     var loaderPromise = new Promise(function (resolve, reject) {
       var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
       if (!head) {
         reject(new Error('Unable to resolve document head for pink mode animations.'));
         return;
       }
-
       var existingScript = document.querySelector('script[data-loader="pink-mode-lottie"]');
-
       if (existingScript) {
-        var markLoaded = function markLoaded() {
-          existingScript.removeEventListener('load', markLoaded, false);
-          existingScript.removeEventListener('error', markFailed, false);
+        var _markLoaded = function markLoaded() {
+          existingScript.removeEventListener('load', _markLoaded);
+          existingScript.removeEventListener('error', _markFailed);
           existingScript.setAttribute('data-loaded', 'true');
           resolve(resolvePinkModeLottieRuntime());
         };
-
-        var markFailed = function markFailed(event) {
-          existingScript.removeEventListener('load', markLoaded, false);
-          existingScript.removeEventListener('error', markFailed, false);
+        var _markFailed = function markFailed(event) {
+          existingScript.removeEventListener('load', _markLoaded);
+          existingScript.removeEventListener('error', _markFailed);
           var error = new Error('Failed to load pink mode animation runtime.');
           error.event = event;
           reject(error);
         };
-
         if (existingScript.getAttribute('data-loaded') === 'true' || existingScript.readyState === 'complete') {
           resolve(resolvePinkModeLottieRuntime());
           return;
         }
-
-        existingScript.addEventListener('load', markLoaded, false);
-        existingScript.addEventListener('error', markFailed, false);
+        existingScript.addEventListener('load', _markLoaded, {
+          once: true
+        });
+        existingScript.addEventListener('error', _markFailed, {
+          once: true
+        });
         return;
       }
-
       var script = document.createElement('script');
       script.src = 'src/vendor/lottie-light.min.js';
       script.async = true;
       script.setAttribute('data-loader', 'pink-mode-lottie');
-
-      var handleLoad = function handleLoad() {
-        script.removeEventListener('load', handleLoad, false);
-        script.removeEventListener('error', handleError, false);
+      var _handleLoad = function handleLoad() {
+        script.removeEventListener('load', _handleLoad);
+        script.removeEventListener('error', _handleError);
         script.setAttribute('data-loaded', 'true');
         resolve(resolvePinkModeLottieRuntime());
       };
-
-      var handleError = function handleError(event) {
-        script.removeEventListener('load', handleLoad, false);
-        script.removeEventListener('error', handleError, false);
+      var _handleError = function handleError(event) {
+        script.removeEventListener('load', _handleLoad);
+        script.removeEventListener('error', _handleError);
         var error = new Error('Failed to load pink mode animation runtime.');
         error.event = event;
         reject(error);
       };
-
-      script.addEventListener('load', handleLoad, false);
-      script.addEventListener('error', handleError, false);
+      script.addEventListener('load', _handleLoad, {
+        once: true
+      });
+      script.addEventListener('error', _handleError, {
+        once: true
+      });
       head.appendChild(script);
     });
-
     pinkModeLottiePromise = loaderPromise.then(function (instance) {
       if (instance && typeof instance.loadAnimation === 'function') {
         return instance;
@@ -1259,16 +1248,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         pinkModeLottieRuntime = null;
         return null;
       }
-
       pinkModeLottieRuntime = runtime;
       disablePinkModeLottieWebWorkers(runtime);
       pinkModeLottiePromise = Promise.resolve(runtime);
       return runtime;
     });
-
     return pinkModeLottiePromise;
   }
-
   var generatePrintableOverview;
   try {
     var _require = require('./overview.js');
@@ -10677,7 +10663,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     pinkModeIconRainLastTriggeredAt = now;
-
     var proceedWithTemplates = function proceedWithTemplates() {
       if (!document || !document.body || !document.body.classList.contains('pink-mode')) {
         return;
@@ -10699,13 +10684,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         console.warn('Could not trigger pink mode icon rain', error);
       });
     };
-
     var runtime = resolvePinkModeLottieRuntime();
     if (runtime && typeof runtime.loadAnimation === 'function') {
       proceedWithTemplates();
       return;
     }
-
     ensurePinkModeLottieRuntime().then(function (lottie) {
       if (!lottie || typeof lottie.loadAnimation !== 'function') {
         return null;
@@ -10936,7 +10919,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (pinkModeAnimatedIconsActive || !document || !document.body || !document.body.classList.contains('pink-mode')) {
       return;
     }
-
     pinkModeAnimatedIconsActive = true;
     loadPinkModeAnimatedIconTemplates().then(function (templates) {
       if (!pinkModeAnimatedIconsActive) {
@@ -10954,7 +10936,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       stopPinkModeAnimatedIcons();
     });
   }
-
   function startPinkModeAnimatedIcons() {
     if (pinkModeAnimatedIconsActive) {
       return;
@@ -10968,13 +10949,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!document.body.classList.contains('pink-mode')) {
       return;
     }
-
     var runtime = resolvePinkModeLottieRuntime();
     if (runtime && typeof runtime.loadAnimation === 'function') {
       activatePinkModeAnimatedIcons();
       return;
     }
-
     ensurePinkModeLottieRuntime().then(function (lottie) {
       if (!lottie || typeof lottie.loadAnimation !== 'function') {
         return null;
@@ -10982,7 +10961,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (!document || !document.body || !document.body.classList.contains('pink-mode') || pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
         return null;
       }
-
       activatePinkModeAnimatedIcons();
       return lottie;
     }).catch(function (error) {
@@ -11256,10 +11234,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     removeBtn.setAttribute('data-help', removeCrewLabel);
     removeBtn.addEventListener('click', function () {
       row.remove();
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
       scheduleProjectAutoSave(true);
     });
     row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
     crewContainer.appendChild(row);
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
   }
   function createPrepRow() {
     var _texts$currentLang5, _texts$en273, _texts$currentLang6, _texts$en274;
@@ -11292,10 +11276,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     removeBtn.setAttribute('data-help', removePrepLabel);
     removeBtn.addEventListener('click', function () {
       row.remove();
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
       scheduleProjectAutoSave(true);
     });
     row.append(start, span, end, removeBtn);
     prepContainer.appendChild(row);
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
   }
   function createShootRow() {
     var _texts$currentLang7, _texts$en275, _texts$currentLang8, _texts$en276;
@@ -11328,10 +11318,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     removeBtn.setAttribute('data-help', removeShootLabel);
     removeBtn.addEventListener('click', function () {
       row.remove();
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
       scheduleProjectAutoSave(true);
     });
     row.append(start, span, end, removeBtn);
     shootContainer.appendChild(row);
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
   }
   function formatCapacity(value, unit) {
     var num = Number(value);
@@ -11588,11 +11584,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       } else {
         updateStorageRequirementTypeOptions();
       }
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
       scheduleProjectAutoSave(true);
     });
     row.append(quantityLabel, quantityInput, typeLabel, typeSelect, variantLabel, variantSelect, notesLabel, notesInput, removeBtn);
     storageNeedsContainer.appendChild(row);
     updateStorageRequirementTypeOptions();
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     return row;
   }
   function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {
@@ -12479,13 +12481,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var deviceManagerPreferredOrder = ["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.cardReaders", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"];
   function normalizeCategoryKey(key) {
-    var _devices8, _devices9, _devices10;
+    var _devices8, _devices9, _devices0;
     if (!key) return null;
     if (key === "accessories" || key === "fiz" || key === "filterOptions") return null;
     if (key.startsWith("accessories.cables.")) return "accessories.cables";
     if (key === "videoAssist" && (_devices8 = devices) !== null && _devices8 !== void 0 && (_devices8 = _devices8.accessories) !== null && _devices8 !== void 0 && _devices8.videoAssist) return "accessories.videoAssist";
     if (key === "media" && (_devices9 = devices) !== null && _devices9 !== void 0 && (_devices9 = _devices9.accessories) !== null && _devices9 !== void 0 && _devices9.media) return "accessories.media";
-    if (key === "cardReaders" && (_devices10 = devices) !== null && _devices10 !== void 0 && (_devices10 = _devices10.accessories) !== null && _devices10 !== void 0 && _devices10.cardReaders) return "accessories.cardReaders";
+    if (key === "cardReaders" && (_devices0 = devices) !== null && _devices0 !== void 0 && (_devices0 = _devices0.accessories) !== null && _devices0 !== void 0 && _devices0.cardReaders) return "accessories.cardReaders";
     return key;
   }
   function getCategoryLabel(categoryKey) {

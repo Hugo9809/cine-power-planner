@@ -531,6 +531,86 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
+  function getNonEmptyString(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    return trimmed ? trimmed : '';
+  }
+  function replaceSummaryTokens(template, tokens) {
+    if (typeof template !== 'string' || !template) {
+      return '';
+    }
+    var result = template;
+    for (var key in tokens) {
+      if (!Object.prototype.hasOwnProperty.call(tokens, key)) {
+        continue;
+      }
+      var tokenValue = tokens[key];
+      var placeholder = '{' + key + '}';
+      if (result.indexOf(placeholder) === -1) {
+        continue;
+      }
+      var replacement = typeof tokenValue === 'undefined' ? '' : String(tokenValue);
+      result = result.split(placeholder).join(replacement);
+    }
+    return result;
+  }
+  function selectSummaryBatteryName(labelText, batteryName, unnamedLabel) {
+    var resolvedLabel = getNonEmptyString(labelText);
+    if (resolvedLabel) {
+      return resolvedLabel;
+    }
+    var resolvedBattery = getNonEmptyString(batteryName);
+    if (resolvedBattery) {
+      return resolvedBattery;
+    }
+    return getNonEmptyString(unnamedLabel);
+  }
+  function formatRuntimeHoursForSummary(runtimeHours) {
+    if (!Number.isFinite(runtimeHours)) {
+      return '';
+    }
+    return runtimeHours >= 10 ? runtimeHours.toFixed(1) : runtimeHours.toFixed(2);
+  }
+  function buildPlainSummaryText(summaryOptions) {
+    var opts = summaryOptions || {};
+    var summaryPrompt = getNonEmptyString(opts.summaryPrompt);
+    var needBatterySummary = getNonEmptyString(opts.needBatterySummary) || summaryPrompt;
+    var unnamedBatteryLabel = getNonEmptyString(opts.unnamedBatteryLabel);
+    var batteryNameSummary = selectSummaryBatteryName(opts.batteryLabelText, opts.battery, unnamedBatteryLabel);
+    var totalPowerDisplay = Number.isFinite(opts.totalWatt) ? opts.totalWatt.toFixed(1) : '0.0';
+    if (!opts.battery) {
+      var promptWhenMissingBattery = opts.totalWatt > 0 ? needBatterySummary : summaryPrompt;
+      return promptWhenMissingBattery || needBatterySummary || summaryPrompt || batteryNameSummary || '';
+    }
+    if (!Number.isFinite(opts.runtimeHoursValue)) {
+      if (opts.unlimitedSummaryTemplate && Number.isFinite(opts.totalWatt) && opts.totalWatt === 0) {
+        var unlimitedSummary = replaceSummaryTokens(opts.unlimitedSummaryTemplate, {
+          batteryName: batteryNameSummary || unnamedBatteryLabel || '',
+          totalPower: totalPowerDisplay
+        });
+        if (unlimitedSummary) {
+          return unlimitedSummary;
+        }
+      }
+      return needBatterySummary || summaryPrompt || batteryNameSummary || '';
+    }
+    if (opts.runtimeSummaryTemplate && opts.batteriesNeededValue !== null && Number.isFinite(opts.batteriesNeededValue) && opts.batteriesNeededValue > 0) {
+      var formattedHours = formatRuntimeHoursForSummary(opts.runtimeHoursValue);
+      var runtimeSummary = replaceSummaryTokens(opts.runtimeSummaryTemplate, {
+        batteryName: batteryNameSummary || unnamedBatteryLabel || '',
+        hours: formattedHours,
+        batteryCount: String(opts.batteriesNeededValue),
+        totalPower: totalPowerDisplay
+      });
+      if (runtimeSummary) {
+        return runtimeSummary;
+      }
+    }
+    return summaryPrompt || needBatterySummary || batteryNameSummary || '';
+  }
   function createTextResolver(langTexts, fallbackTexts) {
     var primary = langTexts && _typeof(langTexts) === 'object' ? langTexts : {};
     var secondary = fallbackTexts && _typeof(fallbackTexts) === 'object' ? fallbackTexts : {};
@@ -570,137 +650,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (breakdownList) {
       var breakdownHelp = resolveText('breakdownListHelp');
       setHelpAttribute(breakdownList, breakdownHelp);
-  }
-
-  function getNonEmptyString(value) {
-    if (typeof value !== 'string') {
-      return '';
     }
-    var trimmed = value.trim();
-    return trimmed ? trimmed : '';
-  }
-
-  function replaceSummaryTokens(template, tokens) {
-    if (typeof template !== 'string' || !template) {
-      return '';
-    }
-    var result = template;
-    for (var key in tokens) {
-      if (!Object.prototype.hasOwnProperty.call(tokens, key)) {
-        continue;
-      }
-      var tokenValue = tokens[key];
-      var placeholder = '{' + key + '}';
-      if (result.indexOf(placeholder) === -1) {
-        continue;
-      }
-      var replacement = typeof tokenValue === 'undefined' ? '' : String(tokenValue);
-      result = result.split(placeholder).join(replacement);
-    }
-    return result;
-  }
-
-  function selectSummaryBatteryName(labelText, batteryName, unnamedLabel) {
-    var resolvedLabel = getNonEmptyString(labelText);
-    if (resolvedLabel) {
-      return resolvedLabel;
-    }
-    var resolvedBattery = getNonEmptyString(batteryName);
-    if (resolvedBattery) {
-      return resolvedBattery;
-    }
-    return getNonEmptyString(unnamedLabel);
-  }
-
-  function formatRuntimeHoursForSummary(runtimeHours) {
-    if (!Number.isFinite(runtimeHours)) {
-      return '';
-    }
-    return runtimeHours >= 10 ? runtimeHours.toFixed(1) : runtimeHours.toFixed(2);
-  }
-
-  function buildPlainSummaryText(summaryOptions) {
-    var opts = summaryOptions || {};
-    var summaryPrompt = getNonEmptyString(opts.summaryPrompt);
-    var needBatterySummary = getNonEmptyString(opts.needBatterySummary) || summaryPrompt;
-    var unnamedBatteryLabel = getNonEmptyString(opts.unnamedBatteryLabel);
-    var batteryNameSummary = selectSummaryBatteryName(opts.batteryLabelText, opts.battery, unnamedBatteryLabel);
-    var totalPowerDisplay = Number.isFinite(opts.totalWatt) ? opts.totalWatt.toFixed(1) : '0.0';
-
-    if (!opts.battery) {
-      var promptWhenMissingBattery = opts.totalWatt > 0 ? needBatterySummary : summaryPrompt;
-      return promptWhenMissingBattery || needBatterySummary || summaryPrompt || batteryNameSummary || '';
-    }
-
-    if (!Number.isFinite(opts.runtimeHoursValue)) {
-      if (
-        opts.unlimitedSummaryTemplate &&
-        Number.isFinite(opts.totalWatt) &&
-        opts.totalWatt === 0
-      ) {
-        var unlimitedSummary = replaceSummaryTokens(opts.unlimitedSummaryTemplate, {
-          batteryName: batteryNameSummary || unnamedBatteryLabel || '',
-          totalPower: totalPowerDisplay
-        });
-        if (unlimitedSummary) {
-          return unlimitedSummary;
-        }
-      }
-      return needBatterySummary || summaryPrompt || batteryNameSummary || '';
-    }
-
-    if (
-      opts.runtimeSummaryTemplate &&
-      opts.batteriesNeededValue !== null &&
-      Number.isFinite(opts.batteriesNeededValue) &&
-      opts.batteriesNeededValue > 0
-    ) {
-      var formattedHours = formatRuntimeHoursForSummary(opts.runtimeHoursValue);
-      var runtimeSummary = replaceSummaryTokens(opts.runtimeSummaryTemplate, {
-        batteryName: batteryNameSummary || unnamedBatteryLabel || '',
-        hours: formattedHours,
-        batteryCount: String(opts.batteriesNeededValue),
-        totalPower: totalPowerDisplay
-      });
-      if (runtimeSummary) {
-        return runtimeSummary;
-      }
-    }
-
-    return summaryPrompt || needBatterySummary || batteryNameSummary || '';
-  }
-
-    var resultsPlainSummary = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryElem',
-      'resultsPlainSummary',
-      'resultsPlainSummaryElem'
-    );
+    var resultsPlainSummary = resolveElementFromOptions(opts, 'resultsPlainSummaryElem', 'resultsPlainSummary', 'resultsPlainSummaryElem');
     if (resultsPlainSummary) {
       setHelpAttribute(resultsPlainSummary, resolveText('resultsPlainSummaryHelp'));
     }
-
-    var resultsPlainSummaryTitle = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryTitleElem',
-      'resultsPlainSummaryTitle',
-      'resultsPlainSummaryTitleElem'
-    );
+    var resultsPlainSummaryTitle = resolveElementFromOptions(opts, 'resultsPlainSummaryTitleElem', 'resultsPlainSummaryTitle', 'resultsPlainSummaryTitleElem');
     if (resultsPlainSummaryTitle) {
       try {
-        resultsPlainSummaryTitle.textContent =
-          resolveText('resultsPlainSummaryTitle') || resultsPlainSummaryTitle.textContent || '';
+        resultsPlainSummaryTitle.textContent = resolveText('resultsPlainSummaryTitle') || resultsPlainSummaryTitle.textContent || '';
       } catch (error) {
         void error;
       }
     }
-
-    var resultsPlainSummaryText = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryTextElem',
-      'resultsPlainSummaryText',
-      'resultsPlainSummaryTextElem'
-    );
+    var resultsPlainSummaryText = resolveElementFromOptions(opts, 'resultsPlainSummaryTextElem', 'resultsPlainSummaryText', 'resultsPlainSummaryTextElem');
     if (resultsPlainSummaryText) {
       var summaryPrompt = resolveText('resultsPlainSummaryPrompt');
       if (!summaryPrompt && typeof resultsPlainSummaryText.textContent === 'string') {
@@ -712,17 +675,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
-    var resultsPlainSummaryNote = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryNoteElem',
-      'resultsPlainSummaryNote',
-      'resultsPlainSummaryNoteElem'
-    );
+    var resultsPlainSummaryNote = resolveElementFromOptions(opts, 'resultsPlainSummaryNoteElem', 'resultsPlainSummaryNote', 'resultsPlainSummaryNoteElem');
     if (resultsPlainSummaryNote) {
       try {
-        resultsPlainSummaryNote.textContent =
-          resolveText('resultsPlainSummaryNote') || resultsPlainSummaryNote.textContent || '';
+        resultsPlainSummaryNote.textContent = resolveText('resultsPlainSummaryNote') || resultsPlainSummaryNote.textContent || '';
       } catch (error) {
         void error;
       }
@@ -889,8 +845,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var tempNote = resolveElementFromOptions(opts, 'tempNote', 'temperatureNote');
     setHelpAttribute(tempNote, resolveText('temperatureNoteHelp'));
     runtimeFeedbackState.elements.breakdownListElem = breakdownList;
-    runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummary;
-    runtimeFeedbackState.elements.resultsPlainSummaryTextElem = resultsPlainSummaryText;
     runtimeFeedbackState.elements.totalPowerLabel = totalPowerLabel;
     runtimeFeedbackState.elements.batteryCountLabel = batteryCountLabel;
     runtimeFeedbackState.elements.batteryLifeLabel = batteryLifeLabel;
@@ -1096,18 +1050,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hotswapSelect = resolveElementFromOptions(opts, 'hotswapSelect', 'batteryHotswapSelect', 'hotswapSelect');
     var motorSelects = resolveSelectCollection(opts, 'motorSelects', ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'], 'motorSelects');
     var controllerSelects = resolveSelectCollection(opts, 'controllerSelects', ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'], 'controllerSelects');
-    var resultsPlainSummaryTarget = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryElem',
-      'resultsPlainSummary',
-      'resultsPlainSummaryElem'
-    );
-    var resultsPlainSummaryTextTarget = resolveElementFromOptions(
-      opts,
-      'resultsPlainSummaryTextElem',
-      'resultsPlainSummaryText',
-      'resultsPlainSummaryTextElem'
-    );
+    var resultsPlainSummaryTarget = resolveElementFromOptions(opts, 'resultsPlainSummaryElem', 'resultsPlainSummary', 'resultsPlainSummaryElem');
+    var resultsPlainSummaryTextTarget = resolveElementFromOptions(opts, 'resultsPlainSummaryTextElem', 'resultsPlainSummaryText', 'resultsPlainSummaryTextElem');
     var totalPowerTarget = resolveElementFromOptions(opts, 'totalPowerElem', 'totalPower', 'totalPowerElem');
     var breakdownListTarget = resolveElementFromOptions(opts, 'breakdownListElem', 'breakdownList', 'breakdownListElem');
     var totalCurrent144Target = resolveElementFromOptions(opts, 'totalCurrent144Elem', 'totalCurrent144', 'totalCurrent144Elem');
@@ -1607,19 +1551,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           dtapSeverity = 'note';
         }
       }
-        var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
-        var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
-        var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
-        var dtapAllowed = !bMountCam && hasDtapRating;
-        var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
-        var batteryValue = typeof battery === 'string' ? battery.trim() : '';
-        var hasBatterySelection = batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
-        if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
-          var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
-          var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
-          if (showPowerWarningDialogFn) {
-            try {
-              showPowerWarningDialogFn({
+      var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
+      var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
+      var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
+      var dtapAllowed = !bMountCam && hasDtapRating;
+      var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
+      var batteryValue = typeof battery === 'string' ? battery.trim() : '';
+      var hasBatterySelection = batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
+      if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
+        var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
+        var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
+        if (showPowerWarningDialogFn) {
+          try {
+            showPowerWarningDialogFn({
               batteryName: labelText,
               current: totalCurrentLow,
               hasPinLimit: hasPinLimit,
@@ -1958,7 +1902,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
     if (renderTemperatureNoteFn) {
       try {
         renderTemperatureNoteFn(getLastRuntimeHoursFn());

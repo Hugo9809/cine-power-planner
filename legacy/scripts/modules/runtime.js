@@ -185,13 +185,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return PRIMARY_SCOPE;
   }();
+  var CANDIDATE_SCOPES_CACHE = typeof WeakMap === 'function' ? new WeakMap() : null;
   function collectCandidateScopes(scope) {
     var targetScope = scope || GLOBAL_SCOPE;
+    var eligibleForCache = !!CANDIDATE_SCOPES_CACHE && targetScope && (_typeof(targetScope) === 'object' || typeof targetScope === 'function');
+    if (eligibleForCache) {
+      try {
+        var cached = CANDIDATE_SCOPES_CACHE.get(targetScope);
+        if (cached && Array.isArray(cached) && cached.length > 0) {
+          return cached.slice();
+        }
+      } catch (cacheReadError) {
+        void cacheReadError;
+      }
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
       try {
         var scopes = MODULE_SYSTEM.collectCandidateScopes(targetScope);
         if (Array.isArray(scopes) && scopes.length > 0) {
-          return scopes;
+          var _result = scopes.slice();
+          if (eligibleForCache) {
+            try {
+              var toCache = typeof Object.freeze === 'function' ? Object.freeze(_result.slice()) : _result.slice();
+              CANDIDATE_SCOPES_CACHE.set(targetScope, toCache);
+            } catch (cacheWriteError) {
+              void cacheWriteError;
+            }
+          }
+          return _result;
         }
       } catch (error) {
         void error;
@@ -201,13 +222,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       try {
         var fromContext = ENVIRONMENT_CONTEXT.collectCandidateScopes(targetScope);
         if (Array.isArray(fromContext) && fromContext.length > 0) {
-          return fromContext;
+          var _result2 = fromContext.slice();
+          if (eligibleForCache) {
+            try {
+              var _toCache = typeof Object.freeze === 'function' ? Object.freeze(_result2.slice()) : _result2.slice();
+              CANDIDATE_SCOPES_CACHE.set(targetScope, _toCache);
+            } catch (cacheWriteError) {
+              void cacheWriteError;
+            }
+          }
+          return _result2;
         }
       } catch (error) {
         void error;
       }
     }
-    return fallbackCollectCandidateScopes(targetScope);
+    var fallbackScopes = fallbackCollectCandidateScopes(targetScope);
+    var result = Array.isArray(fallbackScopes) ? fallbackScopes.slice() : [];
+    if (eligibleForCache && result.length > 0) {
+      try {
+        var _toCache2 = typeof Object.freeze === 'function' ? Object.freeze(result.slice()) : result.slice();
+        CANDIDATE_SCOPES_CACHE.set(targetScope, _toCache2);
+      } catch (cacheWriteError) {
+        void cacheWriteError;
+      }
+    }
+    return result;
   }
   var MODULE_ENV = (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleEnvironment === 'function' ? ENVIRONMENT_CONTEXT.resolveModuleEnvironment(GLOBAL_SCOPE) : null) || fallbackLoadModuleEnvironment(GLOBAL_SCOPE);
   var ENV_BRIDGE = (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveEnvironmentBridge === 'function' ? ENVIRONMENT_CONTEXT.resolveEnvironmentBridge(GLOBAL_SCOPE) : null) || fallbackLoadEnvironmentBridge(GLOBAL_SCOPE);
@@ -654,6 +694,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
+  var FULLY_FROZEN_OBJECTS = typeof WeakSet === 'function' ? new WeakSet() : null;
   function fallbackFreezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
     if (!value || _typeof(value) !== 'object') {
@@ -662,10 +703,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (shouldBypassDeepFreeze(value)) {
       return value;
     }
+    if (FULLY_FROZEN_OBJECTS && FULLY_FROZEN_OBJECTS.has(value)) {
+      return value;
+    }
     if (seen.has(value)) {
       return value;
     }
     seen.add(value);
+    var alreadyFrozen = false;
+    if (typeof Object.isFrozen === 'function') {
+      try {
+        alreadyFrozen = Object.isFrozen(value);
+      } catch (inspectionError) {
+        void inspectionError;
+        alreadyFrozen = false;
+      }
+    }
     var keys = [];
     try {
       keys = Object.getOwnPropertyNames(value);
@@ -713,8 +766,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void childError;
       }
     }
+    if (alreadyFrozen) {
+      if (FULLY_FROZEN_OBJECTS) {
+        try {
+          FULLY_FROZEN_OBJECTS.add(value);
+        } catch (cacheError) {
+          void cacheError;
+        }
+      }
+      return value;
+    }
     try {
-      return Object.freeze(value);
+      var frozen = Object.freeze(value);
+      if (FULLY_FROZEN_OBJECTS) {
+        try {
+          FULLY_FROZEN_OBJECTS.add(frozen || value);
+        } catch (cacheError) {
+          void cacheError;
+        }
+      }
+      return frozen;
     } catch (freezeError) {
       void freezeError;
       return value;

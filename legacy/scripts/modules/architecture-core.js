@@ -21,32 +21,96 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
-  function createUniqueList() {
-    var values = [];
-    return {
-      push: function push(candidate) {
-        if (values.indexOf(candidate) === -1) {
-          values.push(candidate);
+  function resolveScopeCollector() {
+    if (typeof require === 'function') {
+      try {
+        var required = require('./helpers/scope-collector.js');
+        if (required && typeof required.createCollector === 'function') {
+          return required;
         }
-      },
-      toArray: function toArray() {
-        return values.slice();
+      } catch (error) {
+        void error;
       }
-    };
+    }
+    var candidates = [];
+    function pushCandidate(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+    pushCandidate(baseDetectGlobalScope());
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      try {
+        var collector = scope && scope.__cineScopeCollector;
+        if (collector && typeof collector.createCollector === 'function') {
+          return collector;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
+  var SCOPE_COLLECTOR = resolveScopeCollector();
+  var createScopeCollector = SCOPE_COLLECTOR && typeof SCOPE_COLLECTOR.createCollector === 'function' ? SCOPE_COLLECTOR.createCollector : null;
+  var DEFAULT_EXTRAS_KEY = {
+    key: 'defaultExtras'
+  };
+  var HELPER_COLLECTOR_CACHE = [];
+  function resolveHelperCollector(detectFn, extras) {
+    var extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
+    for (var index = 0; index < HELPER_COLLECTOR_CACHE.length; index += 1) {
+      var entry = HELPER_COLLECTOR_CACHE[index];
+      if (entry.detect === detectFn && entry.extras === extrasKey) {
+        return entry.collector;
+      }
+    }
+    var collector = createScopeCollector ? createScopeCollector({
+      detectGlobalScope: detectFn,
+      additionalScopes: Array.isArray(extras) ? extras : undefined
+    }) : null;
+    if (collector) {
+      HELPER_COLLECTOR_CACHE.push({
+        detect: detectFn,
+        extras: extrasKey,
+        collector: collector
+      });
+      return collector;
+    }
+    return null;
   }
   function collectCandidateScopesImpl(primary, detect, extras) {
-    var list = createUniqueList();
+    var detectFn = typeof detect === 'function' ? detect : baseDetectGlobalScope;
+    if (createScopeCollector) {
+      var collector = resolveHelperCollector(detectFn, extras);
+      if (collector) {
+        return collector(primary);
+      }
+    }
+    var scopes = [];
     function pushScope(scope) {
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         return;
       }
-      list.push(scope);
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
     }
-    if (primary) {
-      pushScope(primary);
+    pushScope(primary);
+    try {
+      var detected = detectFn();
+      pushScope(detected);
+    } catch (error) {
+      void error;
     }
-    var detected = detect();
-    pushScope(detected);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
@@ -56,7 +120,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         pushScope(extras[index]);
       }
     }
-    return list.toArray();
+    return scopes.slice();
   }
   function tryRequireImpl(modulePath) {
     if (typeof require !== 'function') {
