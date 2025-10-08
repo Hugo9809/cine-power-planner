@@ -6604,9 +6604,10 @@ function ensureGearListActions() {
     }
 }
 
+let gearDeleteRequestListenerBound = false;
+
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-    const handlerKey = '__cameraPowerPlannerGearDeleteHandler';
-    if (!document[handlerKey]) {
+    if (!gearDeleteRequestListenerBound) {
         const handleGearDeleteRequest = () => {
             try {
                 deleteCurrentGearList();
@@ -6615,12 +6616,7 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
             }
         };
         document.addEventListener('gearlist:delete-requested', handleGearDeleteRequest);
-        Object.defineProperty(document, handlerKey, {
-            value: handleGearDeleteRequest,
-            configurable: true,
-            writable: false,
-            enumerable: false,
-        });
+        gearDeleteRequestListenerBound = true;
     }
 }
 
