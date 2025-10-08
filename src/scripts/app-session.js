@@ -13896,12 +13896,32 @@ function handleFilterDetailChange() {
 function collectFilterSelections() {
   const select = resolveFilterSelectElement();
   if (!select) return '';
-  const selected = Array.from(select.selectedOptions).map(o => o.value);
-  const existing = currentProjectInfo && currentProjectInfo.filter
-    ? parseFilterTokens(currentProjectInfo.filter)
+
+  const selected = Array.from(select.selectedOptions)
+    .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+    .filter(Boolean);
+
+  const existingSelectionString = currentProjectInfo && typeof currentProjectInfo.filter === 'string'
+    ? currentProjectInfo.filter
+    : '';
+  const existingTokens = existingSelectionString
+    ? parseFilterTokens(existingSelectionString)
     : [];
-  const existingMap = Object.fromEntries(existing.map(t => [t.type, t]));
-  const tokens = selected.map(type => {
+  const existingMap = Object.fromEntries(existingTokens.map(token => [token.type, token]));
+
+  const existingStringMap = {};
+  if (existingSelectionString) {
+    existingSelectionString.split(',').forEach(tokenStr => {
+      const trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
+      if (!trimmed) return;
+      const type = trimmed.split(':')[0]?.trim();
+      if (type) {
+        existingStringMap[type] = trimmed;
+      }
+    });
+  }
+
+  const selectedTokens = selected.map(type => {
     const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
     const prev = existingMap[type] || {};
@@ -13921,7 +13941,33 @@ function collectFilterSelections() {
     }
     return `${type}:${size}${valueSegment}`;
   });
-  return tokens.join(',');
+
+  const availableTypes = new Set(
+    Array.from(select.options)
+      .map(option => (typeof option.value === 'string' ? option.value.trim() : ''))
+      .filter(Boolean),
+  );
+  const selectedTypes = new Set(selected);
+
+  existingTokens.forEach(token => {
+    if (!token || !token.type) return;
+    if (selectedTypes.has(token.type)) return;
+    if (availableTypes.has(token.type)) return;
+
+    const preserved = existingStringMap[token.type]
+      || (() => {
+        const size = token.size || SESSION_DEFAULT_FILTER_SIZE;
+        const values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
+        let segment = '';
+        if (filterTypeNeedsValueSelect(token.type)) {
+          segment = values.length ? `:${values.join('|')}` : ':!';
+        }
+        return `${token.type}:${size}${segment}`;
+      })();
+    selectedTokens.push(preserved);
+  });
+
+  return selectedTokens.join(',');
 }
 
 function parseFilterTokens(str) {
