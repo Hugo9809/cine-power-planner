@@ -5816,7 +5816,10 @@ function saveCurrentGearList() {
         }
     }
     if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
-    const payload = {
+        if (typeof setActiveProjectCompressionHold === 'function') {
+            setActiveProjectCompressionHold(effectiveStorageKey);
+        }
+        const payload = {
             projectInfo: projectInfoSnapshot,
             gearListAndProjectRequirementsGenerated: gearListGenerated
         };

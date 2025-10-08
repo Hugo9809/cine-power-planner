@@ -142,6 +142,9 @@ if (typeof require === 'function') {
   }
 }
 
+var ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
+var ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+
 if (
   !ensureConsoleMethodsWritable
   && GLOBAL_SCOPE
@@ -7571,6 +7574,40 @@ function normalizeProjectStorageKey(name) {
   return name.trim();
 }
 
+function setActiveProjectCompressionHold(name) {
+  if (name === null || name === undefined) {
+    ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
+    ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+    return '';
+  }
+
+  const normalized = normalizeProjectStorageKey(name);
+  ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = normalized;
+  ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = true;
+  return normalized;
+}
+
+function clearActiveProjectCompressionHold(name) {
+  if (!ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+    return false;
+  }
+
+  if (name !== undefined) {
+    const normalized = normalizeProjectStorageKey(name);
+    if (normalized !== ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
+      return false;
+    }
+  }
+
+  ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
+  ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+  return true;
+}
+
+function shouldDisableProjectCompressionDuringPersist() {
+  return ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED;
+}
+
 function resolveProjectKey(projects, lookup, name, options = {}) {
   if (!projects || typeof projects !== "object") {
     return null;
@@ -7867,6 +7904,7 @@ function persistAllProjects(projects) {
     "Error saving project to localStorage:",
     {
       forceCompressionOnQuota: true,
+      disableCompression: shouldDisableProjectCompressionDuringPersist(),
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedProjects);
         if (!removedKey) {
@@ -10397,6 +10435,8 @@ var STORAGE_API = {
   getLastCriticalStorageGuardResult,
   decodeStoredValue,
   getCompressionLogSnapshot,
+  setActiveProjectCompressionHold,
+  clearActiveProjectCompressionHold,
 };
 
 if (typeof module !== "undefined" && module.exports) {
