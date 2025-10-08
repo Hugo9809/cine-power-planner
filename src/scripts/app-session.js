@@ -12324,6 +12324,7 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
+  setLanguage(currentLang);
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
@@ -12337,26 +12338,36 @@ function initApp() {
     renderFilterDetails();
   }
   populateUserButtonDropdowns();
-  document.querySelectorAll('#projectForm select')
-    .forEach(sel => {
-      attachSelectSearch(sel);
-      callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
-    });
-  if (
-    typeof globalThis !== 'undefined'
-    && typeof globalThis.setupInstallBanner === 'function'
-  ) {
-    globalThis.setupInstallBanner();
-  }
-  setLanguage(currentLang);
-  if (typeof populateUserButtonDropdowns === 'function') {
-    try {
-      populateUserButtonDropdowns();
-    } catch (userButtonError) {
-      console.warn('Failed to refresh user button selectors after applying current language', userButtonError);
+  schedulePostRenderTask(() => {
+    document.querySelectorAll('#projectForm select')
+      .forEach(sel => {
+        attachSelectSearch(sel);
+        callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
+      });
+  });
+  schedulePostRenderTask(() => {
+    if (
+      typeof globalThis !== 'undefined'
+      && typeof globalThis.setupInstallBanner === 'function'
+    ) {
+      try {
+        globalThis.setupInstallBanner();
+      } catch (installError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to set up install banner', installError);
+        }
+      }
     }
-  }
-  maybeShowIosPwaHelp();
+    if (typeof maybeShowIosPwaHelp === 'function') {
+      try {
+        maybeShowIosPwaHelp();
+      } catch (iosHelpError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to display iOS PWA help prompt', iosHelpError);
+        }
+      }
+    }
+  });
   resetDeviceForm();
   ensureDefaultProjectInfoSnapshot();
   restoreSessionState();
@@ -12433,6 +12444,43 @@ function updateFeedbackTemperatureOptionsSafe() {
   });
 }
 
+const POST_RENDER_TIMEOUT_MS = 120;
+
+function schedulePostRenderTask(task, options = {}) {
+  if (typeof task !== 'function') {
+    return;
+  }
+
+  const timeout = typeof options.timeout === 'number' && options.timeout >= 0
+    ? options.timeout
+    : POST_RENDER_TIMEOUT_MS;
+
+  const runTaskSafely = (deadline) => {
+    try {
+      task(deadline);
+    } catch (taskError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Deferred task failed during post-render scheduling', taskError);
+      }
+    }
+  };
+
+  const scheduleIdle = () => {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(runTaskSafely, { timeout });
+      return;
+    }
+
+    setTimeout(runTaskSafely, timeout);
+  };
+
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(scheduleIdle);
+  } else {
+    scheduleIdle();
+  }
+}
+
 function populateEnvironmentDropdowns() {
   const tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
@@ -12456,36 +12504,42 @@ function populateLensDropdown() {
 
   const previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(opt => opt.value));
 
-  lensSelect.innerHTML = '';
+  const fragment = document.createDocumentFragment();
 
   if (!lensSelect.multiple) {
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
-    lensSelect.appendChild(emptyOpt);
+    fragment.appendChild(emptyOpt);
   }
 
-  Object.keys(lensData)
-    .sort(localeSort)
-    .forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      const lens = lensData[name] || {};
-      const attrs = [];
-      if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
-      if (lens.clampOn) {
-        if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
-        else attrs.push('clamp-on');
-      } else if (lens.clampOn === false) {
-        attrs.push('no clamp-on');
-      }
-      const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-      if (minFocus) attrs.push(`${minFocus}m min focus`);
-      opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
-      if (previousSelection.has(name)) {
-        opt.selected = true;
-      }
-      lensSelect.appendChild(opt);
-    });
+  const lensNames = Object.keys(lensData);
+  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
+  lensNames.sort(sortFn);
+
+  for (let index = 0; index < lensNames.length; index += 1) {
+    const name = lensNames[index];
+    const opt = document.createElement('option');
+    opt.value = name;
+    const lens = lensData[name] || {};
+    const attrs = [];
+    if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+    if (lens.clampOn) {
+      if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+      else attrs.push('clamp-on');
+    } else if (lens.clampOn === false) {
+      attrs.push('no clamp-on');
+    }
+    const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
+    if (minFocus) attrs.push(`${minFocus}m min focus`);
+    opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
+    if (previousSelection.has(name)) {
+      opt.selected = true;
+    }
+    fragment.appendChild(opt);
+  }
+
+  lensSelect.innerHTML = '';
+  lensSelect.appendChild(fragment);
 }
 
 function populateCameraPropertyDropdown(selectId, property, selected = '') {
@@ -12528,17 +12582,21 @@ function populateCodecDropdown(selected = '') {
 function populateFilterDropdown() {
   const select = resolveFilterSelectElement();
   if (select && devices && Array.isArray(devices.filterOptions)) {
+    const fragment = document.createDocumentFragment();
     if (!select.multiple) {
       const emptyOpt = document.createElement('option');
       emptyOpt.value = '';
-      select.appendChild(emptyOpt);
+      fragment.appendChild(emptyOpt);
     }
-    devices.filterOptions.forEach(f => {
+    for (let index = 0; index < devices.filterOptions.length; index += 1) {
+      const value = devices.filterOptions[index];
       const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f;
-      select.appendChild(opt);
-    });
+      opt.value = value;
+      opt.textContent = value;
+      fragment.appendChild(opt);
+    }
+    select.innerHTML = '';
+    select.appendChild(fragment);
   }
 }
 
@@ -12616,42 +12674,57 @@ function createFilterValueSelect(type, selected) {
       checkbox.removeAttribute('checked');
     }
   };
-  opts.forEach(o => {
+  const optionsByValue = new Map();
+  const optionFragment = document.createDocumentFragment();
+  for (let index = 0; index < opts.length; index += 1) {
+    const value = opts[index];
     const opt = document.createElement('option');
-    opt.value = o;
-    opt.textContent = o;
-    syncOption(opt, selectedVals.includes(o));
-    sel.appendChild(opt);
-  });
+    opt.value = value;
+    opt.textContent = value;
+    syncOption(opt, selectedVals.includes(value));
+    optionsByValue.set(value, opt);
+    optionFragment.appendChild(opt);
+  }
+  sel.appendChild(optionFragment);
   // Hidden select holds the values; checkboxes provide the UI
   sel.size = opts.length;
   sel.style.display = 'none';
   const container = document.createElement('span');
   container.className = 'filter-values-container';
   const checkboxName = `filterValues-${filterId(type)}`;
-  opts.forEach(o => {
+  const checkboxFragment = document.createDocumentFragment();
+  const checkboxesByValue = new Map();
+  for (let index = 0; index < opts.length; index += 1) {
+    const value = opts[index];
     const lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.name = checkboxName;
-    cb.value = o;
-    syncCheckbox(cb, selectedVals.includes(o));
+    cb.value = value;
+    syncCheckbox(cb, selectedVals.includes(value));
     cb.addEventListener('change', () => {
-      const opt = Array.from(sel.options).find(opt => opt.value === o);
-      if (opt) syncOption(opt, cb.checked);
+      const opt = optionsByValue.get(value);
+      if (opt) {
+        syncOption(opt, cb.checked);
+      }
       syncCheckbox(cb, cb.checked);
       sel.dispatchEvent(new Event('change'));
     });
     lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(o));
-    container.appendChild(lbl);
-  });
+    lbl.appendChild(document.createTextNode(value));
+    checkboxesByValue.set(value, cb);
+    checkboxFragment.appendChild(lbl);
+  }
+  container.appendChild(checkboxFragment);
   sel.addEventListener('change', () => {
-    Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
-      const opt = Array.from(sel.options).find(opt => opt.value === cb.value);
-      if (opt) syncOption(opt, opt.selected);
-      syncCheckbox(cb, !!opt && opt.selected);
+    optionsByValue.forEach((opt, value) => {
+      const selected = !!opt && opt.selected;
+      syncOption(opt, selected);
+      const checkbox = checkboxesByValue.get(value);
+      if (checkbox) {
+        syncCheckbox(checkbox, selected);
+      }
     });
   });
   container.appendChild(sel);
@@ -13218,11 +13291,12 @@ function populateUserButtonDropdowns() {
       Array.from(sel.selectedOptions || []).map(opt => opt.value)
     );
 
-    sel.innerHTML = '';
+    const fragment = document.createDocumentFragment();
 
-    items.forEach(({ value, label }) => {
+    for (let index = 0; index < items.length; index += 1) {
+      const { value, label } = items[index];
       if (!value) {
-        return;
+        continue;
       }
       const opt = document.createElement('option');
       opt.value = value;
@@ -13230,8 +13304,8 @@ function populateUserButtonDropdowns() {
       if (previouslySelected.has(value)) {
         opt.selected = true;
       }
-      sel.appendChild(opt);
-    });
+      fragment.appendChild(opt);
+    }
 
     previouslySelected.forEach(value => {
       if (knownValues.has(value)) {
@@ -13241,10 +13315,13 @@ function populateUserButtonDropdowns() {
       opt.value = value;
       opt.textContent = value;
       opt.selected = true;
-      sel.appendChild(opt);
+      fragment.appendChild(opt);
     });
 
-    const optionCount = sel.options.length;
+    sel.innerHTML = '';
+    sel.appendChild(fragment);
+
+    const optionCount = sel.options ? sel.options.length : 0;
     sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
