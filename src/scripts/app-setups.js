@@ -4,7 +4,7 @@
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
-          storageNeedsContainer, createStorageRequirementRow */
+          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -2063,6 +2063,9 @@ function cloneProjectFormDataSnapshot(snapshot) {
     if (Array.isArray(snapshot.shootingDays)) {
         clone.shootingDays = [...snapshot.shootingDays];
     }
+    if (Array.isArray(snapshot.returnDays)) {
+        clone.returnDays = [...snapshot.returnDays];
+    }
     if (Array.isArray(snapshot.storageRequirements)) {
         clone.storageRequirements = snapshot.storageRequirements.map(entry => ({ ...entry }));
     }
@@ -2081,6 +2084,9 @@ function freezeProjectFormDataSnapshot(info) {
     }
     if (Array.isArray(info.shootingDays)) {
         snapshot.shootingDays = PROJECT_FORM_FREEZE([...info.shootingDays]);
+    }
+    if (Array.isArray(info.returnDays)) {
+        snapshot.returnDays = PROJECT_FORM_FREEZE([...info.returnDays]);
     }
     if (Array.isArray(info.storageRequirements)) {
         snapshot.storageRequirements = PROJECT_FORM_FREEZE(
@@ -2144,6 +2150,7 @@ function collectProjectFormData() {
 
     const prepDays = collectRanges(prepContainer, '.prep-start', '.prep-end');
     const shootingDays = collectRanges(shootContainer, '.shoot-start', '.shoot-end');
+    const returnDays = collectRanges(returnContainer, '.return-start', '.return-end');
 
     const gearValues = gearListOutput ? (() => {
         const ids = [
@@ -2183,6 +2190,7 @@ function collectProjectFormData() {
         ...(people.length ? { people } : {}),
         prepDays,
         shootingDays,
+        returnDays,
         deliveryResolution: getValue('deliveryResolution'),
         recordingResolution: getValue('recordingResolution'),
         aspectRatio: getMultiValue('aspectRatio'),
@@ -2340,6 +2348,17 @@ function populateProjectForm(info = {}) {
         shootArr.forEach(r => {
             const [start, end] = r.split(' to ');
             createShootRow({ start, end });
+        });
+    }
+    if (returnContainer) {
+        returnContainer.innerHTML = '';
+        const returnArr = Array.isArray(info.returnDays)
+            ? info.returnDays
+            : (info.returnDays ? String(info.returnDays).split('\n') : ['']);
+        if (!returnArr.length) returnArr.push('');
+        returnArr.forEach(r => {
+            const [start, end] = r.split(' to ');
+            createReturnRow({ start, end });
         });
     }
     if (storageNeedsContainer) {
@@ -4658,6 +4677,9 @@ function gearListGenerateHtmlImpl(info = {}) {
     }
     if (Array.isArray(info.shootingDays)) {
         projectInfo.shootingDays = info.shootingDays.join('\n');
+    }
+    if (Array.isArray(info.returnDays)) {
+        projectInfo.returnDays = info.returnDays.join('\n');
     }
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');

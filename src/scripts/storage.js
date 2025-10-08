@@ -7653,7 +7653,7 @@ function renameSetup(oldName, newName) {
 }
 
 // --- Project Storage ---
-var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'crew']);
+var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew']);
 
 var LEGACY_PROJECT_FIELD_LABELS = {
   productionCompany: [
@@ -7678,6 +7678,13 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Jours de tournage',
     'Días de rodaje',
     'Giorni di riprese',
+  ],
+  returnDays: [
+    'Return Days',
+    'Rückgabetage',
+    'Jours de restitution',
+    'Días de devolución',
+    'Giorni di restituzione',
   ],
   deliveryResolution: [
     'Delivery Resolution',

@@ -6414,13 +6414,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     });
   }
-  var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'crew']);
+  var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew']);
   var LEGACY_PROJECT_FIELD_LABELS = {
     productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
     rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: ['Prep Days', 'Prep-Tage', 'Jours de préparation', 'Días de preparación', 'Giorni di preparazione'],
     shootingDays: ['Shooting Days', 'Drehtage', 'Jours de tournage', 'Días de rodaje', 'Giorni di riprese'],
+    returnDays: ['Return Days', 'Rückgabetage', 'Jours de restitution', 'Días de devolución', 'Giorni di restituzione'],
     deliveryResolution: ['Delivery Resolution', 'Auslieferungsauflösung', 'Résolution de livraison', 'Resolución de entrega', 'Risoluzione di consegna'],
     recordingResolution: ['Recording Resolution', 'Aufnahmeauflösung', 'Résolution d’enregistrement', 'Resolución de grabación', 'Risoluzione di registrazione'],
     aspectRatio: ['Aspect Ratio', 'Seitenverhältnis', "Format d’image", 'Relación de aspecto', 'Formato'],

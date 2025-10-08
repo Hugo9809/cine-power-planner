@@ -2052,7 +2052,7 @@ function summarizeProjectInfoStats(projectInfo) {
         hasDetails = true;
       }
     }
-    if (key === 'prepDays' || key === 'shootingDays') {
+    if (key === 'prepDays' || key === 'shootingDays' || key === 'returnDays') {
       const scheduleCount = countScheduleEntries(value);
       if (scheduleCount > 0) {
         schedule += scheduleCount;
