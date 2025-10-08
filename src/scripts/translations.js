@@ -4490,7 +4490,7 @@ const texts = {
       "Ve a la %s para repasar cómo guardar, compartir y hacer copias de seguridad.",
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
-    helpQuickStartChecklistTitle: "Lista de inicio rápido",
+    helpQuickStartChecklistTitle: "Lista de comprobación de inicio rápido",
     helpDataSafetyTitle: "Protege tu trabajo",
    helpRestoreDrillTitle: "Ensayo de restauración",
     helpDataAuditTitle: "Revisión mensual de salud de datos",
