@@ -269,8 +269,6 @@ function logCompressionSavingsEvent(kind, identifier, message, savings, percent)
     now - entry.lastSummaryAt >= COMPRESSION_LOG_SUMMARY_WINDOW_MS
   ) {
     shouldSummarize = true;
-  } else if (now === null && entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
-    shouldSummarize = true;
   }
 
   if (shouldSummarize && typeof console.info === 'function') {
