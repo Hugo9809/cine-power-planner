@@ -6821,6 +6821,14 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   padding: clamp(20px, 4vw, 32px);
 }
 
+#projectDialog input,
+#projectDialog select,
+#projectDialog textarea {
+  font-family: var(--font-family);
+  font-size: var(--form-control-font-size);
+  line-height: var(--line-height-base);
+}
+
 @media (min-width: 1024px) {
   #projectDialog .project-dialog {
     width: min(100%, 1100px);
