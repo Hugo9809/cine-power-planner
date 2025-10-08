@@ -2466,6 +2466,7 @@ const gear = {
       "ARRI Codex Compact Drive 1TB": {
         "brand": "ARRI",
         "model": "Codex Compact Drive 1TB",
+        "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
         "kNumber": "K2.0044880",
         "capacityGb": 960,
         "capacityTb": 1,
@@ -2474,6 +2475,7 @@ const gear = {
       "ARRI Codex Compact Drive 2TB": {
         "brand": "ARRI",
         "model": "Codex Compact Drive 2TB",
+        "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
         "kNumber": "K2.0044881",
         "capacityGb": 1920,
         "capacityTb": 2,
@@ -2482,6 +2484,7 @@ const gear = {
       "ARRI Codex Compact Drive Express 1TB": {
         "brand": "ARRI",
         "model": "Codex Compact Drive Express 1TB",
+        "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
         "kNumber": "K2.0046663",
         "capacityGb": 960,
         "capacityTb": 1,
@@ -2489,7 +2492,8 @@ const gear = {
       },
       "Angelbird AV PRO CFexpress Type A 1TB": {
         "brand": "Angelbird",
-        "model": "AV PRO CFexpress Type A 1TB",
+        "model": "AV PRO CFexpress A 1TB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-cfexpress-a-3444/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -2497,7 +2501,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type A 160GB": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type A 160GB",
+        "model": "AV PRO SE CFexpress A 160GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-a-3448/",
         "kNumber": null,
         "capacityGb": 160,
         "capacityTb": 0.16,
@@ -2505,7 +2510,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type A 330GB": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type A 330GB",
+        "model": "AV PRO SE CFexpress A 330GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-a-3448/",
         "kNumber": null,
         "capacityGb": 330,
         "capacityTb": 0.33,
@@ -2513,7 +2519,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type B 512GB (v4 Mk2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type B v4 Mk2 512GB",
+        "model": "AV PRO SE CFexpress B v4 Mk2 512GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2521,7 +2528,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type B 1TB (v4 Mk2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type B v4 Mk2 1TB",
+        "model": "AV PRO SE CFexpress B v4 Mk2 1TB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -2529,7 +2537,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type B 2TB (v4 Mk2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type B v4 Mk2 2TB",
+        "model": "AV PRO SE CFexpress B v4 Mk2 2TB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
         "kNumber": null,
         "capacityGb": 2048,
         "capacityTb": 2,
@@ -2537,7 +2546,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CFexpress Type B 4TB (v4 Mk2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CFexpress Type B v4 Mk2 4TB",
+        "model": "AV PRO SE CFexpress B v4 Mk2 4TB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
         "kNumber": null,
         "capacityGb": 4096,
         "capacityTb": 4,
@@ -2545,7 +2555,8 @@ const gear = {
       },
       "Angelbird AV PRO CF CFast 512GB": {
         "brand": "Angelbird",
-        "model": "AV PRO CF CFast 512GB",
+        "model": "AV PRO CF 512GB (CFast 2.0)",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-1350/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2553,7 +2564,8 @@ const gear = {
       },
       "Angelbird AV PRO CF CFast 1TB": {
         "brand": "Angelbird",
-        "model": "AV PRO CF CFast 1TB",
+        "model": "AV PRO CF 1TB (CFast 2.0)",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-1350/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -2561,7 +2573,8 @@ const gear = {
       },
       "Angelbird AV PRO SE CF CFast 256GB": {
         "brand": "Angelbird",
-        "model": "AV PRO SE CF CFast 256GB",
+        "model": "AV PRO SE CF 256GB (CFast 2.0)",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-se-3417/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2570,6 +2583,7 @@ const gear = {
       "Angelbird AV PRO SD V90 64GB": {
         "brand": "Angelbird",
         "model": "AV PRO SD V90 64GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2578,6 +2592,7 @@ const gear = {
       "Angelbird AV PRO SD V90 128GB": {
         "brand": "Angelbird",
         "model": "AV PRO SD V90 128GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2586,6 +2601,7 @@ const gear = {
       "Angelbird AV PRO SD V90 256GB": {
         "brand": "Angelbird",
         "model": "AV PRO SD V90 256GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2594,6 +2610,7 @@ const gear = {
       "Angelbird AV PRO SD V90 512GB": {
         "brand": "Angelbird",
         "model": "AV PRO SD V90 512GB",
+        "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2601,7 +2618,8 @@ const gear = {
       },
       "Angelbird AV PRO SD V60 64GB (MK2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SD V60 MK2 64GB",
+        "model": "AV PRO SD V60 (MK2) 64GB",
+        "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2609,7 +2627,8 @@ const gear = {
       },
       "Angelbird AV PRO SD V60 128GB (MK2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SD V60 MK2 128GB",
+        "model": "AV PRO SD V60 (MK2) 128GB",
+        "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2617,7 +2636,8 @@ const gear = {
       },
       "Angelbird AV PRO SD V60 256GB (MK2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SD V60 MK2 256GB",
+        "model": "AV PRO SD V60 (MK2) 256GB",
+        "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2625,7 +2645,8 @@ const gear = {
       },
       "Angelbird AV PRO SD V60 512GB (MK2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SD V60 MK2 512GB",
+        "model": "AV PRO SD V60 (MK2) 512GB",
+        "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2633,7 +2654,8 @@ const gear = {
       },
       "Angelbird AV PRO SD V60 1TB (MK2)": {
         "brand": "Angelbird",
-        "model": "AV PRO SD V60 MK2 1TB",
+        "model": "AV PRO SD V60 (MK2) 1TB",
+        "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -2642,6 +2664,7 @@ const gear = {
       "Angelbird AV PRO microSD V30 128GB": {
         "brand": "Angelbird",
         "model": "AV PRO microSD V30 128GB",
+        "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2650,6 +2673,7 @@ const gear = {
       "Angelbird AV PRO microSD V30 256GB": {
         "brand": "Angelbird",
         "model": "AV PRO microSD V30 256GB",
+        "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2658,6 +2682,7 @@ const gear = {
       "Angelbird AV PRO microSD V30 512GB": {
         "brand": "Angelbird",
         "model": "AV PRO microSD V30 512GB",
+        "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2682,6 +2707,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 80GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 80GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 80,
         "capacityTb": 0.08,
@@ -2690,6 +2716,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 160GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 160GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 160,
         "capacityTb": 0.16,
@@ -2698,6 +2725,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 320GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 320GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 320,
         "capacityTb": 0.32,
@@ -2706,6 +2734,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 480GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 480GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 480,
         "capacityTb": 0.48,
@@ -2714,6 +2743,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 640GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 640GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 640,
         "capacityTb": 0.64,
@@ -2722,6 +2752,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 960GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 960GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 960,
         "capacityTb": 0.96,
@@ -2730,6 +2761,7 @@ const gear = {
       "Sony CEA-G Series CFexpress Type A 1920GB": {
         "brand": "Sony",
         "model": "CEA-G Series CFexpress Type A 1920GB",
+        "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
         "kNumber": null,
         "capacityGb": 1920,
         "capacityTb": 1.92,
@@ -2738,6 +2770,7 @@ const gear = {
       "Sony CEA-M Series CFexpress Type A 960GB": {
         "brand": "Sony",
         "model": "CEA-M Series CFexpress Type A 960GB",
+        "sourceUrl": "https://www.sony.com/lr/electronics/sd-cards/cea-m960t-cea-m1920t",
         "kNumber": null,
         "capacityGb": 960,
         "capacityTb": 0.96,
@@ -2746,6 +2779,7 @@ const gear = {
       "Sony CEA-M Series CFexpress Type A 1920GB": {
         "brand": "Sony",
         "model": "CEA-M Series CFexpress Type A 1920GB",
+        "sourceUrl": "https://www.sony.com/lr/electronics/sd-cards/cea-m960t-cea-m1920t",
         "kNumber": null,
         "capacityGb": 1920,
         "capacityTb": 1.92,
@@ -2754,6 +2788,7 @@ const gear = {
       "Sony CEB-G Series CFexpress Type B 128GB": {
         "brand": "Sony",
         "model": "CEB-G Series CFexpress Type B 128GB",
+        "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2762,6 +2797,7 @@ const gear = {
       "Sony CEB-G Series CFexpress Type B 240GB": {
         "brand": "Sony",
         "model": "CEB-G Series CFexpress Type B 240GB",
+        "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
         "kNumber": null,
         "capacityGb": 240,
         "capacityTb": 0.24,
@@ -2770,6 +2806,7 @@ const gear = {
       "Sony CEB-G Series CFexpress Type B 256GB": {
         "brand": "Sony",
         "model": "CEB-G Series CFexpress Type B 256GB",
+        "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2778,6 +2815,7 @@ const gear = {
       "Sony CEB-G Series CFexpress Type B 480GB": {
         "brand": "Sony",
         "model": "CEB-G Series CFexpress Type B 480GB",
+        "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
         "kNumber": null,
         "capacityGb": 480,
         "capacityTb": 0.48,
@@ -2786,6 +2824,7 @@ const gear = {
       "Sony CEB-G Series CFexpress Type B 512GB": {
         "brand": "Sony",
         "model": "CEB-G Series CFexpress Type B 512GB",
+        "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2794,6 +2833,7 @@ const gear = {
       "Sony SF-G TOUGH SDXC V90 32GB": {
         "brand": "Sony",
         "model": "SF-G TOUGH SDXC V90 32GB",
+        "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
         "kNumber": null,
         "capacityGb": 32,
         "capacityTb": 0.032,
@@ -2802,6 +2842,7 @@ const gear = {
       "Sony SF-G TOUGH SDXC V90 64GB": {
         "brand": "Sony",
         "model": "SF-G TOUGH SDXC V90 64GB",
+        "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2810,6 +2851,7 @@ const gear = {
       "Sony SF-G TOUGH SDXC V90 128GB": {
         "brand": "Sony",
         "model": "SF-G TOUGH SDXC V90 128GB",
+        "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2818,6 +2860,7 @@ const gear = {
       "Sony XQD G Series 32GB": {
         "brand": "Sony",
         "model": "XQD G Series 32GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 32,
         "capacityTb": 0.032,
@@ -2826,6 +2869,7 @@ const gear = {
       "Sony XQD G Series 64GB": {
         "brand": "Sony",
         "model": "XQD G Series 64GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2834,6 +2878,7 @@ const gear = {
       "Sony XQD G Series 120GB": {
         "brand": "Sony",
         "model": "XQD G Series 120GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 120,
         "capacityTb": 0.12,
@@ -2842,6 +2887,7 @@ const gear = {
       "Sony XQD G Series 128GB": {
         "brand": "Sony",
         "model": "XQD G Series 128GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2850,6 +2896,7 @@ const gear = {
       "Sony XQD G Series 240GB": {
         "brand": "Sony",
         "model": "XQD G Series 240GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 240,
         "capacityTb": 0.24,
@@ -2858,6 +2905,7 @@ const gear = {
       "Sony XQD G Series 256GB": {
         "brand": "Sony",
         "model": "XQD G Series 256GB",
+        "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2866,6 +2914,7 @@ const gear = {
       "RED MINI-MAG 120GB": {
         "brand": "RED",
         "model": "MINI-MAG 120GB",
+        "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
         "kNumber": null,
         "capacityGb": 120,
         "capacityTb": 0.12,
@@ -2874,6 +2923,7 @@ const gear = {
       "RED MINI-MAG 240GB": {
         "brand": "RED",
         "model": "MINI-MAG 240GB",
+        "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
         "kNumber": null,
         "capacityGb": 240,
         "capacityTb": 0.24,
@@ -2882,6 +2932,7 @@ const gear = {
       "RED MINI-MAG 480GB": {
         "brand": "RED",
         "model": "MINI-MAG 480GB",
+        "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
         "kNumber": "750-0080",
         "capacityGb": 480,
         "capacityTb": 0.48,
@@ -2890,6 +2941,7 @@ const gear = {
       "RED MINI-MAG 960GB": {
         "brand": "RED",
         "model": "MINI-MAG 960GB",
+        "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
         "kNumber": null,
         "capacityGb": 960,
         "capacityTb": 0.96,
@@ -2898,6 +2950,7 @@ const gear = {
       "RED MINI-MAG 1TB": {
         "brand": "RED",
         "model": "MINI-MAG 1TB",
+        "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -2930,6 +2983,7 @@ const gear = {
       "SanDisk Extreme PRO CFexpress Type B 64GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFexpress Type B 64GB",
+        "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2938,6 +2992,7 @@ const gear = {
       "SanDisk Extreme PRO CFexpress Type B 128GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFexpress Type B 128GB",
+        "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2946,6 +3001,7 @@ const gear = {
       "SanDisk Extreme PRO CFexpress Type B 256GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFexpress Type B 256GB",
+        "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2954,6 +3010,7 @@ const gear = {
       "SanDisk Extreme PRO CFexpress Type B 512GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFexpress Type B 512GB",
+        "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2962,6 +3019,7 @@ const gear = {
       "SanDisk Extreme PRO CFast 2.0 64GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFast 2.0 64GB",
+        "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -2970,6 +3028,7 @@ const gear = {
       "SanDisk Extreme PRO CFast 2.0 128GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFast 2.0 128GB",
+        "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -2978,6 +3037,7 @@ const gear = {
       "SanDisk Extreme PRO CFast 2.0 256GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFast 2.0 256GB",
+        "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -2986,6 +3046,7 @@ const gear = {
       "SanDisk Extreme PRO CFast 2.0 512GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO CFast 2.0 512GB",
+        "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -2994,6 +3055,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 32GB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 32GB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 32,
         "capacityTb": 0.032,
@@ -3002,6 +3064,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 64GB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 64GB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3010,6 +3073,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 128GB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 128GB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3018,6 +3082,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 256GB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 256GB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3026,6 +3091,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 512GB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 512GB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3034,6 +3100,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-I 1TB (200MB/s)": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-I 1TB (200MB/s)",
+        "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3042,6 +3109,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 64GB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 64GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3050,6 +3118,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 128GB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 128GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3058,6 +3127,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 256GB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 256GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3066,6 +3136,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 512GB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 512GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3074,6 +3145,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 1TB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 1TB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3082,6 +3154,7 @@ const gear = {
       "SanDisk Extreme microSD UHS-I 2TB": {
         "brand": "SanDisk",
         "model": "Extreme microSD UHS-I 2TB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
         "kNumber": null,
         "capacityGb": 2048,
         "capacityTb": 2,
@@ -3090,6 +3163,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 64GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 64GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3098,6 +3172,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 128GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 128GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3106,6 +3181,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 256GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 256GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3114,6 +3190,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 400GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 400GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 400,
         "capacityTb": 0.4,
@@ -3122,6 +3199,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 512GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 512GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3130,6 +3208,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 1TB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 1TB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3138,6 +3217,7 @@ const gear = {
       "SanDisk Extreme PRO microSD UHS-I 2TB": {
         "brand": "SanDisk",
         "model": "Extreme PRO microSD UHS-I 2TB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
         "kNumber": null,
         "capacityGb": 2048,
         "capacityTb": 2,
@@ -3146,6 +3226,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-II V90 64GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-II V90 64GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3154,6 +3235,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-II V90 128GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-II V90 128GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3162,6 +3244,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-II V90 256GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-II V90 256GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3170,6 +3253,7 @@ const gear = {
       "SanDisk Extreme PRO SD UHS-II V90 512GB": {
         "brand": "SanDisk",
         "model": "Extreme PRO SD UHS-II V90 512GB",
+        "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3178,6 +3262,7 @@ const gear = {
       "Samsung PRO Plus microSD 128GB": {
         "brand": "Samsung",
         "model": "PRO Plus microSD 128GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3186,6 +3271,7 @@ const gear = {
       "Samsung PRO Plus microSD 256GB": {
         "brand": "Samsung",
         "model": "PRO Plus microSD 256GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3194,6 +3280,7 @@ const gear = {
       "Samsung PRO Plus microSD 512GB": {
         "brand": "Samsung",
         "model": "PRO Plus microSD 512GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3202,6 +3289,7 @@ const gear = {
       "Samsung PRO Plus microSD 1TB": {
         "brand": "Samsung",
         "model": "PRO Plus microSD 1TB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3210,6 +3298,7 @@ const gear = {
       "Samsung PRO Plus SD 64GB": {
         "brand": "Samsung",
         "model": "PRO Plus SD 64GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3218,6 +3307,7 @@ const gear = {
       "Samsung PRO Plus SD 128GB": {
         "brand": "Samsung",
         "model": "PRO Plus SD 128GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3226,6 +3316,7 @@ const gear = {
       "Samsung PRO Plus SD 256GB": {
         "brand": "Samsung",
         "model": "PRO Plus SD 256GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3234,6 +3325,7 @@ const gear = {
       "Samsung PRO Plus SD 512GB": {
         "brand": "Samsung",
         "model": "PRO Plus SD 512GB",
+        "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3242,6 +3334,7 @@ const gear = {
       "Lexar Professional CFexpress 4.0 Type B GOLD 512GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress 4.0 Type B GOLD 512GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3250,6 +3343,7 @@ const gear = {
       "Lexar Professional CFexpress 4.0 Type B GOLD 1TB": {
         "brand": "Lexar",
         "model": "Professional CFexpress 4.0 Type B GOLD 1TB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3258,6 +3352,7 @@ const gear = {
       "Lexar Professional CFexpress 4.0 Type B GOLD 2TB": {
         "brand": "Lexar",
         "model": "Professional CFexpress 4.0 Type B GOLD 2TB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
         "kNumber": null,
         "capacityGb": 2048,
         "capacityTb": 2,
@@ -3266,6 +3361,7 @@ const gear = {
       "Lexar Professional CFexpress 4.0 Type B GOLD 4TB": {
         "brand": "Lexar",
         "model": "Professional CFexpress 4.0 Type B GOLD 4TB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
         "kNumber": null,
         "capacityGb": 4096,
         "capacityTb": 4,
@@ -3274,6 +3370,7 @@ const gear = {
       "Lexar Professional CFexpress Type B GOLD 128GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type B GOLD 128GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-b-card-gold-series/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3282,6 +3379,7 @@ const gear = {
       "Lexar Professional CFexpress Type B GOLD 256GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type B GOLD 256GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-b-card-gold-series/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3290,6 +3388,7 @@ const gear = {
       "Lexar Professional CFexpress Type A GOLD 80GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type A GOLD 80GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
         "kNumber": null,
         "capacityGb": 80,
         "capacityTb": 0.08,
@@ -3298,6 +3397,7 @@ const gear = {
       "Lexar Professional CFexpress Type A GOLD 160GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type A GOLD 160GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
         "kNumber": null,
         "capacityGb": 160,
         "capacityTb": 0.16,
@@ -3306,6 +3406,7 @@ const gear = {
       "Lexar Professional CFexpress Type A GOLD 320GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress Type A GOLD 320GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
         "kNumber": null,
         "capacityGb": 320,
         "capacityTb": 0.32,
@@ -3314,6 +3415,7 @@ const gear = {
       "Lexar Professional 3500x CFast 2.0 64GB": {
         "brand": "Lexar",
         "model": "Professional 3500x CFast 2.0 64GB",
+        "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3322,6 +3424,7 @@ const gear = {
       "Lexar Professional 3500x CFast 2.0 128GB": {
         "brand": "Lexar",
         "model": "Professional 3500x CFast 2.0 128GB",
+        "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3330,6 +3433,7 @@ const gear = {
       "Lexar Professional 3500x CFast 2.0 256GB": {
         "brand": "Lexar",
         "model": "Professional 3500x CFast 2.0 256GB",
+        "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3338,6 +3442,7 @@ const gear = {
       "Lexar Professional 3500x CFast 2.0 512GB": {
         "brand": "Lexar",
         "model": "Professional 3500x CFast 2.0 512GB",
+        "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3346,6 +3451,7 @@ const gear = {
       "Lexar Professional 2000x SD GOLD 64GB": {
         "brand": "Lexar",
         "model": "Professional 2000x SD GOLD 64GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3354,6 +3460,7 @@ const gear = {
       "Lexar Professional 2000x SD GOLD 128GB": {
         "brand": "Lexar",
         "model": "Professional 2000x SD GOLD 128GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3362,6 +3469,7 @@ const gear = {
       "Lexar Professional 2000x SD GOLD 256GB": {
         "brand": "Lexar",
         "model": "Professional 2000x SD GOLD 256GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3370,6 +3478,7 @@ const gear = {
       "Lexar Professional 2000x SD GOLD 512GB": {
         "brand": "Lexar",
         "model": "Professional 2000x SD GOLD 512GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3378,6 +3487,7 @@ const gear = {
       "Lexar Professional 1066x microSD SILVER 64GB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 64GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3386,6 +3496,7 @@ const gear = {
       "Lexar Professional 1066x microSD SILVER 128GB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 128GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3394,6 +3505,7 @@ const gear = {
       "Lexar Professional 1066x microSD SILVER 256GB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 256GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3402,6 +3514,7 @@ const gear = {
       "Lexar Professional 1066x microSD SILVER 512GB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 512GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3410,6 +3523,7 @@ const gear = {
       "Lexar Professional 1066x microSD SILVER 1TB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 1TB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
@@ -3418,6 +3532,7 @@ const gear = {
       "Lexar Professional 1066x SD SILVER 64GB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 64GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 64,
         "capacityTb": 0.064,
@@ -3426,6 +3541,7 @@ const gear = {
       "Lexar Professional 1066x SD SILVER 128GB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 128GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 128,
         "capacityTb": 0.128,
@@ -3434,6 +3550,7 @@ const gear = {
       "Lexar Professional 1066x SD SILVER 256GB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 256GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 256,
         "capacityTb": 0.256,
@@ -3442,6 +3559,7 @@ const gear = {
       "Lexar Professional 1066x SD SILVER 512GB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 512GB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
@@ -3450,6 +3568,7 @@ const gear = {
       "Lexar Professional 1066x SD SILVER 1TB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 1TB",
+        "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
