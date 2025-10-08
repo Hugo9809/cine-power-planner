@@ -3099,13 +3099,16 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     const selectorLabel = getAutoGearSelectorLabel(selectorType);
     if (selectorType && selectorType !== 'none') {
         if (normalizedItem.selectorEnabled) {
-            const options = getAutoGearSelectorOptions(selectorType);
+            const options = getAutoGearSelectorOptions(selectorType, normalizedItem);
             const sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
             const selectId = `autoGearSelector_${sanitizedRuleId}_${normalizedItem.id}`;
             const select = document.createElement('select');
             select.id = selectId;
             select.className = 'auto-gear-selector';
             select.dataset.autoGearSelectorType = selectorType;
+            if (normalizedItem.selectorContext) {
+                select.dataset.autoGearSelectorContext = normalizedItem.selectorContext;
+            }
             if (selectorLabel) {
                 select.setAttribute('aria-label', selectorLabel);
             }
