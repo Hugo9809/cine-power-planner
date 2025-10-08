@@ -1492,6 +1492,20 @@ function expandAutoBackupEntries(container, options) {
   const isAutoBackupKey = typeof opts.isAutoBackupKey === 'function'
     ? opts.isAutoBackupKey
     : isAutoBackupStorageKey;
+  const filter = typeof opts.filter === 'function' ? opts.filter : null;
+
+  const shouldIncludeEntry = filter
+    ? (name) => {
+        let include = false;
+        try {
+          include = filter(name);
+        } catch (filterError) {
+          include = false;
+          void filterError;
+        }
+        return include;
+      }
+    : () => true;
 
   const resolve = (name, stack) => {
     if (cache.has(name)) {
@@ -1608,6 +1622,9 @@ function expandAutoBackupEntries(container, options) {
   };
 
   Object.keys(container).forEach((name) => {
+    if (!shouldIncludeEntry(name)) {
+      return;
+    }
     if (!isAutoBackupKey(name)) {
       const value = container[name];
       result[name] = isPlainObject(value)
@@ -8311,10 +8328,16 @@ function resolveProjectKey(projects, lookup, name, options = {}) {
 }
 
 function readAllProjectsFromStorage(options = {}) {
-  const { forceRefresh = false, forMutation = false } = options || {};
+  const {
+    forceRefresh = false,
+    forMutation = false,
+    skipAutoBackupExpansion = false,
+  } = options || {};
   applyLegacyStorageMigrations();
 
-  if (!forceRefresh) {
+  const shouldUseCache = !skipAutoBackupExpansion;
+
+  if (shouldUseCache && !forceRefresh) {
     const cached = getProjectReadCacheClone({ forMutation });
     if (cached) {
       return cached;
@@ -8346,9 +8369,13 @@ function readAllProjectsFromStorage(options = {}) {
     },
   );
   const originalValue = parsed;
-  const expandedParsed = expandAutoBackupEntries(parsed, {
+  const expandOptions = {
     isAutoBackupKey: isAutoBackupStorageKey,
-  });
+  };
+  if (skipAutoBackupExpansion) {
+    expandOptions.filter = (name) => !isAutoBackupStorageKey(name);
+  }
+  const expandedParsed = expandAutoBackupEntries(parsed, expandOptions);
   const projects = {};
   let changed = false;
   const usedProjectNames = new Set();
@@ -8403,6 +8430,10 @@ function readAllProjectsFromStorage(options = {}) {
           lookup: cloneProjectLookupSnapshotForReturn(snapshot.lookup),
         };
       }
+      return snapshot;
+    }
+
+    if (!shouldUseCache) {
       return snapshot;
     }
 
@@ -8559,7 +8590,13 @@ function persistAllProjects(projects) {
 }
 
 function loadProject(name) {
-  let { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
+  const skipAutoBackupExpansion =
+    name !== undefined
+    && !(typeof name === 'string' && isAutoBackupStorageKey(name));
+
+  let { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({
+    skipAutoBackupExpansion,
+  });
   let resolvedKey = null;
 
   if (name !== undefined) {
