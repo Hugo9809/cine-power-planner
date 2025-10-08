@@ -1861,6 +1861,182 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "capacityTb": 1,
           "interface": "PCIe (ProRes-only)"
         },
+        "Angelbird AV PRO CFexpress Type A 1TB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CFexpress Type A 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFexpress Type A (v4)"
+        },
+        "Angelbird AV PRO SE CFexpress Type A 160GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type A 160GB",
+          "kNumber": null,
+          "capacityGb": 160,
+          "capacityTb": 0.16,
+          "interface": "CFexpress Type A (2.0)"
+        },
+        "Angelbird AV PRO SE CFexpress Type A 330GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type A 330GB",
+          "kNumber": null,
+          "capacityGb": 330,
+          "capacityTb": 0.33,
+          "interface": "CFexpress Type A (2.0)"
+        },
+        "Angelbird AV PRO SE CFexpress Type B 512GB (v4 Mk2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type B v4 Mk2 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFexpress Type B (v4)"
+        },
+        "Angelbird AV PRO SE CFexpress Type B 1TB (v4 Mk2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type B v4 Mk2 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFexpress Type B (v4)"
+        },
+        "Angelbird AV PRO SE CFexpress Type B 2TB (v4 Mk2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type B v4 Mk2 2TB",
+          "kNumber": null,
+          "capacityGb": 2048,
+          "capacityTb": 2,
+          "interface": "CFexpress Type B (v4)"
+        },
+        "Angelbird AV PRO SE CFexpress Type B 4TB (v4 Mk2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CFexpress Type B v4 Mk2 4TB",
+          "kNumber": null,
+          "capacityGb": 4096,
+          "capacityTb": 4,
+          "interface": "CFexpress Type B (v4)"
+        },
+        "Angelbird AV PRO CF CFast 512GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CF CFast 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFast 2.0"
+        },
+        "Angelbird AV PRO CF CFast 1TB": {
+          "brand": "Angelbird",
+          "model": "AV PRO CF CFast 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFast 2.0"
+        },
+        "Angelbird AV PRO SE CF CFast 256GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SE CF CFast 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFast 2.0"
+        },
+        "Angelbird AV PRO SD V90 64GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V90 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Angelbird AV PRO SD V90 128GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V90 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Angelbird AV PRO SD V90 256GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V90 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Angelbird AV PRO SD V90 512GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V90 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Angelbird AV PRO SD V60 64GB (MK2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V60 MK2 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-II (V60)"
+        },
+        "Angelbird AV PRO SD V60 128GB (MK2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V60 MK2 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-II (V60)"
+        },
+        "Angelbird AV PRO SD V60 256GB (MK2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V60 MK2 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDXC UHS-II (V60)"
+        },
+        "Angelbird AV PRO SD V60 512GB (MK2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V60 MK2 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDXC UHS-II (V60)"
+        },
+        "Angelbird AV PRO SD V60 1TB (MK2)": {
+          "brand": "Angelbird",
+          "model": "AV PRO SD V60 MK2 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "SDXC UHS-II (V60)"
+        },
+        "Angelbird AV PRO microSD V30 128GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO microSD V30 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "Angelbird AV PRO microSD V30 256GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO microSD V30 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "Angelbird AV PRO microSD V30 512GB": {
+          "brand": "Angelbird",
+          "model": "AV PRO microSD V30 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
         "OWC Atlas Ultra CFexpress Type B 1TB": {
           "brand": "OWC",
           "model": "Atlas Ultra 1TB",
@@ -1877,12 +2053,228 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "capacityTb": 1,
           "interface": "CFexpress Type B (NVMe / PCIe)"
         },
+        "Sony CEA-G Series CFexpress Type A 80GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 80GB",
+          "kNumber": null,
+          "capacityGb": 80,
+          "capacityTb": 0.08,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 160GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 160GB",
+          "kNumber": null,
+          "capacityGb": 160,
+          "capacityTb": 0.16,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 320GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 320GB",
+          "kNumber": null,
+          "capacityGb": 320,
+          "capacityTb": 0.32,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 480GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 480GB",
+          "kNumber": null,
+          "capacityGb": 480,
+          "capacityTb": 0.48,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 640GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 640GB",
+          "kNumber": null,
+          "capacityGb": 640,
+          "capacityTb": 0.64,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 960GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 960GB",
+          "kNumber": null,
+          "capacityGb": 960,
+          "capacityTb": 0.96,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-G Series CFexpress Type A 1920GB": {
+          "brand": "Sony",
+          "model": "CEA-G Series CFexpress Type A 1920GB",
+          "kNumber": null,
+          "capacityGb": 1920,
+          "capacityTb": 1.92,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-M Series CFexpress Type A 960GB": {
+          "brand": "Sony",
+          "model": "CEA-M Series CFexpress Type A 960GB",
+          "kNumber": null,
+          "capacityGb": 960,
+          "capacityTb": 0.96,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEA-M Series CFexpress Type A 1920GB": {
+          "brand": "Sony",
+          "model": "CEA-M Series CFexpress Type A 1920GB",
+          "kNumber": null,
+          "capacityGb": 1920,
+          "capacityTb": 1.92,
+          "interface": "CFexpress Type A"
+        },
+        "Sony CEB-G Series CFexpress Type B 128GB": {
+          "brand": "Sony",
+          "model": "CEB-G Series CFexpress Type B 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "CFexpress Type B"
+        },
+        "Sony CEB-G Series CFexpress Type B 240GB": {
+          "brand": "Sony",
+          "model": "CEB-G Series CFexpress Type B 240GB",
+          "kNumber": null,
+          "capacityGb": 240,
+          "capacityTb": 0.24,
+          "interface": "CFexpress Type B"
+        },
+        "Sony CEB-G Series CFexpress Type B 256GB": {
+          "brand": "Sony",
+          "model": "CEB-G Series CFexpress Type B 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFexpress Type B"
+        },
+        "Sony CEB-G Series CFexpress Type B 480GB": {
+          "brand": "Sony",
+          "model": "CEB-G Series CFexpress Type B 480GB",
+          "kNumber": null,
+          "capacityGb": 480,
+          "capacityTb": 0.48,
+          "interface": "CFexpress Type B"
+        },
+        "Sony CEB-G Series CFexpress Type B 512GB": {
+          "brand": "Sony",
+          "model": "CEB-G Series CFexpress Type B 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFexpress Type B"
+        },
+        "Sony SF-G TOUGH SDXC V90 32GB": {
+          "brand": "Sony",
+          "model": "SF-G TOUGH SDXC V90 32GB",
+          "kNumber": null,
+          "capacityGb": 32,
+          "capacityTb": 0.032,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Sony SF-G TOUGH SDXC V90 64GB": {
+          "brand": "Sony",
+          "model": "SF-G TOUGH SDXC V90 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Sony SF-G TOUGH SDXC V90 128GB": {
+          "brand": "Sony",
+          "model": "SF-G TOUGH SDXC V90 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Sony XQD G Series 32GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 32GB",
+          "kNumber": null,
+          "capacityGb": 32,
+          "capacityTb": 0.032,
+          "interface": "XQD"
+        },
+        "Sony XQD G Series 64GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "XQD"
+        },
+        "Sony XQD G Series 120GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 120GB",
+          "kNumber": null,
+          "capacityGb": 120,
+          "capacityTb": 0.12,
+          "interface": "XQD"
+        },
+        "Sony XQD G Series 128GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "XQD"
+        },
+        "Sony XQD G Series 240GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 240GB",
+          "kNumber": null,
+          "capacityGb": 240,
+          "capacityTb": 0.24,
+          "interface": "XQD"
+        },
+        "Sony XQD G Series 256GB": {
+          "brand": "Sony",
+          "model": "XQD G Series 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "XQD"
+        },
+        "RED MINI-MAG 120GB": {
+          "brand": "RED",
+          "model": "MINI-MAG 120GB",
+          "kNumber": null,
+          "capacityGb": 120,
+          "capacityTb": 0.12,
+          "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+        },
+        "RED MINI-MAG 240GB": {
+          "brand": "RED",
+          "model": "MINI-MAG 240GB",
+          "kNumber": null,
+          "capacityGb": 240,
+          "capacityTb": 0.24,
+          "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+        },
         "RED MINI-MAG 480GB": {
           "brand": "RED",
           "model": "MINI-MAG 480GB",
           "kNumber": "750-0080",
           "capacityGb": 480,
           "capacityTb": 0.48,
+          "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+        },
+        "RED MINI-MAG 960GB": {
+          "brand": "RED",
+          "model": "MINI-MAG 960GB",
+          "kNumber": null,
+          "capacityGb": 960,
+          "capacityTb": 0.96,
+          "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+        },
+        "RED MINI-MAG 1TB": {
+          "brand": "RED",
+          "model": "MINI-MAG 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
           "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
         },
         "Sony AXS Memory Card 1TB (S24)": {
@@ -1908,6 +2300,534 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "capacityGb": 64,
           "capacityTb": 0.064,
           "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
+        },
+        "SanDisk Extreme PRO CFexpress Type B 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFexpress Type B 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "CFexpress Type B"
+        },
+        "SanDisk Extreme PRO CFexpress Type B 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFexpress Type B 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "CFexpress Type B"
+        },
+        "SanDisk Extreme PRO CFexpress Type B 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFexpress Type B 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFexpress Type B"
+        },
+        "SanDisk Extreme PRO CFexpress Type B 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFexpress Type B 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFexpress Type B"
+        },
+        "SanDisk Extreme PRO CFast 2.0 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "CFast 2.0"
+        },
+        "SanDisk Extreme PRO CFast 2.0 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "CFast 2.0"
+        },
+        "SanDisk Extreme PRO CFast 2.0 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFast 2.0"
+        },
+        "SanDisk Extreme PRO CFast 2.0 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO CFast 2.0 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFast 2.0"
+        },
+        "SanDisk Extreme PRO SD UHS-I 32GB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 32GB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 32,
+          "capacityTb": 0.032,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme PRO SD UHS-I 64GB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 64GB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme PRO SD UHS-I 128GB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 128GB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme PRO SD UHS-I 256GB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 256GB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme PRO SD UHS-I 512GB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 512GB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme PRO SD UHS-I 1TB (200MB/s)": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-I 1TB (200MB/s)",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "SDHC/SDXC UHS-I"
+        },
+        "SanDisk Extreme microSD UHS-I 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme microSD UHS-I 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme microSD UHS-I 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme microSD UHS-I 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme microSD UHS-I 1TB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme microSD UHS-I 2TB": {
+          "brand": "SanDisk",
+          "model": "Extreme microSD UHS-I 2TB",
+          "kNumber": null,
+          "capacityGb": 2048,
+          "capacityTb": 2,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 400GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 400GB",
+          "kNumber": null,
+          "capacityGb": 400,
+          "capacityTb": 0.4,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 1TB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO microSD UHS-I 2TB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO microSD UHS-I 2TB",
+          "kNumber": null,
+          "capacityGb": 2048,
+          "capacityTb": 2,
+          "interface": "microSDXC UHS-I (V30, A2)"
+        },
+        "SanDisk Extreme PRO SD UHS-II V90 64GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-II V90 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "SanDisk Extreme PRO SD UHS-II V90 128GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-II V90 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "SanDisk Extreme PRO SD UHS-II V90 256GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-II V90 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "SanDisk Extreme PRO SD UHS-II V90 512GB": {
+          "brand": "SanDisk",
+          "model": "Extreme PRO SD UHS-II V90 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDXC UHS-II (V90)"
+        },
+        "Samsung PRO Plus microSD 128GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus microSD 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "microSDXC UHS-I"
+        },
+        "Samsung PRO Plus microSD 256GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus microSD 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "microSDXC UHS-I"
+        },
+        "Samsung PRO Plus microSD 512GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus microSD 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "microSDXC UHS-I"
+        },
+        "Samsung PRO Plus microSD 1TB": {
+          "brand": "Samsung",
+          "model": "PRO Plus microSD 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "microSDXC UHS-I"
+        },
+        "Samsung PRO Plus SD 64GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus SD 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-I"
+        },
+        "Samsung PRO Plus SD 128GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus SD 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-I"
+        },
+        "Samsung PRO Plus SD 256GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus SD 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDXC UHS-I"
+        },
+        "Samsung PRO Plus SD 512GB": {
+          "brand": "Samsung",
+          "model": "PRO Plus SD 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDXC UHS-I"
+        },
+        "Lexar Professional CFexpress 4.0 Type B GOLD 512GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress 4.0 Type B GOLD 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFexpress Type B (v4.0)"
+        },
+        "Lexar Professional CFexpress 4.0 Type B GOLD 1TB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress 4.0 Type B GOLD 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFexpress Type B (v4.0)"
+        },
+        "Lexar Professional CFexpress 4.0 Type B GOLD 2TB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress 4.0 Type B GOLD 2TB",
+          "kNumber": null,
+          "capacityGb": 2048,
+          "capacityTb": 2,
+          "interface": "CFexpress Type B (v4.0)"
+        },
+        "Lexar Professional CFexpress 4.0 Type B GOLD 4TB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress 4.0 Type B GOLD 4TB",
+          "kNumber": null,
+          "capacityGb": 4096,
+          "capacityTb": 4,
+          "interface": "CFexpress Type B (v4.0)"
+        },
+        "Lexar Professional CFexpress Type B GOLD 128GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type B GOLD 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "CFexpress Type B (2.0)"
+        },
+        "Lexar Professional CFexpress Type B GOLD 256GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type B GOLD 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFexpress Type B (2.0)"
+        },
+        "Lexar Professional CFexpress Type A GOLD 80GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type A GOLD 80GB",
+          "kNumber": null,
+          "capacityGb": 80,
+          "capacityTb": 0.08,
+          "interface": "CFexpress Type A"
+        },
+        "Lexar Professional CFexpress Type A GOLD 160GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type A GOLD 160GB",
+          "kNumber": null,
+          "capacityGb": 160,
+          "capacityTb": 0.16,
+          "interface": "CFexpress Type A"
+        },
+        "Lexar Professional CFexpress Type A GOLD 320GB": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type A GOLD 320GB",
+          "kNumber": null,
+          "capacityGb": 320,
+          "capacityTb": 0.32,
+          "interface": "CFexpress Type A"
+        },
+        "Lexar Professional 3500x CFast 2.0 64GB": {
+          "brand": "Lexar",
+          "model": "Professional 3500x CFast 2.0 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "CFast 2.0"
+        },
+        "Lexar Professional 3500x CFast 2.0 128GB": {
+          "brand": "Lexar",
+          "model": "Professional 3500x CFast 2.0 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "CFast 2.0"
+        },
+        "Lexar Professional 3500x CFast 2.0 256GB": {
+          "brand": "Lexar",
+          "model": "Professional 3500x CFast 2.0 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "CFast 2.0"
+        },
+        "Lexar Professional 3500x CFast 2.0 512GB": {
+          "brand": "Lexar",
+          "model": "Professional 3500x CFast 2.0 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "CFast 2.0"
+        },
+        "Lexar Professional 2000x SD GOLD 64GB": {
+          "brand": "Lexar",
+          "model": "Professional 2000x SD GOLD 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDHC/SDXC UHS-II (V90)"
+        },
+        "Lexar Professional 2000x SD GOLD 128GB": {
+          "brand": "Lexar",
+          "model": "Professional 2000x SD GOLD 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDHC/SDXC UHS-II (V90)"
+        },
+        "Lexar Professional 2000x SD GOLD 256GB": {
+          "brand": "Lexar",
+          "model": "Professional 2000x SD GOLD 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDHC/SDXC UHS-II (V90)"
+        },
+        "Lexar Professional 2000x SD GOLD 512GB": {
+          "brand": "Lexar",
+          "model": "Professional 2000x SD GOLD 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDHC/SDXC UHS-II (V90)"
+        },
+        "Lexar Professional 1066x microSD SILVER 64GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x microSD SILVER 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "microSDXC UHS-I"
+        },
+        "Lexar Professional 1066x microSD SILVER 128GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x microSD SILVER 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "microSDXC UHS-I"
+        },
+        "Lexar Professional 1066x microSD SILVER 256GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x microSD SILVER 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "microSDXC UHS-I"
+        },
+        "Lexar Professional 1066x microSD SILVER 512GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x microSD SILVER 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "microSDXC UHS-I"
+        },
+        "Lexar Professional 1066x microSD SILVER 1TB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x microSD SILVER 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "microSDXC UHS-I"
+        },
+        "Lexar Professional 1066x SD SILVER 64GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x SD SILVER 64GB",
+          "kNumber": null,
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SDXC UHS-I (V30)"
+        },
+        "Lexar Professional 1066x SD SILVER 128GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x SD SILVER 128GB",
+          "kNumber": null,
+          "capacityGb": 128,
+          "capacityTb": 0.128,
+          "interface": "SDXC UHS-I (V30)"
+        },
+        "Lexar Professional 1066x SD SILVER 256GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x SD SILVER 256GB",
+          "kNumber": null,
+          "capacityGb": 256,
+          "capacityTb": 0.256,
+          "interface": "SDXC UHS-I (V30)"
+        },
+        "Lexar Professional 1066x SD SILVER 512GB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x SD SILVER 512GB",
+          "kNumber": null,
+          "capacityGb": 512,
+          "capacityTb": 0.512,
+          "interface": "SDXC UHS-I (V30)"
+        },
+        "Lexar Professional 1066x SD SILVER 1TB": {
+          "brand": "Lexar",
+          "model": "Professional 1066x SD SILVER 1TB",
+          "kNumber": null,
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "SDXC UHS-I (V30)"
         }
       },
       "cardReaders": {
@@ -2241,6 +3161,38 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "Angénieux Optimo 15-40mm T2.6": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.6,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.61,
+          "weight_g": 1920,
+          "imageCircleMm": 31.4,
+          "lengthMm": 186,
+          "notes": "Compact Optimo zoom with S35+ coverage (≈31.4 mm diagonal)."
+        },
+        "Angénieux Optimo 45-120mm T2.8": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.94,
+          "weight_g": 1950,
+          "imageCircleMm": 31.4,
+          "lengthMm": 203,
+          "notes": "Matches the 15-40mm Optimo compact zoom; S35+ coverage."
+        },
         "Angenieux Optimo 25-250mm T3.5 (PL)": {
           "brand": "Angénieux",
           "frontDiameterMm": 136,
@@ -2255,150 +3207,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 7300,
           "imageCircleMm": 31.4,
           "lengthMm": 377.4
-        },
-        "Atlas Orion 32mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.76,
-          "weight_g": 3600,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion wide: Ø136 mm front, 0.76 m close focus, about 3.6 kg."
-        },
-        "Atlas Orion 40mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.61,
-          "weight_g": 3100,
-          "imageCircleMm": 31,
-          "lengthMm": 197,
-          "notes": "Atlas Orion 40 mm: 0.61 m MOD, Ø114 mm front, roughly 3.1 kg."
-        },
-        "Atlas Orion 50mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.7,
-          "weight_g": 3400,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion 50 mm: 0.7 m close focus, 210 mm length, approx. 3.4 kg."
-        },
-        "Atlas Orion 65mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.76,
-          "weight_g": 3200,
-          "imageCircleMm": 31,
-          "lengthMm": 197,
-          "notes": "Atlas Orion 65 mm: Ø114 mm clamp-on, 0.76 m MOD, about 3.2 kg."
-        },
-        "Atlas Orion 80mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 0.91,
-          "weight_g": 3500,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion 80 mm: 0.91 m close focus and roughly 3.5 kg weight."
-        },
-        "Atlas Orion 100mm T2.0 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 114,
-          "clampOn": true,
-          "tStop": 2,
-          "tStopRange": "T2.0–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1,
-          "weight_g": 3600,
-          "imageCircleMm": 31,
-          "lengthMm": 210,
-          "notes": "Atlas Orion 100 mm: 1 m close focus, 210 mm length, near 3.6 kg."
-        },
-        "Atlas Orion 135mm T2.2 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2.2,
-          "tStopRange": "T2.2–T22",
-          "mount": "PL",
-          "rodStandard": "15mm",
-          "rodLengthCm": 45,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1.52,
-          "weight_g": 4000,
-          "imageCircleMm": 31,
-          "lengthMm": 230,
-          "notes": "Atlas Orion 135 mm: T2.2 speed with 1.52 m close focus and ~4 kg mass."
-        },
-        "Atlas Orion 180mm T2.2 2x": {
-          "brand": "Atlas",
-          "frontDiameterMm": 136,
-          "clampOn": true,
-          "tStop": 2.2,
-          "tStopRange": "T2.2–T22",
-          "mount": "PL",
-          "rodStandard": "19mm",
-          "rodLengthCm": 60,
-          "needsLensSupport": true,
-          "lensType": "anamorphic",
-          "anamorphicSqueeze": 2,
-          "minFocusMeters": 1.83,
-          "weight_g": 4200,
-          "imageCircleMm": 31,
-          "lengthMm": 240,
-          "notes": "Atlas Orion 180 mm tele: Ø136 mm front, ~4.2 kg, 1.83 m minimum focus."
         },
         "LOMO Anamorphic RF 35mm T2.5": {
           "brand": "LOMO",
@@ -2440,11 +3248,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": true,
           "lensType": "spherical"
         },
-        "Canon CN7x17 17-120mm T3.0-3.9": {
+        "Canon CN7x17 17-120mm T2.95-3.9": {
           "brand": "Canon",
           "frontDiameterMm": 114,
           "clampOn": true,
-          "tStop": 3,
+          "tStop": 2.95,
           "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 45,
@@ -2453,7 +3261,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "minFocusMeters": 0.85,
           "weight_g": 2900,
           "lengthMm": 254.9,
-          "notes": "Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
+          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
         },
         "Canon CN-E Flex Zoom 14-35mm T1.7": {
           "brand": "Canon",
@@ -3042,6 +3850,34 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 420,
           "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
         },
+        "ARRI/FUJINON Alura 15.5-45mm T2.8": {
+          "brand": "ARRI/FUJINON",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "lengthMm": 228,
+          "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support."
+        },
+        "ARRI/FUJINON Alura 30-80mm T2.8": {
+          "brand": "ARRI/FUJINON",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "lengthMm": 228,
+          "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8."
+        },
         "ARRI/ZEISS Ultra Prime 8mm T2.8": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 134,
@@ -3110,7 +3946,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.25,
           "weight_g": 1200,
-          "lengthMm": 94
+          "lengthMm": 94,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 20mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3124,17 +3961,23 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.28,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 24mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 1000,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 28mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3148,17 +3991,24 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.28,
           "weight_g": 1000,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1,
+          "notes": "ZEISS technical table lists 0.28 m MOD, 91 mm length, 1.0 kg weight, and PL reference for Ultra Prime 28 mm."
         },
         "ARRI/ZEISS Ultra Prime 32mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 1100,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 40mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3172,7 +4022,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.38,
           "weight_g": 1000,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 50mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3186,7 +4037,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.6,
           "weight_g": 1000,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 65mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3199,8 +4051,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "minFocusMeters": 0.65,
-          "weight_g": 1100,
-          "lengthMm": 91
+          "weight_g": 1200,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 85mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3214,7 +4067,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 0.9,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 100mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3228,7 +4082,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 1,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 135mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3663,7 +4518,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "minFocusMeters": 0.45,
+          "minFocusMeters": 0.457,
           "weight_g": 1220,
           "imageCircleMm": 46.3,
           "lengthMm": 119,
@@ -3807,7 +4662,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 101,
           "minFocusMeters": 0.3,
           "weight_g": 1300,
-          "notes": "Leitz table: 0.3 m MOD, 101 mm length, 1.3 kg weight."
+          "notes": "Leitz technical table lists 0.3 m MOD, 101 mm length, and 1.3 kg weight for the 29 mm Summicron-C."
         },
         "Leitz Summicron-C 35mm T2.0": {
           "brand": "Leitz",
@@ -3834,7 +4689,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 101,
           "minFocusMeters": 0.45,
           "weight_g": 1300,
-          "notes": "Leitz table: 0.45 m MOD, 101 mm length, 1.3 kg weight."
+          "notes": "Leitz technical table lists 0.45 m MOD, 101 mm length, and 1.3 kg weight for the 40 mm Summicron-C."
         },
         "Leitz Summicron-C 50mm T2.0": {
           "brand": "Leitz",
@@ -3845,7 +4700,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 1500,
+          "lengthMm": 101,
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 75mm T2.0": {
           "brand": "Leitz",
@@ -3856,7 +4715,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 1200,
+          "lengthMm": 101,
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 100mm T2.0": {
           "brand": "Leitz",
@@ -3883,7 +4746,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 118,
           "minFocusMeters": 1.35,
           "weight_g": 1800,
-          "notes": "Leitz table: 1.35 m MOD, 118 mm length, 1.8 kg weight."
+          "notes": "Leitz technical table lists 1.35 m MOD, 118 mm length, and 1.8 kg weight for the 135 mm Summicron-C."
         },
         "Leitz Elsie 15mm T2.1": {
           "brand": "Leitz",
@@ -4011,7 +4874,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 1996,
           "imageCircleMm": 46.5,
           "lengthMm": 160,
-          "notes": "ELSIE 50mm T2.1. BandPro lists 20\" (0.508 m) MOD, 160 mm length, ~4.4 lb (1996 g)."
+          "notes": "ELSIE 50mm T2.1. BandPro listing notes 20\" (0.508 m) MOD, 160 mm length, and ~4.4 lb (1996 g)."
         },
         "Leitz Elsie 65mm T2.1": {
           "brand": "Leitz",
@@ -4075,7 +4938,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 2404,
           "imageCircleMm": 46.5,
           "lengthMm": 160,
-          "notes": "ELSIE 125mm T2.1. BandPro lists 50\" (1.27 m) MOD, 160 mm length, ~5.3 lb (2404 g)."
+          "notes": "ELSIE 125mm T2.1. BandPro listing notes 50\" (1.27 m) MOD, 160 mm length, and ~5.3 lb (2404 g)."
         },
         "Leitz Elsie 150mm T2.1": {
           "brand": "Leitz",
@@ -4092,6 +4955,230 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "imageCircleMm": 46.5,
           "lengthMm": 160,
           "notes": "ELSIE 150mm T2.1. Front filter M112×1.5 on 125–150 mm."
+        },
+        "Leitz HUGO 18mm T1.5": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "LPL / Leica L / Leica M",
+          "rodStandard": "15mm",
+          "rodLengthCm": 5,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.22,
+          "weight_g": 1040,
+          "imageCircleMm": 43.3,
+          "lengthMm": 71,
+          "notes": "Specs from B&H: 2.8\" / 71 mm length, 95 mm front, 1040 g weight."
+        },
+        "Leitz HUGO 24mm T1.5": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "LPL / Leica L / Leica M",
+          "rodStandard": "15mm",
+          "rodLengthCm": 5,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 860,
+          "imageCircleMm": 43.3,
+          "lengthMm": 68,
+          "notes": "Band Pro listing: 2.7\" / 68 mm length, approximately 860 g weight."
+        },
+        "Leitz HUGO 40mm T1.5": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "LPL / Leica L / Leica M",
+          "rodStandard": "15mm",
+          "rodLengthCm": 5,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.36,
+          "weight_g": 870,
+          "imageCircleMm": 43.3,
+          "lengthMm": 68,
+          "notes": "Announced specifications: 2.7\" / 68 mm length, 0.87 kg weight, close focus 0.36 m."
+        },
+        "Leitz HUGO 135mm T1.9": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "LPL / Leica L / Leica M",
+          "rodStandard": "15mm",
+          "rodLengthCm": 10,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 1590,
+          "imageCircleMm": 43.3,
+          "lengthMm": 121,
+          "notes": "Manufacturer specs: 4.8\" / 121 mm length, 1.59 kg weight, close focus 1 m."
+        },
+        "Leitz Thalia 24mm T3.6": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 3.6,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 124.5,
+          "minFocusMeters": 0.2,
+          "weight_g": 1420,
+          "notes": "Thalia prime set; 92 mm thread except wides; 270° focus rotation. Specs from Leitz THALIA datasheet."
+        },
+        "Leitz Thalia 30mm T2.9": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 131.5,
+          "minFocusMeters": 0.5,
+          "weight_g": 1500,
+          "notes": "Thalia 30 mm; datasheet lists close focus 0.5 m."
+        },
+        "Leitz Thalia 35mm T2.6": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.6,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 131.5,
+          "minFocusMeters": 0.55,
+          "weight_g": 1400,
+          "notes": "Thalia 35 mm; close focus 0.55 m per spec."
+        },
+        "Leitz Thalia 45mm T2.9": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 131.5,
+          "minFocusMeters": 0.6,
+          "weight_g": 1460,
+          "notes": "Thalia 45 mm; close focus 0.6 m per spec."
+        },
+        "Leitz Thalia 55mm T2.8": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 154.5,
+          "minFocusMeters": 0.3,
+          "weight_g": 1640,
+          "notes": "Thalia 55 mm macro; spec gives close focus 0.3 m."
+        },
+        "Leitz Thalia 70mm T2.6": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.6,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 124.5,
+          "minFocusMeters": 0.5,
+          "weight_g": 1060,
+          "notes": "Thalia 70 mm; spec gives length 124.5 mm and close focus 0.5 m."
+        },
+        "Leitz Thalia 90mm T2.2 (Thalia-T variant)": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 124.5,
+          "minFocusMeters": 0.9,
+          "weight_g": 1050,
+          "notes": "Thalia-T 90 mm variant with dual \"soft/hard\" character. Datasheet lists 0.9 m close focus."
+        },
+        "Leitz Thalia 100mm T2.2": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 124.5,
+          "minFocusMeters": 0.7,
+          "weight_g": 1160,
+          "notes": "Thalia 100 mm; spec gives close focus 0.7 m."
+        },
+        "Leitz Thalia 120mm T2.6": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.6,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 175,
+          "minFocusMeters": 0.57,
+          "weight_g": 1660,
+          "notes": "Thalia 120 mm macro; spec length 175 mm and close focus 0.57 m."
+        },
+        "Leitz Thalia 180mm T3.6": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 3.6,
+          "mount": "PL / LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "imageCircleMm": 60,
+          "lengthMm": 154.5,
+          "minFocusMeters": 1.5,
+          "weight_g": 1620,
+          "notes": "Thalia 180 mm; spec gives length 154.5 mm and close focus 1.5 m."
         },
         "Cooke S7/i FF 25mm T2.0": {
           "brand": "Cooke",
@@ -4122,7 +5209,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 3300,
           "imageCircleMm": 46.3,
           "lengthMm": 182,
-          "notes": "Cooke spec: 0.35 m MOD, 182 mm length, Ø110 mm front, PL or LPL mounts."
+          "notes": "Cooke spec lists 0.35 m close focus, 182 mm length, Ø110 mm front, and PL or LPL mount options."
         },
         "Cooke S7/i FF 32mm T2.0": {
           "brand": "Cooke",
@@ -4222,7 +5309,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 4400,
           "imageCircleMm": 46.3,
           "lengthMm": 256,
-          "notes": "Cooke spec: 2.1 m MOD, 256 mm length, ~4.4 kg weight, Ø110 mm front, includes support bracket."
+          "notes": "Cooke spec states 2.1 m close focus, 256 mm length, ~4.4 kg weight, Ø110 mm front, and includes a support bracket."
         },
         "Cooke S8/i FF 18mm T1.4": {
           "brand": "Cooke",
@@ -4238,7 +5325,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 3400,
           "imageCircleMm": 43.3,
           "lengthMm": 200,
-          "notes": "Cooke S8/i FF 18mm T1.4 ships with support bracket; Ø136 mm clamp-on may vignette."
+          "notes": "Cooke S8/i FF 18mm T1.4 ships with a support bracket; Cooke warns of Ø136 mm clamp-on vignette risk."
         },
         "Cooke S8/i FF 25mm T1.4": {
           "brand": "Cooke",
@@ -4265,7 +5352,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 2600,
           "imageCircleMm": 46.3,
           "lengthMm": 162,
-          "notes": "Cooke S8/i FF 27mm T1.4 supports PL or LPL mounts and M99×0.75 filter thread."
+          "notes": "Cooke S8/i FF 27mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.6 m MOD."
         },
         "Cooke S8/i FF 32mm T1.4": {
           "brand": "Cooke",
@@ -4314,7 +5401,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 2600,
           "imageCircleMm": 46.3,
           "lengthMm": 157,
-          "notes": "Cooke S8/i FF 65mm T1.4 supports PL or LPL mounts and M99×0.75 filter thread."
+          "notes": "Cooke S8/i FF 65mm T1.4 supports PL or LPL mounts with M99×0.75 filter thread and 0.75 m MOD."
         },
         "Cooke S8/i FF 75mm T1.4": {
           "brand": "Cooke",
@@ -4972,10 +6059,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 30,
           "clampOn": true,
           "tStop": 8,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.005,
+          "imageCircleMm": 43.3,
+          "notes": "Macro probe set with 0°, 35° and 90° modules; waterproof tip and 2× magnification."
         },
         "Laowa Ranger 28-75mm T2.9": {
           "brand": "Laowa",
@@ -4998,6 +6089,710 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical"
+        },
+        "Sigma Cine FF High Speed Prime 14mm T2": {
+          "brand": "Sigma",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.27,
+          "weight_g": 1190,
+          "imageCircleMm": 43.3,
+          "lengthMm": 126,
+          "notes": "Full-frame high-speed prime with interchangeable mounts and 0.8 mod gears."
+        },
+        "Sigma Cine FF High Speed Prime 20mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.28,
+          "weight_g": 1430,
+          "imageCircleMm": 43.3,
+          "lengthMm": 138,
+          "notes": "High-speed wide with unified 0.8 mod gears; optional lightweight support recommended for gimbals."
+        },
+        "Sigma Cine FF High Speed Prime 24mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 1360,
+          "imageCircleMm": 43.3,
+          "lengthMm": 124,
+          "notes": "Matches Sigma FF housing with 95 mm front and consistent gear spacing for matte box swaps."
+        },
+        "Sigma Cine FF High Speed Prime 28mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 1300,
+          "imageCircleMm": 43.3,
+          "lengthMm": 122,
+          "notes": "Standard wide FF prime with interchangeable mounts and 95 mm clip-on matte box compatibility."
+        },
+        "Sigma Cine FF High Speed Prime 35mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 1250,
+          "imageCircleMm": 43.3,
+          "lengthMm": 118,
+          "notes": "Go-to focal with matching focus/iris positions for fast swaps across the Sigma FF set."
+        },
+        "Sigma Cine FF High Speed Prime 40mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.4,
+          "weight_g": 1210,
+          "imageCircleMm": 43.3,
+          "lengthMm": 118,
+          "notes": "Large-format ready normal with consistent 95 mm front for clip-on matte boxes."
+        },
+        "Sigma Cine FF High Speed Prime 50mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.4,
+          "weight_g": 1180,
+          "imageCircleMm": 43.3,
+          "lengthMm": 117,
+          "notes": "Standard Sigma FF prime with LDS and /i contacts in PL for metadata-enabled shoots."
+        },
+        "Sigma Cine FF High Speed Prime 85mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.95,
+          "weight_g": 1220,
+          "imageCircleMm": 43.3,
+          "lengthMm": 125,
+          "notes": "Portrait-length FF prime with 300° focus travel; add clip-on support ring for extended builds."
+        },
+        "Sigma Cine FF High Speed Prime 105mm T1.5": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 1620,
+          "imageCircleMm": 43.3,
+          "lengthMm": 134,
+          "notes": "Compact FF prime with LDS and /i metadata support in PL mount plus matched gear positions."
+        },
+        "Sigma Cine FF High Speed Prime 135mm T2": {
+          "brand": "Sigma",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL / EF / E (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1.1,
+          "weight_g": 1840,
+          "imageCircleMm": 43.3,
+          "lengthMm": 156,
+          "notes": "Long telephoto prime best paired with 15 mm support bridge or studio rods for steadiness."
+        },
+        "Tokina Vista 18mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 3200,
+          "imageCircleMm": 46.7,
+          "lengthMm": 188,
+          "notes": "Ultra-wide Vista prime with generous image circle; use 15 mm rods with yoke-style lens support."
+        },
+        "Tokina Vista 21mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 2400,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Vista large-format prime with 46.7 mm image circle and matched gear spacing."
+        },
+        "Tokina Vista 25mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 2500,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Fast full-frame wide with matching focus/iris gear placement across the Vista range."
+        },
+        "Tokina Vista 35mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "weight_g": 2380,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Large-format normal prime with 300° focus travel and shared 114 mm front."
+        },
+        "Tokina Vista 40mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "weight_g": 2300,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Tokina Vista full-frame prime with 300° focus rotation and 0.8 mod gears."
+        },
+        "Tokina Vista 50mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2320,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Vista 50 mm maintains even gear spacing and benefits from 15 mm lens support on longer takes."
+        },
+        "Tokina Vista 65mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.65,
+          "weight_g": 2450,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Longer Tokina Vista prime covering VistaVision with unified housing dimensions."
+        },
+        "Tokina Vista 85mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.95,
+          "weight_g": 2350,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Telephoto Vista prime—pair with 15 mm rods and lens support foot for steadier pulls."
+        },
+        "Tokina Vista 105mm T1.5": {
+          "brand": "Tokina",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.5,
+          "mount": "PL / EF / E (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 2420,
+          "imageCircleMm": 46.7,
+          "lengthMm": 179,
+          "notes": "Long Vista tele prime covering full-frame and VistaVision with identical gear positions."
+        },
+        "Cooke SP3 25mm T2.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 81,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "E / RF / L (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.25,
+          "weight_g": 700,
+          "imageCircleMm": 43.3,
+          "lengthMm": 87,
+          "notes": "Wide Cooke SP3 prime with native mirrorless mounts and 77 mm front threads for lightweight matte boxes."
+        },
+        "Cooke SP3 32mm T2.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 81,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "E / RF / L (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.29,
+          "weight_g": 690,
+          "imageCircleMm": 43.3,
+          "lengthMm": 87,
+          "notes": "Mirrorless-native Cooke SP3 with interchangeable bayonet mounts and 77 mm threads."
+        },
+        "Cooke SP3 50mm T2.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 81,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "E / RF / L (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.45,
+          "weight_g": 730,
+          "imageCircleMm": 43.3,
+          "lengthMm": 94,
+          "notes": "Standard SP3 prime retaining Cooke Look micro-contrast with lightweight build."
+        },
+        "Cooke SP3 75mm T2.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 81,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "E / RF / L (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.7,
+          "weight_g": 760,
+          "imageCircleMm": 43.3,
+          "lengthMm": 99,
+          "notes": "Compact SP3 telephoto prime, matched housing with Cooke Look rendering."
+        },
+        "Cooke SP3 100mm T2.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 81,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "E / RF / L (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 840,
+          "imageCircleMm": 43.3,
+          "lengthMm": 118,
+          "notes": "Longest SP3 focal—add optional support foot for extended rods without sacrificing handheld agility."
+        },
+        "TRIBE7 Blackwing7 T-Tune 27mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 1880,
+          "imageCircleMm": 46.6,
+          "lengthMm": 178,
+          "notes": "Wide Blackwing7 T-Tune with swappable tuning modules; brace with 15 mm rods for accessories."
+        },
+        "TRIBE7 Blackwing7 T-Tune 37mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.45,
+          "weight_g": 1900,
+          "imageCircleMm": 46.6,
+          "lengthMm": 178,
+          "notes": "Blackwing7 T-Tune prime with modular contrast tuning and large-format coverage."
+        },
+        "TRIBE7 Blackwing7 T-Tune 47mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.55,
+          "weight_g": 1920,
+          "imageCircleMm": 46.6,
+          "lengthMm": 178,
+          "notes": "Normal Blackwing7 T-Tune prime—pair with clip-on matte boxes or 114 mm donut."
+        },
+        "TRIBE7 Blackwing7 T-Tune 57mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.65,
+          "weight_g": 1950,
+          "imageCircleMm": 46.6,
+          "lengthMm": 178,
+          "notes": "Blackwing7 T-Tune mid-tele prime tuned for lower contrast and halation."
+        },
+        "TRIBE7 Blackwing7 T-Tune 77mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.85,
+          "weight_g": 2050,
+          "imageCircleMm": 46.6,
+          "lengthMm": 178,
+          "notes": "Short telephoto Blackwing7 with tuned flare behavior; secure with lens support when rigged with motors."
+        },
+        "TRIBE7 Blackwing7 T-Tune 107mm T1.8": {
+          "brand": "TRIBE7",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "PL / LPL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1.2,
+          "weight_g": 2150,
+          "imageCircleMm": 46.6,
+          "lengthMm": 185,
+          "notes": "Long Blackwing7 tele tuned for expressive falloff—run on 15 mm or 19 mm studio rods with solid support."
+        },
+        "Atlas Mercury 36mm T2.2 1.5x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "LPL / PL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "minFocusMeters": 0.4,
+          "weight_g": 1700,
+          "imageCircleMm": 36,
+          "lengthMm": 145,
+          "notes": "Widest Mercury 1.5x prime; prefer 15 mm bridge support when stacking clip-on matte boxes."
+        },
+        "Atlas Mercury 42mm T2.2 1.5x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "LPL / PL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "minFocusMeters": 0.55,
+          "weight_g": 1800,
+          "imageCircleMm": 36,
+          "lengthMm": 150,
+          "notes": "Mercury Series 1.5x anamorphic covering Open Gate sensors with built-in close focus."
+        },
+        "Atlas Mercury 54mm T2.2 1.5x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "LPL / PL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "minFocusMeters": 0.7,
+          "weight_g": 1900,
+          "imageCircleMm": 36,
+          "lengthMm": 160,
+          "notes": "Mercury Series normal with rear net slot; support on rods when pairing with dual motors."
+        },
+        "Atlas Mercury 72mm T2.2 1.5x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "LPL / PL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "minFocusMeters": 0.9,
+          "weight_g": 2000,
+          "imageCircleMm": 36,
+          "lengthMm": 170,
+          "notes": "Mercury Series 1.5x anamorphic mid-tele with LPL base mount and drop-in rear filter slot."
+        },
+        "Atlas Mercury 95mm T2.2 1.5x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "LPL / PL (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "minFocusMeters": 1.1,
+          "weight_g": 2150,
+          "imageCircleMm": 36,
+          "lengthMm": 185,
+          "notes": "Tele Mercury 1.5x prime—pair with sturdy 15 mm or studio rods for rock-solid framing."
+        },
+        "Atlas Orion 32mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 0.76,
+          "weight_g": 3600,
+          "imageCircleMm": 31,
+          "lengthMm": 210,
+          "notes": "Atlas Orion Silver Edition wide: Ø136 mm front, 0.76 m close focus, 3.6 kg weight."
+        },
+        "Atlas Orion 40mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 0.61,
+          "weight_g": 3100,
+          "imageCircleMm": 31,
+          "lengthMm": 197,
+          "notes": "Atlas Orion A-set 40 mm: 0.61 m MOD, Ø114 mm front, approx. 3.1 kg."
+        },
+        "Atlas Orion 50mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 0.7,
+          "weight_g": 3400,
+          "imageCircleMm": 31,
+          "lengthMm": 210,
+          "notes": "Atlas Orion B-set 50 mm: 0.7 m close focus, 210 mm length, 3.4 kg mass."
+        },
+        "Atlas Orion 65mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 0.76,
+          "weight_g": 3200,
+          "imageCircleMm": 31,
+          "lengthMm": 197,
+          "notes": "Atlas Orion A-set 65 mm: Ø114 mm clamp-on, 0.76 m MOD, roughly 3.2 kg."
+        },
+        "Atlas Orion 80mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 0.91,
+          "weight_g": 3500,
+          "imageCircleMm": 31,
+          "lengthMm": 210,
+          "notes": "Atlas Orion B-set 80 mm: 0.91 m close focus with ~3.5 kg heft."
+        },
+        "Atlas Orion 100mm T2.0 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "tStopRange": "T2.0–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 1,
+          "weight_g": 3600,
+          "imageCircleMm": 31,
+          "lengthMm": 210,
+          "notes": "Atlas Orion A-set 100 mm: 1 m close focus, 210 mm length, approx. 3.6 kg."
+        },
+        "Atlas Orion 135mm T2.2 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 2.2,
+          "tStopRange": "T2.2–T22",
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 1.52,
+          "weight_g": 4000,
+          "imageCircleMm": 31,
+          "lengthMm": 230,
+          "notes": "Atlas Orion C-set 135 mm: T2.2 speed, 1.52 m close focus, roughly 4 kg."
+        },
+        "Atlas Orion 180mm T2.2 2x": {
+          "brand": "Atlas",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 2.2,
+          "tStopRange": "T2.2–T22",
+          "mount": "PL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 60,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "minFocusMeters": 1.83,
+          "weight_g": 4200,
+          "imageCircleMm": 31,
+          "lengthMm": 240,
+          "notes": "Atlas Orion 180 mm tele: larger Ø136 mm front, ~4.2 kg, 1.83 m minimum focus."
         },
         "Sigma 18–35mm f/1.8 DC HSM Art": {
           "brand": "Sigma",
@@ -5334,7 +7129,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 1600,
           "imageCircleMm": 31.5,
           "lengthMm": 150,
-          "notes": "Pictor 12–25mm T2.8 (S35) parfocal; DZO lists PL/EF mounts, Ø95 mm front, 0.4 m MOD."
+          "notes": "Pictor 12–25mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.4 m MOD."
         },
         "DZOFILM Pictor 14-30mm T2.8": {
           "brand": "DZOFILM",
@@ -5350,7 +7145,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 1880,
           "imageCircleMm": 31.5,
           "lengthMm": 173,
-          "notes": "Pictor 14–30mm T2.8 (S35) parfocal; DZO lists PL/EF mounts, Ø95 mm front, 0.6 m MOD."
+          "notes": "Pictor 14–30mm T2.8 (S35) parfocal zoom; DZO lists PL/EF mounts, Ø95 mm front, and 0.6 m MOD."
         },
         "DZOFILM Pictor 20-55mm T2.8": {
           "brand": "DZOFILM",

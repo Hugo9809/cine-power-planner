@@ -995,6 +995,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       function computePath(fromId, toId) {
         var labelSpacing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
         var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var labelLineCount = Math.max(0, opts.labelLineCount || 0);
+        var multilineOffset = labelLineCount > 1 ? (labelLineCount - 1) * DIAGRAM_LABEL_LINE_HEIGHT : 0;
         var from = connectorPos(fromId, opts.fromSide);
         var to = connectorPos(toId, opts.toSide);
         var path;
@@ -1005,7 +1007,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var bottomY = maxY + NODE_H;
           path = "M ".concat(from.x, " ").concat(from.y, " V ").concat(bottomY, " H ").concat(to.x, " V ").concat(to.y);
           lx = (from.x + to.x) / 2;
-          ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing;
+          ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing - multilineOffset;
         } else {
           path = "M ".concat(from.x, " ").concat(from.y, " L ").concat(to.x, " ").concat(to.y);
           var dx = to.x - from.x;
@@ -1015,7 +1017,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var midY = (from.y + to.y) / 2;
           var len = Math.hypot(dx, dy) || 1;
           var baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
-          var off = baseGap + labelSpacing;
+          var off = baseGap + labelSpacing + multilineOffset;
           var perpX = dy / len * off;
           var perpY = -dx / len * off;
           lx = midX + perpX;
@@ -1098,23 +1100,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         svg += "</g>";
       });
       edges.forEach(function (edge) {
-        var _computePath = computePath(edge.from, edge.to, edge.labelSpacing, edge),
+        var lines = edge.label ? wrapLabel(edge.label, EDGE_LABEL_WRAP) : [];
+        var _computePath = computePath(edge.from, edge.to, edge.labelSpacing, _objectSpread(_objectSpread({}, edge), {}, {
+            labelLineCount: lines.length
+          })),
           path = _computePath.path,
           labelX = _computePath.labelX,
           labelY = _computePath.labelY,
           angle = _computePath.angle;
         svg += "<path class=\"edge-path ".concat(edge.type, "\" d=\"").concat(path, "\" />");
-        if (edge.label) {
-          var lines = wrapLabel(edge.label, EDGE_LABEL_WRAP);
-          if (lines.length) {
-            var transform = Math.abs(angle) > 90 ? "rotate(".concat(angle + 180, " ").concat(labelX, " ").concat(labelY, ")") : "rotate(".concat(angle, " ").concat(labelX, " ").concat(labelY, ")");
-            svg += "<text class=\"edge-label\" x=\"".concat(formatSvgCoordinate(labelX), "\" y=\"").concat(formatSvgCoordinate(labelY), "\" transform=\"").concat(transform, "\">");
-            lines.forEach(function (line, idx) {
-              var dyAttr = idx === 0 ? '' : " dy=\"".concat(DIAGRAM_LABEL_LINE_HEIGHT, "\"");
-              svg += "<tspan x=\"".concat(formatSvgCoordinate(labelX), "\"").concat(dyAttr, ">").concat(line, "</tspan>");
-            });
-            svg += '</text>';
-          }
+        if (lines.length) {
+          var transform = Math.abs(angle) > 90 ? "rotate(".concat(angle + 180, " ").concat(labelX, " ").concat(labelY, ")") : "rotate(".concat(angle, " ").concat(labelX, " ").concat(labelY, ")");
+          var labelXCoord = formatSvgCoordinate(labelX);
+          var labelYCoord = formatSvgCoordinate(labelY);
+          svg += "<text class=\"edge-label\" x=\"".concat(labelXCoord, "\" y=\"").concat(labelYCoord, "\" transform=\"").concat(transform, "\" text-anchor=\"middle\">");
+          lines.forEach(function (line, idx) {
+            var dyAttr = idx === 0 ? '' : " dy=\"".concat(DIAGRAM_LABEL_LINE_HEIGHT, "\"");
+            svg += "<tspan x=\"".concat(labelXCoord, "\"").concat(dyAttr, ">").concat(line, "</tspan>");
+          });
+          svg += '</text>';
         }
       });
       svg += '</g></svg>';

@@ -904,8 +904,30 @@ function generatePrintableOverview() {
     if (parts.projectHtml) {
       projectSectionHtml = "<section id=\"projectRequirementsOutput\" class=\"print-section project-requirements-section\">".concat(parts.projectHtml, "</section>");
     }
-    if (parts.gearHtml && hasGeneratedGearList) {
-      gearSectionHtml = "<section id=\"gearListOutput\" class=\"gear-list-section\">".concat(parts.gearHtml, "</section>");
+    if (parts.gearHtml) {
+      var shouldRenderGearList = hasGeneratedGearList || function () {
+        var trimmed = parts.gearHtml.trim();
+        if (!trimmed) return false;
+        if (typeof document === 'undefined' || typeof document.createElement !== 'function') {
+          return true;
+        }
+        var template = document.createElement('template');
+        template.innerHTML = trimmed;
+        var table = template.content.querySelector('.gear-table');
+        if (!table) {
+          return trimmed.length > 0;
+        }
+        var rows = table.querySelectorAll('tbody tr');
+        if (!rows.length) {
+          return false;
+        }
+        return Array.from(rows).some(function (row) {
+          return row.textContent && row.textContent.trim().length > 0;
+        });
+      }();
+      if (shouldRenderGearList) {
+        gearSectionHtml = "<section id=\"gearListOutput\" class=\"gear-list-section\">".concat(parts.gearHtml, "</section>");
+      }
     }
   }
   var projectRequirementsHtml = projectSectionHtml || '';

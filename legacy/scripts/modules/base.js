@@ -21,7 +21,108 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
+  function resolveScopeCollector() {
+    if (typeof require === 'function') {
+      try {
+        var required = require('./helpers/scope-collector.js');
+        if (required && typeof required.createCollector === 'function') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [];
+    function pushCandidate(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+    pushCandidate(fallbackDetectGlobalScope());
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      try {
+        var collector = scope && scope.__cineScopeCollector;
+        if (collector && typeof collector.createCollector === 'function') {
+          return collector;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
+  var SCOPE_COLLECTOR = resolveScopeCollector();
+  var createScopeCollector = SCOPE_COLLECTOR && typeof SCOPE_COLLECTOR.createCollector === 'function' ? SCOPE_COLLECTOR.createCollector : null;
+  var DEFAULT_EXTRAS_KEY = {
+    key: 'defaultExtras'
+  };
+  var HELPER_COLLECTOR_CACHE = [];
+  var BASE_SCOPE_EXTRAS_CACHE = typeof WeakMap === 'function' ? new WeakMap() : [];
+  function resolveExtrasForBaseScope(baseScope) {
+    if (!baseScope || _typeof(baseScope) !== 'object' && typeof baseScope !== 'function') {
+      return undefined;
+    }
+    if (BASE_SCOPE_EXTRAS_CACHE && typeof BASE_SCOPE_EXTRAS_CACHE.get === 'function') {
+      var _extras = BASE_SCOPE_EXTRAS_CACHE.get(baseScope);
+      if (!_extras) {
+        _extras = [baseScope];
+        BASE_SCOPE_EXTRAS_CACHE.set(baseScope, _extras);
+      }
+      return _extras;
+    }
+    for (var index = 0; index < BASE_SCOPE_EXTRAS_CACHE.length; index += 1) {
+      var entry = BASE_SCOPE_EXTRAS_CACHE[index];
+      if (entry.scope === baseScope) {
+        return entry.extras;
+      }
+    }
+    var extras = [baseScope];
+    BASE_SCOPE_EXTRAS_CACHE.push({
+      scope: baseScope,
+      extras: extras
+    });
+    return extras;
+  }
+  function resolveHelperCollector(detectFn, extras) {
+    if (!createScopeCollector) {
+      return null;
+    }
+    var extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
+    for (var index = 0; index < HELPER_COLLECTOR_CACHE.length; index += 1) {
+      var entry = HELPER_COLLECTOR_CACHE[index];
+      if (entry.detect === detectFn && entry.extras === extrasKey) {
+        return entry.collector;
+      }
+    }
+    var collector = createScopeCollector({
+      detectGlobalScope: detectFn,
+      additionalScopes: Array.isArray(extras) ? extras : undefined
+    });
+    if (collector) {
+      HELPER_COLLECTOR_CACHE.push({
+        detect: detectFn,
+        extras: extrasKey,
+        collector: collector
+      });
+      return collector;
+    }
+    return null;
+  }
   function fallbackCollectCandidateScopes(primary, baseScope) {
+    var resolvedBaseScope = baseScope || fallbackDetectGlobalScope();
+    var extras = resolveExtrasForBaseScope(resolvedBaseScope);
+    var collector = resolveHelperCollector(fallbackDetectGlobalScope, extras);
+    if (collector) {
+      return collector(primary || resolvedBaseScope);
+    }
     var scopes = [];
     function pushScope(scope) {
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -31,7 +132,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         scopes.push(scope);
       }
     }
-    pushScope(primary || baseScope);
+    pushScope(primary || resolvedBaseScope);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
