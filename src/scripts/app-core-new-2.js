@@ -9250,6 +9250,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
       const phraseDetails = computePhraseMatchDetails(entry, validQueryTokens, rawQueryText);
       const quotedPhraseDetails = computeQuotedPhraseMatchDetails(entry, quotedPhrases);
+      const labelMatchDetails = computeLabelMatchDetails(entry, rawQueryText);
+      const nowTimestamp = typeof Date === 'function' && typeof Date.now === 'function'
+        ? Date.now()
+        : new Date().getTime();
+      const historyBoostScore = computeHistoryBoostScore(
+        historyCount,
+        historyLastUsed,
+        nowTimestamp
+      );
 
       let bestType = 'none';
       let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
@@ -9308,8 +9317,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           : Number.POSITIVE_INFINITY,
         keyLength: entryKey.length,
         historyCount,
-        historyLastUsed
-        ,
+        historyLastUsed,
+        labelMatchLevel: labelMatchDetails.level,
+        labelMatchScore: labelMatchDetails.score,
+        historyBoostScore,
         quotedPhraseScore: quotedPhraseDetails.score,
         quotedPhraseMatches: quotedPhraseDetails.matched
       };
@@ -9322,6 +9333,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (b.priority !== a.priority) return b.priority - a.priority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+      }
+      const aLabelLevel = typeof a.labelMatchLevel === 'number' ? a.labelMatchLevel : 0;
+      const bLabelLevel = typeof b.labelMatchLevel === 'number' ? b.labelMatchLevel : 0;
+      if (bLabelLevel !== aLabelLevel) {
+        return bLabelLevel - aLabelLevel;
+      }
+      const aLabelScore = typeof a.labelMatchScore === 'number' ? a.labelMatchScore : 0;
+      const bLabelScore = typeof b.labelMatchScore === 'number' ? b.labelMatchScore : 0;
+      if (bLabelScore !== aLabelScore) {
+        return bLabelScore - aLabelScore;
       }
       const aPhraseScore = typeof a.phraseScore === 'number' ? a.phraseScore : 0;
       const bPhraseScore = typeof b.phraseScore === 'number' ? b.phraseScore : 0;
@@ -9353,6 +9374,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
       if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+      const aHistoryBoost = typeof a.historyBoostScore === 'number' ? a.historyBoostScore : 0;
+      const bHistoryBoost = typeof b.historyBoostScore === 'number' ? b.historyBoostScore : 0;
+      if (bHistoryBoost !== aHistoryBoost) {
+        return bHistoryBoost - aHistoryBoost;
+      }
       if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
       if (b.historyCount !== a.historyCount) return b.historyCount - a.historyCount;
       if (b.historyLastUsed !== a.historyLastUsed) {
@@ -10371,6 +10397,76 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return texts;
     };
 
+    const computeLabelMatchDetails = (entry, rawQuery = '') => {
+      const normalizedQuery = typeof rawQuery === 'string'
+        ? rawQuery.replace(/\s+/g, ' ').trim().toLowerCase()
+        : '';
+      if (!normalizedQuery) {
+        return { level: 0, score: 0 };
+      }
+
+      const labels = new Set();
+      const addLabel = value => {
+        if (typeof value !== 'string') return;
+        const cleaned = value.replace(/\s+/g, ' ').trim().toLowerCase();
+        if (!cleaned) return;
+        labels.add(cleaned);
+      };
+
+      if (entry && typeof entry === 'object') {
+        addLabel(entry.optionLabel);
+        addLabel(entry.display);
+        const rawValue = entry.value && typeof entry.value === 'object' ? entry.value : null;
+        if (rawValue) {
+          addLabel(rawValue.baseLabel);
+          addLabel(rawValue.displayLabel);
+          if (Array.isArray(rawValue.context)) {
+            rawValue.context.forEach(addLabel);
+          }
+        }
+      }
+
+      if (labels.size === 0) {
+        return { level: 0, score: 0 };
+      }
+
+      const queryLength = normalizedQuery.length;
+      let bestLevel = 0;
+      let bestScore = 0;
+      const boundaryPattern = /[a-z0-9]/;
+
+      labels.forEach(label => {
+        if (label === normalizedQuery) {
+          bestLevel = Math.max(bestLevel, 4);
+          bestScore = Math.max(bestScore, Math.max(label.length * 8, 80));
+          return;
+        }
+
+        if (label.startsWith(normalizedQuery)) {
+          bestLevel = Math.max(bestLevel, 3);
+          bestScore = Math.max(bestScore, Math.max(queryLength * 4, 36));
+        }
+
+        const index = label.indexOf(normalizedQuery);
+        if (index !== -1) {
+          const beforeChar = index > 0 ? label.charAt(index - 1) : '';
+          const afterIndex = index + queryLength;
+          const afterChar = afterIndex < label.length ? label.charAt(afterIndex) : '';
+          const beforeBoundary = index === 0 || !boundaryPattern.test(beforeChar);
+          const afterBoundary = afterIndex >= label.length || !boundaryPattern.test(afterChar);
+          if (beforeBoundary && afterBoundary) {
+            bestLevel = Math.max(bestLevel, 2);
+            bestScore = Math.max(bestScore, Math.max(queryLength * 3, 28));
+          } else {
+            bestLevel = Math.max(bestLevel, 1);
+            bestScore = Math.max(bestScore, Math.max(queryLength * 2, 14));
+          }
+        }
+      });
+
+      return { level: bestLevel, score: bestScore };
+    };
+
     const computePhraseMatchDetails = (entry, queryTokens = [], rawQuery = '') => {
       const validTokens = Array.isArray(queryTokens)
         ? queryTokens.map(token => token && token.replace(/[^a-z0-9]+/g, '')).filter(Boolean)
@@ -10452,7 +10548,35 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return { score, matched };
     };
-    
+
+    const computeHistoryBoostScore = (count = 0, lastUsed = 0, now = NaN) => {
+      const usageCount = Number.isFinite(count) && count > 0 ? count : 0;
+      const normalizedCount = Math.min(Math.max(usageCount, 0), 50);
+      let score = normalizedCount * 2;
+
+      const timestamp = Number.isFinite(lastUsed) && lastUsed > 0 ? lastUsed : 0;
+      if (timestamp > 0) {
+        const current = Number.isFinite(now)
+          ? now
+          : (typeof Date === 'function' && typeof Date.now === 'function'
+              ? Date.now()
+              : new Date().getTime());
+        const age = Math.max(0, current - timestamp);
+        const day = 24 * 60 * 60 * 1000;
+        if (age <= day) {
+          score += 20;
+        } else if (age <= 7 * day) {
+          score += 12;
+        } else if (age <= 30 * day) {
+          score += 6;
+        } else if (age <= 90 * day) {
+          score += 3;
+        }
+      }
+
+      return score;
+    };
+
     const computeLevenshteinDistance = (a, b) => {
       if (a === b) return 0;
       if (typeof a !== 'string' || typeof b !== 'string') {
