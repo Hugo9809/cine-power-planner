@@ -13419,7 +13419,11 @@ function createStorageRequirementRow(data = {}) {
     quantityInput.value = quantityValue;
   }
   const quantityLabelText = getProjectFormText('storageQuantityLabel', 'Quantity');
-  const quantityLabel = createHiddenLabel(ensureElementId(quantityInput, quantityLabelText), quantityLabelText);
+  const quantityId = ensureElementId(quantityInput, quantityLabelText);
+  const quantityLabel = document.createElement('label');
+  quantityLabel.className = 'form-row-label storage-quantity-label';
+  quantityLabel.setAttribute('for', quantityId);
+  quantityLabel.textContent = quantityLabelText;
   quantityLabel.dataset.storageLabelKey = 'storageQuantityLabel';
   quantityInput.addEventListener('input', () => scheduleProjectAutoSave(true));
   quantityInput.addEventListener('change', () => scheduleProjectAutoSave(true));
