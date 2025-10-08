@@ -221,7 +221,8 @@ var COMPRESSION_CANDIDATE_CACHE_MISS =
 var STORAGE_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(8);
 var MIGRATION_BACKUP_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(6);
 
-var COMPRESSION_WARNING_LIMIT = 12;
+// Allow unlimited compression warnings so diagnostics are never suppressed.
+var COMPRESSION_WARNING_LIMIT = Number.POSITIVE_INFINITY;
 var COMPRESSION_WARNING_BATCH_SIZE = 8;
 var COMPRESSION_LOG_SUMMARY_WINDOW_MS = 60 * 1000;
 var compressionWarningRegistry = {
