@@ -23,7 +23,7 @@ import, backup and restore experiences stay auditable without depending on impli
 ## Runtime integration
 
 * `loader.js` and `script.js` load the new module before the legacy core pieces, ensuring
-  downstream scripts can register controllers during evaluation.【F:src/scripts/loader.js†L470-L506】【F:src/scripts/script.js†L13-L54】
+  downstream scripts can register controllers during evaluation.【F:src/scripts/loader.js†L1850-L1874】【F:src/scripts/script.js†L13-L54】
 * The service worker pre-caches `src/scripts/modules/ui.js` so offline sessions can recover
   UI metadata even after clearing other caches.【F:service-worker.js†L20-L42】
 * Share/import handlers in `app-setups.js`, setup lifecycle helpers in `app-events.js` and
