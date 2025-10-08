@@ -3564,8 +3564,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       visibleRules.forEach(function (rule) {
-        var index = ruleIndexByObject.get(rule);
         var _texts$currentLang44, _texts$en119, _texts$currentLang45, _texts$en120, _texts$currentLang46, _texts$en121;
+        var index = ruleIndexByObject.get(rule);
         var wrapper = document.createElement('div');
         wrapper.className = 'auto-gear-rule';
         wrapper.dataset.ruleId = rule.id;
@@ -4402,7 +4402,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var initialDraft = options.initialDraft,
         _options$highlightLab = options.highlightLabel,
         highlightLabel = _options$highlightLab === void 0 ? false : _options$highlightLab,
-        ruleIndex = options.ruleIndex;
+        _options$ruleIndex = options.ruleIndex,
+        ruleIndex = _options$ruleIndex === void 0 ? null : _options$ruleIndex;
       var rules = getAutoGearRules();
       var source = null;
       if (initialDraft) {
@@ -4417,6 +4418,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
           source = rules[parsedIndex] || null;
         }
+      }
+      if (!source && !initialDraft) {
+        source = null;
       }
       autoGearEditorDraft = createAutoGearDraft(source);
       autoGearEditorActiveItem = null;
@@ -8474,6 +8478,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var allTokensMatched = queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
       var phraseDetails = computePhraseMatchDetails(entry, validQueryTokens, rawQueryText);
       var quotedPhraseDetails = computeQuotedPhraseMatchDetails(entry, quotedPhrases);
+      var labelMatchDetails = computeLabelMatchDetails(entry, rawQueryText);
+      var nowTimestamp = typeof Date === 'function' && typeof Date.now === 'function' ? Date.now() : new Date().getTime();
+      var historyBoostScore = computeHistoryBoostScore(historyCount, historyLastUsed, nowTimestamp);
       var bestType = 'none';
       var bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
       var fuzzyDistance = Number.POSITIVE_INFINITY;
@@ -8526,6 +8533,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         keyLength: entryKey.length,
         historyCount: historyCount,
         historyLastUsed: historyLastUsed,
+        labelMatchLevel: labelMatchDetails.level,
+        labelMatchScore: labelMatchDetails.score,
+        historyBoostScore: historyBoostScore,
         quotedPhraseScore: quotedPhraseDetails.score,
         quotedPhraseMatches: quotedPhraseDetails.matched
       };
@@ -8538,6 +8548,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (b.priority !== a.priority) return b.priority - a.priority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+      }
+      var aLabelLevel = typeof a.labelMatchLevel === 'number' ? a.labelMatchLevel : 0;
+      var bLabelLevel = typeof b.labelMatchLevel === 'number' ? b.labelMatchLevel : 0;
+      if (bLabelLevel !== aLabelLevel) {
+        return bLabelLevel - aLabelLevel;
+      }
+      var aLabelScore = typeof a.labelMatchScore === 'number' ? a.labelMatchScore : 0;
+      var bLabelScore = typeof b.labelMatchScore === 'number' ? b.labelMatchScore : 0;
+      if (bLabelScore !== aLabelScore) {
+        return bLabelScore - aLabelScore;
       }
       var aPhraseScore = typeof a.phraseScore === 'number' ? a.phraseScore : 0;
       var bPhraseScore = typeof b.phraseScore === 'number' ? b.phraseScore : 0;
@@ -8569,6 +8589,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
       if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+      var aHistoryBoost = typeof a.historyBoostScore === 'number' ? a.historyBoostScore : 0;
+      var bHistoryBoost = typeof b.historyBoostScore === 'number' ? b.historyBoostScore : 0;
+      if (bHistoryBoost !== aHistoryBoost) {
+        return bHistoryBoost - aHistoryBoost;
+      }
       if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
       if (b.historyCount !== a.historyCount) return b.historyCount - a.historyCount;
       if (b.historyLastUsed !== a.historyLastUsed) {
@@ -9360,6 +9385,75 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return texts;
     };
+    var computeLabelMatchDetails = function computeLabelMatchDetails(entry) {
+      var rawQuery = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var normalizedQuery = typeof rawQuery === 'string' ? rawQuery.replace(/\s+/g, ' ').trim().toLowerCase() : '';
+      if (!normalizedQuery) {
+        return {
+          level: 0,
+          score: 0
+        };
+      }
+      var labels = new Set();
+      var addLabel = function addLabel(value) {
+        if (typeof value !== 'string') return;
+        var cleaned = value.replace(/\s+/g, ' ').trim().toLowerCase();
+        if (!cleaned) return;
+        labels.add(cleaned);
+      };
+      if (entry && _typeof(entry) === 'object') {
+        addLabel(entry.optionLabel);
+        addLabel(entry.display);
+        var rawValue = entry.value && _typeof(entry.value) === 'object' ? entry.value : null;
+        if (rawValue) {
+          addLabel(rawValue.baseLabel);
+          addLabel(rawValue.displayLabel);
+          if (Array.isArray(rawValue.context)) {
+            rawValue.context.forEach(addLabel);
+          }
+        }
+      }
+      if (labels.size === 0) {
+        return {
+          level: 0,
+          score: 0
+        };
+      }
+      var queryLength = normalizedQuery.length;
+      var bestLevel = 0;
+      var bestScore = 0;
+      var boundaryPattern = /[a-z0-9]/;
+      labels.forEach(function (label) {
+        if (label === normalizedQuery) {
+          bestLevel = Math.max(bestLevel, 4);
+          bestScore = Math.max(bestScore, Math.max(label.length * 8, 80));
+          return;
+        }
+        if (label.startsWith(normalizedQuery)) {
+          bestLevel = Math.max(bestLevel, 3);
+          bestScore = Math.max(bestScore, Math.max(queryLength * 4, 36));
+        }
+        var index = label.indexOf(normalizedQuery);
+        if (index !== -1) {
+          var beforeChar = index > 0 ? label.charAt(index - 1) : '';
+          var afterIndex = index + queryLength;
+          var afterChar = afterIndex < label.length ? label.charAt(afterIndex) : '';
+          var beforeBoundary = index === 0 || !boundaryPattern.test(beforeChar);
+          var afterBoundary = afterIndex >= label.length || !boundaryPattern.test(afterChar);
+          if (beforeBoundary && afterBoundary) {
+            bestLevel = Math.max(bestLevel, 2);
+            bestScore = Math.max(bestScore, Math.max(queryLength * 3, 28));
+          } else {
+            bestLevel = Math.max(bestLevel, 1);
+            bestScore = Math.max(bestScore, Math.max(queryLength * 2, 14));
+          }
+        }
+      });
+      return {
+        level: bestLevel,
+        score: bestScore
+      };
+    };
     var computePhraseMatchDetails = function computePhraseMatchDetails(entry) {
       var queryTokens = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
       var rawQuery = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
@@ -9487,6 +9581,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         score: score,
         matched: matched
       };
+    };
+    var computeHistoryBoostScore = function computeHistoryBoostScore() {
+      var count = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var lastUsed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var now = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : NaN;
+      var usageCount = Number.isFinite(count) && count > 0 ? count : 0;
+      var normalizedCount = Math.min(Math.max(usageCount, 0), 50);
+      var score = normalizedCount * 2;
+      var timestamp = Number.isFinite(lastUsed) && lastUsed > 0 ? lastUsed : 0;
+      if (timestamp > 0) {
+        var current = Number.isFinite(now) ? now : typeof Date === 'function' && typeof Date.now === 'function' ? Date.now() : new Date().getTime();
+        var age = Math.max(0, current - timestamp);
+        var day = 24 * 60 * 60 * 1000;
+        if (age <= day) {
+          score += 20;
+        } else if (age <= 7 * day) {
+          score += 12;
+        } else if (age <= 30 * day) {
+          score += 6;
+        } else if (age <= 90 * day) {
+          score += 3;
+        }
+      }
+      return score;
     };
     var computeLevenshteinDistance = function computeLevenshteinDistance(a, b) {
       if (a === b) return 0;

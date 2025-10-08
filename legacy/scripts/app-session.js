@@ -4556,15 +4556,13 @@ if (settingsButton && settingsDialog) {
         }
         invokeSessionOpenAutoGearEditor(ruleId, options);
       } else if (button.classList.contains('auto-gear-duplicate')) {
-        duplicateAutoGearRule(button.dataset.ruleId || '', button.dataset.ruleIndex);
+        var _ruleId = button.dataset.ruleId || '';
+        duplicateAutoGearRule(_ruleId, button.dataset.ruleIndex);
       } else if (button.classList.contains('auto-gear-delete')) {
-        var deleteRuleId = button.dataset.ruleId || '';
-        var deleteRuleIndex = button.dataset.ruleIndex;
-        if (deleteRuleIndex !== undefined) {
-          deleteAutoGearRule(deleteRuleId, deleteRuleIndex);
-        } else {
-          deleteAutoGearRule(deleteRuleId);
-        }
+        var _ruleId2 = button.dataset.ruleId || '';
+        var _ruleIndex = button.dataset.ruleIndex;
+        var args = _ruleIndex !== undefined ? [_ruleId2, _ruleIndex] : [_ruleId2];
+        callSessionCoreFunction('deleteAutoGearRule', args);
       }
     });
   }
@@ -8394,14 +8392,11 @@ function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn,
   });
   return false;
 }
-
-function scheduleForceReloadFallbacks(win, locationLike, options) {
+function scheduleForceReloadFallbacks(win, locationLike) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   if (!win || !locationLike) {
     return;
   }
-
-  options = options || {};
-
   var schedule = null;
   try {
     if (typeof win.setTimeout === 'function') {
@@ -8410,7 +8405,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
   } catch (error) {
     void error;
   }
-
   if (!schedule) {
     if (typeof setTimeout === 'function') {
       schedule = setTimeout;
@@ -8418,16 +8412,14 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       return;
     }
   }
-
   var hasReload = options.hasReload === true && typeof locationLike.reload === 'function';
   var baseHref = typeof options.baseHref === 'string' ? options.baseHref : '';
   var nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
   var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
   var fallbackHref = nextHref || baseHref || originalHref || '';
   var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  var hashFallback = hashBase ? hashBase + '#forceReload-' + Date.now().toString(36) : '';
+  var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
   var steps = [];
-
   if (hasReload) {
     steps.push({
       delay: 350,
@@ -8440,7 +8432,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (fallbackHref) {
     if (typeof locationLike.assign === 'function') {
       steps.push({
@@ -8454,7 +8445,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
         }
       });
     }
-
     if (typeof locationLike.replace === 'function') {
       steps.push({
         delay: hasReload ? 1150 : 650,
@@ -8467,7 +8457,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
         }
       });
     }
-
     steps.push({
       delay: hasReload ? 1450 : 950,
       run: function run() {
@@ -8479,7 +8468,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (hashFallback && hashFallback !== fallbackHref) {
     steps.push({
       delay: hasReload ? 1750 : 1250,
@@ -8492,11 +8480,9 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (!steps.length) {
     return;
   }
-
   steps.forEach(function (step) {
     try {
       schedule(step.run, step.delay);
@@ -8505,7 +8491,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
     }
   });
 }
-
 function prepareForceReloadContext(win) {
   if (!win || !win.location) {
     return null;
@@ -8529,7 +8514,6 @@ function prepareForceReloadContext(win) {
     baseHref: baseHref
   };
 }
-
 function executeForceReloadContext(context) {
   if (!context || !context.location) {
     return false;
@@ -8576,7 +8560,6 @@ function executeForceReloadContext(context) {
   }
   return navigationTriggered;
 }
-
 function tryForceReload(win) {
   var context = prepareForceReloadContext(win);
   if (!context) {
@@ -8584,7 +8567,6 @@ function tryForceReload(win) {
   }
   return executeForceReloadContext(context);
 }
-
 function createReloadFallback(win) {
   var delayMs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4500;
   if (!win) {
@@ -8665,7 +8647,6 @@ function createReloadFallback(win) {
     }
   };
 }
-
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }

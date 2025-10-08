@@ -2378,6 +2378,7 @@ function ensureProjectEntryCompressed(value, contextName) {
     try {
       JSON.parse(value);
     } catch (nonJsonStringError) {
+      void nonJsonStringError;
       return value;
     }
 
