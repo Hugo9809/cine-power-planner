@@ -274,7 +274,11 @@ describe('cineOffline module', () => {
     });
     location.reload = reload;
 
-    const setTimeoutSpy = jest.fn();
+    const scheduledCallbacks = [];
+    const setTimeoutSpy = jest.fn(callback => {
+      scheduledCallbacks.push(callback);
+      return scheduledCallbacks.length;
+    });
 
     const windowMock = {
       location,
@@ -284,8 +288,19 @@ describe('cineOffline module', () => {
     const result = internal.triggerReload(windowMock);
 
     expect(result).toBe(false);
-    expect(reload).toHaveBeenCalledTimes(1);
+    expect(reload).not.toHaveBeenCalled();
     expect(setTimeoutSpy).toHaveBeenCalled();
+
+    scheduledCallbacks.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        // The fallback helpers already report their own errors.
+        void error;
+      }
+    });
+
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 
     test('registerServiceWorker registers immediately when the document is already loaded', async () => {
