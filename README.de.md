@@ -402,6 +402,8 @@ npm run test:data
 
 `npm run help` listet alle Skripte, `--help` liefert Details.
 
+> **Katalogaktualisierung.** Der FIZ-Handeinheitenkatalog enthält jetzt Tilta's Nucleus-M II gemeinsam mit neuen Profilen für Prestons HU4, cmotions cPRO-Handeinheit, Teradeks CTRL.3 und DJIs Focus Pro-Handeinheit, sodass Teams offline mehr Systeme vergleichen können, ohne die App zu verlassen.
+
 ## Entwicklung
 
 Node.js 18 oder neuer installieren, dann:
