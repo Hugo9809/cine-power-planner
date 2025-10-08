@@ -75,25 +75,110 @@
   const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
   /* eslint-enable no-control-regex, no-misleading-character-class */
 
-  const LIGATURE_REPLACEMENTS = {
-    ß: 'ss',
-    æ: 'ae',
-    œ: 'oe',
-    ø: 'o',
-    þ: 'th',
-    ð: 'd',
-    đ: 'd',
-    ħ: 'h',
-    ı: 'i',
-    ĳ: 'ij',
-    ŋ: 'ng',
-    ł: 'l',
-    ſ: 's',
-  };
+  const LIGATURE_ENTRIES = [
+    ['ß', 'ss'],
+    ['æ', 'ae'],
+    ['œ', 'oe'],
+    ['ø', 'o'],
+    ['þ', 'th'],
+    ['ð', 'd'],
+    ['đ', 'd'],
+    ['ħ', 'h'],
+    ['ı', 'i'],
+    ['ĳ', 'ij'],
+    ['ŋ', 'ng'],
+    ['ł', 'l'],
+    ['ſ', 's'],
+  ];
+  const LIGATURE_PATTERNS = LIGATURE_ENTRIES.map(entry => new RegExp(entry[0], 'g'));
+
+  const NORMALIZE_CACHE_LIMIT = 400;
+  const NORMALIZE_CACHE_MAX_LENGTH = 200;
+  const CACHE_SUPPORTS_MAP = typeof Map === 'function';
+  const NORMALIZE_CACHE = CACHE_SUPPORTS_MAP ? new Map() : [];
+
+  function readNormalizedCache(value) {
+    if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
+      return null;
+    }
+
+    if (CACHE_SUPPORTS_MAP) {
+      if (!NORMALIZE_CACHE.has(value)) {
+        return null;
+      }
+
+      const cachedValue = NORMALIZE_CACHE.get(value);
+      try {
+        NORMALIZE_CACHE.delete(value);
+        NORMALIZE_CACHE.set(value, cachedValue);
+      } catch (cacheUpdateError) {
+        void cacheUpdateError;
+      }
+      return cachedValue;
+    }
+
+    for (let index = 0; index < NORMALIZE_CACHE.length; index += 1) {
+      const entry = NORMALIZE_CACHE[index];
+      if (!entry || entry.key !== value) {
+        continue;
+      }
+
+      if (index !== NORMALIZE_CACHE.length - 1) {
+        NORMALIZE_CACHE.splice(index, 1);
+        NORMALIZE_CACHE.push(entry);
+      }
+
+      return entry.value;
+    }
+
+    return null;
+  }
+
+  function writeNormalizedCache(value, normalized) {
+    if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
+      return;
+    }
+
+    if (CACHE_SUPPORTS_MAP) {
+      try {
+        NORMALIZE_CACHE.set(value, normalized);
+      } catch (cacheSetError) {
+        void cacheSetError;
+        return;
+      }
+
+      if (NORMALIZE_CACHE.size <= NORMALIZE_CACHE_LIMIT) {
+        return;
+      }
+
+      const oldestIterator = NORMALIZE_CACHE.keys();
+      const oldestResult =
+        oldestIterator && typeof oldestIterator.next === 'function'
+          ? oldestIterator.next()
+          : { done: true };
+      if (oldestResult && oldestResult.done === false) {
+        NORMALIZE_CACHE.delete(oldestResult.value);
+      }
+      return;
+    }
+
+    NORMALIZE_CACHE.push({ key: value, value: normalized });
+
+    if (NORMALIZE_CACHE.length <= NORMALIZE_CACHE_LIMIT) {
+      return;
+    }
+
+    NORMALIZE_CACHE.shift();
+  }
 
   function normalizeSearchValue(value) {
     if (typeof value !== 'string') {
       return '';
+    }
+
+    const cached = readNormalizedCache(value);
+    if (typeof cached === 'string') {
+      return cached;
     }
 
     let normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
@@ -124,14 +209,18 @@
 
     normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
 
-    Object.keys(LIGATURE_REPLACEMENTS).forEach(key => {
-      normalized = normalized.replace(new RegExp(key, 'g'), LIGATURE_REPLACEMENTS[key]);
-    });
+    for (let ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
+      const entry = LIGATURE_ENTRIES[ligatureIndex];
+      const pattern = LIGATURE_PATTERNS[ligatureIndex];
+      normalized = normalized.replace(pattern, entry[1]);
+    }
 
     normalized = normalized
       .replace(/['"`]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+
+    writeNormalizedCache(value, normalized);
 
     return normalized;
   }
