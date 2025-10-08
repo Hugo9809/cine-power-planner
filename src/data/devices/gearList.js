@@ -1,5 +1,471 @@
 /* global registerDevice */
 (() => {
+function parseMediaCapacity(capacity) {
+  if (typeof capacity !== 'string') return null;
+  const sanitized = capacity.replace(/[,]/g, '');
+  const match = sanitized.match(/([\d.]+)\s*(TB|GB)/i);
+  if (!match) return null;
+  const value = parseFloat(match[1]);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  const unit = match[2].toUpperCase();
+  const labelValue = Number.isInteger(value)
+    ? String(value)
+    : match[1].replace(/0+$/, '').replace(/\.$/, '');
+  return {
+    value,
+    unit,
+    label: `${labelValue}${unit}`
+  };
+}
+
+function createMediaEntriesFromSeries(seriesList) {
+  const entries = {};
+  seriesList.forEach(series => {
+    if (!series || typeof series !== 'object') return;
+    const brand = typeof series.brand === 'string' ? series.brand.trim() : '';
+    const seriesName = typeof series.series === 'string' ? series.series.trim() : '';
+    const capacities = Array.isArray(series.capacities) ? series.capacities : [];
+    if (!brand || !seriesName || capacities.length === 0) return;
+    const interfaceLabel = typeof series.interface === 'string' && series.interface.trim()
+      ? series.interface.trim()
+      : typeof series.type === 'string'
+        ? series.type.trim()
+        : '';
+    const entryPrefix = seriesName.toLowerCase().startsWith(brand.toLowerCase())
+      ? seriesName
+      : `${brand} ${seriesName}`;
+
+    capacities.forEach(capacity => {
+      const capacityInfo = typeof capacity === 'string' ? { label: capacity } : capacity;
+      if (!capacityInfo || typeof capacityInfo !== 'object') return;
+      const label = typeof capacityInfo.label === 'string'
+        ? capacityInfo.label
+        : typeof capacityInfo.capacity === 'string'
+          ? capacityInfo.capacity
+          : '';
+      const parsed = parseMediaCapacity(label);
+      if (!parsed) return;
+      const entryName = `${entryPrefix} ${parsed.label}`;
+      const entry = {
+        brand,
+        model: typeof capacityInfo.model === 'string'
+          ? capacityInfo.model
+          : typeof series.model === 'string' && series.model.trim()
+            ? series.model.trim()
+            : seriesName
+      };
+      if (interfaceLabel) {
+        entry.interface = interfaceLabel;
+      }
+
+      let capacityGb = capacityInfo.capacityGb;
+      let capacityTb = capacityInfo.capacityTb;
+
+      if (!Number.isFinite(capacityGb)) {
+        capacityGb = parsed.unit === 'TB'
+          ? Math.round(parsed.value * 1024)
+          : Number(parsed.value);
+      } else {
+        capacityGb = Number(capacityGb);
+      }
+
+      if (!Number.isFinite(capacityTb)) {
+        capacityTb = parsed.unit === 'TB'
+          ? Number(parsed.value)
+          : Number((capacityGb / 1000).toFixed(3));
+      } else {
+        capacityTb = Number(capacityTb);
+      }
+
+      if (Number.isFinite(capacityGb) && capacityGb > 0) {
+        entry.capacityGb = capacityGb;
+      }
+      if (Number.isFinite(capacityTb) && capacityTb > 0) {
+        entry.capacityTb = capacityTb;
+      }
+
+      if (typeof capacityInfo.kNumber === 'string') {
+        entry.kNumber = capacityInfo.kNumber;
+      }
+      if (typeof capacityInfo.notes === 'string') {
+        entry.notes = capacityInfo.notes;
+      }
+
+      if (series.source && typeof series.source === 'object') {
+        if (typeof series.source.url === 'string') {
+          entry.sourceUrl = series.source.url;
+        }
+        if (typeof series.source.quote === 'string') {
+          entry.sourceQuote = series.source.quote;
+        }
+        if (typeof series.source.access_date === 'string' || typeof series.source.accessDate === 'string') {
+          entry.sourceAccessDate = series.source.access_date || series.source.accessDate;
+        }
+      }
+
+      entries[entryName] = entry;
+    });
+  });
+  return entries;
+}
+
+const recordingMediaSeries = [
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO CFexpress A',
+    type: 'CFexpress Type A (v4)',
+    capacities: ['1 TB'],
+    source: {
+      quote: '…offering double the speed of our SE model and up to 1 TB of capacity.',
+      url: 'https://www.angelbird.com/prod/av-pro-cfexpress-a-3444/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO SE CFexpress A',
+    type: 'CFexpress Type A (2.0)',
+    capacities: ['160 GB', '330 GB'],
+    source: {
+      quote: 'Capacity: 160 GB, 330 GB',
+      url: 'https://www.angelbird.com/prod/av-pro-se-cfexpress-a-3448/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO SE CFexpress B v4 (Mk2)',
+    type: 'CFexpress Type B (v4)',
+    capacities: ['512 GB', '1 TB', '2 TB', '4 TB'],
+    source: {
+      quote: 'Capacity 512 GB 1 TB 2 TB 4 TB',
+      url: 'https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO CF (CFast 2.0)',
+    type: 'CFast 2.0',
+    capacities: ['512 GB', '1 TB'],
+    source: {
+      quote: 'Available capacities 512 GB 1 TB',
+      url: 'https://www.angelbird.com/prod/av-pro-cf-1350/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO SE CF',
+    type: 'CFast 2.0',
+    capacities: ['256 GB'],
+    source: {
+      quote: 'Capacity 256 GB',
+      url: 'https://www.angelbird.com/prod/av-pro-cf-se-3417/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO SD V90',
+    type: 'SDXC UHS-II (V90)',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'Available capacities 64 GB 128 GB 256 GB 512 GB',
+      url: 'https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO SD V60 (MK2)',
+    type: 'SDXC UHS-II (V60)',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB', '1 TB'],
+    source: {
+      quote: 'AV PRO SD V60 512 GB … AV PRO SD V60 1 TB',
+      url: 'https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Angelbird',
+    series: 'AV PRO microSD V30',
+    type: 'microSDXC UHS-I (V30, A2)',
+    capacities: ['128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: '…write speeds up to 90 MB/s and capacities up to 512 GB.',
+      url: 'https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Sony',
+    series: 'CEA-G Series',
+    type: 'CFexpress Type A',
+    capacities: ['80 GB', '160 GB', '320 GB', '480 GB', '640 GB', '960 GB', '1920 GB'],
+    source: {
+      quote: 'The memory capacity of the Sony CFexpress Type A cards… 80, 160, 320, 640, 960, and 1920 GB.',
+      url: 'https://www.sony.com/electronics/support/articles/00252738',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Sony',
+    series: 'CEA-M Series',
+    type: 'CFexpress Type A',
+    capacities: ['960 GB', '1920 GB'],
+    source: {
+      quote: 'Available in 960 GB and 1920 GB capacities, for extended recording.',
+      url: 'https://www.sony.com/lr/electronics/sd-cards/cea-m960t-cea-m1920t',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Sony',
+    series: 'CEB-G Series',
+    type: 'CFexpress Type B',
+    capacities: ['128 GB', '240 GB', '256 GB', '480 GB', '512 GB'],
+    source: {
+      quote: '128GB… 240 GB… 256GB… 480GB… 512GB.',
+      url: 'https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Sony',
+    series: 'SF-G TOUGH',
+    type: 'SDXC UHS-II (V90)',
+    capacities: ['32 GB', '64 GB', '128 GB'],
+    source: {
+      quote: 'SF-G Series TOUGH UHS-II 32, 64 & 128GB SD memory cards.',
+      url: 'https://www.sony.com/ug/electronics/sd-cards/sf-gt-series',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Sony',
+    series: 'XQD G Series',
+    type: 'XQD',
+    capacities: ['32 GB', '64 GB', '120 GB', '128 GB', '240 GB', '256 GB'],
+    source: {
+      quote: '32 GB, 64 GB, 120 GB, 128 GB, 240 GB, and 256 GB XQD Series memory cards',
+      url: 'https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme PRO CFexpress Type B',
+    type: 'CFexpress Type B',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'Capacity 64GB… 128GB… 256GB… 512GB',
+      url: 'https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme PRO CFast 2.0',
+    type: 'CFast 2.0',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'This card has 64GB–512GB capacities',
+      url: 'https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme PRO SD UHS-I (200MB/s)',
+    type: 'SDHC/SDXC UHS-I',
+    capacities: ['32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB'],
+    source: {
+      quote: 'Capacities: 32GB, 64GB, 128GB, 256GB, 512GB, 1TB.',
+      url: 'https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme microSD UHS-I',
+    type: 'microSDXC UHS-I (V30, A2)',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB', '1 TB', '2 TB'],
+    source: {
+      quote: 'With up to 1TB… (and) SDSQXAV-2T00… 2TB',
+      url: 'https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme PRO microSD UHS-I',
+    type: 'microSDXC UHS-I (V30, A2)',
+    capacities: ['64 GB', '128 GB', '256 GB', '400 GB', '512 GB', '1 TB', '2 TB'],
+    source: {
+      quote: 'With up to 1TB… (Extreme PRO microSD UHS-I)…',
+      url: 'https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'SanDisk',
+    series: 'Extreme PRO SD UHS-II (V90)',
+    type: 'SDXC UHS-II (V90)',
+    capacities: ['Up to 512 GB'],
+    source: {
+      quote: 'SanDisk Extreme PRO UHS-II Card (V90)… with capacities up to 512GB',
+      url: 'https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Samsung',
+    series: 'PRO Plus microSD',
+    type: 'microSDXC UHS-I',
+    capacities: ['128 GB', '256 GB', '512 GB', '1 TB'],
+    source: {
+      quote: 'Capacity: 128GB, 256GB, 512GB, 1TB',
+      url: 'https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Samsung',
+    series: 'PRO Plus SD',
+    type: 'SDXC UHS-I',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'Capacity: 64GB, 128GB, 256GB, 512GB',
+      url: 'https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional CFexpress 4.0 Type B GOLD',
+    type: 'CFexpress Type B (v4.0)',
+    capacities: ['512 GB', '1 TB', '2 TB', '4 TB'],
+    source: {
+      quote: 'Capacity. 4TB | 2TB | 1TB | 512GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional CFexpress Type B GOLD (PCIe 3.0)',
+    type: 'CFexpress Type B (2.0)',
+    capacities: ['128 GB', '256 GB'],
+    source: {
+      quote: 'Capacity. 256GB | 128GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-cfexpress-type-b-card-gold-series/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional CFexpress Type A GOLD',
+    type: 'CFexpress Type A',
+    capacities: ['80 GB', '160 GB', '320 GB'],
+    source: {
+      quote: 'Capacity. 320GB | 160GB | 80GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional 3500x CFast 2.0',
+    type: 'CFast 2.0',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'The 64GB–512GB capacities of the card support… VPG-130',
+      url: 'https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional 2000x SD (GOLD)',
+    type: 'SDHC/SDXC UHS-II (V90)',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB'],
+    source: {
+      quote: 'Capacity. 512GB | 256GB | 128GB | 64GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional 1066x microSD (SILVER)',
+    type: 'microSDXC UHS-I',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB', '1 TB'],
+    source: {
+      quote: 'Capacity. 1TB | 512GB | 256GB | 128GB | 64GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'Lexar',
+    series: 'Professional 1066x SD (SILVER)',
+    type: 'SDXC UHS-I (V30)',
+    capacities: ['64 GB', '128 GB', '256 GB', '512 GB', '1 TB'],
+    source: {
+      quote: 'Capacity. 1TB | 512GB | 256GB | 128GB | 64GB',
+      url: 'https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'ARRI',
+    series: 'Codex Compact Drive',
+    model: 'Codex Compact Drive',
+    type: 'Camera SSD (ARRI ALEXA)',
+    capacities: [
+      {
+        label: '1 TB',
+        kNumber: 'K2.0044880',
+        capacityGb: 960
+      },
+      {
+        label: '2 TB',
+        kNumber: 'K2.0044881',
+        capacityGb: 1920
+      }
+    ],
+    source: {
+      quote: 'The Compact Drive is available in two capacities: 1TB… and 2TB…',
+      url: 'https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive',
+      access_date: '2025-10-08'
+    }
+  },
+  {
+    brand: 'RED',
+    series: 'MINI-MAG',
+    model: 'RED MINI-MAG',
+    type: 'Proprietary SSD (REDCINE)',
+    capacities: [
+      '120 GB',
+      '240 GB',
+      {
+        label: '480 GB',
+        kNumber: '750-0080'
+      },
+      '960 GB',
+      '1 TB'
+    ],
+    source: {
+      quote: 'RED MINI-MAG 120GB… 240GB… 480GB… 960GB… 1TB',
+      url: 'https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm',
+      access_date: '2025-10-08'
+    }
+  }
+];
+
+const generatedMediaEntries = createMediaEntriesFromSeries(recordingMediaSeries);
+
 const gear = {
   "viewfinders": {
     "ARRI K2.75004.0 MVF-1 Viewfinder": {
@@ -2462,91 +2928,70 @@ const gear = {
         "screenSizeInches": 5
       }
     },
-    "media": {
-      "ARRI Codex Compact Drive 1TB": {
-        "brand": "ARRI",
-        "model": "Codex Compact Drive 1TB",
-        "kNumber": "K2.0044880",
-        "capacityGb": 960,
-        "capacityTb": 1,
-        "interface": "PCIe, sustained ~8 Gb/s write"
+    "media": Object.assign(
+      {
+        "ARRI Codex Compact Drive Express 1TB": {
+          "brand": "ARRI",
+          "model": "Codex Compact Drive Express 1TB",
+          "kNumber": "K2.0046663",
+          "capacityGb": 960,
+          "capacityTb": 1,
+          "interface": "PCIe (ProRes-only)"
+        },
+        "ARRI Codex Compact Drive Reader (USB-C)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024130",
+          "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s), bus-powered"
+        },
+        "OWC Atlas Ultra CFexpress Type B 1TB": {
+          "brand": "OWC",
+          "model": "Atlas Ultra 1TB",
+          "kNumber": "OWC CFXB1TBATLU",
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFexpress Type B (PCIe)"
+        },
+        "ProGrade Digital CFexpress Type B 1TB Gold": {
+          "brand": "ProGrade",
+          "model": "CFexpress Type B Gold 1TB",
+          "kNumber": "PGCFX128GBCE-GNAN (series uses capacity-specific SKUs)",
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "CFexpress Type B (NVMe / PCIe)"
+        },
+        "Sony AXS Memory Card 1TB (S24)": {
+          "brand": "Sony",
+          "model": "AXS-A1TS24",
+          "kNumber": "AXS-A1TS24",
+          "capacityGb": 1024,
+          "capacityTb": 1,
+          "interface": "AXS (S24, up to 2.4 Gb/s write)"
+        },
+        "Sony AXS Memory Card 512GB": {
+          "brand": "Sony",
+          "model": "AXS-A512S48",
+          "kNumber": "AXS-A512S48",
+          "capacityGb": 512,
+          "capacityTb": 0.5,
+          "interface": "AXS (S48, up to 4.8 Gb/s write)"
+        },
+        "Sony AXS-AR1 Card Reader": {
+          "brand": "Sony",
+          "model": "AXS-AR1 Card Reader",
+          "kNumber": "AXS-AR1",
+          "interface": "USB 3.0"
+        },
+        "Sony SxS PRO+ 64GB card (E-Series)": {
+          "brand": "Sony",
+          "model": "SBP64E",
+          "kNumber": "SBS-64G1C",
+          "capacityGb": 64,
+          "capacityTb": 0.064,
+          "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
+        }
       },
-      "ARRI Codex Compact Drive 2TB": {
-        "brand": "ARRI",
-        "model": "Codex Compact Drive 2TB",
-        "kNumber": "K2.0044881",
-        "capacityGb": 1920,
-        "capacityTb": 2,
-        "interface": "PCIe NVMe, up to 16 Gb/s write"
-      },
-      "ARRI Codex Compact Drive Express 1TB": {
-        "brand": "ARRI",
-        "model": "Codex Compact Drive Express 1TB",
-        "kNumber": "K2.0046663",
-        "capacityGb": 960,
-        "capacityTb": 1,
-        "interface": "PCIe (ProRes-only)"
-      },
-      "ARRI Codex Compact Drive Reader (USB-C)": {
-        "brand": "ARRI",
-        "kNumber": "K2.0024130",
-        "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s), bus-powered"
-      },
-      "OWC Atlas Ultra CFexpress Type B 1TB": {
-        "brand": "OWC",
-        "model": "Atlas Ultra 1TB",
-        "kNumber": "OWC CFXB1TBATLU",
-        "capacityGb": 1024,
-        "capacityTb": 1,
-        "interface": "CFexpress Type B (PCIe)"
-      },
-      "ProGrade Digital CFexpress Type B 1TB Gold": {
-        "brand": "ProGrade",
-        "model": "CFexpress Type B Gold 1TB",
-        "kNumber": "PGCFX128GBCE-GNAN (series uses capacity-specific SKUs)",
-        "capacityGb": 1024,
-        "capacityTb": 1,
-        "interface": "CFexpress Type B (NVMe / PCIe)"
-      },
-      "RED MINI-MAG 480GB": {
-        "brand": "RED",
-        "model": "MINI-MAG 480GB",
-        "kNumber": "750-0080",
-        "capacityGb": 480,
-        "capacityTb": 0.48,
-        "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
-      },
-      "Sony AXS Memory Card 1TB (S24)": {
-        "brand": "Sony",
-        "model": "AXS-A1TS24",
-        "kNumber": "AXS-A1TS24",
-        "capacityGb": 1024,
-        "capacityTb": 1,
-        "interface": "AXS (S24, up to 2.4 Gb/s write)"
-      },
-      "Sony AXS Memory Card 512GB": {
-        "brand": "Sony",
-        "model": "AXS-A512S48",
-        "kNumber": "AXS-A512S48",
-        "capacityGb": 512,
-        "capacityTb": 0.5,
-        "interface": "AXS (S48, up to 4.8 Gb/s write)"
-      },
-      "Sony AXS-AR1 Card Reader": {
-        "brand": "Sony",
-        "model": "AXS-AR1 Card Reader",
-        "kNumber": "AXS-AR1",
-        "interface": "USB 3.0"
-      },
-      "Sony SxS PRO+ 64GB card (E-Series)": {
-        "brand": "Sony",
-        "model": "SBP64E",
-        "kNumber": "SBS-64G1C",
-        "capacityGb": 64,
-        "capacityTb": 0.064,
-        "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
-      }
-    },
+      generatedMediaEntries
+    ),
     "lenses": {
         "ZEISS High Speed MK III 18mm T1.3": {
           "brand": "ZEISS",
@@ -6862,7 +7307,9 @@ const gear = {
   ]
 };
 
-// Expose lenses at the top level for easier access
+// Expose frequently used accessory collections at the top level for easier access
+gear.videoAssist = gear.accessories.videoAssist;
+gear.media = gear.accessories.media;
 gear.lenses = gear.accessories.lenses;
 // Remove lenses from accessories to avoid duplicate entries
 delete gear.accessories.lenses;

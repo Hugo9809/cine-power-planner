@@ -62,6 +62,7 @@ This document summarizes the attribute schema defined in `src/data/schema.json`.
 
 ## Media (general)
 - **Attributes**: `brand`, `capacityGb`, `capacityTb`, `interface`, `kNumber`, `model`
+- **Current coverage**: Angelbird CFexpress Type A/B, Sony CEA/CEB CFexpress cards, Sony XQD G-Series, SanDisk Extreme PRO CFexpress/CFast/SD/microSD, Samsung PRO Plus SD & microSD, Lexar Professional CFexpress/CFast/SD/microSD, ARRI Codex Compact Drives, RED MINI-MAG SSDs.
 
 ## Monitors (general field)
 - **Attributes**: `audioInput`, `audioIo`, `audioOutput`, `bluetooth`, `brightnessNits`, `latencyMs`, `power`, `powerDrawWatts`, `screenSizeInches`, `videoInputs`, `videoOutputs`, `wireless`, `wirelessRX`, `wirelessTx`
