@@ -170,8 +170,9 @@ If the console reports `Detected cyclic auto-backup reference while expanding sn
 an entry such as `auto-backup-2025-10-06-23-38-Hallo 123`, it means a delta snapshot points
 back to itself or another snapshot that eventually loops around. The storage layer walks
 each snapshot’s `base` reference when reconstructing the full payload, so this guard stops
-infinite recursion, substitutes a temporary empty object and keeps the rest of the backups
-safe instead of locking up the browser.
+infinite recursion. The planner now degrades the looping snapshot into a standalone copy of
+its stored payload, marking it as `degradedDueToCycle` so audits know to re-create a clean
+backup chain.
 
 When you see the warning:
 

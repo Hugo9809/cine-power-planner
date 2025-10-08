@@ -578,7 +578,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       sequence: Number.isFinite(metadata.sequence) ? metadata.sequence : metadata.snapshotType === 'delta' ? 1 : 0,
       createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
       changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
-      removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : []
+      removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+      degradedDueToCycle: metadata.degradedDueToCycle === true
     };
   }
   function defineAutoBackupMetadata(target, metadata) {
@@ -780,10 +781,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var snapshot = value[AUTO_BACKUP_SNAPSHOT_PROPERTY];
       if (snapshot && _typeof(snapshot) === 'object') {
         if (stack.has(name)) {
-          console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
-          var fallback = {};
-          cache.set(name, fallback);
-          return fallback;
+          console.warn('Detected cyclic auto-backup reference while expanding snapshot', name, Array.from(stack));
+          var fallbackPayload = {};
+          var payloadChangedKeys = [];
+          try {
+            var payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
+            if (isPlainObject(payloadInfo.payload)) {
+              fallbackPayload = cloneAutoBackupValue(payloadInfo.payload, {
+                stripMetadata: true
+              });
+              payloadChangedKeys = Object.keys(payloadInfo.payload);
+            }
+          } catch (cyclePayloadError) {
+            console.warn('Failed to recover payload while resolving cyclic auto-backup reference', name, cyclePayloadError);
+          }
+          var degraded = isPlainObject(fallbackPayload) ? fallbackPayload : {};
+          var metadata = {
+            version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+            snapshotType: 'full',
+            base: null,
+            sequence: Number.isFinite(snapshot.sequence) ? snapshot.sequence : 0,
+            createdAt: typeof snapshot.createdAt === 'string' ? snapshot.createdAt : deriveAutoBackupCreatedAt(name),
+            changedKeys: payloadChangedKeys,
+            removedKeys: [],
+            degradedDueToCycle: true
+          };
+          defineAutoBackupMetadata(degraded, metadata);
+          cache.set(name, degraded);
+          return degraded;
         }
         stack.add(name);
         var snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';

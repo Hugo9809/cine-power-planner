@@ -863,6 +863,7 @@ function cloneAutoBackupMetadata(metadata) {
     createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
     changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
     removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+    degradedDueToCycle: metadata.degradedDueToCycle === true,
   };
 }
 
@@ -1089,10 +1090,35 @@ function expandAutoBackupEntries(container, options) {
     const snapshot = value[AUTO_BACKUP_SNAPSHOT_PROPERTY];
     if (snapshot && typeof snapshot === 'object') {
       if (stack.has(name)) {
-        console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
-        const fallback = {};
-        cache.set(name, fallback);
-        return fallback;
+        console.warn('Detected cyclic auto-backup reference while expanding snapshot', name, Array.from(stack));
+        let fallbackPayload = {};
+        let payloadChangedKeys = [];
+        try {
+          const payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
+          if (isPlainObject(payloadInfo.payload)) {
+            fallbackPayload = cloneAutoBackupValue(payloadInfo.payload, { stripMetadata: true });
+            payloadChangedKeys = Object.keys(payloadInfo.payload);
+          }
+        } catch (cyclePayloadError) {
+          console.warn('Failed to recover payload while resolving cyclic auto-backup reference', name, cyclePayloadError);
+        }
+
+        const degraded = isPlainObject(fallbackPayload) ? fallbackPayload : {};
+        const metadata = {
+          version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+          snapshotType: 'full',
+          base: null,
+          sequence: Number.isFinite(snapshot.sequence) ? snapshot.sequence : 0,
+          createdAt: typeof snapshot.createdAt === 'string'
+            ? snapshot.createdAt
+            : deriveAutoBackupCreatedAt(name),
+          changedKeys: payloadChangedKeys,
+          removedKeys: [],
+          degradedDueToCycle: true,
+        };
+        defineAutoBackupMetadata(degraded, metadata);
+        cache.set(name, degraded);
+        return degraded;
       }
 
       stack.add(name);
