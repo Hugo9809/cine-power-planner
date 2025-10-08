@@ -323,13 +323,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var keys = Object.getOwnPropertyNames(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+      var child = void 0;
+      try {
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
+      }
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, seen);
+      fallbackFreezeDeep(child, seen);
     }
-    return Object.freeze(value);
+    try {
+      return Object.freeze(value);
+    } catch (freezeError) {
+      void freezeError;
+      return value;
+    }
   }
   function freezeDeep(value, seen) {
     var base = getModuleBase();

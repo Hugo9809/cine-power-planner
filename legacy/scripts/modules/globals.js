@@ -211,20 +211,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor;
+      var child;
       try {
-        descriptor = Object.getOwnPropertyDescriptor(value, key);
-      } catch (descriptorError) {
-        void descriptorError;
-        descriptor = null;
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
       }
-      if (!descriptor || descriptor.get || descriptor.set) {
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, localSeen);
+      fallbackFreezeDeep(child, localSeen);
     }
     try {
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     } catch (freezeError) {
       void freezeError;
       return value;

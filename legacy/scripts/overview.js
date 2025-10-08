@@ -4,6 +4,11 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var createOverviewPrintWorkflowModule = null;
 var triggerOverviewPrintWorkflowModule = null;
@@ -39,6 +44,233 @@ var triggerOverviewPrintWorkflowModule = null;
     }
   }
 })();
+var overviewLogger = function () {
+  var scopes = [];
+  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    var logging = null;
+    try {
+      logging = scope.cineLogging || null;
+    } catch (error) {
+      void error;
+      logging = null;
+    }
+    if (logging && typeof logging.createLogger === 'function') {
+      try {
+        return logging.createLogger('overview', {
+          meta: {
+            source: 'overview-dialog'
+          }
+        });
+      } catch (creationError) {
+        try {
+          if (typeof logging.error === 'function') {
+            logging.error('Failed to create overview logger', creationError, {
+              namespace: 'overview-bootstrap'
+            });
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+  }
+  return null;
+}();
+var overviewConsoleFallback = (typeof console === "undefined" ? "undefined" : _typeof(console)) === 'object' && console ? console : null;
+var OVERVIEW_LOG_META_DEFAULTS = Object.freeze({
+  namespace: 'overview',
+  source: 'overview-dialog'
+});
+function cloneOverviewLogMeta(meta) {
+  if (!meta || _typeof(meta) !== 'object') {
+    return {};
+  }
+  var clone = {};
+  var keys = Object.keys(meta);
+  for (var index = 0; index < keys.length; index += 1) {
+    var key = keys[index];
+    var value = meta[key];
+    if (typeof value === 'undefined') {
+      continue;
+    }
+    if (value === null) {
+      clone[key] = null;
+      continue;
+    }
+    var valueType = _typeof(value);
+    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      clone[key] = value;
+      continue;
+    }
+    if (value instanceof Date && typeof value.toISOString === 'function') {
+      clone[key] = value.toISOString();
+      continue;
+    }
+    if (Array.isArray(value)) {
+      try {
+        clone[key] = JSON.parse(JSON.stringify(value));
+      } catch (arrayError) {
+        void arrayError;
+        clone[key] = value.map(function (item) {
+          if (item === null || typeof item === 'undefined') {
+            return null;
+          }
+          var itemType = _typeof(item);
+          if (itemType === 'string' || itemType === 'number' || itemType === 'boolean') {
+            return item;
+          }
+          if (item instanceof Date && typeof item.toISOString === 'function') {
+            return item.toISOString();
+          }
+          try {
+            return JSON.parse(JSON.stringify(item));
+          } catch (itemError) {
+            void itemError;
+            return String(item);
+          }
+        });
+      }
+      continue;
+    }
+    if (valueType === 'object') {
+      try {
+        clone[key] = JSON.parse(JSON.stringify(value));
+      } catch (objectError) {
+        void objectError;
+        clone[key] = String(value);
+      }
+      continue;
+    }
+    try {
+      clone[key] = JSON.parse(JSON.stringify(value));
+    } catch (fallbackError) {
+      void fallbackError;
+      clone[key] = String(value);
+    }
+  }
+  return clone;
+}
+function createOverviewLogMetaSnapshot(level, meta) {
+  var normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+  var timestamp = Date.now();
+  var isoTimestamp = null;
+  try {
+    isoTimestamp = new Date(timestamp).toISOString();
+  } catch (timestampError) {
+    void timestampError;
+    try {
+      isoTimestamp = new Date().toISOString();
+    } catch (isoError) {
+      void isoError;
+      isoTimestamp = String(timestamp);
+    }
+  }
+  var baseMeta = _objectSpread(_objectSpread({}, OVERVIEW_LOG_META_DEFAULTS), cloneOverviewLogMeta(meta));
+  if (!baseMeta.namespace) {
+    baseMeta.namespace = OVERVIEW_LOG_META_DEFAULTS.namespace;
+  }
+  if (!baseMeta.source) {
+    baseMeta.source = OVERVIEW_LOG_META_DEFAULTS.source;
+  }
+  baseMeta.level = normalizedLevel;
+  baseMeta.timestamp = isoTimestamp;
+  baseMeta.timestampMs = timestamp;
+  if (typeof baseMeta.eventId !== 'string' || !baseMeta.eventId) {
+    baseMeta.eventId = "overview-".concat(timestamp.toString(36), "-").concat(Math.random().toString(36).slice(2, 10));
+  }
+  if (typeof baseMeta.correlationId !== 'string' || !baseMeta.correlationId) {
+    baseMeta.correlationId = baseMeta.eventId;
+  }
+  return baseMeta;
+}
+function logOverview(level, message, detail, meta) {
+  var normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+  var detailValue = typeof detail === 'undefined' ? undefined : detail;
+  var baseMeta = createOverviewLogMetaSnapshot(normalizedLevel, meta);
+  var loggerMeta = _objectSpread(_objectSpread({}, baseMeta), {}, {
+    channel: 'cineLogging'
+  });
+  var consoleMeta = _objectSpread(_objectSpread({}, baseMeta), {}, {
+    channel: 'console'
+  });
+  var loggerInvocationFailed = false;
+  if (overviewLogger && typeof overviewLogger[normalizedLevel] === 'function') {
+    try {
+      overviewLogger[normalizedLevel](message, detailValue, loggerMeta);
+    } catch (loggerError) {
+      loggerInvocationFailed = true;
+      consoleMeta.consoleFallbackUsed = true;
+      consoleMeta.consoleFallbackReason = 'logger-invocation-failed';
+      consoleMeta.loggerErrorMessage = loggerError && loggerError.message ? loggerError.message : undefined;
+      if (overviewConsoleFallback && typeof overviewConsoleFallback.warn === 'function') {
+        try {
+          overviewConsoleFallback.warn('Overview logger invocation failed', loggerError, {
+            meta: consoleMeta
+          });
+        } catch (consoleError) {
+          void consoleError;
+        }
+      }
+    }
+  } else {
+    loggerInvocationFailed = true;
+    consoleMeta.consoleFallbackUsed = true;
+    consoleMeta.consoleFallbackReason = overviewLogger ? 'logger-level-missing' : 'logger-unavailable';
+  }
+  if (!overviewConsoleFallback) {
+    return baseMeta.eventId;
+  }
+  var consoleMethodName = normalizedLevel === 'warn' ? 'warn' : normalizedLevel === 'error' ? 'error' : normalizedLevel === 'debug' ? 'debug' : 'info';
+  var consoleMethod = typeof overviewConsoleFallback[consoleMethodName] === 'function' ? overviewConsoleFallback[consoleMethodName] : typeof overviewConsoleFallback.log === 'function' ? overviewConsoleFallback.log : null;
+  if (!consoleMethod) {
+    return baseMeta.eventId;
+  }
+  if (!loggerInvocationFailed) {
+    consoleMeta.consoleFallbackUsed = consoleMeta.consoleFallbackUsed || false;
+  }
+  var consoleArgs = ["[overview:".concat(consoleMeta.eventId, "] ").concat(message)];
+  if (typeof detailValue !== 'undefined') {
+    consoleArgs.push(detailValue);
+  }
+  consoleArgs.push({
+    meta: consoleMeta
+  });
+  try {
+    consoleMethod.apply(overviewConsoleFallback, consoleArgs);
+  } catch (consoleInvokeError) {
+    void consoleInvokeError;
+  }
+  return baseMeta.eventId;
+}
+function createOverviewLoggerProxy(baseMeta) {
+  var frozenMeta = baseMeta && _typeof(baseMeta) === 'object' ? Object.freeze(_objectSpread({}, baseMeta)) : null;
+  var proxy = {
+    log: function log(message, detail) {
+      logOverview('info', message, detail, frozenMeta);
+    },
+    info: function info(message, detail) {
+      logOverview('info', message, detail, frozenMeta);
+    },
+    debug: function debug(message, detail) {
+      logOverview('debug', message, detail, frozenMeta);
+    },
+    warn: function warn(message, detail) {
+      logOverview('warn', message, detail, frozenMeta);
+    },
+    error: function error(message, detail) {
+      logOverview('error', message, detail, frozenMeta);
+    }
+  };
+  return Object.freeze(proxy);
+}
 function generatePrintableOverview() {
   var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var safeConfig = config && _typeof(config) === 'object' ? config : {};
@@ -142,7 +374,235 @@ function generatePrintableOverview() {
       addToSection(headingKey, "<div class=\"device-block\"><strong>".concat(safeName, "</strong>").concat(details, "</div>"));
     }
   };
+  var lensSelectElement = typeof lensSelect !== 'undefined' && lensSelect && (typeof lensSelect === "undefined" ? "undefined" : _typeof(lensSelect)) === 'object' ? lensSelect : null;
+  var resolveLensDataset = function resolveLensDataset() {
+    if (!devices || (typeof devices === "undefined" ? "undefined" : _typeof(devices)) !== 'object') {
+      return null;
+    }
+    if (devices.lenses && Object.keys(devices.lenses).length) {
+      return devices.lenses;
+    }
+    if (devices.accessories && devices.accessories.lenses) {
+      return devices.accessories.lenses;
+    }
+    return null;
+  };
+  var lensDataset = resolveLensDataset();
+  var numberFormatterCache = new Map();
+  var getNumberFormatter = function getNumberFormatter(options) {
+    var key = JSON.stringify(options || {});
+    if (numberFormatterCache.has(key)) {
+      return numberFormatterCache.get(key);
+    }
+    var formatter = null;
+    try {
+      formatter = (typeof Intl === "undefined" ? "undefined" : _typeof(Intl)) === 'object' && Intl && typeof Intl.NumberFormat === 'function' ? new Intl.NumberFormat(locale, options) : null;
+    } catch (error) {
+      void error;
+      formatter = null;
+    }
+    numberFormatterCache.set(key, formatter);
+    return formatter;
+  };
+  var formatNumber = function formatNumber(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var num = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(num)) {
+      return '';
+    }
+    var formatter = getNumberFormatter(options);
+    if (formatter) {
+      return formatter.format(num);
+    }
+    var maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
+    return num.toFixed(maximumFractionDigits);
+  };
+  var formatLengthMm = function formatLengthMm(value) {
+    var formatted = formatNumber(value, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " mm") : '';
+  };
+  var formatRodLength = function formatRodLength(value) {
+    var formatted = formatNumber(value, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " cm") : '';
+  };
+  var formatWeight = function formatWeight(value) {
+    var formatted = formatNumber(value, {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " g") : '';
+  };
+  var resolveMinFocusMeters = function resolveMinFocusMeters(lensInfo) {
+    if (!lensInfo || _typeof(lensInfo) !== 'object') {
+      return null;
+    }
+    if (typeof lensInfo.minFocusMeters !== 'undefined') {
+      return lensInfo.minFocusMeters;
+    }
+    if (typeof lensInfo.minFocus !== 'undefined') {
+      return lensInfo.minFocus;
+    }
+    if (typeof lensInfo.minFocusCm !== 'undefined') {
+      var cmValue = Number(lensInfo.minFocusCm);
+      if (Number.isFinite(cmValue)) {
+        return cmValue / 100;
+      }
+    }
+    return null;
+  };
+  var formatDistanceMeters = function formatDistanceMeters(value) {
+    var num = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(num)) {
+      return '';
+    }
+    var digits = num < 1 ? 2 : 1;
+    var formatted = formatNumber(num, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits
+    });
+    return formatted ? "".concat(formatted, " m") : '';
+  };
+  var formatTStop = function formatTStop(value) {
+    var num = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(num)) {
+      return '';
+    }
+    var formatted = formatNumber(num, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "T".concat(formatted) : '';
+  };
+  var _normalizeStringValue = function normalizeStringValue(rawValue) {
+    if (Array.isArray(rawValue)) {
+      return rawValue.map(function (item) {
+        return _normalizeStringValue(item);
+      }).filter(Boolean).join(', ');
+    }
+    if (rawValue === null || typeof rawValue === 'undefined') {
+      return '';
+    }
+    var str = String(rawValue).trim();
+    return str;
+  };
+  var formatLensType = function formatLensType(value) {
+    var str = _normalizeStringValue(value);
+    if (!str) {
+      return '';
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  var formatClampOn = function formatClampOn(value) {
+    if (value === null || typeof value === 'undefined') {
+      return '';
+    }
+    var yesLabel = t.lensSpecYes || 'Yes';
+    var noLabel = t.lensSpecNo || 'No';
+    if (value === true || typeof value === 'string' && value.toLowerCase() === 'true') {
+      return yesLabel;
+    }
+    if (value === false || typeof value === 'string' && value.toLowerCase() === 'false') {
+      return noLabel;
+    }
+    return t.lensSpecUnknownValue || 'Unknown';
+  };
+  var formatSupport = function formatSupport(value) {
+    if (value === null || typeof value === 'undefined') {
+      return '';
+    }
+    if (value === true || typeof value === 'string' && value.toLowerCase() === 'true') {
+      return t.lensSpecSupportRequired || 'Required';
+    }
+    if (value === false || typeof value === 'string' && value.toLowerCase() === 'false') {
+      return t.lensSpecSupportNotRequired || 'Not required';
+    }
+    return t.lensSpecUnknownValue || 'Unknown';
+  };
+  var formatRodStandard = function formatRodStandard(value) {
+    return _normalizeStringValue(value);
+  };
+  var formatMount = function formatMount(value) {
+    return _normalizeStringValue(value);
+  };
+  var formatNotes = function formatNotes(value) {
+    return _normalizeStringValue(value);
+  };
+  var createLensInfoHtml = function createLensInfoHtml(lensInfo) {
+    if (!lensInfo || _typeof(lensInfo) !== 'object') {
+      return '';
+    }
+    var infoBoxes = [];
+    var addLensBox = function addLensBox(labelKey, rawValue) {
+      var formatter = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+      var formattedValue = rawValue;
+      if (formatter) {
+        formattedValue = formatter(rawValue, lensInfo);
+      }
+      if (formattedValue === null || typeof formattedValue === 'undefined') {
+        return;
+      }
+      if (typeof formattedValue === 'string') {
+        if (!formattedValue.trim()) {
+          return;
+        }
+      }
+      var valueText = typeof formattedValue === 'string' ? formattedValue : String(formattedValue);
+      if (!valueText.trim()) {
+        return;
+      }
+      var label = t[labelKey] || labelKey;
+      infoBoxes.push("<span class=\"info-box neutral-conn\"><span class=\"info-box-label\">".concat(escapeHtmlSafe(label), "</span><span class=\"info-box-values\">").concat(escapeHtmlSafe(valueText), "</span></span>"));
+    };
+    addLensBox('lensSpecBrandLabel', lensInfo.brand, _normalizeStringValue);
+    addLensBox('lensSpecTypeLabel', lensInfo.lensType, formatLensType);
+    addLensBox('lensSpecMountLabel', lensInfo.mount, formatMount);
+    addLensBox('lensSpecFrontDiameterLabel', lensInfo.frontDiameterMm, formatLengthMm);
+    addLensBox('lensSpecTStopLabel', lensInfo.tStop, formatTStop);
+    addLensBox('lensSpecImageCircleLabel', lensInfo.imageCircleMm, formatLengthMm);
+    addLensBox('lensSpecLengthLabel', lensInfo.lengthMm, formatLengthMm);
+    addLensBox('lensSpecMinFocusLabel', resolveMinFocusMeters(lensInfo), formatDistanceMeters);
+    addLensBox('lensSpecWeightLabel', lensInfo.weight_g, formatWeight);
+    addLensBox('lensSpecRodStandardLabel', lensInfo.rodStandard, formatRodStandard);
+    addLensBox('lensSpecRodLengthLabel', lensInfo.rodLengthCm, formatRodLength);
+    if (Object.prototype.hasOwnProperty.call(lensInfo, 'clampOn')) {
+      addLensBox('lensSpecClampOnLabel', lensInfo.clampOn, formatClampOn);
+    }
+    if (Object.prototype.hasOwnProperty.call(lensInfo, 'needsLensSupport')) {
+      addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
+    }
+    addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
+    if (!infoBoxes.length) {
+      return '';
+    }
+    return "<div class=\"info-box-list\">".concat(infoBoxes.join(''), "</div>");
+  };
+  var processLensesForOverview = function processLensesForOverview(selectElement, headingKey) {
+    if (!selectElement) {
+      return;
+    }
+    var selectedOptions = Array.from(selectElement.selectedOptions || []).filter(function (opt) {
+      return opt && typeof opt.value === 'string' && opt.value.trim() !== '' && opt.value !== 'None';
+    });
+    if (!selectedOptions.length) {
+      return;
+    }
+    selectedOptions.forEach(function (opt) {
+      var lensKey = opt.value;
+      var lensInfo = lensDataset && lensDataset[lensKey] ? lensDataset[lensKey] : null;
+      var displayName = lensKey || opt.text || '';
+      var safeName = escapeHtmlSafe(displayName);
+      var details = lensInfo ? createLensInfoHtml(lensInfo) : '';
+      addToSection(headingKey, "<div class=\"device-block\"><strong>".concat(safeName, "</strong>").concat(details, "</div>"));
+    });
+  };
   processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
+  processLensesForOverview(lensSelectElement, 'category_lenses');
   processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
   processSelectForOverview(videoSelect, 'category_video', 'video');
   processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
@@ -382,7 +842,10 @@ function generatePrintableOverview() {
       try {
         return iconMarkup(ICON_GLYPHS.fileExport, 'btn-icon');
       } catch (error) {
-        console.warn('Unable to render export icon for overview dialog.', error);
+        logOverview('warn', 'Unable to render export icon for overview dialog.', error, {
+          action: 'render-icon',
+          icon: 'fileExport'
+        });
       }
     }
     return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
@@ -390,6 +853,18 @@ function generatePrintableOverview() {
   var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n                <button id=\"exportPdfBtn\" class=\"print-btn export-pdf-btn\">").concat(exportIconHtml).concat(escapeHtmlSafe(exportPdfLabel), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>").concat(generatedOnDisplay, "</em></p>\n\n            ").concat(projectRequirementsHtml, "\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtml, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
   var overviewDialog = document.getElementById('overviewDialog');
   overviewDialog.innerHTML = overviewHtml;
+  if (overviewDialog && !overviewDialog.hasAttribute('data-overview-outside-close')) {
+    overviewDialog.addEventListener('click', function (event) {
+      if (event.target === overviewDialog) {
+        closeDialog(overviewDialog);
+      }
+    });
+    overviewDialog.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      closeDialog(overviewDialog);
+    });
+    overviewDialog.setAttribute('data-overview-outside-close', '');
+  }
   var content = overviewDialog.querySelector('#overviewDialogContent');
   var applyThemeClasses = function applyThemeClasses(target) {
     if (!target || typeof document === 'undefined') return;
@@ -436,7 +911,10 @@ function generatePrintableOverview() {
           }
           return;
         } catch (error) {
-          console.warn('Failed to delete gear list from overview button', error);
+          logOverview('warn', 'Failed to delete gear list from overview button', error, {
+            action: 'delete-gear-list',
+            method: 'direct-call'
+          });
           usedFallback = true;
         }
       } else {
@@ -457,7 +935,10 @@ function generatePrintableOverview() {
             });
             document.dispatchEvent(fallbackEvent);
           } else {
-            console.warn('Unable to request gear list deletion from overview', error);
+            logOverview('warn', 'Unable to request gear list deletion from overview', error, {
+              action: 'delete-gear-list',
+              method: 'event-dispatch'
+            });
           }
         }
       }
@@ -479,6 +960,16 @@ function generatePrintableOverview() {
     }
     closeDialog(overviewDialog);
   };
+  var printWorkflowLoggerMeta = {
+    action: 'print-workflow',
+    source: 'overview-dialog'
+  };
+  if (setupName) {
+    printWorkflowLoggerMeta.setupName = setupName;
+  } else if (fallbackProjectName) {
+    printWorkflowLoggerMeta.projectName = fallbackProjectName;
+  }
+  var printWorkflowLogger = createOverviewLoggerProxy(printWorkflowLoggerMeta);
   var openFallbackPrintView = function openFallbackPrintView() {
     if (!content || typeof window === 'undefined') return false;
     var fallbackRoot = content.cloneNode(true);
@@ -487,7 +978,11 @@ function generatePrintableOverview() {
     });
     var printWindow = window.open('', '_blank', 'noopener,noreferrer');
     if (!printWindow) {
-      console.error('Unable to open a fallback print window. Please allow pop-ups and try again.');
+      logOverview('error', 'Unable to open a fallback print window. Please allow pop-ups and try again.', undefined, {
+        action: 'print-workflow',
+        stage: 'fallback-window-open',
+        result: 'blocked'
+      });
       return false;
     }
     var doc = printWindow.document;
@@ -532,7 +1027,10 @@ function generatePrintableOverview() {
       try {
         printWindow.print();
       } catch (error) {
-        console.error('Failed to trigger print in fallback window.', error);
+        logOverview('error', 'Failed to trigger print in fallback window.', error, {
+          action: 'print-workflow',
+          stage: 'fallback-window-print'
+        });
       }
     };
     if (printWindow.document.readyState === 'complete') {
@@ -601,7 +1099,7 @@ function generatePrintableOverview() {
     originalDocumentTitle: originalDocumentTitle,
     openFallbackPrintView: openFallbackPrintView,
     closeAfterPrint: _closeAfterPrint,
-    logger: (typeof console === "undefined" ? "undefined" : _typeof(console)) === 'object' ? console : null
+    logger: printWorkflowLogger
   };
   var resolvedPrintWorkflow = typeof createOverviewPrintWorkflowModule === 'function' ? createOverviewPrintWorkflowModule(printWorkflowContext) : null;
   var triggerPrintWorkflow = function triggerPrintWorkflow() {
@@ -627,10 +1125,19 @@ function generatePrintableOverview() {
           reason: 'export'
         });
         if (!printStarted) {
-          console.error('Unable to start the PDF export print workflow. Please enable pop-ups and try again.');
+          logOverview('error', 'Unable to start the PDF export print workflow. Please enable pop-ups and try again.', undefined, {
+            action: 'print-workflow',
+            stage: 'trigger',
+            reason: 'export',
+            result: 'not-started'
+          });
         }
       } catch (error) {
-        console.error('Failed to export overview PDF via print workflow.', error);
+        logOverview('error', 'Failed to export overview PDF via print workflow.', error, {
+          action: 'print-workflow',
+          stage: 'trigger',
+          reason: 'export'
+        });
       } finally {
         exportBtn.disabled = false;
       }
@@ -643,7 +1150,12 @@ function generatePrintableOverview() {
         reason: 'print'
       });
       if (!success) {
-        console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+        logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
+          action: 'print-workflow',
+          stage: 'trigger',
+          reason: 'print',
+          result: 'not-started'
+        });
       }
     });
   }
@@ -653,7 +1165,12 @@ function generatePrintableOverview() {
       reason: 'generate'
     });
     if (!printed) {
-      console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+      logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
+        action: 'print-workflow',
+        stage: 'trigger',
+        reason: 'generate',
+        result: 'not-started'
+      });
     }
   }
   if (typeof window.matchMedia === 'function') {

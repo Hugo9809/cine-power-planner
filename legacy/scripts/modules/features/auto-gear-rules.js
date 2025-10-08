@@ -27,6 +27,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var GLOBAL_SCOPE = detectGlobalScope();
+  var MODULE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : function moduleFallbackDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (cloneError) {
+      void cloneError;
+    }
+    return value;
+  };
   function resolveModuleBase(scope) {
     if ((typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase) {
       return cineModuleBase;
@@ -67,11 +78,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var keys = Object.getOwnPropertyNames(target);
         for (var index = 0; index < keys.length; index += 1) {
           var key = keys[index];
-          var descriptor = Object.getOwnPropertyDescriptor(target, key);
-          if (!descriptor || descriptor.get || descriptor.set) {
+          var child = void 0;
+          try {
+            child = target[key];
+          } catch (accessError) {
+            void accessError;
+            child = undefined;
+          }
+          if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
             continue;
           }
-          freeze(descriptor.value);
+          freeze(child);
         }
         Object.freeze(target);
       } catch (error) {
@@ -100,6 +117,143 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
   var factoryAutoGearRulesSnapshot = null;
   var factoryAutoGearSeedContext = null;
+  function fallbackCollectCandidateScopes(primary) {
+    var scopes = [];
+    function push(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    }
+    push(primary);
+    if (typeof globalThis !== 'undefined') push(globalThis);
+    if (typeof window !== 'undefined') push(window);
+    if (typeof self !== 'undefined') push(self);
+    if (typeof global !== 'undefined') push(global);
+    return scopes;
+  }
+  var candidateScopes = function resolveCandidateScopes() {
+    if (MODULE_BASE && typeof MODULE_BASE.collectCandidateScopes === 'function') {
+      try {
+        var collected = MODULE_BASE.collectCandidateScopes(GLOBAL_SCOPE);
+        if (Array.isArray(collected) && collected.length) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(GLOBAL_SCOPE);
+  }();
+  var structuredCloneCandidates = function collectStructuredCloneCandidates() {
+    var candidates = [];
+    function addCandidate(fn, scope) {
+      if (typeof fn !== 'function') {
+        return;
+      }
+      var exists = candidates.some(function (candidate) {
+        return candidate && candidate.fn === fn;
+      });
+      if (!exists) {
+        candidates.push({
+          fn: fn,
+          scope: scope || null
+        });
+      }
+    }
+    if (MODULE_BASE) {
+      if (typeof MODULE_BASE.structuredClone === 'function') {
+        addCandidate(MODULE_BASE.structuredClone, MODULE_BASE);
+      }
+      if (typeof MODULE_BASE.getStructuredClone === 'function') {
+        try {
+          var resolved = MODULE_BASE.getStructuredClone();
+          addCandidate(resolved, MODULE_BASE);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var scope = candidateScopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      var candidate = scope.structuredClone;
+      if (typeof candidate === 'function') {
+        addCandidate(candidate, scope);
+      }
+    }
+    return candidates;
+  }();
+  var cachedStructuredCloneCandidate = null;
+  function tryStructuredCloneValue(value) {
+    if (cachedStructuredCloneCandidate) {
+      try {
+        var candidate = cachedStructuredCloneCandidate;
+        return {
+          success: true,
+          value: candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value)
+        };
+      } catch (error) {
+        void error;
+        cachedStructuredCloneCandidate = null;
+      }
+    }
+    for (var index = 0; index < structuredCloneCandidates.length; index += 1) {
+      var _candidate = structuredCloneCandidates[index];
+      if (!_candidate || typeof _candidate.fn !== 'function') {
+        continue;
+      }
+      try {
+        var cloned = _candidate.scope ? _candidate.fn.call(_candidate.scope, value) : _candidate.fn(value);
+        cachedStructuredCloneCandidate = _candidate;
+        return {
+          success: true,
+          value: cloned
+        };
+      } catch (error) {
+        void error;
+      }
+    }
+    return {
+      success: false,
+      value: null
+    };
+  }
+  function cloneWithStructuredCloneFallback(value) {
+    if (value === null || typeof value === 'undefined') {
+      return value;
+    }
+    var attempt = tryStructuredCloneValue(value);
+    if (attempt.success) {
+      return attempt.value;
+    }
+    if (MODULE_DEEP_CLONE) {
+      try {
+        var cloned = MODULE_DEEP_CLONE(value);
+        if (cloned !== value || value === null || _typeof(value) !== 'object') {
+          return cloned;
+        }
+      } catch (cloneError) {
+        void cloneError;
+      }
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (error) {
+      void error;
+    }
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
+    if (_typeof(value) === 'object') {
+      return _objectSpread({}, value);
+    }
+    return value;
+  }
   function cloneAutoGearItems(items) {
     return items.map(function (item) {
       var normalized = normalizeAutoGearItem(item);
@@ -495,6 +649,121 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         remove: []
       };
     });
+  }
+  var ARRI_VIEWFINDER_BRACKET_NAME = 'ARRI K2.74000.0 VEB-3 Viewfinder Extension Bracket';
+  var ARRI_VIEWFINDER_BRACKET_CATEGORY = 'Camera Support';
+  function createArriViewfinderBracketItem(contextNotes) {
+    if (typeof generateAutoGearId !== 'function') {
+      return null;
+    }
+    var normalizedNotes = Array.isArray(contextNotes) ? contextNotes.filter(function (note) {
+      return typeof note === 'string' && note.trim();
+    }) : [];
+    return {
+      id: generateAutoGearId('item'),
+      name: ARRI_VIEWFINDER_BRACKET_NAME,
+      category: ARRI_VIEWFINDER_BRACKET_CATEGORY,
+      quantity: 1,
+      screenSize: '',
+      selectorType: 'none',
+      selectorDefault: '',
+      selectorEnabled: false,
+      notes: '',
+      contextNotes: normalizedNotes.map(function (note) {
+        return note.trim();
+      })
+    };
+  }
+  function collectArriCameraNames() {
+    var arriNames = [];
+    var cameraDb = devices && (typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' ? devices.cameras : null;
+    if (!cameraDb || _typeof(cameraDb) !== 'object') {
+      return arriNames;
+    }
+    Object.keys(cameraDb).forEach(function (name) {
+      if (!name) return;
+      var entry = cameraDb[name];
+      var brand = entry && typeof entry.brand === 'string' ? entry.brand : '';
+      if (/arri/i.test(brand || name)) {
+        arriNames.push(name);
+      }
+    });
+    return arriNames;
+  }
+  function createArriBracketRule(options) {
+    if (!options || _typeof(options) !== 'object') {
+      return null;
+    }
+    var addition = createArriViewfinderBracketItem(options.contextNotes || []);
+    if (!addition) {
+      return null;
+    }
+    var cameraList = Array.isArray(options.camera) ? options.camera.filter(Boolean) : [];
+    return {
+      id: generateAutoGearId('rule'),
+      label: typeof options.label === 'string' && options.label.trim() ? options.label.trim() : 'ARRI viewfinder extension support',
+      scenarios: Array.isArray(options.scenarios) ? options.scenarios.filter(Boolean) : [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: Array.isArray(options.viewfinderExtension) ? options.viewfinderExtension.filter(Boolean) : [],
+      deliveryResolution: [],
+      videoDistribution: [],
+      camera: cameraList,
+      monitor: [],
+      tripodHeadBrand: [],
+      tripodBowl: [],
+      tripodTypes: [],
+      tripodSpreader: [],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      shootingDays: null,
+      add: [addition],
+      remove: []
+    };
+  }
+  function buildArriViewfinderBracketRules() {
+    var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var arriCameras = collectArriCameraNames();
+    if (!arriCameras.length) {
+      return [];
+    }
+    var viewfinderSelection = baseInfo && typeof baseInfo.viewfinderExtension === 'string' ? baseInfo.viewfinderExtension.trim() : '';
+    var selectedScenarios = baseInfo && typeof baseInfo.requiredScenarios === 'string' ? baseInfo.requiredScenarios.split(',').map(function (value) {
+      return typeof value === 'string' ? value.trim() : '';
+    }).filter(Boolean) : [];
+    var normalizedScenarios = selectedScenarios.map(function (value) {
+      return normalizeAutoGearTriggerValue(value);
+    }).filter(Boolean);
+    var sliderActive = normalizedScenarios.includes(normalizeAutoGearTriggerValue('Slider'));
+    var rules = [];
+    if (viewfinderSelection) {
+      var contextLabel = getViewfinderFallbackLabel(viewfinderSelection);
+      var viewfinderRule = createArriBracketRule({
+        label: "".concat(contextLabel || viewfinderSelection, " \u2013 ARRI viewfinder support"),
+        viewfinderExtension: [viewfinderSelection],
+        camera: arriCameras.slice(),
+        contextNotes: ['ARRI viewfinder extension support']
+      });
+      if (viewfinderRule) {
+        rules.push(viewfinderRule);
+      }
+    }
+    if (sliderActive && !viewfinderSelection) {
+      var sliderRule = createArriBracketRule({
+        label: 'Slider – ARRI viewfinder extension support',
+        scenarios: ['Slider'],
+        camera: arriCameras.slice(),
+        contextNotes: ['Slider scenario']
+      });
+      if (sliderRule) {
+        rules.push(sliderRule);
+      }
+    }
+    return rules;
   }
   function buildDefaultVideoDistributionAutoGearRules() {
     var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -905,11 +1174,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (factoryAutoGearSeedContext) return;
     if (typeof collectProjectFormData !== 'function') return;
     var baseInfo = collectProjectFormData() || {};
-    var projectDataClone;
-    try {
-      projectDataClone = JSON.parse(JSON.stringify(baseInfo));
-    } catch (cloneError) {
-      void cloneError;
+    var projectDataClone = cloneWithStructuredCloneFallback(baseInfo);
+    if (!projectDataClone || _typeof(projectDataClone) !== 'object') {
       projectDataClone = _objectSpread({}, baseInfo);
     }
     var scenarioValues = requiredScenariosSelect ? Array.from(requiredScenariosSelect.options || []).map(function (opt) {
@@ -1047,6 +1313,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
       appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
       appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
+      appendUniqueRules(buildArriViewfinderBracketRules(baseInfo));
     }
     var anyMotorRule = buildAutoGearAnyMotorRule();
     if (anyMotorRule) {
@@ -1095,11 +1362,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       autoGearRulesDirtySinceBackup = savedDirtyFlag;
       applySetupSelectValues(context.setupValues);
       var baseInfoSource = context.projectFormData || {};
-      var baseInfo;
-      try {
-        baseInfo = JSON.parse(JSON.stringify(baseInfoSource));
-      } catch (cloneErr) {
-        void cloneErr;
+      var baseInfo = cloneWithStructuredCloneFallback(baseInfoSource);
+      if (!baseInfo || _typeof(baseInfo) !== 'object') {
         baseInfo = _objectSpread({}, baseInfoSource);
       }
       var rules = buildAutoGearRulesFromBaseInfo(baseInfo, context.scenarioValues || []);
@@ -1220,12 +1484,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!factoryAutoGearSeedContext) {
         return null;
       }
-      try {
-        return JSON.parse(JSON.stringify(factoryAutoGearSeedContext));
-      } catch (error) {
-        void error;
-        return _objectSpread({}, factoryAutoGearSeedContext);
+      var clonedContext = cloneWithStructuredCloneFallback(factoryAutoGearSeedContext);
+      if (clonedContext && _typeof(clonedContext) === 'object') {
+        return clonedContext;
       }
+      return _objectSpread({}, factoryAutoGearSeedContext);
     },
     setFactoryAutoGearRulesSnapshot: setFactoryAutoGearRulesSnapshot,
     cloneAutoGearItems: cloneAutoGearItems,
@@ -1244,6 +1507,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     buildAutoGearAnyMotorRule: buildAutoGearAnyMotorRule,
     buildAlwaysAutoGearRule: buildAlwaysAutoGearRule,
     buildFiveDayConsumablesAutoGearRule: buildFiveDayConsumablesAutoGearRule,
+    buildArriViewfinderBracketRules: buildArriViewfinderBracketRules,
     ensureDefaultMatteboxAutoGearRules: ensureDefaultMatteboxAutoGearRules,
     captureAutoGearSeedContext: captureAutoGearSeedContext,
     buildAutoGearRulesFromBaseInfo: buildAutoGearRulesFromBaseInfo,
@@ -1261,7 +1525,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn('Unable to register cineFeatureAutoGearRules module.', error);
     }
   });
-  var globalExports = [['cineFeatureAutoGearRules', autoGearRulesAPI], ['cloneAutoGearItems', cloneAutoGearItems], ['cloneAutoGearRuleItem', cloneAutoGearRuleItem], ['cloneAutoGearRule', cloneAutoGearRule], ['cloneAutoGearRules', cloneAutoGearRules], ['setFactoryAutoGearRulesSnapshot', setFactoryAutoGearRulesSnapshot], ['ensureDefaultMatteboxAutoGearRules', ensureDefaultMatteboxAutoGearRules], ['captureAutoGearSeedContext', captureAutoGearSeedContext], ['buildAutoGearRulesFromBaseInfo', buildAutoGearRulesFromBaseInfo], ['computeFactoryAutoGearRules', computeFactoryAutoGearRules], ['seedAutoGearRulesFromCurrentProject', seedAutoGearRulesFromCurrentProject], ['resetAutoGearRulesToFactoryAdditions', resetAutoGearRulesToFactoryAdditions], ['factoryAutoGearRulesSnapshot', null], ['factoryAutoGearSeedContext', null]];
+  var globalExports = [['cineFeatureAutoGearRules', autoGearRulesAPI], ['cloneAutoGearItems', cloneAutoGearItems], ['cloneAutoGearRuleItem', cloneAutoGearRuleItem], ['cloneAutoGearRule', cloneAutoGearRule], ['cloneAutoGearRules', cloneAutoGearRules], ['setFactoryAutoGearRulesSnapshot', setFactoryAutoGearRulesSnapshot], ['ensureDefaultMatteboxAutoGearRules', ensureDefaultMatteboxAutoGearRules], ['captureAutoGearSeedContext', captureAutoGearSeedContext], ['buildAutoGearRulesFromBaseInfo', buildAutoGearRulesFromBaseInfo], ['buildArriViewfinderBracketRules', buildArriViewfinderBracketRules], ['computeFactoryAutoGearRules', computeFactoryAutoGearRules], ['seedAutoGearRulesFromCurrentProject', seedAutoGearRulesFromCurrentProject], ['resetAutoGearRulesToFactoryAdditions', resetAutoGearRulesToFactoryAdditions], ['factoryAutoGearRulesSnapshot', null], ['factoryAutoGearSeedContext', null]];
   globalExports.forEach(function (_ref3) {
     var _ref4 = _slicedToArray(_ref3, 2),
       name = _ref4[0],

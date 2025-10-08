@@ -1,3 +1,8 @@
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
@@ -111,13 +116,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var keys = Object.getOwnPropertyNames(value);
       for (var index = 0; index < keys.length; index += 1) {
         var key = keys[index];
-        var descriptor = Object.getOwnPropertyDescriptor(value, key);
-        if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+        var child = void 0;
+        try {
+          child = value[key];
+        } catch (accessError) {
+          void accessError;
+          child = undefined;
+        }
+        if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
           continue;
         }
-        freeze(descriptor.value, seen);
+        freeze(child, seen);
       }
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     }
     return {
       shouldBypassDeepFreeze: shouldBypass,
@@ -234,6 +250,84 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       connections: meta.connections || freezeDeep([])
     });
   }
+  function normalizeNameCollection(value) {
+    if (value == null) {
+      return null;
+    }
+    var entries = Array.isArray(value) ? value : typeof value === 'string' ? [value] : typeof value[Symbol.iterator] === 'function' ? Array.from(value) : [value];
+    var normalized = [];
+    var seen = new Set();
+    for (var index = 0; index < entries.length; index += 1) {
+      var entry = entries[index];
+      try {
+        var normalizedName = normalizeName(entry);
+        if (!seen.has(normalizedName)) {
+          seen.add(normalizedName);
+          normalized.push(normalizedName);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return normalized.length > 0 ? normalized : null;
+  }
+  function normalizeCategoryCollection(value) {
+    if (value == null) {
+      return null;
+    }
+    var entries = Array.isArray(value) ? value : typeof value === 'string' ? [value] : typeof value[Symbol.iterator] === 'function' ? Array.from(value) : [value];
+    var normalized = [];
+    var seen = new Set();
+    for (var index = 0; index < entries.length; index += 1) {
+      var entry = entries[index];
+      if (typeof entry !== 'string') {
+        continue;
+      }
+      var trimmed = entry.trim();
+      if (!trimmed || seen.has(trimmed)) {
+        continue;
+      }
+      seen.add(trimmed);
+      normalized.push(trimmed);
+    }
+    return normalized.length > 0 ? normalized : null;
+  }
+  function describeAll() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var normalizedNames = normalizeNameCollection(options && options.names);
+    var normalizedCategories = normalizeCategoryCollection(options && (options.categories || options.category || null));
+    var namesFilter = normalizedNames ? new Set(normalizedNames) : null;
+    var categoryFilter = normalizedCategories ? new Set(normalizedCategories) : null;
+    var snapshot = [];
+    var sourceNames = namesFilter ? normalizedNames : Object.keys(metadataMap);
+    for (var index = 0; index < sourceNames.length; index += 1) {
+      var name = sourceNames[index];
+      var meta = metadataMap[name];
+      if (!meta) {
+        continue;
+      }
+      if (categoryFilter && !categoryFilter.has(meta.category)) {
+        continue;
+      }
+      snapshot.push({
+        name: name,
+        description: meta.description,
+        category: meta.category,
+        registeredAt: meta.registeredAt,
+        frozen: meta.frozen,
+        connections: meta.connections || freezeDeep([])
+      });
+    }
+    if (!namesFilter) {
+      var shouldSort = !options || options.sort !== false;
+      if (shouldSort) {
+        snapshot.sort(function (left, right) {
+          return left.name.localeCompare(right.name);
+        });
+      }
+    }
+    return freezeDeep(snapshot);
+  }
   function assertRegistered(names) {
     var entries = Array.isArray(names) ? names.slice() : [names];
     var detail = {};
@@ -273,8 +367,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return descriptor && _typeof(descriptor) === 'object' ? descriptor : null;
   }
   function assignHidden(scope, key, value) {
-    if (!scope || _typeof(scope) !== 'object') {
-      return;
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return false;
     }
     try {
       Object.defineProperty(scope, key, {
@@ -283,14 +377,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         writable: true,
         value: value
       });
+      return true;
     } catch (error) {
       void error;
-      try {
-        scope[key] = value;
-      } catch (assignmentError) {
-        void assignmentError;
-      }
     }
+    try {
+      scope[key] = value;
+      return true;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+    return false;
   }
   function cancelPendingFlush(scope) {
     var descriptor = getTimerDescriptor(scope);
@@ -367,87 +464,118 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       cancelPendingFlush(scope);
     }
   }
-  function queueRegistrationPayload(scope, payload) {
-    var targetScope = scope || GLOBAL_SCOPE;
-    if (!targetScope || _typeof(targetScope) !== 'object' && typeof targetScope !== 'function') {
-      return false;
+  function collectQueueScopes(preferredScope) {
+    var scopes = [];
+    function pushScope(candidate) {
+      if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+        return;
+      }
+      if (scopes.indexOf(candidate) === -1) {
+        scopes.push(candidate);
+      }
     }
-
-    var queue = null;
+    pushScope(preferredScope);
+    pushScope(GLOBAL_SCOPE);
+    if (typeof globalThis !== 'undefined') pushScope(globalThis);
+    if (typeof window !== 'undefined') pushScope(window);
+    if (typeof self !== 'undefined') pushScope(self);
+    if (typeof global !== 'undefined') pushScope(global);
+    return scopes;
+  }
+  function readQueueFromScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
     try {
-      queue = targetScope[PENDING_QUEUE_KEY];
+      var queue = scope[PENDING_QUEUE_KEY];
+      return Array.isArray(queue) ? queue : null;
     } catch (error) {
       void error;
-      queue = null;
+      return null;
     }
-
-    if (!Array.isArray(queue)) {
-      queue = [];
-      assignHidden(targetScope, PENDING_QUEUE_KEY, queue);
+  }
+  function ensureQueueOnScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
     }
-
-    var optionsClone = payload && payload.options ? cloneObject(payload.options) : {};
+    var queue = readQueueFromScope(scope);
+    if (queue) {
+      return queue;
+    }
+    if (assignHidden(scope, PENDING_QUEUE_KEY, [])) {
+      queue = readQueueFromScope(scope);
+      if (queue) {
+        return queue;
+      }
+    }
+    try {
+      scope[PENDING_QUEUE_KEY] = [];
+      queue = readQueueFromScope(scope);
+      if (queue) {
+        return queue;
+      }
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+  function resolveQueueDescriptor(preferredScope) {
+    var scopes = collectQueueScopes(preferredScope);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var candidate = scopes[index];
+      var queue = ensureQueueOnScope(candidate);
+      if (queue) {
+        return {
+          queue: queue,
+          scope: candidate
+        };
+      }
+    }
+    return null;
+  }
+  function queueRegistrationPayload(scope, payload) {
+    var descriptor = resolveQueueDescriptor(scope || GLOBAL_SCOPE);
+    if (!descriptor || !descriptor.queue) {
+      return false;
+    }
     var record = freezeDeep({
       name: payload && payload.name ? normalizeName(payload.name) : null,
       api: payload ? payload.api : null,
-      options: Object.freeze(optionsClone)
+      options: Object.freeze(_objectSpread({}, payload && payload.options ? payload.options : {}))
     });
-
+    var queue = descriptor.queue,
+      queueScope = descriptor.scope;
     try {
       queue.push(record);
     } catch (error) {
       void error;
       queue[queue.length] = record;
     }
-
     try {
-      schedulePendingFlush(targetScope);
+      schedulePendingFlush(queueScope);
     } catch (error) {
       void error;
     }
-
     return true;
   }
-  function cloneObject(source) {
-    var copy = {};
-    if (!source || _typeof(source) !== 'object') {
-      return copy;
-    }
-
-    var keys = Object.keys(source);
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      copy[key] = source[key];
-    }
-
-    return copy;
-  }
-  function createBlueprint(options) {
-    if (!options) {
-      options = {};
-    }
-
+  function createBlueprint() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var normalizedName = normalizeName(options.name);
     var normalizedCategory = typeof options.category === 'string' ? options.category.trim() : '';
     if (!normalizedCategory) {
-      throw new TypeError('cineModules.createBlueprint("' + normalizedName + '") expected a non-empty category string.');
+      throw new TypeError("cineModules.createBlueprint(\"".concat(normalizedName, "\") expected a non-empty category string."));
     }
-
     var normalizedDescription = typeof options.description === 'string' ? options.description.trim() : '';
     if (!normalizedDescription) {
-      throw new TypeError('cineModules.createBlueprint("' + normalizedName + '") expected a non-empty description.');
+      throw new TypeError("cineModules.createBlueprint(\"".concat(normalizedName, "\") expected a non-empty description."));
     }
-
     var freezeByDefault = options.freeze !== false;
     var normalizedConnections = freezeDeep(normalizeConnections(options.connections));
-
     var factory = typeof options.factory === 'function' ? options.factory : null;
     var staticApi = factory ? null : options.api;
-
     if (!factory && (!staticApi || _typeof(staticApi) !== 'object' && typeof staticApi !== 'function')) {
-      throw new TypeError('cineModules.createBlueprint("' + normalizedName + '") expected an object API or factory function.');
+      throw new TypeError("cineModules.createBlueprint(\"".concat(normalizedName, "\") expected an object API or factory function."));
     }
-
     var metadata = Object.freeze({
       name: normalizedName,
       category: normalizedCategory,
@@ -455,11 +583,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       connections: normalizedConnections,
       freeze: freezeByDefault
     });
-
     var cachedApi = null;
     var instantiated = false;
     var instantiateError = null;
-
     function buildRegistrationOptions(overrides) {
       var base = {
         category: metadata.category,
@@ -467,39 +593,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         connections: metadata.connections,
         freeze: metadata.freeze
       };
-
       if (!overrides || _typeof(overrides) !== 'object') {
-        var baseCopy = cloneObject(base);
-        return Object.freeze(baseCopy);
+        return Object.freeze(_objectSpread({}, base));
       }
-
-      var normalized = cloneObject(base);
-
+      var normalized = _objectSpread({}, base);
       if (Object.prototype.hasOwnProperty.call(overrides, 'category')) {
-        var candidateCategory = typeof overrides.category === 'string' ? overrides.category.trim() : '';
-        if (candidateCategory) {
-          normalized.category = candidateCategory;
+        var candidate = typeof overrides.category === 'string' ? overrides.category.trim() : '';
+        if (candidate) {
+          normalized.category = candidate;
         }
       }
-
       if (Object.prototype.hasOwnProperty.call(overrides, 'description')) {
-        var candidateDescription = typeof overrides.description === 'string' ? overrides.description.trim() : '';
-        if (candidateDescription) {
-          normalized.description = candidateDescription;
+        var _candidate = typeof overrides.description === 'string' ? overrides.description.trim() : '';
+        if (_candidate) {
+          normalized.description = _candidate;
         }
       }
-
       if (Object.prototype.hasOwnProperty.call(overrides, 'connections')) {
         normalized.connections = freezeDeep(normalizeConnections(overrides.connections));
       }
-
       if (Object.prototype.hasOwnProperty.call(overrides, 'freeze')) {
         normalized.freeze = overrides.freeze !== false;
       }
-
       return Object.freeze(normalized);
     }
-
     function instantiate(context) {
       if (instantiated) {
         if (instantiateError) {
@@ -507,12 +624,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         return cachedApi;
       }
-
       instantiated = true;
-
       var produced = staticApi;
       if (factory) {
-        var invocationContext = context && _typeof(context) === 'object' ? cloneObject(context) : {};
+        var invocationContext = context && _typeof(context) === 'object' ? _objectSpread({}, context) : {};
         var frozenContext = Object.freeze({
           registry: registryReference || null,
           metadata: metadata,
@@ -520,7 +635,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           freezeDeep: freezeDeep,
           normalizeConnections: normalizeConnections
         });
-
         try {
           produced = factory(frozenContext);
         } catch (error) {
@@ -528,36 +642,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           throw instantiateError;
         }
       }
-
       if (!produced || _typeof(produced) !== 'object' && typeof produced !== 'function') {
-        var failure = new TypeError('cineModules.createBlueprint("' + normalizedName + '") factory expected an object or function return value.');
-        instantiateError = failure;
-        throw failure;
+        var error = new TypeError("cineModules.createBlueprint(\"".concat(normalizedName, "\") factory expected an object or function return value."));
+        instantiateError = error;
+        throw error;
       }
-
       cachedApi = freezeByDefault && !Object.isFrozen(produced) ? freezeDeep(produced) : produced;
       return cachedApi;
     }
-
-    function registerBlueprint(options) {
-      if (!options) {
-        options = {};
-      }
-
+    function registerBlueprint() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var resolvedRegistry = options && _typeof(options.registry) === 'object' && options.registry ? options.registry : registryReference;
       var registrationOptions = buildRegistrationOptions(options && options.options);
       var scope = options && options.scope ? options.scope : GLOBAL_SCOPE;
-      var deferOnError = Object.prototype.hasOwnProperty.call(options, 'defer') ? options.defer !== false : true;
+      var deferOnError = options && Object.prototype.hasOwnProperty.call(options, 'defer') ? options.defer !== false : true;
       var onError = options && typeof options.onError === 'function' ? options.onError : null;
-
       var api = instantiate(options && options.context);
-
       var targetRegistry = resolvedRegistry && typeof resolvedRegistry.register === 'function' ? resolvedRegistry : registryReference;
-
       if (!targetRegistry || typeof targetRegistry.register !== 'function') {
         throw new TypeError('cineModules.createBlueprint register() requires a registry with a register() function.');
       }
-
       try {
         return targetRegistry.register(metadata.name, api, registrationOptions);
       } catch (error) {
@@ -568,7 +672,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             options: registrationOptions
           });
         }
-
         if (onError) {
           try {
             onError(error);
@@ -576,11 +679,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void handlerError;
           }
         }
-
         throw error;
       }
     }
-
     var blueprint = {
       name: metadata.name,
       category: metadata.category,
@@ -597,7 +698,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return metadata;
       }
     };
-
     return Object.freeze(blueprint);
   }
   var registry = Object.freeze({
@@ -606,6 +706,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     has: has,
     list: list,
     describe: describe,
+    describeAll: describeAll,
     assertRegistered: assertRegistered,
     createBlueprint: createBlueprint,
     __internalResetForTests: resetForTests

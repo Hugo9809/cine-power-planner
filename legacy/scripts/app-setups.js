@@ -16,6 +16,19 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
+var projectPersistenceSuspendedCount = 0;
+function suspendProjectPersistence() {
+  projectPersistenceSuspendedCount += 1;
+}
+function resumeProjectPersistence() {
+  if (projectPersistenceSuspendedCount > 0) {
+    projectPersistenceSuspendedCount -= 1;
+  }
+  return projectPersistenceSuspendedCount;
+}
+function isProjectPersistenceSuspended() {
+  return projectPersistenceSuspendedCount > 0;
+}
 var localGetLocalizedText = function () {
   function fallbackGetLocalizedText(key) {
     if (!key) return '';
@@ -84,7 +97,24 @@ function assignSelectValue(select, value) {
 function getGlobalScope() {
   return typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
 }
-function getSafeGearListHtmlSections(html) {
+var SETUPS_DEEP_CLONE = function () {
+  var scope = getGlobalScope();
+  if (scope && typeof scope.__cineDeepClone === 'function') {
+    return scope.__cineDeepClone;
+  }
+  return function setupsFallbackDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (cloneError) {
+      void cloneError;
+    }
+    return value;
+  };
+}();
+function gearListGetSafeHtmlSectionsImpl(html) {
   var normalizedHtml = typeof html === 'string' ? html : '';
   var fallbackResult = {
     projectHtml: '',
@@ -132,6 +162,76 @@ function resolveElementById(id, globalName) {
   }
   return null;
 }
+function resolveGearListModule() {
+  var scope = getGlobalScope();
+  var candidates = [];
+  if ((typeof cineGearList === "undefined" ? "undefined" : _typeof(cineGearList)) === 'object' && cineGearList) {
+    candidates.push(cineGearList);
+  }
+  if (scope && _typeof(scope.cineGearList) === 'object' && scope.cineGearList) {
+    if (!candidates.includes(scope.cineGearList)) {
+      candidates.push(scope.cineGearList);
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/gear-list.js');
+      if (required && _typeof(required) === 'object' && !candidates.includes(required)) {
+        candidates.push(required);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var candidate = candidates[index];
+    if (!candidate || typeof candidate.setImplementation !== 'function') {
+      continue;
+    }
+    return candidate;
+  }
+  return null;
+}
+function registerGearListModuleImplementation() {
+  var module = resolveGearListModule();
+  var implementation = {
+    getSafeGearListHtmlSections: gearListGetSafeHtmlSectionsImpl,
+    generateGearListHtml: gearListGenerateHtmlImpl,
+    getCurrentGearListHtml: gearListGetCurrentHtmlImpl
+  };
+  if (module && typeof module.setImplementation === 'function') {
+    try {
+      module.setImplementation(implementation, {
+        source: 'app-setups'
+      });
+      return true;
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('Unable to register gear list implementation with cineGearList.', error);
+      }
+    }
+  }
+  var scope = getGlobalScope();
+  if (scope && _typeof(scope) === 'object') {
+    try {
+      scope.getSafeGearListHtmlSections = gearListGetSafeHtmlSectionsImpl;
+    } catch (error) {
+      void error;
+    }
+    try {
+      scope.generateGearListHtml = gearListGenerateHtmlImpl;
+    } catch (error) {
+      void error;
+    }
+    try {
+      scope.getCurrentGearListHtml = gearListGetCurrentHtmlImpl;
+    } catch (error) {
+      void error;
+    }
+  }
+  return false;
+}
+registerGearListModuleImplementation();
 function buildShareUiContext() {
   return {
     dialog: resolveElementById('shareDialog', 'shareDialog'),
@@ -561,7 +661,7 @@ if (projectForm) {
     var info = collectProjectFormData();
     currentProjectInfo = info;
     ensureZoomRemoteSetup(info);
-    var html = generateGearListHtml(info);
+    var html = gearListGenerateHtmlImpl(info);
     displayGearAndRequirements(html);
     ensureGearListActions();
     bindGearListCageListener();
@@ -619,29 +719,69 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       currentSetup.diagramPositions = diagramPositions;
     }
   }
+  var projectInfoCandidates = [];
   if (currentProjectInfo) {
-    currentSetup.projectInfo = currentProjectInfo;
-  } else {
-    var project = typeof loadProject === 'function' ? loadProject(setupName) : null;
-    if (project && project.projectInfo) {
-      currentSetup.projectInfo = project.projectInfo;
+    projectInfoCandidates.push(currentProjectInfo);
+  }
+  if (typeof loadProject === 'function') {
+    var storageKeys = new Set();
+    if (typeof setupName === 'string' && setupName) {
+      storageKeys.add(setupName);
+    }
+    if (typeof getCurrentProjectStorageKey === 'function') {
+      var storageKey = getCurrentProjectStorageKey({
+        allowTyped: true
+      });
+      if (typeof storageKey === 'string' && storageKey) {
+        storageKeys.add(storageKey);
+      }
+    }
+    if (typeof getSetupNameState === 'function') {
+      var nameState = getSetupNameState();
+      if (nameState && _typeof(nameState) === 'object') {
+        ['storageKey', 'selectedName', 'typedName'].forEach(function (prop) {
+          var value = typeof nameState[prop] === 'string' ? nameState[prop].trim() : '';
+          if (value) {
+            storageKeys.add(value);
+          }
+        });
+      }
+    }
+    storageKeys.forEach(function (key) {
+      try {
+        var storedProject = loadProject(key);
+        if (storedProject && storedProject.projectInfo) {
+          projectInfoCandidates.push(storedProject.projectInfo);
+        }
+      } catch (error) {
+        console.warn('Unable to read project info for export from storage key', key, error);
+      }
+    });
+  }
+  var mergedProjectInfo = null;
+  projectInfoCandidates.forEach(function (candidate) {
+    if (!candidate) return;
+    if (!mergedProjectInfo) {
+      mergedProjectInfo = cloneProjectInfoForStorage(candidate);
+    } else {
+      mergedProjectInfo = mergeProjectInfoSnapshots(mergedProjectInfo, candidate);
+    }
+  });
+  if (mergedProjectInfo) {
+    var snapshotForExport = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(mergedProjectInfo, {
+      projectNameOverride: setupName
+    }) : mergedProjectInfo;
+    var clonedSnapshot = cloneProjectInfoForStorage(snapshotForExport);
+    if (clonedSnapshot && _typeof(clonedSnapshot) === 'object') {
+      currentSetup.projectInfo = clonedSnapshot;
     }
   }
   var gearSelectors = cloneGearListSelectors(getGearListSelectors());
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
-  var combinedHtml = getCurrentGearListHtml();
+  var combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
-  if (combinedHtml) {
-    var _getSafeGearListHtmlS = getSafeGearListHtmlSections(combinedHtml),
-      projectHtml = _getSafeGearListHtmlS.projectHtml,
-      gearHtml = _getSafeGearListHtmlS.gearHtml;
-    if (projectHtml) currentSetup.projectHtml = projectHtml;
-    if (gearHtml) {
-      currentSetup.gearList = projectHtml ? gearHtml.replace(/<h2[^>]*>.*?<\/h2>/, '') : gearHtml;
-    }
-  }
   var deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -979,7 +1119,7 @@ function registerSetupsCineUiInternal(cineUi) {
       var _getSafeLanguageTexts = getSafeLanguageTexts(),
         langTexts = _getSafeLanguageTexts.langTexts,
         fallbackTexts = _getSafeLanguageTexts.fallbackTexts;
-      return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON file of the current project to share with others.';
+      return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON safety bundle of the current project so you can archive or share it offline. Store the file with your crew backups before closing the planner.';
     }
   }, {
     name: 'sharedImport',
@@ -987,7 +1127,7 @@ function registerSetupsCineUiInternal(cineUi) {
       var _getSafeLanguageTexts2 = getSafeLanguageTexts(),
         langTexts = _getSafeLanguageTexts2.langTexts,
         fallbackTexts = _getSafeLanguageTexts2.fallbackTexts;
-      return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from the selected project file.';
+      return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview before applying—nothing overwrites your current project until you confirm Save.';
     }
   }], 'cineUi help registration (setups) failed');
   setupsCineUiRegistered = areSetupsEntriesRegistered(cineUi);
@@ -1675,7 +1815,7 @@ function collectAccessories() {
   };
 }
 function collectProjectFormData() {
-  var _crewContainer;
+  var _crewContainer, _storageNeedsContaine;
   if (!projectForm) return {};
   var formData = new FormData(projectForm);
   var getValue = function getValue(name) {
@@ -1818,6 +1958,29 @@ function collectProjectFormData() {
     info.proGaffColor2 = proGaffColor2 || '';
     info.proGaffWidth2 = proGaffWidth2 || '';
   }
+  var storageEntries = Array.from(((_storageNeedsContaine = storageNeedsContainer) === null || _storageNeedsContaine === void 0 ? void 0 : _storageNeedsContaine.querySelectorAll('.storage-row')) || []).map(function (row) {
+    var quantityInput = row.querySelector('.storage-quantity');
+    var typeSelect = row.querySelector('.storage-type');
+    var variantSelect = row.querySelector('.storage-variant');
+    var notesInput = row.querySelector('.storage-notes');
+    var rawQuantity = quantityInput ? parseInt(quantityInput.value, 10) : NaN;
+    var quantity = Number.isFinite(rawQuantity) && rawQuantity > 0 ? rawQuantity : null;
+    var type = typeof (typeSelect === null || typeSelect === void 0 ? void 0 : typeSelect.value) === 'string' ? typeSelect.value.trim() : '';
+    var variant = typeof (variantSelect === null || variantSelect === void 0 ? void 0 : variantSelect.value) === 'string' ? variantSelect.value.trim() : '';
+    var notes = typeof (notesInput === null || notesInput === void 0 ? void 0 : notesInput.value) === 'string' ? notesInput.value.trim() : '';
+    if (!quantity && !type && !variant && !notes) {
+      return null;
+    }
+    var entry = {};
+    if (quantity) entry.quantity = quantity;
+    if (type) entry.type = type;
+    if (variant) entry.variant = variant;
+    if (notes) entry.notes = notes;
+    return entry;
+  }).filter(Boolean);
+  if (storageEntries.length) {
+    info.storageRequirements = storageEntries;
+  }
   var currentProjectName = getCurrentProjectName();
   if (currentProjectName) {
     info.projectName = currentProjectName;
@@ -1883,6 +2046,17 @@ function populateProjectForm() {
         end: end
       });
     });
+  }
+  if (storageNeedsContainer) {
+    storageNeedsContainer.innerHTML = '';
+    var storageArr = Array.isArray(info.storageRequirements) ? info.storageRequirements : [];
+    if (storageArr.length) {
+      storageArr.forEach(function (entry) {
+        return createStorageRequirementRow(entry);
+      });
+    } else {
+      createStorageRequirementRow();
+    }
   }
   setVal('deliveryResolution', info.deliveryResolution);
   setMulti('aspectRatio', info.aspectRatio);
@@ -1978,6 +2152,29 @@ function stripAutoGearContext(name) {
 function normalizeAutoGearName(name) {
   return stripAutoGearContext(name).toLowerCase();
 }
+function normalizeAutoGearNotesKey(value) {
+  var base = typeof normalizeAutoGearText === 'function' ? normalizeAutoGearText(value, {
+    collapseWhitespace: true
+  }) : (value == null ? '' : String(value)).trim().replace(/\s+/g, ' ');
+  if (!base) {
+    return '';
+  }
+  return base.replace(/^[\t-\r \x2D\xA0\u1680\u2000-\u200A\u2013\u2014\u2028\u2029\u202F\u205F\u3000\uFEFF]+/, '').trim().toLowerCase();
+}
+function getAutoGearSpanNotesKey(span) {
+  if (!span || !span.dataset) {
+    return '';
+  }
+  var datasetNotes = typeof span.dataset.autoGearNotes === 'string' ? span.dataset.autoGearNotes : '';
+  if (datasetNotes) {
+    return normalizeAutoGearNotesKey(datasetNotes);
+  }
+  var notesNode = span.querySelector('.auto-gear-notes');
+  if (!notesNode || typeof notesNode.textContent !== 'string') {
+    return '';
+  }
+  return normalizeAutoGearNotesKey(notesNode.textContent);
+}
 function matchesAutoGearItem(target, actual) {
   if (!target || !actual) return false;
   var normTarget = normalizeAutoGearName(target);
@@ -1992,16 +2189,17 @@ function isOnboardMonitorRiggingItemName(name) {
   return normalizeAutoGearName(name) === normalizedTarget;
 }
 function isOnboardMonitorRiggingItemEntry(entry) {
-  if (!entry || typeof entry !== 'object') return false;
+  if (!entry || _typeof(entry) !== 'object') return false;
   return isOnboardMonitorRiggingItemName(entry.name);
 }
 function getOnboardMonitorRiggingRuleLabel() {
-  if (typeof texts === 'object' && texts) {
-    var localized = texts[currentLang] && texts[currentLang].autoGearMonitorLabel;
+  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
+    var _texts$currentLang, _texts$en;
+    var localized = (_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.autoGearMonitorLabel;
     if (typeof localized === 'string' && localized.trim()) {
       return localized.trim();
     }
-    var fallback = texts.en && texts.en.autoGearMonitorLabel;
+    var fallback = (_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.autoGearMonitorLabel;
     if (typeof fallback === 'string' && fallback.trim()) {
       return fallback.trim();
     }
@@ -2015,7 +2213,10 @@ function ensureOnboardMonitorRiggingAutoGearHighlight(table) {
   var target = normalizeAutoGearName(ONBOARD_MONITOR_RIGGING_ITEM_NAME);
   if (!target) return;
   var label = getOnboardMonitorRiggingRuleLabel();
-  var fallbackRule = { id: ONBOARD_MONITOR_RIGGING_RULE_ID, label: label };
+  var fallbackRule = {
+    id: ONBOARD_MONITOR_RIGGING_RULE_ID,
+    label: label
+  };
   var spans = Array.from(table.querySelectorAll('.gear-item')).filter(function (span) {
     if (!span) return false;
     var dataName = typeof span.getAttribute === 'function' ? span.getAttribute('data-gear-name') : '';
@@ -2251,12 +2452,12 @@ function removeAutoGearItem(cell, item, remainingOverride) {
   return remaining;
 }
 function getCrewRoleLabelForDisplay(value) {
-  var _texts$en;
+  var _texts$en2;
   if (typeof value !== 'string') return '';
   var trimmed = value.trim();
   if (!trimmed) return '';
   var langTexts = texts[currentLang] || texts.en || {};
-  var crewRoleLabels = langTexts.crewRoles || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.crewRoles) || {};
+  var crewRoleLabels = langTexts.crewRoles || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.crewRoles) || {};
   return (crewRoleLabels === null || crewRoleLabels === void 0 ? void 0 : crewRoleLabels[trimmed]) || trimmed;
 }
 function getAutoGearRuleDisplayLabel(rule) {
@@ -2296,14 +2497,14 @@ function getAutoGearRuleDisplayLabel(rule) {
   return '';
 }
 function formatAutoGearRuleTooltip(rule) {
-  var _texts$en2;
+  var _texts$en3;
   var langTexts = texts[currentLang] || texts.en || {};
-  var unnamedTemplate = langTexts.autoGearRuleTooltipUnnamed || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.autoGearRuleTooltipUnnamed) || 'Added by automatic gear rule';
+  var unnamedTemplate = langTexts.autoGearRuleTooltipUnnamed || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.autoGearRuleTooltipUnnamed) || 'Added by automatic gear rule';
   if (!rule || _typeof(rule) !== 'object') return unnamedTemplate;
   var label = getAutoGearRuleDisplayLabel(rule);
   if (label) {
-    var _texts$en3;
-    var namedTemplate = langTexts.autoGearRuleTooltipNamed || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.autoGearRuleTooltipNamed) || "".concat(unnamedTemplate, ": %s");
+    var _texts$en4;
+    var namedTemplate = langTexts.autoGearRuleTooltipNamed || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.autoGearRuleTooltipNamed) || "".concat(unnamedTemplate, ": %s");
     return namedTemplate.replace('%s', label);
   }
   return unnamedTemplate;
@@ -2656,6 +2857,13 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
       span.appendChild(document.createTextNode(" - ".concat(selectorLabel)));
     }
   }
+  if (span.dataset) {
+    if (normalizedItem.notes) {
+      span.dataset.autoGearNotes = normalizedItem.notes;
+    } else if (Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearNotes')) {
+      delete span.dataset.autoGearNotes;
+    }
+  }
   if (normalizedItem.notes) {
     var delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
     var notesSpan = document.createElement('span');
@@ -2675,10 +2883,23 @@ function addAutoGearItem(cell, item, rule) {
   var name = normalizedItem.name ? normalizedItem.name.trim() : '';
   if (!name) return;
   var spans = Array.from(cell.querySelectorAll('.gear-item'));
+  var targetNotesKey = normalizeAutoGearNotesKey(normalizedItem.notes);
   for (var _i1 = 0, _spans = spans; _i1 < _spans.length; _i1++) {
     var _span = _spans[_i1];
     var spanName = _span.getAttribute('data-gear-name') || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     if (matchesAutoGearItem(name, spanName)) {
+      var spanNotesKey = getAutoGearSpanNotesKey(_span);
+      if (targetNotesKey) {
+        if (_span.classList.contains('auto-gear-item')) {
+          if (!spanNotesKey || spanNotesKey !== targetNotesKey) {
+            continue;
+          }
+        } else if (spanNotesKey && spanNotesKey !== targetNotesKey) {
+          continue;
+        }
+      } else if (_span.classList.contains('auto-gear-item') && spanNotesKey) {
+        continue;
+      }
       if (_span.classList.contains('auto-gear-item')) {
         var newCount = getSpanCount(_span) + quantity;
         updateSpanCountInPlace(_span, newCount);
@@ -2686,6 +2907,13 @@ function addAutoGearItem(cell, item, rule) {
           mergeAutoGearSpanContextNotes(_span, normalizedItem.contextNotes, quantity);
         } else {
           renderAutoGearSpanContextNotes(_span);
+        }
+        if (_span.dataset) {
+          if (normalizedItem.notes) {
+            _span.dataset.autoGearNotes = normalizedItem.notes;
+          } else if (Object.prototype.hasOwnProperty.call(_span.dataset, 'autoGearNotes')) {
+            delete _span.dataset.autoGearNotes;
+          }
         }
         if (rule && _typeof(rule) === 'object') {
           appendAutoGearRuleSource(_span, rule);
@@ -2714,15 +2942,25 @@ function addAutoGearItem(cell, item, rule) {
   cell.appendChild(span);
 }
 function ensureAutoGearCategory(table, category) {
-  var _texts$currentLang, _texts$en4;
+  var _texts$currentLang2, _texts$en5;
   var rawCategory = category && category.trim() ? category.trim() : '';
   var label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
   var existing = Array.from(table.querySelectorAll('tbody.category-group')).find(function (body) {
-    if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-      return body.dataset.autoCategory === rawCategory;
+    if (body.dataset) {
+      if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+        return body.dataset.autoCategory === rawCategory;
+      }
+      if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
+        return body.dataset.gearTableCategory === rawCategory;
+      }
     }
     var headerCell = body.querySelector('.category-row td');
-    return headerCell && headerCell.textContent.trim() === label;
+    if (!headerCell) return false;
+    var storedLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
+    if (rawCategory) {
+      return storedLabel === rawCategory;
+    }
+    return body.classList.contains('auto-gear-category') || storedLabel === label;
   });
   if (existing) {
     var cell = existing.querySelector('tr:not(.category-row) td');
@@ -2731,10 +2969,12 @@ function ensureAutoGearCategory(table, category) {
   var body = document.createElement('tbody');
   body.className = 'category-group auto-gear-category';
   body.dataset.autoCategory = rawCategory;
+  body.dataset.gearTableCategory = rawCategory || label;
   var headerRow = document.createElement('tr');
   headerRow.className = 'category-row';
   var headerCell = document.createElement('td');
-  var labelText = rawCategory ? rawCategory : ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.autoGearCustomCategory) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.autoGearCustomCategory) || 'Custom Additions';
+  var labelText = rawCategory ? rawCategory : ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.autoGearCustomCategory) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.autoGearCustomCategory) || 'Custom Additions';
+  headerCell.setAttribute('data-gear-category-label', labelText);
   headerCell.textContent = labelText;
   headerRow.appendChild(headerCell);
   body.appendChild(headerRow);
@@ -2752,24 +2992,33 @@ function findAutoGearCategoryCell(table, category) {
   var bodies = Array.from(table.querySelectorAll('tbody.category-group'));
   for (var _i10 = 0, _bodies = bodies; _i10 < _bodies.length; _i10++) {
     var body = _bodies[_i10];
-    if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-      if (body.dataset.autoCategory === rawCategory) {
-        var cell = body.querySelector('tr:not(.category-row) td');
-        if (cell) return cell;
+    if (body.dataset) {
+      if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+        if (body.dataset.autoCategory === rawCategory) {
+          var cell = body.querySelector('tr:not(.category-row) td');
+          if (cell) return cell;
+        }
+        continue;
       }
-      continue;
+      if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
+        if (body.dataset.gearTableCategory === rawCategory) {
+          var _cell = body.querySelector('tr:not(.category-row) td');
+          if (_cell) return _cell;
+        }
+        continue;
+      }
     }
     var headerCell = body.querySelector('.category-row td');
     if (!headerCell) continue;
-    var headerLabel = headerCell.textContent.trim();
+    var headerLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
     if (rawCategory) {
       if (headerLabel === rawCategory) {
-        var _cell = body.querySelector('tr:not(.category-row) td');
-        if (_cell) return _cell;
+        var _cell2 = body.querySelector('tr:not(.category-row) td');
+        if (_cell2) return _cell2;
       }
     } else if (body.classList.contains('auto-gear-category') || headerLabel === label) {
-      var _cell2 = body.querySelector('tr:not(.category-row) td');
-      if (_cell2) return _cell2;
+      var _cell3 = body.querySelector('tr:not(.category-row) td');
+      if (_cell3) return _cell3;
     }
   }
   return null;
@@ -2861,6 +3110,112 @@ function computeAutoGearScenarioOutcome(rule, scenarioSet) {
     active: allPresent,
     multiplier: allPresent ? 1 : 0
   };
+}
+function normalizeClampOnDiameterKey(value) {
+  if (!Number.isFinite(value)) return '';
+  return Number(value).toFixed(3);
+}
+function formatClampOnDiameterLabel(value) {
+  if (!Number.isFinite(value)) return '';
+  var rounded = Number(Number(value).toFixed(2));
+  if (!Number.isFinite(rounded)) return '';
+  return String(rounded);
+}
+function shouldAugmentClampOnRule(rule) {
+  if (!rule || _typeof(rule) !== 'object') return false;
+  var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+  if (!matteboxList.length) return false;
+  var normalized = matteboxList.map(function (value) {
+    return normalizeAutoGearTriggerValue(value).replace(/-/g, ' ');
+  }).filter(Boolean);
+  if (!normalized.length) return false;
+  return normalized.includes('clamp on');
+}
+function buildClampOnBackingAdditionsFromInfo(info) {
+  var lensValue = info ? info.lenses : '';
+  var lensNames = [];
+  if (Array.isArray(lensValue)) {
+    lensNames = lensValue.filter(function (name) {
+      return typeof name === 'string' && name.trim();
+    });
+  } else if (typeof lensValue === 'string') {
+    lensNames = lensValue.split(',').map(function (name) {
+      return name.trim();
+    }).filter(Boolean);
+  }
+  if (!lensNames.length) return [];
+  var lensDb = devices && devices.lenses ? devices.lenses : null;
+  if (!lensDb || _typeof(lensDb) !== 'object') return [];
+  var normalizedLookup = new Map();
+  Object.keys(lensDb).forEach(function (name) {
+    if (typeof name !== 'string' || !name) return;
+    var normalized = name.trim().toLowerCase();
+    if (normalized && !normalizedLookup.has(normalized)) {
+      normalizedLookup.set(normalized, lensDb[name]);
+    }
+  });
+  var diameterMap = new Map();
+  lensNames.forEach(function (selectionName) {
+    if (typeof selectionName !== 'string') return;
+    var trimmed = selectionName.trim();
+    if (!trimmed) return;
+    var normalized = trimmed.toLowerCase();
+    var lens = Object.prototype.hasOwnProperty.call(lensDb, trimmed) ? lensDb[trimmed] : null;
+    if (!lens && normalizedLookup.has(normalized)) {
+      lens = normalizedLookup.get(normalized);
+    }
+    if (!lens || _typeof(lens) !== 'object') return;
+    var diameter = Number(lens.frontDiameterMm);
+    if (!Number.isFinite(diameter) || diameter <= 0) return;
+    var key = normalizeClampOnDiameterKey(diameter);
+    if (!key) return;
+    if (!diameterMap.has(key)) {
+      diameterMap.set(key, {
+        diameter: diameter,
+        lenses: []
+      });
+    }
+    var entry = diameterMap.get(key);
+    if (entry.lenses.indexOf(trimmed) === -1) {
+      entry.lenses.push(trimmed);
+    }
+  });
+  if (!diameterMap.size) return [];
+  var sorted = Array.from(diameterMap.values()).sort(function (a, b) {
+    if (a.diameter === b.diameter) return 0;
+    return a.diameter < b.diameter ? -1 : 1;
+  });
+  return sorted.map(function (_ref12) {
+    var diameter = _ref12.diameter,
+      lenses = _ref12.lenses;
+    var sizeLabel = formatClampOnDiameterLabel(diameter) || String(Number(diameter));
+    var item = {
+      name: "Mattebox Clamp-On Backing ".concat(sizeLabel, "mm"),
+      category: 'Matte box + filter',
+      quantity: 1
+    };
+    if (Array.isArray(lenses) && lenses.length) {
+      item.contextNotes = ["Lenses: ".concat(lenses.join(', '))];
+    }
+    return item;
+  });
+}
+function mergeAutoGearAdditions(baseAdditions, extraAdditions) {
+  var result = [];
+  var seen = new Set();
+  var pushUnique = function pushUnique(item) {
+    if (!item || _typeof(item) !== 'object') return;
+    var name = typeof item.name === 'string' ? item.name.trim() : '';
+    if (!name) return;
+    var category = typeof item.category === 'string' ? item.category.trim() : '';
+    var key = "".concat(name.toLowerCase(), "|").concat(category.toLowerCase());
+    if (seen.has(key)) return;
+    seen.add(key);
+    result.push(item);
+  };
+  baseAdditions.forEach(pushUnique);
+  extraAdditions.forEach(pushUnique);
+  return result;
 }
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
   if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
@@ -3201,8 +3556,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   });
   if (!triggeredEntries.length) return tableHtml;
   if (normalizedMattebox) {
-    var filtered = triggeredEntries.filter(function (_ref12) {
-      var rule = _ref12.rule;
+    var filtered = triggeredEntries.filter(function (_ref13) {
+      var rule = _ref13.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
       if (!matteboxList.length) return true;
@@ -3221,9 +3576,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
   var monitorRiggingTriggered = false;
-  triggeredEntries.forEach(function (_ref13) {
-    var rule = _ref13.rule,
-      multiplier = _ref13.multiplier;
+  triggeredEntries.forEach(function (_ref14) {
+    var rule = _ref14.rule,
+      multiplier = _ref14.multiplier;
     var effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
     rule.remove.forEach(function (item) {
       var remaining = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
@@ -3242,7 +3597,15 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         }
       }
     });
-    rule.add.forEach(function (item) {
+    var baseAdditions = Array.isArray(rule.add) ? rule.add.slice() : [];
+    var additions = baseAdditions;
+    if (shouldAugmentClampOnRule(rule)) {
+      var clampBackings = buildClampOnBackingAdditionsFromInfo(info);
+      if (clampBackings.length) {
+        additions = mergeAutoGearAdditions(baseAdditions, clampBackings);
+      }
+    }
+    additions.forEach(function (item) {
       var quantity = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
       var scaledItem = quantity === normalizeAutoGearQuantity(item.quantity) ? item : _objectSpread(_objectSpread({}, item), {}, {
         quantity: quantity
@@ -3293,8 +3656,212 @@ function formatRequirementValue(rawValue) {
   var value = typeof rawValue === 'string' ? rawValue : rawValue == null ? '' : String(rawValue);
   return escapeHtml(value).replace(/\n/g, '<br>');
 }
-function generateGearListHtml() {
-  var _devices$accessories2, _texts$currentLang2, _texts$en5, _texts$currentLang3, _texts$en6, _texts$currentLang4, _texts$en7, _devices$accessories3;
+function resolveGearListCustomText(key, fallback, replacements) {
+  var _texts2, _texts3;
+  var langEntry = (_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2[currentLang]) === null || _texts2 === void 0 ? void 0 : _texts2[key];
+  var enEntry = (_texts3 = texts) === null || _texts3 === void 0 || (_texts3 = _texts3.en) === null || _texts3 === void 0 ? void 0 : _texts3[key];
+  var template = typeof langEntry === 'string' && langEntry.trim() ? langEntry : typeof enEntry === 'string' && enEntry.trim() ? enEntry : fallback;
+  if (!replacements || _typeof(replacements) !== 'object') {
+    return template;
+  }
+  return Object.keys(replacements).reduce(function (acc, token) {
+    var value = replacements[token];
+    var replacement = typeof value === 'string' ? value : String(value !== null && value !== void 0 ? value : '');
+    return acc.replace(new RegExp("\\{".concat(token, "\\}"), 'g'), replacement);
+  }, template);
+}
+function createCustomCategoryKey(label) {
+  if (typeof label !== 'string' || !label.trim()) {
+    return 'category';
+  }
+  var normalized = label.trim().toLowerCase();
+  var slug = normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+  return slug || 'category';
+}
+function getCustomItemsContainer(key) {
+  if (!gearListOutput || typeof key !== 'string') return null;
+  return gearListOutput.querySelector(".gear-custom-items[data-gear-custom-list=\"".concat(key, "\"]"));
+}
+function updateCustomItemPreview(entry) {
+  var _quantityInput$value, _nameInput$value;
+  if (!entry) return;
+  var preview = entry.querySelector('.gear-custom-item-preview');
+  if (!preview) return;
+  var quantityInput = entry.querySelector('[data-gear-custom-input="quantity"]');
+  var nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+  var quantity = quantityInput ? String((_quantityInput$value = quantityInput.value) !== null && _quantityInput$value !== void 0 ? _quantityInput$value : '').trim() : '';
+  var name = nameInput ? String((_nameInput$value = nameInput.value) !== null && _nameInput$value !== void 0 ? _nameInput$value : '').trim() : '';
+  var fallback = resolveGearListCustomText('gearListCustomItemPreviewFallback', 'Custom item');
+  var display = '';
+  if (quantity && name) {
+    display = "".concat(quantity, "x ").concat(name);
+  } else if (name) {
+    display = name;
+  } else if (quantity) {
+    display = "".concat(quantity, "x ").concat(fallback);
+  } else {
+    display = fallback;
+  }
+  preview.textContent = display;
+}
+function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
+  var doc = gearListOutput && gearListOutput.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  var template = doc.createElement('template');
+  var rawQuantity = data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '1';
+  var rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
+  var quantityValue = typeof rawQuantity === 'string' ? rawQuantity : String(rawQuantity !== null && rawQuantity !== void 0 ? rawQuantity : '');
+  var nameValue = typeof rawName === 'string' ? rawName : String(rawName !== null && rawName !== void 0 ? rawName : '');
+  var quantityLabel = resolveGearListCustomText('gearListCustomItemQuantityLabel', 'Quantity');
+  var quantityAria = resolveGearListCustomText('gearListCustomItemQuantityAria', 'Quantity for custom item in {category}', {
+    category: categoryLabel
+  });
+  var nameLabel = resolveGearListCustomText('gearListCustomItemNameLabel', 'Item name');
+  var nameAria = resolveGearListCustomText('gearListCustomItemNameAria', 'Item name for custom item in {category}', {
+    category: categoryLabel
+  });
+  var placeholder = resolveGearListCustomText('gearListCustomItemNamePlaceholder', 'Custom item');
+  var removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
+  var removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', {
+    category: categoryLabel
+  });
+  var minusIcon = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.minus, {
+    className: 'btn-icon'
+  }) : '';
+  template.innerHTML = "\n    <div class=\"gear-custom-item\" data-gear-custom-entry=\"".concat(escapeHtml(categoryKey), "\">\n      <span class=\"gear-custom-item-preview\" aria-hidden=\"true\"></span>\n      <label class=\"gear-custom-field gear-custom-field--quantity\">\n        <span class=\"visually-hidden\">").concat(escapeHtml(quantityLabel), " (").concat(escapeHtml(categoryLabel), ")</span>\n        <input\n          type=\"number\"\n          inputmode=\"numeric\"\n          pattern=\"[0-9]*\"\n          min=\"0\"\n          step=\"1\"\n          data-gear-custom-input=\"quantity\"\n          value=\"").concat(escapeHtml(quantityValue), "\"\n          aria-label=\"").concat(escapeHtml(quantityAria), "\"\n        />\n      </label>\n      <label class=\"gear-custom-field gear-custom-field--name\">\n        <span class=\"visually-hidden\">").concat(escapeHtml(nameLabel), " (").concat(escapeHtml(categoryLabel), ")</span>\n        <input\n          type=\"text\"\n          data-gear-custom-input=\"name\"\n          value=\"").concat(escapeHtml(nameValue), "\"\n          placeholder=\"").concat(escapeHtml(placeholder), "\"\n          aria-label=\"").concat(escapeHtml(nameAria), "\"\n        />\n      </label>\n      <button\n        type=\"button\"\n        class=\"gear-custom-remove-btn\"\n        data-gear-custom-remove=\"").concat(escapeHtml(categoryKey), "\"\n        data-gear-custom-category=\"").concat(escapeHtml(categoryLabel), "\"\n        aria-label=\"").concat(escapeHtml(removeAria), "\"\n      >\n        ").concat(minusIcon, "<span>").concat(escapeHtml(removeLabel), "</span>\n      </button>\n    </div>\n  ").trim();
+  var element = template.content.firstElementChild;
+  if (element) {
+    updateCustomItemPreview(element);
+  }
+  return element;
+}
+function persistCustomItemsChange() {
+  if (typeof saveCurrentGearList === 'function') {
+    saveCurrentGearList();
+  }
+  if (typeof saveCurrentSession === 'function') {
+    saveCurrentSession();
+  }
+  if (typeof checkSetupChanged === 'function') {
+    checkSetupChanged();
+  }
+}
+function addCustomItemEntry(categoryKey, categoryLabel) {
+  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var container = getCustomItemsContainer(categoryKey);
+  if (!container) return null;
+  var entry = buildCustomItemEntryElement(categoryKey, categoryLabel, data);
+  if (!entry) return null;
+  container.appendChild(entry);
+  updateCustomItemPreview(entry);
+  if (!options.skipFocus) {
+    var nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+    if (nameInput) {
+      nameInput.focus();
+    }
+  }
+  if (!options.skipPersist) {
+    persistCustomItemsChange();
+  }
+  return entry;
+}
+function handleAddCustomItemRequest(button) {
+  if (!button) return;
+  var categoryKey = button.getAttribute('data-gear-custom-add') || '';
+  if (!categoryKey) return;
+  var categoryLabel = button.getAttribute('data-gear-custom-category') || '';
+  addCustomItemEntry(categoryKey, categoryLabel, {
+    quantity: '1',
+    name: ''
+  });
+}
+function handleRemoveCustomItemRequest(button) {
+  if (!button) return;
+  var entry = button.closest('.gear-custom-item');
+  if (!entry) return;
+  var categoryKey = button.getAttribute('data-gear-custom-remove') || entry.getAttribute('data-gear-custom-entry') || '';
+  entry.remove();
+  persistCustomItemsChange();
+  if (categoryKey) {
+    var _gearListOutput;
+    var addBtn = (_gearListOutput = gearListOutput) === null || _gearListOutput === void 0 ? void 0 : _gearListOutput.querySelector("[data-gear-custom-add=\"".concat(categoryKey, "\"]"));
+    if (addBtn) {
+      addBtn.focus();
+    }
+  }
+}
+function readCustomItemsState() {
+  if (!gearListOutput) return {};
+  var state = {};
+  var containers = gearListOutput.querySelectorAll('.gear-custom-items[data-gear-custom-list]');
+  containers.forEach(function (container) {
+    var key = container.getAttribute('data-gear-custom-list');
+    if (!key) return;
+    var entries = [];
+    container.querySelectorAll('.gear-custom-item').forEach(function (item) {
+      var _quantityInput$value2, _nameInput$value2;
+      var quantityInput = item.querySelector('[data-gear-custom-input="quantity"]');
+      var nameInput = item.querySelector('[data-gear-custom-input="name"]');
+      var quantity = quantityInput ? String((_quantityInput$value2 = quantityInput.value) !== null && _quantityInput$value2 !== void 0 ? _quantityInput$value2 : '') : '';
+      var name = nameInput ? String((_nameInput$value2 = nameInput.value) !== null && _nameInput$value2 !== void 0 ? _nameInput$value2 : '') : '';
+      entries.push({
+        quantity: quantity,
+        name: name
+      });
+    });
+    if (entries.length) {
+      state[key] = entries;
+    }
+  });
+  return state;
+}
+function applyCustomItemsState(state) {
+  if (!gearListOutput) return;
+  var normalizedState = state && _typeof(state) === 'object' ? state : {};
+  var activeKeys = new Set(Object.keys(normalizedState));
+  var containers = gearListOutput.querySelectorAll('.gear-custom-items[data-gear-custom-list]');
+  containers.forEach(function (container) {
+    var key = container.getAttribute('data-gear-custom-list');
+    if (!key) return;
+    if (!activeKeys.has(key)) {
+      container.querySelectorAll('.gear-custom-item').forEach(function (item) {
+        return item.remove();
+      });
+    }
+  });
+  Object.entries(normalizedState).forEach(function (_ref15) {
+    var _ref16 = _slicedToArray(_ref15, 2),
+      key = _ref16[0],
+      entries = _ref16[1];
+    var container = getCustomItemsContainer(key);
+    if (!container) return;
+    container.querySelectorAll('.gear-custom-item').forEach(function (item) {
+      return item.remove();
+    });
+    var categoryLabel = container.getAttribute('data-gear-custom-category') || '';
+    if (Array.isArray(entries)) {
+      entries.forEach(function (entry) {
+        if (entry && _typeof(entry) === 'object') {
+          addCustomItemEntry(key, categoryLabel, entry, {
+            skipFocus: true,
+            skipPersist: true
+          });
+        } else {
+          addCustomItemEntry(key, categoryLabel, {
+            quantity: '',
+            name: ''
+          }, {
+            skipFocus: true,
+            skipPersist: true
+          });
+        }
+      });
+    }
+  });
+}
+function gearListGenerateHtmlImpl() {
+  var _devices$accessories2, _texts$currentLang3, _texts$en6, _texts$currentLang4, _texts$en7, _texts$currentLang5, _texts$en8;
   var info = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var getText = function getText(sel) {
     return sel && sel.options && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text.trim() : '';
@@ -3531,7 +4098,9 @@ function generateGearListHtml() {
     supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
   }
   var projectInfo = _objectSpread({}, info);
-  var crewRoleLabels = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.crewRoles) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.crewRoles) || {};
+  var projectFormTexts = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectForm) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectForm) || {};
+  var storageFallbackLabel = projectFormTexts.storageSummaryFallback || projectFormTexts.storageTypeLabel || 'Media';
+  var crewRoleLabels = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewRoles) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.crewRoles) || {};
   if (Array.isArray(info.people)) {
     var crewEntriesHtml = [];
     var crewEntriesText = [];
@@ -3584,6 +4153,38 @@ function generateGearListHtml() {
     }
   }
   delete projectInfo.people;
+  if (Array.isArray(info.storageRequirements)) {
+    var storageEntriesHtml = [];
+    var storageEntriesText = [];
+    info.storageRequirements.forEach(function (entry) {
+      if (!entry || _typeof(entry) !== 'object') return;
+      var quantity = Number.isFinite(entry.quantity) && entry.quantity > 0 ? entry.quantity : null;
+      var type = typeof entry.type === 'string' ? entry.type.trim() : '';
+      var variant = typeof entry.variant === 'string' ? entry.variant.trim() : '';
+      var notes = typeof entry.notes === 'string' ? entry.notes.trim() : '';
+      if (!quantity && !type && !variant && !notes) return;
+      var label = variant || type || '';
+      if (variant && type && !variant.toLowerCase().includes(type.toLowerCase())) {
+        label = "".concat(variant, " (").concat(type, ")");
+      } else if (!label && type) {
+        label = type;
+      }
+      if (notes) {
+        label = label ? "".concat(label, " \u2013 ").concat(notes) : notes;
+      }
+      var display = label || storageFallbackLabel;
+      var prefix = quantity ? "".concat(quantity, "x ") : '';
+      var text = "".concat(prefix).concat(display).trim();
+      storageEntriesText.push(text);
+      storageEntriesHtml.push("<span class=\"storage-entry\">".concat(escapeHtml(text), "</span>"));
+    });
+    if (storageEntriesHtml.length) {
+      projectInfo.storageRequirements = {
+        __html: storageEntriesHtml.join('<br>'),
+        text: storageEntriesText.join('\n')
+      };
+    }
+  }
   if (Array.isArray(info.prepDays)) {
     projectInfo.prepDays = info.prepDays.join('\n');
   }
@@ -3599,19 +4200,18 @@ function generateGearListHtml() {
   delete projectInfo.aspectMaskOpacity;
   var projectTitleSource = getCurrentProjectName() || info.projectName || '';
   var projectTitle = escapeHtml(projectTitleSource);
-  var projectLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectFields) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectFields) || {};
-  var projectFormTexts = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.projectForm) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.projectForm) || {};
+  var projectLabels = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref14) {
-    var _ref15 = _slicedToArray(_ref14, 2),
-      k = _ref15[0],
-      v = _ref15[1];
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref17) {
+    var _ref18 = _slicedToArray(_ref17, 2),
+      k = _ref18[0],
+      v = _ref18[1];
     return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
   });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref16) {
-    var _ref17 = _slicedToArray(_ref16, 2),
-      k = _ref17[0],
-      v = _ref17[1];
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref19) {
+    var _ref20 = _slicedToArray(_ref19, 2),
+      k = _ref20[0],
+      v = _ref20[1];
     var value = formatRequirementValue(v);
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -3642,21 +4242,21 @@ function generateGearListHtml() {
       var current = counts[base].ctxCounts[ctx] || 0;
       counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
     });
-    return Object.entries(counts).sort(function (_ref18, _ref19) {
-      var _ref20 = _slicedToArray(_ref18, 1),
-        a = _ref20[0];
-      var _ref21 = _slicedToArray(_ref19, 1),
-        b = _ref21[0];
+    return Object.entries(counts).sort(function (_ref21, _ref22) {
+      var _ref23 = _slicedToArray(_ref21, 1),
+        a = _ref23[0];
+      var _ref24 = _slicedToArray(_ref22, 1),
+        b = _ref24[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref22) {
+    }).map(function (_ref25) {
       var _gearItemTranslations;
-      var _ref23 = _slicedToArray(_ref22, 2),
-        base = _ref23[0],
-        _ref23$ = _ref23[1],
-        total = _ref23$.total,
-        ctxCounts = _ref23$.ctxCounts;
+      var _ref26 = _slicedToArray(_ref25, 2),
+        base = _ref26[0],
+        _ref26$ = _ref26[1],
+        total = _ref26$.total,
+        ctxCounts = _ref26$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -3664,41 +4264,41 @@ function generateGearListHtml() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref24) {
-            var _ref25 = _slicedToArray(_ref24, 1),
-              c = _ref25[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref27) {
+            var _ref28 = _slicedToArray(_ref27, 1),
+              c = _ref28[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref26, _ref27) {
-            var _ref28 = _slicedToArray(_ref26, 1),
-              a = _ref28[0];
-            var _ref29 = _slicedToArray(_ref27, 1),
-              b = _ref29[0];
+          }).sort(function (_ref29, _ref30) {
+            var _ref31 = _slicedToArray(_ref29, 1),
+              a = _ref31[0];
+            var _ref32 = _slicedToArray(_ref30, 1),
+              b = _ref32[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref30) {
-            var _ref31 = _slicedToArray(_ref30, 2),
-              count = _ref31[1];
+          var usedCount = realEntries.reduce(function (sum, _ref33) {
+            var _ref34 = _slicedToArray(_ref33, 2),
+              count = _ref34[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref32) {
-            var _ref33 = _slicedToArray(_ref32, 2),
-              c = _ref33[0],
-              count = _ref33[1];
+          ctxParts = realEntries.map(function (_ref35) {
+            var _ref36 = _slicedToArray(_ref35, 2),
+              c = _ref36[0],
+              count = _ref36[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref34) {
-            var _ref35 = _slicedToArray(_ref34, 1),
-              c = _ref35[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref37) {
+            var _ref38 = _slicedToArray(_ref37, 1),
+              c = _ref38[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref36) {
-            var _ref37 = _slicedToArray(_ref36, 2),
-              c = _ref37[0],
-              count = _ref37[1];
+          }).map(function (_ref39) {
+            var _ref40 = _slicedToArray(_ref39, 2),
+              c = _ref40[0],
+              count = _ref40[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -3710,63 +4310,63 @@ function generateGearListHtml() {
               }
             }
             return [c, count];
-          }).sort(function (_ref38, _ref39) {
-            var _ref40 = _slicedToArray(_ref38, 1),
-              a = _ref40[0];
-            var _ref41 = _slicedToArray(_ref39, 1),
-              b = _ref41[0];
+          }).sort(function (_ref41, _ref42) {
+            var _ref43 = _slicedToArray(_ref41, 1),
+              a = _ref43[0];
+            var _ref44 = _slicedToArray(_ref42, 1),
+              b = _ref44[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref42) {
-            var _ref43 = _slicedToArray(_ref42, 2),
-              count = _ref43[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref45) {
+            var _ref46 = _slicedToArray(_ref45, 2),
+              count = _ref46[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref44) {
-            var _ref45 = _slicedToArray(_ref44, 2),
-              c = _ref45[0],
-              count = _ref45[1];
+          ctxParts = _realEntries.map(function (_ref47) {
+            var _ref48 = _slicedToArray(_ref47, 2),
+              c = _ref48[0],
+              count = _ref48[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref46) {
-            var _ref47 = _slicedToArray(_ref46, 1),
-              c = _ref47[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref49) {
+            var _ref50 = _slicedToArray(_ref49, 1),
+              c = _ref50[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref48, _ref49) {
-            var _ref50 = _slicedToArray(_ref48, 1),
-              a = _ref50[0];
-            var _ref51 = _slicedToArray(_ref49, 1),
-              b = _ref51[0];
+          }).sort(function (_ref51, _ref52) {
+            var _ref53 = _slicedToArray(_ref51, 1),
+              a = _ref53[0];
+            var _ref54 = _slicedToArray(_ref52, 1),
+              b = _ref54[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          ctxParts = _realEntries2.map(function (_ref52) {
-            var _ref53 = _slicedToArray(_ref52, 2),
-              c = _ref53[0],
-              count = _ref53[1];
+          ctxParts = _realEntries2.map(function (_ref55) {
+            var _ref56 = _slicedToArray(_ref55, 2),
+              c = _ref56[0],
+              count = _ref56[1];
             return "".concat(count, "x ").concat(c);
           });
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref54) {
-            var _ref55 = _slicedToArray(_ref54, 1),
-              c = _ref55[0];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref57) {
+            var _ref58 = _slicedToArray(_ref57, 1),
+              c = _ref58[0];
             return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref56) {
-            var _ref57 = _slicedToArray(_ref56, 2),
-              count = _ref57[1];
+          }).reduce(function (sum, _ref59) {
+            var _ref60 = _slicedToArray(_ref59, 2),
+              count = _ref60[1];
             return sum + count;
           }, 0);
           if (_spareCount2 > 0) {
             ctxParts.push("".concat(_spareCount2, "x Spare"));
           } else if (base === 'D-Tap Extension 50 cm') {
-            var _usedCount2 = _realEntries2.reduce(function (sum, _ref58) {
-              var _ref59 = _slicedToArray(_ref58, 2),
-                count = _ref59[1];
+            var _usedCount2 = _realEntries2.reduce(function (sum, _ref61) {
+              var _ref62 = _slicedToArray(_ref61, 2),
+                count = _ref62[1];
               return sum + count;
             }, 0);
             var remaining = total - _usedCount2;
@@ -3795,7 +4395,22 @@ function generateGearListHtml() {
   };
   var categoryGroups = [];
   var addRow = function addRow(cat, items) {
-    categoryGroups.push("<tbody class=\"category-group\"><tr class=\"category-row\"><td>".concat(cat, "</td></tr><tr><td>").concat(items, "</td></tr></tbody>"));
+    var rawLabel = typeof cat === 'string' ? cat : String(cat !== null && cat !== void 0 ? cat : '');
+    var categoryLabel = rawLabel.trim() || String(cat !== null && cat !== void 0 ? cat : '');
+    var categoryKey = createCustomCategoryKey(categoryLabel);
+    var safeLabel = escapeHtml(categoryLabel);
+    var addLabel = resolveGearListCustomText('gearListAddCustomItem', 'Add custom item');
+    var addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', {
+      category: categoryLabel
+    });
+    var addIcon = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.add, {
+      className: 'btn-icon'
+    }) : '';
+    var addButtonHtml = "<button type=\"button\" class=\"gear-custom-add-btn\" data-gear-custom-add=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-label=\"").concat(escapeHtml(addAria), "\">").concat(addIcon, "<span>").concat(escapeHtml(addLabel), "</span></button>");
+    var standardItemsHtml = items ? "<div class=\"gear-standard-items\">".concat(items, "</div>") : '';
+    var customSectionHtml = "<div class=\"gear-custom-section\" data-gear-custom-key=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\"><div class=\"gear-custom-items\" data-gear-custom-list=\"").concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-live=\"polite\"></div></div>");
+    var rowContent = "".concat(standardItemsHtml).concat(customSectionHtml);
+    categoryGroups.push("<tbody class=\"category-group\" data-gear-table-category=\"".concat(safeLabel, "\" data-gear-custom-key=\"").concat(escapeHtml(categoryKey), "\"><tr class=\"category-row\"><td data-gear-category-label=\"").concat(safeLabel, "\"><div class=\"gear-category-header\"><span class=\"gear-category-label\">").concat(safeLabel, "</span>").concat(addButtonHtml, "</div></td></tr><tr><td>").concat(rowContent, "</td></tr></tbody>"));
   };
   addRow('Camera', formatItems([selectedNames.camera]));
   var cameraSupportText = formatItems(supportAccNoCages);
@@ -3807,42 +4422,74 @@ function generateGearListHtml() {
     cageSelectHtml = "<span class=\"cage-select-wrapper\"><span>1x</span><select id=\"gearListCage\">".concat(options, "</select></span>");
   }
   addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
-  var mediaItems = '';
-  var cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
-  if (cam && Array.isArray(cam.recordingMedia) && cam.recordingMedia.length) {
-    var sizeMap = {
-      'CFexpress Type A': '320GB',
-      'CFast 2.0': '512GB',
-      'CFexpress Type B': '512GB',
-      'Codex Compact Drive': '1TB',
-      'AXS Memory A-Series slot': '1TB',
-      'SD': '128GB',
-      'SD Card': '128GB',
-      'SDXC': '128GB',
-      'XQD Card': '120GB',
-      'RED MINI-MAG': '512GB',
-      'REDMAG 1.8" SSD': '512GB',
-      'Blackmagic Media Module': '8TB',
-      'DJI PROSSD': '1TB',
-      'USB-C 3.1 Gen 1 expansion port for external media': '1TB',
-      'USB-C 3.1 Gen 2 expansion port for external media': '1TB',
-      'USB-C to external SSD/HDD': '1TB'
-    };
-    mediaItems = cam.recordingMedia.slice(0, 1).map(function (m) {
-      var type = m && m.type ? m.type : '';
-      if (!type) return '';
-      var size = '';
-      if (m.notes) {
-        var match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
-        if (match) size = match[1].toUpperCase();
+  var storageGearListItems = Array.isArray(info.storageRequirements) ? info.storageRequirements.map(function (entry) {
+    if (!entry || _typeof(entry) !== 'object') return '';
+    var quantity = Number.isFinite(entry.quantity) && entry.quantity > 0 ? entry.quantity : null;
+    var type = typeof entry.type === 'string' ? entry.type.trim() : '';
+    var variant = typeof entry.variant === 'string' ? entry.variant.trim() : '';
+    var notes = typeof entry.notes === 'string' ? entry.notes.trim() : '';
+    if (!quantity && !type && !variant && !notes) return '';
+    var contextParts = [];
+    var normalizedType = type.toLowerCase();
+    var display = variant || '';
+    if (display) {
+      var normalizedVariant = display.toLowerCase();
+      if (normalizedType && !normalizedVariant.includes(normalizedType) && type) {
+        contextParts.push(type);
       }
-      if (!size) size = sizeMap[type] || '512GB';
-      return "4x ".concat(escapeHtml(size), " ").concat(escapeHtml(type), "<br>2x ").concat(escapeHtml(type), " reader with USB-C");
-    }).filter(Boolean).join('<br>');
+    } else if (type) {
+      display = type;
+    }
+    if (!display) {
+      display = storageFallbackLabel;
+    }
+    if (notes) {
+      contextParts.push(notes);
+    }
+    var context = contextParts.length ? " (".concat(contextParts.join(', '), ")") : '';
+    var prefix = quantity ? "".concat(quantity, "x ") : '';
+    return "".concat(prefix).concat(display).concat(context).trim();
+  }).filter(Boolean) : [];
+  var cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
+  var mediaItems = '';
+  if (storageGearListItems.length) {
+    mediaItems = formatItems(storageGearListItems);
+  } else {
+    if (cam && Array.isArray(cam.recordingMedia) && cam.recordingMedia.length) {
+      var sizeMap = {
+        'CFexpress Type A': '320GB',
+        'CFast 2.0': '512GB',
+        'CFexpress Type B': '512GB',
+        'Codex Compact Drive': '1TB',
+        'AXS Memory A-Series slot': '1TB',
+        'SD': '128GB',
+        'SD Card': '128GB',
+        'SDXC': '128GB',
+        'XQD Card': '120GB',
+        'RED MINI-MAG': '512GB',
+        'REDMAG 1.8" SSD': '512GB',
+        'Blackmagic Media Module': '8TB',
+        'DJI PROSSD': '1TB',
+        'USB-C 3.1 Gen 1 expansion port for external media': '1TB',
+        'USB-C 3.1 Gen 2 expansion port for external media': '1TB',
+        'USB-C to external SSD/HDD': '1TB'
+      };
+      mediaItems = cam.recordingMedia.slice(0, 1).map(function (m) {
+        var type = m && m.type ? m.type : '';
+        if (!type) return '';
+        var size = '';
+        if (m.notes) {
+          var match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
+          if (match) size = match[1].toUpperCase();
+        }
+        if (!size) size = sizeMap[type] || '512GB';
+        return "4x ".concat(escapeHtml(size), " ").concat(escapeHtml(type), "<br>2x ").concat(escapeHtml(type), " reader with USB-C");
+      }).filter(Boolean).join('<br>');
+    }
   }
   addRow('Media', mediaItems);
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref60, _lens$minFocusMeters;
+    var _ref63, _lens$minFocusMeters;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
@@ -3853,7 +4500,7 @@ function generateGearListHtml() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref60 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref60 !== void 0 ? _ref60 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref63 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref63 !== void 0 ? _ref63 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
@@ -3969,9 +4616,9 @@ function generateGearListHtml() {
     var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
   }
-  handheldPrefs.forEach(function (_ref61) {
-    var role = _ref61.role,
-      size = _ref61.size;
+  handheldPrefs.forEach(function (_ref64) {
+    var role = _ref64.role,
+      size = _ref64.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -4050,9 +4697,9 @@ function generateGearListHtml() {
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
     if (selectedSize) monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref62) {
+  largeMonitorPrefs.forEach(function (_ref65) {
     var _dirDb$resolvedName, _dirDb$defaultName, _dirDb$candidate;
-    var role = _ref62.role;
+    var role = _ref65.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -4198,20 +4845,81 @@ function generateGearListHtml() {
     var gearHtml = formatItems(monitoringGear).replace(/>(\d+x )Wireless Transmitter/g, '>$1<strong>Wireless Transmitter</strong>').replace(/>(\d+x )Wireless Receiver/g, '>$1<strong>Wireless Receiver</strong>').replace(/&amp;quot;/g, '&quot;');
     monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
   }
+  var monitorBatterySelections = function () {
+    var source = info.monitorBatteries;
+    if (!source || _typeof(source) !== 'object' || Array.isArray(source)) return {};
+    var entries = {};
+    Object.entries(source).forEach(function (_ref66) {
+      var _ref67 = _slicedToArray(_ref66, 2),
+        key = _ref67[0],
+        value = _ref67[1];
+      if (typeof key !== 'string') return;
+      if (typeof value !== 'string') return;
+      var trimmed = value.trim();
+      if (!trimmed) return;
+      entries[key] = trimmed;
+    });
+    return entries;
+  }();
+  var batteryDatabase = devices && devices.batteries ? devices.batteries : {};
+  var baseBatteryOptions = Object.keys(batteryDatabase).filter(function (name) {
+    return name && name !== 'None';
+  }).sort(localeSort);
+  var buildBatteryOptions = function buildBatteryOptions(selectedValue) {
+    var normalizedSelected = typeof selectedValue === 'string' ? selectedValue.trim() : '';
+    var optionValues = baseBatteryOptions.slice();
+    if (normalizedSelected && !optionValues.some(function (value) {
+      return value.toLowerCase() === normalizedSelected.toLowerCase();
+    })) {
+      optionValues.unshift(normalizedSelected);
+    }
+    var seen = new Set();
+    return optionValues.filter(Boolean).filter(function (value) {
+      var key = value.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).map(function (value) {
+      var isSelected = normalizedSelected && value.toLowerCase() === normalizedSelected.toLowerCase();
+      return "<option value=\"".concat(escapeHtml(value), "\"").concat(isSelected ? ' selected' : '', ">").concat(escapeHtml(addArriKNumber(value)), "</option>");
+    }).join('');
+  };
   var monitoringBatteryItems = [];
-  var bebob98 = Object.keys(devices.batteries || {}).find(function (n) {
+  var bebob98 = Object.keys(batteryDatabase).find(function (n) {
     return /V98micro/i.test(n);
   }) || 'Bebob V98micro';
-  handheldPrefs.forEach(function (p) {
-    for (var _i14 = 0; _i14 < 3; _i14++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
+  handheldPrefs.forEach(function (p, index) {
+    var roleNameRaw = typeof p.role === 'string' ? p.role : '';
+    var roleName = roleNameRaw.trim();
+    var contextLabel = "".concat(roleName || 'Monitor', " handheld");
+    var key = "handheld:".concat(roleName, ":").concat(index);
+    var storedValue = monitorBatterySelections[key];
+    var selectedValue = typeof storedValue === 'string' && storedValue.trim() || bebob98;
+    if (!selectedValue) return;
+    var roleId = (roleName || 'Monitor').replace(/[^A-Za-z0-9]/g, '') || 'Monitor';
+    var selectId = "gearListMonitorBatteryHandheld".concat(index).concat(roleId);
+    var optionsHtml = buildBatteryOptions(selectedValue);
+    var selectHtml = "<select id=\"".concat(selectId, "\" data-monitor-battery-key=\"").concat(escapeHtml(key), "\" data-monitor-battery-type=\"handheld\" data-monitor-battery-role=\"").concat(escapeHtml(roleName), "\">").concat(optionsHtml, "</select>");
+    monitoringBatteryItems.push("<span class=\"gear-item\" data-gear-name=\"".concat(escapeHtml("Monitoring Battery ".concat(contextLabel)), "\">3x ").concat(selectHtml, " (").concat(escapeHtml(contextLabel), ")</span>"));
   });
-  var bebob290 = Object.keys(devices.batteries || {}).find(function (n) {
+  var bebob290 = Object.keys(batteryDatabase).find(function (n) {
     return /V290RM-Cine/i.test(n);
   }) || 'Bebob V290RM-Cine';
-  largeMonitorPrefs.forEach(function (p) {
-    monitoringBatteryItems.push("".concat(bebob290, " (").concat(p.role, " 15-21\")"), "".concat(bebob290, " (").concat(p.role, " 15-21\")"));
+  largeMonitorPrefs.forEach(function (p, index) {
+    var roleNameRaw = typeof p.role === 'string' ? p.role : '';
+    var roleName = roleNameRaw.trim();
+    var contextLabel = "".concat(roleName || 'Monitor', " 15-21\"");
+    var key = "large:".concat(roleName, ":").concat(index);
+    var storedValue = monitorBatterySelections[key];
+    var selectedValue = typeof storedValue === 'string' && storedValue.trim() || bebob290;
+    if (!selectedValue) return;
+    var roleId = (roleName || 'Monitor').replace(/[^A-Za-z0-9]/g, '') || 'Monitor';
+    var selectId = "gearListMonitorBatteryLarge".concat(index).concat(roleId);
+    var optionsHtml = buildBatteryOptions(selectedValue);
+    var selectHtml = "<select id=\"".concat(selectId, "\" data-monitor-battery-key=\"").concat(escapeHtml(key), "\" data-monitor-battery-type=\"large\" data-monitor-battery-role=\"").concat(escapeHtml(roleName), "\">").concat(optionsHtml, "</select>");
+    monitoringBatteryItems.push("<span class=\"gear-item\" data-gear-name=\"".concat(escapeHtml("Monitoring Battery ".concat(contextLabel)), "\">2x ").concat(selectHtml, " (").concat(escapeHtml(contextLabel), ")</span>"));
   });
-  addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
+  addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('<br>') : '');
   addRow('Chargers', formatItems(chargersAcc));
   addRow('Monitoring', monitoringItems);
   ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');
@@ -4426,15 +5134,15 @@ function generateGearListHtml() {
     multiplier = 2;
   }
   var klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
-  for (var _i15 = 0, _baseConsumables = baseConsumables; _i15 < _baseConsumables.length; _i15++) {
-    var item = _baseConsumables[_i15];
+  for (var _i14 = 0, _baseConsumables = baseConsumables; _i14 < _baseConsumables.length; _i14++) {
+    var item = _baseConsumables[_i14];
     var _count2 = item.count;
     if (item.noScale) {} else if (item.klappen) {
       _count2 *= klappenMultiplier;
     } else {
       _count2 *= multiplier;
     }
-    for (var _i16 = 0; _i16 < _count2; _i16++) consumables.push(item.name);
+    for (var _i15 = 0; _i15 < _count2; _i15++) consumables.push(item.name);
   }
   if (eyeLeatherCount) eyeLeatherCount *= multiplier;
   var needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
@@ -4458,10 +5166,10 @@ function generateGearListHtml() {
     var monitorsUnder10 = _monitorSizes.filter(function (s) {
       return s <= 10;
     }).length;
-    for (var _i17 = 0; _i17 < monitorsAbove10 + 2; _i17++) consumables.push('CapIt Large');
-    for (var _i18 = 0; _i18 < monitorsUnder10 + 3; _i18++) consumables.push('CapIt Medium');
-    for (var _i19 = 0; _i19 < 3; _i19++) consumables.push('CapIt Small');
-    for (var _i20 = 0; _i20 < 10; _i20++) consumables.push('Shower Cap');
+    for (var _i16 = 0; _i16 < monitorsAbove10 + 2; _i16++) consumables.push('CapIt Large');
+    for (var _i17 = 0; _i17 < monitorsUnder10 + 3; _i17++) consumables.push('CapIt Medium');
+    for (var _i18 = 0; _i18 < 3; _i18++) consumables.push('CapIt Small');
+    for (var _i19 = 0; _i19 < 10; _i19++) consumables.push('Shower Cap');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');
@@ -4476,20 +5184,20 @@ function generateGearListHtml() {
   }
   if (needsHandAndFeetWarmers) {
     var warmersCount = Math.max(shootDays, 1) * 2;
-    for (var _i21 = 0; _i21 < warmersCount; _i21++) miscItems.push('Hand Warmers');
-    for (var _i22 = 0; _i22 < warmersCount; _i22++) miscItems.push('Feet Warmers');
+    for (var _i20 = 0; _i20 < warmersCount; _i20++) miscItems.push('Hand Warmers');
+    for (var _i21 = 0; _i21 < warmersCount; _i21++) miscItems.push('Feet Warmers');
   }
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref63) {
-    var id = _ref63.id,
-      color = _ref63.color,
-      width = _ref63.width;
-    var colorOpts = gaffColors.map(function (_ref64) {
-      var _ref65 = _slicedToArray(_ref64, 2),
-        val = _ref65[0],
-        label = _ref65[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref68) {
+    var id = _ref68.id,
+      color = _ref68.color,
+      width = _ref68.width;
+    var colorOpts = gaffColors.map(function (_ref69) {
+      var _ref70 = _slicedToArray(_ref69, 2),
+        val = _ref70[0],
+        label = _ref70[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -4500,10 +5208,10 @@ function generateGearListHtml() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref66) {
-      var _ref67 = _slicedToArray(_ref66, 2),
-        val = _ref67[0],
-        label = _ref67[1];
+    var _options3 = colors.map(function (_ref71) {
+      var _ref72 = _slicedToArray(_ref71, 2),
+        val = _ref72[0],
+        label = _ref72[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\">".concat(eyeLeatherCount, "x Bluestar eye leather made of microfiber oval, large <select id=\"gearListEyeLeatherColor\">").concat(_options3, "</select></span>");
@@ -4525,7 +5233,7 @@ function generateGearListHtml() {
   body += '<h3>Gear List</h3>' + adjustedTable;
   return body;
 }
-function getCurrentGearListHtml() {
+function gearListGetCurrentHtmlImpl() {
   if (!gearListOutput && !projectRequirementsOutput) return '';
   var projHtml = '';
   if (projectRequirementsOutput) {
@@ -4607,6 +5315,19 @@ function getCurrentGearListHtml() {
         }
       });
     }
+    var monitorBatterySelects = clone.querySelectorAll('select[data-monitor-battery-key]');
+    monitorBatterySelects.forEach(function (sel) {
+      if (!sel.id) return;
+      var originalSel = gearListOutput.querySelector("#".concat(sel.id));
+      var val = originalSel ? originalSel.value : sel.value;
+      Array.from(sel.options).forEach(function (opt) {
+        if (opt.value === val) {
+          opt.setAttribute('selected', '');
+        } else {
+          opt.removeAttribute('selected');
+        }
+      });
+    });
     var eyeSel = clone.querySelector('#gearListEyeLeatherColor');
     if (eyeSel) {
       var _originalSel3 = gearListOutput.querySelector('#gearListEyeLeatherColor');
@@ -4652,6 +5373,11 @@ function getCurrentGearListHtml() {
         cb.removeAttribute('checked');
       }
     });
+    clone.querySelectorAll('[data-gear-custom-input]').forEach(function (input) {
+      if (input && typeof input.getAttribute === 'function') {
+        input.setAttribute('value', input.value);
+      }
+    });
     var table = clone.querySelector('.gear-table');
     gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
   }
@@ -4674,34 +5400,52 @@ function getGearListSelectors() {
       return o.value;
     }) : sel.value;
   });
+  var customState = readCustomItemsState();
+  if (customState && Object.keys(customState).length) {
+    selectors.__customItems = customState;
+  }
   return selectors;
 }
 function cloneGearListSelectors(selectors) {
   if (!selectors || _typeof(selectors) !== 'object') return {};
-  var clone = {};
-  Object.entries(selectors).forEach(function (_ref68) {
-    var _ref69 = _slicedToArray(_ref68, 2),
-      id = _ref69[0],
-      value = _ref69[1];
-    if (!id || typeof id !== 'string') return;
+  var _cloneValue = function cloneValue(value) {
     if (Array.isArray(value)) {
-      clone[id] = value.map(function (item) {
-        return typeof item === 'string' ? item : String(item !== null && item !== void 0 ? item : '');
+      return value.map(function (item) {
+        return _cloneValue(item);
       });
-    } else if (value === undefined || value === null) {
-      clone[id] = '';
-    } else {
-      clone[id] = typeof value === 'string' ? value : String(value);
     }
+    if (value && _typeof(value) === 'object') {
+      var nested = {};
+      Object.entries(value).forEach(function (_ref73) {
+        var _ref74 = _slicedToArray(_ref73, 2),
+          key = _ref74[0],
+          nestedValue = _ref74[1];
+        nested[key] = _cloneValue(nestedValue);
+      });
+      return nested;
+    }
+    if (value === undefined || value === null) {
+      return '';
+    }
+    return typeof value === 'string' ? value : String(value);
+  };
+  var clone = {};
+  Object.entries(selectors).forEach(function (_ref75) {
+    var _ref76 = _slicedToArray(_ref75, 2),
+      id = _ref76[0],
+      value = _ref76[1];
+    if (!id || typeof id !== 'string') return;
+    clone[id] = _cloneValue(value);
   });
   return clone;
 }
 function applyGearListSelectors(selectors) {
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref70) {
-    var _ref71 = _slicedToArray(_ref70, 2),
-      id = _ref71[0],
-      value = _ref71[1];
+  Object.entries(selectors).forEach(function (_ref77) {
+    var _ref78 = _slicedToArray(_ref77, 2),
+      id = _ref78[0],
+      value = _ref78[1];
+    if (id === '__customItems') return;
     var sel = gearListOutput.querySelector("#".concat(id));
     if (sel) {
       if (sel.multiple) {
@@ -4716,6 +5460,7 @@ function applyGearListSelectors(selectors) {
       }
     }
   });
+  applyCustomItemsState(selectors.__customItems || {});
 }
 function cloneProjectInfoForStorage(info) {
   if (info === undefined || info === null) {
@@ -4724,17 +5469,12 @@ function cloneProjectInfoForStorage(info) {
   if (_typeof(info) !== 'object') {
     return info;
   }
-  if (typeof structuredClone === 'function') {
+  if (typeof SETUPS_DEEP_CLONE === 'function') {
     try {
-      return structuredClone(info);
+      return SETUPS_DEEP_CLONE(info);
     } catch (error) {
-      console.warn('Failed to structured clone project info for storage', error);
+      console.warn('Failed to clone project info for storage', error);
     }
-  }
-  try {
-    return JSON.parse(JSON.stringify(info));
-  } catch (error) {
-    console.warn('Failed to serialize project info for storage', error);
   }
   if (Array.isArray(info)) {
     return info.map(function (item) {
@@ -4746,6 +5486,52 @@ function cloneProjectInfoForStorage(info) {
     clone[key] = cloneProjectInfoForStorage(info[key]);
   });
   return clone;
+}
+function hasMeaningfulProjectInfoValue(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.some(function (entry) {
+      return hasMeaningfulProjectInfoValue(entry);
+    });
+  }
+  if (_typeof(value) === 'object') {
+    return Object.values(value).some(function (entry) {
+      return hasMeaningfulProjectInfoValue(entry);
+    });
+  }
+  return false;
+}
+function mergeProjectInfoSnapshots(base, updates) {
+  var baseHasData = hasMeaningfulProjectInfoValue(base);
+  var updateHasData = hasMeaningfulProjectInfoValue(updates);
+  if (!updateHasData) {
+    return baseHasData ? cloneProjectInfoForStorage(base) : cloneProjectInfoForStorage(updates);
+  }
+  if (!baseHasData) {
+    return cloneProjectInfoForStorage(updates);
+  }
+  if (Array.isArray(base) && Array.isArray(updates)) {
+    return cloneProjectInfoForStorage(updates.length ? updates : base);
+  }
+  if (_typeof(base) === 'object' && _typeof(updates) === 'object') {
+    var merged = cloneProjectInfoForStorage(base);
+    Object.keys(updates).forEach(function (key) {
+      merged[key] = mergeProjectInfoSnapshots(merged[key], updates[key]);
+    });
+    return merged;
+  }
+  return cloneProjectInfoForStorage(updates);
 }
 function normalizeRequirementNodeValue(node) {
   if (!node) return '';
@@ -4792,8 +5578,10 @@ function collectProjectInfoFromRequirementsGrid() {
 }
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
-  var html = getCurrentGearListHtml();
-  var gearListGenerated = Boolean(html);
+  if (isProjectPersistenceSuspended()) return;
+  var html = gearListGetCurrentHtmlImpl();
+  var normalizedHtml = typeof html === 'string' ? html.trim() : '';
+  var gearListGenerated = Boolean(normalizedHtml);
   var info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
   info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -4874,9 +5662,11 @@ function saveCurrentGearList() {
   if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
     var payload = {
       projectInfo: projectInfoSnapshot,
-      gearList: html,
       gearListAndProjectRequirementsGenerated: gearListGenerated
     };
+    if (normalizedHtml) {
+      payload.gearList = normalizedHtml;
+    }
     if (powerSelectionSnapshot) {
       payload.powerSelection = powerSelectionSnapshot;
     }
@@ -4899,16 +5689,16 @@ function saveCurrentGearList() {
   }
   var setup = existing || {};
   var changed = false;
-  if (html) {
-    if (setup.gearList !== html) {
-      setup.gearList = html;
+  var existingGearList = typeof setup.gearList === 'string' ? setup.gearList : '';
+  if (normalizedHtml) {
+    if (existingGearList !== normalizedHtml) {
+      setup.gearList = normalizedHtml;
       changed = true;
     }
-  } else if (setup.gearList !== '') {
-    setup.gearList = '';
+  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+    delete setup.gearList;
     changed = true;
   }
-
   if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
     setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     changed = true;
@@ -4994,7 +5784,7 @@ function deleteCurrentGearList() {
   } else if (typeof saveProject === 'function') {
     saveProject(storageKey, {
       projectInfo: null,
-      gearList: ''
+      gearListAndProjectRequirementsGenerated: false
     });
   }
   var setups = getSetups();
@@ -5006,22 +5796,12 @@ function deleteCurrentGearList() {
         delete existingSetup.gearList;
         changed = true;
       }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'projectInfo')) {
-        delete existingSetup.projectInfo;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'autoGearRules')) {
-        delete existingSetup.autoGearRules;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
-        delete existingSetup.diagramPositions;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'powerSelection')) {
-        delete existingSetup.powerSelection;
-        changed = true;
-      }
+      ['projectInfo', 'autoGearRules', 'diagramPositions', 'powerSelection', 'gearSelectors', 'gearListAndProjectRequirementsGenerated'].forEach(function (prop) {
+        if (Object.prototype.hasOwnProperty.call(existingSetup, prop)) {
+          delete existingSetup[prop];
+          changed = true;
+        }
+      });
       if (changed) {
         storeSetups(setups);
       }
@@ -5073,10 +5853,12 @@ function deleteCurrentGearList() {
           delete savedSetup.gearList;
           resaved = true;
         }
-        if (Object.prototype.hasOwnProperty.call(savedSetup, 'projectInfo')) {
-          delete savedSetup.projectInfo;
-          resaved = true;
-        }
+        ['projectInfo', 'gearListAndProjectRequirementsGenerated', 'gearSelectors'].forEach(function (prop) {
+          if (Object.prototype.hasOwnProperty.call(savedSetup, prop)) {
+            delete savedSetup[prop];
+            resaved = true;
+          }
+        });
         if (resaved) {
           storeSetups(setupsAfterSave);
         }
@@ -5228,10 +6010,10 @@ function applyAutoGearRuleColors(span, rule) {
   }
 }
 function getAutoGearRuleBadgeTemplates() {
-  var _texts$en8, _texts$en9;
+  var _texts$en9, _texts$en0;
   var langTexts = texts[currentLang] || texts.en || {};
-  var named = langTexts.autoGearRuleBadgeNamed || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.autoGearRuleBadgeNamed) || AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK;
-  var unnamed = langTexts.autoGearRuleBadgeUnnamed || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.autoGearRuleBadgeUnnamed) || AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK;
+  var named = langTexts.autoGearRuleBadgeNamed || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.autoGearRuleBadgeNamed) || AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK;
+  var unnamed = langTexts.autoGearRuleBadgeUnnamed || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.autoGearRuleBadgeUnnamed) || AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK;
   return {
     named: named,
     unnamed: unnamed
@@ -5605,6 +6387,9 @@ function ensureGearListActions() {
       var target = e.target;
       if (!target) return;
       if (target.closest('#gearListActions')) return;
+      if (target.closest('.gear-custom-item')) {
+        updateCustomItemPreview(target.closest('.gear-custom-item'));
+      }
       if (target.matches('input, textarea')) {
         saveCurrentGearList();
         saveCurrentSession();
@@ -5613,10 +6398,26 @@ function ensureGearListActions() {
     });
     gearListOutput._inputListenerBound = true;
   }
+  if (!gearListOutput._customClickListenerBound) {
+    gearListOutput.addEventListener('click', function (e) {
+      var addBtn = e.target && e.target.closest('[data-gear-custom-add]');
+      if (addBtn) {
+        e.preventDefault();
+        handleAddCustomItemRequest(addBtn);
+        return;
+      }
+      var removeBtn = e.target && e.target.closest('[data-gear-custom-remove]');
+      if (removeBtn) {
+        e.preventDefault();
+        handleRemoveCustomItemRequest(removeBtn);
+      }
+    });
+    gearListOutput._customClickListenerBound = true;
+  }
 }
+var gearDeleteRequestListenerBound = false;
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-  var handlerKey = '__cameraPowerPlannerGearDeleteHandler';
-  if (!document[handlerKey]) {
+  if (!gearDeleteRequestListenerBound) {
     var handleGearDeleteRequest = function handleGearDeleteRequest() {
       try {
         deleteCurrentGearList();
@@ -5625,12 +6426,7 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
       }
     };
     document.addEventListener('gearlist:delete-requested', handleGearDeleteRequest);
-    Object.defineProperty(document, handlerKey, {
-      value: handleGearDeleteRequest,
-      configurable: true,
-      writable: false,
-      enumerable: false
-    });
+    gearDeleteRequestListenerBound = true;
   }
 }
 function bindGearListCageListener() {
@@ -5748,12 +6544,12 @@ function refreshGearListIfVisible() {
     };
     currentProjectInfo = deriveProjectInfo(_info);
   }
-  var html = generateGearListHtml(currentProjectInfo || {});
+  var html = gearListGenerateHtmlImpl(currentProjectInfo || {});
   if (currentProjectInfo) {
     displayGearAndRequirements(html);
   } else {
-    var _getSafeGearListHtmlS2 = getSafeGearListHtmlSections(html),
-      gearHtml = _getSafeGearListHtmlS2.gearHtml;
+    var _gearListGetSafeHtmlS = gearListGetSafeHtmlSectionsImpl(html),
+      gearHtml = _gearListGetSafeHtmlS.gearHtml;
     gearListOutput.innerHTML = gearHtml;
   }
   ensureGearListActions();

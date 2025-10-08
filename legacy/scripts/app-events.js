@@ -51,6 +51,108 @@ var eventsLogger = function resolveEventsLogger() {
   return null;
 }();
 var APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
+function getGlobalScope() {
+  if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
+  if (typeof window !== 'undefined' && window) return window;
+  if (typeof self !== 'undefined' && self) return self;
+  if (typeof global !== 'undefined' && global) return global;
+  return null;
+}
+var AUTO_BACKUP_CHANGE_THRESHOLD = 50;
+var AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
+var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold', 'safeguard'];
+var autoBackupChangesSinceSnapshot = 0;
+var autoBackupThresholdInProgress = false;
+function resetAutoBackupChangeCounter() {
+  autoBackupChangesSinceSnapshot = 0;
+}
+function recordAutoBackupRun(result) {
+  autoBackupThresholdInProgress = false;
+  if (!result || _typeof(result) !== 'object') {
+    return;
+  }
+  var status = typeof result.status === 'string' ? result.status : null;
+  var reason = typeof result.reason === 'string' ? result.reason : null;
+  if (status === 'skipped') {
+    if (reason === 'unchanged') {
+      resetAutoBackupChangeCounter();
+    }
+    return;
+  }
+  if (status && status !== 'error') {
+    resetAutoBackupChangeCounter();
+  }
+}
+function isAutoBackupReasonAllowed(reason) {
+  if (typeof reason !== 'string' || !reason) {
+    return false;
+  }
+  return AUTO_BACKUP_ALLOWED_REASONS.includes(reason);
+}
+function showAutoBackupIndicatorSafe() {
+  var scope = getGlobalScope();
+  var indicator = scope && typeof scope.__cineShowAutoBackupIndicator === 'function' ? scope.__cineShowAutoBackupIndicator : null;
+  if (!indicator) {
+    return function () {};
+  }
+  try {
+    var message = resolveAutoBackupIndicatorMessage();
+    var hide = indicator(message);
+    return typeof hide === 'function' ? hide : function () {};
+  } catch (indicatorError) {
+    console.warn('Failed to show auto backup indicator', indicatorError);
+    return function () {};
+  }
+}
+function triggerAutoBackupForChangeThreshold(details) {
+  if (autoBackupThresholdInProgress) {
+    return;
+  }
+  autoBackupThresholdInProgress = true;
+  var run = function run() {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        triggerAutoSaveNotification: true,
+        reason: 'change-threshold'
+      });
+    } catch (error) {
+      console.warn('Failed to run auto backup after change threshold', error);
+      autoBackupThresholdInProgress = false;
+    }
+  };
+  if (typeof queueMicrotask === 'function') {
+    try {
+      queueMicrotask(run);
+      return;
+    } catch (queueError) {
+      console.warn('Failed to queue auto backup microtask', queueError);
+    }
+  }
+  var timer = setTimeout(run, 0);
+  if (timer && typeof timer.unref === 'function') {
+    timer.unref();
+  }
+}
+function noteAutoBackupRelevantChange() {
+  var details = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (details && details.reset === true) {
+    resetAutoBackupChangeCounter();
+    return;
+  }
+  autoBackupChangesSinceSnapshot = Math.min(AUTO_BACKUP_CHANGE_THRESHOLD, autoBackupChangesSinceSnapshot + 1);
+  if (autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD) {
+    triggerAutoBackupForChangeThreshold(details);
+  }
+}
+try {
+  var scope = getGlobalScope();
+  if (scope) {
+    scope.__cineNoteAutoBackupChange = noteAutoBackupRelevantChange;
+  }
+} catch (changeExposeError) {
+  console.warn('Failed to expose auto backup change tracker', changeExposeError);
+}
 function markAutoBackupDataAsRenamed(value) {
   if (!value || _typeof(value) !== 'object') {
     return;
@@ -216,13 +318,13 @@ function resolveCineUi() {
   if (typeof self !== 'undefined') scopes.push(self);
   if (typeof global !== 'undefined') scopes.push(global);
   for (var index = 0; index < scopes.length; index += 1) {
-    var scope = scopes[index];
-    if (!scope || _typeof(scope) !== 'object') {
+    var _scope = scopes[index];
+    if (!_scope || _typeof(_scope) !== 'object') {
       continue;
     }
     try {
-      if (scope.cineUi && _typeof(scope.cineUi) === 'object') {
-        return scope.cineUi;
+      if (_scope.cineUi && _typeof(_scope.cineUi) === 'object') {
+        return _scope.cineUi;
       }
     } catch (error) {
       void error;
@@ -457,102 +559,120 @@ function handleDeleteSetupClick() {
 addSafeEventListener(deleteSetupBtn, "click", handleDeleteSetupClick);
 function resetSetupStateToDefaults() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var suspendable = typeof suspendProjectPersistence === 'function' && typeof resumeProjectPersistence === 'function';
+  if (suspendable) {
+    try {
+      suspendProjectPersistence();
+    } catch (error) {
+      console.warn('Failed to suspend project persistence during setup reset', error);
+    }
+  }
   var config = _typeof(options) === 'object' && options !== null ? options : {};
   var preserveSetupNameInput = Boolean(config.preserveSetupNameInput);
-  if (!preserveSetupNameInput && setupNameInput) {
-    setupNameInput.value = "";
-  }
-  var resetSelectToDefault = function resetSelectToDefault(select) {
-    if (!select || _typeof(select) !== 'object') return;
-    var noneOption = Array.from(select.options || []).find(function (opt) {
-      return opt.value === "None";
-    });
-    if (noneOption) {
-      select.value = "None";
-    } else if (select.options && select.options.length) {
-      select.selectedIndex = 0;
-    } else {
-      select.value = "";
-    }
-  };
-  [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(resetSelectToDefault);
-  if (typeof updateCageSelectOptions === 'function') {
-    try {
-      updateCageSelectOptions('None');
-    } catch (error) {
-      console.warn('Failed to reset cage options while preparing setup switch', error);
-    }
-  }
-  var sliderBowlSelect = typeof getSliderBowlSelect === 'function' ? getSliderBowlSelect() : null;
-  if (sliderBowlSelect) {
-    sliderBowlSelect.value = '';
-  }
-  if (Array.isArray(motorSelects)) {
-    motorSelects.forEach(resetSelectToDefault);
-  }
-  if (Array.isArray(controllerSelects)) {
-    controllerSelects.forEach(resetSelectToDefault);
-  }
-  if (typeof updateBatteryPlateVisibility === 'function') {
-    try {
-      updateBatteryPlateVisibility();
-    } catch (error) {
-      console.warn('Failed to reset battery plate visibility while preparing setup switch', error);
-    }
-  }
-  if (typeof updateBatteryOptions === 'function') {
-    try {
-      updateBatteryOptions();
-    } catch (error) {
-      console.warn('Failed to reset battery options while preparing setup switch', error);
-    }
-  }
-  if (typeof displayGearAndRequirements === 'function') {
-    try {
-      displayGearAndRequirements('');
-    } catch (error) {
-      console.warn('Failed to reset gear and requirements display while preparing setup switch', error);
-    }
-  }
-  if (gearListOutput) {
-    gearListOutput.innerHTML = '';
-    gearListOutput.classList.add('hidden');
-  }
-  if (projectRequirementsOutput) {
-    projectRequirementsOutput.innerHTML = '';
-    projectRequirementsOutput.classList.add('hidden');
-  }
-  currentProjectInfo = null;
-  if (projectForm) {
-    try {
-      populateProjectForm({});
-    } catch (error) {
-      console.warn('Failed to reset project form while preparing setup switch', error);
-    }
-  }
-  if (typeof clearProjectAutoGearRules === 'function') {
-    try {
-      clearProjectAutoGearRules();
-    } catch (error) {
-      console.warn('Failed to clear project auto gear rules while preparing setup switch', error);
-    }
-  }
-  if (typeof setManualDiagramPositions === 'function') {
-    try {
-      setManualDiagramPositions({}, {
-        render: false
-      });
-    } catch (error) {
-      console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
-    }
-  }
   try {
-    storeLoadedSetupStateSafe(null);
-  } catch (error) {
-    console.warn('Failed to reset stored setup state while preparing setup switch', error);
-  }
-  if (typeof globalThis !== 'undefined') {
-    globalThis.__cineLastGearListHtml = '';
+    if (!preserveSetupNameInput && setupNameInput) {
+      setupNameInput.value = "";
+    }
+    var resetSelectToDefault = function resetSelectToDefault(select) {
+      if (!select || _typeof(select) !== 'object') return;
+      var noneOption = Array.from(select.options || []).find(function (opt) {
+        return opt.value === "None";
+      });
+      if (noneOption) {
+        select.value = "None";
+      } else if (select.options && select.options.length) {
+        select.selectedIndex = 0;
+      } else {
+        select.value = "";
+      }
+    };
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(resetSelectToDefault);
+    if (typeof updateCageSelectOptions === 'function') {
+      try {
+        updateCageSelectOptions('None');
+      } catch (error) {
+        console.warn('Failed to reset cage options while preparing setup switch', error);
+      }
+    }
+    var sliderBowlSelect = typeof getSliderBowlSelect === 'function' ? getSliderBowlSelect() : null;
+    if (sliderBowlSelect) {
+      sliderBowlSelect.value = '';
+    }
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(resetSelectToDefault);
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(resetSelectToDefault);
+    }
+    if (typeof updateBatteryPlateVisibility === 'function') {
+      try {
+        updateBatteryPlateVisibility();
+      } catch (error) {
+        console.warn('Failed to reset battery plate visibility while preparing setup switch', error);
+      }
+    }
+    if (typeof updateBatteryOptions === 'function') {
+      try {
+        updateBatteryOptions();
+      } catch (error) {
+        console.warn('Failed to reset battery options while preparing setup switch', error);
+      }
+    }
+    if (typeof displayGearAndRequirements === 'function') {
+      try {
+        displayGearAndRequirements('');
+      } catch (error) {
+        console.warn('Failed to reset gear and requirements display while preparing setup switch', error);
+      }
+    }
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (projectRequirementsOutput) {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+    currentProjectInfo = null;
+    if (projectForm) {
+      try {
+        populateProjectForm({});
+      } catch (error) {
+        console.warn('Failed to reset project form while preparing setup switch', error);
+      }
+    }
+    if (typeof clearProjectAutoGearRules === 'function') {
+      try {
+        clearProjectAutoGearRules();
+      } catch (error) {
+        console.warn('Failed to clear project auto gear rules while preparing setup switch', error);
+      }
+    }
+    if (typeof setManualDiagramPositions === 'function') {
+      try {
+        setManualDiagramPositions({}, {
+          render: false
+        });
+      } catch (error) {
+        console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
+      }
+    }
+    try {
+      storeLoadedSetupStateSafe(null);
+    } catch (error) {
+      console.warn('Failed to reset stored setup state while preparing setup switch', error);
+    }
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__cineLastGearListHtml = '';
+    }
+  } finally {
+    if (suspendable) {
+      try {
+        resumeProjectPersistence();
+      } catch (error) {
+        console.warn('Failed to resume project persistence after setup reset', error);
+      }
+    }
   }
 }
 function finalizeSetupSelection(nextSetupName) {
@@ -678,7 +798,8 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
       autoBackup({
         suppressSuccess: true,
         projectNameOverride: normalizeProjectName(previousKey),
-        triggerAutoSaveNotification: true
+        triggerAutoSaveNotification: true,
+        reason: 'project-switch'
       });
     } catch (error) {
       console.warn('Failed to auto backup project before loading a different setup', error);
@@ -738,11 +859,20 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
           updateBatteryOptions();
         }
       }
-      var html = setup.gearList || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.gearList) || '';
+      var storedHtml = typeof setup.gearList === 'string' && setup.gearList ? setup.gearList : typeof (storedProject === null || storedProject === void 0 ? void 0 : storedProject.gearList) === 'string' ? storedProject.gearList : '';
+      currentProjectInfo = setup.projectInfo || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.projectInfo) || null;
+      var regenerateGearList = function regenerateGearList(info) {
+        return callEventsCoreFunction('generateGearListHtml', [info || {}], {
+          defaultValue: ''
+        }) || '';
+      };
+      var html = storedHtml;
+      if (!html) {
+        html = regenerateGearList(currentProjectInfo || {});
+      }
       if (html && typeof globalThis !== 'undefined') {
         globalThis.__cineLastGearListHtml = html;
       }
-      currentProjectInfo = setup.projectInfo || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.projectInfo) || null;
       if (typeof setManualDiagramPositions === 'function') {
         var _diagramPositions = {};
         if (typeof normalizeDiagramPositionsInput === 'function') {
@@ -777,7 +907,7 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
         if (typeof saveProject === 'function') {
           var payload = {
             projectInfo: currentProjectInfo,
-            gearList: html
+            gearListAndProjectRequirementsGenerated: Boolean(html)
           };
           var currentPowerSelection = typeof getPowerSelectionSnapshot === 'function' ? getPowerSelectionSnapshot() : null;
           if (currentPowerSelection) {
@@ -792,6 +922,11 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
           var activeRules = getProjectScopedAutoGearRules();
           if (activeRules && activeRules.length) {
             payload.autoGearRules = activeRules;
+          }
+          if (setup.gearSelectors && Object.keys(setup.gearSelectors).length) {
+            payload.gearSelectors = setup.gearSelectors;
+          } else if (storedProject !== null && storedProject !== void 0 && storedProject.gearSelectors && Object.keys(storedProject.gearSelectors).length) {
+            payload.gearSelectors = storedProject.gearSelectors;
           }
           saveProject(setupName, payload);
         }
@@ -811,7 +946,13 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
       currentProjectInfo = (_storedProject === null || _storedProject === void 0 ? void 0 : _storedProject.projectInfo) || null;
       if (projectForm) populateProjectForm(currentProjectInfo || {});
       if (gearListOutput) {
-        var _html = (_storedProject === null || _storedProject === void 0 ? void 0 : _storedProject.gearList) || '';
+        var _regenerateGearList = function _regenerateGearList(info) {
+          return callEventsCoreFunction('generateGearListHtml', [info || {}], {
+            defaultValue: ''
+          }) || '';
+        };
+        var _storedHtml = typeof (_storedProject === null || _storedProject === void 0 ? void 0 : _storedProject.gearList) === 'string' ? _storedProject.gearList : '';
+        var _html = _storedHtml || _regenerateGearList(currentProjectInfo || {});
         displayGearAndRequirements(_html);
         if (_html) {
           ensureGearListActions();
@@ -924,6 +1065,219 @@ function notifyAutoSaveFromBackup(message, backupName) {
     }
   }
 }
+var AUTO_BACKUP_MAX_DELTA_SEQUENCE = 30;
+var lastAutoBackupSignature = null;
+var lastAutoBackupName = null;
+var lastAutoBackupCreatedAtIso = null;
+function createStableValueSignature(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (Array.isArray(value)) {
+    return "[".concat(value.map(function (item) {
+      return createStableValueSignature(item);
+    }).join(','), "]");
+  }
+  if (value instanceof Date) {
+    var timestamp = value.getTime();
+    if (Number.isNaN(timestamp)) {
+      return 'date:invalid';
+    }
+    return "date:".concat(timestamp);
+  }
+  var valueType = _typeof(value);
+  if (valueType === 'number') {
+    if (Number.isNaN(value)) {
+      return 'number:NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'number:Infinity' : 'number:-Infinity';
+    }
+    return "number:".concat(value);
+  }
+  if (valueType === 'bigint') {
+    return "bigint:".concat(value.toString());
+  }
+  if (valueType === 'boolean') {
+    return value ? 'boolean:true' : 'boolean:false';
+  }
+  if (valueType === 'string') {
+    return "string:".concat(value);
+  }
+  if (valueType === 'symbol') {
+    return "symbol:".concat(String(value));
+  }
+  if (valueType === 'function') {
+    return "function:".concat(value.name || 'anonymous');
+  }
+  if (valueType === 'object') {
+    var keys = Object.keys(value).sort();
+    var entries = keys.map(function (key) {
+      return "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
+    });
+    return "{".concat(entries.join(','), "}");
+  }
+  return "".concat(valueType, ":").concat(String(value));
+}
+function computeAutoBackupStateSignature(setupState, gearSelectors, gearListGenerated) {
+  return createStableValueSignature({
+    setup: setupState || null,
+    gearSelectors: gearSelectors || null,
+    gearListGenerated: Boolean(gearListGenerated)
+  });
+}
+function getSortedAutoBackupNames(setups) {
+  if (!setups || _typeof(setups) !== 'object') {
+    return [];
+  }
+  return Object.keys(setups).filter(function (name) {
+    return typeof name === 'string' && name.startsWith('auto-backup-');
+  }).sort();
+}
+function resolveLatestAutoBackupEntry(setups) {
+  var names = getSortedAutoBackupNames(setups);
+  if (!names.length) {
+    return {
+      name: null,
+      entry: null
+    };
+  }
+  var latestName = names[names.length - 1];
+  var latestEntry = setups && _typeof(setups) === 'object' ? setups[latestName] : null;
+  return {
+    name: latestName,
+    entry: latestEntry
+  };
+}
+function computeStoredAutoBackupSignature(name, entry) {
+  if (!entry || _typeof(entry) !== 'object') {
+    return createStableValueSignature(null);
+  }
+  var gearSelectors = null;
+  if (entry.gearSelectors && _typeof(entry.gearSelectors) === 'object') {
+    gearSelectors = entry.gearSelectors;
+  }
+  var gearListGenerated = false;
+  if (typeof loadProject === 'function' && name) {
+    try {
+      var storedProject = loadProject(name);
+      if (storedProject && _typeof(storedProject) === 'object') {
+        if (!gearSelectors && storedProject.gearSelectors && _typeof(storedProject.gearSelectors) === 'object') {
+          gearSelectors = storedProject.gearSelectors;
+        }
+        if (typeof storedProject.gearListAndProjectRequirementsGenerated === 'boolean') {
+          gearListGenerated = storedProject.gearListAndProjectRequirementsGenerated;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to inspect stored project payload for auto backup signature', error);
+    }
+  }
+  return computeAutoBackupStateSignature(entry, gearSelectors, gearListGenerated);
+}
+function ensureLastAutoBackupSignatureInitialized(setups) {
+  if (lastAutoBackupSignature || !setups || _typeof(setups) !== 'object') {
+    return;
+  }
+  var _resolveLatestAutoBac = resolveLatestAutoBackupEntry(setups),
+    name = _resolveLatestAutoBac.name,
+    entry = _resolveLatestAutoBac.entry;
+  if (!name || !entry || _typeof(entry) !== 'object') {
+    return;
+  }
+  try {
+    lastAutoBackupSignature = computeStoredAutoBackupSignature(name, entry);
+    lastAutoBackupName = name;
+    var metadata = readAutoBackupMetadata(entry);
+    if (metadata && typeof metadata.createdAt === 'string') {
+      lastAutoBackupCreatedAtIso = metadata.createdAt;
+    }
+  } catch (error) {
+    lastAutoBackupSignature = null;
+    console.warn('Failed to prime automatic backup signature cache', error);
+  }
+}
+function readAutoBackupMetadata(entry) {
+  if (!entry || _typeof(entry) !== 'object') {
+    return null;
+  }
+  var metadata = entry.__cineAutoBackupMetadata;
+  if (!metadata || _typeof(metadata) !== 'object') {
+    return null;
+  }
+  return metadata;
+}
+function attachAutoBackupMetadata(target, metadata) {
+  if (!target || _typeof(target) !== 'object') {
+    return;
+  }
+  var snapshotMetadata = metadata && _typeof(metadata) === 'object' ? {
+    version: typeof metadata.version === 'number' ? metadata.version : 1,
+    snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
+    base: typeof metadata.base === 'string' ? metadata.base : null,
+    sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
+    createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
+    changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
+    removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : []
+  } : null;
+  try {
+    Object.defineProperty(target, '__cineAutoBackupMetadata', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: snapshotMetadata
+    });
+  } catch (error) {
+    try {
+      target.__cineAutoBackupMetadata = snapshotMetadata;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+}
+function determineNextAutoBackupPlan(setups) {
+  if (!setups || _typeof(setups) !== 'object') {
+    return {
+      snapshotType: 'full',
+      base: null,
+      sequence: 0
+    };
+  }
+  var autoBackupNames = getSortedAutoBackupNames(setups);
+  if (!autoBackupNames.length) {
+    return {
+      snapshotType: 'full',
+      base: null,
+      sequence: 0
+    };
+  }
+  var latestName = autoBackupNames[autoBackupNames.length - 1];
+  var latestEntry = setups[latestName];
+  var latestMetadata = readAutoBackupMetadata(latestEntry);
+  if (!latestEntry || !latestMetadata) {
+    return {
+      snapshotType: 'full',
+      base: null,
+      sequence: 0
+    };
+  }
+  var latestSequence = typeof latestMetadata.sequence === 'number' ? latestMetadata.sequence : 0;
+  if (latestSequence >= AUTO_BACKUP_MAX_DELTA_SEQUENCE) {
+    return {
+      snapshotType: 'full',
+      base: null,
+      sequence: 0
+    };
+  }
+  return {
+    snapshotType: 'delta',
+    base: latestName,
+    sequence: latestSequence + 1
+  };
+}
 function autoBackup() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var setupSelectElement = getSetupSelectElement();
@@ -931,6 +1285,8 @@ function autoBackup() {
   var config = _typeof(options) === 'object' && options !== null ? options : {};
   var suppressSuccess = Boolean(config.suppressSuccess);
   var suppressError = Boolean(config.suppressError);
+  var force = config.force === true;
+  var reason = typeof config.reason === 'string' && config.reason ? config.reason : 'unspecified';
   var successMessage = typeof config.successMessage === 'string' && config.successMessage ? config.successMessage : 'Auto backup saved';
   var errorMessage = typeof config.errorMessage === 'string' && config.errorMessage ? config.errorMessage : 'Auto backup failed';
   var triggerAutoSaveNotification = Boolean(config.triggerAutoSaveNotification);
@@ -947,28 +1303,55 @@ function autoBackup() {
   var isAutoBackupName = function isAutoBackupName(name) {
     return typeof name === 'string' && name.startsWith('auto-backup-');
   };
+  if (!force && !isAutoBackupReasonAllowed(reason)) {
+    var skipped = {
+      status: 'skipped',
+      reason: 'disallowed',
+      context: reason || null
+    };
+    if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+      console.debug('Skipping auto backup run because the trigger is not permitted.', {
+        trigger: reason
+      });
+    }
+    recordAutoBackupRun(skipped);
+    return skipped;
+  }
   var nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {
     if (overrideName && isAutoBackupName(overrideName)) {
-      return {
+      var _skipped = {
         status: 'skipped',
-        reason: 'auto-backup-selected'
+        reason: 'auto-backup-selected',
+        context: reason
       };
+      recordAutoBackupRun(_skipped);
+      return _skipped;
     }
     nameForBackup = overrideName;
   } else if (normalizedSelectedName && isAutoBackupName(normalizedSelectedName)) {
     if (normalizedTypedName && !isAutoBackupName(normalizedTypedName) && normalizedTypedName !== normalizedSelectedName) {
       nameForBackup = normalizedTypedName;
     } else {
-      return {
+      var _skipped2 = {
         status: 'skipped',
-        reason: 'auto-backup-selected'
+        reason: 'auto-backup-selected',
+        context: reason
       };
+      recordAutoBackupRun(_skipped2);
+      return _skipped2;
     }
   } else if (normalizedSelectedName) {
     nameForBackup = normalizedSelectedName;
   } else if (normalizedTypedName) {
     nameForBackup = normalizedTypedName;
+  }
+  var hideIndicator = null;
+  try {
+    hideIndicator = showAutoBackupIndicatorSafe();
+  } catch (indicatorError) {
+    console.warn('Failed to prepare auto backup indicator', indicatorError);
+    hideIndicator = null;
   }
   try {
     var pad = function pad(n) {
@@ -979,45 +1362,72 @@ function autoBackup() {
     var normalizedName = nameForBackup || '';
     var backupName = normalizedName ? "".concat(baseName, "-").concat(normalizedName) : baseName;
     var currentSetup = _objectSpread({}, getCurrentSetupState());
-    var gearListHtml = getCurrentGearListHtml();
-    if (!gearListHtml) {
-      var activeName = (typeof setupSelectElement.value === 'string' ? setupSelectElement.value.trim() : '') || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
-      if (activeName) {
-        var _setups = typeof getSetups === 'function' ? getSetups() : null;
-        var storedSetup = _setups && _typeof(_setups) === 'object' ? _setups[activeName] : null;
-        if (storedSetup && typeof storedSetup.gearList === 'string' && storedSetup.gearList.trim()) {
-          gearListHtml = storedSetup.gearList;
-        } else if (typeof loadProject === 'function') {
-          try {
-            var storedProject = loadProject(activeName);
-            if (storedProject && typeof storedProject.gearList === 'string' && storedProject.gearList.trim()) {
-              gearListHtml = storedProject.gearList;
-            }
-          } catch (error) {
-            console.warn('Failed to read stored project while preparing auto backup', error);
-          }
-        }
-      }
-      if (!gearListHtml && typeof globalThis !== 'undefined' && typeof globalThis.__cineLastGearListHtml === 'string') {
-        gearListHtml = globalThis.__cineLastGearListHtml;
+    var setupsSnapshot = getSetups();
+    ensureLastAutoBackupSignatureInitialized(setupsSnapshot);
+    var plan = determineNextAutoBackupPlan(setupsSnapshot);
+    var resolvedPlan = plan;
+    if (plan.snapshotType === 'delta') {
+      var baseEntry = plan.base && setupsSnapshot ? setupsSnapshot[plan.base] : null;
+      if (!baseEntry || _typeof(baseEntry) !== 'object') {
+        resolvedPlan = {
+          snapshotType: 'full',
+          base: null,
+          sequence: 0
+        };
       }
     }
-    if (gearListHtml) {
-      currentSetup.gearList = gearListHtml;
+    var currentGearListHtml = getCurrentGearListHtml();
+    currentSetup.gearListAndProjectRequirementsGenerated = Boolean(currentGearListHtml);
+    var gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], {
+      defaultValue: {}
+    }) || {};
+    var gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], {
+      defaultValue: {}
+    }) || {};
+    if (gearSelectors && Object.keys(gearSelectors).length) {
+      currentSetup.gearSelectors = gearSelectors;
     }
-    var setups = getSetups();
+    var gearListGenerated = Boolean(currentGearListHtml);
+    var currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    if (!force && lastAutoBackupSignature && currentSignature === lastAutoBackupSignature) {
+      var _skipped3 = {
+        status: 'skipped',
+        reason: 'unchanged',
+        name: lastAutoBackupName || null,
+        createdAt: lastAutoBackupCreatedAtIso || null,
+        context: reason
+      };
+      recordAutoBackupRun(_skipped3);
+      return _skipped3;
+    }
+    var timestamp = now.toISOString();
+    var backupMetadata = {
+      version: 1,
+      snapshotType: resolvedPlan.snapshotType,
+      base: resolvedPlan.base,
+      sequence: resolvedPlan.sequence,
+      createdAt: timestamp,
+      changedKeys: [],
+      removedKeys: []
+    };
+    attachAutoBackupMetadata(currentSetup, backupMetadata);
+    var setups = setupsSnapshot;
     setups[backupName] = currentSetup;
     storeSetups(setups);
     if (typeof saveProject === 'function') {
       var payload = {
-        gearList: gearListHtml || '',
-        projectInfo: currentSetup.projectInfo || null
+        projectInfo: currentSetup.projectInfo || null,
+        gearListAndProjectRequirementsGenerated: Boolean(currentGearListHtml)
       };
+      if (gearSelectors && Object.keys(gearSelectors).length) {
+        payload.gearSelectors = gearSelectors;
+      }
       var activeRules = getProjectScopedAutoGearRules();
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      if (payload.gearList || payload.projectInfo || payload.autoGearRules) {
+      if (payload.projectInfo || payload.gearListAndProjectRequirementsGenerated || payload.gearSelectors && Object.keys(payload.gearSelectors).length || payload.autoGearRules) {
+        attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
       }
     }
@@ -1032,13 +1442,35 @@ function autoBackup() {
     if (triggerAutoSaveNotification) {
       notifyAutoSaveFromBackup(autoSaveNotificationMessage, backupName);
     }
+    lastAutoBackupSignature = currentSignature;
+    lastAutoBackupName = backupName;
+    lastAutoBackupCreatedAtIso = timestamp;
+    recordAutoBackupRun({
+      status: 'success',
+      name: backupName,
+      createdAt: timestamp,
+      context: reason
+    });
     return backupName;
   } catch (e) {
     console.warn('Auto backup failed', e);
     if (!suppressError) {
       showNotification('error', errorMessage);
     }
+    recordAutoBackupRun({
+      status: 'error',
+      reason: 'exception',
+      context: reason
+    });
     return null;
+  } finally {
+    if (typeof hideIndicator === 'function') {
+      try {
+        hideIndicator();
+      } catch (hideError) {
+        console.warn('Failed to hide auto backup indicator', hideError);
+      }
+    }
   }
 }
 function ensureAutoBackupBeforeDeletion(context) {
@@ -1052,6 +1484,12 @@ function ensureAutoBackupBeforeDeletion(context) {
     suppressSuccess: true,
     suppressError: true
   }, config.autoBackupOptions || {});
+  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'reason')) {
+    autoBackupOptions.reason = 'safeguard';
+  }
+  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'force')) {
+    autoBackupOptions.force = true;
+  }
   var backupResult = null;
   if (typeof autoBackup === 'function') {
     try {
@@ -1076,6 +1514,12 @@ function ensureAutoBackupBeforeDeletion(context) {
   if (!backupName) {
     if (backupSkipped) {
       var reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason ? backupSkipped.reason : 'unspecified';
+      if (reason === 'unchanged' && typeof backupSkipped.name === 'string' && backupSkipped.name) {
+        if (config.notifySuccess !== false) {
+          showNotification('success', successMessage);
+        }
+        return backupSkipped.name;
+      }
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn("Automatic backup before ".concat(context || 'deletion', " was skipped (").concat(reason, "). The action was cancelled to protect user data."));
       }
@@ -1088,7 +1532,11 @@ function ensureAutoBackupBeforeDeletion(context) {
   }
   return backupName;
 }
-var autoBackupInterval = setInterval(autoBackup, 10 * 60 * 1000);
+var autoBackupInterval = setInterval(function () {
+  autoBackup({
+    reason: 'interval'
+  });
+}, AUTO_BACKUP_INTERVAL_MS);
 if (typeof autoBackupInterval.unref === 'function') {
   autoBackupInterval.unref();
 }
@@ -1146,6 +1594,12 @@ function getEventsLanguageTexts() {
     fallbackTexts: fallbackTexts
   };
 }
+function resolveAutoBackupIndicatorMessage() {
+  var _getEventsLanguageTex = getEventsLanguageTexts(),
+    langTexts = _getEventsLanguageTex.langTexts,
+    fallbackTexts = _getEventsLanguageTex.fallbackTexts;
+  return langTexts && langTexts.autoBackupInProgressNotice || fallbackTexts && fallbackTexts.autoBackupInProgressNotice || 'Auto backup in progress. Performance may pause briefly.';
+}
 function registerEventsCineUiInternal(cineUi) {
   if (!cineUi || eventsCineUiRegistered) {
     return;
@@ -1173,16 +1627,16 @@ function registerEventsCineUiInternal(cineUi) {
   try {
     if (cineUi.help && typeof cineUi.help.register === 'function') {
       cineUi.help.register('saveSetup', function () {
-        var _getEventsLanguageTex = getEventsLanguageTexts(),
-          langTexts = _getEventsLanguageTex.langTexts,
-          fallbackTexts = _getEventsLanguageTex.fallbackTexts;
-        return langTexts.saveSetupHelp || fallbackTexts.saveSetupHelp || 'Store the current project so it is never lost. Press Enter or Ctrl+S to save instantly.';
-      });
-      cineUi.help.register('autoBackupBeforeDeletion', function () {
         var _getEventsLanguageTex2 = getEventsLanguageTexts(),
           langTexts = _getEventsLanguageTex2.langTexts,
           fallbackTexts = _getEventsLanguageTex2.fallbackTexts;
-        return langTexts.preDeleteBackupSuccess || fallbackTexts.preDeleteBackupSuccess || 'Automatic backup saved. Restore it anytime from Saved Projects.';
+        return langTexts.saveSetupHelp || fallbackTexts.saveSetupHelp || 'Capture the current project—including devices, requirements and notes—so it can be restored instantly. The autosave status dot beside Project Name glows while changes are secured. Press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered.';
+      });
+      cineUi.help.register('autoBackupBeforeDeletion', function () {
+        var _getEventsLanguageTex3 = getEventsLanguageTexts(),
+          langTexts = _getEventsLanguageTex3.langTexts,
+          fallbackTexts = _getEventsLanguageTex3.fallbackTexts;
+        return langTexts.preDeleteBackupSuccess || fallbackTexts.preDeleteBackupSuccess || 'Automatic safety copy stored before deletion. Find the matching auto-backup entry under Saved Projects and rename it if you plan to keep it permanently.';
       });
     }
   } catch (error) {
@@ -1915,6 +2369,17 @@ addSafeEventListener(cancelEditBtn, "click", function () {
   resetDeviceForm();
 });
 addSafeEventListener(exportBtn, "click", function () {
+  if (typeof autoBackup === 'function') {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        triggerAutoSaveNotification: true,
+        reason: 'export'
+      });
+    } catch (error) {
+      console.warn('Failed to auto backup before export', error);
+    }
+  }
   var dataStr = JSON.stringify(devices, null, 2);
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
@@ -1934,6 +2399,17 @@ var exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 if (exportAndRevertBtn) {
   addSafeEventListener(exportAndRevertBtn, 'click', function () {
     if (confirm(texts[currentLang].confirmExportAndRevert)) {
+      if (typeof autoBackup === 'function') {
+        try {
+          autoBackup({
+            suppressSuccess: true,
+            triggerAutoSaveNotification: true,
+            reason: 'export-revert'
+          });
+        } catch (error) {
+          console.warn('Failed to auto backup before export and revert', error);
+        }
+      }
       var dataStr = JSON.stringify(devices, null, 2);
       var blob = new Blob([dataStr], {
         type: "application/json"
@@ -1975,6 +2451,17 @@ addSafeEventListener(importFileInput, "change", function (event) {
         console.error('Device import validation failed:', result.errors);
         alert(summary ? "".concat(texts[currentLang].alertImportError, "\n").concat(summary) : texts[currentLang].alertImportError);
         return;
+      }
+      if (typeof autoBackup === 'function') {
+        try {
+          autoBackup({
+            suppressSuccess: true,
+            triggerAutoSaveNotification: true,
+            reason: 'import'
+          });
+        } catch (error) {
+          console.warn('Failed to auto backup before import', error);
+        }
       }
       devices = result.devices;
       if (typeof updateGlobalDevicesReference === 'function') {
