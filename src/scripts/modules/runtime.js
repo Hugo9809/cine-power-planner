@@ -15,7 +15,67 @@
     return {};
   }
 
+  function resolveEnvironmentHelpers() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/environment-cache.js');
+        if (required && typeof required.collectCandidateScopes === 'function') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+
+    function pushCandidate(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+
+    pushCandidate(fallbackDetectGlobalScope());
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
+      try {
+        const helpers = scope && scope.__cineEnvironmentHelpers;
+        if (helpers && typeof helpers.collectCandidateScopes === 'function') {
+          return helpers;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  const ENVIRONMENT_HELPERS = resolveEnvironmentHelpers();
+
+  const helperDetectGlobalScope =
+    ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.detectGlobalScope === 'function'
+      ? ENVIRONMENT_HELPERS.detectGlobalScope
+      : fallbackDetectGlobalScope;
+
+  const helperTryRequire =
+    ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.tryRequire === 'function'
+      ? ENVIRONMENT_HELPERS.tryRequire
+      : null;
+
   function fallbackCollectCandidateScopes(primary) {
+    if (ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.collectCandidateScopes === 'function') {
+      return ENVIRONMENT_HELPERS.collectCandidateScopes(primary, fallbackDetectGlobalScope, null);
+    }
+
     const scopes = [];
 
     function pushScope(scope) {
@@ -37,6 +97,17 @@
   }
 
   function fallbackLoadModuleEnvironment(scope) {
+    if (helperTryRequire) {
+      try {
+        const required = helperTryRequire('./environment.js');
+        if (required) {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (typeof require === 'function') {
       try {
         return require('./environment.js');
@@ -45,7 +116,7 @@
       }
     }
 
-    const candidates = fallbackCollectCandidateScopes(scope);
+    const candidates = collectCandidateScopes(scope);
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -58,6 +129,17 @@
   }
 
   function fallbackLoadEnvironmentBridge(scope) {
+    if (helperTryRequire) {
+      try {
+        const required = helperTryRequire('./environment-bridge.js');
+        if (required) {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (typeof require === 'function') {
       try {
         return require('./environment-bridge.js');
@@ -66,7 +148,7 @@
       }
     }
 
-    const candidates = fallbackCollectCandidateScopes(scope);
+    const candidates = collectCandidateScopes(scope);
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -79,6 +161,17 @@
   }
 
   function fallbackResolveModuleGlobals(scope) {
+    if (helperTryRequire) {
+      try {
+        const required = helperTryRequire('./globals.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (typeof require === 'function') {
       try {
         const required = require('./globals.js');
@@ -90,7 +183,7 @@
       }
     }
 
-    const candidates = fallbackCollectCandidateScopes(scope);
+    const candidates = collectCandidateScopes(scope);
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -103,6 +196,13 @@
   }
 
   function fallbackTryRequire(modulePath) {
+    if (helperTryRequire) {
+      const helperResult = helperTryRequire(modulePath);
+      if (typeof helperResult !== 'undefined') {
+        return helperResult;
+      }
+    }
+
     if (typeof require !== 'function') {
       return null;
     }
@@ -115,7 +215,7 @@
     }
   }
 
-  const LOCAL_SCOPE = fallbackDetectGlobalScope();
+  const LOCAL_SCOPE = helperDetectGlobalScope();
 
   function resolveModuleSystem(scope) {
     const targetScope = scope || LOCAL_SCOPE;
@@ -188,9 +288,21 @@
           } catch (error) {
             void error;
           }
+
+          const helperDetected = helperDetectGlobalScope();
+          if (helperDetected) {
+            return helperDetected;
+          }
+
           return detectWithContext();
         }
-      : detectWithContext;
+      : function detectWithoutSystem() {
+          const helperDetected = helperDetectGlobalScope();
+          if (helperDetected) {
+            return helperDetected;
+          }
+          return detectWithContext();
+        };
 
   const PRIMARY_SCOPE =
     (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.getPrimaryScope === 'function'

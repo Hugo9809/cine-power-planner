@@ -1,7 +1,7 @@
 (function () {
   const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
 
-  function baseDetectGlobalScope() {
+  function fallbackDetectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -17,11 +17,11 @@
     return {};
   }
 
-  function resolveScopeCollector() {
+  function resolveEnvironmentHelpers() {
     if (typeof require === 'function') {
       try {
-        const required = require('./helpers/scope-collector.js');
-        if (required && typeof required.createCollector === 'function') {
+        const required = require('./helpers/environment-cache.js');
+        if (required && typeof required.collectCandidateScopes === 'function') {
           return required;
         }
       } catch (error) {
@@ -40,7 +40,7 @@
       }
     }
 
-    pushCandidate(baseDetectGlobalScope());
+    pushCandidate(fallbackDetectGlobalScope());
     if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
     if (typeof window !== 'undefined') pushCandidate(window);
     if (typeof self !== 'undefined') pushCandidate(self);
@@ -49,9 +49,9 @@
     for (let index = 0; index < candidates.length; index += 1) {
       const scope = candidates[index];
       try {
-        const collector = scope && scope.__cineScopeCollector;
-        if (collector && typeof collector.createCollector === 'function') {
-          return collector;
+        const helpers = scope && scope.__cineEnvironmentHelpers;
+        if (helpers && typeof helpers.collectCandidateScopes === 'function') {
+          return helpers;
         }
       } catch (error) {
         void error;
@@ -61,95 +61,70 @@
     return null;
   }
 
-  const SCOPE_COLLECTOR = resolveScopeCollector();
-  const createScopeCollector =
-    SCOPE_COLLECTOR && typeof SCOPE_COLLECTOR.createCollector === 'function'
-      ? SCOPE_COLLECTOR.createCollector
-      : null;
-  const DEFAULT_EXTRAS_KEY = { key: 'defaultExtras' };
-  const HELPER_COLLECTOR_CACHE = [];
+  const ENVIRONMENT_HELPERS = resolveEnvironmentHelpers();
 
-  function resolveHelperCollector(detectFn, extras) {
-    const extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
+  const detectGlobalScope =
+    ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.detectGlobalScope === 'function'
+      ? ENVIRONMENT_HELPERS.detectGlobalScope
+      : fallbackDetectGlobalScope;
 
-    for (let index = 0; index < HELPER_COLLECTOR_CACHE.length; index += 1) {
-      const entry = HELPER_COLLECTOR_CACHE[index];
-      if (entry.detect === detectFn && entry.extras === extrasKey) {
-        return entry.collector;
-      }
-    }
+  const collectCandidateScopesImpl =
+    ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.collectCandidateScopes === 'function'
+      ? function collectUsingHelpers(primary, detect, extras) {
+          return ENVIRONMENT_HELPERS.collectCandidateScopes(primary, detect, extras);
+        }
+      : function collectFallback(primary, detect, extras) {
+          const detectFn = typeof detect === 'function' ? detect : fallbackDetectGlobalScope;
 
-    const collector = createScopeCollector
-      ? createScopeCollector({
-          detectGlobalScope: detectFn,
-          additionalScopes: Array.isArray(extras) ? extras : undefined,
-        })
-      : null;
+          const scopes = [];
 
-    if (collector) {
-      HELPER_COLLECTOR_CACHE.push({ detect: detectFn, extras: extrasKey, collector });
-      return collector;
-    }
+          function pushScope(scope) {
+            if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+              return;
+            }
+            if (scopes.indexOf(scope) === -1) {
+              scopes.push(scope);
+            }
+          }
 
-    return null;
-  }
+          pushScope(primary);
 
-  function collectCandidateScopesImpl(primary, detect, extras) {
-    const detectFn = typeof detect === 'function' ? detect : baseDetectGlobalScope;
+          try {
+            const detected = detectFn();
+            pushScope(detected);
+          } catch (error) {
+            void error;
+          }
 
-    if (createScopeCollector) {
-      const collector = resolveHelperCollector(detectFn, extras);
-      if (collector) {
-        return collector(primary);
-      }
-    }
+          if (typeof globalThis !== 'undefined') pushScope(globalThis);
+          if (typeof window !== 'undefined') pushScope(window);
+          if (typeof self !== 'undefined') pushScope(self);
+          if (typeof global !== 'undefined') pushScope(global);
 
-    const scopes = [];
+          if (Array.isArray(extras)) {
+            for (let index = 0; index < extras.length; index += 1) {
+              pushScope(extras[index]);
+            }
+          }
 
-    function pushScope(scope) {
-      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-        return;
-      }
-      if (scopes.indexOf(scope) === -1) {
-        scopes.push(scope);
-      }
-    }
+          return scopes.slice();
+        };
 
-    pushScope(primary);
+  const tryRequireImpl =
+    ENVIRONMENT_HELPERS && typeof ENVIRONMENT_HELPERS.tryRequire === 'function'
+      ? ENVIRONMENT_HELPERS.tryRequire
+      : function tryRequireFallback(modulePath) {
+          if (typeof require !== 'function') {
+            return null;
+          }
 
-    try {
-      const detected = detectFn();
-      pushScope(detected);
-    } catch (error) {
-      void error;
-    }
-
-    if (typeof globalThis !== 'undefined') pushScope(globalThis);
-    if (typeof window !== 'undefined') pushScope(window);
-    if (typeof self !== 'undefined') pushScope(self);
-    if (typeof global !== 'undefined') pushScope(global);
-
-    if (Array.isArray(extras)) {
-      for (let index = 0; index < extras.length; index += 1) {
-        pushScope(extras[index]);
-      }
-    }
-
-    return scopes.slice();
-  }
-
-  function tryRequireImpl(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
-
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
+          try {
+            return require(modulePath);
+          } catch (error) {
+            void error;
+            return null;
+          }
+        };
 
   function defineHiddenPropertyImpl(target, key, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
@@ -258,7 +233,7 @@
   }
 
   function resolveImmutabilityImpl(scope, tryRequire, collectCandidateScopes) {
-    const targetScope = scope || baseDetectGlobalScope();
+    const targetScope = scope || detectGlobalScope();
 
     try {
       const required = tryRequire('./immutability.js');
@@ -286,7 +261,7 @@
       options && typeof options.collectCandidateScopes === 'function'
         ? options.collectCandidateScopes
         : function collect() {
-            return collectCandidateScopesImpl(null, baseDetectGlobalScope, []);
+            return collectCandidateScopesImpl(null, detectGlobalScope, []);
           };
 
     try {
@@ -482,7 +457,7 @@
         return cachedPrimaryScope;
       }
 
-      const detected = customPrimaryScope || baseDetectGlobalScope();
+      const detected = customPrimaryScope || detectGlobalScope();
       cachedPrimaryScope = detected;
       return detected;
     }
