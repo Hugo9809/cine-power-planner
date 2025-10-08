@@ -955,6 +955,7 @@ behavior on every workstation.
 
 Keeping the help center, printable manuals and localized READMEs current is part of every
 feature change. Follow the [Documentation, Help & Translation Maintenance Guide](docs/documentation-maintenance.md)
+and the quick [Documentation Update Checklist](docs/documentation-update-checklist.md)
 whenever you ship a new workflow so offline crews inherit accurate drills, translation
 coverage and recovery instructions. Each update should:
 
@@ -965,6 +966,9 @@ coverage and recovery instructions. Each update should:
 - Keep the [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md)
   aligned with UI labels, keyboard shortcuts and verification drills so crews rehearse the
   exact workflows enforced in code when they validate documentation changes.
+- Use the checklist to log which UI surfaces changed, which modules they depend on and which
+  translations need attention so verification logs always prove that the documentation and
+  offline behavior match.
 - Keep the **Key Workflow Reference** table and **Repository Layout & Offline Assets** notes synchronized across each
   localized README so every crew references the same offline-first procedures and directory expectations.
 - Update translation keys and selectors so language options stay synchronized with the UI
