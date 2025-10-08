@@ -38,7 +38,11 @@ function neutraliseDeprecatedStyleMedia(scope) {
     return;
   }
 
-  if (typeof Object.defineProperty !== 'function') {
+  if (
+    typeof Object.defineProperty !== 'function' ||
+    typeof Object.getPrototypeOf !== 'function' ||
+    typeof Object.getOwnPropertyDescriptor !== 'function'
+  ) {
     return;
   }
 
@@ -49,7 +53,29 @@ function neutraliseDeprecatedStyleMedia(scope) {
   var hasStyleMedia = false;
 
   try {
-    hasStyleMedia = 'styleMedia' in target;
+    var current = target;
+    var guard = 0;
+    while (!hasStyleMedia && current && guard < 20) {
+      current = Object.getPrototypeOf(current);
+      if (!current) {
+        break;
+      }
+
+      var descriptor = null;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(current, 'styleMedia');
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+
+      if (descriptor) {
+        hasStyleMedia = true;
+        break;
+      }
+
+      guard += 1;
+    }
   } catch (hasError) {
     void hasError;
     hasStyleMedia = false;
