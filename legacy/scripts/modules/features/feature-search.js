@@ -76,10 +76,101 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ['ł', 'l'],
     ['ſ', 's']
   ];
+  var LIGATURE_PATTERNS = [];
+  for (var ligaturePatternIndex = 0; ligaturePatternIndex < LIGATURE_ENTRIES.length; ligaturePatternIndex += 1) {
+    LIGATURE_PATTERNS.push(new RegExp(LIGATURE_ENTRIES[ligaturePatternIndex][0], 'g'));
+  }
+
+  var NORMALIZE_CACHE_LIMIT = 400;
+  var NORMALIZE_CACHE_MAX_LENGTH = 200;
+  var CACHE_SUPPORTS_MAP = typeof Map === 'function';
+  var NORMALIZE_CACHE = CACHE_SUPPORTS_MAP ? new Map() : [];
+
+  function readNormalizedCache(value) {
+    if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
+      return null;
+    }
+
+    if (CACHE_SUPPORTS_MAP) {
+      if (!NORMALIZE_CACHE.has(value)) {
+        return null;
+      }
+
+      var cachedValue = NORMALIZE_CACHE.get(value);
+      try {
+        NORMALIZE_CACHE.delete(value);
+        NORMALIZE_CACHE.set(value, cachedValue);
+      } catch (cacheUpdateError) {
+        void cacheUpdateError;
+      }
+
+      return cachedValue;
+    }
+
+    for (var index = 0; index < NORMALIZE_CACHE.length; index += 1) {
+      var entry = NORMALIZE_CACHE[index];
+      if (!entry || entry.key !== value) {
+        continue;
+      }
+
+      if (index !== NORMALIZE_CACHE.length - 1) {
+        NORMALIZE_CACHE.splice(index, 1);
+        NORMALIZE_CACHE.push(entry);
+      }
+
+      return entry.value;
+    }
+
+    return null;
+  }
+
+  function writeNormalizedCache(value, normalized) {
+    if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
+      return;
+    }
+
+    if (CACHE_SUPPORTS_MAP) {
+      try {
+        NORMALIZE_CACHE.set(value, normalized);
+      } catch (cacheSetError) {
+        void cacheSetError;
+        return;
+      }
+
+      if (NORMALIZE_CACHE.size <= NORMALIZE_CACHE_LIMIT) {
+        return;
+      }
+
+      var oldestIterator = NORMALIZE_CACHE.keys();
+      var oldestResult = oldestIterator && typeof oldestIterator.next === 'function' ? oldestIterator.next() : {
+        done: true
+      };
+      if (oldestResult && oldestResult.done === false) {
+        NORMALIZE_CACHE["delete"](oldestResult.value);
+      }
+      return;
+    }
+
+    NORMALIZE_CACHE.push({
+      key: value,
+      value: normalized
+    });
+
+    if (NORMALIZE_CACHE.length <= NORMALIZE_CACHE_LIMIT) {
+      return;
+    }
+
+    NORMALIZE_CACHE.shift();
+  }
 
   function normalizeSearchValue(value) {
     if (typeof value !== 'string') {
       return '';
+    }
+
+    var cached = readNormalizedCache(value);
+    if (typeof cached === 'string') {
+      return cached;
     }
 
     var normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
@@ -112,15 +203,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     for (var ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
       var entry = LIGATURE_ENTRIES[ligatureIndex];
-      var source = entry[0];
       var replacement = entry[1];
-      normalized = normalized.replace(new RegExp(source, 'g'), replacement);
+      var pattern = LIGATURE_PATTERNS[ligatureIndex];
+      normalized = normalized.replace(pattern, replacement);
     }
 
     normalized = normalized
       .replace(/['"`]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+
+    writeNormalizedCache(value, normalized);
 
     return normalized;
   }
