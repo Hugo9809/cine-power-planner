@@ -1145,8 +1145,15 @@
     init();
   }
 
+  function handleFactoryReset() {
+    saveState({ version: STORAGE_VERSION });
+    storedState = loadStoredState();
+    applyHelpButtonLabel();
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
     GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChange);
+    GLOBAL_SCOPE.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
   }
 
   const moduleApi = clone({
