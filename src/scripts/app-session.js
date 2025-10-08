@@ -9301,6 +9301,93 @@ function waitForReloadNavigation(beforeHref, options = {}) {
   });
 }
 
+function scheduleForceReloadNavigationWarning(
+  locationLike,
+  baseHref,
+  description,
+  before,
+  expected,
+  initialAfter,
+) {
+  let schedule = null;
+
+  try {
+    if (typeof window !== 'undefined' && window && typeof window.setTimeout === 'function') {
+      schedule = window.setTimeout.bind(window);
+    }
+  } catch (error) {
+    void error;
+  }
+
+  if (!schedule) {
+    if (typeof setTimeout === 'function') {
+      schedule = setTimeout;
+    } else {
+      console.warn('Forced reload navigation attempt did not update location', {
+        description,
+        before,
+        after: initialAfter,
+        expected,
+      });
+      return;
+    }
+  }
+
+  let resolved = false;
+
+  const evaluate = () => {
+    const currentRaw = readLocationHrefSafe(locationLike);
+    const current = normaliseForceReloadHref(currentRaw, baseHref);
+
+    if (
+      (expected && (current === expected || current === `${expected}#`))
+      || (before !== current && current && (!expected || current === expected))
+    ) {
+      resolved = true;
+      return { matched: true, value: current };
+    }
+
+    return { matched: false, value: current };
+  };
+
+  const verifyDelays = [120, 360];
+
+  verifyDelays.forEach((delay, index) => {
+    const isFinalCheck = index === verifyDelays.length - 1;
+
+    const runCheck = () => {
+      if (resolved) {
+        return;
+      }
+
+      const result = evaluate();
+
+      if (result.matched) {
+        return;
+      }
+
+      if (isFinalCheck) {
+        resolved = true;
+        console.warn('Forced reload navigation attempt did not update location', {
+          description,
+          before,
+          after: result.value,
+          expected,
+        });
+      }
+    };
+
+    try {
+      schedule(runCheck, delay);
+    } catch (scheduleError) {
+      void scheduleError;
+      if (isFinalCheck) {
+        runCheck();
+      }
+    }
+  });
+}
+
 function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
   if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
     return false;
@@ -9327,12 +9414,7 @@ function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn,
     return true;
   }
 
-  console.warn('Forced reload navigation attempt did not update location', {
-    description,
-    before,
-    after,
-    expected,
-  });
+  scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
 
   return false;
 }
