@@ -4214,6 +4214,91 @@
         </section>
         <section
           data-help-section
+          id="diagnosticsHelp"
+          data-help-keywords="diagnostics log logging console capture errors warnings audit trail offline status history filter session storage runtime guard verify support"
+        >
+          <h3>
+            <span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE99A;</span>Diagnostics &amp; Audit Trails
+          </h3>
+          <ul>
+            <li>
+              Open
+              <a class="help-link button-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
+              and switch to
+              <a class="help-link" href="#loggingHeading" data-help-target="#loggingHeading" data-help-highlight="#loggingSection">Diagnostics log</a>
+              whenever you need to capture behaviour for incident reviews or offline support. The panel stays available without a
+              connection so crews can document issues on location.
+            </li>
+            <li>
+              Narrow the feed with the
+              <a class="help-link" href="#loggingLevelFilterLabel" data-help-target="#loggingLevelFilter">Show entries from</a>
+              dropdown, the
+              <a class="help-link" href="#loggingNamespaceFilterLabel" data-help-target="#loggingNamespaceFilter">Namespace filter</a>
+              search box and the
+              <a class="help-link" href="#loggingHistoryLimitLabel" data-help-target="#loggingHistoryLimit">History size</a>
+              control. Filters update live and never delete the underlying records, so you can safely widen the scope again after
+              auditing a subsystem.
+            </li>
+            <li>
+              Enable the
+              <a class="help-link" href="#loggingConsoleOutputLabel" data-help-target="#loggingConsoleOutput">Mirror to console</a>
+              toggle to stream the feed into developer tools, then turn on
+              <a class="help-link" href="#loggingCaptureConsoleLabel" data-help-target="#loggingCaptureConsole">Capture console output</a>
+              and
+              <a class="help-link" href="#loggingCaptureErrorsLabel" data-help-target="#loggingCaptureErrors">Capture global errors</a>
+              so uncaught issues and warnings persist in the log even if the browser console was closed.
+            </li>
+            <li>
+              Keep evidence available after refreshes by enabling
+              <a class="help-link" href="#loggingPersistSessionLabel" data-help-target="#loggingPersistSession">Keep log between reloads</a>.
+              The planner stores the timeline in session storage, protecting the audit trail while you reproduce a problem or verify
+              a backup—saved projects and exports remain untouched.
+            </li>
+            <li>
+              Watch the
+              <a class="help-link" href="#loggingStatus" data-help-target="#loggingStatus">status banner</a>
+              for confirmation that collection is active and check the
+              <a class="help-link" href="#loggingEmpty" data-help-target="#loggingEmpty">No log entries</a>
+              notice when rehearsals run clean. The
+              <a class="help-link" href="#loggingUnavailable" data-help-target="#loggingUnavailable">Logging module unavailable</a>
+              callout only appears if storage is blocked—resolve it before relying on the log for safety sign-off.
+            </li>
+          </ul>
+          <div
+            id="diagnosticsCaptureChecklist"
+            class="help-callout"
+            role="note"
+            aria-label="Diagnostics capture checklist"
+          >
+            <h4>Diagnostics capture checklist</h4>
+            <ol>
+              <li>
+                Before exporting backups or share links, enable
+                <a class="help-link" href="#loggingCaptureConsoleLabel" data-help-target="#loggingCaptureConsole">Capture console output</a>
+                and reproduce the workflow so the log records every safeguard.
+              </li>
+              <li>
+                Run the
+                <a class="help-link" href="#loggingNamespaceFilterLabel" data-help-target="#loggingNamespaceFilter">Namespace filter</a>
+                over <code>runtime</code>, <code>persistence</code> and <code>backup</code> to confirm guard entries reported
+                success. Pair the results with the
+                <a class="help-link" href="#helpConsoleVerification" data-help-target="#helpConsoleVerification" data-help-highlight="#helpConsoleVerification">console verification commands</a>
+                to document the integrity check.
+              </li>
+              <li>
+                Capture a screenshot or copy the entries from
+                <a class="help-link" href="#loggingHistory" data-help-target="#loggingHistory">Logging history</a>
+                into your incident log so production teams can review the exact timestamps offline.
+              </li>
+            </ol>
+            <p class="help-callout-note">
+              Tip: Store diagnostics exports beside your backup JSON files. Keeping the context together makes it easier to prove
+              every save, share, import, backup and restore path stayed healthy before the shoot.
+            </p>
+          </div>
+        </section>
+        <section
+          data-help-section
           id="offlineStorageHelp"
           data-help-keywords="offline storage local persistence browser cache pwa migrate transfer install indicator safety backup"
         >
