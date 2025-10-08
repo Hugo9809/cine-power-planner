@@ -23,7 +23,10 @@ update the repository or hand off a project at the end of the day.
 
 1. **Load recent projects.** Open the primary project and at least one
    `auto-backup-…` entry. Verify gear lists, runtime feedback, favorites and
-   custom devices appear in both.
+   custom devices appear in both. Confirm the tripod catalog shows the newly
+   documented heads (Cartoni Maxima 40, Miller CX18 Fluid, Libec RH45D and
+   Vinten Vision 10AS) so offline crews can rely on the expanded options when
+   planning support kits.
 2. **Exercise manual save.** Make a harmless edit, press `Enter` or
    `Ctrl+S`/`⌘S`, then confirm the timestamp updates in the project selector.
 3. **Export safety snapshots.** Download both a `planner-backup.json` file and a
