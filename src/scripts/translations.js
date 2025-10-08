@@ -8,6 +8,7 @@ const texts = {
     offlineIndicator: "Offline",
     offlineIndicatorHelp:
       "Appears when the planner is offline. All projects, backups and device data stay stored on this device so you can keep working.",
+    globalLoadingIndicator: "Loading data…",
     installBannerText: "Install Cine Power Planner on your device for quick access.",
     installBannerDismiss: "Dismiss",
     installHelpTitleIos: "Install Cine Power Planner on iOS",
@@ -1554,6 +1555,7 @@ const texts = {
     offlineIndicator: "Non in linea",
     offlineIndicatorHelp:
       "Compare quando l’app è offline. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare.",
+    globalLoadingIndicator: "Caricamento dei dati…",
     installBannerText: "Installa Cine Power Planner sul tuo dispositivo per un accesso rapido.",
     installBannerDismiss: "Chiudi",
     installHelpTitleIos: "Installa Cine Power Planner su iOS",
@@ -3089,6 +3091,7 @@ const texts = {
     offlineIndicator: "Sin conexión",
     offlineIndicatorHelp:
       "Aparece cuando el planificador está sin conexión. Todos los proyectos, copias de seguridad y datos de dispositivos permanecen guardados en este dispositivo para que puedas seguir trabajando.",
+    globalLoadingIndicator: "Cargando datos…",
     installBannerText: "Instala Cine Power Planner en tu dispositivo para acceder rápidamente.",
     installBannerDismiss: "Cerrar",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
@@ -4639,6 +4642,7 @@ const texts = {
     offlineIndicator: "Hors ligne",
     offlineIndicatorHelp:
       "S’affiche lorsque le planificateur est hors ligne. Tous les projets, sauvegardes et données d’appareil restent stockés sur cet appareil afin que vous puissiez continuer à travailler.",
+    globalLoadingIndicator: "Chargement des données…",
     installBannerText: "Installez Cine Power Planner sur votre appareil pour un accès rapide.",
     installBannerDismiss: "Fermer",
     installHelpTitleIos: "Installer Cine Power Planner sur iOS",
@@ -6200,6 +6204,7 @@ const texts = {
     offlineIndicator: "Offline",
     offlineIndicatorHelp:
       "Erscheint, wenn der Planner offline ist. Alle Projekte, Backups und Gerätedaten bleiben auf diesem Gerät gespeichert, damit du weiterarbeiten kannst.",
+    globalLoadingIndicator: "Daten werden geladen …",
     installBannerText: "Installiere Cine Power Planner auf deinem Gerät für schnellen Zugriff.",
     installBannerDismiss: "Schließen",
     installHelpTitleIos: "Cine Power Planner auf iOS installieren",
