@@ -977,6 +977,9 @@ coverage and recovery instructions. Each update should:
   and remain fully functional without connectivity.
 - Rehearse the save → share → import loop after documentation edits to guarantee the printed
   instructions, help content and offline behavior still align.
+- Cross-check the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) so every
+  workflow change includes updated README copy, help topics, printable runbooks, translations and
+  rehearsal evidence before sign-off.
 
 ## Development
 
