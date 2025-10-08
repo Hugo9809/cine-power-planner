@@ -27,17 +27,66 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var GLOBAL_SCOPE = detectGlobalScope();
-  var MODULE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : function moduleFallbackDeepClone(value) {
+  function moduleJsonDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
     }
     try {
       return JSON.parse(JSON.stringify(value));
-    } catch (cloneError) {
-      void cloneError;
+    } catch (jsonCloneError) {
+      void jsonCloneError;
     }
     return value;
-  };
+  }
+  function moduleResolveStructuredClone(scope) {
+    if (typeof structuredClone === 'function') {
+      return structuredClone;
+    }
+    if (scope && typeof scope.structuredClone === 'function') {
+      try {
+        return scope.structuredClone.bind(scope);
+      } catch (bindError) {
+        void bindError;
+      }
+    }
+    if (typeof require === 'function') {
+      try {
+        var nodeUtil = require('node:util');
+        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+          return nodeUtil.structuredClone.bind(nodeUtil);
+        }
+      } catch (nodeUtilError) {
+        void nodeUtilError;
+      }
+      try {
+        var legacyUtil = require('util');
+        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+          return legacyUtil.structuredClone.bind(legacyUtil);
+        }
+      } catch (legacyUtilError) {
+        void legacyUtilError;
+      }
+    }
+    return null;
+  }
+  function moduleCreateResilientDeepClone(scope) {
+    var structuredCloneImpl = moduleResolveStructuredClone(scope);
+    if (!structuredCloneImpl) {
+      return moduleJsonDeepClone;
+    }
+    return function moduleResilientDeepClone(value) {
+      if (value === null || _typeof(value) !== 'object') {
+        return value;
+      }
+      try {
+        return structuredCloneImpl(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
+      }
+      return moduleJsonDeepClone(value);
+    };
+  }
+  var MODULE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : moduleCreateResilientDeepClone(GLOBAL_SCOPE);
   function resolveModuleBase(scope) {
     if ((typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase) {
       return cineModuleBase;
@@ -242,7 +291,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     try {
-      return JSON.parse(JSON.stringify(value));
+      return moduleJsonDeepClone(value);
     } catch (error) {
       void error;
     }

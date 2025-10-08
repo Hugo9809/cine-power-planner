@@ -89,6 +89,87 @@ var OVERVIEW_LOG_META_DEFAULTS = Object.freeze({
   namespace: 'overview',
   source: 'overview-dialog'
 });
+function resolveOverviewCloneScope() {
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined' && window) {
+    return window;
+  }
+  if (typeof self !== 'undefined' && self) {
+    return self;
+  }
+  if (typeof global !== 'undefined' && global) {
+    return global;
+  }
+  return null;
+}
+function overviewJsonDeepClone(value) {
+  if (value === null || _typeof(value) !== 'object') {
+    return value;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (jsonCloneError) {
+    void jsonCloneError;
+  }
+  return value;
+}
+function overviewResolveStructuredClone(scope) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone;
+  }
+  if (scope && typeof scope.structuredClone === 'function') {
+    try {
+      return scope.structuredClone.bind(scope);
+    } catch (bindError) {
+      void bindError;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var nodeUtil = require('node:util');
+      if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+        return nodeUtil.structuredClone.bind(nodeUtil);
+      }
+    } catch (nodeUtilError) {
+      void nodeUtilError;
+    }
+    try {
+      var legacyUtil = require('util');
+      if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+        return legacyUtil.structuredClone.bind(legacyUtil);
+      }
+    } catch (legacyUtilError) {
+      void legacyUtilError;
+    }
+  }
+  return null;
+}
+function createOverviewDeepClone(scope) {
+  var structuredCloneImpl = overviewResolveStructuredClone(scope);
+  if (!structuredCloneImpl) {
+    return overviewJsonDeepClone;
+  }
+  return function overviewResilientDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return structuredCloneImpl(value);
+    } catch (structuredCloneError) {
+      void structuredCloneError;
+    }
+    return overviewJsonDeepClone(value);
+  };
+}
+var OVERVIEW_DEEP_CLONE = function () {
+  var scope = resolveOverviewCloneScope();
+  if (scope && typeof scope.__cineDeepClone === 'function') {
+    return scope.__cineDeepClone;
+  }
+  return createOverviewDeepClone(scope);
+}();
 function cloneOverviewLogMeta(meta) {
   if (!meta || _typeof(meta) !== 'object') {
     return {};
@@ -115,44 +196,43 @@ function cloneOverviewLogMeta(meta) {
       continue;
     }
     if (Array.isArray(value)) {
-      try {
-        clone[key] = JSON.parse(JSON.stringify(value));
-      } catch (arrayError) {
-        void arrayError;
-        clone[key] = value.map(function (item) {
-          if (item === null || typeof item === 'undefined') {
-            return null;
-          }
-          var itemType = _typeof(item);
-          if (itemType === 'string' || itemType === 'number' || itemType === 'boolean') {
-            return item;
-          }
-          if (item instanceof Date && typeof item.toISOString === 'function') {
-            return item.toISOString();
-          }
-          try {
-            return JSON.parse(JSON.stringify(item));
-          } catch (itemError) {
-            void itemError;
-            return String(item);
-          }
-        });
+      var clonedArray = OVERVIEW_DEEP_CLONE(value);
+      if (clonedArray !== value) {
+        clone[key] = clonedArray;
+        continue;
       }
+      clone[key] = value.map(function (item) {
+        if (item === null || typeof item === 'undefined') {
+          return null;
+        }
+        var itemType = _typeof(item);
+        if (itemType === 'string' || itemType === 'number' || itemType === 'boolean') {
+          return item;
+        }
+        if (item instanceof Date && typeof item.toISOString === 'function') {
+          return item.toISOString();
+        }
+        var clonedItem = OVERVIEW_DEEP_CLONE(item);
+        if (clonedItem !== item || item === null || _typeof(item) !== 'object') {
+          return clonedItem;
+        }
+        return String(item);
+      });
       continue;
     }
     if (valueType === 'object') {
-      try {
-        clone[key] = JSON.parse(JSON.stringify(value));
-      } catch (objectError) {
-        void objectError;
+      var clonedObject = OVERVIEW_DEEP_CLONE(value);
+      if (clonedObject !== value || value === null) {
+        clone[key] = clonedObject;
+      } else {
         clone[key] = String(value);
       }
       continue;
     }
-    try {
-      clone[key] = JSON.parse(JSON.stringify(value));
-    } catch (fallbackError) {
-      void fallbackError;
+    var clonedValue = OVERVIEW_DEEP_CLONE(value);
+    if (clonedValue !== value || value === null || _typeof(value) !== 'object') {
+      clone[key] = clonedValue;
+    } else {
       clone[key] = String(value);
     }
   }

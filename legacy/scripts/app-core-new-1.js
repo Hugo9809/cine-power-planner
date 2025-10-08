@@ -45,17 +45,66 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
-  var CORE_DEEP_CLONE = CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function' ? CORE_GLOBAL_SCOPE.__cineDeepClone : function coreFallbackDeepClone(value) {
+  function coreJsonDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
     }
     try {
       return JSON.parse(JSON.stringify(value));
-    } catch (cloneError) {
-      void cloneError;
+    } catch (jsonCloneError) {
+      void jsonCloneError;
     }
     return value;
-  };
+  }
+  function coreResolveStructuredClone(scope) {
+    if (typeof structuredClone === 'function') {
+      return structuredClone;
+    }
+    if (scope && typeof scope.structuredClone === 'function') {
+      try {
+        return scope.structuredClone.bind(scope);
+      } catch (bindError) {
+        void bindError;
+      }
+    }
+    if (typeof require === 'function') {
+      try {
+        var nodeUtil = require('node:util');
+        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+          return nodeUtil.structuredClone.bind(nodeUtil);
+        }
+      } catch (nodeUtilError) {
+        void nodeUtilError;
+      }
+      try {
+        var legacyUtil = require('util');
+        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+          return legacyUtil.structuredClone.bind(legacyUtil);
+        }
+      } catch (legacyUtilError) {
+        void legacyUtilError;
+      }
+    }
+    return null;
+  }
+  function coreCreateResilientDeepClone(scope) {
+    var structuredCloneImpl = coreResolveStructuredClone(scope);
+    if (!structuredCloneImpl) {
+      return coreJsonDeepClone;
+    }
+    return function coreResilientDeepClone(value) {
+      if (value === null || _typeof(value) !== 'object') {
+        return value;
+      }
+      try {
+        return structuredCloneImpl(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
+      }
+      return coreJsonDeepClone(value);
+    };
+  }
+  var CORE_DEEP_CLONE = CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function' ? CORE_GLOBAL_SCOPE.__cineDeepClone : coreCreateResilientDeepClone(getCoreGlobalObject());
   if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
     try {
       CORE_GLOBAL_SCOPE.__cineDeepClone = CORE_DEEP_CLONE;
