@@ -7383,7 +7383,7 @@ function loadSessionState() {
   return state;
 }
 
-function saveSessionState(state) {
+function saveSessionState(state, options = {}) {
   const safeStorage = getSafeLocalStorage();
   if (state === null || state === undefined) {
     deleteFromStorage(
@@ -7401,11 +7401,14 @@ function saveSessionState(state) {
 
   ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
   const normalizedState = normalizeLegacyLongGopStructure(state);
+  const { disableCompression = false } = options || {};
+  const saveOptions = disableCompression ? { disableCompression: true } : undefined;
   saveJSONToStorage(
     safeStorage,
     SESSION_STATE_KEY,
     normalizedState,
     "Error saving session state to localStorage:",
+    saveOptions,
   );
 }
 
@@ -9333,15 +9336,21 @@ function readAllProjectsFromStorage(options = {}) {
   return finalize();
 }
 
-function persistAllProjects(projects) {
+function persistAllProjects(projects, options = {}) {
+  const { skipCompression = false } = options || {};
   const safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
   const serializedProjects = serializeAutoBackupEntries(projects, {
     isAutoBackupKey: isAutoBackupStorageKey,
   });
-  applyProjectEntryCompression(serializedProjects);
+  if (skipCompression) {
+    ensureProjectEntriesUncompressed(serializedProjects);
+  } else {
+    applyProjectEntryCompression(serializedProjects);
+  }
   invalidateProjectReadCache();
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
+  const disableCompression = skipCompression || shouldDisableProjectCompressionDuringPersist();
   saveJSONToStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
@@ -9349,7 +9358,7 @@ function persistAllProjects(projects) {
     "Error saving project to localStorage:",
     {
       forceCompressionOnQuota: true,
-      disableCompression: shouldDisableProjectCompressionDuringPersist(),
+      disableCompression,
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedProjects);
         if (!removedKey) {
@@ -9589,6 +9598,7 @@ function saveProject(name, project, options = {}) {
     return;
   }
   const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
+  const skipCompression = Boolean(options && options.skipCompression);
   const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
   if (changed) {
     const safeStorage = getSafeLocalStorage();
@@ -9653,7 +9663,7 @@ function saveProject(name, project, options = {}) {
   const finalKey = storageKey || '';
   projects[finalKey] = normalized;
   markProjectActivity(finalKey);
-  persistAllProjects(projects);
+  persistAllProjects(projects, { skipCompression });
 }
 
 function deleteProject(name) {
@@ -9755,7 +9765,7 @@ function createProjectImporter() {
     if (candidates.includes("") && !normalizedNames.has("")) {
       usedNames.add("");
       normalizedNames.add("");
-      saveProject("", normalizedProject);
+      saveProject("", normalizedProject, { skipCompression: true });
       return;
     }
 
@@ -9764,7 +9774,7 @@ function createProjectImporter() {
     const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
       ? generateImportedProjectName(baseName, usedNames, normalizedNames)
       : generateUniqueName(baseName, usedNames, normalizedNames);
-    saveProject(uniqueName, normalizedProject);
+    saveProject(uniqueName, normalizedProject, { skipCompression: true });
   };
 }
 
@@ -11746,7 +11756,7 @@ function importAllData(allData, options = {}) {
     saveSetups(allData.setups);
   }
   if (hasOwn('session')) {
-    saveSessionState(allData.session);
+    saveSessionState(allData.session, { disableCompression: true });
   }
   if (hasOwn('feedback')) {
     saveFeedback(allData.feedback);
