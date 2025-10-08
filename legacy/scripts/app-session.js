@@ -8933,7 +8933,7 @@ function scheduleForceReloadNavigationWarning(locationLike, baseHref, descriptio
       value: current
     };
   };
-  var verifyDelays = [120, 360];
+  var verifyDelays = [90, 240, 480];
   verifyDelays.forEach(function (delay, index) {
     var isFinalCheck = index === verifyDelays.length - 1;
     var runCheck = function runCheck() {
@@ -9014,15 +9014,18 @@ function scheduleForceReloadFallbacks(win, locationLike) {
   var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
   var fallbackHref = nextHref || baseHref || originalHref || '';
   var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
+  var fallbackToken =
+    typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
+  var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(fallbackToken) : '';
   var steps = [];
-  var nextDelay = 350;
+  var nextDelay = 120;
+  var delayIncrement = 120;
   var queueStep = function queueStep(run) {
     steps.push({
       delay: nextDelay,
       run: run
     });
-    nextDelay += 300;
+    nextDelay += delayIncrement;
   };
   if (fallbackHref) {
     if (typeof locationLike.assign === 'function') {
@@ -9061,7 +9064,7 @@ function scheduleForceReloadFallbacks(win, locationLike) {
     });
   }
   if (hasReload) {
-    var reloadDelay = steps.length ? nextDelay : 350;
+    var reloadDelay = steps.length ? Math.max(nextDelay, 280) : 280;
     steps.push({
       delay: reloadDelay,
       run: function run() {
@@ -9095,6 +9098,7 @@ function prepareForceReloadContext(win) {
   var forceReloadUrl = buildForceReloadHref(location, 'forceReload');
   var originalHref = forceReloadUrl.originalHref;
   var nextHref = forceReloadUrl.nextHref;
+  var timestamp = forceReloadUrl.timestamp;
   var baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
   return {
     win: win,
@@ -9104,6 +9108,7 @@ function prepareForceReloadContext(win) {
     hasReload: hasReload,
     originalHref: originalHref,
     nextHref: nextHref,
+    timestamp: timestamp,
     baseHref: baseHref
   };
 }
@@ -9118,6 +9123,7 @@ function executeForceReloadContext(context) {
     hasReload = context.hasReload,
     originalHref = context.originalHref,
     nextHref = context.nextHref,
+    timestamp = context.timestamp,
     baseHref = context.baseHref;
   var navigationTriggered = false;
   if (hasReplace && nextHref) {
@@ -9149,7 +9155,8 @@ function executeForceReloadContext(context) {
       originalHref: originalHref,
       baseHref: baseHref,
       nextHref: nextHref,
-      hasReload: hasReload
+      hasReload: hasReload,
+      timestamp: timestamp
     });
   }
   return navigationTriggered;

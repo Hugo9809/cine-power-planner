@@ -1283,7 +1283,7 @@
       return { matched: false, value: current };
     };
 
-    const verifyDelays = [120, 360];
+    const verifyDelays = [90, 240, 480];
 
     verifyDelays.forEach((delay, index) => {
       const isFinalCheck = index === verifyDelays.length - 1;
@@ -1381,18 +1381,23 @@
 
     const fallbackHref = nextHref || baseHref || originalHref || '';
     const hashBase = fallbackHref ? fallbackHref.split('#')[0] : (baseHref || originalHref || '');
-    const hashFallback = hashBase ? `${hashBase}#forceReload-${Date.now().toString(36)}` : '';
+    const fallbackToken =
+      typeof options.timestamp === 'string' && options.timestamp
+        ? options.timestamp
+        : Date.now().toString(36);
+    const hashFallback = hashBase ? `${hashBase}#forceReload-${fallbackToken}` : '';
 
     const steps = [];
 
-    let nextDelay = 350;
+    let nextDelay = 120;
+    const delayIncrement = 120;
 
     const queueStep = (run) => {
       steps.push({
         delay: nextDelay,
         run,
       });
-      nextDelay += 300;
+      nextDelay += delayIncrement;
     };
 
     if (fallbackHref) {
@@ -1436,7 +1441,7 @@
     }
 
     if (hasReload) {
-      const reloadDelay = steps.length ? nextDelay : 350;
+      const reloadDelay = steps.length ? Math.max(nextDelay, 280) : 280;
       steps.push({
         delay: reloadDelay,
         run() {
@@ -1477,6 +1482,7 @@
     const forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
     const nextHref = forceReloadUrl.nextHref;
     const originalHref = forceReloadUrl.originalHref;
+    const timestamp = forceReloadUrl.timestamp;
     const baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
 
     if (hasReplace && nextHref) {
@@ -1532,6 +1538,7 @@
         baseHref,
         nextHref,
         hasReload,
+        timestamp,
       });
     }
 
