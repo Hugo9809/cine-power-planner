@@ -39,7 +39,7 @@ for (let index = 0; index < cliArgs.length; index += 1) {
     forwardedArgs.push(arg);
 
     const next = cliArgs[index + 1];
-    if (next && !next.startsWith('-') && !resolveTestPath(next)) {
+    if (next && !next.startsWith('-')) {
       forwardedArgs.push(next);
       index += 1;
     }
