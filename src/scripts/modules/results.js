@@ -121,6 +121,8 @@
     handlers: {},
     feedbackFieldCache: [],
     feedbackFieldCacheDoc: null,
+    collatorCache: Object.create(null),
+    fallbackCollator: null,
     dependencies: {
       mailTarget: 'info@lucazanner.de',
       document: null,
@@ -449,6 +451,61 @@
     }
 
     return null;
+  }
+
+  function getLocaleAwareCollator(collatorCandidate, lang) {
+    if (collatorCandidate && typeof collatorCandidate.compare === 'function') {
+      return collatorCandidate;
+    }
+
+    var cache = runtimeFeedbackState.collatorCache;
+    if (!cache || typeof cache !== 'object') {
+      cache = Object.create(null);
+      runtimeFeedbackState.collatorCache = cache;
+    }
+
+    var normalizedLang = typeof lang === 'string' ? lang.trim() : '';
+    var localeKey = normalizedLang || 'default';
+    var cached = cache[localeKey];
+    if (cached && typeof cached.compare === 'function') {
+      return cached;
+    }
+
+    var resolvedCollator = null;
+    if (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function') {
+      var localeCandidates = localeKey === 'default'
+        ? [undefined]
+        : [normalizedLang, undefined];
+      for (var index = 0; index < localeCandidates.length; index += 1) {
+        var localeCandidate = localeCandidates[index];
+        if (typeof localeCandidate === 'string' && !localeCandidate) {
+          continue;
+        }
+        try {
+          resolvedCollator = new Intl.Collator(localeCandidate, { numeric: true, sensitivity: 'base' });
+          break;
+        } catch (error) {
+          void error;
+          resolvedCollator = null;
+        }
+      }
+    }
+
+    if (!resolvedCollator) {
+      var fallback = runtimeFeedbackState.fallbackCollator;
+      if (!fallback || typeof fallback.compare !== 'function') {
+        fallback = {
+          compare: function fallbackCompare(a, b) {
+            return String(a).localeCompare(String(b));
+          }
+        };
+        runtimeFeedbackState.fallbackCollator = fallback;
+      }
+      resolvedCollator = fallback;
+    }
+
+    cache[localeKey] = resolvedCollator;
+    return resolvedCollator;
   }
 
   function toArray(value) {
@@ -1122,6 +1179,10 @@
     }
     if (!collator && GLOBAL_SCOPE && GLOBAL_SCOPE.collator) {
       collator = GLOBAL_SCOPE.collator;
+    }
+
+    if (collator && deps && typeof deps === 'object') {
+      deps.collator = collator;
     }
 
     var langTexts = texts && typeof texts === 'object' && texts[currentLang] && typeof texts[currentLang] === 'object'
@@ -1800,11 +1861,7 @@
 
       var pinsCandidates = [];
       var dtapCandidates = [];
-      var nameCollator = collator && typeof collator.compare === 'function'
-        ? collator
-        : (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function'
-            ? new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
-            : { compare: function compareStrings(a, b) { return String(a).localeCompare(String(b)); } });
+      var nameCollator = getLocaleAwareCollator(collator, currentLang);
 
       for (var batteryName in batteryDevices) {
         if (!Object.prototype.hasOwnProperty.call(batteryDevices, batteryName)) {
