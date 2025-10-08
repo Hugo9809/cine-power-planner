@@ -79,6 +79,10 @@ describe('cineResults module', () => {
     const doc = { getElementById: jest.fn(() => null) };
 
     const elements = {
+      resultsPlainSummaryElem: createElement(''),
+      resultsPlainSummaryTitleElem: createElement('Existing summary title'),
+      resultsPlainSummaryTextElem: createElement('Existing summary text'),
+      resultsPlainSummaryNoteElem: createElement('Existing summary note'),
       breakdownListElem: createElement('Existing help'),
       totalPowerLabel: createElement('Total Power (existing)'),
       batteryCountLabel: createElement('Battery count'),
@@ -109,6 +113,14 @@ describe('cineResults module', () => {
       lang: 'en',
       langTexts: {
         breakdownListHelp: 'Power distribution details',
+        resultsPlainSummaryTitle: 'Quick recap',
+        resultsPlainSummaryHelp: 'Plain summary help',
+        resultsPlainSummaryPrompt: 'Add gear for summary.',
+        resultsPlainSummaryNeedBattery: 'Pick a battery to get runtime.',
+        resultsPlainSummaryRuntime: '{batteryName} {hours}h {batteryCount} packs {totalPower}W',
+        resultsPlainSummaryUnlimited: 'Unlimited with {batteryName} at {totalPower}W',
+        resultsPlainSummaryNote: 'Numbers save offline.',
+        resultsPlainSummaryUnnamedBattery: 'your selected battery',
         totalPowerLabel: 'Total Power',
         totalPowerHelp: 'Shows the maximum draw.',
         batteryCountLabel: 'Batteries needed',
@@ -145,6 +157,10 @@ describe('cineResults module', () => {
     });
 
     expect(success).toBe(true);
+    expect(elements.resultsPlainSummaryElem.attributes['data-help']).toBe('Plain summary help');
+    expect(elements.resultsPlainSummaryTitleElem.textContent).toBe('Quick recap');
+    expect(elements.resultsPlainSummaryTextElem.textContent).toBe('Add gear for summary.');
+    expect(elements.resultsPlainSummaryNoteElem.textContent).toBe('Numbers save offline.');
     expect(elements.breakdownListElem.attributes['data-help']).toBe('Power distribution details');
     expect(elements.totalPowerLabel.textContent).toBe('Total Power');
     expect(elements.totalPowerLabel.attributes['data-help']).toBe('Shows the maximum draw.');
@@ -230,6 +246,8 @@ describe('cineResults module', () => {
     const batteryComparisonSection = { style: { display: 'none' } };
     const batteryTableElem = createElement('');
     batteryTableElem.innerHTML = '';
+    const resultsPlainSummaryElem = createElement('');
+    const resultsPlainSummaryTextElem = createElement('');
 
     const breakdownListElem = {
       _html: '',
@@ -298,6 +316,16 @@ describe('cineResults module', () => {
         runtimeUserCountNote: 'Used by {count}',
         batteryLifeHelp: 'Life help',
         runtimeAverageNote: 'Average note',
+        resultsPlainSummaryTitle: 'Quick summary',
+        resultsPlainSummaryHelp: 'Plain summary help',
+        resultsPlainSummaryPrompt: 'Add devices and choose a battery to see a plain-language summary of runtime and consumption.',
+        resultsPlainSummaryNeedBattery: 'Choose a battery to see how long the rig will run and how many packs to pack.',
+        resultsPlainSummaryRuntime:
+          'With {batteryName}, expect about {hours} hours of runtime. Pack {batteryCount} batteries for a 10-hour day. Your rig currently draws {totalPower} W.',
+        resultsPlainSummaryUnlimited:
+          'With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.',
+        resultsPlainSummaryNote: 'The planner saves these numbers offline automatically. Update your backups after big changes.',
+        resultsPlainSummaryUnnamedBattery: 'your selected battery',
       },
     };
 
@@ -358,6 +386,8 @@ describe('cineResults module', () => {
         batteryComparisonSection,
         batteryTableElem,
         setupDiagramContainer,
+        resultsPlainSummaryElem,
+        resultsPlainSummaryTextElem,
       },
       motorSelects,
       controllerSelects,
@@ -398,6 +428,9 @@ describe('cineResults module', () => {
     expect(batteryLifeLabelElem.textContent).toContain('Used by 5');
     expect(batteryLifeLabelElem.attributes['data-help']).toBe('Life help');
     expect(runtimeAverageNoteElem.textContent).toBe('Average note');
+    expect(resultsPlainSummaryTextElem.textContent).toBe(
+      'With BatteryA, expect about 3.20 hours of runtime. Pack 4 batteries for a 10-hour day. Your rig currently draws 41.0 W.'
+    );
     expect(pinWarnElem.textContent).toContain('Pin OK');
     expect(setStatusMessage).toHaveBeenCalledWith(
       hotswapWarnElem,

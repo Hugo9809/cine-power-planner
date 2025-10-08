@@ -8153,6 +8153,25 @@ function setLanguage(lang) {
 
   if (!resultsLocalizationApplied) {
     // Results labels
+  const resultsPlainSummaryElem = document.getElementById("resultsPlainSummary");
+  if (resultsPlainSummaryElem) {
+    resultsPlainSummaryElem.setAttribute(
+      "data-help",
+      texts[lang].resultsPlainSummaryHelp
+    );
+  }
+  const resultsPlainSummaryTitleElem = document.getElementById("resultsPlainSummaryTitle");
+  if (resultsPlainSummaryTitleElem) {
+    resultsPlainSummaryTitleElem.textContent = texts[lang].resultsPlainSummaryTitle;
+  }
+  const resultsPlainSummaryTextElem = document.getElementById("resultsPlainSummaryText");
+  if (resultsPlainSummaryTextElem) {
+    resultsPlainSummaryTextElem.textContent = texts[lang].resultsPlainSummaryPrompt;
+  }
+  const resultsPlainSummaryNoteElem = document.getElementById("resultsPlainSummaryNote");
+  if (resultsPlainSummaryNoteElem) {
+    resultsPlainSummaryNoteElem.textContent = texts[lang].resultsPlainSummaryNote;
+  }
   const breakdownListTarget =
     typeof breakdownListElem !== "undefined" && breakdownListElem
       ? breakdownListElem

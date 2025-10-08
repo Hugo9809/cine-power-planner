@@ -525,6 +525,53 @@ textarea {
   color: var(--status-error-text-color);
 }
 
+.results-plain-summary {
+  margin-block: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: calc(var(--border-radius) * 2);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.results-plain-summary:hover,
+.results-plain-summary:focus-within {
+  box-shadow: var(--panel-shadow-hover);
+  border-color: color-mix(in srgb, var(--panel-border) 70%, var(--accent-color));
+}
+
+.results-plain-summary-title,
+#resultsPlainSummaryTitle {
+  margin-block: 0 0.5rem;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+}
+
+.results-plain-summary-text,
+#resultsPlainSummaryText {
+  margin-block: 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.results-plain-summary-note,
+#resultsPlainSummaryNote {
+  margin-block: 0.75rem 0 0;
+  color: var(--muted-text-color);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+body.dark-mode .results-plain-summary {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+body.dark-mode .results-plain-summary:hover,
+body.dark-mode .results-plain-summary:focus-within {
+  border-color: color-mix(in srgb, rgba(255, 255, 255, 0.3) 70%, var(--accent-color));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
 /* Improve keyboard accessibility by clearly showing focus outlines for links, inputs, and textareas */
 button:focus,
 a:focus,

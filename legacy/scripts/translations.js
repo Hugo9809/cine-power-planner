@@ -57,6 +57,20 @@ var texts = {
     setupManageHeadingHelp: "Manage saved projects: save, load, or clear configurations.",
     deviceSelectionHeadingHelp: "Choose cameras, monitors, and accessories for your rig.",
     resultsHeadingHelp: "See power consumption, estimated runtime, and battery counts.",
+    resultsPlainSummaryTitle: "Quick summary",
+    resultsPlainSummaryHelp:
+      "Explains the power summary in plain language so you can confirm runtime and battery needs without reading every table.",
+    resultsPlainSummaryPrompt:
+      "Add devices and choose a battery to see a plain-language summary of runtime and consumption.",
+    resultsPlainSummaryNeedBattery:
+      "Choose a battery to see how long the rig will run and how many packs to pack.",
+    resultsPlainSummaryRuntime:
+      "With {batteryName}, expect about {hours} hours of runtime. Pack {batteryCount} batteries for a 10-hour day. Your rig currently draws {totalPower} W.",
+    resultsPlainSummaryUnlimited:
+      "With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.",
+    resultsPlainSummaryNote:
+      "The planner saves these numbers offline automatically. Update your backups after big changes.",
+    resultsPlainSummaryUnnamedBattery: "your selected battery",
     deviceManagerHeadingHelp: "Add, edit or remove entries from the device database, including categories, subcategories and attributes.",
     batteryComparisonHeadingHelp: "Compare runtimes for all compatible batteries.",
     batteryTableBatteryHelp: "Battery name and mount that can power your current build.",
@@ -1356,6 +1370,20 @@ var texts = {
     setupManageHeadingHelp: "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
     deviceSelectionHeadingHelp: "Scegli fotocamere, monitor e accessori per la tua configurazione.",
     resultsHeadingHelp: "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
+    resultsPlainSummaryTitle: "Riepilogo rapido",
+    resultsPlainSummaryHelp:
+      "Spiega il riepilogo di potenza con termini semplici e supporta la pianificazione dell'autonomia.",
+    resultsPlainSummaryPrompt:
+      "Aggiungi dispositivi e scegli una batteria per vedere un riepilogo in linguaggio semplice.",
+    resultsPlainSummaryNeedBattery:
+      "Scegli una batteria per scoprire quanta autonomia avrai e quanti pacchi portare.",
+    resultsPlainSummaryRuntime:
+      "Con {batteryName} puoi aspettarti circa {hours} ore di autonomia. Per una giornata da 10 ore porta {batteryCount} batterie. Il tuo setup assorbe attualmente {totalPower} W.",
+    resultsPlainSummaryUnlimited:
+      "Con {batteryName} il tuo setup assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
+    resultsPlainSummaryNote:
+      "Il planner salva questi valori offline in automatico. Aggiorna i backup dopo modifiche importanti.",
+    resultsPlainSummaryUnnamedBattery: "la batteria selezionata",
     deviceManagerHeadingHelp: "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi, inclusi categorie, sottocategorie e attributi.",
     batteryComparisonHeadingHelp: "Confronta le autonomie di tutte le batterie compatibili.",
     batteryTableBatteryHelp: "Nome della batteria e attacco che possono alimentare la tua configurazione.",
@@ -2654,6 +2682,20 @@ var texts = {
     setupManageHeadingHelp: "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp: "Elige cámaras, monitores y accesorios para tu equipo.",
     resultsHeadingHelp: "Consulta el consumo de energía, la autonomía estimada y la cantidad de baterías.",
+    resultsPlainSummaryTitle: "Resumen rápido",
+    resultsPlainSummaryHelp:
+      "Explica el resumen de potencia con un lenguaje sencillo y ayuda a planificar la autonomía.",
+    resultsPlainSummaryPrompt:
+      "Añade dispositivos y elige una batería para ver un resumen en lenguaje claro.",
+    resultsPlainSummaryNeedBattery:
+      "Elige una batería para saber cuánto durará tu equipo y cuántos packs llevar.",
+    resultsPlainSummaryRuntime:
+      "Con {batteryName} tendrás unas {hours} horas de autonomía. Para una jornada de 10 horas lleva {batteryCount} baterías. Tu equipo consume ahora {totalPower} W.",
+    resultsPlainSummaryUnlimited:
+      "Con {batteryName} tu equipo consume {totalPower} W, así que la autonomía es prácticamente ilimitada. Asegúrate de tener una batería cargada conectada antes de grabar.",
+    resultsPlainSummaryNote:
+      "El planificador guarda estos datos offline automáticamente. Actualiza tus copias de seguridad después de cambios importantes.",
+    resultsPlainSummaryUnnamedBattery: "la batería seleccionada",
     deviceManagerHeadingHelp: "Añade, edita o elimina entradas de la base de datos de dispositivos, incluidas categorías, subcategorías y atributos.",
     batteryComparisonHeadingHelp: "Compara los tiempos de funcionamiento de todas las baterías compatibles.",
     batteryTableBatteryHelp: "Nombre de la batería y montura capaces de alimentar tu configuración.",
@@ -3952,6 +3994,20 @@ var texts = {
     setupManageHeadingHelp: "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
     deviceSelectionHeadingHelp: "Choisissez les caméras, moniteurs et accessoires de votre équipement.",
     resultsHeadingHelp: "Affiche la consommation, l’autonomie estimée et le nombre de batteries.",
+    resultsPlainSummaryTitle: "Résumé rapide",
+    resultsPlainSummaryHelp:
+      "Explique le résumé de puissance avec des mots simples et aide à planifier l’autonomie.",
+    resultsPlainSummaryPrompt:
+      "Ajoutez des appareils et choisissez une batterie pour obtenir un résumé en langage clair.",
+    resultsPlainSummaryNeedBattery:
+      "Choisissez une batterie pour connaître l'autonomie et le nombre de packs à prévoir.",
+    resultsPlainSummaryRuntime:
+      "Avec {batteryName}, comptez environ {hours} heures d'autonomie. Pour une journée de 10 heures, prévoyez {batteryCount} batteries. Votre configuration consomme actuellement {totalPower} W.",
+    resultsPlainSummaryUnlimited:
+      "Avec {batteryName}, votre configuration consomme {totalPower} W : l'autonomie reste donc illimitée. Gardez tout de même une batterie chargée branchée avant de tourner.",
+    resultsPlainSummaryNote:
+      "Le planificateur enregistre ces données hors ligne automatiquement. Mettez à jour vos sauvegardes après des modifications importantes.",
+    resultsPlainSummaryUnnamedBattery: "la batterie sélectionnée",
     deviceManagerHeadingHelp: "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils, y compris les catégories, sous-catégories et attributs.",
     batteryComparisonHeadingHelp: "Compare l’autonomie de toutes les batteries compatibles.",
     batteryTableBatteryHelp: "Nom de la batterie et type de montage capables d’alimenter votre configuration.",
@@ -5250,6 +5306,20 @@ var texts = {
     setupManageHeadingHelp: "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
     deviceSelectionHeadingHelp: "Wähle Kameras, Monitore und Zubehör für dein Setup.",
     resultsHeadingHelp: "Zeigt Stromverbrauch, geschätzte Laufzeit und benötigte Akkus.",
+    resultsPlainSummaryTitle: "Schnellüberblick",
+    resultsPlainSummaryHelp:
+      "Erläutert die Leistungsübersicht in Alltagssprache und unterstützt die Laufzeitplanung.",
+    resultsPlainSummaryPrompt:
+      "Füge Geräte hinzu und wähle einen Akku, um eine leicht verständliche Zusammenfassung zu erhalten.",
+    resultsPlainSummaryNeedBattery:
+      "Wähle einen Akku, um Laufzeit und benötigte Packs zu sehen.",
+    resultsPlainSummaryRuntime:
+      "Mit {batteryName} kannst du mit etwa {hours} Stunden Laufzeit rechnen. Für einen 10-Stunden-Tag solltest du {batteryCount} Akkus einplanen. Dein Aufbau zieht derzeit {totalPower} W.",
+    resultsPlainSummaryUnlimited:
+      "Mit {batteryName} zieht dein Aufbau {totalPower} W und die Laufzeit bleibt praktisch unbegrenzt. Halte vor dem Dreh trotzdem einen geladenen Akku bereit.",
+    resultsPlainSummaryNote:
+      "Die Angaben werden offline automatisch gespeichert. Aktualisiere nach größeren Änderungen deine Sicherungen.",
+    resultsPlainSummaryUnnamedBattery: "dein ausgewählter Akku",
     deviceManagerHeadingHelp: "Füge Einträge zur Gerätedatenbank hinzu, bearbeite oder entferne sie – inklusive Kategorien, Unterkategorien und Attributen.",
     batteryComparisonHeadingHelp: "Vergleicht Laufzeiten aller kompatiblen Batterien.",
     batteryTableBatteryHelp: "Akkuname und Mount, die dein aktuelles Setup versorgen können.",
