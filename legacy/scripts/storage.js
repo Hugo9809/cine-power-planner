@@ -7116,7 +7116,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var normalizedRules = skipNormalization ? safeRules : Array.isArray(safeRules) ? normalizeLegacyLongGopStructure(safeRules) : [];
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, normalizedRules, "Error saving automatic gear rules to localStorage:");
+    saveJSONToStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, normalizedRules, "Error saving automatic gear rules to localStorage:", {
+      disableCompression: true
+    });
     return normalizedRules;
   }
   function loadAutoGearBackups() {
