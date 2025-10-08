@@ -3003,6 +3003,18 @@ function ensureProjectEntryUncompressed(value, contextName) {
   return value;
 }
 
+function ensureProjectEntriesUncompressed(container) {
+  if (!isPlainObject(container)) {
+    return container;
+  }
+
+  Object.keys(container).forEach((key) => {
+    container[key] = ensureProjectEntryUncompressed(container[key], key);
+  });
+
+  return container;
+}
+
 function ensureProjectEntryCompressed(value, contextName) {
   if (typeof value === 'string') {
     const decoded = decodeCompressedJsonStorageValue(value);
@@ -7382,7 +7394,7 @@ function saveSetups(setups) {
     isAutoBackupKey: (name) => typeof name === 'string'
       && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
   });
-  applyProjectEntryCompression(serializedSetups);
+  ensureProjectEntriesUncompressed(serializedSetups);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
@@ -7391,7 +7403,7 @@ function saveSetups(setups) {
     serializedSetups,
     "Error saving setups to localStorage:",
     {
-      disableCompression: shouldDisableProjectCompressionDuringPersist(),
+      disableCompression: true,
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedSetups);
         if (!removedKey) {
