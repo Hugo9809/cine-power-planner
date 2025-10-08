@@ -990,6 +990,75 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       timestamp: timestamp
     };
   }
+  function scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, initialAfter) {
+    var schedule = null;
+    try {
+      if (typeof window !== 'undefined' && window && typeof window.setTimeout === 'function') {
+        schedule = window.setTimeout.bind(window);
+      }
+    } catch (error) {
+      void error;
+    }
+    if (!schedule) {
+      if (typeof setTimeout === 'function') {
+        schedule = setTimeout;
+      } else {
+        safeWarn('Forced reload navigation attempt did not update location', {
+          description: description,
+          before: before,
+          after: initialAfter,
+          expected: expected
+        });
+        return;
+      }
+    }
+    var resolved = false;
+    var evaluate = function evaluate() {
+      var currentRaw = readLocationHrefSafe(locationLike);
+      var current = normaliseHrefForComparison(currentRaw, baseHref);
+      if (expected && (current === expected || current === "".concat(expected, "#")) || before !== current && current && (!expected || current === expected)) {
+        resolved = true;
+        return {
+          matched: true,
+          value: current
+        };
+      }
+      return {
+        matched: false,
+        value: current
+      };
+    };
+    var verifyDelays = [120, 360];
+    verifyDelays.forEach(function (delay, index) {
+      var isFinalCheck = index === verifyDelays.length - 1;
+      var runCheck = function runCheck() {
+        if (resolved) {
+          return;
+        }
+        var result = evaluate();
+        if (result.matched) {
+          return;
+        }
+        if (isFinalCheck) {
+          resolved = true;
+          safeWarn('Forced reload navigation attempt did not update location', {
+            description: description,
+            before: before,
+            after: result.value,
+            expected: expected
+          });
+        }
+      };
+      try {
+        schedule(runCheck, delay);
+      } catch (scheduleError) {
+        void scheduleError;
+        if (isFinalCheck) {
+          runCheck();
+        }
+      }
+    });
+  }
   function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
     if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
       return false;
@@ -1011,12 +1080,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (expected && (after === expected || after === "".concat(expected, "#")) || before !== after && after && (!expected || after === expected)) {
       return true;
     }
-    safeWarn('Forced reload navigation attempt did not update location', {
-      description: description,
-      before: before,
-      after: after,
-      expected: expected
-    });
+    scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
     return false;
   }
   function scheduleForceReloadFallbacks(win, locationLike, options) {
