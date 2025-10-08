@@ -10,6 +10,30 @@
             ? global
             : {};
 
+  let ensureConsoleMethodsWritable = null;
+  if (typeof require === 'function') {
+    try {
+      const consoleHelpers = require('../console-helpers.js');
+      if (consoleHelpers && typeof consoleHelpers.ensureConsoleMethodsWritable === 'function') {
+        ensureConsoleMethodsWritable = consoleHelpers.ensureConsoleMethodsWritable;
+      }
+    } catch (consoleHelpersError) {
+      void consoleHelpersError;
+    }
+  }
+
+  if (
+    !ensureConsoleMethodsWritable
+    && GLOBAL_SCOPE
+    && typeof GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable === 'function'
+  ) {
+    ensureConsoleMethodsWritable = GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable;
+  }
+
+  if (typeof ensureConsoleMethodsWritable === 'function') {
+    ensureConsoleMethodsWritable(['warn', 'info']);
+  }
+
   const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
   const QUEUE_FLUSH_TIMER_KEY = '__cinePendingModuleRegistrationsTimer__';
 
