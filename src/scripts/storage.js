@@ -120,6 +120,211 @@ var COMPRESSION_STRATEGY_CACHE =
 var COMPRESSION_STRATEGY_CACHE_KEYS = [];
 var COMPRESSION_STRATEGY_CACHE_LIMIT = 6;
 
+var COMPRESSION_WARNING_LIMIT = 12;
+var COMPRESSION_WARNING_BATCH_SIZE = 8;
+var COMPRESSION_LOG_SUMMARY_WINDOW_MS = 60 * 1000;
+var compressionWarningRegistry = {
+  entries: Object.create(null),
+  totalWarnings: 0,
+  suppressionNoticeShown: false,
+};
+var ensureConsoleMethodsWritable = null;
+if (typeof require === 'function') {
+  try {
+    var consoleHelpers = require('./console-helpers.js');
+    if (consoleHelpers && typeof consoleHelpers.ensureConsoleMethodsWritable === 'function') {
+      ensureConsoleMethodsWritable = consoleHelpers.ensureConsoleMethodsWritable;
+    }
+  } catch (consoleHelpersError) {
+    void consoleHelpersError;
+  }
+}
+
+if (
+  !ensureConsoleMethodsWritable
+  && GLOBAL_SCOPE
+  && typeof GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable === 'function'
+) {
+  ensureConsoleMethodsWritable = GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable;
+}
+
+if (typeof ensureConsoleMethodsWritable === 'function') {
+  ensureConsoleMethodsWritable(['warn', 'info']);
+}
+
+function getCompressionLogTimestamp() {
+  if (typeof Date === 'undefined') {
+    return null;
+  }
+
+  if (typeof Date.now === 'function') {
+    return Date.now();
+  }
+
+  try {
+    return new Date().getTime();
+  } catch (timestampError) {
+    void timestampError;
+  }
+
+  return null;
+}
+
+function logCompressionSavingsEvent(kind, identifier, message, savings, percent) {
+  if (typeof console === 'undefined') {
+    return;
+  }
+
+  var entryKey = typeof kind === 'string' && kind ? kind : 'generic';
+  var keyLabel = null;
+  if (typeof identifier === 'string' && identifier) {
+    keyLabel = identifier;
+  } else if (identifier !== null && identifier !== undefined) {
+    try {
+      keyLabel = String(identifier);
+    } catch (stringifyError) {
+      keyLabel = null;
+      void stringifyError;
+    }
+  }
+
+  var registry = compressionWarningRegistry;
+  var entry = registry.entries[entryKey];
+  var now = getCompressionLogTimestamp();
+
+  if (!entry) {
+    entry = {
+      kind: entryKey,
+      occurrences: 0,
+      totalSavings: 0,
+      lastPercent: null,
+      lastKey: null,
+      uniqueKeys: Object.create(null),
+      uniqueKeyCount: 0,
+      firstLoggedAt: now,
+      lastLoggedAt: now,
+      lastSummaryAt: null,
+      suppressedTotal: 0,
+      suppressedSinceSummary: 0,
+    };
+    registry.entries[entryKey] = entry;
+  }
+
+  entry.occurrences += 1;
+  entry.lastLoggedAt = now;
+  if (keyLabel) {
+    entry.lastKey = keyLabel;
+    if (!entry.uniqueKeys[keyLabel]) {
+      entry.uniqueKeys[keyLabel] = true;
+      entry.uniqueKeyCount += 1;
+    }
+  }
+
+  if (typeof savings === 'number' && Number.isFinite(savings)) {
+    entry.totalSavings += savings;
+  }
+  if (typeof percent === 'number' && Number.isFinite(percent)) {
+    entry.lastPercent = percent;
+  }
+
+  if (registry.totalWarnings < COMPRESSION_WARNING_LIMIT) {
+    if (typeof ensureConsoleMethodsWritable === 'function') {
+      ensureConsoleMethodsWritable('warn');
+    }
+    if (typeof console.warn === 'function' && message) {
+      console.warn(message);
+    }
+    registry.totalWarnings += 1;
+    return;
+  }
+
+  entry.suppressedTotal += 1;
+  entry.suppressedSinceSummary += 1;
+
+  if (!registry.suppressionNoticeShown && typeof console.info === 'function') {
+    if (typeof ensureConsoleMethodsWritable === 'function') {
+      ensureConsoleMethodsWritable('info');
+    }
+    console.info(
+      'Additional storage compression warnings are being batched to keep diagnostics readable.',
+      {
+        limit: COMPRESSION_WARNING_LIMIT,
+        batchSize: COMPRESSION_WARNING_BATCH_SIZE,
+      },
+    );
+    registry.suppressionNoticeShown = true;
+  }
+
+  var shouldSummarize = false;
+  if (!entry.lastSummaryAt) {
+    shouldSummarize = true;
+  } else if (entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
+    shouldSummarize = true;
+  } else if (
+    now !== null &&
+    entry.lastSummaryAt !== null &&
+    entry.suppressedSinceSummary > 0 &&
+    now - entry.lastSummaryAt >= COMPRESSION_LOG_SUMMARY_WINDOW_MS
+  ) {
+    shouldSummarize = true;
+  } else if (now === null && entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
+    shouldSummarize = true;
+  }
+
+  if (shouldSummarize && typeof console.info === 'function') {
+    if (typeof ensureConsoleMethodsWritable === 'function') {
+      ensureConsoleMethodsWritable('info');
+    }
+    console.info('Suppressed repeated storage compression warnings.', {
+      kind: entry.kind,
+      mostRecentKey: entry.lastKey,
+      suppressedSinceSummary: entry.suppressedSinceSummary,
+      suppressedTotal: entry.suppressedTotal,
+      totalOccurrences: entry.occurrences,
+      totalSavings: entry.totalSavings,
+      lastPercent: entry.lastPercent,
+      uniqueKeys: entry.uniqueKeyCount,
+    });
+    entry.lastSummaryAt = now;
+    entry.suppressedSinceSummary = 0;
+  }
+}
+
+function getCompressionLogSnapshot() {
+  var entries = {};
+  var keys = Object.keys(compressionWarningRegistry.entries);
+
+  for (var i = 0; i < keys.length; i += 1) {
+    var key = keys[i];
+    var source = compressionWarningRegistry.entries[key];
+    if (!source) {
+      continue;
+    }
+
+    entries[key] = {
+      kind: source.kind,
+      occurrences: source.occurrences,
+      totalSavings: source.totalSavings,
+      lastPercent: source.lastPercent,
+      lastKey: source.lastKey,
+      uniqueKeyCount: source.uniqueKeyCount,
+      firstLoggedAt: source.firstLoggedAt,
+      lastLoggedAt: source.lastLoggedAt,
+      lastSummaryAt: source.lastSummaryAt,
+      suppressedTotal: source.suppressedTotal,
+    };
+  }
+
+  return {
+    limit: COMPRESSION_WARNING_LIMIT,
+    batchSize: COMPRESSION_WARNING_BATCH_SIZE,
+    summaryWindowMs: COMPRESSION_LOG_SUMMARY_WINDOW_MS,
+    totalWarnings: compressionWarningRegistry.totalWarnings,
+    suppressionNoticeShown: compressionWarningRegistry.suppressionNoticeShown,
+    entries: entries,
+  };
+}
+
 function getCompressionStrategyCacheKey(variants) {
   if (!Array.isArray(variants) || !variants.length) {
     return null;
@@ -865,9 +1070,8 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
     const percent = candidate.originalLength > 0
       ? Math.round((savings / candidate.originalLength) * 100)
       : 0;
-    console.warn(
-      `Stored compressed payload for ${label} snapshot to reduce storage usage by ${savings} characters (${percent}%).`,
-    );
+    const message = `Stored compressed payload for ${label} snapshot to reduce storage usage by ${savings} characters (${percent}%).`;
+    logCompressionSavingsEvent('auto-backup', contextName || label, message, savings, percent);
   }
 
   return {
@@ -1504,8 +1708,6 @@ function ensureCriticalStorageBackups(options = {}) {
 
     if (
       compressionInfo
-      && typeof console !== 'undefined'
-      && typeof console.warn === 'function'
       && typeof compressionInfo.originalLength === 'number'
       && typeof compressionInfo.wrappedLength === 'number'
     ) {
@@ -1513,9 +1715,8 @@ function ensureCriticalStorageBackups(options = {}) {
       const percent = compressionInfo.originalLength > 0
         ? Math.round((savings / compressionInfo.originalLength) * 100)
         : 0;
-      console.warn(
-        `Stored compressed critical backup for ${entry.key}, reducing storage usage by ${savings} characters (${percent}%).`,
-      );
+      const message = `Stored compressed critical backup for ${entry.key}, reducing storage usage by ${savings} characters (${percent}%).`;
+      logCompressionSavingsEvent('critical-backup', entry.key, message, savings, percent);
     }
   }
 
@@ -2733,9 +2934,8 @@ function createStorageMigrationBackup(storage, key, originalValue) {
         const percent = info.originalSize > 0
           ? Math.round((savings / info.originalSize) * 100)
           : 0;
-        console.warn(
-          `Stored compressed migration backup for ${key} to reduce storage usage by ${savings} characters (${percent}%) using ${info.variant || 'unknown'} variant.`,
-        );
+        const message = `Stored compressed migration backup for ${key} to reduce storage usage by ${savings} characters (${percent}%) using ${info.variant || 'unknown'} variant.`;
+        logCompressionSavingsEvent('migration-backup', key, message, savings, percent);
       }
       return { success: true, quota: false };
     } catch (error) {
@@ -4987,14 +5187,11 @@ function saveJSONToStorage(
       typeof originalLength === 'number'
       && typeof wrappedLength === 'number'
       && wrappedLength < originalLength
-      && typeof console !== 'undefined'
-      && typeof console.warn === 'function'
     ) {
       const savings = originalLength - wrappedLength;
       const percent = originalLength > 0 ? Math.round((savings / originalLength) * 100) : 0;
-      console.warn(
-        `Stored compressed value for ${key} to reduce storage usage by ${savings} characters (${percent}%).`,
-      );
+      const message = `Stored compressed value for ${key} to reduce storage usage by ${savings} characters (${percent}%).`;
+      logCompressionSavingsEvent('storage-value', key, message, savings, percent);
     }
 
     compressionLogged = true;
@@ -9961,6 +10158,7 @@ var STORAGE_API = {
   ensureCriticalStorageBackups,
   getLastCriticalStorageGuardResult,
   decodeStoredValue,
+  getCompressionLogSnapshot,
 };
 
 if (typeof module !== "undefined" && module.exports) {
