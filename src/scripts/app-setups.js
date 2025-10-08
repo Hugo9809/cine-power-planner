@@ -960,10 +960,6 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
-  const deviceChanges = getDeviceChanges();
-  if (Object.keys(deviceChanges).length) {
-    currentSetup.changedDevices = deviceChanges;
-  }
   const key = getCurrentSetupKey();
   const feedback = loadFeedbackSafe()[key] || [];
   if (feedback.length) {
