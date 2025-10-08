@@ -1541,6 +1541,14 @@ function deriveAutoBackupCreatedAt(name, fallbackDate) {
   }
 }
 
+class AutoBackupCycleError extends Error {
+  constructor(entryName) {
+    super(`Detected cyclic auto-backup reference while expanding snapshot ${entryName}`);
+    this.name = 'AutoBackupCycleError';
+    this.entryName = entryName;
+  }
+}
+
 function expandAutoBackupEntries(container, options) {
   if (!isPlainObject(container)) {
     return container;
@@ -1585,83 +1593,105 @@ function expandAutoBackupEntries(container, options) {
     if (snapshot && typeof snapshot === 'object') {
       if (stack.has(name)) {
         console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
-        const fallback = {};
-        cache.set(name, fallback);
-        return fallback;
+        throw new AutoBackupCycleError(name);
       }
 
       stack.add(name);
 
-      const snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';
-      const baseName = snapshotType === 'delta' && typeof snapshot.base === 'string'
-        ? snapshot.base
-        : null;
-      const baseValue = baseName ? cloneAutoBackupValue(resolve(baseName, stack)) : {};
-      let payloadInfo;
       try {
-        payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
-      } catch (payloadError) {
-        console.warn('Failed to restore automatic backup payload while expanding snapshot', name, payloadError);
-        throw payloadError;
-      }
-      const payload = isPlainObject(payloadInfo.payload) ? payloadInfo.payload : {};
-      const changedKeys = Array.isArray(snapshot.changedKeys) && snapshot.changedKeys.length
-        ? snapshot.changedKeys
-        : Object.keys(payload);
-      const removedKeys = Array.isArray(snapshot.removedKeys) ? snapshot.removedKeys : [];
-
-      const expanded = cloneAutoBackupValue(baseValue);
-
-      changedKeys.forEach((key) => {
-        if (Object.prototype.hasOwnProperty.call(payload, key)) {
-          expanded[key] = cloneAutoBackupValue(payload[key]);
-        }
-      });
-
-      removedKeys.forEach((key) => {
-        if (Object.prototype.hasOwnProperty.call(expanded, key)) {
-          delete expanded[key];
-        }
-      });
-
-      const metadata = {
-        version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
-        snapshotType,
-        base: snapshotType === 'delta' ? baseName : null,
-        sequence: Number.isFinite(snapshot.sequence)
-          ? snapshot.sequence
-          : (snapshotType === 'delta' ? 1 : 0),
-        createdAt: typeof snapshot.createdAt === 'string'
-          ? snapshot.createdAt
-          : deriveAutoBackupCreatedAt(name),
-        changedKeys: changedKeys.slice(),
-        removedKeys: removedKeys.slice(),
-      };
-
-      try {
-        metadata.payloadSignature = createStableValueSignature(payload);
-      } catch (payloadSignatureError) {
-        metadata.payloadSignature = null;
-        console.warn(
-          'Unable to compute stable signature for automatic backup payload during expansion',
-          payloadSignatureError,
-        );
-      }
-
-      if (isCompressedAutoBackupSnapshotPayload(snapshot.payload)) {
-        metadata.compressedPayload = cloneAutoBackupValue(snapshot.payload, { stripMetadata: true });
-        metadata.payloadCompression = isPlainObject(snapshot.payloadCompression)
-          ? { ...snapshot.payloadCompression }
+        const snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';
+        const baseName = snapshotType === 'delta' && typeof snapshot.base === 'string'
+          ? snapshot.base
           : null;
-      } else {
-        metadata.compressedPayload = null;
-        metadata.payloadCompression = null;
-      }
 
-      defineAutoBackupMetadata(expanded, metadata);
-      cache.set(name, expanded);
-      stack.delete(name);
-      return expanded;
+        let baseHadCycle = false;
+        let baseValue = {};
+        if (baseName) {
+          try {
+            baseValue = cloneAutoBackupValue(resolve(baseName, stack));
+          } catch (error) {
+            if (error instanceof AutoBackupCycleError) {
+              baseHadCycle = true;
+              baseValue = {};
+            } else {
+              throw error;
+            }
+          }
+        }
+
+        let payloadInfo;
+        try {
+          payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
+        } catch (payloadError) {
+          console.warn('Failed to restore automatic backup payload while expanding snapshot', name, payloadError);
+          throw payloadError;
+        }
+        const payload = isPlainObject(payloadInfo.payload) ? payloadInfo.payload : {};
+        const changedKeys = Array.isArray(snapshot.changedKeys) && snapshot.changedKeys.length
+          ? snapshot.changedKeys
+          : Object.keys(payload);
+        const removedKeys = Array.isArray(snapshot.removedKeys) ? snapshot.removedKeys : [];
+
+        const expanded = cloneAutoBackupValue(baseValue);
+
+        changedKeys.forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(payload, key)) {
+            expanded[key] = cloneAutoBackupValue(payload[key]);
+          }
+        });
+
+        removedKeys.forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(expanded, key)) {
+            delete expanded[key];
+          }
+        });
+
+        const snapshotTypeForMetadata = baseHadCycle ? 'full' : snapshotType;
+        const baseNameForMetadata = snapshotTypeForMetadata === 'delta' ? baseName : null;
+        const sequenceForMetadata = baseHadCycle
+          ? 0
+          : (Number.isFinite(snapshot.sequence)
+            ? snapshot.sequence
+            : (snapshotTypeForMetadata === 'delta' ? 1 : 0));
+
+        const metadata = {
+          version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+          snapshotType: snapshotTypeForMetadata,
+          base: baseHadCycle ? null : baseNameForMetadata,
+          sequence: sequenceForMetadata,
+          createdAt: typeof snapshot.createdAt === 'string'
+            ? snapshot.createdAt
+            : deriveAutoBackupCreatedAt(name),
+          changedKeys: changedKeys.slice(),
+          removedKeys: removedKeys.slice(),
+        };
+
+        try {
+          metadata.payloadSignature = createStableValueSignature(payload);
+        } catch (payloadSignatureError) {
+          metadata.payloadSignature = null;
+          console.warn(
+            'Unable to compute stable signature for automatic backup payload during expansion',
+            payloadSignatureError,
+          );
+        }
+
+        if (isCompressedAutoBackupSnapshotPayload(snapshot.payload)) {
+          metadata.compressedPayload = cloneAutoBackupValue(snapshot.payload, { stripMetadata: true });
+          metadata.payloadCompression = isPlainObject(snapshot.payloadCompression)
+            ? { ...snapshot.payloadCompression }
+            : null;
+        } else {
+          metadata.compressedPayload = null;
+          metadata.payloadCompression = null;
+        }
+
+        defineAutoBackupMetadata(expanded, metadata);
+        cache.set(name, expanded);
+        return expanded;
+      } finally {
+        stack.delete(name);
+      }
     }
 
     const cloned = cloneAutoBackupValue(value);

@@ -370,13 +370,24 @@ if (typeof self !== 'undefined') {
   });
 
   self.addEventListener('activate', event => {
-    event.waitUntil(
-      caches.keys().then(keys =>
-        Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-      )
-    );
-    self.clients.claim();
-    serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
+    event.waitUntil((async () => {
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+      } catch (cacheCleanupError) {
+        serviceWorkerLog.warn('Failed to clean up old caches during activation.', cacheCleanupError);
+      }
+
+      try {
+        if (self.clients && typeof self.clients.claim === 'function') {
+          await self.clients.claim();
+        }
+      } catch (claimError) {
+        serviceWorkerLog.warn('Unable to claim clients during activation.', claimError);
+      }
+
+      serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
+    })());
   });
 
   self.addEventListener('fetch', event => {
