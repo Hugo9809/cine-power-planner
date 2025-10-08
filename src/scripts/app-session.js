@@ -4326,7 +4326,7 @@ function applySharedSetup(shared, options = {}) {
         if (!hasAutoRules) {
           delete payload.autoGearRules;
         }
-        saveProject(storageKey, payload);
+        saveProject(storageKey, payload, { skipOverwriteBackup: true });
       }
     }
   } catch (e) {
