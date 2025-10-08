@@ -49,8 +49,80 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn(message, error);
     }
   };
+  var ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
+  var SPACE_VARIANTS_PATTERN = /[\u0009-\u000D\u00A0\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g;
+  var COMBINING_MARKS_PATTERN = /[\u0300-\u036F]/g;
+  var DASH_VARIANTS_PATTERN = /[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g;
+  var APOSTROPHE_VARIANTS_PATTERN = /[\u2018\u2019\u201A\u201B\u2032\u2035]/g;
+  var QUOTE_VARIANTS_PATTERN = /[\u201C\u201D\u201E\u201F\u2033\u2036]/g;
+  var SLASH_VARIANTS_PATTERN = /[\u2044\u2215]/g;
+  var MULTIPLY_VARIANTS_PATTERN = /[×✕✖✗✘]/g;
+  var DEGREE_VARIANTS_PATTERN = /[°º˚]/g;
+  var ELLIPSIS_PATTERN = /[\u2026]/g;
+  var TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
+  var GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
+  var LIGATURE_ENTRIES = [
+    ['ß', 'ss'],
+    ['æ', 'ae'],
+    ['œ', 'oe'],
+    ['ø', 'o'],
+    ['þ', 'th'],
+    ['ð', 'd'],
+    ['đ', 'd'],
+    ['ħ', 'h'],
+    ['ı', 'i'],
+    ['ĳ', 'ij'],
+    ['ŋ', 'ng'],
+    ['ł', 'l'],
+    ['ſ', 's']
+  ];
+
   function normalizeSearchValue(value) {
-    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+    if (typeof value !== 'string') {
+      return '';
+    }
+
+    var normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
+
+    if (typeof normalized.normalize === 'function') {
+      try {
+        normalized = normalized.normalize('NFKD');
+      } catch (error) {
+        void error;
+      }
+    }
+
+    normalized = normalized
+      .replace(SPACE_VARIANTS_PATTERN, ' ')
+      .replace(APOSTROPHE_VARIANTS_PATTERN, ' ')
+      .replace(QUOTE_VARIANTS_PATTERN, ' ')
+      .replace(DASH_VARIANTS_PATTERN, ' ')
+      .replace(SLASH_VARIANTS_PATTERN, ' ')
+      .replace(MULTIPLY_VARIANTS_PATTERN, ' x ')
+      .replace(DEGREE_VARIANTS_PATTERN, ' deg ')
+      .replace(/\bdegrees?\b/gi, ' deg ')
+      .replace(/&/g, ' and ')
+      .replace(/\+/g, ' plus ')
+      .replace(/@/g, ' at ')
+      .replace(TRADEMARK_PATTERN, ' ')
+      .replace(ELLIPSIS_PATTERN, ' ')
+      .replace(GENERAL_PUNCTUATION_PATTERN, ' ');
+
+    normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
+
+    for (var ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
+      var entry = LIGATURE_ENTRIES[ligatureIndex];
+      var source = entry[0];
+      var replacement = entry[1];
+      normalized = normalized.replace(new RegExp(source, 'g'), replacement);
+    }
+
+    normalized = normalized
+      .replace(/['"`]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    return normalized;
   }
   function sanitizeHighlightTokens(tokens) {
     if (!Array.isArray(tokens) || tokens.length === 0) {
