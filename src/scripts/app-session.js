@@ -3641,13 +3641,28 @@ if (projectForm) {
     handleUpdate();
   });
 
-  const queueProjectAutoSave = () => scheduleProjectAutoSave();
-  const flushProjectAutoSave = () => scheduleProjectAutoSave(true);
+  const noteProjectFormDirty = () => {
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+  };
+
+  const queueProjectAutoSave = () => {
+    noteProjectFormDirty();
+    scheduleProjectAutoSave();
+  };
+  const flushProjectAutoSave = () => {
+    noteProjectFormDirty();
+    scheduleProjectAutoSave(true);
+  };
   projectForm.addEventListener('input', queueProjectAutoSave);
   projectForm.addEventListener('change', flushProjectAutoSave);
 
   projectForm.querySelectorAll('input, textarea, select').forEach(el => {
-    el.addEventListener('change', saveCurrentSession);
+    el.addEventListener('change', event => {
+      noteProjectFormDirty();
+      saveCurrentSession(event);
+    });
   });
 }
 
@@ -3775,6 +3790,10 @@ function restoreSessionState() {
       projectRequirementsOutput.classList.add('hidden');
     }
   }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+
   if (gearListOutput || projectRequirementsOutput) {
     const typedName = getCurrentProjectName();
     const storageKey = getCurrentProjectStorageKey();

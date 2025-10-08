@@ -12920,10 +12920,16 @@ function createCrewRow(data = {}) {
   removeBtn.setAttribute('data-help', removeCrewLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     scheduleProjectAutoSave(true);
   });
   row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
   crewContainer.appendChild(row);
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
 }
 
 function createPrepRow(data = {}) {
@@ -12957,10 +12963,16 @@ function createPrepRow(data = {}) {
   removeBtn.setAttribute('data-help', removePrepLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     scheduleProjectAutoSave(true);
   });
   row.append(start, span, end, removeBtn);
   prepContainer.appendChild(row);
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
 }
 
 function createShootRow(data = {}) {
@@ -12994,10 +13006,16 @@ function createShootRow(data = {}) {
   removeBtn.setAttribute('data-help', removeShootLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     scheduleProjectAutoSave(true);
   });
   row.append(start, span, end, removeBtn);
   shootContainer.appendChild(row);
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
 }
 
 function formatCapacity(value, unit) {
@@ -13248,6 +13266,9 @@ function createStorageRequirementRow(data = {}) {
     } else {
       updateStorageRequirementTypeOptions();
     }
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     scheduleProjectAutoSave(true);
   });
 
@@ -13265,6 +13286,9 @@ function createStorageRequirementRow(data = {}) {
 
   storageNeedsContainer.appendChild(row);
   updateStorageRequirementTypeOptions();
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
   return row;
 }
 
