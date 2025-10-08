@@ -10554,6 +10554,26 @@ function setLanguage(lang) {
               highlight: "#setup-manager",
             },
           ),
+        () =>
+          createHelpLink(
+            "#settingsShowAutoBackups",
+            resolveLocaleString("showAutoBackupsSetting")
+              || "Show auto backups in project list",
+            {
+              target: "#settingsShowAutoBackups",
+              highlight: "#settingsDialog",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#backupDiffToggleButton",
+            resolveLocaleString("versionCompareButton")
+              || "Compare versions",
+            {
+              target: "#backupDiffToggleButton",
+              highlight: "#projectBackupsSection",
+            },
+          ),
       ],
     );
     applySuggestionTemplate(

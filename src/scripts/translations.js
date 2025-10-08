@@ -1531,7 +1531,7 @@ const texts = {
     helpDataAuditStep1:
       "Open %1$s, switch to %2$s, then use %3$s under %4$s to capture a fresh full-app snapshot before auditing downloads.",
     helpDataAuditStep2:
-      "Export each active project with %1$s and confirm the files are stored in two separate locations.",
+      "Export each active project with %1$s, then enable %2$s and open %3$s to review automatic snapshots before archiving copies in two separate locations.",
     helpDataAuditStep3:
       "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage.",
     helpDataAuditStep4:
@@ -3147,7 +3147,7 @@ const texts = {
     helpDataAuditStep1:
       "Apri %1$s, passa a %2$s e attiva %3$s in %4$s per acquisire un nuovo snapshot completo prima di verificare i download.",
     helpDataAuditStep2:
-      "Esporta ogni progetto attivo con %1$s e conferma che i file sono archiviati in due posizioni separate.",
+      "Esporta ogni progetto attivo con %1$s, quindi abilita %2$s e apri %3$s per esaminare gli snapshot automatici prima di archiviare le copie in due posizioni separate.",
     helpDataAuditStep3:
       "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale.",
     helpDataAuditStep4:
@@ -4773,7 +4773,7 @@ const texts = {
     helpDataAuditStep1:
       "Abre %1$s, cambia a %2$s y usa %3$s en %4$s para capturar una instantánea completa nueva antes de auditar las descargas.",
     helpDataAuditStep2:
-      "Exporta cada proyecto activo con %1$s y confirma que los archivos se guardan en dos ubicaciones independientes.",
+      "Exporta cada proyecto activo con %1$s, luego activa %2$s y abre %3$s para revisar las capturas automáticas antes de archivar las copias en dos ubicaciones independientes.",
     helpDataAuditStep3:
       "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local.",
     helpDataAuditStep4:
@@ -6411,7 +6411,7 @@ const texts = {
     helpDataAuditStep1:
       "Ouvrez %1$s, passez à %2$s, puis utilisez %3$s dans %4$s pour capturer une nouvelle sauvegarde complète avant d'auditer les téléchargements.",
     helpDataAuditStep2:
-      "Exportez chaque projet actif avec %1$s et confirmez que les fichiers sont conservés sur deux emplacements distincts.",
+      "Exportez chaque projet actif avec %1$s, puis activez %2$s et ouvrez %3$s pour examiner les instantanés automatiques avant d'archiver les copies dans deux emplacements distincts.",
     helpDataAuditStep3:
       "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide.",
     helpDataAuditStep4:
@@ -8053,7 +8053,7 @@ const texts = {
     helpDataAuditStep1:
       "Öffne %1$s, wechsle zu %2$s und nutze %3$s in %4$s, um vor der Download-Prüfung einen frischen Komplett-Schnappschuss zu erstellen.",
     helpDataAuditStep2:
-      "Exportiere jedes aktive Projekt mit %1$s und bestätige, dass die Dateien an zwei getrennten Orten gesichert sind.",
+      "Exportiere jedes aktive Projekt mit %1$s, aktiviere anschließend %2$s und öffne %3$s, um die automatischen Sicherungen zu prüfen, bevor du die Kopien an zwei getrennten Orten archivierst.",
     helpDataAuditStep3:
       "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden.",
     helpDataAuditStep4:
