@@ -17,7 +17,120 @@
     return {};
   }
 
+  function resolveScopeCollector() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/scope-collector.js');
+        if (required && typeof required.createCollector === 'function') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+
+    function pushCandidate(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+
+    pushCandidate(fallbackDetectGlobalScope());
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
+      try {
+        const collector = scope && scope.__cineScopeCollector;
+        if (collector && typeof collector.createCollector === 'function') {
+          return collector;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  const SCOPE_COLLECTOR = resolveScopeCollector();
+  const createScopeCollector =
+    SCOPE_COLLECTOR && typeof SCOPE_COLLECTOR.createCollector === 'function'
+      ? SCOPE_COLLECTOR.createCollector
+      : null;
+  const DEFAULT_EXTRAS_KEY = { key: 'defaultExtras' };
+  const HELPER_COLLECTOR_CACHE = [];
+  const BASE_SCOPE_EXTRAS_CACHE = typeof WeakMap === 'function' ? new WeakMap() : [];
+
+  function resolveExtrasForBaseScope(baseScope) {
+    if (!baseScope || (typeof baseScope !== 'object' && typeof baseScope !== 'function')) {
+      return undefined;
+    }
+
+    if (BASE_SCOPE_EXTRAS_CACHE && typeof BASE_SCOPE_EXTRAS_CACHE.get === 'function') {
+      let extras = BASE_SCOPE_EXTRAS_CACHE.get(baseScope);
+      if (!extras) {
+        extras = [baseScope];
+        BASE_SCOPE_EXTRAS_CACHE.set(baseScope, extras);
+      }
+      return extras;
+    }
+
+    for (let index = 0; index < BASE_SCOPE_EXTRAS_CACHE.length; index += 1) {
+      const entry = BASE_SCOPE_EXTRAS_CACHE[index];
+      if (entry.scope === baseScope) {
+        return entry.extras;
+      }
+    }
+
+    const extras = [baseScope];
+    BASE_SCOPE_EXTRAS_CACHE.push({ scope: baseScope, extras });
+    return extras;
+  }
+
+  function resolveHelperCollector(detectFn, extras) {
+    if (!createScopeCollector) {
+      return null;
+    }
+
+    const extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
+
+    for (let index = 0; index < HELPER_COLLECTOR_CACHE.length; index += 1) {
+      const entry = HELPER_COLLECTOR_CACHE[index];
+      if (entry.detect === detectFn && entry.extras === extrasKey) {
+        return entry.collector;
+      }
+    }
+
+    const collector = createScopeCollector({
+      detectGlobalScope: detectFn,
+      additionalScopes: Array.isArray(extras) ? extras : undefined,
+    });
+
+    if (collector) {
+      HELPER_COLLECTOR_CACHE.push({ detect: detectFn, extras: extrasKey, collector });
+      return collector;
+    }
+
+    return null;
+  }
+
   function fallbackCollectCandidateScopes(primary, baseScope) {
+    const resolvedBaseScope = baseScope || fallbackDetectGlobalScope();
+    const extras = resolveExtrasForBaseScope(resolvedBaseScope);
+    const collector = resolveHelperCollector(fallbackDetectGlobalScope, extras);
+    if (collector) {
+      return collector(primary || resolvedBaseScope);
+    }
+
     const scopes = [];
 
     function pushScope(scope) {
@@ -29,7 +142,7 @@
       }
     }
 
-    pushScope(primary || baseScope);
+    pushScope(primary || resolvedBaseScope);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
