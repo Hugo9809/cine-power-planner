@@ -1425,6 +1425,7 @@ const texts = {
     gearListExcludeRentalToggle: "Exclude for rental house",
     gearListIncludeRentalToggle: "Include for rental house",
     gearListRentalNote: "Rental house handles this item",
+    gearListLensCoverageWarning: "This lens may not cover the full sensor of this camera!",
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp:
       "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
@@ -2269,6 +2270,7 @@ const texts = {
     gearListExcludeRentalToggle: "Escludi per il rental",
     gearListIncludeRentalToggle: "Includi per il rental",
     gearListRentalNote: "Il rental house fornisce questo elemento",
+    gearListLensCoverageWarning: "Questo obiettivo potrebbe non coprire interamente il sensore di questa camera!",
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp:
       "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
@@ -3931,6 +3933,7 @@ const texts = {
     gearListExcludeRentalToggle: "Excluir para rental",
     gearListIncludeRentalToggle: "Incluir para rental",
     gearListRentalNote: "La casa de alquiler aporta este elemento",
+    gearListLensCoverageWarning: "¡Este objetivo puede que no cubra por completo el sensor de esta cámara!",
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp:
       "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
@@ -5594,6 +5597,7 @@ const texts = {
     gearListExcludeRentalToggle: "Exclure pour la location",
     gearListIncludeRentalToggle: "Inclure pour la location",
     gearListRentalNote: "La maison de location fournit cet élément",
+    gearListLensCoverageWarning: "Cet objectif pourrait ne pas couvrir entièrement le capteur de cette caméra !",
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp:
       "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
@@ -7269,6 +7273,7 @@ const texts = {
     gearListExcludeRentalToggle: "Für Rental House ausblenden",
     gearListIncludeRentalToggle: "Für Rental House einblenden",
     gearListRentalNote: "Rental House stellt diesen Artikel bereit",
+    gearListLensCoverageWarning: "Dieses Objektiv deckt den Sensor dieser Kamera möglicherweise nicht vollständig ab!",
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp:
       "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",

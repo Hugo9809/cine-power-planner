@@ -5080,6 +5080,16 @@ function gearListGenerateHtmlImpl(info = {}) {
         }
     }
     addRow('Media', mediaItems);
+    const cameraRequiredImageCircle = (() => {
+        if (!cam) return null;
+        const rawValue = cam.requiredImageCircleMm ?? cam.requiredImageCircle;
+        const parsed = Number(rawValue);
+        return Number.isFinite(parsed) ? parsed : null;
+    })();
+    const lensCoverageWarningText = resolveGearListCustomText(
+        'gearListLensCoverageWarning',
+        'This lens may not cover the full sensor of this camera!'
+    );
     const lensDisplayNames = selectedLensNames.map(name => {
         const lens = devices.lenses && devices.lenses[name];
         const base = addArriKNumber(name);
@@ -5094,6 +5104,13 @@ function gearListGenerateHtmlImpl(info = {}) {
         }
         const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
         if (minFocus) attrs.push(`${minFocus}m min focus`);
+        const lensImageCircle = Number(lens.imageCircleMm ?? lens.imageCircle);
+        const needsCoverageWarning = Number.isFinite(cameraRequiredImageCircle)
+            && Number.isFinite(lensImageCircle)
+            && lensImageCircle + 0.5 < cameraRequiredImageCircle;
+        if (needsCoverageWarning && lensCoverageWarningText) {
+            attrs.push(lensCoverageWarningText);
+        }
         return attrs.length ? `${base} (${attrs.join(', ')})` : base;
     });
     addRow('Lens', formatItems(lensDisplayNames));
