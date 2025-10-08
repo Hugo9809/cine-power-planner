@@ -28,6 +28,26 @@ drive without phoning home.
   confirm a refresh, keeping teams on a known-good revision during travel or
   low-connectivity shoots.
 
+## Quick Links
+
+- **Run the full rehearsal.** Follow the [Quick Start](#quick-start) drill to
+  verify save, share, import, backup and restore paths on every workstation
+  before crews depend on them offline.
+- **Reference the workflows.** Keep the [Save, Share & Import Drill](#save-share--import-drill)
+  and the detailed [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md)
+  nearby when training teams or auditing data safety.
+- **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md)
+  with the [Operational Checklist](docs/operations-checklist.md) so documented
+  rehearsals stay synchronized with the app and bundled assets.
+- **Update documentation deliberately.** Use the
+  [Documentation Update Checklist](docs/documentation-update-checklist.md) and
+  [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every
+  time you ship new behavior so help topics, translations and manuals stay in
+  lockstep with the runtime.
+- **Localize with confidence.** Reference the [Translation Guide](docs/translation-guide.md)
+  and language-specific README files whenever you add or update locales so
+  offline readers stay aligned with the latest workflows.
+
 ## Overview
 
 ### Built for crews
@@ -97,6 +117,7 @@ production day.
 ## Table of Contents
 
 - [At a Glance](#at-a-glance)
+- [Quick Links](#quick-links)
 - [Overview](#overview)
 - [Core Principles](#core-principles)
 - [Translations](#translations)
@@ -214,8 +235,8 @@ that every save, share, import, backup and restore workflow works exactly the
 same online or offline.
 
 1. Download or clone this repository.
-2. Open `index.html` in any modern browser.
-3. (Optional) Serve the folder over HTTP(S) to install the service worker and
+1. Open `index.html` in any modern browser.
+1. (Optional) Serve the folder over HTTP(S) to install the service worker and
    Progressive Web App features:
    ```bash
    npx http-server
@@ -224,41 +245,41 @@ same online or offline.
    ```
    The app then caches itself for offline use and applies updates when you
    approve them.
-4. Load the planner once, close the tab, disconnect from the network (or toggle
+1. Load the planner once, close the tab, disconnect from the network (or toggle
    Airplane Mode) and reopen `index.html`. The offline indicator in the header
    should flash briefly while cached files load. Confirm the interface mirrors
    the last session exactly, including any locally stored Uicons or helper
    assets.
-5. Open **Help → Quick start checklist** and press **Start guided tutorial** to
+1. Open **Help → Quick start checklist** and press **Start guided tutorial** to
    follow the step-by-step walkthrough of creating a project, selecting
    devices, generating gear lists, customising automatic gear rules, exporting,
    importing and backing up data. The new step navigator lets you jump back to
    finished workflows without restarting, and the **Resume guided tutorial**
    option appears automatically if you paused mid-tour so progress never goes
    missing offline.
-6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
+1. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
-7. Export **Settings → Backup & Restore → Backup** and import the resulting
+1. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
    restore path early proves that no saves are stranded on a single machine and
    demonstrates the forced pre-restore backup safeguard.
-8. Practice exporting a project bundle (the download defaults to
+1. Practice exporting a project bundle (the download defaults to
    `project-name.json`) and re-importing it on a secondary machine or profile.
    Rehearsing the full save → share → import loop keeps crews confident that
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
-9. Archive the verified backup and project bundle alongside the repository copy
+1. Archive the verified backup and project bundle alongside the repository copy
    you opened. Log the verification date, machine name and operator in the same
    folder (mirroring the recommendations in `docs/backup-rotation-guide.md`) so
    every crew can prove when the drill succeeded. This keeps save, share,
    import, backup and restore workflows provably in sync from the first session
    and gives you redundant recovery media for travel days.
-10. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
+1. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
     `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
    that the runtime guard validated every save/share/restore gateway and the
    runtime feedback storage bindings while you rehearsed offline.
-10. Still offline, open the in-app help center and at least one localized
+1. Still offline, open the in-app help center and at least one localized
     README from the repository. Confirm the topics mirror the live interface,
     translations render without fetching remote assets and the documentation
     reiterates the save → share → import → backup → restore drills you just ran.
