@@ -8194,6 +8194,9 @@ function saveAutoGearRules(rules, options = {}) {
     AUTO_GEAR_RULES_STORAGE_KEY,
     normalizedRules,
     "Error saving automatic gear rules to localStorage:",
+    {
+      disableCompression: true,
+    },
   );
   return normalizedRules;
 }
