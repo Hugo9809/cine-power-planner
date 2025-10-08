@@ -40,9 +40,39 @@
       pinA: 20,
       mount_type: "B-Mount"
     },
+    "bebob B290cineML": {
+      capacity: 294,
+      pinA: 20,
+      mount_type: "B-Mount"
+    },
+    "bebob B480cineML": {
+      capacity: 475,
+      pinA: 20,
+      mount_type: "B-Mount"
+    },
+    "Core SWX HLX-TB-B Helix Max Hot Swap Plate": {
+      capacity: 98,
+      pinA: 20,
+      mount_type: "B-Mount"
+    },
+    "Hawk-Woods BL-SF1 B-Lok Dual Hot Swap Plate": {
+      capacity: 52,
+      pinA: 10,
+      mount_type: "B-Mount"
+    },
+    "Anton/Bauer B-Mount Hot Swap Bracket": {
+      capacity: 26,
+      pinA: 12,
+      mount_type: "B-Mount"
+    },
     "SWIT KA-B30B B-mount to B-mount Hot-Swap Plate": {
       capacity: 32,
       pinA: 7.14,
+      mount_type: "B-Mount"
+    },
+    "SWIT KA-S30B B-mount Hot-Swap Plate": {
+      capacity: 32,
+      pinA: 7,
       mount_type: "B-Mount"
     },
     "SWIT KA-R31B B-mount Hot-Swap Plate": {
