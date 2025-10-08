@@ -2658,6 +2658,38 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "Angénieux Optimo 15-40mm T2.6": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.6,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.61,
+          "weight_g": 1920,
+          "imageCircleMm": 31.4,
+          "lengthMm": 186,
+          "notes": "Compact Optimo zoom with S35+ coverage (≈31.4 mm diagonal)."
+        },
+        "Angénieux Optimo 45-120mm T2.8": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.94,
+          "weight_g": 1950,
+          "imageCircleMm": 31.4,
+          "lengthMm": 203,
+          "notes": "Matches the 15-40mm Optimo compact zoom; S35+ coverage."
+        },
         "Angenieux Optimo 25-250mm T3.5 (PL)": {
           "brand": "Angénieux",
           "frontDiameterMm": 136,
@@ -2713,11 +2745,11 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical"
         },
-        "Canon CN7x17 17-120mm T3.0-3.9": {
+        "Canon CN7x17 17-120mm T2.95-3.9": {
           "brand": "Canon",
           "frontDiameterMm": 114,
           "clampOn": true,
-          "tStop": 3,
+          "tStop": 2.95,
           "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 45,
@@ -2726,7 +2758,7 @@ const gear = {
           "minFocusMeters": 0.85,
           "weight_g": 2900,
           "lengthMm": 254.9,
-          "notes": "Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
+          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
         },
         "Canon CN-E Flex Zoom 14-35mm T1.7": {
           "brand": "Canon",
@@ -3315,6 +3347,34 @@ const gear = {
           "lengthMm": 420,
           "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
         },
+        "ARRI/FUJINON Alura 15.5-45mm T2.8": {
+          "brand": "ARRI/FUJINON",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "lengthMm": 228,
+          "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support."
+        },
+        "ARRI/FUJINON Alura 30-80mm T2.8": {
+          "brand": "ARRI/FUJINON",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "lengthMm": 228,
+          "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8."
+        },
         "ARRI/ZEISS Ultra Prime 8mm T2.8": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 134,
@@ -3383,7 +3443,8 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.25,
           "weight_g": 1200,
-          "lengthMm": 94
+          "lengthMm": 94,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 20mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3397,27 +3458,38 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.28,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 24mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 1000,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 32mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 1100,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 40mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3431,7 +3503,8 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.38,
           "weight_g": 1000,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 50mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3445,7 +3518,8 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.6,
           "weight_g": 1000,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 65mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3458,8 +3532,9 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "minFocusMeters": 0.65,
-          "weight_g": 1100,
-          "lengthMm": 91
+          "weight_g": 1200,
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 85mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3473,7 +3548,8 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.9,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 100mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3487,7 +3563,8 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 1,
           "weight_g": 1200,
-          "lengthMm": 91
+          "lengthMm": 91,
+          "imageCircleMm": 31.1
         },
         "ARRI/ZEISS Ultra Prime 135mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3922,7 +3999,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "minFocusMeters": 0.45,
+          "minFocusMeters": 0.457,
           "weight_g": 1220,
           "imageCircleMm": 46.3,
           "lengthMm": 119,
@@ -4072,7 +4149,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 1500,
+          "lengthMm": 101,
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 75mm T2.0": {
           "brand": "Leitz",
@@ -4083,7 +4164,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 1200,
+          "lengthMm": 101,
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 100mm T2.0": {
           "brand": "Leitz",
@@ -4989,10 +5074,14 @@ const gear = {
           "frontDiameterMm": 30,
           "clampOn": true,
           "tStop": 8,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.005,
+          "imageCircleMm": 43.3,
+          "notes": "Macro probe set with 0°, 35° and 90° modules; waterproof tip and 2× magnification."
         },
         "Laowa Ranger 28-75mm T2.9": {
           "brand": "Laowa",
