@@ -570,6 +570,162 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (breakdownList) {
       var breakdownHelp = resolveText('breakdownListHelp');
       setHelpAttribute(breakdownList, breakdownHelp);
+  }
+
+  function getNonEmptyString(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    return trimmed ? trimmed : '';
+  }
+
+  function replaceSummaryTokens(template, tokens) {
+    if (typeof template !== 'string' || !template) {
+      return '';
+    }
+    var result = template;
+    for (var key in tokens) {
+      if (!Object.prototype.hasOwnProperty.call(tokens, key)) {
+        continue;
+      }
+      var tokenValue = tokens[key];
+      var placeholder = '{' + key + '}';
+      if (result.indexOf(placeholder) === -1) {
+        continue;
+      }
+      var replacement = typeof tokenValue === 'undefined' ? '' : String(tokenValue);
+      result = result.split(placeholder).join(replacement);
+    }
+    return result;
+  }
+
+  function selectSummaryBatteryName(labelText, batteryName, unnamedLabel) {
+    var resolvedLabel = getNonEmptyString(labelText);
+    if (resolvedLabel) {
+      return resolvedLabel;
+    }
+    var resolvedBattery = getNonEmptyString(batteryName);
+    if (resolvedBattery) {
+      return resolvedBattery;
+    }
+    return getNonEmptyString(unnamedLabel);
+  }
+
+  function formatRuntimeHoursForSummary(runtimeHours) {
+    if (!Number.isFinite(runtimeHours)) {
+      return '';
+    }
+    return runtimeHours >= 10 ? runtimeHours.toFixed(1) : runtimeHours.toFixed(2);
+  }
+
+  function buildPlainSummaryText(summaryOptions) {
+    var opts = summaryOptions || {};
+    var summaryPrompt = getNonEmptyString(opts.summaryPrompt);
+    var needBatterySummary = getNonEmptyString(opts.needBatterySummary) || summaryPrompt;
+    var unnamedBatteryLabel = getNonEmptyString(opts.unnamedBatteryLabel);
+    var batteryNameSummary = selectSummaryBatteryName(opts.batteryLabelText, opts.battery, unnamedBatteryLabel);
+    var totalPowerDisplay = Number.isFinite(opts.totalWatt) ? opts.totalWatt.toFixed(1) : '0.0';
+
+    if (!opts.battery) {
+      var promptWhenMissingBattery = opts.totalWatt > 0 ? needBatterySummary : summaryPrompt;
+      return promptWhenMissingBattery || needBatterySummary || summaryPrompt || batteryNameSummary || '';
+    }
+
+    if (!Number.isFinite(opts.runtimeHoursValue)) {
+      if (
+        opts.unlimitedSummaryTemplate &&
+        Number.isFinite(opts.totalWatt) &&
+        opts.totalWatt === 0
+      ) {
+        var unlimitedSummary = replaceSummaryTokens(opts.unlimitedSummaryTemplate, {
+          batteryName: batteryNameSummary || unnamedBatteryLabel || '',
+          totalPower: totalPowerDisplay
+        });
+        if (unlimitedSummary) {
+          return unlimitedSummary;
+        }
+      }
+      return needBatterySummary || summaryPrompt || batteryNameSummary || '';
+    }
+
+    if (
+      opts.runtimeSummaryTemplate &&
+      opts.batteriesNeededValue !== null &&
+      Number.isFinite(opts.batteriesNeededValue) &&
+      opts.batteriesNeededValue > 0
+    ) {
+      var formattedHours = formatRuntimeHoursForSummary(opts.runtimeHoursValue);
+      var runtimeSummary = replaceSummaryTokens(opts.runtimeSummaryTemplate, {
+        batteryName: batteryNameSummary || unnamedBatteryLabel || '',
+        hours: formattedHours,
+        batteryCount: String(opts.batteriesNeededValue),
+        totalPower: totalPowerDisplay
+      });
+      if (runtimeSummary) {
+        return runtimeSummary;
+      }
+    }
+
+    return summaryPrompt || needBatterySummary || batteryNameSummary || '';
+  }
+
+    var resultsPlainSummary = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryElem',
+      'resultsPlainSummary',
+      'resultsPlainSummaryElem'
+    );
+    if (resultsPlainSummary) {
+      setHelpAttribute(resultsPlainSummary, resolveText('resultsPlainSummaryHelp'));
+    }
+
+    var resultsPlainSummaryTitle = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryTitleElem',
+      'resultsPlainSummaryTitle',
+      'resultsPlainSummaryTitleElem'
+    );
+    if (resultsPlainSummaryTitle) {
+      try {
+        resultsPlainSummaryTitle.textContent =
+          resolveText('resultsPlainSummaryTitle') || resultsPlainSummaryTitle.textContent || '';
+      } catch (error) {
+        void error;
+      }
+    }
+
+    var resultsPlainSummaryText = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryTextElem',
+      'resultsPlainSummaryText',
+      'resultsPlainSummaryTextElem'
+    );
+    if (resultsPlainSummaryText) {
+      var summaryPrompt = resolveText('resultsPlainSummaryPrompt');
+      if (!summaryPrompt && typeof resultsPlainSummaryText.textContent === 'string') {
+        summaryPrompt = resultsPlainSummaryText.textContent;
+      }
+      try {
+        resultsPlainSummaryText.textContent = summaryPrompt;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    var resultsPlainSummaryNote = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryNoteElem',
+      'resultsPlainSummaryNote',
+      'resultsPlainSummaryNoteElem'
+    );
+    if (resultsPlainSummaryNote) {
+      try {
+        resultsPlainSummaryNote.textContent =
+          resolveText('resultsPlainSummaryNote') || resultsPlainSummaryNote.textContent || '';
+      } catch (error) {
+        void error;
+      }
     }
     function applyLabel(element, labelKey, helpKey) {
       if (!element) {
@@ -733,6 +889,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var tempNote = resolveElementFromOptions(opts, 'tempNote', 'temperatureNote');
     setHelpAttribute(tempNote, resolveText('temperatureNoteHelp'));
     runtimeFeedbackState.elements.breakdownListElem = breakdownList;
+    runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummary;
+    runtimeFeedbackState.elements.resultsPlainSummaryTextElem = resultsPlainSummaryText;
     runtimeFeedbackState.elements.totalPowerLabel = totalPowerLabel;
     runtimeFeedbackState.elements.batteryCountLabel = batteryCountLabel;
     runtimeFeedbackState.elements.batteryLifeLabel = batteryLifeLabel;
@@ -938,6 +1096,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hotswapSelect = resolveElementFromOptions(opts, 'hotswapSelect', 'batteryHotswapSelect', 'hotswapSelect');
     var motorSelects = resolveSelectCollection(opts, 'motorSelects', ['motor1Select', 'motor2Select', 'motor3Select', 'motor4Select'], 'motorSelects');
     var controllerSelects = resolveSelectCollection(opts, 'controllerSelects', ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'], 'controllerSelects');
+    var resultsPlainSummaryTarget = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryElem',
+      'resultsPlainSummary',
+      'resultsPlainSummaryElem'
+    );
+    var resultsPlainSummaryTextTarget = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryTextElem',
+      'resultsPlainSummaryText',
+      'resultsPlainSummaryTextElem'
+    );
     var totalPowerTarget = resolveElementFromOptions(opts, 'totalPowerElem', 'totalPower', 'totalPowerElem');
     var breakdownListTarget = resolveElementFromOptions(opts, 'breakdownListElem', 'breakdownList', 'breakdownListElem');
     var totalCurrent144Target = resolveElementFromOptions(opts, 'totalCurrent144Elem', 'totalCurrent144', 'totalCurrent144Elem');
@@ -960,6 +1130,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.elements.hotswapSelect = hotswapSelect;
     runtimeFeedbackState.elements.motorSelects = motorSelects;
     runtimeFeedbackState.elements.controllerSelects = controllerSelects;
+    runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummaryTarget;
+    runtimeFeedbackState.elements.resultsPlainSummaryTextElem = resultsPlainSummaryTextTarget;
     runtimeFeedbackState.elements.totalPowerElem = totalPowerTarget;
     runtimeFeedbackState.elements.breakdownListElem = breakdownListTarget;
     runtimeFeedbackState.elements.totalCurrent144Elem = totalCurrent144Target;
@@ -977,11 +1149,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function safeSelectValue(select) {
       return select && typeof select.value === 'string' ? select.value : '';
     }
+    function getSelectedOptionLabel(select) {
+      if (!select || typeof select.selectedIndex !== 'number') {
+        return '';
+      }
+      var options = select.options;
+      if (!options || select.selectedIndex < 0 || select.selectedIndex >= options.length) {
+        return '';
+      }
+      var option = options[select.selectedIndex];
+      if (!option || typeof option.textContent !== 'string') {
+        return '';
+      }
+      return option.textContent.trim();
+    }
     var camera = safeSelectValue(cameraSelect);
     var monitor = safeSelectValue(monitorSelect);
     var video = safeSelectValue(videoSelect);
     var distance = safeSelectValue(distanceSelect);
     var battery = safeSelectValue(batterySelect);
+    var batteryLabelText = getSelectedOptionLabel(batterySelect);
     var motors = motorSelects.map(function mapMotor(select) {
       return safeSelectValue(select);
     });
@@ -1276,6 +1463,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     var hours = null;
+    var runtimeHoursValue = null;
+    var batteriesNeeded = null;
+    var batteriesNeededValue = null;
     if (!battery || !devices.batteries || !devices.batteries[battery]) {
       if (batteryLifeTarget && typeof batteryLifeTarget.textContent !== 'undefined') {
         try {
@@ -1307,6 +1497,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       setLastRuntimeHoursFn(null);
+      runtimeHoursValue = null;
+      batteriesNeeded = null;
+      batteriesNeededValue = null;
       if (drawPowerDiagramFn) {
         try {
           drawPowerDiagramFn(0, segments, 0);
@@ -1377,10 +1570,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       setLastRuntimeHoursFn(hours);
-      var batteriesNeeded = 1;
+      runtimeHoursValue = hours;
+      batteriesNeeded = 1;
       if (Number.isFinite(hours) && hours > 0) {
         batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
       }
+      batteriesNeededValue = batteriesNeeded;
       if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
         try {
           batteryCountTarget.textContent = String(batteriesNeeded);
@@ -1678,6 +1873,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       setLastRuntimeHoursFn(combinedRuntime);
+      runtimeHoursValue = combinedRuntime;
       if (batteryLifeLabelTarget) {
         var label = resolveText('batteryLifeLabel');
         var runtimeUserCountNote = resolveText('runtimeUserCountNote');
@@ -1711,6 +1907,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
         batteriesNeededFeedback = Math.max(1, Math.ceil(10 / combinedRuntime));
       }
+      batteriesNeeded = batteriesNeededFeedback;
+      batteriesNeededValue = batteriesNeededFeedback;
       if (batteryCountTarget && typeof batteryCountTarget.textContent !== 'undefined') {
         try {
           batteryCountTarget.textContent = String(batteriesNeededFeedback);
@@ -1735,6 +1933,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
+    if (resultsPlainSummaryTextTarget) {
+      var summaryPrompt = resolveText('resultsPlainSummaryPrompt') || '';
+      var summaryTextValue = buildPlainSummaryText({
+        summaryPrompt: summaryPrompt,
+        needBatterySummary: resolveText('resultsPlainSummaryNeedBattery'),
+        runtimeSummaryTemplate: resolveText('resultsPlainSummaryRuntime'),
+        unlimitedSummaryTemplate: resolveText('resultsPlainSummaryUnlimited'),
+        unnamedBatteryLabel: resolveText('resultsPlainSummaryUnnamedBattery'),
+        batteryLabelText: batteryLabelText,
+        battery: battery,
+        totalWatt: totalWatt,
+        runtimeHoursValue: runtimeHoursValue,
+        batteriesNeededValue: batteriesNeededValue
+      });
+      if (!summaryTextValue) {
+        summaryTextValue = summaryPrompt;
+      }
+      try {
+        resultsPlainSummaryTextTarget.textContent = summaryTextValue;
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (renderTemperatureNoteFn) {
       try {
         renderTemperatureNoteFn(getLastRuntimeHoursFn());

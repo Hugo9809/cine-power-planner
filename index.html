@@ -424,6 +424,21 @@
     <p id="pinWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
     <p id="dtapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
     <p id="hotswapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryHotswapLabel"></p>
+    <section
+      id="resultsPlainSummary"
+      class="results-plain-summary"
+      aria-labelledby="resultsPlainSummaryTitle"
+    >
+      <h3 id="resultsPlainSummaryTitle">Quick summary</h3>
+      <p
+        id="resultsPlainSummaryText"
+        class="results-plain-summary-text"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></p>
+      <p id="resultsPlainSummaryNote" class="results-plain-summary-note"></p>
+    </section>
     <div id="temperatureNote"></div>
     <button id="runtimeFeedbackBtn" type="button">
       <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF13E;</span>Submit User Runtime Feedback
@@ -2946,7 +2961,15 @@
                   data-help-highlight="#setupDiagram"
                 ><em>Connection Diagram</em></a>
                 in order. Each section updates immediately so you can verify power draw, cable routing and runtime checks at a
-                glance.
+                glance. The
+                <a
+                  class="help-link"
+                  href="#resultsPlainSummary"
+                  data-help-target="#resultsPlainSummary"
+                  data-help-highlight="#resultsPlainSummary"
+                >Quick summary</a>
+                card inside <em>Power Summary</em> turns the totals into plain language and keeps working offline so every
+                change is easy to explain.
               </li>
               <li>
                 Before wrapping up, download an

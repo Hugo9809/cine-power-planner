@@ -7230,6 +7230,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (!resultsLocalizationApplied) {
+      var resultsPlainSummaryElem = document.getElementById("resultsPlainSummary");
+      if (resultsPlainSummaryElem) {
+        resultsPlainSummaryElem.setAttribute("data-help", texts[lang].resultsPlainSummaryHelp);
+      }
+      var resultsPlainSummaryTitleElem = document.getElementById("resultsPlainSummaryTitle");
+      if (resultsPlainSummaryTitleElem) {
+        resultsPlainSummaryTitleElem.textContent = texts[lang].resultsPlainSummaryTitle;
+      }
+      var resultsPlainSummaryTextElem = document.getElementById("resultsPlainSummaryText");
+      if (resultsPlainSummaryTextElem) {
+        resultsPlainSummaryTextElem.textContent = texts[lang].resultsPlainSummaryPrompt;
+      }
+      var resultsPlainSummaryNoteElem = document.getElementById("resultsPlainSummaryNote");
+      if (resultsPlainSummaryNoteElem) {
+        resultsPlainSummaryNoteElem.textContent = texts[lang].resultsPlainSummaryNote;
+      }
       var breakdownListTarget = typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : document.getElementById('breakdownList');
       if (breakdownListTarget) {
         breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
