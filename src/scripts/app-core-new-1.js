@@ -3180,6 +3180,7 @@ const AUTO_GEAR_SELECTOR_TYPES = [
   'tripodBowl',
   'tripodTypes',
   'tripodSpreader',
+  'fizHandUnit',
 ];
 const AUTO_GEAR_SELECTOR_TYPE_MAP = AUTO_GEAR_SELECTOR_TYPES.reduce((map, type) => {
   map[type.toLowerCase()] = type;
@@ -3199,6 +3200,139 @@ const AUTO_GEAR_TRIPOD_FIELD_IDS = {
   tripodTypes: 'tripodTypes',
   tripodSpreader: 'tripodSpreader',
 };
+
+const AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUP_DATA = Object.freeze([
+  {
+    key: 'tilta-nucleus-m',
+    label: 'Tilta Nucleus ecosystem (M / M II)',
+    motors: Object.freeze(['Tilta Nucleus M', 'Tilta Nucleus M II']),
+    options: Object.freeze([
+      'Tilta Nucleus-M FIZ Hand Unit',
+      'Tilta Nucleus-M II FIZ Hand Unit',
+      'Tilta Nucleus Nano II Hand Controller',
+    ]),
+    defaultOption: 'Tilta Nucleus-M FIZ Hand Unit',
+  },
+  {
+    key: 'tilta-nucleus-nano',
+    label: 'Tilta Nucleus Nano ecosystem',
+    motors: Object.freeze(['Tilta Nucleus Nano (Original)', 'Tilta Nucleus Nano II']),
+    options: Object.freeze([
+      'Tilta Nucleus Nano Hand Wheel Controller',
+      'Tilta Nucleus Nano II Hand Controller',
+    ]),
+    defaultOption: 'Tilta Nucleus Nano Hand Wheel Controller',
+  },
+  {
+    key: 'arri-lbus',
+    label: 'ARRI / cmotion LBUS ecosystem',
+    motors: Object.freeze([
+      'Arri Cforce Mini',
+      'Arri Cforce Plus',
+      'Arri CLM-3',
+      'Arri CLM-4 (K2.72114.0)',
+      'Arri CLM-5 (K2.0006361)',
+      'Arri cforce mini RF (KK.0040345)',
+      'Cmotion cPRO',
+    ]),
+    options: Object.freeze([
+      'Arri Hi-5',
+      'Arri WCU-4',
+      'Arri SXU-1',
+      'cmotion cPRO hand unit',
+    ]),
+    defaultOption: 'Arri Hi-5',
+  },
+  {
+    key: 'teradek-rt',
+    label: 'Teradek RT ecosystem',
+    motors: Object.freeze(['Teradek RT Motion FIZ (MOTR.S)']),
+    options: Object.freeze(['Teradek RT CTRL.3']),
+    defaultOption: 'Teradek RT CTRL.3',
+  },
+  {
+    key: 'preston',
+    label: 'Preston ecosystem',
+    motors: Object.freeze(['Preston DM1X', 'Preston DM2', 'Preston DM2X', 'Preston DM-A', 'Preston DM-C']),
+    options: Object.freeze(['Preston Hand Unit 4 (HU4)']),
+    defaultOption: 'Preston Hand Unit 4 (HU4)',
+  },
+  {
+    key: 'chrosziel',
+    label: 'Chrosziel MagNum ecosystem',
+    motors: Object.freeze(['Chrosziel CDM-100 Digital', 'Chrosziel CDM-M (Universal Zoom Servo Drive)']),
+    options: Object.freeze(['Chrosziel MagNum Hand Unit (MN-100R)']),
+    defaultOption: 'Chrosziel MagNum Hand Unit (MN-100R)',
+  },
+  {
+    key: 'dji-focus',
+    label: 'DJI Focus ecosystem',
+    motors: Object.freeze(['DJI Focus (Original)']),
+    options: Object.freeze(['DJI Focus Hand Unit']),
+    defaultOption: 'DJI Focus Hand Unit',
+  },
+  {
+    key: 'dji-focus-pro',
+    label: 'DJI Focus Pro ecosystem',
+    motors: Object.freeze(['DJI RS Focus (2022)', 'DJI Focus Pro Motor']),
+    options: Object.freeze(['DJI RS Focus Wheel (2022)', 'DJI Focus Pro Hand Unit']),
+    defaultOption: 'DJI Focus Pro Hand Unit',
+  },
+  {
+    key: 'smallrig-magicfiz',
+    label: 'SmallRig MagicFIZ ecosystem',
+    motors: Object.freeze(['SmallRig Wireless Follow Focus']),
+    options: Object.freeze(['SmallRig MagicFIZ Wireless Handgrip']),
+    defaultOption: 'SmallRig MagicFIZ Wireless Handgrip',
+  },
+  {
+    key: 'redrock-microremote',
+    label: 'Redrock microRemote ecosystem',
+    motors: Object.freeze(['Redrock MicroRemote Torque']),
+    options: Object.freeze(['Redrock microRemote Hand Controller']),
+    defaultOption: 'Redrock microRemote Hand Controller',
+  },
+]);
+
+const AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = (() => {
+  const groups = Object.create(null);
+  AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUP_DATA.forEach(entry => {
+    if (!entry || !entry.key || !Array.isArray(entry.options) || !entry.options.length) {
+      return;
+    }
+    const groupKey = entry.key;
+    const uniqueOptions = Array.from(new Set(entry.options.filter(Boolean)));
+    if (!uniqueOptions.length) return;
+    groups[groupKey] = Object.freeze({
+      key: groupKey,
+      label: entry.label || '',
+      motors: entry.motors || [],
+      options: Object.freeze(uniqueOptions),
+      defaultOption: uniqueOptions.includes(entry.defaultOption) ? entry.defaultOption : uniqueOptions[0],
+    });
+  });
+  return Object.freeze(groups);
+})();
+
+const AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = (() => {
+  const map = Object.create(null);
+  Object.values(AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS).forEach(group => {
+    if (!group || !Array.isArray(group.motors)) return;
+    group.motors.forEach(name => {
+      const normalized = normalizeAutoGearTriggerValue(name);
+      if (!normalized || Object.prototype.hasOwnProperty.call(map, normalized)) {
+        return;
+      }
+      map[normalized] = group.key;
+    });
+  });
+  return Object.freeze(map);
+})();
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+  globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+}
 
 /**
  * Produce a deterministic-looking id for Auto Gear rules/presets.
@@ -3294,7 +3428,7 @@ function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
  * the future.
  *
  * @param {unknown} value
- * @returns {'none'|'monitor'|'directorMonitor'|'tripodHeadBrand'|'tripodBowl'|'tripodTypes'|'tripodSpreader'}
+ * @returns {'none'|'monitor'|'directorMonitor'|'tripodHeadBrand'|'tripodBowl'|'tripodTypes'|'tripodSpreader'|'fizHandUnit'}
  */
 function normalizeAutoGearSelectorType(value) {
   const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
@@ -3312,10 +3446,10 @@ function normalizeAutoGearSelectorType(value) {
  * @param {unknown} value
  * @returns {string}
  */
-function normalizeAutoGearSelectorDefault(type, value) {
+function normalizeAutoGearSelectorDefault(type, value, context) {
   const text = normalizeAutoGearText(value);
   if (!text) return '';
-  const options = getAutoGearSelectorOptions(type);
+  const options = getAutoGearSelectorOptions(type, context ? { selectorContext: context } : null);
   if (!options.length) return text;
   const match = options.find(option => option.toLowerCase() === text.toLowerCase());
   return match || text;
@@ -3364,7 +3498,7 @@ function collectTripodPreferenceOptions(type) {
   return results;
 }
 
-function getAutoGearSelectorOptions(type) {
+function getAutoGearSelectorOptions(type, itemOrContext) {
   const normalizedType = normalizeAutoGearSelectorType(type);
   const catalog = resolveDevicesSnapshot();
 
@@ -3381,6 +3515,53 @@ function getAutoGearSelectorOptions(type) {
     const directorDb = catalog && catalog.directorMonitors ? catalog.directorMonitors : null;
     if (!directorDb || typeof directorDb !== 'object') return [];
     return Object.keys(directorDb).filter(name => name && name !== 'None').sort(localeSort);
+  }
+  if (normalizedType === 'fizHandUnit') {
+    const groups = typeof AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS === 'object'
+      ? AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS
+      : (typeof globalThis !== 'undefined' && typeof globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS === 'object'
+        ? globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS
+        : Object.create(null));
+    const motorMap = typeof AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP === 'object'
+      ? AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP
+      : (typeof globalThis !== 'undefined' && typeof globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP === 'object'
+        ? globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP
+        : Object.create(null));
+    let contextValue = '';
+    if (itemOrContext && typeof itemOrContext === 'object') {
+      const context = itemOrContext.selectorContext || itemOrContext.context;
+      if (typeof context === 'string') {
+        contextValue = context.trim();
+      }
+    } else if (typeof itemOrContext === 'string') {
+      contextValue = itemOrContext.trim();
+    }
+    let group = null;
+    if (contextValue) {
+      group = groups[contextValue] || null;
+      if (!group) {
+        const normalizedContext = normalizeAutoGearTriggerValue(contextValue);
+        if (normalizedContext) {
+          if (groups[normalizedContext]) {
+            group = groups[normalizedContext];
+          } else if (motorMap[normalizedContext] && groups[motorMap[normalizedContext]]) {
+            group = groups[motorMap[normalizedContext]];
+          }
+        }
+      }
+    }
+    if (group && Array.isArray(group.options)) {
+      return group.options.slice();
+    }
+    const fallback = [];
+    Object.values(groups).forEach(entry => {
+      if (!entry || !Array.isArray(entry.options)) return;
+      entry.options.forEach(option => {
+        if (!option || fallback.includes(option)) return;
+        fallback.push(option);
+      });
+    });
+    return fallback;
   }
   if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
     return collectTripodPreferenceOptions(normalizedType).map(option => option.value);
@@ -3421,6 +3602,11 @@ function getAutoGearSelectorLabel(type) {
       || texts.en?.autoGearSelectorTripodSpreaderOption
       || 'Tripod spreader selector';
   }
+  if (normalizedType === 'fizHandUnit') {
+    return langTexts.autoGearSelectorFizHandUnitOption
+      || texts.en?.autoGearSelectorFizHandUnitOption
+      || 'FIZ hand unit selector';
+  }
   return langTexts.autoGearSelectorNoneOption
     || texts.en?.autoGearSelectorNoneOption
     || 'No selector';
@@ -3458,7 +3644,8 @@ function formatAutoGearSelectorValue(type, value) {
       return match.label;
     }
   }
-  if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor')) {
+  if (typeof addArriKNumber === 'function'
+    && (normalizedType === 'monitor' || normalizedType === 'directorMonitor' || normalizedType === 'fizHandUnit')) {
     return addArriKNumber(normalizedValue);
   }
   return normalizedValue;
@@ -3633,7 +3820,14 @@ function normalizeAutoGearItem(entry) {
   const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
   const screenSize = normalizeAutoGearText(entry.screenSize);
   const selectorType = normalizeAutoGearSelectorType(entry.selectorType);
-  const selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault);
+  const selectorContext = typeof entry.selectorContext === 'string'
+    ? entry.selectorContext.trim()
+    : '';
+  const selectorDefault = normalizeAutoGearSelectorDefault(
+    selectorType,
+    entry.selectorDefault,
+    selectorContext
+  );
   let selectorEnabled = !!entry.selectorEnabled;
   if (selectorType === 'none') {
     selectorEnabled = false;
@@ -3641,7 +3835,19 @@ function normalizeAutoGearItem(entry) {
     selectorEnabled = true;
   }
   const notes = normalizeAutoGearText(entry.notes);
-  return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes, contextNotes: contexts };
+  return {
+    id,
+    name,
+    category,
+    quantity,
+    screenSize,
+    selectorType,
+    selectorDefault,
+    selectorEnabled,
+    selectorContext,
+    notes,
+    contextNotes: contexts,
+  };
 }
 
 function normalizeAutoGearTriggerList(values) {

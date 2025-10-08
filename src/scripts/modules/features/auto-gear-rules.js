@@ -9,6 +9,7 @@
           getSliderBowlValue, getEasyrigValue, ensureAutoBackupBeforeDeletion, showNotification, notifyAutoSaveFromBackup,
           markAutoGearDefaultsSeeded, getAutoGearRules, clearAutoGearDefaultsSeeded, hasSeededAutoGearDefaults,
           assignAutoGearRules, AUTO_GEAR_ANY_MOTOR_TOKEN,
+          AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS, AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP,
           baseAutoGearRulesState: true, projectScopedAutoGearRules: true,
           autoGearRulesLastBackupSignature: true, autoGearRulesLastPersistedSignature: true,
           autoGearRulesDirtySinceBackup: true */
@@ -395,6 +396,7 @@ function cloneAutoGearRuleItem(item) {
     selectorType: typeof item.selectorType === 'string' ? item.selectorType : 'none',
     selectorDefault: typeof item.selectorDefault === 'string' ? item.selectorDefault : '',
     selectorEnabled: !!item.selectorEnabled,
+    selectorContext: typeof item.selectorContext === 'string' ? item.selectorContext : '',
     notes: typeof item.notes === 'string' ? item.notes : '',
     contextNotes: Array.isArray(item.contextNotes) ? item.contextNotes.filter(Boolean) : [],
   };
@@ -1105,6 +1107,187 @@ function buildDefaultMatteboxAutoGearRules() {
   ];
 }
 
+function resolveHandUnitCompatibilityMaps() {
+  let groups = null;
+  let motorMap = null;
+  try {
+    if (typeof AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS !== 'undefined'
+      && AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS
+      && typeof AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS === 'object') {
+      groups = AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+    }
+  } catch (error) {
+    void error;
+  }
+  if (!groups && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS === 'object') {
+    groups = GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+  }
+  try {
+    if (typeof AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP !== 'undefined'
+      && AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP
+      && typeof AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP === 'object') {
+      motorMap = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+    }
+  } catch (error) {
+    void error;
+  }
+  if (!motorMap && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP === 'object') {
+    motorMap = GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+  }
+  return {
+    groups: groups && typeof groups === 'object' ? groups : null,
+    motorMap: motorMap && typeof motorMap === 'object' ? motorMap : null,
+  };
+}
+
+function getHandUnitGroupForMotor(motorName) {
+  if (!motorName) return null;
+  const maps = resolveHandUnitCompatibilityMaps();
+  if (!maps.groups) return null;
+  const normalized = normalizeAutoGearTriggerValue(motorName);
+  if (!normalized) return null;
+  let key = null;
+  if (maps.motorMap && Object.prototype.hasOwnProperty.call(maps.motorMap, normalized)) {
+    key = maps.motorMap[normalized];
+  } else if (Object.prototype.hasOwnProperty.call(maps.groups, normalized)) {
+    key = normalized;
+  }
+  if (!key || !maps.groups[key]) {
+    return null;
+  }
+  const group = maps.groups[key];
+  if (!group || !Array.isArray(group.options) || !group.options.length) {
+    return null;
+  }
+  return { key, group };
+}
+
+function collectAllWirelessTransmitterNames() {
+  const names = [];
+  if (!devices || typeof devices !== 'object') {
+    return names;
+  }
+  const videoDb = devices.video && typeof devices.video === 'object' ? devices.video : null;
+  if (!videoDb) {
+    return names;
+  }
+  Object.keys(videoDb).forEach(name => {
+    if (!name || name === 'None') return;
+    if (!names.includes(name)) {
+      names.push(name);
+    }
+  });
+  return names;
+}
+
+function buildMotorHandUnitAutoGearRules(baseInfo) {
+  const maps = resolveHandUnitCompatibilityMaps();
+  if (!maps.groups) {
+    return [];
+  }
+
+  const setupValues = typeof captureSetupSelectValues === 'function'
+    ? captureSetupSelectValues()
+    : null;
+
+  const rawMotors = [];
+  if (setupValues && Array.isArray(setupValues.motors)) {
+    rawMotors.push(...setupValues.motors);
+  }
+  if (baseInfo && Array.isArray(baseInfo.motorSelections)) {
+    rawMotors.push(...baseInfo.motorSelections);
+  }
+  if (baseInfo && Array.isArray(baseInfo.motors)) {
+    rawMotors.push(...baseInfo.motors);
+  }
+
+  const motorEntries = rawMotors
+    .map(name => (typeof name === 'string' ? name.trim() : ''))
+    .filter(name => name && name !== 'None')
+    .map(name => ({ name, normalized: normalizeAutoGearTriggerValue(name) }))
+    .filter(entry => entry.normalized);
+
+  if (!motorEntries.length) {
+    return [];
+  }
+
+  let wirelessSelection = '';
+  if (setupValues && typeof setupValues.video === 'string') {
+    wirelessSelection = setupValues.video.trim();
+  }
+  if (!wirelessSelection && baseInfo && typeof baseInfo.wirelessSelection === 'string') {
+    wirelessSelection = baseInfo.wirelessSelection.trim();
+  }
+  if (!wirelessSelection || wirelessSelection === 'None') {
+    return [];
+  }
+
+  const additions = [];
+  const handledGroups = new Set();
+  motorEntries.forEach(entry => {
+    const resolved = getHandUnitGroupForMotor(entry.normalized);
+    if (!resolved || handledGroups.has(resolved.key)) {
+      return;
+    }
+    handledGroups.add(resolved.key);
+    const group = resolved.group;
+    const options = Array.isArray(group.options) ? group.options.filter(Boolean) : [];
+    if (!options.length) {
+      return;
+    }
+    const defaultOption = typeof group.defaultOption === 'string' && group.defaultOption
+      ? group.defaultOption
+      : options[0];
+    const contextNotes = [];
+    if (group.label) {
+      contextNotes.push(group.label);
+    }
+    if (Array.isArray(group.motors) && group.motors.length) {
+      contextNotes.push(`Compatible motors: ${group.motors.join(', ')}`);
+    }
+    additions.push({
+      id: generateAutoGearId('item'),
+      name: defaultOption,
+      category: 'LDS (FIZ)',
+      quantity: 1,
+      screenSize: '',
+      selectorType: 'fizHandUnit',
+      selectorDefault: defaultOption,
+      selectorEnabled: true,
+      selectorContext: resolved.key,
+      notes: '',
+      contextNotes,
+    });
+  });
+
+  if (!additions.length) {
+    return [];
+  }
+
+  const wirelessTargets = collectAllWirelessTransmitterNames();
+  if (!wirelessTargets.length) {
+    wirelessTargets.push(wirelessSelection);
+  }
+
+  return [{
+    id: generateAutoGearId('rule'),
+    label: 'FIZ hand units',
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    videoDistribution: [],
+    camera: [],
+    monitor: [],
+    wireless: wirelessTargets,
+    motors: [AUTO_GEAR_ANY_MOTOR_TOKEN],
+    controllers: [],
+    distance: [],
+    add: additions,
+    remove: [],
+  }];
+}
+
 function buildAutoGearAnyMotorRule() {
   if (typeof captureSetupSelectValues !== 'function') return null;
   const setupValues = captureSetupSelectValues();
@@ -1506,6 +1689,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
     appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
     appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
     appendUniqueRules(buildArriViewfinderBracketRules(baseInfo));
+    appendUniqueRules(buildMotorHandUnitAutoGearRules(baseInfo));
   }
 
   const anyMotorRule = buildAutoGearAnyMotorRule();
