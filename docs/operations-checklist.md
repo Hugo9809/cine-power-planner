@@ -47,9 +47,10 @@ update the repository or hand off a project at the end of the day.
    persistence, offline and UI sections—including runtime feedback storage
    wrappers and bindings—all pass before you archive exports. While the console
    is open, confirm the new `styleMedia` shim kept Chrome from logging the
-   deprecated `window.styleMedia` warning—the loader now shadows that property
-   with a `matchMedia`-based helper so display-mode detection stays reliable
-   without triggering deprecation noise.【F:src/scripts/loader.js†L1-L128】
+   deprecated `window.styleMedia` warning—the loader now shadows the
+   prototype-provided property with a `matchMedia`-based helper, avoiding the
+   deprecated getter while keeping display-mode detection reliable and
+   silent.【F:src/scripts/loader.js†L1-L128】
 7. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations,
    confirm the **Latest activity** board lists recent saves and backups, review

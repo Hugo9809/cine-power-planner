@@ -72,9 +72,10 @@ you prepare a release candidate or validate a workstation:
    cached assets render instantly and the restored project remains intact.
 6. **Check the console for deprecations.** Open developer tools and confirm
    the session stays free of the deprecated `window.styleMedia` warning. The
-   loader now injects a `matchMedia`-driven shim so display-mode detection and
-   help overlays keep functioning without touching the old API or generating
-   console noise that could obscure real persistence issues.【F:src/scripts/loader.js†L1-L128】
+   loader now shadows the prototype-provided binding with a `matchMedia`-driven
+   shim so display-mode detection and help overlays keep functioning without
+   touching the old API or generating console noise that could obscure real
+   persistence issues.【F:src/scripts/loader.js†L1-L128】
 7. **Document the outcome.** Note the timestamp, machine, browser version and
    files inspected in your verification log. Include any checksum manifests so
    release managers can trace which rehearsal proved the save → share → import
