@@ -886,8 +886,28 @@ function generatePrintableOverview(config = {}) {
         if (parts.projectHtml) {
             projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
-        if (parts.gearHtml && hasGeneratedGearList) {
-            gearSectionHtml = `<section id="gearListOutput" class="gear-list-section">${parts.gearHtml}</section>`;
+        if (parts.gearHtml) {
+            const shouldRenderGearList = hasGeneratedGearList || (() => {
+                const trimmed = parts.gearHtml.trim();
+                if (!trimmed) return false;
+                if (typeof document === 'undefined' || typeof document.createElement !== 'function') {
+                    return true;
+                }
+                const template = document.createElement('template');
+                template.innerHTML = trimmed;
+                const table = template.content.querySelector('.gear-table');
+                if (!table) {
+                    return trimmed.length > 0;
+                }
+                const rows = table.querySelectorAll('tbody tr');
+                if (!rows.length) {
+                    return false;
+                }
+                return Array.from(rows).some(row => row.textContent && row.textContent.trim().length > 0);
+            })();
+            if (shouldRenderGearList) {
+                gearSectionHtml = `<section id="gearListOutput" class="gear-list-section">${parts.gearHtml}</section>`;
+            }
         }
     }
     const projectRequirementsHtml = projectSectionHtml || '';
