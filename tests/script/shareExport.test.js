@@ -379,6 +379,38 @@ describe('project sharing helpers', () => {
     delete global.currentProjectInfo;
   });
 
+  test('downloadSharedProject omits changed device diffs from payload', () => {
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        downloadBackupPayload: downloadPayloadMock,
+        getDeviceChanges: null,
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const getDeviceChangesMock = jest.fn(() => ({ camera: { before: 'A', after: 'B' } }));
+    global.getDeviceChanges = getDeviceChangesMock;
+    env.globals.getDeviceChanges = getDeviceChangesMock;
+
+    const { downloadSharedProject } = env.utils;
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Diff Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    downloadSharedProject('diff.json', false);
+
+    expect(getDeviceChangesMock).not.toHaveBeenCalled();
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadPayloadMock.mock.calls[0];
+    const parsed = JSON.parse(payload);
+    expect(parsed).not.toHaveProperty('changedDevices');
+  });
+
   test('downloadSharedProject alerts when status element is unavailable', () => {
     const originalGetElementById = document.getElementById;
     document.getElementById = jest.fn(function getElementByIdOverride(id) {
