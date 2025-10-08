@@ -277,8 +277,12 @@
       });
     }
 
-    moduleCaches.globals = moduleGlobals || null;
-    return moduleCaches.globals;
+    if (moduleGlobals) {
+      moduleCaches.globals = moduleGlobals;
+      return moduleCaches.globals;
+    }
+
+    return null;
   }
 
   function getGlobalScope() {
