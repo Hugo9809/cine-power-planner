@@ -2812,7 +2812,9 @@ var PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
   AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
   AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+  AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
   AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
+  FULL_BACKUP_HISTORY_STORAGE_KEY,
 ];
 
 var SIMPLE_STORAGE_KEYS = [
@@ -4517,12 +4519,37 @@ function loadJSONFromStorage(
     validate,
     restoreIfMissing = false,
     alertOnFailure = null,
+    migrationBackupKey,
   } = options || {};
 
   const fallbackKey = typeof backupKey === 'string' && backupKey
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+
+  const migrationBackupCandidates = (() => {
+    const seen = new Set();
+    const candidates = [];
+
+    const pushCandidate = (candidate) => {
+      if (typeof candidate !== 'string' || !candidate || seen.has(candidate)) {
+        return;
+      }
+      seen.add(candidate);
+      candidates.push(candidate);
+    };
+
+    if (typeof migrationBackupKey === 'string' && migrationBackupKey) {
+      pushCandidate(migrationBackupKey);
+    }
+
+    const variants = getStorageKeyVariants(key);
+    for (let i = 0; i < variants.length; i += 1) {
+      pushCandidate(`${variants[i]}${STORAGE_MIGRATION_BACKUP_SUFFIX}`);
+    }
+
+    return candidates;
+  })();
 
   const rawGetter = getRawStorageGetter(storage);
   let rawStoredValue =
@@ -4602,6 +4629,136 @@ function loadJSONFromStorage(
 
   const missingPrimary = !primary.ok && primary.reason === 'missing';
 
+  const attemptMigrationBackupRecovery = () => {
+    if (!migrationBackupCandidates.length) {
+      return { success: false, shouldAlert: false };
+    }
+
+    for (let i = 0; i < migrationBackupCandidates.length; i += 1) {
+      const candidateKey = migrationBackupCandidates[i];
+      let migrationRaw = null;
+      let migrationRawStored;
+
+      try {
+        migrationRaw = storage.getItem(candidateKey);
+      } catch (migrationReadError) {
+        console.error(`${errorMessage} (migration backup read)`, migrationReadError);
+        downgradeSafeLocalStorageToMemory('read access', migrationReadError, storage);
+        return { success: false, shouldAlert: true };
+      }
+
+      if (typeof rawGetter === 'function') {
+        migrationRawStored = readRawStorageValue(storage, candidateKey, rawGetter);
+      }
+
+      if (
+        (migrationRaw === null || migrationRaw === undefined)
+        && (migrationRawStored === null || migrationRawStored === undefined)
+      ) {
+        clearCachedStorageEntry(storage, candidateKey);
+        continue;
+      }
+
+      const rawSource = migrationRaw !== null && migrationRaw !== undefined
+        ? migrationRaw
+        : migrationRawStored;
+
+      const entry = { key: candidateKey, value: rawSource, type: 'migration-backup' };
+      const extracted = extractSnapshotStoredValue(entry);
+
+      if (typeof extracted === 'undefined') {
+        continue;
+      }
+
+      let candidateValue = extracted;
+      if (typeof candidateValue === 'string') {
+        const trimmed = candidateValue.trim();
+        if (trimmed) {
+          try {
+            candidateValue = JSON.parse(trimmed);
+          } catch (parseError) {
+            void parseError;
+          }
+        } else {
+          candidateValue = '';
+        }
+      }
+
+      if (typeof validate === 'function' && !validate(candidateValue)) {
+        console.warn(`Ignored migration backup for ${key} because it failed validation.`);
+        continue;
+      }
+
+      const migrationRawForCache = typeof migrationRawStored === 'string' && migrationRawStored
+        ? migrationRawStored
+        : typeof rawSource === 'string' && rawSource
+          ? rawSource
+          : null;
+      const normalizedMigrationRaw = typeof rawSource === 'string' && rawSource
+        ? rawSource
+        : typeof migrationRawStored === 'string' && migrationRawStored
+          ? migrationRawStored
+          : null;
+      cacheStorageValue(
+        storage,
+        candidateKey,
+        migrationRawForCache,
+        normalizedMigrationRaw,
+        candidateValue,
+      );
+
+      let serializedCandidate = null;
+      try {
+        serializedCandidate = JSON.stringify(candidateValue);
+      } catch (serializationError) {
+        console.warn(`Unable to serialize recovered migration backup for ${key}`, serializationError);
+        serializedCandidate = null;
+      }
+
+      let restoredRawValue = null;
+      let shouldEscalate = false;
+
+      if (serializedCandidate !== null) {
+        let payloadToStore = serializedCandidate;
+        const recompressed = typeof serializedCandidate === 'string'
+          ? createCompressedJsonStorageCandidate(serializedCandidate)
+          : null;
+        if (recompressed && typeof recompressed.serialized === 'string') {
+          payloadToStore = recompressed.serialized;
+        }
+
+        try {
+          storage.setItem(key, payloadToStore);
+          restoredRawValue = payloadToStore;
+        } catch (restoreError) {
+          console.warn(`Unable to restore primary copy for ${key} from migration backup`, restoreError);
+          downgradeSafeLocalStorageToMemory('write access', restoreError, storage);
+          shouldEscalate = true;
+        }
+      } else {
+        shouldEscalate = true;
+      }
+
+      if (restoredRawValue !== null) {
+        cacheStorageValue(storage, key, restoredRawValue, serializedCandidate, candidateValue);
+      } else if (serializedCandidate !== null) {
+        cacheStorageValue(storage, key, serializedCandidate, serializedCandidate, candidateValue);
+      } else {
+        cacheStorageValue(storage, key, null, null, candidateValue);
+      }
+
+      console.warn(
+        restoredRawValue !== null
+          ? `Recovered ${key} from migration backup copy.`
+          : `Recovered ${key} from migration backup copy but could not rewrite the primary entry.`,
+      );
+
+      return { success: true, value: candidateValue, shouldAlert: shouldEscalate };
+    }
+
+    return { success: false, shouldAlert: false };
+  };
+
   const shouldAttemptBackup =
     useBackup && (shouldAlert || restoreIfMissing || missingPrimary);
 
@@ -4667,6 +4824,23 @@ function loadJSONFromStorage(
         }
       }
       return backup.value;
+    }
+  }
+
+  const shouldAttemptMigrationBackup =
+    migrationBackupCandidates.length > 0
+    && (missingPrimary || restoreIfMissing || shouldAlert);
+
+  if (shouldAttemptMigrationBackup) {
+    const migrationRecovery = attemptMigrationBackupRecovery();
+    if (migrationRecovery.success) {
+      if (migrationRecovery.shouldAlert) {
+        shouldAlert = true;
+      }
+      return migrationRecovery.value;
+    }
+    if (migrationRecovery.shouldAlert) {
+      shouldAlert = true;
     }
   }
 
