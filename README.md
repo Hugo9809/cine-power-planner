@@ -232,9 +232,10 @@ same online or offline.
 5. Open **Help → Quick start checklist** and press **Start guided tutorial** to
    follow the step-by-step walkthrough of creating a project, selecting
    devices, generating gear lists, customising automatic gear rules, exporting,
-   importing and backing up data. Completing or skipping the tour records the
-   preference offline so you can replay it from Help whenever you need a
-   refresher.
+   importing and backing up data. The new step navigator lets you jump back to
+   finished workflows without restarting, and the **Resume guided tutorial**
+   option appears automatically if you paused mid-tour so progress never goes
+   missing offline.
 6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.

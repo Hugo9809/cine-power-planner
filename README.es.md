@@ -123,11 +123,12 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
    ```
    La aplicación se almacenará en caché para uso offline y aplicará actualizaciones cuando las apruebes.
 4. Carga el planner, cierra la pestaña, desconecta la red (o activa modo avión) y vuelve a abrir `index.html`. El indicador offline debe parpadear mientras se cargan los recursos en caché, incluidos los Uicons locales.
-5. Crea un proyecto, pulsa **Enter** (o **Ctrl+S**/`⌘S`) para guardar manualmente y revisa el selector para ver el auto-backup con sello horario que aparece tras unas 50 modificaciones registradas o a los diez minutos.
-6. Exporta **Configuración → Copia de seguridad y restauración → Copia de seguridad** e importa el archivo `planner-backup.json` en un perfil privado. Verificar la ruta de restauración demuestra que ninguna copia queda atrapada y que la salvaguarda previa funciona.
-7. Practica la exportación de un paquete (`project-name.json`) y su importación en otro equipo o perfil. Ensayar el flujo Guardar → Compartir → Importar asegura que los recursos locales acompañan al proyecto.
-8. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Registra fecha, equipo y operador para dejar constancia de cuándo se validó el ensayo y mantener los flujos sincronizados desde la primera sesión.
-9. Abre la consola del navegador y captura `window.__cineRuntimeIntegrity` (o vuelve a ejecutar `window.cineRuntime.verifyCriticalFlows()` y guarda el informe). Ese registro demuestra que la guarda en tiempo de ejecución validó las rutas de guardado/compartido/restauración y la persistencia de feedback durante la práctica offline.
+5. Abre **Ayuda → Lista de comprobación de inicio rápido** y lanza el tutorial guiado. El nuevo navegador de pasos permite volver a los flujos completados sin reiniciar y, si lo dejas a medias, aparecerá automáticamente **Reanudar tutorial guiado** para conservar el progreso sin conexión.
+6. Crea un proyecto, pulsa **Enter** (o **Ctrl+S**/`⌘S`) para guardar manualmente y revisa el selector para ver el auto-backup con sello horario que aparece tras unas 50 modificaciones registradas o a los diez minutos.
+7. Exporta **Configuración → Copia de seguridad y restauración → Copia de seguridad** e importa el archivo `planner-backup.json` en un perfil privado. Verificar la ruta de restauración demuestra que ninguna copia queda atrapada y que la salvaguarda previa funciona.
+8. Practica la exportación de un paquete (`project-name.json`) y su importación en otro equipo o perfil. Ensayar el flujo Guardar → Compartir → Importar asegura que los recursos locales acompañan al proyecto.
+9. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Registra fecha, equipo y operador para dejar constancia de cuándo se validó el ensayo y mantener los flujos sincronizados desde la primera sesión.
+10. Abre la consola del navegador y captura `window.__cineRuntimeIntegrity` (o vuelve a ejecutar `window.cineRuntime.verifyCriticalFlows()` y guarda el informe). Ese registro demuestra que la guarda en tiempo de ejecución validó las rutas de guardado/compartido/restauración y la persistencia de feedback durante la práctica offline.
 
 ## Requisitos del sistema y navegadores
 

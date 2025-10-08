@@ -123,11 +123,12 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
    ```
    L’app viene messa in cache per l’uso offline e applica gli update solo con il tuo consenso.
 4. Carica il planner, chiudi la scheda, disconnettiti (o attiva la modalità aereo) e riapri `index.html`. L’indicatore offline dovrebbe lampeggiare brevemente mentre carica le risorse memorizzate, inclusi gli Uicons locali.
-5. Crea un progetto, premi **Invio** (o **Ctrl+S**/`⌘S`) per un salvataggio manuale e controlla che nel selettore compaia il backup automatico con timestamp dopo circa 50 modifiche registrate o entro dieci minuti.
-6. Esporta **Impostazioni → Backup e ripristino → Backup** e importa il file `planner-backup.json` in un profilo privato. Così verifichi che nessuna copia resti isolata e che il backup forzato prima del ripristino funzioni.
-7. Esercitati a esportare un bundle (`project-name.json`) e importarlo su un altro dispositivo o profilo per collaudare il flusso Salva → Condividi → Importa e assicurarti che risorse locali seguano il progetto.
-8. Archivia backup e bundle verificati insieme alla copia del repository utilizzato. Annota data, macchina e operatore per documentare quando l’esercizio è stato convalidato e mantenere i flussi sincronizzati fin dalla prima sessione.
-9. Apri la console del browser e acquisisci `window.__cineRuntimeIntegrity` (oppure riesegui `window.cineRuntime.verifyCriticalFlows()` e salva il report). In questo modo dimostri che la sentinella runtime ha validato i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback durante la prova offline.
+5. Apri **Aiuto → Checklist di avvio rapido** e avvia il tutorial guidato. Il nuovo navigatore dei passaggi ti permette di rivedere i flussi completati senza ricominciare; se interrompi il percorso, apparirà automaticamente **Riprendi il tutorial guidato** così il progresso offline resta salvato.
+6. Crea un progetto, premi **Invio** (o **Ctrl+S**/`⌘S`) per un salvataggio manuale e controlla che nel selettore compaia il backup automatico con timestamp dopo circa 50 modifiche registrate o entro dieci minuti.
+7. Esporta **Impostazioni → Backup e ripristino → Backup** e importa il file `planner-backup.json` in un profilo privato. Così verifichi che nessuna copia resti isolata e che il backup forzato prima del ripristino funzioni.
+8. Esercitati a esportare un bundle (`project-name.json`) e importarlo su un altro dispositivo o profilo per collaudare il flusso Salva → Condividi → Importa e assicurarti che risorse locali seguano il progetto.
+9. Archivia backup e bundle verificati insieme alla copia del repository utilizzato. Annota data, macchina e operatore per documentare quando l’esercizio è stato convalidato e mantenere i flussi sincronizzati fin dalla prima sessione.
+10. Apri la console del browser e acquisisci `window.__cineRuntimeIntegrity` (oppure riesegui `window.cineRuntime.verifyCriticalFlows()` e salva il report). In questo modo dimostri che la sentinella runtime ha validato i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback durante la prova offline.
 
 ## Requisiti di sistema e browser
 

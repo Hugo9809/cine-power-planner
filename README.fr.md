@@ -123,11 +123,12 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
    ```
    L’application se met ensuite en cache pour un usage hors ligne et n’applique les mises à jour qu’après validation.
 4. Chargez le planner, fermez l’onglet, coupez la connexion (ou activez le mode avion) puis rouvrez `index.html`. L’indicateur hors ligne doit clignoter brièvement pendant le chargement des ressources mises en cache, y compris les Uicons locaux.
-5. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour déclencher une sauvegarde manuelle et vérifiez l’apparition de l’auto-backup horodaté dans le sélecteur après environ 50 modifications suivies ou au bout de dix minutes.
-6. Exportez **Paramètres → Backup & Restauration → Backup** et importez le fichier `planner-backup.json` dans un profil privé. Cette vérification garantit qu’aucune sauvegarde ne reste isolée et démontre le backup forcé avant restauration.
-7. Entraînez-vous à exporter un bundle (`project-name.json`) puis à l’importer sur une seconde machine ou profil pour valider la chaîne Sauvegarder → Partager → Importer et s’assurer que les ressources locales suivent le projet hors ligne.
-8. Archivez le backup vérifié et le bundle avec la copie du dépôt. Consignez date, machine et opérateur pour attester du succès de l’exercice et garder les flux synchronisés dès la première session.
-9. Ouvrez la console du navigateur et capturez `window.__cineRuntimeIntegrity` (ou relancez `window.cineRuntime.verifyCriticalFlows()` puis enregistrez le rapport). Cette trace prouve que la sentinelle runtime a validé les parcours de sauvegarde/partage/restauration et la persistance du feedback durant la répétition hors ligne.
+5. Ouvrez **Aide → Liste de démarrage rapide** et lancez le tutoriel guidé. Le nouveau navigateur d’étapes permet de revisiter les flux terminés sans recommencer et, si vous interrompez la session, l’option **Reprendre le tutoriel guidé** apparaît automatiquement pour préserver votre progression hors ligne.
+6. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour déclencher une sauvegarde manuelle et vérifiez l’apparition de l’auto-backup horodaté dans le sélecteur après environ 50 modifications suivies ou au bout de dix minutes.
+7. Exportez **Paramètres → Backup & Restauration → Backup** et importez le fichier `planner-backup.json` dans un profil privé. Cette vérification garantit qu’aucune sauvegarde ne reste isolée et démontre le backup forcé avant restauration.
+8. Entraînez-vous à exporter un bundle (`project-name.json`) puis à l’importer sur une seconde machine ou profil pour valider la chaîne Sauvegarder → Partager → Importer et s’assurer que les ressources locales suivent le projet hors ligne.
+9. Archivez le backup vérifié et le bundle avec la copie du dépôt. Consignez date, machine et opérateur pour attester du succès de l’exercice et garder les flux synchronisés dès la première session.
+10. Ouvrez la console du navigateur et capturez `window.__cineRuntimeIntegrity` (ou relancez `window.cineRuntime.verifyCriticalFlows()` puis enregistrez le rapport). Cette trace prouve que la sentinelle runtime a validé les parcours de sauvegarde/partage/restauration et la persistance du feedback durant la répétition hors ligne.
 
 ## Prérequis système et navigateurs
 
