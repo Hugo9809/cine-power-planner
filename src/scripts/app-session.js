@@ -5196,7 +5196,8 @@ if (autoGearAddItemButton) {
       } else if (button.classList.contains('auto-gear-duplicate')) {
         duplicateAutoGearRule(button.dataset.ruleId || '');
       } else if (button.classList.contains('auto-gear-delete')) {
-        deleteAutoGearRule(button.dataset.ruleId || '');
+        const ruleId = button.dataset.ruleId || '';
+        callSessionCoreFunction('deleteAutoGearRule', [ruleId]);
       }
     });
   }
