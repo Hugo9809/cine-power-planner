@@ -541,6 +541,60 @@ const fizData = {
       "batteryType": "Integrated Li-ion (2600 mAh)",
       "connectivity": "Wireless (DJI 2.4/5.8 GHz link with Focus Pro ecosystem) or Wired (USB-C for updates)",
       "notes": "Compact controller for the Focus Pro ecosystem with customizable focus wheel tension, vibration feedback for range alerts, and direct pairing to the LiDAR Range Finder."
+    },
+    "Hedén YMER-3 Hand Control": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging and configuration"
+        },
+        {
+          "type": "LEMO 7-pin",
+          "notes": "Optional tether to YMER receiver for power/data"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Sony NP-FM500H) or External (wired to receiver)",
+      "batteryType": "Sony NP-FM500H",
+      "connectivity": "Wireless (dual-band FHSS Hedén link) or Wired (RS-422 style tether via 7-pin)",
+      "notes": "Precision Swedish-built controller with adjustable focus wheel tension, integrated lens data display, and Light Ranger compatibility when paired with Hedén receivers."
+    },
+    "Freefly Pilot Pro Hand Controller": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging, configuration and tethered data"
+        },
+        {
+          "type": "CAN (Hirose 6-pin)",
+          "notes": "Optional wired control to Freefly ecosystems"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Sony NP-F550/NP-F570) or External via CAN bus",
+      "batteryType": "Sony NP-F550/NP-F570",
+      "connectivity": "Wireless (Freefly Pilot Pro 2.4 GHz link) or Wired (CAN bus tether)",
+      "notes": "Next-generation Pilot controller with high-brightness status display, dual-stage focus knob damping, assignable sliders and buttons, and deep integration with MōVI and Ember camera control."
+    },
+    "Redrock microRemote Hand Controller": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "LEMO 5-pin",
+          "notes": "Wired link to microRemote BaseStation"
+        },
+        {
+          "type": "USB",
+          "notes": "Charging and firmware"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Canon LP-E6) or External via BaseStation",
+      "batteryType": "Canon LP-E6",
+      "connectivity": "Wireless (2.4 GHz microRemote link) or Wired (LEMO 5-pin to BaseStation)",
+      "notes": "Programmable hand controller with illuminated marking disk, adjustable hard stops, and multi-axis expansion when paired with Redrock's thumb and finger controllers."
     }
   },
   "controllers": {

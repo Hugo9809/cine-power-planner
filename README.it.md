@@ -403,7 +403,7 @@ npm run test:data
 
 Aggiungi `--help` a ogni comando per avere istruzioni e controlla i diff generati prima di aprire una pull request. `npm run help` riepiloga tutti gli script disponibili.
 
-> **Aggiornamento del catalogo.** Il catalogo delle hand unit FIZ ora elenca il controller Nucleus-M II di Tilta insieme a nuovi profili per la HU4 di Preston, la hand unit cPRO di cmotion, la CTRL.3 di Teradek e la hand unit Focus Pro di DJI, così i pianificatori possono confrontare più ecosistemi offline senza uscire dall’app.
+> **Aggiornamento del catalogo.** Il catalogo delle hand unit FIZ ora elenca il controller Nucleus-M II di Tilta insieme a nuovi profili per la HU4 di Preston, la hand unit cPRO di cmotion, la CTRL.3 di Teradek, la hand unit Focus Pro di DJI, la hand control YMER-3 di Hedén, il controller Pilot Pro di Freefly e la hand controller microRemote di Redrock, così i pianificatori possono confrontare più ecosistemi offline senza uscire dall’app.
 
 ## Sviluppo
 
