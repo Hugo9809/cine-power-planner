@@ -14,6 +14,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Revise contextual help topics, hover help strings and FAQ answers in `src/scripts/help/` and `index.html` so offline crews see accurate instructions.
 - [ ] Synchronize printable manuals and runbooks in `docs/` (save/share reference, offline readiness, operations checklist, backup rotation guide, testing plan) with the change.
 - [ ] Update legal pages in `legal/` if any disclosures or policy links reference the updated feature.
+- [ ] Mark the affected rows in `docs/documentation-coverage-matrix.md` and update the entries so reviewers can trace which surfaces now document the revised save, share, import, backup and restore behavior.
 
 ## 3. Refresh translations
 
@@ -34,5 +35,6 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Store the verified planner backup, project bundle, automatic gear rules export and a ZIP of the repository alongside the updated documentation so crews can prove parity later.
 - [ ] Attach rendered PDFs or screenshots of modified help pages if the change affected visual layout or iconography.
 - [ ] Assemble the release documentation packet following `docs/documentation-verification-packet.md` and record where redundant offline copies live.
+- [ ] Note the storage locations for the packet inside the verification log so future crews can retrieve the canonical manuals and rehearsal artefacts without reconnecting to the network.
 
 Running this checklist alongside the full maintenance guide keeps documentation, translations and offline workflows in sync with the product while protecting user data across every save, share, import, backup and restore path.

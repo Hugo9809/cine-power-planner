@@ -78,6 +78,11 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 6. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
    static pages in `legal/`, mirror the update in every localized HTML file so offline
    references stay consistent.
+7. **Data schema references.** When datasets or schema attributes change, refresh
+   `docs/schema-inventory.md`, any related help topics and translation keys so operators see
+   accurate field names when auditing backups or reconciling planner exports. Note the schema
+   revision in your verification log so crews can trace which data structures the
+   documentation describes during save, share, import, backup and restore rehearsals.
 
 ## 2. Update translations in lockstep
 
