@@ -13166,7 +13166,6 @@ const sharedKeyMap = {
   diagramPositions: "y"
 };
 const sharedKeyMapKeys = Object.keys(sharedKeyMap);
-const sharedHasOwn = Object.prototype.hasOwnProperty;
 
 var lastSharedSetupData = null;
 var lastSharedAutoGearRules = null;
@@ -13522,8 +13521,8 @@ function decodeSharedSetup(setup) {
   for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
     const key = sharedKeyMapKeys[index];
     const short = sharedKeyMap[key];
-    const longPresent = sharedHasOwn.call(setup, key);
-    const shortPresent = sharedHasOwn.call(setup, short);
+    const longPresent = Object.prototype.hasOwnProperty.call(setup, key);
+    const shortPresent = Object.prototype.hasOwnProperty.call(setup, short);
 
     if (longPresent) {
       hasLongKeys = true;
@@ -13560,7 +13559,7 @@ function decodeSharedSetup(setup) {
   const merged = { ...setup };
   for (let index = 0; index < pendingKeys.length; index += 1) {
     const key = pendingKeys[index];
-    if (!sharedHasOwn.call(merged, key)) {
+    if (!Object.prototype.hasOwnProperty.call(merged, key)) {
       const short = sharedKeyMap[key];
       const value = setup[short];
       if (value != null) {
