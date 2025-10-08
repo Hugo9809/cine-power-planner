@@ -6015,6 +6015,7 @@ function saveCurrentGearList() {
         setups[selectedStorageKey] = setup;
         storeSetups(setups);
     }
+    return changed;
 }
 
 function deleteCurrentGearList() {

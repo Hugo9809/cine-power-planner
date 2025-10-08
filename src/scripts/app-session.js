@@ -32,7 +32,8 @@
           recordFeatureSearchUsage, extractFeatureSearchFilter,
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
-          resumeProjectPersistence */
+          resumeProjectPersistence, stableStringify, CORE_SHARED,
+          markProjectFormDataDirty */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -3281,14 +3282,17 @@ function autoSaveCurrentSetup() {
   if (!name) {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
-    return;
+    return false;
   }
   const selectedName = setupSelect ? setupSelect.value : '';
   if (setupSelect && (!selectedName || name !== selectedName)) {
     saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
-    return;
+    return false;
   }
+  const setups = getSetups();
+  const existingSetup = setups && typeof setups === 'object' ? setups[name] : undefined;
+  const existingSetupSignature = existingSetup ? stableStringify(existingSetup) : '';
   const currentSetup = { ...getCurrentSetupState() };
   const gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
@@ -3302,7 +3306,6 @@ function autoSaveCurrentSetup() {
       delete currentSetup.diagramPositions;
     }
   }
-  const setups = getSetups();
   setups[name] = currentSetup;
   storeSetups(setups);
   populateSetupSelect();
@@ -3310,6 +3313,8 @@ function autoSaveCurrentSetup() {
   saveCurrentSession();
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
+  const updatedSignature = stableStringify(currentSetup);
+  return existingSetupSignature !== updatedSignature;
 }
 
 const PROJECT_AUTOSAVE_BASE_DELAY_MS = 300;
@@ -3322,6 +3327,24 @@ let projectAutoSaveFailureCount = 0;
 let projectAutoSavePendingWhileRestoring = null;
 let factoryResetInProgress = false;
 let projectAutoSaveOverrides = null;
+
+function notifyAutoBackupChange(details) {
+  try {
+    const scope = typeof globalThis !== 'undefined'
+      ? globalThis
+      : (typeof window !== 'undefined'
+        ? window
+        : (typeof self !== 'undefined' ? self : null));
+    const notifier = scope && typeof scope.__cineNoteAutoBackupChange === 'function'
+      ? scope.__cineNoteAutoBackupChange
+      : null;
+    if (notifier) {
+      notifier(details || {});
+    }
+  } catch (changeError) {
+    console.warn('Failed to record auto backup change context', changeError);
+  }
+}
 
 function setProjectAutoSaveOverrides(overrides) {
   if (!overrides || typeof overrides !== 'object') {
@@ -3387,19 +3410,29 @@ function runProjectAutoSave() {
 
   let encounteredError = false;
 
-  const guard = (fn, context) => {
+  const guard = (fn, context, onSuccess) => {
     if (typeof fn !== 'function') {
-      return true;
+      return { ok: true, result: undefined };
     }
     try {
-      fn();
-      return true;
+      const result = fn();
+      if (typeof onSuccess === 'function') {
+        try {
+          onSuccess(result);
+        } catch (callbackError) {
+          console.warn('Auto backup mutation observer callback failed', callbackError);
+        }
+      }
+      return { ok: true, result };
     } catch (error) {
       encounteredError = true;
       console.error(`Project autosave failed while ${context}.`, error);
-      return false;
+      return { ok: false, result: undefined };
     }
   };
+
+  let setupMutationDetected = false;
+  let gearListMutationDetected = false;
 
   const hasSetupName = Boolean(
     setupNameInput
@@ -3411,15 +3444,31 @@ function runProjectAutoSave() {
     guard(() => saveCurrentSession(), 'saving the current session state');
   }
 
-  const setupSaved = guard(autoSaveCurrentSetup, 'saving the current setup');
-  if (!setupSaved) {
+  const setupSaveResult = guard(
+    autoSaveCurrentSetup,
+    'saving the current setup',
+    (result) => {
+      if (result === true) {
+        setupMutationDetected = true;
+      }
+    },
+  );
+  if (!setupSaveResult.ok) {
     guard(
       () => saveCurrentSession({ skipGearList: true }),
       'saving the current session state as a fallback',
     );
   }
 
-  guard(saveCurrentGearList, 'saving the gear list');
+  guard(
+    saveCurrentGearList,
+    'saving the gear list',
+    (result) => {
+      if (result === true) {
+        gearListMutationDetected = true;
+      }
+    },
+  );
 
   if (encounteredError) {
     if (projectAutoSaveFailureCount < PROJECT_AUTOSAVE_MAX_RETRIES) {
@@ -3434,6 +3483,10 @@ function runProjectAutoSave() {
 
   projectAutoSaveFailureCount = 0;
   clearProjectAutoSaveOverrides();
+
+  if (!encounteredError && (setupMutationDetected || gearListMutationDetected)) {
+    notifyAutoBackupChange({ commit: true });
+  }
 }
 
 function scheduleProjectAutoSave(immediateOrOptions = false) {
@@ -3472,23 +3525,7 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
   }
   projectAutoSavePendingWhileRestoring = null;
 
-  const noteAutoBackupChange = () => {
-    try {
-      const scope = typeof globalThis !== 'undefined'
-        ? globalThis
-        : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
-      const notifier = scope && typeof scope.__cineNoteAutoBackupChange === 'function'
-        ? scope.__cineNoteAutoBackupChange
-        : null;
-      if (notifier) {
-        notifier({ immediate, overrides: overrides !== undefined });
-      }
-    } catch (changeError) {
-      console.warn('Failed to record auto backup change context', changeError);
-    }
-  };
-
-  noteAutoBackupChange();
+  notifyAutoBackupChange({ immediate, overrides: overrides !== undefined, pending: true });
   if (immediate) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
@@ -4500,10 +4537,8 @@ const flushProjectAutoSaveOnExit = () => {
       hideIndicator = null;
     }
   }
+  notifyAutoBackupChange({ immediate: true, reason: 'before-exit', pending: true });
   try {
-    if (scope && typeof scope.__cineNoteAutoBackupChange === 'function') {
-      scope.__cineNoteAutoBackupChange({ immediate: true, reason: 'before-exit' });
-    }
     if (scope && typeof scope.autoBackup === 'function') {
       scope.autoBackup({
         suppressSuccess: true,
