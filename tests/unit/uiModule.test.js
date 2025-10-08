@@ -49,18 +49,19 @@ describe('cineUi module', () => {
   test('warns when replacing controller entries', () => {
     const first = jest.fn();
     const second = jest.fn();
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    harness.moduleGlobals.safeWarn.mockClear();
 
     cineUi.controllers.register('saveSetup', { run: first });
     cineUi.controllers.register('saveSetup', { run: second });
 
-    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(harness.moduleGlobals.safeWarn).toHaveBeenCalledTimes(1);
+    expect(harness.moduleGlobals.safeWarn.mock.calls[0][0]).toBe(
+      'cineUi controller "saveSetup" was replaced. Using the latest registration.',
+    );
 
     cineUi.controllers.invoke('saveSetup', 'run');
     expect(first).not.toHaveBeenCalled();
     expect(second).toHaveBeenCalled();
-
-    warnSpy.mockRestore();
   });
 
   test('exposes interactions that can be triggered programmatically', () => {

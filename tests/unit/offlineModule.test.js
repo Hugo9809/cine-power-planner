@@ -7,21 +7,27 @@ describe('cineOffline module', () => {
   let internal;
   let consoleWarnSpy;
   let harness;
+  let originalConsole;
 
   beforeEach(() => {
     harness = setupModuleHarness();
     delete global.cineOffline;
+    originalConsole = console;
+    consoleWarnSpy = jest.fn();
+    const consoleClone = Object.create(console);
+    consoleClone.warn = consoleWarnSpy;
+    global.console = consoleClone;
     offline = require(path.join('..', '..', 'src', 'scripts', 'modules', 'offline.js'));
     internal = offline.__internal;
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     delete global.cineOffline;
-    if (consoleWarnSpy) {
-      consoleWarnSpy.mockRestore();
-      consoleWarnSpy = null;
+    if (originalConsole) {
+      global.console = originalConsole;
+      originalConsole = null;
     }
+    consoleWarnSpy = null;
     if (harness) {
       harness.teardown();
       harness = null;
@@ -196,11 +202,11 @@ describe('cineOffline module', () => {
       });
     });
 
-    test('triggerReload appends a forceReload query parameter and prefers location.replace', () => {
-      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
+  test('triggerReload appends a forceReload query parameter and prefers location.replace', () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
 
-      const location = {
-        href: 'https://example.test/app?foo=bar#section',
+    const location = {
+      href: 'https://example.test/app?foo=bar#section',
         replace: jest.fn(),
         reload: jest.fn(),
       };
@@ -213,8 +219,42 @@ describe('cineOffline module', () => {
       expect(replacedUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
       expect(location.reload).not.toHaveBeenCalled();
 
-      nowSpy.mockRestore();
+    nowSpy.mockRestore();
+  });
+
+  test('triggerReload schedules fallback attempts when navigation is blocked', () => {
+    const reloadError = new Error('blocked');
+    const reload = jest.fn(() => {
+      throw reloadError;
     });
+
+    let currentHref = 'https://example.test/app';
+    const location = {};
+    Object.defineProperty(location, 'href', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return currentHref;
+      },
+      set() {
+        throw new Error('href assignment blocked');
+      },
+    });
+    location.reload = reload;
+
+    const setTimeoutSpy = jest.fn();
+
+    const windowMock = {
+      location,
+      setTimeout: setTimeoutSpy,
+    };
+
+    const result = internal.triggerReload(windowMock);
+
+    expect(result).toBe(false);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(setTimeoutSpy).toHaveBeenCalled();
+  });
 
     test('registerServiceWorker registers immediately when the document is already loaded', async () => {
       const register = jest.fn(() => Promise.resolve('registered'));
