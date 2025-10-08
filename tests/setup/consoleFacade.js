@@ -57,17 +57,28 @@ function createConsoleFacade(baseConsole) {
   return facade;
 }
 
-function ensureConsoleFacade() {
+function ensureConsoleFacade(onConsoleChanged) {
   const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
   const initialConsole = descriptor && 'value' in descriptor ? descriptor.value : global.console;
   if (!initialConsole) {
     return initialConsole;
   }
 
+  const notifyConsoleChanged = typeof onConsoleChanged === 'function'
+    ? (nextConsole) => {
+        try {
+          onConsoleChanged(nextConsole);
+        } catch (error) {
+          void error;
+        }
+      }
+    : () => {};
+
   if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
     try {
       const current = descriptor.get ? descriptor.get.call(global) : initialConsole;
       if (current && current.__cameraPowerPlannerProxy) {
+        notifyConsoleChanged(current);
         return current;
       }
     } catch (error) {
@@ -84,16 +95,19 @@ function ensureConsoleFacade() {
     get() {
       if (facade && facade.__cameraPowerPlannerOriginal !== baseConsole) {
         facade = createConsoleFacade(baseConsole);
+        notifyConsoleChanged(facade);
       }
       return facade;
     },
     set(nextConsole) {
       baseConsole = nextConsole;
       facade = createConsoleFacade(baseConsole);
+      notifyConsoleChanged(facade);
     },
   });
 
   global.console = baseConsole;
+  notifyConsoleChanged(global.console);
   return facade;
 }
 

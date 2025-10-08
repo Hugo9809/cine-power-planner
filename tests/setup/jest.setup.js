@@ -2,8 +2,6 @@ const { TextEncoder: NodeTextEncoder, TextDecoder: NodeTextDecoder } = require('
 
 const { ensureConsoleFacade } = require('./consoleFacade');
 
-const activeConsole = ensureConsoleFacade() || console;
-
 const originalDateNow = Date.now;
 
 try {
@@ -66,36 +64,84 @@ const suppressMessages = (originalFn, patterns) => {
   };
 };
 
-if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
-  const suppressedWarns = [
-    /^Failed to .*backup/i,
-    /^Backup failed/i,
-    /^Restore failed/i,
-    /^Restore rehearsal failed/i,
-    /^Restore rehearsal .*received/i,
-    /^Restore rehearsal .*mismatch/i,
-    /FileReader unavailable/i,
-    /Recovered .* from backup copy/i,
-    /Removed \d+ older automatic backup/i,
-    /^Error loading .*Invalid data/i,
-    /^Ignoring invalid favorites payload/i,
-    /^localStorage is unavailable/i,
-    /^Falling back to sessionStorage/i,
-    /^Unable to access localStorage/i,
-    /^Project export failed/i,
-    /^No supported download method available/i,
-  ];
+const suppressedWarns = [
+  /^Failed to .*backup/i,
+  /^Backup failed/i,
+  /^Restore failed/i,
+  /^Restore rehearsal failed/i,
+  /^Restore rehearsal .*received/i,
+  /^Restore rehearsal .*mismatch/i,
+  /FileReader unavailable/i,
+  /Recovered .* from backup copy/i,
+  /Removed \d+ older automatic backup/i,
+  /^Stored compressed value /i,
+  /^Error loading .*Invalid data/i,
+  /^Ignoring invalid favorites payload/i,
+  /^localStorage is unavailable/i,
+  /^Falling back to sessionStorage/i,
+  /^Unable to access localStorage/i,
+  /^Project export failed/i,
+  /^No supported download method available/i,
+];
 
-  const suppressedErrors = [
-    /Not implemented: window\.open/i,
-    /Not implemented: navigation \(except hash changes\)/i,
-    /^Error loading .* from localStorage/i,
-  ];
+const suppressedErrors = [
+  /Not implemented: window\.open/i,
+  /Not implemented: navigation \(except hash changes\)/i,
+  /^Error loading .* from localStorage/i,
+];
 
-  activeConsole.warn = suppressMessages(activeConsole.warn?.bind(activeConsole), suppressedWarns);
-  activeConsole.error = suppressMessages(activeConsole.error?.bind(activeConsole), suppressedErrors);
-  activeConsole.__cameraPowerPlannerPatched = true;
-}
+const suppressedInfos = [
+  /^Removed duplicate automatic backup while preserving newer copy\./i,
+  /^Additional storage compression warnings are being batched/i,
+  /^Suppressed repeated storage compression warnings\./i,
+  /^Critical storage guard mirrored backup copies/i,
+];
+
+const patchConsoleInstance = (consoleInstance) => {
+  if (!consoleInstance || consoleInstance.__cameraPowerPlannerPatched) {
+    return consoleInstance;
+  }
+
+  const patchMethod = (methodName, patterns) => {
+    const original = consoleInstance[methodName];
+    if (typeof original !== 'function') {
+      return;
+    }
+
+    const patched = suppressMessages(original.bind(consoleInstance), patterns);
+    if (typeof patched !== 'function' || patched === original) {
+      return;
+    }
+
+    try {
+      Object.defineProperty(consoleInstance, methodName, {
+        configurable: true,
+        enumerable: Object.prototype.propertyIsEnumerable.call(consoleInstance, methodName),
+        writable: true,
+        value: patched,
+      });
+    } catch (error) {
+      consoleInstance[methodName] = patched;
+    }
+  };
+
+  patchMethod('warn', suppressedWarns);
+  patchMethod('error', suppressedErrors);
+  patchMethod('info', suppressedInfos);
+
+  consoleInstance.__cameraPowerPlannerPatched = true;
+
+  const originalConsole = consoleInstance.__cameraPowerPlannerOriginal;
+  if (originalConsole && originalConsole !== consoleInstance) {
+    patchConsoleInstance(originalConsole);
+  }
+
+  return consoleInstance;
+};
+
+const activeConsole = ensureConsoleFacade(patchConsoleInstance) || console;
+
+patchConsoleInstance(activeConsole);
 
 if (typeof window !== 'undefined') {
   if (typeof window.open !== 'function') {
