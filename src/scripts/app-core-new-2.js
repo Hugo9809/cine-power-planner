@@ -4046,9 +4046,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     
       visibleRules.forEach(rule => {
+        const index = ruleIndexByObject.get(rule);
         const wrapper = document.createElement('div');
         wrapper.className = 'auto-gear-rule';
         wrapper.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          wrapper.dataset.ruleIndex = String(index);
+        } else {
+          delete wrapper.dataset.ruleIndex;
+        }
         const info = document.createElement('div');
         info.className = 'auto-gear-rule-info';
         const title = document.createElement('p');
@@ -4308,6 +4314,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         editBtn.type = 'button';
         editBtn.className = 'auto-gear-edit';
         editBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          editBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete editBtn.dataset.ruleIndex;
+        }
         const editLabel = texts[currentLang]?.editBtn || texts.en?.editBtn || 'Edit';
         editBtn.textContent = editLabel;
         editBtn.setAttribute('data-help', editLabel);
@@ -4316,6 +4327,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         duplicateBtn.type = 'button';
         duplicateBtn.className = 'auto-gear-duplicate';
         duplicateBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          duplicateBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete duplicateBtn.dataset.ruleIndex;
+        }
         const duplicateLabel = texts[currentLang]?.autoGearDuplicateRule
           || texts.en?.autoGearDuplicateRule
           || 'Duplicate';
@@ -4326,6 +4342,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         deleteBtn.type = 'button';
         deleteBtn.className = 'auto-gear-delete';
         deleteBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          deleteBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete deleteBtn.dataset.ruleIndex;
+        }
         const deleteLabel = texts[currentLang]?.autoGearDeleteRule
           || texts.en?.autoGearDeleteRule
           || 'Delete';
@@ -4928,11 +4949,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function openAutoGearEditor(ruleId, options = {}) {
       if (!autoGearEditor) return;
-      const { initialDraft, highlightLabel = false } = options;
+      const { initialDraft, highlightLabel = false, ruleIndex = null } = options;
       const rules = getAutoGearRules();
-      const source = initialDraft
-        ? initialDraft
-        : (ruleId ? rules.find(rule => rule.id === ruleId) : null);
+      let source = null;
+      if (initialDraft) {
+        source = initialDraft;
+      } else if (ruleId) {
+        source = rules.find(rule => rule && rule.id === ruleId) || null;
+      }
+      if (!source && ruleIndex !== null && ruleIndex !== undefined) {
+        const parsedIndex = typeof ruleIndex === 'number'
+          ? ruleIndex
+          : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          source = rules[parsedIndex] || null;
+        }
+      }
+      if (!source && !initialDraft) {
+        source = null;
+      }
       autoGearEditorDraft = createAutoGearDraft(source);
       autoGearEditorActiveItem = null;
       autoGearEditor.hidden = false;
@@ -5373,10 +5408,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       closeAutoGearEditor();
     }
     
-    function duplicateAutoGearRule(ruleId) {
-      if (!ruleId) return;
+    function duplicateAutoGearRule(ruleId, ruleIndex) {
       const rules = getAutoGearRules();
-      const original = rules.find(rule => rule && rule.id === ruleId);
+      let original = null;
+      if (ruleId) {
+        original = rules.find(rule => rule && rule.id === ruleId) || null;
+      }
+      if (!original && ruleIndex !== null && ruleIndex !== undefined) {
+        const parsedIndex = typeof ruleIndex === 'number'
+          ? ruleIndex
+          : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          original = rules[parsedIndex] || null;
+        }
+      }
       if (!original) return;
     
       const langTexts = texts[currentLang] || texts.en || {};
@@ -5444,9 +5489,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       openAutoGearEditor(null, { initialDraft: duplicateRule, highlightLabel: true });
     }
     
-    function deleteAutoGearRule(ruleId) {
+    function deleteAutoGearRule(ruleId, ruleIndex) {
       const rules = getAutoGearRules();
-      const index = rules.findIndex(rule => rule.id === ruleId);
+      let index = -1;
+      if (ruleId) {
+        index = rules.findIndex(rule => rule && rule.id === ruleId);
+      }
+      if (index < 0 && ruleIndex !== null && ruleIndex !== undefined) {
+        const parsedIndex = typeof ruleIndex === 'number'
+          ? ruleIndex
+          : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          index = parsedIndex;
+        }
+      }
       if (index < 0) return;
       const confirmation = texts[currentLang]?.autoGearDeleteConfirm
         || texts.en?.autoGearDeleteConfirm

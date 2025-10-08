@@ -3564,10 +3564,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       visibleRules.forEach(function (rule) {
+        var index = ruleIndexByObject.get(rule);
         var _texts$currentLang44, _texts$en119, _texts$currentLang45, _texts$en120, _texts$currentLang46, _texts$en121;
         var wrapper = document.createElement('div');
         wrapper.className = 'auto-gear-rule';
         wrapper.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          wrapper.dataset.ruleIndex = String(index);
+        } else {
+          delete wrapper.dataset.ruleIndex;
+        }
         var info = document.createElement('div');
         info.className = 'auto-gear-rule-info';
         var title = document.createElement('p');
@@ -3789,6 +3795,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         editBtn.type = 'button';
         editBtn.className = 'auto-gear-edit';
         editBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          editBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete editBtn.dataset.ruleIndex;
+        }
         var editLabel = ((_texts$currentLang44 = texts[currentLang]) === null || _texts$currentLang44 === void 0 ? void 0 : _texts$currentLang44.editBtn) || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.editBtn) || 'Edit';
         editBtn.textContent = editLabel;
         editBtn.setAttribute('data-help', editLabel);
@@ -3797,6 +3808,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         duplicateBtn.type = 'button';
         duplicateBtn.className = 'auto-gear-duplicate';
         duplicateBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          duplicateBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete duplicateBtn.dataset.ruleIndex;
+        }
         var duplicateLabel = ((_texts$currentLang45 = texts[currentLang]) === null || _texts$currentLang45 === void 0 ? void 0 : _texts$currentLang45.autoGearDuplicateRule) || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearDuplicateRule) || 'Duplicate';
         duplicateBtn.textContent = duplicateLabel;
         duplicateBtn.setAttribute('data-help', duplicateLabel);
@@ -3805,6 +3821,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         deleteBtn.type = 'button';
         deleteBtn.className = 'auto-gear-delete';
         deleteBtn.dataset.ruleId = rule.id;
+        if (typeof index === 'number' && index >= 0) {
+          deleteBtn.dataset.ruleIndex = String(index);
+        } else {
+          delete deleteBtn.dataset.ruleIndex;
+        }
         var deleteLabel = ((_texts$currentLang46 = texts[currentLang]) === null || _texts$currentLang46 === void 0 ? void 0 : _texts$currentLang46.autoGearDeleteRule) || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearDeleteRule) || 'Delete';
         deleteBtn.textContent = deleteLabel;
         deleteBtn.setAttribute('data-help', deleteLabel);
@@ -4380,11 +4401,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!autoGearEditor) return;
       var initialDraft = options.initialDraft,
         _options$highlightLab = options.highlightLabel,
-        highlightLabel = _options$highlightLab === void 0 ? false : _options$highlightLab;
+        highlightLabel = _options$highlightLab === void 0 ? false : _options$highlightLab,
+        ruleIndex = options.ruleIndex;
       var rules = getAutoGearRules();
-      var source = initialDraft ? initialDraft : ruleId ? rules.find(function (rule) {
-        return rule.id === ruleId;
-      }) : null;
+      var source = null;
+      if (initialDraft) {
+        source = initialDraft;
+      } else if (ruleId) {
+        source = rules.find(function (rule) {
+          return rule && rule.id === ruleId;
+        }) || null;
+      }
+      if (!source && ruleIndex !== null && ruleIndex !== undefined) {
+        var parsedIndex = typeof ruleIndex === 'number' ? ruleIndex : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          source = rules[parsedIndex] || null;
+        }
+      }
       autoGearEditorDraft = createAutoGearDraft(source);
       autoGearEditorActiveItem = null;
       autoGearEditor.hidden = false;
@@ -4768,13 +4801,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       showNotification('success', successMessage);
       closeAutoGearEditor();
     }
-    function duplicateAutoGearRule(ruleId) {
+    function duplicateAutoGearRule(ruleId, ruleIndex) {
       var _texts$en142;
-      if (!ruleId) return;
       var rules = getAutoGearRules();
-      var original = rules.find(function (rule) {
-        return rule && rule.id === ruleId;
-      });
+      var original = null;
+      if (ruleId) {
+        original = rules.find(function (rule) {
+          return rule && rule.id === ruleId;
+        }) || null;
+      }
+      if (!original && ruleIndex !== null && ruleIndex !== undefined) {
+        var parsedIndex = typeof ruleIndex === 'number' ? ruleIndex : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          original = rules[parsedIndex] || null;
+        }
+      }
       if (!original) return;
       var langTexts = texts[currentLang] || texts.en || {};
       var suffixBase = typeof langTexts.autoGearDuplicateSuffix === 'string' ? langTexts.autoGearDuplicateSuffix.trim() : '';
@@ -4831,12 +4872,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         highlightLabel: true
       });
     }
-    function deleteAutoGearRule(ruleId) {
+    function deleteAutoGearRule(ruleId, ruleIndex) {
       var _texts$currentLang57, _texts$en143;
       var rules = getAutoGearRules();
-      var index = rules.findIndex(function (rule) {
-        return rule.id === ruleId;
-      });
+      var index = -1;
+      if (ruleId) {
+        index = rules.findIndex(function (rule) {
+          return rule && rule.id === ruleId;
+        });
+      }
+      if (index < 0 && ruleIndex !== null && ruleIndex !== undefined) {
+        var parsedIndex = typeof ruleIndex === 'number' ? ruleIndex : Number.parseInt(ruleIndex, 10);
+        if (Number.isInteger(parsedIndex) && parsedIndex >= 0 && parsedIndex < rules.length) {
+          index = parsedIndex;
+        }
+      }
       if (index < 0) return;
       var confirmation = ((_texts$currentLang57 = texts[currentLang]) === null || _texts$currentLang57 === void 0 ? void 0 : _texts$currentLang57.autoGearDeleteConfirm) || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearDeleteConfirm) || 'Delete this rule?';
       if (!window.confirm(confirmation)) return;
