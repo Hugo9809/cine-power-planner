@@ -107,6 +107,19 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   page-break-after: avoid;
 }
 
+#overviewDialogContent .gear-table .gear-item {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  width: 100%;
+  white-space: normal;
+}
+
+#overviewDialogContent .gear-table .gear-item .gear-rental-toggle {
+  margin-left: auto;
+}
+
 .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
 .gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
 .gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td {
