@@ -8621,6 +8621,40 @@ function maybeCreateProjectDeletionBackup(projects, key) {
   return { status: 'created', backupName };
 }
 
+function createProjectDeletionBackup(name) {
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
+  if (!projects || typeof projects !== 'object') {
+    return { status: 'invalid' };
+  }
+
+  const resolvedKey = resolveProjectKey(projects, lookup, name, { preferExact: true });
+  const normalizedName = normalizeProjectStorageKey(name);
+  const key =
+    resolvedKey !== null && resolvedKey !== undefined
+      ? resolvedKey
+      : normalizedName;
+
+  if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return { status: 'missing' };
+  }
+
+  const backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
+  if (backupOutcome.status !== 'created') {
+    return backupOutcome;
+  }
+
+  if (changed) {
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
+  }
+
+  markProjectActivity(backupOutcome.backupName);
+  persistAllProjects(projects);
+  return backupOutcome;
+}
+
 function generateOverwriteBackupMetadata(projectName, projects) {
   const timestamp = formatAutoBackupTimestamp(new Date());
   const sanitizedName = sanitizeProjectNameForBackup(projectName);
@@ -10994,6 +11028,7 @@ var STORAGE_API = {
   loadProject,
   saveProject,
   deleteProject,
+  createProjectDeletionBackup,
   loadSessionState,
   saveSessionState,
   loadFavorites,
