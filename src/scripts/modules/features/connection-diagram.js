@@ -710,6 +710,30 @@
       if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
       if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
 
+      if (pos.distance && !manualPositions.distance) {
+        const references = [];
+        const distanceIndex = chain.indexOf('distance');
+        if (distanceIndex !== -1) {
+          const prevId = distanceIndex > 0 ? chain[distanceIndex - 1] : null;
+          const nextId = distanceIndex < chain.length - 1 ? chain[distanceIndex + 1] : null;
+          if (prevId && pos[prevId]) references.push(pos[prevId]);
+          if (nextId && pos[nextId]) references.push(pos[nextId]);
+        }
+
+        if (references.length < 2) {
+          const fallbackIds = chain.filter(id => id !== 'distance').slice(0, 2);
+          fallbackIds.forEach(id => {
+            if (pos[id] && !references.includes(pos[id])) references.push(pos[id]);
+          });
+        }
+
+        if (references.length >= 2) {
+          pos.distance.x = (references[0].x + references[1].x) / 2;
+        } else if (references.length === 1) {
+          pos.distance.x = references[0].x;
+        }
+      }
+
       if (cam && chain.length) {
         let first = chain[0];
         if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
