@@ -7604,8 +7604,17 @@ function clearActiveProjectCompressionHold(name) {
   return true;
 }
 
-function shouldDisableProjectCompressionDuringPersist() {
-  return ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED;
+function shouldDisableProjectCompressionDuringPersist(activeProjectKey) {
+  if (!ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+    return false;
+  }
+
+  if (activeProjectKey === null || activeProjectKey === undefined) {
+    return false;
+  }
+
+  const normalized = normalizeProjectStorageKey(activeProjectKey);
+  return normalized === ACTIVE_PROJECT_COMPRESSION_HOLD_KEY;
 }
 
 function resolveProjectKey(projects, lookup, name, options = {}) {
@@ -7889,7 +7898,8 @@ function readAllProjectsFromStorage(options = {}) {
   return finalize();
 }
 
-function persistAllProjects(projects) {
+function persistAllProjects(projects, options = {}) {
+  const { activeProjectKey, releaseCompressionHold = false } = options || {};
   const safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
   const serializedProjects = serializeAutoBackupEntries(projects, {
@@ -7897,26 +7907,33 @@ function persistAllProjects(projects) {
   });
   invalidateProjectReadCache();
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
-  saveJSONToStorage(
-    safeStorage,
-    PROJECT_STORAGE_KEY,
-    serializedProjects,
-    "Error saving project to localStorage:",
-    {
-      forceCompressionOnQuota: true,
-      disableCompression: shouldDisableProjectCompressionDuringPersist(),
-      onQuotaExceeded: () => {
-        const removedKey = removeOldestAutoBackupEntry(serializedProjects);
-        if (!removedKey) {
-          return false;
-        }
-        console.warn(
-          `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
-        );
-        return true;
+  const disableCompression = shouldDisableProjectCompressionDuringPersist(activeProjectKey);
+  try {
+    saveJSONToStorage(
+      safeStorage,
+      PROJECT_STORAGE_KEY,
+      serializedProjects,
+      "Error saving project to localStorage:",
+      {
+        forceCompressionOnQuota: true,
+        disableCompression,
+        onQuotaExceeded: () => {
+          const removedKey = removeOldestAutoBackupEntry(serializedProjects);
+          if (!removedKey) {
+            return false;
+          }
+          console.warn(
+            `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
+          );
+          return true;
+        },
       },
-    },
-  );
+    );
+  } finally {
+    if (releaseCompressionHold && activeProjectKey !== undefined) {
+      clearActiveProjectCompressionHold(activeProjectKey);
+    }
+  }
 }
 
 function loadProject(name) {
@@ -8151,7 +8168,10 @@ function saveProject(name, project) {
   }
 
   projects[storageKey || ''] = normalized;
-  persistAllProjects(projects);
+  persistAllProjects(projects, {
+    activeProjectKey: storageKey,
+    releaseCompressionHold: true,
+  });
 }
 
 function deleteProject(name) {
