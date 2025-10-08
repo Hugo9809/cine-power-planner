@@ -14,7 +14,7 @@
     "build:legacy": "node tools/buildLegacy.js",
     "test": "npm run lint && npm run check-consistency && npm run test:jest",
     "test:jest": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand",
-    "test:unit": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects unit",
+    "test:unit": "node tools/runUnitTests.js",
     "test:data": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects data",
     "test:dom": "node --max-old-space-size=1536 tools/runDomTests.js",
     "test:script": "RUN_HEAVY_TESTS=true node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand --selectProjects script"
