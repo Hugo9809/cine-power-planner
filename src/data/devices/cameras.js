@@ -450,6 +450,169 @@ const cameraData = {
       "2048x1152"
     ]
   },
+  "Arri Alexa 35 Xtreme": {
+    "powerDrawWatts": 121.5,
+    "power": {
+      "input": {
+        "voltageRange": "20.5-33.6",
+        "type": "Bat LEMO 8-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "B-Mount",
+          "mount": "native",
+          "notes": ""
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "notes": "Regulated accessory power with start/stop and shutter pulse"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "notes": "Regulated accessory power output"
+        },
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "voltage": "24V",
+          "notes": "Daisy-chainable lens and accessory power"
+        },
+        {
+          "type": "LEMO 6-pin (Audio)",
+          "voltage": "12V",
+          "notes": "Balanced stereo line input with 12V accessory power"
+        },
+        {
+          "type": "LEMO 10-pin (ETH)",
+          "voltage": "24V",
+          "notes": "Ethernet remote/control connector with regulated accessory power"
+        },
+        {
+          "type": "Rear Interface",
+          "notes": "Accessory modules like PDM-1 add 4×24V, 2×12V and D-Tap; LPS-1 adds extra 24V/12V feeds"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "12G-SDI",
+        "notes": "Two independent 12G SDI outputs supporting 1.5G/3G/6G/12G HD and UHD (4:2:2 and 4:4:4)"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "type": "LBUS (LEMO 4-pin)",
+        "notes": "Lens motors and accessories"
+      },
+      {
+        "type": "SERIAL (LEMO 4-pin)",
+        "notes": "Distance measuring accessories"
+      },
+      {
+        "type": "ETH (LEMO 10-pin)",
+        "notes": "Camera Access Protocol, remote control and accessory power"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "Codex Compact Drive 1TB",
+        "notes": "CA08-1024"
+      },
+      {
+        "type": "Codex Compact Drive 2TB",
+        "notes": "CB16-2048"
+      },
+      {
+        "type": "Codex Compact Drive Express 1TB",
+        "notes": "CP08-1024"
+      }
+    ],
+    "viewfinder": [
+      {
+        "type": "ARRI MVF-2 (Native)",
+        "resolution": "1920x1080",
+        "notes": "OLED eyepiece with 4\" flip-out LCD"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "LPL (LBUS)",
+        "mount": "native",
+        "notes": "Includes PL-to-LPL adapter"
+      },
+      {
+        "type": "PL (LBUS)",
+        "mount": "adapted",
+        "notes": "Supports ARRI LDS and Cooke /i lens data"
+      },
+      {
+        "type": "PL (Hirose)",
+        "mount": "adapted",
+        "notes": "Alternate PL mount with Hirose lens interface"
+      },
+      {
+        "type": "EF (LBUS)",
+        "mount": "adapted",
+        "notes": "Supports Canon EF electronic communication"
+      },
+      {
+        "type": "Leitz M Mount for ARRI",
+        "mount": "adapted",
+        "notes": "Mechanical mount for rangefinder glass"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "LTC timecode In/Out"
+      },
+      {
+        "type": "SYNC IN (BNC)",
+        "notes": "Genlock synchronization"
+      },
+      {
+        "type": "RET IN (BNC)",
+        "notes": "Switchable on SDI 2 for return feed"
+      }
+    ],
+    "weight_g": 3000,
+    "recordingCodecs": [
+      "ARRIRAW MXF",
+      "ARRICORE MXF",
+      "Apple ProRes 4444 XQ",
+      "Apple ProRes 4444",
+      "Apple ProRes 422 HQ",
+      "Apple ProRes 422",
+      "Apple ProRes 422 LT"
+    ],
+    "sensorModes": [
+      "4.6K 3:2 Open Gate",
+      "4.6K 16:9",
+      "4K 16:9",
+      "4K 2:1",
+      "3.8K 16:9",
+      "3.3K 6:5",
+      "3K 1:1",
+      "2.7K 8:9",
+      "2K 16:9 S16"
+    ],
+    "resolutions": [
+      "4608x3164",
+      "4608x2592",
+      "4096x2304",
+      "4096x2048",
+      "3840x2160",
+      "3840x1608",
+      "3328x2790",
+      "3072x3072",
+      "2743x3086",
+      "2048x1152",
+      "1920x1080"
+    ]
+  },
   "Arri Amira": {
     "powerDrawWatts": 50,
     "power": {
