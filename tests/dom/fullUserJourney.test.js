@@ -230,6 +230,13 @@ describe('full user journey regression', () => {
     const projectsAfterAutoBackup = storageApi.loadProject();
     expect(projectsAfterAutoBackup[autoBackupName]).toBeDefined();
 
+    const autoBackupProject = projectsAfterAutoBackup[autoBackupName];
+    expect(autoBackupProject.gearList).toBeDefined();
+    expect(autoBackupProject.gearList).toContain(cameraLabel);
+    expect(autoBackupProject.gearListAndProjectRequirementsGenerated).toBe(true);
+    expect(autoBackupProject.projectInfo).toBeTruthy();
+    expect(autoBackupProject.projectInfo.productionCompany).toBe('Alpha Films');
+
     const backupFileName = utils.createSettingsBackup(false, new Date('2024-05-01T12:34:56Z'));
     expect(typeof backupFileName).toBe('string');
     expect(backupFileName).toContain('full app backup.json');
