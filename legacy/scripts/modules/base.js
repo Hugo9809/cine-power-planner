@@ -124,7 +124,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
-
     if (PRIMARY_SCOPE && _typeof(PRIMARY_SCOPE) === 'object') {
       try {
         if (value === PRIMARY_SCOPE.ethereum) {
@@ -135,7 +134,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return true;
       }
     }
-
     try {
       if (value.isMetaMask === true) {
         return true;
@@ -145,13 +143,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return true;
       }
     }
-
     try {
       if (typeof value.request === 'function' && typeof value.on === 'function') {
         if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
           return true;
         }
-
         var ctorName = value.constructor && value.constructor.name;
         if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
           return true;
@@ -161,10 +157,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void accessError;
       return true;
     }
-
     return false;
   }
-
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
