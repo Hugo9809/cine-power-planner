@@ -2303,6 +2303,55 @@ describe('export/import all data', () => {
     }));
   });
 
+  test('importAllData converts legacy filter arrays into serialized filter selections', () => {
+    clearAllData();
+    importAllData({
+      project: {
+        'Filter Project': {
+          gearList: '<ul></ul>',
+          projectInfo: {
+            filters: [
+              { type: 'IRND', size: '6x6', values: ['0.3 ', '0.9'] },
+              { type: 'Pol', size: '95mm' },
+              { type: 'Diopter', size: '4x5.65', values: [] },
+            ],
+          },
+        },
+      },
+    });
+
+    const project = loadProject('Filter Project');
+    expect(project.projectInfo).toMatchObject({
+      filter: 'IRND:6x6:0.3|0.9,Pol:95mm,Diopter:4x5.65:!',
+    });
+    expect(project.projectInfo.filters).toBeUndefined();
+  });
+
+  test('importAllData normalizes map-based filter payloads with mixed formats', () => {
+    clearAllData();
+    importAllData({
+      project: {
+        'Mapped Filters': {
+          gearList: '',
+          projectInfo: {
+            filters: {
+              IRND: { size: '4x5.65', strengths: ['0.3', '0.6', '0.9'] },
+              Clear: 'Clear:4x5.65',
+              'Rota-Pol': { size: '6x6' },
+              Custom: ['Custom', '95mm', ['1/4', '1/2', '1/8']],
+            },
+          },
+        },
+      },
+    });
+
+    const project = loadProject('Mapped Filters');
+    expect(project.projectInfo.filter).toBe(
+      'IRND:4x5.65:0.3|0.6|0.9,Clear:4x5.65,Rota-Pol:6x6,Custom:95mm:1/4|1/2|1/8',
+    );
+    expect(project.projectInfo.filters).toBeUndefined();
+  });
+
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);
