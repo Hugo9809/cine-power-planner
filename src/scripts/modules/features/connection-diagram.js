@@ -766,6 +766,10 @@
       const viewHeight = Math.max(Math.ceil(baseViewHeight), Math.ceil(maxBoundY - viewBoxY));
 
       function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
+        const labelLineCount = Math.max(0, opts.labelLineCount || 0);
+        const multilineOffset = labelLineCount > 1
+          ? (labelLineCount - 1) * DIAGRAM_LABEL_LINE_HEIGHT
+          : 0;
         const from = connectorPos(fromId, opts.fromSide);
         const to = connectorPos(toId, opts.toSide);
         let path; let lx; let ly; let angle = 0;
@@ -774,7 +778,7 @@
           const bottomY = maxY + NODE_H;
           path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
           lx = (from.x + to.x) / 2;
-          ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing;
+          ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing - multilineOffset;
         } else {
           path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
           const dx = to.x - from.x;
@@ -784,7 +788,7 @@
           const midY = (from.y + to.y) / 2;
           const len = Math.hypot(dx, dy) || 1;
           const baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
-          const off = baseGap + labelSpacing;
+          const off = baseGap + labelSpacing + multilineOffset;
           const perpX = (dy / len) * off;
           const perpY = (-dx / len) * off;
           lx = midX + perpX;
@@ -885,19 +889,24 @@
       });
 
       edges.forEach(edge => {
-        const { path, labelX, labelY, angle } = computePath(edge.from, edge.to, edge.labelSpacing, edge);
+        const lines = edge.label ? wrapLabel(edge.label, EDGE_LABEL_WRAP) : [];
+        const { path, labelX, labelY, angle } = computePath(edge.from, edge.to, edge.labelSpacing, {
+          ...edge,
+          labelLineCount: lines.length,
+        });
         svg += `<path class="edge-path ${edge.type}" d="${path}" />`;
-        if (edge.label) {
-          const lines = wrapLabel(edge.label, EDGE_LABEL_WRAP);
-          if (lines.length) {
-            const transform = Math.abs(angle) > 90 ? `rotate(${angle + 180} ${labelX} ${labelY})` : `rotate(${angle} ${labelX} ${labelY})`;
-            svg += `<text class="edge-label" x="${formatSvgCoordinate(labelX)}" y="${formatSvgCoordinate(labelY)}" transform="${transform}">`;
-            lines.forEach((line, idx) => {
-              const dyAttr = idx === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
-              svg += `<tspan x="${formatSvgCoordinate(labelX)}"${dyAttr}>${line}</tspan>`;
-            });
-            svg += '</text>';
-          }
+        if (lines.length) {
+          const transform = Math.abs(angle) > 90
+            ? `rotate(${angle + 180} ${labelX} ${labelY})`
+            : `rotate(${angle} ${labelX} ${labelY})`;
+          const labelXCoord = formatSvgCoordinate(labelX);
+          const labelYCoord = formatSvgCoordinate(labelY);
+          svg += `<text class="edge-label" x="${labelXCoord}" y="${labelYCoord}" transform="${transform}" text-anchor="middle">`;
+          lines.forEach((line, idx) => {
+            const dyAttr = idx === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
+            svg += `<tspan x="${labelXCoord}"${dyAttr}>${line}</tspan>`;
+          });
+          svg += '</text>';
         }
       });
 
