@@ -1116,7 +1116,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         value: current
       };
     };
-    var verifyDelays = [120, 360];
+    var verifyDelays = [90, 240, 480];
     verifyDelays.forEach(function (delay, index) {
       var isFinalCheck = index === verifyDelays.length - 1;
       var runCheck = function runCheck() {
@@ -1197,15 +1197,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
     var fallbackHref = nextHref || baseHref || originalHref || '';
     var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-    var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
+    var fallbackToken =
+      typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
+    var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(fallbackToken) : '';
     var steps = [];
-    var nextDelay = 350;
+    var nextDelay = 120;
+    var delayIncrement = 120;
     var queueStep = function queueStep(run) {
       steps.push({
         delay: nextDelay,
         run: run
       });
-      nextDelay += 300;
+      nextDelay += delayIncrement;
     };
     if (fallbackHref) {
       if (typeof locationLike.assign === 'function') {
@@ -1244,7 +1247,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
     if (hasReload) {
-      var reloadDelay = steps.length ? nextDelay : 350;
+      var reloadDelay = steps.length ? Math.max(nextDelay, 280) : 280;
       steps.push({
         delay: reloadDelay,
         run: function run() {
@@ -1280,6 +1283,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
     var nextHref = forceReloadUrl.nextHref;
     var originalHref = forceReloadUrl.originalHref;
+    var timestamp = forceReloadUrl.timestamp;
     var baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
     if (hasReplace && nextHref) {
       navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
@@ -1310,7 +1314,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         originalHref: originalHref,
         baseHref: baseHref,
         nextHref: nextHref,
-        hasReload: hasReload
+        hasReload: hasReload,
+        timestamp: timestamp
       });
     }
     return navigationTriggered;

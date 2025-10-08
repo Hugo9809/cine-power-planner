@@ -10043,7 +10043,7 @@ function scheduleForceReloadNavigationWarning(
     return { matched: false, value: current };
   };
 
-  const verifyDelays = [120, 360];
+  const verifyDelays = [90, 240, 480];
 
   verifyDelays.forEach((delay, index) => {
     const isFinalCheck = index === verifyDelays.length - 1;
@@ -10141,18 +10141,23 @@ function scheduleForceReloadFallbacks(win, locationLike, options = {}) {
 
   const fallbackHref = nextHref || baseHref || originalHref || '';
   const hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  const hashFallback = hashBase ? `${hashBase}#forceReload-${Date.now().toString(36)}` : '';
+  const fallbackToken =
+    typeof options.timestamp === 'string' && options.timestamp
+      ? options.timestamp
+      : Date.now().toString(36);
+  const hashFallback = hashBase ? `${hashBase}#forceReload-${fallbackToken}` : '';
 
   const steps = [];
 
-  let nextDelay = 350;
+  let nextDelay = 120;
+  const delayIncrement = 120;
 
   const queueStep = run => {
     steps.push({
       delay: nextDelay,
       run,
     });
-    nextDelay += 300;
+    nextDelay += delayIncrement;
   };
 
   if (fallbackHref) {
@@ -10196,7 +10201,7 @@ function scheduleForceReloadFallbacks(win, locationLike, options = {}) {
   }
 
   if (hasReload) {
-    const reloadDelay = steps.length ? nextDelay : 350;
+    const reloadDelay = steps.length ? Math.max(nextDelay, 280) : 280;
     steps.push({
       delay: reloadDelay,
       run() {
@@ -10232,8 +10237,7 @@ function prepareForceReloadContext(win) {
   const hasAssign = typeof location.assign === 'function';
   const hasReload = typeof location.reload === 'function';
   const forceReloadUrl = buildForceReloadHref(location, 'forceReload');
-  const originalHref = forceReloadUrl.originalHref;
-  const nextHref = forceReloadUrl.nextHref;
+  const { originalHref, nextHref, timestamp } = forceReloadUrl;
   const baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
 
   return {
@@ -10244,6 +10248,7 @@ function prepareForceReloadContext(win) {
     hasReload,
     originalHref,
     nextHref,
+    timestamp,
     baseHref,
   };
 }
@@ -10261,6 +10266,7 @@ function executeForceReloadContext(context) {
     hasReload,
     originalHref,
     nextHref,
+    timestamp,
     baseHref,
   } = context;
 
@@ -10315,6 +10321,7 @@ function executeForceReloadContext(context) {
       baseHref,
       nextHref,
       hasReload,
+      timestamp,
     });
   }
 
