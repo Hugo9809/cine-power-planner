@@ -575,6 +575,11 @@ body:not(.light-mode) .gear-table .category-row {
   gap: 0.4em;
   flex-wrap: nowrap;
   white-space: nowrap;
+  width: 100%;
+}
+
+#overviewDialogContent .gear-table .gear-item .gear-rental-toggle {
+  margin-left: auto;
 }
 
 #overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"],
