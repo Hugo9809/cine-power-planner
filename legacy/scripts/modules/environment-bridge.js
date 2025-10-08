@@ -167,11 +167,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       keys = [];
     }
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      if (key === 'web3' && value === PRIMARY_SCOPE) {
-        continue;
-      }
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        var descriptor;
+        try {
+          descriptor = Object.getOwnPropertyDescriptor(value, key);
+        } catch (descriptorError) {
+          void descriptorError;
+          descriptor = null;
+        }
+        if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
+          continue;
+        }
+        if (key === 'web3' && value === PRIMARY_SCOPE) {
+          continue;
+        }
       var child;
       try {
         child = value[key];
@@ -180,6 +190,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         child = undefined;
       }
       if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        continue;
+      }
+      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
         continue;
       }
       fallbackFreezeDeep(child, localSeen);
@@ -510,11 +523,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function freezeDeep(value, seen) {
     var environment = getEnvironment();
-    if (environment && typeof environment.freezeDeep === 'function') {
-      return safeInvoke(function () {
-        return environment.freezeDeep(value, seen);
-      }, value);
-    }
     return fallbackFreezeDeep(value, seen);
   }
   function safeWarn(message, detail) {

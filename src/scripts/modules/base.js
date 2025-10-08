@@ -137,6 +137,51 @@
     return null;
   })();
 
+  function isEthereumProviderCandidate(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    if (PRIMARY_SCOPE && typeof PRIMARY_SCOPE === 'object') {
+      try {
+        if (value === PRIMARY_SCOPE.ethereum) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+        return true;
+      }
+    }
+
+    try {
+      if (value.isMetaMask === true) {
+        return true;
+      }
+    } catch (inspectionError) {
+      if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+        return true;
+      }
+    }
+
+    try {
+      if (typeof value.request === 'function' && typeof value.on === 'function') {
+        if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+          return true;
+        }
+
+        const ctorName = value.constructor && value.constructor.name;
+        if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+          return true;
+        }
+      }
+    } catch (accessError) {
+      void accessError;
+      return true;
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
@@ -184,7 +229,7 @@
       return value;
     }
 
-    if (shouldBypassDeepFreeze(value)) {
+    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
       return value;
     }
 
@@ -203,6 +248,22 @@
     }
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
+
+      let descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+
+      if (
+        descriptor &&
+        (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')
+      ) {
+        continue;
+      }
+
       let child;
       try {
         child = value[key];
@@ -213,6 +274,11 @@
       if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
+
+      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
+        continue;
+      }
+
       fallbackFreezeDeep(child, seen);
     }
 
@@ -524,6 +590,14 @@
   }
 
   function baseFreezeDeep(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return value;
+    }
+
+    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
+      return value;
+    }
+
     if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.freezeDeep === 'function') {
       try {
         return ACTIVE_KERNEL.freezeDeep(value);
