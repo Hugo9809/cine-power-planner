@@ -12711,19 +12711,49 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return Array.from(media).sort(localeSort);
     }
     var recordingMediaOptions = getAllRecordingMedia();
+
+    function resolveRecordingMediaPlaceholder() {
+      var _texts$en, _texts$currentLang;
+      var fallbackProjectForm = ((_texts$en = texts === null || texts === void 0 ? void 0 : texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.projectForm) || {};
+      var projectFormTexts = ((_texts$currentLang = texts === null || texts === void 0 ? void 0 : texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.projectForm) || fallbackProjectForm;
+      var placeholder = projectFormTexts.storageTypePlaceholder || fallbackProjectForm.storageTypePlaceholder || 'Select media type';
+      var text = typeof placeholder === 'string' ? placeholder.trim() : '';
+      return text || 'Select media type';
+    }
+
+    function appendRecordingMediaPlaceholder(select) {
+      if (!select) return;
+      var option = document.createElement('option');
+      option.value = '';
+      option.textContent = resolveRecordingMediaPlaceholder();
+      option.dataset.placeholder = 'true';
+      select.appendChild(option);
+    }
+
     function updateRecordingMediaOptions() {
       recordingMediaOptions = getAllRecordingMedia();
       document.querySelectorAll('.recording-media-select').forEach(function (sel) {
         var cur = sel.value;
         sel.innerHTML = '';
-        addEmptyOption(sel);
+        appendRecordingMediaPlaceholder(sel);
         recordingMediaOptions.forEach(function (optVal) {
           var opt = document.createElement('option');
           opt.value = optVal;
           opt.textContent = optVal;
           sel.appendChild(opt);
         });
-        if (recordingMediaOptions.includes(cur)) sel.value = cur;
+        if (recordingMediaOptions.includes(cur)) {
+          sel.value = cur;
+        } else if (cur && cur !== 'None') {
+          var opt = document.createElement('option');
+          opt.value = cur;
+          opt.textContent = cur;
+          opt.dataset.extraOption = 'true';
+          sel.appendChild(opt);
+          sel.value = cur;
+        } else {
+          sel.value = '';
+        }
       });
     }
     function createRecordingMediaRow() {
@@ -12734,7 +12764,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var select = document.createElement('select');
       select.className = 'recording-media-select';
       select.name = 'recordingMediaType';
-      addEmptyOption(select);
+      appendRecordingMediaPlaceholder(select);
       recordingMediaOptions.forEach(function (optVal) {
         var opt = document.createElement('option');
         opt.value = optVal;
@@ -12749,6 +12779,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           select.appendChild(opt);
         }
         select.value = type;
+      } else {
+        select.value = '';
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var notesInput = document.createElement('input');

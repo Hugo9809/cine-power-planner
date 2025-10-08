@@ -13941,23 +13941,53 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     let recordingMediaOptions = getAllRecordingMedia();
-    
+
+    function resolveRecordingMediaPlaceholder() {
+      const fallbackProjectForm = (texts?.en && texts.en.projectForm) || {};
+      const projectFormTexts = (texts?.[currentLang] && texts[currentLang].projectForm) || fallbackProjectForm;
+      const placeholder = projectFormTexts.storageTypePlaceholder
+        || fallbackProjectForm.storageTypePlaceholder
+        || 'Select media type';
+      const text = typeof placeholder === 'string' ? placeholder.trim() : '';
+      return text || 'Select media type';
+    }
+
+    function appendRecordingMediaPlaceholder(select) {
+      if (!select) return;
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = resolveRecordingMediaPlaceholder();
+      option.dataset.placeholder = 'true';
+      select.appendChild(option);
+    }
+
     function updateRecordingMediaOptions() {
       recordingMediaOptions = getAllRecordingMedia();
       document.querySelectorAll('.recording-media-select').forEach(sel => {
         const cur = sel.value;
         sel.innerHTML = '';
-        addEmptyOption(sel);
+        appendRecordingMediaPlaceholder(sel);
         recordingMediaOptions.forEach(optVal => {
           const opt = document.createElement('option');
           opt.value = optVal;
           opt.textContent = optVal;
           sel.appendChild(opt);
         });
-        if (recordingMediaOptions.includes(cur)) sel.value = cur;
+        if (recordingMediaOptions.includes(cur)) {
+          sel.value = cur;
+        } else if (cur && cur !== 'None') {
+          const opt = document.createElement('option');
+          opt.value = cur;
+          opt.textContent = cur;
+          opt.dataset.extraOption = 'true';
+          sel.appendChild(opt);
+          sel.value = cur;
+        } else {
+          sel.value = '';
+        }
       });
     }
-    
+
     // Build a row allowing the user to specify recording media details.
     function createRecordingMediaRow(type = '', notes = '') {
       const row = document.createElement('div');
@@ -13966,7 +13996,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const select = document.createElement('select');
       select.className = 'recording-media-select';
       select.name = 'recordingMediaType';
-      addEmptyOption(select);
+      appendRecordingMediaPlaceholder(select);
       recordingMediaOptions.forEach(optVal => {
         const opt = document.createElement('option');
         opt.value = optVal;
@@ -13981,6 +14011,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           select.appendChild(opt);
         }
         select.value = type;
+      } else {
+        select.value = '';
       }
       row.appendChild(createFieldWithLabel(select, 'Type'));
     
