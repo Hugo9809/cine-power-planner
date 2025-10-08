@@ -113,6 +113,30 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 - Screenshot or export updates (as required) – regenerate any documentation images or
   printable PDFs referenced in manuals so crews see the latest UI states while offline.
 
+## 5. Assemble the documentation verification packet
+
+Follow the [Documentation Verification Packet guide](documentation-verification-packet.md) to
+bundle everything reviewers need when they audit the release offline. The packet keeps the
+written guidance, supporting exports and verification artefacts together so crews can trust the
+instructions even years later when internet access is unavailable.
+
+1. **Collect updated manuals.** Export or print the primary README, localized READMEs,
+   printable runbooks and legal pages that changed. Confirm each PDF references the same
+   version string surfaced through `cinePersistence` and `cineOffline` so operators know which
+   build the instructions cover.【F:src/scripts/modules/persistence.js†L1-L125】【F:src/scripts/modules/offline.js†L1-L188】
+2. **Attach verification evidence.** Include the latest planner backup, project bundle and
+   automatic gear rules export used during rehearsal. These files prove that save, share,
+   import, backup and restore remained stable when the documentation was signed off. Pair them
+   with the console capture from `window.__cineRuntimeIntegrity` to document the runtime guard
+   status at release time.【F:src/scripts/script.js†L92-L183】
+3. **Record the checklist outcome.** Add the completed [Documentation Update
+   Checklist](documentation-update-checklist.md) with boxes ticked and initials or signatures.
+   Attach the verification log entry that lists the workstation, browser build and timestamp so
+   auditors can trace the rehearsal lineage.
+4. **Store redundantly.** Zip the packet and copy it to at least two offline drives that travel
+   separately with the release media. Note the storage locations in `docs/verification-log`
+   entries or your change log so teams know where to find the canonical documentation bundle.
+
 Maintaining this cadence guarantees the planner’s guidance, translations and offline-first
 workflows stay in sync, keeping user data safe even in the most isolated production
 environments.

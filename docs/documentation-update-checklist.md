@@ -33,5 +33,6 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Update the verification log (using `docs/verification-log-template.md`) with the version, browser, workstation and command outputs collected during testing.
 - [ ] Store the verified planner backup, project bundle, automatic gear rules export and a ZIP of the repository alongside the updated documentation so crews can prove parity later.
 - [ ] Attach rendered PDFs or screenshots of modified help pages if the change affected visual layout or iconography.
+- [ ] Assemble the release documentation packet following `docs/documentation-verification-packet.md` and record where redundant offline copies live.
 
 Running this checklist alongside the full maintenance guide keeps documentation, translations and offline workflows in sync with the product while protecting user data across every save, share, import, backup and restore path.
