@@ -3086,12 +3086,25 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     if (!span || !normalizedItem) return;
     const name = normalizedItem.name ? normalizedItem.name.trim() : '';
     if (!name) return;
+    const rentalTexts = getGearListRentalToggleTexts();
+    const rentalNote = rentalTexts && typeof rentalTexts.noteLabel === 'string'
+        ? rentalTexts.noteLabel.trim()
+        : '';
+    const wasRentalExcluded = (
+        (span.classList && span.classList.contains('gear-item-rental-excluded'))
+        || span.getAttribute?.('data-rental-excluded') === 'true'
+    );
     while (span.firstChild) {
         span.removeChild(span.firstChild);
     }
     span.classList.add('gear-item');
     span.classList.add('auto-gear-item');
     span.setAttribute('data-gear-name', name);
+    if (rentalNote) {
+        span.setAttribute('data-rental-note', rentalNote);
+    } else if (span.removeAttribute) {
+        span.removeAttribute('data-rental-note');
+    }
     if (span.dataset) {
         delete span.dataset.autoGearContextCounts;
     }
@@ -3193,6 +3206,19 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
         notesSpan.textContent = `${delimiter}${normalizedItem.notes}`;
         span.appendChild(notesSpan);
     }
+    if (rentalTexts) {
+        const toggleHtml = buildRentalToggleMarkup(name, rentalTexts);
+        if (toggleHtml && typeof toggleHtml === 'string' && typeof document !== 'undefined') {
+            const template = document.createElement('template');
+            template.innerHTML = toggleHtml.trim();
+            const toggleButton = template.content.firstElementChild;
+            if (toggleButton) {
+                span.appendChild(document.createTextNode(' '));
+                span.appendChild(toggleButton);
+            }
+        }
+    }
+    setRentalExclusionState(span, wasRentalExcluded);
     applyAutoGearRuleColors(span, rule);
     refreshAutoGearRuleBadge(span);
 }
