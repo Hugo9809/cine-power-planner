@@ -201,7 +201,7 @@ let CACHE_VERSION = null;
   }
 
 if (!CACHE_VERSION) {
-CACHE_VERSION = '1.0.19';
+CACHE_VERSION = '1.0.20';
 }
 
 const CACHE_NAME = `cine-power-planner-v${CACHE_VERSION}`;
