@@ -3974,6 +3974,75 @@ function resolveGearListCustomText(key, fallback, replacements) {
   }, template);
 }
 
+function getGearListRentalToggleTexts() {
+  const excludeLabel = resolveGearListCustomText('gearListExcludeRentalToggle', 'Exclude for rental house');
+  const includeLabel = resolveGearListCustomText('gearListIncludeRentalToggle', 'Include for rental house');
+  const noteLabel = resolveGearListCustomText('gearListRentalNote', 'Rental house handles this item');
+  return {
+    excludeLabel,
+    includeLabel,
+    noteLabel,
+  };
+}
+
+function buildRentalToggleMarkup(dataName, labels) {
+  const texts = labels || getGearListRentalToggleTexts();
+  const offLabel = typeof texts.excludeLabel === 'string' && texts.excludeLabel.trim()
+    ? texts.excludeLabel
+    : 'Exclude for rental house';
+  const onLabel = typeof texts.includeLabel === 'string' && texts.includeLabel.trim()
+    ? texts.includeLabel
+    : 'Include for rental house';
+  const safeOff = escapeHtml(offLabel);
+  const safeOn = escapeHtml(onLabel);
+  const safeDataName = escapeHtml(dataName || '');
+  return `<button type="button" class="gear-rental-toggle" data-gear-rental-toggle="${safeDataName}" data-label-off="${safeOff}" data-label-on="${safeOn}" aria-pressed="false">${safeOff}</button>`;
+}
+
+function setRentalExclusionState(element, excluded) {
+  if (!element || typeof element !== 'object') {
+    return false;
+  }
+  const shouldExclude = Boolean(excluded);
+  const wasExcluded = element.classList?.contains('gear-item-rental-excluded')
+    || element.getAttribute?.('data-rental-excluded') === 'true';
+  const toggle = element.querySelector?.('.gear-rental-toggle');
+  if (shouldExclude) {
+    element.classList?.add('gear-item-rental-excluded');
+    element.setAttribute?.('data-rental-excluded', 'true');
+  } else {
+    element.classList?.remove('gear-item-rental-excluded');
+    element.removeAttribute?.('data-rental-excluded');
+  }
+  if (toggle) {
+    const offLabel = toggle.getAttribute('data-label-off') || '';
+    const onLabel = toggle.getAttribute('data-label-on') || offLabel;
+    toggle.setAttribute('aria-pressed', shouldExclude ? 'true' : 'false');
+    toggle.textContent = shouldExclude ? (onLabel || offLabel) : offLabel;
+  }
+  const { noteLabel } = getGearListRentalToggleTexts();
+  if (noteLabel && element.getAttribute && !element.getAttribute('data-rental-note')) {
+    element.setAttribute('data-rental-note', noteLabel);
+  }
+  return wasExcluded !== shouldExclude;
+}
+
+function applyRentalExclusionsState(state) {
+  if (!gearListOutput) return;
+  const normalizedState = state && typeof state === 'object' ? state : {};
+  const exclusions = new Set();
+  Object.entries(normalizedState).forEach(([name, value]) => {
+    if (value) {
+      exclusions.add(name);
+    }
+  });
+  const spans = gearListOutput.querySelectorAll('.gear-item[data-gear-name]');
+  spans.forEach(span => {
+    const name = span.getAttribute('data-gear-name');
+    setRentalExclusionState(span, exclusions.has(name));
+  });
+}
+
 function createCustomCategoryKey(label) {
   if (typeof label !== 'string' || !label.trim()) {
     return 'category';
@@ -4206,9 +4275,15 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   const minusIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
     ? iconMarkup(ICON_GLYPHS.minus, { className: 'btn-icon' })
     : '';
+  const rentalTexts = getGearListRentalToggleTexts();
+  const noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim()
+    ? ` data-rental-note="${escapeHtml(rentalTexts.noteLabel)}"`
+    : '';
+  const toggleHtml = buildRentalToggleMarkup(categoryLabel || categoryKey || 'custom', rentalTexts);
   template.innerHTML = `
-    <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}">
+    <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}"${noteAttr}>
       <span class="gear-custom-item-preview" aria-hidden="true"></span>
+      ${toggleHtml}
       <label class="gear-custom-field gear-custom-field--quantity">
         <span class="visually-hidden">${escapeHtml(quantityLabel)} (${escapeHtml(categoryLabel)})</span>
         <input
@@ -4270,6 +4345,10 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   container.appendChild(entry);
   attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
   updateCustomItemPreview(entry);
+  const wantsExcluded = Boolean(
+    data && (data.rentalExcluded === true || data.rentalExcluded === 'true')
+  );
+  setRentalExclusionState(entry, wantsExcluded);
   if (!options.skipFocus) {
     const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
     if (nameInput) {
@@ -4320,7 +4399,8 @@ function readCustomItemsState() {
       const nameInput = item.querySelector('[data-gear-custom-input="name"]');
       const quantity = quantityInput ? String(quantityInput.value ?? '') : '';
       const name = nameInput ? String(nameInput.value ?? '') : '';
-      entries.push({ quantity, name });
+      const rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
+      entries.push({ quantity, name, rentalExcluded });
     });
     if (entries.length) {
       state[key] = entries;
@@ -4731,6 +4811,10 @@ function gearListGenerateHtmlImpl(info = {}) {
             const current = counts[base].ctxCounts[ctx] || 0;
             counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
         });
+        const rentalTexts = getGearListRentalToggleTexts();
+        const noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim()
+            ? ` data-rental-note="${escapeHtml(rentalTexts.noteLabel)}"`
+            : '';
         return Object.entries(counts)
             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
             .map(([base, { total, ctxCounts }]) => {
@@ -4786,7 +4870,8 @@ function gearListGenerateHtmlImpl(info = {}) {
                 const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
                 const displayName = `${translatedBase}${ctxStr}`;
                 const dataName = `${base}${ctxStr}`;
-                return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}">${total}x ${escapeHtml(displayName)}</span>`;
+                const toggleHtml = buildRentalToggleMarkup(dataName, rentalTexts);
+                return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${noteAttr}>${total}x ${escapeHtml(displayName)} ${toggleHtml}</span>`;
             })
             .join('<br>');
     };
@@ -5820,13 +5905,24 @@ function getGearListSelectors() {
     if (!gearListOutput) return {};
     const selectors = {};
     gearListOutput.querySelectorAll('select[id]').forEach(sel => {
-        selectors[sel.id] = sel.multiple
-            ? Array.from(sel.selectedOptions).map(o => o.value)
-            : sel.value;
+    selectors[sel.id] = sel.multiple
+        ? Array.from(sel.selectedOptions).map(o => o.value)
+        : sel.value;
     });
     const customState = readCustomItemsState();
     if (customState && Object.keys(customState).length) {
         selectors.__customItems = customState;
+    }
+    const rentalState = {};
+    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
+        const name = span.getAttribute('data-gear-name');
+        if (!name) return;
+        if (span.getAttribute('data-rental-excluded') === 'true') {
+            rentalState[name] = true;
+        }
+    });
+    if (Object.keys(rentalState).length) {
+        selectors.__rentalExclusions = rentalState;
     }
     return selectors;
 }
@@ -5860,7 +5956,7 @@ function cloneGearListSelectors(selectors) {
 function applyGearListSelectors(selectors) {
     if (!gearListOutput || !selectors) return;
     Object.entries(selectors).forEach(([id, value]) => {
-        if (id === '__customItems') return;
+        if (id === '__customItems' || id === '__rentalExclusions') return;
         const sel = gearListOutput.querySelector(`#${id}`);
         if (sel) {
             if (sel.multiple) {
@@ -5876,6 +5972,7 @@ function applyGearListSelectors(selectors) {
         }
     });
     applyCustomItemsState(selectors.__customItems || {});
+    applyRentalExclusionsState(selectors.__rentalExclusions || {});
 }
 
 function convertCustomItemsForStaticOutput(root) {
@@ -5892,10 +5989,14 @@ function convertCustomItemsForStaticOutput(root) {
             return;
         }
 
+        section.querySelectorAll('.gear-rental-toggle').forEach(btn => btn.remove());
         const previews = Array.from(itemsContainer.querySelectorAll('.gear-custom-item-preview'));
-        const values = previews
-            .map(preview => (preview.textContent || '').replace(/\s+/g, ' ').trim())
-            .filter(Boolean);
+        const entriesWithValues = previews
+            .map(preview => ({
+                preview,
+                value: (preview.textContent || '').replace(/\s+/g, ' ').trim(),
+            }))
+            .filter(entry => entry.value);
 
         let standardContainer = section.previousElementSibling;
         if (!standardContainer || !standardContainer.classList.contains('gear-standard-items')) {
@@ -5904,8 +6005,8 @@ function convertCustomItemsForStaticOutput(root) {
             parent.insertBefore(standardContainer, section);
         }
 
-        if (values.length) {
-            values.forEach(value => {
+        if (entriesWithValues.length) {
+            entriesWithValues.forEach(({ value, preview }) => {
                 if (standardContainer.childNodes.length) {
                     const last = standardContainer.lastChild;
                     const isBreak = last && last.nodeType === 1 && last.tagName === 'BR';
@@ -5918,6 +6019,17 @@ function convertCustomItemsForStaticOutput(root) {
                 span.textContent = value;
                 span.setAttribute('data-gear-name', value);
                 span.setAttribute('data-gear-custom-output', 'true');
+                const sourceEntry = preview.closest('.gear-custom-item');
+                if (sourceEntry) {
+                    const rentalNote = sourceEntry.getAttribute('data-rental-note');
+                    if (rentalNote) {
+                        span.setAttribute('data-rental-note', rentalNote);
+                    }
+                    if (sourceEntry.getAttribute('data-rental-excluded') === 'true') {
+                        span.setAttribute('data-rental-excluded', 'true');
+                        span.classList.add('gear-item-rental-excluded');
+                    }
+                }
                 standardContainer.appendChild(span);
             });
         }
@@ -5926,6 +6038,7 @@ function convertCustomItemsForStaticOutput(root) {
     });
 
     root.querySelectorAll('.gear-custom-add-btn').forEach(btn => btn.remove());
+    root.querySelectorAll('.gear-rental-toggle').forEach(btn => btn.remove());
 }
 
 function cloneProjectInfoForStorage(info) {
@@ -6945,6 +7058,28 @@ function ensureGearListActions() {
 
     if (!gearListOutput._customClickListenerBound) {
         gearListOutput.addEventListener('click', e => {
+            const toggleBtn = e.target && e.target.closest('.gear-rental-toggle');
+            if (toggleBtn) {
+                e.preventDefault();
+                const targetItem = toggleBtn.closest('.gear-item, .gear-custom-item');
+                if (!targetItem) return;
+                const nextState = toggleBtn.getAttribute('aria-pressed') !== 'true';
+                setRentalExclusionState(targetItem, nextState);
+                if (targetItem.classList && targetItem.classList.contains('gear-custom-item')) {
+                    persistCustomItemsChange();
+                } else {
+                    if (typeof saveCurrentGearList === 'function') {
+                        saveCurrentGearList();
+                    }
+                    if (typeof saveCurrentSession === 'function') {
+                        saveCurrentSession();
+                    }
+                    if (typeof checkSetupChanged === 'function') {
+                        checkSetupChanged();
+                    }
+                }
+                return;
+            }
             const addBtn = e.target && e.target.closest('[data-gear-custom-add]');
             if (addBtn) {
                 e.preventDefault();

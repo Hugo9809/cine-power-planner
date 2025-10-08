@@ -6539,6 +6539,25 @@
     </datalist>
   </dialog>
   <dialog id="overviewDialog"></dialog>
+  <dialog
+    id="rentalPrintDialog"
+    class="app-modal print-options-dialog"
+    aria-labelledby="rentalPrintDialogTitle"
+    aria-describedby="rentalPrintDialogDescription"
+  >
+    <form id="rentalPrintForm" method="dialog" class="modal-surface print-options-surface">
+      <h2 id="rentalPrintDialogTitle"></h2>
+      <p id="rentalPrintDialogDescription"></p>
+      <fieldset id="rentalPrintSections" class="print-options-sections"></fieldset>
+      <div class="print-options-footer">
+        <button type="button" id="rentalPrintSelectAllBtn"></button>
+        <div class="print-options-actions">
+          <button type="button" id="rentalPrintCancelBtn"></button>
+          <button type="submit" id="rentalPrintConfirmBtn" class="primary"></button>
+        </div>
+      </div>
+    </form>
+  </dialog>
   <script src="src/scripts/globals-legacy-shim.js"></script>
   <script src="src/scripts/globals-bootstrap.js"></script>
   <script src="src/scripts/loader.js"></script>
