@@ -17,7 +17,37 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
-  function loadModuleEnvironment(scope) {
+  function resolveModuleLinker(scope) {
+    if (typeof require === 'function') {
+      try {
+        return require('./helpers/module-linker.js');
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [scope];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      try {
+        const linker = candidate && candidate.cineModuleLinker;
+        if (linker && typeof linker === 'object') {
+          return linker;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
         return require('./environment.js');
@@ -42,7 +72,7 @@
     return null;
   }
 
-  function loadEnvironmentBridge(scope) {
+  function fallbackLoadEnvironmentBridge(scope) {
     if (typeof require === 'function') {
       try {
         return require('./environment-bridge.js');
@@ -67,19 +97,28 @@
     return null;
   }
 
-  const MODULE_ENV = loadModuleEnvironment(FALLBACK_SCOPE);
+  const MODULE_LINKER = resolveModuleLinker(FALLBACK_SCOPE);
 
-  const ENV_BRIDGE = loadEnvironmentBridge(FALLBACK_SCOPE);
+  const MODULE_ENV = MODULE_LINKER && typeof MODULE_LINKER.getModuleEnvironment === 'function'
+    ? MODULE_LINKER.getModuleEnvironment()
+    : fallbackLoadModuleEnvironment(FALLBACK_SCOPE);
 
-  const GLOBAL_SCOPE = (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function'
-    ? ENV_BRIDGE.getGlobalScope()
+  const ENV_BRIDGE = MODULE_LINKER && typeof MODULE_LINKER.getEnvironmentBridge === 'function'
+    ? MODULE_LINKER.getEnvironmentBridge()
+    : fallbackLoadEnvironmentBridge(FALLBACK_SCOPE);
+
+  const GLOBAL_SCOPE = (MODULE_LINKER && typeof MODULE_LINKER.getGlobalScope === 'function'
+    ? MODULE_LINKER.getGlobalScope()
     : null)
+    || (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function'
+      ? ENV_BRIDGE.getGlobalScope()
+      : null)
     || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function'
       ? MODULE_ENV.getGlobalScope()
       : null)
     || FALLBACK_SCOPE;
 
-  const MODULE_GLOBALS = (function resolveModuleGlobals() {
+  function fallbackResolveModuleGlobals() {
     if (typeof require === 'function') {
       try {
         const required = require('./globals.js');
@@ -105,9 +144,18 @@
     }
 
     return null;
-  })();
+  }
+
+  const MODULE_GLOBALS = (MODULE_LINKER && typeof MODULE_LINKER.getModuleGlobals === 'function'
+    ? MODULE_LINKER.getModuleGlobals()
+    : null)
+    || fallbackResolveModuleGlobals();
 
   function informModuleGlobals(name, api) {
+    if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
+      MODULE_LINKER.recordModule(name, api);
+    }
+
     if (!MODULE_GLOBALS || typeof MODULE_GLOBALS.recordModule !== 'function') {
       return;
     }
@@ -133,6 +181,10 @@
   }
 
   const tryRequire = (function resolveTryRequire() {
+    if (MODULE_LINKER && typeof MODULE_LINKER.tryRequire === 'function') {
+      return MODULE_LINKER.tryRequire;
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.tryRequire === 'function') {
       return MODULE_GLOBALS.tryRequire;
     }
@@ -152,9 +204,18 @@
   })();
 
   function resolveModuleRegistry(scope) {
+    const targetScope = scope || GLOBAL_SCOPE;
+
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      const linked = MODULE_LINKER.getModuleRegistry(targetScope);
+      if (linked) {
+        return linked;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
-        const resolved = MODULE_GLOBALS.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        const resolved = MODULE_GLOBALS.resolveModuleRegistry(targetScope);
         if (resolved) {
           return resolved;
         }
@@ -165,7 +226,7 @@
 
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
       try {
-        const bridged = ENV_BRIDGE.getModuleRegistry(scope || GLOBAL_SCOPE);
+        const bridged = ENV_BRIDGE.getModuleRegistry(targetScope);
         if (bridged) {
           return bridged;
         }
@@ -176,7 +237,10 @@
 
     if (MODULE_ENV && typeof MODULE_ENV.resolveModuleRegistry === 'function') {
       try {
-        return MODULE_ENV.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        const provided = MODULE_ENV.resolveModuleRegistry(targetScope);
+        if (provided) {
+          return provided;
+        }
       } catch (error) {
         void error;
       }
@@ -187,7 +251,7 @@
       return required;
     }
 
-    const scopes = [scope || GLOBAL_SCOPE];
+    const scopes = [targetScope];
     if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
     if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
     if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
@@ -204,6 +268,13 @@
   }
 
   const MODULE_REGISTRY = (function () {
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      const linkedRegistry = MODULE_LINKER.getModuleRegistry(GLOBAL_SCOPE);
+      if (linkedRegistry) {
+        return linkedRegistry;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getModuleRegistry === 'function') {
       try {
         const shared = MODULE_GLOBALS.getModuleRegistry(GLOBAL_SCOPE);
@@ -236,10 +307,18 @@
         void error;
       }
     }
-    return resolveModuleRegistry();
+
+    return resolveModuleRegistry(GLOBAL_SCOPE);
   })();
 
   const PENDING_QUEUE_KEY = (function resolvePendingKey() {
+    if (MODULE_LINKER && typeof MODULE_LINKER.getPendingQueueKey === 'function') {
+      const linkedKey = MODULE_LINKER.getPendingQueueKey();
+      if (typeof linkedKey === 'string' && linkedKey) {
+        return linkedKey;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getPendingQueueKey === 'function') {
       try {
         const sharedKey = MODULE_GLOBALS.getPendingQueueKey();
