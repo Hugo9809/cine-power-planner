@@ -2822,16 +2822,26 @@ function applyProjectEntryCompression(container) {
   const now = Date.now();
   const threshold = now - PROJECT_ACTIVITY_WINDOW_MS;
   const validKeys = new Set(keys);
+  const activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED
+    ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY
+    : '';
 
   pruneProjectActivityCache(validKeys);
 
   keys.forEach((key) => {
+    const normalizedKey = normalizeProjectStorageKey(key);
+    const isActiveHold = activeCompressionHoldKey
+      && normalizedKey === activeCompressionHoldKey;
     const timestamp = projectActivityTimestamps.has(key)
       ? projectActivityTimestamps.get(key)
       : null;
-    const keepUncompressed = Number.isFinite(timestamp) && timestamp >= threshold;
+    const keepUncompressed = isActiveHold
+      || (Number.isFinite(timestamp) && timestamp >= threshold);
     if (keepUncompressed) {
       container[key] = ensureProjectEntryUncompressed(container[key], key);
+      if (isActiveHold && Number.isFinite(now)) {
+        markProjectActivity(normalizedKey, now);
+      }
     } else {
       container[key] = ensureProjectEntryCompressed(container[key], key);
     }
@@ -2869,6 +2879,9 @@ function attemptStorageCompressionSweep(storage, options) {
   const { skipKeys = [], limit = STORAGE_COMPRESSION_SWEEP_LIMIT, minSavings = STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS } = options || {};
 
   const skipSet = new Set();
+  if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
+    skipSet.add(ACTIVE_PROJECT_COMPRESSION_HOLD_KEY);
+  }
   if (Array.isArray(skipKeys)) {
     for (let i = 0; i < skipKeys.length; i += 1) {
       const key = skipKeys[i];
