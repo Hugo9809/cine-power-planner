@@ -314,6 +314,8 @@
   let titleEl = null;
   let bodyEl = null;
   let progressEl = null;
+  let stepListEl = null;
+  let resumeHintEl = null;
   let backButton = null;
   let nextButton = null;
   let skipButton = null;
@@ -324,6 +326,8 @@
   let pendingFrame = null;
   let autoOpenedSettings = false;
   let settingsDialogRef = null;
+  let resumeHintVisible = false;
+  let resumeStartIndex = null;
 
   function clearFrame() {
     if (pendingFrame === null) {
@@ -397,6 +401,11 @@
     });
     header.appendChild(skipButton);
 
+    resumeHintEl = DOCUMENT.createElement('p');
+    resumeHintEl.className = 'onboarding-resume-hint';
+    resumeHintEl.hidden = true;
+    cardEl.appendChild(resumeHintEl);
+
     titleEl = DOCUMENT.createElement('h2');
     titleEl.id = 'onboardingCardTitle';
     cardEl.appendChild(titleEl);
@@ -404,6 +413,12 @@
     bodyEl = DOCUMENT.createElement('p');
     bodyEl.id = 'onboardingCardBody';
     cardEl.appendChild(bodyEl);
+
+    stepListEl = DOCUMENT.createElement('ol');
+    stepListEl.className = 'onboarding-step-list';
+    stepListEl.setAttribute('role', 'list');
+    stepListEl.addEventListener('click', handleStepListClick);
+    cardEl.appendChild(stepListEl);
 
     const actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-card-actions';
@@ -446,9 +461,13 @@
     titleEl = null;
     bodyEl = null;
     progressEl = null;
+    stepListEl = null;
+    resumeHintEl = null;
     backButton = null;
     nextButton = null;
     skipButton = null;
+    resumeHintVisible = false;
+    resumeStartIndex = null;
   }
 
   function formatStepIndicator(index, total) {
@@ -645,14 +664,121 @@
     autoOpenedSettings = false;
   }
 
+  function getStepTexts(step) {
+    if (!step) {
+      return { title: '', body: '' };
+    }
+    const pack = tourTexts.steps && tourTexts.steps[step.key]
+      ? tourTexts.steps[step.key]
+      : { title: step.key, body: '' };
+    return {
+      title: typeof pack.title === 'string' ? pack.title : step.key,
+      body: typeof pack.body === 'string' ? pack.body : '',
+    };
+  }
+
+  function updateResumeHint(index) {
+    if (!resumeHintEl) {
+      return;
+    }
+    if (!resumeHintVisible || typeof index !== 'number' || index < 0) {
+      resumeHintEl.hidden = true;
+      resumeHintEl.textContent = '';
+      return;
+    }
+    const hint = tourTexts.resumeHint || 'Resuming where you left off. Use the step navigator to revisit steps.';
+    resumeHintEl.hidden = false;
+    resumeHintEl.textContent = hint;
+  }
+
+  function updateStepList(activeIndex) {
+    if (!stepListEl) {
+      return;
+    }
+
+    const resolvedActiveIndex = typeof activeIndex === 'number' && activeIndex >= 0
+      ? activeIndex
+      : 0;
+    const total = stepConfig.length;
+    const statusLabels = {
+      current: tourTexts.stepStatusCurrent || 'Current step',
+      complete: tourTexts.stepStatusComplete || 'Completed',
+      upcoming: tourTexts.stepStatusUpcoming || 'Locked',
+    };
+
+    stepListEl.textContent = '';
+    if (typeof stepListEl.setAttribute === 'function') {
+      stepListEl.setAttribute('aria-label', tourTexts.stepListAriaLabel || 'Tutorial steps');
+    }
+
+    for (let index = 0; index < total; index += 1) {
+      const step = stepConfig[index];
+      const texts = getStepTexts(step);
+      const item = DOCUMENT.createElement('li');
+      item.className = 'onboarding-step-item';
+
+      const status = index === resolvedActiveIndex
+        ? 'current'
+        : index < resolvedActiveIndex
+          ? 'complete'
+          : 'upcoming';
+      item.setAttribute('data-status', status);
+
+      const button = DOCUMENT.createElement('button');
+      button.type = 'button';
+      button.className = 'onboarding-step-button';
+      button.disabled = index > resolvedActiveIndex;
+      button.setAttribute('data-step-index', String(index));
+      button.setAttribute('aria-current', status === 'current' ? 'step' : 'false');
+
+      const title = texts.title || step.key;
+      const statusText = statusLabels[status] || '';
+      button.setAttribute('aria-label', statusText ? `${title}. ${statusText}.` : title);
+
+      const titleElFragment = DOCUMENT.createElement('span');
+      titleElFragment.className = 'onboarding-step-title';
+      titleElFragment.textContent = title;
+      button.appendChild(titleElFragment);
+
+      const statusEl = DOCUMENT.createElement('span');
+      statusEl.className = 'onboarding-step-status';
+      statusEl.textContent = statusText;
+      button.appendChild(statusEl);
+
+      item.appendChild(button);
+      stepListEl.appendChild(item);
+    }
+  }
+
+  function handleStepListClick(event) {
+    if (!active) {
+      return;
+    }
+    const target = event && event.target;
+    if (!target) {
+      return;
+    }
+    const button = typeof target.closest === 'function'
+      ? target.closest('.onboarding-step-button')
+      : (target.classList && target.classList.contains('onboarding-step-button') ? target : null);
+    if (!button || button.disabled) {
+      return;
+    }
+    const index = parseInt(button.getAttribute('data-step-index'), 10);
+    if (Number.isNaN(index) || index > currentIndex) {
+      return;
+    }
+    showStep(index);
+  }
+
   function updateCardForStep(step, index) {
     if (!cardEl) {
       return;
     }
 
-    const totalSteps = stepConfig.length - 1;
-    const textPack = tourTexts.steps[step.key] || { title: step.key, body: '' };
-    const stepText = typeof textPack.body === 'string' ? textPack.body : '';
+    const totalSteps = stepConfig.length;
+    const textPack = getStepTexts(step);
+    const stepText = textPack.body;
 
     cardEl.setAttribute('aria-labelledby', titleEl.id);
     cardEl.setAttribute('aria-describedby', bodyEl.id);
@@ -685,6 +811,9 @@
     } else {
       skipButton.hidden = false;
     }
+
+    updateResumeHint(index);
+    updateStepList(index);
   }
 
   function showStep(index) {
@@ -730,6 +859,11 @@
     }
 
     updateCardForStep(step, index);
+
+    if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
+      resumeHintVisible = false;
+      updateResumeHint(index);
+    }
 
     schedulePositionUpdate();
     setTimeout(() => {
@@ -908,6 +1042,8 @@
     autoOpenedSettings = false;
     settingsDialogRef = null;
     storedState = loadStoredState();
+    resumeHintVisible = Boolean(resume);
+    resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
 
     attachGlobalListeners();
     showStep(resolvedIndex);
@@ -943,8 +1079,14 @@
       return;
     }
     const state = storedState || loadStoredState();
-    const label = state && state.completed ? (tourTexts.restartLabel || tourTexts.startLabel || 'Start guided tutorial')
-      : tourTexts.startLabel || 'Start guided tutorial';
+    let label;
+    if (state && state.completed) {
+      label = tourTexts.restartLabel || tourTexts.startLabel || 'Start guided tutorial';
+    } else if (state && state.activeStep) {
+      label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
+    } else {
+      label = tourTexts.startLabel || 'Start guided tutorial';
+    }
     button.textContent = label;
   }
 

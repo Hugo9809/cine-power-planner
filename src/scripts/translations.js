@@ -1449,18 +1449,26 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow before configuring your first project.",
+      "to walk through every workflow before configuring your first project. Use the step navigator to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
+      resumeLabel: "Resume guided tutorial",
       skipLabel: "Skip tutorial",
       backLabel: "Back",
       nextLabel: "Next",
       doneLabel: "Finish tutorial",
       stepIndicator: "Step {current} of {total}",
       completionIndicator: "You're ready to build projects",
+      stepListAriaLabel: "Tutorial steps",
+      stepStatusCurrent: "Current step",
+      stepStatusComplete: "Completed",
+      stepStatusUpcoming: "Up next",
+      resumeHint:
+        "Resuming where you left off. Use the step navigator to revisit earlier workflows without losing progress.",
       skipConfirmationTitle: "Skip the guided tutorial?",
-      skipConfirmationBody: "You can reopen the tutorial from Help at any time.",
+      skipConfirmationBody:
+        "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
       skipConfirmationAccept: "Skip tutorial",
       skipConfirmationCancel: "Continue tutorial",
       steps: {
@@ -3057,18 +3065,26 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
     helpOnboardingTutorialCopy:
-      "per seguire ogni flusso di lavoro prima di configurare il tuo primo progetto.",
+      "per seguire ogni flusso di lavoro prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi per riaprire offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
+      resumeLabel: "Riprendi il tutorial guidato",
       skipLabel: "Salta tutorial",
       backLabel: "Indietro",
       nextLabel: "Avanti",
       doneLabel: "Termina tutorial",
       stepIndicator: "Passo {current} di {total}",
       completionIndicator: "Ora puoi creare progetti",
+      stepListAriaLabel: "Passaggi del tutorial",
+      stepStatusCurrent: "Passaggio attuale",
+      stepStatusComplete: "Completato",
+      stepStatusUpcoming: "In arrivo",
+      resumeHint:
+        "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
       skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
-      skipConfirmationBody: "Puoi riaprire il tutorial dalla Guida in qualsiasi momento.",
+      skipConfirmationBody:
+        "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
       skipConfirmationAccept: "Salta tutorial",
       skipConfirmationCancel: "Continua tutorial",
       steps: {
@@ -4675,18 +4691,26 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
     helpOnboardingTutorialCopy:
-      "para recorrer cada flujo de trabajo antes de configurar tu primer proyecto.",
+      "para recorrer cada flujo de trabajo antes de configurar tu primer proyecto. Usa el navegador de pasos para volver a secciones completadas sin conexión.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
+      resumeLabel: "Reanudar tutorial guiado",
       skipLabel: "Omitir tutorial",
       backLabel: "Atrás",
       nextLabel: "Siguiente",
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
       completionIndicator: "Listo para crear proyectos",
+      stepListAriaLabel: "Pasos del tutorial",
+      stepStatusCurrent: "Paso actual",
+      stepStatusComplete: "Completado",
+      stepStatusUpcoming: "A continuación",
+      resumeHint:
+        "Retomas justo donde lo dejaste. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
       skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
-      skipConfirmationBody: "Puedes volver a abrir el tutorial desde Ayuda cuando lo necesites.",
+      skipConfirmationBody:
+        "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
       skipConfirmationAccept: "Omitir tutorial",
       skipConfirmationCancel: "Continuar tutorial",
       steps: {
@@ -6305,18 +6329,26 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
     helpOnboardingTutorialCopy:
-      "pour découvrir chaque flux de travail avant de configurer votre premier projet.",
+      "pour découvrir chaque flux de travail avant de configurer votre premier projet. Utilisez le navigateur d'étapes pour rouvrir hors ligne les sections terminées.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
+      resumeLabel: "Reprendre le tutoriel guidé",
       skipLabel: "Ignorer le tutoriel",
       backLabel: "Retour",
       nextLabel: "Suivant",
       doneLabel: "Terminer le tutoriel",
       stepIndicator: "Étape {current} sur {total}",
       completionIndicator: "Prêt à créer des projets",
+      stepListAriaLabel: "Étapes du tutoriel",
+      stepStatusCurrent: "Étape actuelle",
+      stepStatusComplete: "Terminé",
+      stepStatusUpcoming: "À suivre",
+      resumeHint:
+        "Vous reprenez là où vous vous étiez arrêté. Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
       skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
-      skipConfirmationBody: "Vous pourrez rouvrir le tutoriel depuis Aide à tout moment.",
+      skipConfirmationBody:
+        "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
       skipConfirmationAccept: "Ignorer le tutoriel",
       skipConfirmationCancel: "Continuer le tutoriel",
       steps: {
@@ -7939,18 +7971,26 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
     helpOnboardingTutorialCopy:
-      "um jeden Arbeitsablauf kennenzulernen, bevor du dein erstes Projekt anlegst.",
+      "um jeden Arbeitsablauf kennenzulernen, bevor du dein erstes Projekt anlegst. Nutze den Schritt-Navigator, um abgeschlossene Abschnitte offline erneut zu öffnen.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
+      resumeLabel: "Geführtes Tutorial fortsetzen",
       skipLabel: "Tutorial überspringen",
       backLabel: "Zurück",
       nextLabel: "Weiter",
       doneLabel: "Tutorial abschließen",
       stepIndicator: "Schritt {current} von {total}",
       completionIndicator: "Bereit für neue Projekte",
+      stepListAriaLabel: "Tutorial-Schritte",
+      stepStatusCurrent: "Aktueller Schritt",
+      stepStatusComplete: "Abgeschlossen",
+      stepStatusUpcoming: "Als nächstes",
+      resumeHint:
+        "Du machst dort weiter, wo du aufgehört hast. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
       skipConfirmationTitle: "Geführtes Tutorial überspringen?",
-      skipConfirmationBody: "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen.",
+      skipConfirmationBody:
+        "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",
       skipConfirmationAccept: "Tutorial überspringen",
       skipConfirmationCancel: "Tutorial fortsetzen",
       steps: {
