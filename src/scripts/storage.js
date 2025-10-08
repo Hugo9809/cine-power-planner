@@ -2880,7 +2880,7 @@ function attemptStorageCompressionSweep(storage, options) {
 
   const skipSet = new Set();
   if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
-    skipSet.add(ACTIVE_PROJECT_COMPRESSION_HOLD_KEY);
+    skipSet.add(PROJECT_STORAGE_KEY);
   }
   if (Array.isArray(skipKeys)) {
     for (let i = 0; i < skipKeys.length; i += 1) {
