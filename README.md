@@ -48,6 +48,9 @@ drive without phoning home.
   and language-specific README files whenever you add or update locales so
   offline readers stay aligned with the latest workflows.
 
+Keep these links handy when onboarding new crew members or rehearsing the
+offline drills so every workstation follows the same trusted playbooks.
+
 ## Overview
 
 ### Built for crews
