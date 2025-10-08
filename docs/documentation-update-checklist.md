@@ -12,6 +12,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 
 - [ ] Edit `README.md` and every localized README to reflect the new workflows, especially the **Key Workflow Reference**, **Save, Share & Import Drill**, **Backup & Recovery** and **Emergency Recovery Playbook** sections.
 - [ ] Revise contextual help topics, hover help strings and FAQ answers in `src/scripts/help/` and `index.html` so offline crews see accurate instructions.
+- [ ] Refresh `tools/cliHelp.js` so `npm run help` includes any new scripts and calls out offline maintenance steps like regenerating service worker assets after documentation updates.
 - [ ] Synchronize printable manuals and runbooks in `docs/` (save/share reference, offline readiness, operations checklist, backup rotation guide, testing plan) with the change.
 - [ ] Update legal pages in `legal/` if any disclosures or policy links reference the updated feature.
 - [ ] Mark the affected rows in `docs/documentation-coverage-matrix.md` and update the entries so reviewers can trace which surfaces now document the revised save, share, import, backup and restore behavior.

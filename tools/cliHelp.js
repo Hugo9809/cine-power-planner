@@ -11,6 +11,10 @@ const sections = [
         description: 'Run linting, data validation and every Jest project.'
       },
       {
+        label: 'npm run generate:sw-assets',
+        description: 'Refresh the service worker asset manifest so offline help and documentation stay cached.'
+      },
+      {
         label: 'npm run test:jest',
         description: 'Run all Jest projects (unit, data, dom, script) without linting.'
       },
@@ -57,6 +61,7 @@ const tips = [
   'Pass --help to supported scripts above to see detailed usage instructions.',
   'Use npm run <script> -- --watch to forward extra flags to the underlying tool.',
   'Commit regenerated files with their source changes to preserve offline builds and shared data exports.',
+  'After editing help topics, documentation or translations, run npm run generate:sw-assets before building so the offline bundle ships the updated copy.',
   'Filter this guide: npm run help -- lint or npm run help -- --section data lint to focus matching commands.'
 ];
 

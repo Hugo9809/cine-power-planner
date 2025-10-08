@@ -21,6 +21,11 @@ workflow diagrams and troubleshooting notes to reference the registered controll
 interactions and help entries so offline operators can cross-check the exact button or
 dialog names documented in code.【F:src/scripts/modules/ui.js†L1-L192】
 
+Keep the command-line help reference (`tools/cliHelp.js`) aligned with these updates so crews
+running `npm run help` offline see every required script. When documentation, help topics or
+translations change, ensure the guide highlights `npm run generate:sw-assets` so operators
+rebuild the service worker manifest before packaging the offline bundle.【F:tools/cliHelp.js†L4-L113】
+
 Printable overviews and PDF exports now route through the dedicated
 `cineFeaturePrint` module. When you adjust instructions for sharing power summaries or
 exporting documentation bundles, reference the module so readers understand how native
