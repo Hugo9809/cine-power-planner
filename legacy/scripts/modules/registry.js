@@ -6,6 +6,23 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
+  var ensureConsoleMethodsWritable = null;
+  if (typeof require === 'function') {
+    try {
+      var consoleHelpers = require('../console-helpers.js');
+      if (consoleHelpers && typeof consoleHelpers.ensureConsoleMethodsWritable === 'function') {
+        ensureConsoleMethodsWritable = consoleHelpers.ensureConsoleMethodsWritable;
+      }
+    } catch (consoleHelpersError) {
+      void consoleHelpersError;
+    }
+  }
+  if (!ensureConsoleMethodsWritable && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable === 'function') {
+    ensureConsoleMethodsWritable = GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable;
+  }
+  if (typeof ensureConsoleMethodsWritable === 'function') {
+    ensureConsoleMethodsWritable(['warn', 'info']);
+  }
   var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
   var QUEUE_FLUSH_TIMER_KEY = '__cinePendingModuleRegistrationsTimer__';
   var moduleMap = Object.create(null);

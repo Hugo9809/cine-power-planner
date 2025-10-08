@@ -61,8 +61,13 @@ function getGlobalScope() {
 var AUTO_BACKUP_CHANGE_THRESHOLD = 50;
 var AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold', 'safeguard'];
+var AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
+var AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'safeguard']);
+var AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
+var lastAutoBackupReasonState = new Map();
 var autoBackupChangesSinceSnapshot = 0;
 var autoBackupThresholdInProgress = false;
+var lastAutoBackupCompletedAtMs = 0;
 function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
 }
@@ -81,6 +86,9 @@ function recordAutoBackupRun(result) {
   }
   if (status && status !== 'error') {
     resetAutoBackupChangeCounter();
+    if (status === 'success') {
+      lastAutoBackupCompletedAtMs = Date.now();
+    }
   }
 }
 function isAutoBackupReasonAllowed(reason) {
@@ -707,6 +715,9 @@ function finalizeSetupSelection(nextSetupName) {
       console.warn('Failed to evaluate setup changes after setup switch', error);
     }
   }
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    setActiveProjectCompressionHold(nextSetupName);
+  }
   lastSetupName = nextSetupName;
 }
 var setupSelectTarget = getSetupSelectElement();
@@ -714,6 +725,9 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
   var setupName = event.target.value;
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
   var previousKey = (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '') || typedName || '';
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    setActiveProjectCompressionHold(previousKey);
+  }
   var normalizeProjectName = function normalizeProjectName(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   };
@@ -1129,6 +1143,16 @@ function computeAutoBackupStateSignature(setupState, gearSelectors, gearListGene
     gearListGenerated: Boolean(gearListGenerated)
   });
 }
+function hasMeaningfulAutoBackupContent(setupState, gearSelectors, gearListGenerated) {
+  var hasDeviceSelection = hasAnyDeviceSelectionSafe(setupState);
+  var hasProjectInfo = Boolean(setupState && _typeof(setupState) === 'object' && setupState.projectInfo);
+  var hasAutoGearRules = Array.isArray(setupState && setupState.autoGearRules) && setupState.autoGearRules.length > 0;
+  var hasDiagramPositions = Boolean(setupState && setupState.diagramPositions && _typeof(setupState.diagramPositions) === 'object' && Object.keys(setupState.diagramPositions).length > 0);
+  var hasGearSelectors = Boolean(gearSelectors && _typeof(gearSelectors) === 'object' && Object.keys(gearSelectors).length > 0);
+  var hasPowerSelection = Boolean(setupState && setupState.powerSelection && _typeof(setupState.powerSelection) === 'object' && Object.keys(setupState.powerSelection).length > 0);
+  var hasGeneratedGear = Boolean(gearListGenerated);
+  return hasDeviceSelection || hasProjectInfo || hasAutoGearRules || hasDiagramPositions || hasGearSelectors || hasPowerSelection || hasGeneratedGear;
+}
 function getSortedAutoBackupNames(setups) {
   if (!setups || _typeof(setups) !== 'object') {
     return [];
@@ -1194,6 +1218,10 @@ function ensureLastAutoBackupSignatureInitialized(setups) {
     var metadata = readAutoBackupMetadata(entry);
     if (metadata && typeof metadata.createdAt === 'string') {
       lastAutoBackupCreatedAtIso = metadata.createdAt;
+      var parsed = Date.parse(metadata.createdAt);
+      if (!Number.isNaN(parsed)) {
+        lastAutoBackupCompletedAtMs = parsed;
+      }
     }
   } catch (error) {
     lastAutoBackupSignature = null;
@@ -1303,8 +1331,28 @@ function autoBackup() {
   var isAutoBackupName = function isAutoBackupName(name) {
     return typeof name === 'string' && name.startsWith('auto-backup-');
   };
-  if (!force && !isAutoBackupReasonAllowed(reason)) {
+  var nowMs = Date.now();
+  var lastCompletedMs = lastAutoBackupCompletedAtMs || 0;
+  var elapsedSinceLastAutoBackupMs = nowMs - lastCompletedMs;
+  var enoughTimeElapsedSinceLastBackup = elapsedSinceLastAutoBackupMs >= AUTO_BACKUP_INTERVAL_MS;
+  var enoughChangesAccumulated = autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD;
+  var enforceCadence = !force && !AUTO_BACKUP_CADENCE_EXEMPT_REASONS.has(reason);
+  if (enforceCadence && !enoughTimeElapsedSinceLastBackup && !enoughChangesAccumulated) {
     var skipped = {
+      status: 'skipped',
+      reason: 'cadence',
+      context: reason,
+      elapsedSinceLastAutoBackupMs: elapsedSinceLastAutoBackupMs,
+      changesSinceSnapshot: autoBackupChangesSinceSnapshot
+    };
+    if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+      console.debug('Skipping auto backup because cadence requirements are not met.', skipped);
+    }
+    recordAutoBackupRun(skipped);
+    return skipped;
+  }
+  if (!force && !isAutoBackupReasonAllowed(reason)) {
+    var _skipped = {
       status: 'skipped',
       reason: 'disallowed',
       context: reason || null
@@ -1314,32 +1362,48 @@ function autoBackup() {
         trigger: reason
       });
     }
-    recordAutoBackupRun(skipped);
-    return skipped;
+    recordAutoBackupRun(_skipped);
+    return _skipped;
+  }
+  if (!force && AUTO_BACKUP_RATE_LIMITED_REASONS.has(reason)) {
+    var _nowMs = Date.now();
+    var _lastCompletedMs = lastAutoBackupCompletedAtMs || 0;
+    var elapsedMs = _nowMs - _lastCompletedMs;
+    var enoughTimeElapsed = elapsedMs >= AUTO_BACKUP_INTERVAL_MS;
+    var _enoughChangesAccumulated = autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD;
+    if (!enoughTimeElapsed && !_enoughChangesAccumulated) {
+      var _skipped2 = {
+        status: 'skipped',
+        reason: 'rate-limited',
+        context: reason
+      };
+      recordAutoBackupRun(_skipped2);
+      return _skipped2;
+    }
   }
   var nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {
     if (overrideName && isAutoBackupName(overrideName)) {
-      var _skipped = {
+      var _skipped3 = {
         status: 'skipped',
         reason: 'auto-backup-selected',
         context: reason
       };
-      recordAutoBackupRun(_skipped);
-      return _skipped;
+      recordAutoBackupRun(_skipped3);
+      return _skipped3;
     }
     nameForBackup = overrideName;
   } else if (normalizedSelectedName && isAutoBackupName(normalizedSelectedName)) {
     if (normalizedTypedName && !isAutoBackupName(normalizedTypedName) && normalizedTypedName !== normalizedSelectedName) {
       nameForBackup = normalizedTypedName;
     } else {
-      var _skipped2 = {
+      var _skipped4 = {
         status: 'skipped',
         reason: 'auto-backup-selected',
         context: reason
       };
-      recordAutoBackupRun(_skipped2);
-      return _skipped2;
+      recordAutoBackupRun(_skipped4);
+      return _skipped4;
     }
   } else if (normalizedSelectedName) {
     nameForBackup = normalizedSelectedName;
@@ -1377,28 +1441,54 @@ function autoBackup() {
       }
     }
     var currentGearListHtml = getCurrentGearListHtml();
-    currentSetup.gearListAndProjectRequirementsGenerated = Boolean(currentGearListHtml);
+    var gearListGenerated = Boolean(currentGearListHtml);
+    currentSetup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     var gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], {
       defaultValue: {}
     }) || {};
     var gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], {
       defaultValue: {}
     }) || {};
+    if (!hasMeaningfulAutoBackupContent(currentSetup, gearSelectors, gearListGenerated)) {
+      var _skipped5 = {
+        status: 'skipped',
+        reason: 'empty',
+        context: reason
+      };
+      recordAutoBackupRun(_skipped5);
+      return _skipped5;
+    }
     if (gearSelectors && Object.keys(gearSelectors).length) {
       currentSetup.gearSelectors = gearSelectors;
     }
-    var gearListGenerated = Boolean(currentGearListHtml);
     var currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    if (!force) {
+      var lastReasonState = lastAutoBackupReasonState.get(reason);
+      if (lastReasonState) {
+        var elapsedSinceReason = now.valueOf() - lastReasonState.timestamp;
+        if (elapsedSinceReason < AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS && lastReasonState.signature === currentSignature) {
+          var _skipped6 = {
+            status: 'skipped',
+            reason: 'duplicate-reason',
+            name: lastAutoBackupName || null,
+            createdAt: lastAutoBackupCreatedAtIso || null,
+            context: reason
+          };
+          recordAutoBackupRun(_skipped6);
+          return _skipped6;
+        }
+      }
+    }
     if (!force && lastAutoBackupSignature && currentSignature === lastAutoBackupSignature) {
-      var _skipped3 = {
+      var _skipped7 = {
         status: 'skipped',
         reason: 'unchanged',
         name: lastAutoBackupName || null,
         createdAt: lastAutoBackupCreatedAtIso || null,
         context: reason
       };
-      recordAutoBackupRun(_skipped3);
-      return _skipped3;
+      recordAutoBackupRun(_skipped7);
+      return _skipped7;
     }
     var timestamp = now.toISOString();
     var backupMetadata = {
@@ -1450,6 +1540,10 @@ function autoBackup() {
       name: backupName,
       createdAt: timestamp,
       context: reason
+    });
+    lastAutoBackupReasonState.set(reason, {
+      timestamp: now.valueOf(),
+      signature: currentSignature
     });
     return backupName;
   } catch (e) {
