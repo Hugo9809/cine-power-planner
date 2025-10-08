@@ -8462,7 +8462,7 @@ function registerSessionCineUiInternal(cineUi) {
           return (
             langTexts.backupSettingsHelp
             || fallbackTexts.backupSettingsHelp
-            || 'Create a full backup of every project and preference stored on this device.'
+            || 'Download a full JSON backup containing every project, device edit, preference, auto-gear rule and runtime log stored on this device. Keep multiple copies in your offline archive.'
           );
         },
       },
@@ -8473,7 +8473,7 @@ function registerSessionCineUiInternal(cineUi) {
           return (
             langTexts.restoreSettingsHelp
             || fallbackTexts.restoreSettingsHelp
-            || 'Restore a full backup. The planner saves another backup automatically before importing.'
+            || 'Restore a full JSON backup. The planner captures a fresh safety copy first, then applies the selected file so you can roll back immediately if anything looks wrong.'
           );
         },
       },

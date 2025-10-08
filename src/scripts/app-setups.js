@@ -1352,7 +1352,7 @@ function registerSetupsCineUiInternal(cineUi) {
           return (
             langTexts.shareSetupHelp
             || fallbackTexts.shareSetupHelp
-            || 'Download a JSON backup of the current project so you can share or restore it later. Store the file with your crew backups before closing the planner.'
+            || 'Download a JSON safety bundle of the current project so you can archive or share it offline. Store the file with your crew backups before closing the planner.'
           );
         },
       },
@@ -1363,7 +1363,7 @@ function registerSetupsCineUiInternal(cineUi) {
           return (
             langTexts.applySharedLinkHelp
             || fallbackTexts.applySharedLinkHelp
-            || 'Load the configuration from a JSON backup exported via Save & Share. Review the preview before applying so nothing overwrites the wrong project.'
+            || 'Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview before applying—nothing overwrites your current project until you confirm Save.'
           );
         },
       },
