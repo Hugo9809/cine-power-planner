@@ -1,10 +1,10 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
-          normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState,
+          normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, filterDetailsStorage,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
-          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow */
+          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -2069,6 +2069,9 @@ function cloneProjectFormDataSnapshot(snapshot) {
     if (Array.isArray(snapshot.storageRequirements)) {
         clone.storageRequirements = snapshot.storageRequirements.map(entry => ({ ...entry }));
     }
+    if (snapshot.monitorBatteries && typeof snapshot.monitorBatteries === 'object') {
+        clone.monitorBatteries = { ...snapshot.monitorBatteries };
+    }
 
     return clone;
 }
@@ -2092,6 +2095,9 @@ function freezeProjectFormDataSnapshot(info) {
         snapshot.storageRequirements = PROJECT_FORM_FREEZE(
             info.storageRequirements.map(entry => PROJECT_FORM_FREEZE({ ...entry }))
         );
+    }
+    if (info.monitorBatteries && typeof info.monitorBatteries === 'object') {
+        snapshot.monitorBatteries = PROJECT_FORM_FREEZE({ ...info.monitorBatteries });
     }
 
     return PROJECT_FORM_FREEZE(snapshot);
@@ -2179,6 +2185,20 @@ function collectProjectFormData() {
 
     const getGearValue = (id) => (gearValues && gearValues.has(id) ? gearValues.get(id) : '');
 
+    const monitorBatteryMap = gearListOutput ? (() => {
+        const entries = {};
+        gearListOutput.querySelectorAll('select[data-monitor-battery-key]').forEach(sel => {
+            const key = sel.getAttribute('data-monitor-battery-key');
+            if (!key) return;
+            const rawValue = sel.value;
+            const value = typeof rawValue === 'string' ? rawValue.trim() : (rawValue == null ? '' : String(rawValue));
+            if (value) {
+                entries[key] = value;
+            }
+        });
+        return entries;
+    })() : {};
+
     const proGaffColor1 = getGearValue('gearListProGaffColor1');
     const proGaffWidth1 = getGearValue('gearListProGaffWidth1');
     const proGaffColor2 = getGearValue('gearListProGaffColor2');
@@ -2221,6 +2241,10 @@ function collectProjectFormData() {
         easyrig: getSetupsCoreValue('getEasyrigValue'),
         filter: filterStr
     };
+
+    if (monitorBatteryMap && Object.keys(monitorBatteryMap).length) {
+        info.monitorBatteries = monitorBatteryMap;
+    }
 
     const assignGearField = (prop, id) => {
         const value = getGearValue(id);
@@ -5933,27 +5957,46 @@ function gearListGetCurrentHtmlImpl() {
 }
 
 function getGearListSelectors() {
-    if (!gearListOutput) return {};
     const selectors = {};
-    gearListOutput.querySelectorAll('select[id]').forEach(sel => {
-    selectors[sel.id] = sel.multiple
-        ? Array.from(sel.selectedOptions).map(o => o.value)
-        : sel.value;
-    });
+    const collectSelectValue = (sel) => {
+        if (!sel || !sel.id) return;
+        if (sel.multiple) {
+            const optionNodes = sel.selectedOptions && typeof sel.selectedOptions.length === 'number'
+                ? Array.from(sel.selectedOptions)
+                : Array.from(sel.options || []).filter(opt => opt.selected);
+            selectors[sel.id] = optionNodes.map(opt => opt.value);
+        } else {
+            selectors[sel.id] = sel.value;
+        }
+    };
+    if (gearListOutput) {
+        gearListOutput.querySelectorAll('select[id]').forEach(sel => {
+            collectSelectValue(sel);
+        });
+    }
+    const filterStorage = typeof filterDetailsStorage !== 'undefined' ? filterDetailsStorage : null;
+    if (filterStorage && typeof filterStorage.querySelectorAll === 'function') {
+        filterStorage.querySelectorAll('select[id]').forEach(sel => {
+            if (!sel || !sel.id || Object.prototype.hasOwnProperty.call(selectors, sel.id)) return;
+            collectSelectValue(sel);
+        });
+    }
     const customState = readCustomItemsState();
     if (customState && Object.keys(customState).length) {
         selectors.__customItems = customState;
     }
-    const rentalState = {};
-    gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
-        const name = span.getAttribute('data-gear-name');
-        if (!name) return;
-        if (span.getAttribute('data-rental-excluded') === 'true') {
-            rentalState[name] = true;
+    if (gearListOutput) {
+        const rentalState = {};
+        gearListOutput.querySelectorAll('.gear-item[data-gear-name]').forEach(span => {
+            const name = span.getAttribute('data-gear-name');
+            if (!name) return;
+            if (span.getAttribute('data-rental-excluded') === 'true') {
+                rentalState[name] = true;
+            }
+        });
+        if (Object.keys(rentalState).length) {
+            selectors.__rentalExclusions = rentalState;
         }
-    });
-    if (Object.keys(rentalState).length) {
-        selectors.__rentalExclusions = rentalState;
     }
     return selectors;
 }
@@ -5985,22 +6028,44 @@ function cloneGearListSelectors(selectors) {
 }
 
 function applyGearListSelectors(selectors) {
-    if (!gearListOutput || !selectors) return;
-    Object.entries(selectors).forEach(([id, value]) => {
-        if (id === '__customItems' || id === '__rentalExclusions') return;
-        const sel = gearListOutput.querySelector(`#${id}`);
-        if (sel) {
-            if (sel.multiple) {
-                const vals = Array.isArray(value) ? value : [value];
-                Array.from(sel.options).forEach(opt => {
-                    opt.selected = vals.includes(opt.value);
-                });
-                sel.dispatchEvent(new Event('change'));
+    if (!selectors) return;
+
+    const setSelectValue = (id, value) => {
+        if (typeof document === 'undefined') return;
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        if (sel.multiple) {
+            const values = Array.isArray(value)
+                ? value.map(item => (typeof item === 'string' ? item : String(item ?? '')))
+                : [typeof value === 'string' ? value : String(value ?? '')];
+            const normalized = new Set(values);
+            Array.from(sel.options).forEach(opt => {
+                const shouldSelect = normalized.has(opt.value);
+                opt.selected = shouldSelect;
+                if (shouldSelect) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        } else {
+            const nextValue = Array.isArray(value) ? value[0] : value;
+            if (nextValue !== undefined && nextValue !== null) {
+                sel.value = typeof nextValue === 'string' ? nextValue : String(nextValue);
             } else {
-                sel.value = value;
-                sel.dispatchEvent(new Event('change'));
+                sel.value = '';
             }
         }
+        try {
+            sel.dispatchEvent(new Event('change'));
+        } catch (dispatchError) {
+            void dispatchError;
+        }
+    };
+
+    Object.entries(selectors).forEach(([id, value]) => {
+        if (id === '__customItems' || id === '__rentalExclusions') return;
+        setSelectValue(id, value);
     });
     applyCustomItemsState(selectors.__customItems || {});
     applyRentalExclusionsState(selectors.__rentalExclusions || {});
