@@ -1060,6 +1060,8 @@
         popup.style.display = 'none';
         popup.setAttribute('hidden', '');
         popup.innerHTML = '';
+        popup.dataset.columns = '1';
+        popup.style.removeProperty('--diagram-popup-dynamic-width');
       };
       hidePopup();
 
@@ -1252,7 +1254,52 @@
       };
 
       let activePopupNode = null;
-      const positionPopup = (nodeEl) => {
+      const adjustPopupLayout = (entry, viewportWidth, viewportHeight, margin) => {
+        if (!popup) return;
+        popup.dataset.columns = '1';
+        popup.style.removeProperty('--diagram-popup-dynamic-width');
+        const isCameraPopup = (entry && typeof entry.className === 'string' && entry.className.includes('diagram-popup--camera'))
+          || popup.classList.contains('diagram-popup--camera');
+        if (!isCameraPopup) return;
+        if (!Number.isFinite(viewportHeight) || viewportHeight <= margin * 2) return;
+        const availableHeight = viewportHeight - margin * 2;
+        if (availableHeight <= 0) return;
+        const currentHeight = popup.scrollHeight;
+        if (!Number.isFinite(currentHeight) || currentHeight <= availableHeight) return;
+        const maxWidth = Number.isFinite(viewportWidth) && viewportWidth > margin * 2
+          ? Math.max(260, viewportWidth - margin * 2)
+          : Infinity;
+        const baseWidth = 520;
+        const widthStep = 220;
+        const minColumnWidth = 220;
+        let appliedColumns = 1;
+        let appliedWidth = baseWidth;
+        for (let columns = 2; columns <= 4; columns += 1) {
+          const candidateWidth = Math.min(maxWidth, baseWidth + (columns - 1) * widthStep);
+          if (candidateWidth < columns * minColumnWidth) {
+            continue;
+          }
+          popup.style.setProperty('--diagram-popup-dynamic-width', `${candidateWidth}px`);
+          popup.dataset.columns = String(columns);
+          void popup.offsetHeight;
+          const updatedHeight = popup.scrollHeight;
+          appliedColumns = columns;
+          appliedWidth = candidateWidth;
+          if (Number.isFinite(updatedHeight) && updatedHeight <= availableHeight) {
+            break;
+          }
+        }
+        if (appliedColumns > 1) {
+          popup.dataset.columns = String(appliedColumns);
+          popup.style.setProperty('--diagram-popup-dynamic-width', `${appliedWidth}px`);
+          void popup.offsetHeight;
+        } else {
+          popup.dataset.columns = '1';
+          popup.style.removeProperty('--diagram-popup-dynamic-width');
+          void popup.offsetHeight;
+        }
+      };
+      const positionPopup = (nodeEl, entry) => {
         if (!popup || !nodeEl) return;
         const rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
         if (!rect) return;
@@ -1266,6 +1313,7 @@
         popup.style.visibility = 'hidden';
         popup.style.display = 'block';
         popup.removeAttribute('hidden');
+        adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
         const popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
         let left = rect.right + margin;
         let top = rect.top;
@@ -1341,7 +1389,7 @@
           popup.removeAttribute('aria-label');
         }
         activePopupNode = nodeEl;
-        positionPopup(nodeEl);
+        positionPopup(nodeEl, entry);
       };
 
       const onNodeOver = e => {
@@ -1385,8 +1433,20 @@
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
       svg.addEventListener('mouseleave', onSvgLeave);
+      const repositionActivePopup = () => {
+        if (!activePopupNode) return;
+        const nodeId = activePopupNode.getAttribute('data-node');
+        if (!nodeId) return;
+        const entry = lastPopupEntries[nodeId];
+        if (!entry) return;
+        positionPopup(activePopupNode, entry);
+      };
+
       svg.addEventListener('mousemove', updatePointerPosition);
       svg.addEventListener('touchstart', updatePointerPosition, { passive: true });
+      if (windowObj) {
+        windowObj.addEventListener('resize', repositionActivePopup);
+      }
 
       cleanupDiagramInteractions = () => {
         svg.removeEventListener('mousedown', onSvgMouseDown);
@@ -1410,6 +1470,9 @@
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
+        if (windowObj) {
+          windowObj.removeEventListener('resize', repositionActivePopup);
+        }
       };
 
       apply();
