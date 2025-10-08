@@ -8615,7 +8615,12 @@ function maybeCreateProjectDeletionBackup(projects, key) {
   }
   const cloned = cloneProjectEntryForBackup(entry);
   if (cloned === undefined) {
-    return { status: 'failed' };
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn(
+        `Skipping deletion backup for project "${key}" because no stored data was available during backup creation.`,
+      );
+    }
+    return { status: 'missing' };
   }
   projects[backupName] = cloned;
   return { status: 'created', backupName };
