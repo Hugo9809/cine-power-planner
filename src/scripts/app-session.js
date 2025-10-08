@@ -145,6 +145,178 @@ function getSessionRuntimeScopes() {
   return scopes;
 }
 
+function normalizeVersionValue(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function resolveKnownAppVersion(explicitVersion) {
+  const normalizedExplicit = normalizeVersionValue(explicitVersion);
+  if (normalizedExplicit) {
+    return normalizedExplicit;
+  }
+
+  try {
+    if (typeof APP_VERSION === 'string') {
+      const normalized = normalizeVersionValue(APP_VERSION);
+      if (normalized) {
+        return normalized;
+      }
+    }
+  } catch (appVersionError) {
+    void appVersionError;
+  }
+
+  const seen = new Set();
+  const queue = [];
+
+  const enqueueCandidate = value => {
+    if (!value) {
+      return;
+    }
+    const type = typeof value;
+    if (type !== 'object' && type !== 'function') {
+      return;
+    }
+    if (seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+    queue.push(value);
+  };
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    enqueueCandidate(scopes[index]);
+  }
+
+  try {
+    if (typeof CORE_SHARED !== 'undefined' && CORE_SHARED) {
+      enqueueCandidate(CORE_SHARED);
+    }
+  } catch (coreSharedError) {
+    void coreSharedError;
+  }
+
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      enqueueCandidate(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreGlobalError) {
+    void coreGlobalError;
+  }
+
+  const versionKeys = ['APP_VERSION', 'appVersion', 'applicationVersion', 'version'];
+  const nestedKeys = [
+    'CORE_SHARED',
+    'CORE_GLOBAL_SCOPE',
+    'CORE_AGGREGATED_EXPORTS',
+    'CORE_RUNTIME_SCOPE',
+    'CORE_PART2_RUNTIME_SCOPE',
+    'CORE_SCOPE',
+    'CORE_SHARED_SCOPE_PART2',
+    'cineCoreShared',
+    'cineModules',
+    'cineModuleGlobals',
+    'cineModuleBase',
+    'cineModuleContext',
+    'cineRuntime',
+    'cinePersistence',
+    'cineOffline',
+    'cineUi',
+    'cineGlobals',
+    'cine',
+    'APP',
+    'app',
+    'globalScope',
+    'scope',
+    'exports',
+    'module',
+    'modules',
+    'environment',
+    'context',
+    'runtime',
+    'shared',
+    'globals',
+    '__cineGlobal',
+    '__cineScope',
+    '__cineModules',
+    '__cineExports',
+    '__cineRuntime',
+    'details',
+    'meta',
+    'metadata',
+    'build',
+    'buildInfo',
+  ];
+
+  while (queue.length) {
+    const candidate = queue.shift();
+    if (!candidate) {
+      continue;
+    }
+
+    for (let index = 0; index < versionKeys.length; index += 1) {
+      const key = versionKeys[index];
+      let value;
+      try {
+        value = candidate[key];
+      } catch (readError) {
+        value = undefined;
+        void readError;
+      }
+      const normalized = normalizeVersionValue(value);
+      if (normalized) {
+        return normalized;
+      }
+    }
+
+    for (let index = 0; index < nestedKeys.length; index += 1) {
+      const nestedKey = nestedKeys[index];
+      let nestedValue;
+      try {
+        nestedValue = candidate[nestedKey];
+      } catch (nestedError) {
+        nestedValue = null;
+        void nestedError;
+      }
+      enqueueCandidate(nestedValue);
+    }
+
+    let keys = [];
+    try {
+      keys = Object.keys(candidate);
+    } catch (keysError) {
+      keys = [];
+      void keysError;
+    }
+    const limitedKeys = keys.length > 50 ? keys.slice(0, 50) : keys;
+    for (let index = 0; index < limitedKeys.length; index += 1) {
+      const key = limitedKeys[index];
+      if (!/(version|core|cine|shared|global|app)/i.test(key)) {
+        continue;
+      }
+      let nested;
+      try {
+        nested = candidate[key];
+      } catch (valueError) {
+        nested = null;
+        void valueError;
+      }
+      enqueueCandidate(nested);
+    }
+  }
+
+  return null;
+}
+
+const ACTIVE_APP_VERSION = resolveKnownAppVersion(
+  typeof APP_VERSION === 'string' ? APP_VERSION : null,
+);
+
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
     return null;
@@ -608,9 +780,14 @@ function buildRestoreCompatibilityReport(options = {}) {
     'restoreVersionSummaryHeading',
     'This backup was created with {oldVersion} and you are running {newVersion}.',
   );
+  const normalizedFileVersion = normalizeVersionValue(fileVersion);
+  const normalizedTargetVersion =
+    resolveKnownAppVersion(targetVersion)
+    || ACTIVE_APP_VERSION
+    || normalizeVersionValue(targetVersion);
   const heading = headingTemplate
-    .replace('{oldVersion}', fileVersion || unknownVersion)
-    .replace('{newVersion}', targetVersion || unknownVersion);
+    .replace('{oldVersion}', normalizedFileVersion || unknownVersion)
+    .replace('{newVersion}', normalizedTargetVersion || unknownVersion);
   messageParts.push(heading);
 
   const warning = getText('restoreVersionWarning');
@@ -6528,7 +6705,9 @@ function handleBackupDiffExport() {
     type: 'cine-power-planner-version-log',
     version: 1,
     createdAt: new Date().toISOString(),
-    appVersion: typeof APP_VERSION === 'string' ? APP_VERSION : null,
+    appVersion: typeof ACTIVE_APP_VERSION === 'string'
+      ? ACTIVE_APP_VERSION
+      : normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null),
     baseline: {
       id: baselineEntry.value,
       label: baselineEntry.label,
@@ -7029,8 +7208,11 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     const settings = captureStorageSnapshot(safeStorage);
     const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
     const { data: backupData, diagnostics } = collectFullBackupData();
+    const backupVersion =
+      ACTIVE_APP_VERSION
+      || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
     const backup = {
-      version: APP_VERSION,
+      version: backupVersion || undefined,
       generatedAt: iso,
       settings,
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
@@ -8230,12 +8412,16 @@ function handleRestoreSettingsInputChange() {
       if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
         throw new Error('Backup missing recognized sections');
       }
-      if (fileVersion !== APP_VERSION) {
+      const normalizedFileVersion = normalizeVersionValue(fileVersion);
+      const normalizedAppVersion =
+        ACTIVE_APP_VERSION
+        || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+      if (normalizedFileVersion !== normalizedAppVersion) {
         const compatibilityMessage = buildRestoreVersionCompatibilityMessage({
           langTexts,
           fallbackTexts,
-          fileVersion,
-          targetVersion: APP_VERSION,
+          fileVersion: normalizedFileVersion,
+          targetVersion: normalizedAppVersion,
           data,
           settingsSnapshot: restoredSettings,
           sessionSnapshot: restoredSession,
@@ -13521,7 +13707,7 @@ if (document.readyState === "loading") {
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
-    APP_VERSION,
+    APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : APP_VERSION,
     closeSideMenu,
     openSideMenu,
     setupSideMenu,
