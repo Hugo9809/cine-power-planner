@@ -773,6 +773,7 @@ function resetSetupStateToDefaults(options = {}) {
 
     const resetSelectToDefault = (select) => {
       if (!select || typeof select !== 'object') return;
+      const isCameraSelect = select === cameraSelect;
       const noneOption = Array.from(select.options || []).find(opt => opt.value === "None");
       if (noneOption) {
         select.value = "None";
@@ -780,6 +781,10 @@ function resetSetupStateToDefaults(options = {}) {
         select.selectedIndex = 0;
       } else {
         select.value = "";
+      }
+
+      if (isCameraSelect) {
+        callEventsCoreFunction('updateRecordingMediaOptions');
       }
     };
 
@@ -1072,6 +1077,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
     if (setup) {
       setupNameInput.value = setupName;
       cameraSelect.value = setup.camera;
+      callEventsCoreFunction('updateRecordingMediaOptions');
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);

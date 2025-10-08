@@ -13875,12 +13875,39 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     function getAllRecordingMedia() {
+      const selectedCameraName =
+        cameraSelect && typeof cameraSelect.value === 'string'
+          ? cameraSelect.value.trim()
+          : '';
+
+      const normalizedCameraName = selectedCameraName === 'None' ? '' : selectedCameraName;
+      const selectedCamera =
+        normalizedCameraName && devices && devices.cameras
+          ? devices.cameras[normalizedCameraName]
+          : null;
+
+      const hasSpecificMedia = Array.isArray(selectedCamera?.recordingMedia)
+        && selectedCamera.recordingMedia.length > 0;
+
+      const sourceCameras = hasSpecificMedia
+        ? [selectedCamera]
+        : Object.values(devices?.cameras || {});
+
       const media = new Set();
-      Object.values(devices.cameras).forEach(cam => {
-        if (Array.isArray(cam.recordingMedia)) {
-          cam.recordingMedia.forEach(m => { if (m && m.type) media.add(m.type); });
+
+      sourceCameras.forEach(cam => {
+        if (!cam || !Array.isArray(cam.recordingMedia)) {
+          return;
         }
+        cam.recordingMedia.forEach(m => {
+          if (!m) return;
+          const type = typeof m === 'string' ? m : m.type;
+          if (type) {
+            media.add(type);
+          }
+        });
       });
+
       return Array.from(media).sort(localeSort);
     }
     
@@ -14019,6 +14046,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
+    writeCoreScopeValue('updateRecordingMediaOptions', updateRecordingMediaOptions);
     
     function clearRecordingMedia() {
       setRecordingMediaLocal([]);
@@ -15341,6 +15369,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       .forEach(sel => attachSelectSearch(sel));
     motorSelects.forEach(sel => attachSelectSearch(sel));
     controllerSelects.forEach(sel => attachSelectSearch(sel));
+
+    if (cameraSelect) {
+      cameraSelect.addEventListener('change', () => {
+        updateRecordingMediaOptions();
+      });
+    }
     applyFilters();
     setVideoOutputs([]);
     setMonitorVideoInputs([]);
@@ -16239,6 +16273,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['promptForSharedFilename', () => promptForSharedFilename],
       ['downloadSharedProject', () => downloadSharedProject],
       ['clearBatteryPlates', () => clearBatteryPlates],
+      ['updateRecordingMediaOptions', () => updateRecordingMediaOptions],
       ['clearRecordingMedia', () => clearRecordingMedia],
       ['clearLensMounts', () => clearLensMounts],
       ['clearPowerDistribution', () => clearPowerDistribution],
