@@ -1291,6 +1291,106 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       finalize(false);
     }
   }
+  function loadScriptsInParallel(urls, options) {
+    var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+    var settings = options || {};
+    var aborted = false;
+    var completed = false;
+
+    if (!urls || !urls.length) {
+      if (typeof settings.onComplete === 'function') {
+        try {
+          settings.onComplete();
+        } catch (completeError) {
+          console.error('Parallel loader completion callback failed', completeError);
+        }
+      }
+      return {
+        cancel: function cancelEmptyParallelLoader() {
+          aborted = true;
+        }
+      };
+    }
+
+    var remaining = urls.length;
+
+    function finalizeParallel() {
+      if (completed || aborted) {
+        return;
+      }
+      completed = true;
+      if (typeof settings.onComplete === 'function') {
+        try {
+          settings.onComplete();
+        } catch (callbackError) {
+          console.error('Parallel loader completion callback failed', callbackError);
+        }
+      }
+    }
+
+    function handleError(context) {
+      if (completed || aborted) {
+        return;
+      }
+
+      var shouldAbort = false;
+      if (typeof settings.onError === 'function') {
+        try {
+          shouldAbort = settings.onError(context) === true;
+        } catch (callbackError) {
+          console.error('Parallel loader error callback failed', callbackError);
+        }
+      }
+
+      if (shouldAbort) {
+        aborted = true;
+      }
+    }
+
+    for (var index = 0; index < urls.length; index += 1) {
+      (function parallelLoaderIterator(currentIndex) {
+        if (aborted) {
+          return;
+        }
+
+        var currentUrl = urls[currentIndex];
+        var resolvedUrl = resolveAssetUrl(currentUrl);
+        var script = document.createElement('script');
+        script.src = resolvedUrl;
+        script.async = true;
+        script.defer = true;
+
+        script.onload = function () {
+          if (aborted || completed) {
+            return;
+          }
+
+          remaining -= 1;
+          if (remaining <= 0) {
+            finalizeParallel();
+          }
+        };
+
+        script.onerror = function (event) {
+          console.error('Failed to load parallel script:', currentUrl, '→', resolvedUrl, event && event.error);
+          handleError({ event: event, url: currentUrl, index: currentIndex });
+          remaining -= 1;
+          if (remaining <= 0) {
+            finalizeParallel();
+          }
+        };
+
+        head.appendChild(script);
+      })(index);
+    }
+
+    return {
+      cancel: function cancelParallelLoader() {
+        aborted = true;
+      }
+    };
+  }
+
   function loadScriptsSequentially(urls, options) {
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
@@ -1319,7 +1419,45 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
       var currentIndex = index;
-      var currentUrl = urls[currentIndex];
+      var currentItem = urls[currentIndex];
+
+      if (currentItem && _typeof(currentItem) === 'object' && !Array.isArray(currentItem)) {
+        if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
+          loadScriptsInParallel(currentItem.parallel, {
+            onError: function handleParallelError(context) {
+              var shouldAbort = false;
+              if (typeof settings.onError === 'function') {
+                try {
+                  shouldAbort = settings.onError(context) === true;
+                } catch (callbackError) {
+                  console.error('Loader error callback failed', callbackError);
+                }
+              }
+
+              if (shouldAbort) {
+                aborted = true;
+              }
+
+              return shouldAbort;
+            },
+            onComplete: function onComplete() {
+              if (aborted) {
+                return;
+              }
+              index = currentIndex + 1;
+              next();
+            }
+          });
+          return;
+        }
+      }
+
+      var currentUrl = typeof currentItem === 'string' ? currentItem : '';
+      if (!currentUrl) {
+        index = currentIndex + 1;
+        next();
+        return;
+      }
       var resolvedUrl = resolveAssetUrl(currentUrl);
       var script = document.createElement('script');
       script.src = resolvedUrl;
@@ -1409,14 +1547,18 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     });
   }
-  var modernScriptBundle = {
-    core: ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
-    deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js']
-  };
-  var legacyScriptBundle = {
-    core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
-    deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
-  };
+    var modernScriptBundle = {
+      core: ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', {
+        parallel: ['src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js']
+      }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+      deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js']
+    };
+    var legacyScriptBundle = {
+      core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', {
+        parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js']
+      }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
+      deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
+    };
   function startLoading() {
     if (shouldForceLegacyBundle()) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;

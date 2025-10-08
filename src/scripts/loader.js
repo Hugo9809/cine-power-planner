@@ -1536,7 +1536,116 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
   }
 
-  function loadScriptsSequentially(urls, options) {
+  function loadScriptsInParallel(urls, options) {
+    var head =
+      document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+    var settings = options || {};
+    var aborted = false;
+    var completed = false;
+
+    if (!urls || !urls.length) {
+      if (typeof settings.onComplete === 'function') {
+        try {
+          settings.onComplete();
+        } catch (completeError) {
+          console.error('Parallel loader completion callback failed', completeError);
+        }
+      }
+      return {
+        cancel: function cancelEmptyParallelLoader() {
+          aborted = true;
+        },
+      };
+    }
+
+    var remaining = urls.length;
+
+    function finalizeParallel() {
+      if (completed || aborted) {
+        return;
+      }
+      completed = true;
+      if (typeof settings.onComplete === 'function') {
+        try {
+          settings.onComplete();
+        } catch (callbackError) {
+          console.error('Parallel loader completion callback failed', callbackError);
+        }
+      }
+    }
+
+    function handleError(context) {
+      if (completed || aborted) {
+        return;
+      }
+
+      var shouldAbort = false;
+      if (typeof settings.onError === 'function') {
+        try {
+          shouldAbort = settings.onError(context) === true;
+        } catch (callbackError) {
+          console.error('Parallel loader error callback failed', callbackError);
+        }
+      }
+
+      if (shouldAbort) {
+        aborted = true;
+      }
+    }
+
+    for (var index = 0; index < urls.length; index += 1) {
+      (function parallelLoaderIterator(currentIndex) {
+        if (aborted) {
+          return;
+        }
+
+        var currentUrl = urls[currentIndex];
+        var resolvedUrl = resolveAssetUrl(currentUrl);
+        var script = document.createElement('script');
+        script.src = resolvedUrl;
+        script.async = true;
+        script.defer = true;
+
+        script.onload = function () {
+          if (aborted || completed) {
+            return;
+          }
+
+          remaining -= 1;
+          if (remaining <= 0) {
+            finalizeParallel();
+          }
+        };
+
+        script.onerror = function (event) {
+          console.error(
+            'Failed to load parallel script:',
+            currentUrl,
+            '→',
+            resolvedUrl,
+            event && event.error,
+          );
+
+          handleError({ event: event, url: currentUrl, index: currentIndex });
+
+          remaining -= 1;
+          if (remaining <= 0) {
+            finalizeParallel();
+          }
+        };
+
+        head.appendChild(script);
+      })(index);
+    }
+
+    return {
+      cancel: function cancelParallelLoader() {
+        aborted = true;
+      },
+    };
+  }
+
+  function loadScriptsSequentially(items, options) {
     var head =
       document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
@@ -1565,13 +1674,51 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         return;
       }
 
-      if (index >= urls.length) {
+      if (index >= items.length) {
         finalize();
         return;
       }
 
       var currentIndex = index;
-      var currentUrl = urls[currentIndex];
+      var currentItem = items[currentIndex];
+
+      if (currentItem && typeof currentItem === 'object' && !Array.isArray(currentItem)) {
+        if (Array.isArray(currentItem.parallel) && currentItem.parallel.length) {
+          loadScriptsInParallel(currentItem.parallel, {
+            onError: function handleParallelError(context) {
+              var shouldAbort = false;
+              if (typeof settings.onError === 'function') {
+                try {
+                  shouldAbort = settings.onError(context) === true;
+                } catch (callbackError) {
+                  console.error('Loader error callback failed', callbackError);
+                }
+              }
+
+              if (shouldAbort) {
+                aborted = true;
+              }
+
+              return shouldAbort;
+            },
+            onComplete: function () {
+              if (aborted) {
+                return;
+              }
+              index = currentIndex + 1;
+              next();
+            },
+          });
+          return;
+        }
+      }
+
+      var currentUrl = typeof currentItem === 'string' ? currentItem : '';
+      if (!currentUrl) {
+        index = currentIndex + 1;
+        next();
+        return;
+      }
       var resolvedUrl = resolveAssetUrl(currentUrl);
       var script = document.createElement('script');
       script.src = resolvedUrl;
@@ -1688,16 +1835,18 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     core: [
       'src/scripts/globalthis-polyfill.js',
       'src/data/devices/index.js',
-      'src/data/devices/cameras.js',
-      'src/data/devices/monitors.js',
-      'src/data/devices/video.js',
-      'src/data/devices/fiz.js',
-      'src/data/devices/batteries.js',
-      'src/data/devices/batteryHotswaps.js',
-      'src/data/devices/chargers.js',
-      'src/data/devices/cages.js',
-      'src/data/devices/gearList.js',
-      'src/data/devices/wirelessReceivers.js',
+      { parallel: [
+        'src/data/devices/cameras.js',
+        'src/data/devices/monitors.js',
+        'src/data/devices/video.js',
+        'src/data/devices/fiz.js',
+        'src/data/devices/batteries.js',
+        'src/data/devices/batteryHotswaps.js',
+        'src/data/devices/chargers.js',
+        'src/data/devices/cages.js',
+        'src/data/devices/gearList.js',
+        'src/data/devices/wirelessReceivers.js',
+      ] },
       'src/scripts/storage.js',
       'src/scripts/translations.js',
       'src/vendor/lz-string.min.js',
@@ -1744,16 +1893,18 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/vendor/regenerator-runtime-fallback.js',
       'legacy/scripts/globalthis-polyfill.js',
       'legacy/data/devices/index.js',
-      'legacy/data/devices/cameras.js',
-      'legacy/data/devices/monitors.js',
-      'legacy/data/devices/video.js',
-      'legacy/data/devices/fiz.js',
-      'legacy/data/devices/batteries.js',
-      'legacy/data/devices/batteryHotswaps.js',
-      'legacy/data/devices/chargers.js',
-      'legacy/data/devices/cages.js',
-      'legacy/data/devices/gearList.js',
-      'legacy/data/devices/wirelessReceivers.js',
+      { parallel: [
+        'legacy/data/devices/cameras.js',
+        'legacy/data/devices/monitors.js',
+        'legacy/data/devices/video.js',
+        'legacy/data/devices/fiz.js',
+        'legacy/data/devices/batteries.js',
+        'legacy/data/devices/batteryHotswaps.js',
+        'legacy/data/devices/chargers.js',
+        'legacy/data/devices/cages.js',
+        'legacy/data/devices/gearList.js',
+        'legacy/data/devices/wirelessReceivers.js',
+      ] },
       'legacy/scripts/storage.js',
       'legacy/scripts/translations.js',
       'src/vendor/lz-string.min.js',

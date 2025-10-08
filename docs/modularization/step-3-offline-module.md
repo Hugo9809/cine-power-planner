@@ -16,7 +16,7 @@ registrations; they are exposed under `cineOffline.__internal` for diagnostic to
 
 ## Integration Updates
 * The loader now fetches `src/scripts/modules/offline.js` before the runtime so every bundle can use the
-  shared facade when the UI boots, including the legacy path.【F:src/scripts/loader.js†L472-L498】【F:legacy/scripts/loader.js†L419-L445】
+  shared facade when the UI boots, including the legacy path.【F:src/scripts/loader.js†L1850-L1865】【F:legacy/scripts/loader.js†L1551-L1559】
 * `app-core-new-1.js` and its legacy counterpart delegate service worker registration to
   `cineOffline.registerServiceWorker`, falling back to the historical code path if the module is
   unavailable.【F:src/scripts/app-core-new-1.js†L3521-L3539】【F:legacy/scripts/app-core-new-1.js†L3286-L3306】

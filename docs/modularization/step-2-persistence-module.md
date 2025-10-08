@@ -22,7 +22,7 @@ accidental mutation of the safety-critical entry points.【F:src/scripts/modules
 ## Loader & Offline Updates
 The script loader now fetches the persistence module after the session logic so it is available for
 both modern and legacy bundles, and the service worker precaches the new asset to preserve
-offline-first guarantees.【F:src/scripts/loader.js†L465-L492】【F:legacy/scripts/loader.js†L420-L446】【F:service-worker.js†L1-L63】
+offline-first guarantees.【F:src/scripts/loader.js†L1850-L1880】【F:legacy/scripts/loader.js†L1551-L1560】【F:service-worker.js†L1-L63】
 
 ## Verification
 A dedicated Jest suite asserts that every wrapper delegates to the underlying implementation without
