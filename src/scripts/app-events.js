@@ -72,7 +72,10 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'change-threshold',
   'safeguard',
 ];
-const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set();
+const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
+
+const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
+const lastAutoBackupReasonState = new Map();
 
 let autoBackupChangesSinceSnapshot = 0;
 let autoBackupThresholdInProgress = false;
@@ -1594,6 +1597,26 @@ function autoBackup(options = {}) {
     }
     const gearListGenerated = Boolean(currentGearListHtml);
     const currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    if (!force) {
+      const lastReasonState = lastAutoBackupReasonState.get(reason);
+      if (lastReasonState) {
+        const elapsedSinceReason = now.valueOf() - lastReasonState.timestamp;
+        if (
+          elapsedSinceReason < AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS
+          && lastReasonState.signature === currentSignature
+        ) {
+          const skipped = {
+            status: 'skipped',
+            reason: 'duplicate-reason',
+            name: lastAutoBackupName || null,
+            createdAt: lastAutoBackupCreatedAtIso || null,
+            context: reason,
+          };
+          recordAutoBackupRun(skipped);
+          return skipped;
+        }
+      }
+    }
     if (!force && lastAutoBackupSignature && currentSignature === lastAutoBackupSignature) {
       const skipped = {
         status: 'skipped',
@@ -1660,6 +1683,10 @@ function autoBackup(options = {}) {
       name: backupName,
       createdAt: timestamp,
       context: reason,
+    });
+    lastAutoBackupReasonState.set(reason, {
+      timestamp: now.valueOf(),
+      signature: currentSignature,
     });
     return backupName;
   } catch (e) {
