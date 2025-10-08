@@ -3,6 +3,7 @@
 const cameraData = {
   "Arri Alexa Mini LF": {
     "powerDrawWatts": 89,
+    "requiredImageCircleMm": 44.71,
     "power": {
       "input": {
         "voltageRange": "11-34",
@@ -166,6 +167,7 @@ const cameraData = {
   },
   "Arri Alexa Mini": {
     "powerDrawWatts": 84,
+    "requiredImageCircleMm": 33.59,
     "power": {
       "input": {
         "voltageRange": "11-34",
@@ -317,6 +319,7 @@ const cameraData = {
   },
   "Arri Alexa 35": {
     "powerDrawWatts": 110,
+    "requiredImageCircleMm": 33.9,
     "power": {
       "input": {
         "voltageRange": "19.5-34",
@@ -472,6 +475,7 @@ const cameraData = {
   },
   "Arri Alexa 35 Xtreme": {
     "powerDrawWatts": 121.5,
+    "requiredImageCircleMm": 33.9,
     "power": {
       "input": {
         "voltageRange": "20.5-33.6",
@@ -642,6 +646,7 @@ const cameraData = {
   },
   "Arri Amira": {
     "powerDrawWatts": 50,
+    "requiredImageCircleMm": 30.3,
     "power": {
       "input": {
         "voltageRange": "10.5-34",
@@ -777,6 +782,7 @@ const cameraData = {
   },
   "Sony Venice 2": {
     "powerDrawWatts": 76,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
@@ -945,6 +951,7 @@ const cameraData = {
   },
   "Sony Venice": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 43.5,
     "power": {
       "input": {
         "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
@@ -1114,6 +1121,7 @@ const cameraData = {
   },
   "Sony Burano": {
     "powerDrawWatts": 66,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "19.5",
@@ -1242,6 +1250,7 @@ const cameraData = {
   },
   "Sony FX3": {
     "powerDrawWatts": 7.3,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "7.2 (ia NP-FZ100) / 5 (ia USB-C)",
@@ -1339,6 +1348,7 @@ const cameraData = {
   },
   "Sony FX6": {
     "powerDrawWatts": 18,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "19.5",
@@ -1481,6 +1491,7 @@ const cameraData = {
   },
   "Sony FX9": {
     "powerDrawWatts": 35.2,
+    "requiredImageCircleMm": 40.35,
     "power": {
       "input": {
         "voltageRange": "19.5",
@@ -1614,6 +1625,7 @@ const cameraData = {
   },
   "Sony FS7 II": {
     "powerDrawWatts": 19,
+    "requiredImageCircleMm": 29.89,
     "power": {
       "input": {
         "voltageRange": "12-17",
@@ -1727,6 +1739,7 @@ const cameraData = {
   },
   "Canon C70": {
     "powerDrawWatts": 14.6,
+    "requiredImageCircleMm": 29.62,
     "power": {
       "input": {
         "voltageRange": "24",
@@ -1817,6 +1830,7 @@ const cameraData = {
   },
   "Canon C80": {
     "powerDrawWatts": 19.6,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "19.5",
@@ -1969,6 +1983,7 @@ const cameraData = {
   },
   "Canon C300 Mk III": {
     "powerDrawWatts": 31,
+    "requiredImageCircleMm": 29.6,
     "power": {
       "input": {
         "voltageRange": "11.5-20",
@@ -2090,6 +2105,7 @@ const cameraData = {
   },
   "Canon C400": {
     "powerDrawWatts": 32.5,
+    "requiredImageCircleMm": 40.7,
     "power": {
       "input": {
         "voltageRange": "11.5-20",
@@ -2225,6 +2241,7 @@ const cameraData = {
   },
   "Canon C500 Mk II": {
     "powerDrawWatts": 63,
+    "requiredImageCircleMm": 43.9,
     "power": {
       "input": {
         "voltageRange": "11.5-20",
@@ -2346,6 +2363,7 @@ const cameraData = {
   },
   "Canon EOS C700 FF": {
     "powerDrawWatts": 61,
+    "requiredImageCircleMm": 43.1,
     "power": {
       "input": {
         "voltageRange": "11-17",
@@ -2415,6 +2433,7 @@ const cameraData = {
   },
   "Blackmagic BMPCC 4K": {
     "powerDrawWatts": 22,
+    "requiredImageCircleMm": 21.64,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -2511,6 +2530,7 @@ const cameraData = {
   },
   "Blackmagic BMPCC 6K G2": {
     "powerDrawWatts": 26,
+    "requiredImageCircleMm": 26.5,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -2614,6 +2634,7 @@ const cameraData = {
   },
   "Blackmagic BMPCC 6K": {
     "powerDrawWatts": 26,
+    "requiredImageCircleMm": 26.5,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -2719,6 +2740,7 @@ const cameraData = {
   },
   "Blackmagic Pocket Cinema Camera 6K Pro": {
     "powerDrawWatts": 26,
+    "requiredImageCircleMm": 26.5,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -2829,6 +2851,7 @@ const cameraData = {
   },
   "Blackmagic URSA 12K": {
     "powerDrawWatts": 55,
+    "requiredImageCircleMm": 30.56,
     "power": {
       "input": {
         "voltageRange": "12",
@@ -2956,6 +2979,7 @@ const cameraData = {
   },
   "Blackmagic URSA Cine": {
     "powerDrawWatts": 100,
+    "requiredImageCircleMm": 55.9,
     "power": {
       "input": {
         "voltageRange": "20-30",
@@ -3114,6 +3138,7 @@ const cameraData = {
   },
   "Blackmagic URSA Cine 17K 65": {
     "powerDrawWatts": 100,
+    "requiredImageCircleMm": 56.4,
     "power": {
       "input": {
         "voltageRange": "20-30",
@@ -3273,6 +3298,7 @@ const cameraData = {
   },
   "Blackmagic PYXIS 6K": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -3367,6 +3393,7 @@ const cameraData = {
   },
   "Blackmagic PYXIS 12K": {
     "powerDrawWatts": 90,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -3460,6 +3487,7 @@ const cameraData = {
   },
   "RED Komodo 6k": {
     "powerDrawWatts": 37,
+    "requiredImageCircleMm": 30.56,
     "power": {
       "input": {
         "voltageRange": "+7-+17",
@@ -3585,6 +3613,7 @@ const cameraData = {
   },
   "RED Komodo X": {
     "powerDrawWatts": 45,
+    "requiredImageCircleMm": 30.56,
     "power": {
       "input": {
         "voltageRange": "+7-+17",
@@ -3686,6 +3715,7 @@ const cameraData = {
   },
   "Red V-Raptor XL 8K VV": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "24",
@@ -3816,6 +3846,7 @@ const cameraData = {
   },
   "Red V-RAPTOR® X XL 8K VV": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "24",
@@ -3945,6 +3976,7 @@ const cameraData = {
   },
   "Red V-RAPTOR® XL 8K S35": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "24",
@@ -4072,6 +4104,7 @@ const cameraData = {
   },
   "Red V-RAPTOR® X XL 8K S35": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "24",
@@ -4199,6 +4232,7 @@ const cameraData = {
   },
   "Red V-Raptor 8k S35": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4293,6 +4327,7 @@ const cameraData = {
   },
   "Red V-Raptor X 8k S35": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4387,6 +4422,7 @@ const cameraData = {
   },
   "Red V-Raptor 8k VV": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4487,6 +4523,7 @@ const cameraData = {
   },
   "Red V-Raptor X 8k VV": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4584,6 +4621,7 @@ const cameraData = {
   },
   "RED Scarlet-W (Dragon Sensor)": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 28.9,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4678,6 +4716,7 @@ const cameraData = {
   },
   "RED Epic-W (Helium 8K S35)": {
     "powerDrawWatts": 37,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4773,6 +4812,7 @@ const cameraData = {
   },
   "RED Weapon (Helium 8K S35/VV)": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4864,6 +4904,7 @@ const cameraData = {
   },
   "RED Epic Dragon (6K)": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 34.5,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -4956,6 +4997,7 @@ const cameraData = {
   },
   "RED Scarlet Dragon (5K)": {
     "powerDrawWatts": 50,
+    "requiredImageCircleMm": 34.5,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -5045,6 +5087,7 @@ const cameraData = {
   },
   "RED Epic (Mysterium-X Sensor)": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 31.4,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -5136,6 +5179,7 @@ const cameraData = {
   },
   "RED Scarlet (Mysterium-X Sensor)": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 31.4,
     "power": {
       "input": {
         "voltageRange": "11.5-17",
@@ -5225,6 +5269,7 @@ const cameraData = {
   },
   "Panasonic Lumix S5 II": {
     "powerDrawWatts": 12,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "8.4 (battery) / 9 (USB-C PD)",
@@ -5320,6 +5365,7 @@ const cameraData = {
   },
   "Panasonic Lumix GH6": {
     "powerDrawWatts": 5,
+    "requiredImageCircleMm": 21.64,
     "power": {
       "input": {
         "voltageRange": "9.0 (battery) / 9 (USB-C PD)",
@@ -5420,6 +5466,7 @@ const cameraData = {
   },
   "Sony A7S III": {
     "powerDrawWatts": 5,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 9 (USB-C PD)",
@@ -5516,6 +5563,7 @@ const cameraData = {
   },
   "Fujifilm X-H2S": {
     "powerDrawWatts": 15,
+    "requiredImageCircleMm": 28.21,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 5 (USB-C PD)",
@@ -5612,6 +5660,7 @@ const cameraData = {
   },
   "DJI Ronin 4D 6K": {
     "powerDrawWatts": 40,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12-30",
@@ -5758,6 +5807,7 @@ const cameraData = {
   },
   "Sony FX30": {
     "powerDrawWatts": 5.6,
+    "requiredImageCircleMm": 28.21,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 9 (USB-C PD)",
@@ -5859,6 +5909,7 @@ const cameraData = {
   },
   "Panasonic Lumix BS1H": {
     "powerDrawWatts": 8.1,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "12 (11.4-12.6)",
@@ -5958,6 +6009,7 @@ const cameraData = {
   },
   "Sony ZV-E1": {
     "powerDrawWatts": 7,
+    "requiredImageCircleMm": 42.82,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / 5 (USB-C PD)",
@@ -6037,6 +6089,7 @@ const cameraData = {
   },
   "Fujifilm X-M5": {
     "powerDrawWatts": 5.5,
+    "requiredImageCircleMm": 28.21,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / USB-C",
@@ -6130,6 +6183,7 @@ const cameraData = {
   },
   "Canon EOS R5 Mark II": {
     "powerDrawWatts": 15,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "7.2 (LP-E6P) / USB-C PD (45W+ recommended)",
@@ -6231,6 +6285,7 @@ const cameraData = {
   },
   "Canon EOS R1": {
     "powerDrawWatts": 18,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "7.2 (LP-E19) / USB-C PD",
@@ -6324,6 +6379,7 @@ const cameraData = {
   },
   "Sony PXW-FS7": {
     "powerDrawWatts": 19,
+    "requiredImageCircleMm": 29.89,
     "power": {
       "input": {
         "voltageRange": "11-17",
@@ -6385,6 +6441,7 @@ const cameraData = {
   },
   "Canon C200": {
     "powerDrawWatts": 19.3,
+    "requiredImageCircleMm": 27.57,
     "power": {
       "input": {
         "voltageRange": "11-17",
@@ -6446,6 +6503,7 @@ const cameraData = {
   },
   "Panasonic AU-EVA1": {
     "powerDrawWatts": 19,
+    "requiredImageCircleMm": 26.57,
     "power": {
       "input": {
         "voltageRange": "10.5-17",
@@ -6513,6 +6571,7 @@ const cameraData = {
   },
   "Panasonic VariCam LT": {
     "powerDrawWatts": 47,
+    "requiredImageCircleMm": 27.78,
     "power": {
       "input": {
         "voltageRange": "10-18",
@@ -6595,6 +6654,7 @@ const cameraData = {
   },
   "RED V-RAPTOR 8K VV": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -6679,6 +6739,7 @@ const cameraData = {
   },
   "RED V-RAPTOR [X] 8K VV": {
     "powerDrawWatts": 75,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -6763,6 +6824,7 @@ const cameraData = {
   },
   "RED V-RAPTOR 8K S35": {
     "powerDrawWatts": 70,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -6859,6 +6921,7 @@ const cameraData = {
   },
   "Blackmagic Cinema Camera 6K": {
     "powerDrawWatts": 30,
+    "requiredImageCircleMm": 26.5,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -6928,6 +6991,7 @@ const cameraData = {
   },
   "Leica SL3-S": {
     "powerDrawWatts": 10,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "7.2 (battery) / USB-C",
@@ -7020,6 +7084,7 @@ const cameraData = {
   },
   "Canon EOS R5 C": {
     "powerDrawWatts": 13.3,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "9-15",
@@ -7078,6 +7143,7 @@ const cameraData = {
   },
   "Blackmagic URSA Broadcast G2": {
     "powerDrawWatts": 100,
+    "requiredImageCircleMm": 26.51,
     "power": {
       "input": {
         "voltageRange": "12-20",
@@ -7152,6 +7218,7 @@ const cameraData = {
   },
   "Kinefinity MAVO Edge 6K": {
     "powerDrawWatts": 32,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "10.5-34",
@@ -7225,6 +7292,7 @@ const cameraData = {
   },
   "Z CAM E2-F6": {
     "powerDrawWatts": 50,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12-16.8",
@@ -7342,6 +7410,7 @@ const cameraData = {
   },
   "Z CAM E2-F6 Pro / Mark II": {
     "powerDrawWatts": 50,
+    "requiredImageCircleMm": 43.27,
     "power": {
       "input": {
         "voltageRange": "12-18",
@@ -7450,6 +7519,7 @@ const cameraData = {
   },
   "RED DSMC2 MONSTRO 8K VV": {
     "powerDrawWatts": 60,
+    "requiredImageCircleMm": 46.31,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -7517,6 +7587,7 @@ const cameraData = {
   },
   "RED DSMC2 HELIUM 8K S35": {
     "powerDrawWatts": 45,
+    "requiredImageCircleMm": 33.8,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -7584,6 +7655,7 @@ const cameraData = {
   },
   "RED DSMC2 GEMINI 5K S35": {
     "powerDrawWatts": 63,
+    "requiredImageCircleMm": 34.5,
     "power": {
       "input": {
         "voltageRange": "11.5-32",
@@ -7649,6 +7721,7 @@ const cameraData = {
   },
   "None": {
     "powerDrawWatts": 0,
+    "requiredImageCircleMm": null,
     "power": {
       "input": {
         "voltageRange": null,
