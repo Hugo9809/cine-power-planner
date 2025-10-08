@@ -4548,11 +4548,23 @@ if (settingsButton && settingsDialog) {
       var button = targetElement && typeof targetElement.closest === 'function' ? targetElement.closest('button') : null;
       if (!button) return;
       if (button.classList.contains('auto-gear-edit')) {
-        invokeSessionOpenAutoGearEditor(button.dataset.ruleId || '');
+        var ruleId = button.dataset.ruleId || '';
+        var ruleIndex = button.dataset.ruleIndex;
+        var options = {};
+        if (ruleIndex !== undefined) {
+          options.ruleIndex = ruleIndex;
+        }
+        invokeSessionOpenAutoGearEditor(ruleId, options);
       } else if (button.classList.contains('auto-gear-duplicate')) {
-        duplicateAutoGearRule(button.dataset.ruleId || '');
+        duplicateAutoGearRule(button.dataset.ruleId || '', button.dataset.ruleIndex);
       } else if (button.classList.contains('auto-gear-delete')) {
-        deleteAutoGearRule(button.dataset.ruleId || '');
+        var deleteRuleId = button.dataset.ruleId || '';
+        var deleteRuleIndex = button.dataset.ruleIndex;
+        if (deleteRuleIndex !== undefined) {
+          deleteAutoGearRule(deleteRuleId, deleteRuleIndex);
+        } else {
+          deleteAutoGearRule(deleteRuleId);
+        }
       }
     });
   }

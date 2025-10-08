@@ -5192,12 +5192,21 @@ if (autoGearAddItemButton) {
         : null;
       if (!button) return;
       if (button.classList.contains('auto-gear-edit')) {
-        invokeSessionOpenAutoGearEditor(button.dataset.ruleId || '');
+        const ruleId = button.dataset.ruleId || '';
+        const ruleIndex = button.dataset.ruleIndex;
+        const options = {};
+        if (ruleIndex !== undefined) {
+          options.ruleIndex = ruleIndex;
+        }
+        invokeSessionOpenAutoGearEditor(ruleId, options);
       } else if (button.classList.contains('auto-gear-duplicate')) {
-        duplicateAutoGearRule(button.dataset.ruleId || '');
+        const ruleId = button.dataset.ruleId || '';
+        duplicateAutoGearRule(ruleId, button.dataset.ruleIndex);
       } else if (button.classList.contains('auto-gear-delete')) {
         const ruleId = button.dataset.ruleId || '';
-        callSessionCoreFunction('deleteAutoGearRule', [ruleId]);
+        const ruleIndex = button.dataset.ruleIndex;
+        const args = ruleIndex !== undefined ? [ruleId, ruleIndex] : [ruleId];
+        callSessionCoreFunction('deleteAutoGearRule', args);
       }
     });
   }
