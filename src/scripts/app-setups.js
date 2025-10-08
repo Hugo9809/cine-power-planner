@@ -2188,6 +2188,7 @@ function collectProjectFormData() {
         aspectRatio: getMultiValue('aspectRatio'),
         codec: getValue('codec'),
         baseFrameRate: getValue('baseFrameRate'),
+        recordingFrameRate: getValue('recordingFrameRate'),
         sensorMode: getValue('sensorMode'),
         lenses: getMultiValue('lenses'),
         requiredScenarios: getMultiValue('requiredScenarios'),
@@ -2313,6 +2314,9 @@ function populateProjectForm(info = {}) {
     populateRecordingResolutionDropdown(info.recordingResolution);
     populateSensorModeDropdown(info.sensorMode);
     populateCodecDropdown(info.codec);
+    if (typeof populateFrameRateDropdown === 'function') {
+        populateFrameRateDropdown(info.recordingFrameRate);
+    }
 
     setVal('productionCompany', info.productionCompany);
     setVal('rentalHouse', info.rentalHouse);
@@ -2354,6 +2358,7 @@ function populateProjectForm(info = {}) {
     setVal('deliveryResolution', info.deliveryResolution);
     setMulti('aspectRatio', info.aspectRatio);
     setVal('baseFrameRate', info.baseFrameRate);
+    setVal('recordingFrameRate', info.recordingFrameRate);
     setVal('sensorMode', info.sensorMode);
     setMulti('lenses', info.lenses);
     setMulti('requiredScenarios', info.requiredScenarios);

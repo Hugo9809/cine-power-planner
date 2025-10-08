@@ -7708,6 +7708,13 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Velocidad base',
     'Frame rate base',
   ],
+  recordingFrameRate: [
+    'Recording Frame Rate',
+    'Aufnahmebildrate',
+    'Cadence d’enregistrement',
+    'Velocidad de grabación',
+    'Frame rate di registrazione',
+  ],
   sensorMode: [
     'Sensor Mode',
     'Sensormodus',

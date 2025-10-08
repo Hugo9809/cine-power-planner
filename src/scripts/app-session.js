@@ -4575,6 +4575,9 @@ if (cameraSelect) {
       updateCageSelectOptions();
     }
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
+    if (typeof populateFrameRateDropdown === 'function') {
+      populateFrameRateDropdown(currentProjectInfo && currentProjectInfo.recordingFrameRate);
+    }
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
@@ -13344,6 +13347,10 @@ function populateRecordingResolutionDropdown(selected = '') {
   populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
 }
 
+function populateFrameRateDropdown(selected = '') {
+  populateCameraPropertyDropdown('recordingFrameRate', 'frameRates', selected);
+}
+
 function populateSensorModeDropdown(selected = '') {
   populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
 }
@@ -14212,6 +14219,7 @@ if (typeof module !== "undefined" && module.exports) {
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,
+    populateFrameRateDropdown,
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
