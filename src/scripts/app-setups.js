@@ -4911,14 +4911,20 @@ function gearListGenerateHtmlImpl(info = {}) {
                         const realEntries = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() !== 'spare')
                             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-                        ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
+                        const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() === 'spare')
                             .reduce((sum, [, count]) => sum + count, 0);
+                        const countsUniform = realEntries.length > 0
+                            && realEntries.every(([, count]) => count === realEntries[0][1]);
+                        if (countsUniform && spareCount === 0) {
+                            ctxParts = realEntries.map(([c]) => c);
+                        } else {
+                            ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
+                        }
                         if (spareCount > 0) {
                             ctxParts.push(`${spareCount}x Spare`);
                         } else if (base === 'D-Tap Extension 50 cm') {
-                            const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                             const remaining = total - usedCount;
                             if (remaining > 0) ctxParts.push(`${remaining}x Spare`);
                         }
