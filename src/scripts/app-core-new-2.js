@@ -9850,532 +9850,252 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // still match “Favorites”. Falls back to whitespace-stripping when no
     // meaningful characters remain (e.g. emoji-only headings) so legacy behaviour
     // is preserved for those edge cases.
-    const ROMAN_NUMERAL_VALUES = {
-      i: 1,
-      v: 5,
-      x: 10,
-      l: 50,
-      c: 100,
-      d: 500,
-      m: 1000
-    };
-    
-    const ROMAN_NUMERAL_PATTERN = /^[ivxlcdm]+$/;
-    
-    const parseMarkSuffix = value => {
-      if (!value) {
-        return { cleaned: '', number: null };
-      }
-      const cleaned = value.replace(/[^a-z0-9]+/g, '');
-      if (!cleaned) {
-        return { cleaned: '', number: null };
-      }
-      let number = null;
-      if (/^\d+$/.test(cleaned)) {
-        number = parseInt(cleaned, 10);
-      } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
-        let total = 0;
-        let prev = 0;
-        for (let i = cleaned.length - 1; i >= 0; i -= 1) {
-          const char = cleaned[i];
-          const current = ROMAN_NUMERAL_VALUES[char];
-          if (!current) {
-            total = 0;
-            break;
-          }
-          if (current < prev) {
-            total -= current;
-          } else {
-            total += current;
-            prev = current;
-          }
+    const FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchEngineModule';
+
+    function createFeatureSearchEngineFallback() {
+      const FALLBACK_FUZZY_DISTANCE = 2;
+
+      function fallbackParseMarkSuffix(value) {
+        if (typeof value !== 'string' || !value) {
+          return { cleaned: '', number: null };
         }
-        if (total > 0) {
-          number = total;
+
+        const cleaned = value.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+        if (!cleaned) {
+          return { cleaned: '', number: null };
         }
-      }
-      return { cleaned, number };
-    };
-    
-    var normaliseMarkVariants = str =>
-      str.replace(/\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g, (_match, _prefix, rawValue) => {
-        const { cleaned, number } = parseMarkSuffix(rawValue);
-        if (!cleaned) return 'mk';
-        const suffix = number != null ? String(number) : cleaned;
-        return `mk${suffix}`;
-      });
-    
-    const UNICODE_FRACTIONS = new Map([
-      ['¼', '1/4'],
-      ['½', '1/2'],
-      ['¾', '3/4'],
-      ['⅓', '1/3'],
-      ['⅔', '2/3'],
-      ['⅕', '1/5'],
-      ['⅖', '2/5'],
-      ['⅗', '3/5'],
-      ['⅘', '4/5'],
-      ['⅙', '1/6'],
-      ['⅚', '5/6'],
-      ['⅛', '1/8'],
-      ['⅜', '3/8'],
-      ['⅝', '5/8'],
-      ['⅞', '7/8'],
-      ['⅑', '1/9'],
-      ['⅒', '1/10'],
-      ['⅐', '1/7']
-    ]);
-    
-    const UNICODE_FRACTION_PATTERN =
-      UNICODE_FRACTIONS.size > 0
-        ? new RegExp(`[${Array.from(UNICODE_FRACTIONS.keys()).join('')}]`, 'g')
-        : null;
-    
-    const normalizeUnicodeFractions = (str) => {
-      if (!UNICODE_FRACTION_PATTERN || typeof str !== 'string' || !str) {
-        return str;
-      }
-      return str.replace(
-        UNICODE_FRACTION_PATTERN,
-        match => UNICODE_FRACTIONS.get(match) || match
-      );
-    };
-    
-    const NUMBER_WORD_ONES = new Map([
-      ['zero', 0],
-      ['one', 1],
-      ['two', 2],
-      ['three', 3],
-      ['four', 4],
-      ['five', 5],
-      ['six', 6],
-      ['seven', 7],
-      ['eight', 8],
-      ['nine', 9],
-    ]);
-    
-    const NUMBER_WORD_TEENS = new Map([
-      ['ten', 10],
-      ['eleven', 11],
-      ['twelve', 12],
-      ['thirteen', 13],
-      ['fourteen', 14],
-      ['fifteen', 15],
-      ['sixteen', 16],
-      ['seventeen', 17],
-      ['eighteen', 18],
-      ['nineteen', 19],
-    ]);
-    
-    const NUMBER_WORD_TENS = new Map([
-      ['twenty', 20],
-      ['thirty', 30],
-      ['forty', 40],
-      ['fifty', 50],
-      ['sixty', 60],
-      ['seventy', 70],
-      ['eighty', 80],
-      ['ninety', 90],
-    ]);
-    
-    const NUMBER_WORD_BASE = new Map([
-      ...NUMBER_WORD_ONES,
-      ...NUMBER_WORD_TEENS,
-      ...NUMBER_WORD_TENS,
-    ]);
-    
-    const NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(
-      (a, b) => b.length - a.length
-    );
-    
-    const NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(
-      (a, b) => b.length - a.length
-    );
-    
-    const NUMBER_WORD_PATTERN =
-      NUMBER_WORD_BASE.size > 0
-        ? new RegExp(
-            `\\b(?:${NUMBER_WORD_BASE_KEYS.join('|')})(?:[\\s-](?:${NUMBER_WORD_ONES_KEYS.join('|')}))?\\b`,
-            'g'
-          )
-        : null;
-    
-    const normalizeNumberWords = str => {
-      if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
-        return str;
-      }
-      return str.replace(NUMBER_WORD_PATTERN, match => {
-        const lower = match.toLowerCase();
-        if (NUMBER_WORD_BASE.has(lower)) {
-          return String(NUMBER_WORD_BASE.get(lower));
+
+        if (/^\d+$/.test(cleaned)) {
+          return { cleaned, number: parseInt(cleaned, 10) };
         }
-        const parts = lower.split(/[\s-]+/).filter(Boolean);
-        if (parts.length === 2) {
-          const tens = NUMBER_WORD_TENS.get(parts[0]);
-          const ones = NUMBER_WORD_ONES.get(parts[1]);
-          if (typeof tens === 'number' && typeof ones === 'number') {
-            return String(tens + ones);
+
+        return { cleaned, number: null };
+      }
+
+      return {
+        FEATURE_SEARCH_FUZZY_MAX_DISTANCE: FALLBACK_FUZZY_DISTANCE,
+        searchKey(value) {
+          if (!value) {
+            return '';
           }
-        }
-        return match;
-      });
-    };
-    
-    const SPELLING_VARIANTS = new Map([
-      ['analyse', 'analyze'],
-      ['analysed', 'analyzed'],
-      ['analyses', 'analyzes'],
-      ['analysing', 'analyzing'],
-      ['behaviour', 'behavior'],
-      ['behaviours', 'behaviors'],
-      ['behavioural', 'behavioral'],
-      ['behaviourally', 'behaviorally'],
-      ['centre', 'center'],
-      ['centres', 'centers'],
-      ['colour', 'color'],
-      ['colourful', 'colorful'],
-      ['colouring', 'coloring'],
-      ['colourings', 'colorings'],
-      ['colourless', 'colorless'],
-      ['colours', 'colors'],
-      ['customisation', 'customization'],
-      ['customisations', 'customizations'],
-      ['customise', 'customize'],
-      ['customised', 'customized'],
-      ['customises', 'customizes'],
-      ['customising', 'customizing'],
-      ['defence', 'defense'],
-      ['defences', 'defenses'],
-      ['favour', 'favor'],
-      ['favourable', 'favorable'],
-      ['favourably', 'favorably'],
-      ['favoured', 'favored'],
-      ['favourite', 'favorite'],
-      ['favourites', 'favorites'],
-      ['favouring', 'favoring'],
-      ['favours', 'favors'],
-      ['licence', 'license'],
-      ['licences', 'licenses'],
-      ['localisation', 'localization'],
-      ['localisations', 'localizations'],
-      ['localise', 'localize'],
-      ['localised', 'localized'],
-      ['localises', 'localizes'],
-      ['localising', 'localizing'],
-      ['modelling', 'modeling'],
-      ['modeller', 'modeler'],
-      ['modellers', 'modelers'],
-      ['optimisation', 'optimization'],
-      ['optimisations', 'optimizations'],
-      ['optimise', 'optimize'],
-      ['optimised', 'optimized'],
-      ['optimises', 'optimizes'],
-      ['optimising', 'optimizing'],
-      ['organisation', 'organization'],
-      ['organisations', 'organizations'],
-      ['organise', 'organize'],
-      ['organised', 'organized'],
-      ['organises', 'organizes'],
-      ['organising', 'organizing'],
-      ['personalisation', 'personalization'],
-      ['personalisations', 'personalizations'],
-      ['personalise', 'personalize'],
-      ['personalised', 'personalized'],
-      ['personalises', 'personalizes'],
-      ['personalising', 'personalizing'],
-      ['practise', 'practice'],
-      ['practised', 'practiced'],
-      ['practises', 'practices'],
-      ['practising', 'practicing'],
-      ['theatre', 'theater'],
-      ['theatres', 'theaters'],
-      ['traveller', 'traveler'],
-      ['travellers', 'travelers'],
-      ['travelling', 'traveling']
-    ]);
-    
-    const SPELLING_VARIANT_PATTERN =
-      SPELLING_VARIANTS.size > 0
-        ? new RegExp(`\\b(${Array.from(SPELLING_VARIANTS.keys()).join('|')})\\b`, 'g')
-        : null;
-    
-    var normalizeSpellingVariants = (str) => {
-      if (!SPELLING_VARIANT_PATTERN) return str;
-      return str.replace(SPELLING_VARIANT_PATTERN, match => SPELLING_VARIANTS.get(match) || match);
-    };
-    
-    const applySearchTokenSynonyms = (tokens, addToken) => {
-      if (!tokens || typeof addToken !== 'function') {
-        return;
-      }
-    
-      const baseTokens = Array.isArray(tokens) ? tokens : Array.from(tokens);
-      if (!Array.isArray(baseTokens) || baseTokens.length === 0) {
-        return;
-      }
-    
-      const tokenSet = new Set(baseTokens);
-      const hasAny = values => values.some(value => tokenSet.has(value));
-      const hasAllGroups = groups =>
-        groups.every(group => {
-          const list = Array.isArray(group) ? group : [group];
-          return list.some(value => tokenSet.has(value));
-        });
-      const addAll = values => {
-        values.forEach(value => {
-          addToken(value);
-        });
-      };
-    
-      if (
-        hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) ||
-        hasAllGroups([
-          ['frame', 'frames'],
-          ['per', 'persecond', 'persec'],
-          ['second', 'seconds', 'sec'],
-        ]) ||
-        hasAllGroups([
-          ['frame', 'frames'],
-          ['rate'],
-        ])
-      ) {
-        addAll([
-          'fps',
-          'framerate',
-          'framepersecond',
-          'framespersecond',
-          'frame',
-          'frames',
-          'second',
-          'seconds',
-        ]);
-      }
-    
-      if (hasAny(['wh', 'watthour', 'watthours'])) {
-        addAll(['wh', 'watthour', 'watthours', 'watt', 'watts', 'hour', 'hours']);
-      } else if (hasAllGroups([
-        ['watt', 'watts'],
-        ['hour', 'hours', 'hr', 'hrs'],
-      ])) {
-        addAll(['wh', 'watthour', 'watthours']);
-      }
-    
-      if (hasAny(['kwh', 'kilowatthour', 'kilowatthours'])) {
-        addAll([
-          'kwh',
-          'kilowatthour',
-          'kilowatthours',
-          'kilowatt',
-          'kilowatts',
-          'watt',
-          'watts',
-          'hour',
-          'hours',
-        ]);
-      } else if (hasAllGroups([
-        ['kilowatt', 'kilowatts', 'kw'],
-        ['hour', 'hours', 'hr', 'hrs'],
-      ])) {
-        addAll(['kwh', 'kilowatthour', 'kilowatthours']);
-      }
-    
-      if (hasAny(['ah', 'amphour', 'amphours'])) {
-        addAll(['ah', 'amphour', 'amphours', 'amp', 'amps', 'ampere', 'amperes', 'hour', 'hours']);
-      } else if (hasAllGroups([
-        ['amp', 'amps', 'ampere', 'amperes'],
-        ['hour', 'hours', 'hr', 'hrs'],
-      ])) {
-        addAll(['ah', 'amphour', 'amphours']);
-      }
-    
-      if (hasAny(['mah', 'milliamphour', 'milliamphours'])) {
-        addAll([
-          'mah',
-          'milliamphour',
-          'milliamphours',
-          'milliamp',
-          'milliamps',
-          'milliampere',
-          'milliamperes',
-          'ma',
-          'hour',
-          'hours',
-        ]);
-      } else if (hasAllGroups([
-        ['milliamp', 'milliamps', 'milliampere', 'milliamperes', 'ma'],
-        ['hour', 'hours', 'hr', 'hrs'],
-      ])) {
-        addAll(['mah', 'milliamphour', 'milliamphours']);
-      }
-    
-      if (hasAny(['mp', 'megapixel', 'megapixels'])) {
-        addAll(['mp', 'megapixel', 'megapixels']);
-      }
-    
-      if (hasAny(['mm', 'millimeter', 'millimeters'])) {
-        addAll(['mm', 'millimeter', 'millimeters']);
-      }
-    
-      if (hasAny(['cm', 'centimeter', 'centimeters'])) {
-        addAll(['cm', 'centimeter', 'centimeters']);
-      }
-    
-      if (hasAny(['ev', 'exposurevalue'])) {
-        addAll(['ev', 'exposurevalue', 'exposure', 'value']);
-      } else if (hasAllGroups([
-        ['exposure'],
-        ['value'],
-      ])) {
-        addAll(['ev', 'exposurevalue']);
-      }
-    };
-    
-    var searchKey       = str => {
-      if (!str) return '';
-      const value = String(str);
-      let normalized = value.toLowerCase();
-      if (typeof normalized.normalize === 'function') {
-        normalized = normalized.normalize('NFD');
-      }
-      normalized = normalized
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/ß/g, 'ss')
-        .replace(/æ/g, 'ae')
-        .replace(/œ/g, 'oe')
-        .replace(/ø/g, 'o')
-        .replace(/&/g, 'and')
-        .replace(/\+/g, 'plus')
-        .replace(/[°º˚]/g, 'deg')
-        .replace(/\bdegrees?\b/g, 'deg')
-        .replace(/[×✕✖✗✘]/g, 'x');
-      normalized = normalizeUnicodeFractions(normalized);
-      normalized = normalizeNumberWords(normalized);
-      normalized = normalizeSpellingVariants(normalized);
-      normalized = normaliseMarkVariants(normalized);
-      const simplified = normalized.replace(/[^a-z0-9]+/g, '');
-      if (simplified) return simplified;
-      return value.toLowerCase().replace(/\s+/g, '');
-    };
-    
-    var searchTokens = str => {
-      if (!str) return [];
-      let normalized = String(str).toLowerCase();
-      if (typeof normalized.normalize === 'function') {
-        normalized = normalized.normalize('NFD');
-      }
-      normalized = normalized
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/ß/g, 'ss')
-        .replace(/æ/g, 'ae')
-        .replace(/œ/g, 'oe')
-        .replace(/ø/g, 'o')
-        .replace(/&/g, ' and ')
-        .replace(/\+/g, ' plus ')
-        .replace(/[°º˚]/g, ' deg ')
-        .replace(/\bdegrees?\b/g, ' deg ')
-        .replace(/[×✕✖✗✘]/g, ' x by ');
-      normalized = normalizeUnicodeFractions(normalized);
-      const numberNormalized = normalizeNumberWords(normalized);
-      const tokens = new Set();
-      const initialWords = [];
-      const addToken = token => {
-        if (!token) return;
-        const cleaned = token.replace(/[^a-z0-9]+/g, '');
-        if (cleaned) tokens.add(cleaned);
-      };
-      const isAlpha = value => /^[a-z]+$/.test(value);
-      const isNumeric = value => /^\d+$/.test(value);
-      const addAlphaNumericVariants = segment => {
-        if (!segment) return;
-        const groups = segment.match(/[a-z]+|\d+/g);
-        if (!groups || groups.length <= 1) return;
-        groups.forEach(part => {
-          if (isNumeric(part) || part.length > 1) {
-            addToken(part);
+          return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+        },
+        searchTokens(value) {
+          if (!value) {
+            return [];
           }
-        });
-        for (let index = 0; index < groups.length - 1; index += 1) {
-          const current = groups[index];
-          const next = groups[index + 1];
-          if (!current || !next) continue;
-          const combined = `${current}${next}`;
-          if (!combined || combined === segment) continue;
-          if (
-            (isAlpha(current) && isNumeric(next)) ||
-            (isNumeric(current) && isAlpha(next)) ||
-            (current.length > 1 && next.length > 1)
-          ) {
-            addToken(combined);
-          }
-        }
-      };
-      const processParts = (strToProcess, collectInitials = false) => {
-        strToProcess.split(/\s+/).forEach(part => {
-          if (!part) return;
-          addToken(part);
-          part
+          return String(value)
+            .toLowerCase()
             .split(/[^a-z0-9]+/)
-            .filter(Boolean)
-            .forEach(segment => {
-              addToken(segment);
-              addAlphaNumericVariants(segment);
-              if (collectInitials && /^[a-z]/.test(segment)) {
-                initialWords.push(segment);
-              }
-            });
-        });
+            .filter(Boolean);
+        },
+        computeTokenMatchDetails() {
+          return { score: 0, matched: 0 };
+        },
+        findBestSearchMatch() {
+          return null;
+        },
+        getFuzzyDistance() {
+          return Number.POSITIVE_INFINITY;
+        },
+        computeFuzzyTokenScore() {
+          return 0;
+        },
+        parseMarkSuffix: fallbackParseMarkSuffix,
+        normaliseMarkVariants(str) {
+          if (typeof str !== 'string' || !str) {
+            return str;
+          }
+          return str.replace(/\bmark\s*(\d+)\b/gi, 'mk$1');
+        },
+        normalizeUnicodeFractions(value) {
+          return value;
+        },
+        normalizeNumberWords(value) {
+          return value;
+        },
+        normalizeSpellingVariants(value) {
+          return value;
+        },
+        applySearchTokenSynonyms() {},
       };
-      processParts(normalized, true);
-      if (numberNormalized !== normalized) {
-        processParts(numberNormalized);
+    }
+
+    function resolveFeatureSearchEngineModuleApi() {
+      const globalScope = typeof getCoreGlobalObject === 'function'
+        ? getCoreGlobalObject()
+        : (typeof globalThis !== 'undefined'
+          ? globalThis
+          : typeof window !== 'undefined'
+            ? window
+            : typeof self !== 'undefined'
+              ? self
+              : typeof global !== 'undefined'
+                ? global
+                : null);
+
+      if (globalScope && globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
+        return globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY];
       }
-      const spellingNormalized = normalizeSpellingVariants(numberNormalized);
-      if (spellingNormalized !== numberNormalized) {
-        processParts(spellingNormalized);
+
+      const moduleBase =
+        (typeof cineModuleBase === 'object' && cineModuleBase)
+        || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+      function logModuleWarning(message, error) {
+        if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+          try {
+            moduleBase.safeWarn(message, error);
+            return;
+          } catch (warnError) {
+            void warnError;
+          }
+        }
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            if (typeof error === 'undefined') {
+              console.warn(message);
+            } else {
+              console.warn(message, error);
+            }
+          } catch (consoleError) {
+            void consoleError;
+          }
+        }
       }
-      const markNormalized = normaliseMarkVariants(spellingNormalized);
-      if (markNormalized !== spellingNormalized) {
-        processParts(markNormalized);
+
+      const candidates = [];
+
+      if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        let registry = null;
+        try {
+          registry = moduleBase.getModuleRegistry(globalScope);
+        } catch (error) {
+          logModuleWarning('Unable to resolve cine.features.featureSearchEngine module registry.', error);
+        }
+        if (registry && typeof registry.get === 'function') {
+          try {
+            const fromRegistry = registry.get('cine.features.featureSearchEngine');
+            if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+              candidates.push(fromRegistry);
+            }
+          } catch (error) {
+            logModuleWarning('Unable to read cine.features.featureSearchEngine module.', error);
+          }
+        }
       }
-      if (initialWords.length >= 2) {
-        const MAX_INITIALISM_LENGTH = 6;
-        const initials = initialWords.map(word => word[0]).filter(Boolean);
-        const limit = Math.min(initials.length, MAX_INITIALISM_LENGTH);
-        for (let start = 0; start < limit; start++) {
-          let current = '';
-          for (let index = start; index < limit; index++) {
-            current += initials[index];
-            if (current.length >= 2) {
-              addToken(current);
+
+      const scopeCandidates = [];
+      if (globalScope && scopeCandidates.indexOf(globalScope) === -1) {
+        scopeCandidates.push(globalScope);
+      }
+      if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) {
+        scopeCandidates.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) {
+        scopeCandidates.push(window);
+      }
+      if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) {
+        scopeCandidates.push(self);
+      }
+      if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
+        scopeCandidates.push(global);
+      }
+
+      for (let index = 0; index < scopeCandidates.length; index += 1) {
+        const scope = scopeCandidates[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          continue;
+        }
+
+        try {
+          const exposed = scope.cineFeaturesFeatureSearchEngine;
+          if (exposed && candidates.indexOf(exposed) === -1) {
+            candidates.push(exposed);
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (candidate && typeof candidate.createEngine === 'function') {
+          if (globalScope && !globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
+            try {
+              globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY] = candidate;
+            } catch (error) {
+              void error;
             }
           }
+          return candidate;
         }
       }
-      const markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
-      let match;
-      const variantSource = spellingNormalized || normalized;
-      while ((match = markPattern.exec(variantSource)) !== null) {
-        const prefix = match[1];
-        const rawValue = match[2];
-        const { cleaned, number } = parseMarkSuffix(rawValue);
-        if (!cleaned) continue;
-        const altPrefix = prefix === 'mk' ? 'mark' : 'mk';
-        addToken(prefix);
-        addToken(altPrefix);
-        addToken(cleaned);
-        addToken(`${prefix}${cleaned}`);
-        addToken(`${altPrefix}${cleaned}`);
-        if (number != null) {
-          const numberToken = String(number);
-          addToken(numberToken);
-          addToken(`${prefix}${numberToken}`);
-          addToken(`${altPrefix}${numberToken}`);
-        }
-      }
-      applySearchTokenSynonyms(tokens, addToken);
-      return Array.from(tokens);
-    };
-    
+
+      return null;
+    }
+
+    const featureSearchEngineModuleApi = resolveFeatureSearchEngineModuleApi();
+    const fallbackFeatureSearchEngine = createFeatureSearchEngineFallback();
+    const featureSearchEngine =
+      featureSearchEngineModuleApi && typeof featureSearchEngineModuleApi.createEngine === 'function'
+        ? featureSearchEngineModuleApi.createEngine()
+        : fallbackFeatureSearchEngine;
+
+    const FEATURE_SEARCH_FUZZY_MAX_DISTANCE = Number.isFinite(
+      featureSearchEngineModuleApi?.FEATURE_SEARCH_FUZZY_MAX_DISTANCE,
+    )
+      ? featureSearchEngineModuleApi.FEATURE_SEARCH_FUZZY_MAX_DISTANCE
+      : featureSearchEngine.FEATURE_SEARCH_FUZZY_MAX_DISTANCE || fallbackFeatureSearchEngine.FEATURE_SEARCH_FUZZY_MAX_DISTANCE;
+
+    const parseMarkSuffix = typeof featureSearchEngine.parseMarkSuffix === 'function'
+      ? featureSearchEngine.parseMarkSuffix
+      : fallbackFeatureSearchEngine.parseMarkSuffix;
+
+    const normaliseMarkVariants = typeof featureSearchEngine.normaliseMarkVariants === 'function'
+      ? featureSearchEngine.normaliseMarkVariants
+      : fallbackFeatureSearchEngine.normaliseMarkVariants;
+
+    const normalizeUnicodeFractions = typeof featureSearchEngine.normalizeUnicodeFractions === 'function'
+      ? featureSearchEngine.normalizeUnicodeFractions
+      : fallbackFeatureSearchEngine.normalizeUnicodeFractions;
+
+    const normalizeNumberWords = typeof featureSearchEngine.normalizeNumberWords === 'function'
+      ? featureSearchEngine.normalizeNumberWords
+      : fallbackFeatureSearchEngine.normalizeNumberWords;
+
+    const normalizeSpellingVariants = typeof featureSearchEngine.normalizeSpellingVariants === 'function'
+      ? featureSearchEngine.normalizeSpellingVariants
+      : fallbackFeatureSearchEngine.normalizeSpellingVariants;
+
+    const applySearchTokenSynonyms = typeof featureSearchEngine.applySearchTokenSynonyms === 'function'
+      ? featureSearchEngine.applySearchTokenSynonyms
+      : fallbackFeatureSearchEngine.applySearchTokenSynonyms;
+
+    const searchKey = typeof featureSearchEngine.searchKey === 'function'
+      ? value => featureSearchEngine.searchKey(value)
+      : fallbackFeatureSearchEngine.searchKey;
+
+    const searchTokens = typeof featureSearchEngine.searchTokens === 'function'
+      ? value => featureSearchEngine.searchTokens(value)
+      : fallbackFeatureSearchEngine.searchTokens;
+
+    const computeTokenMatchDetails = typeof featureSearchEngine.computeTokenMatchDetails === 'function'
+      ? (entryTokens, queryTokens) => featureSearchEngine.computeTokenMatchDetails(entryTokens, queryTokens)
+      : fallbackFeatureSearchEngine.computeTokenMatchDetails;
+
+    const findBestSearchMatch = typeof featureSearchEngine.findBestSearchMatch === 'function'
+      ? (map, key, tokens = []) => featureSearchEngine.findBestSearchMatch(map, key, tokens)
+      : fallbackFeatureSearchEngine.findBestSearchMatch;
+
+    const getFuzzyDistance = typeof featureSearchEngine.getFuzzyDistance === 'function'
+      ? (source, target) => featureSearchEngine.getFuzzyDistance(source, target)
+      : fallbackFeatureSearchEngine.getFuzzyDistance;
+
+    const computeFuzzyTokenScore = typeof featureSearchEngine.computeFuzzyTokenScore === 'function'
+      ? (token, entryToken) => featureSearchEngine.computeFuzzyTokenScore(token, entryToken)
+      : fallbackFeatureSearchEngine.computeFuzzyTokenScore;
+
     const FEATURE_CONTEXT_LIMIT = 3;
     
     const toTitleCase = str =>
@@ -10643,120 +10363,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return entry;
     };
     
-    const FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
-    const featureSearchFuzzyCache = new Map();
-
-    const getFuzzyDistance = (source, target) => {
-      if (!source || !target) {
-        return Number.POSITIVE_INFINITY;
-      }
-      const shorter = source.length <= target.length ? source : target;
-      const longer = source.length > target.length ? source : target;
-      const cacheKey = `${shorter}\u0000${longer}`;
-      if (featureSearchFuzzyCache.has(cacheKey)) {
-        return featureSearchFuzzyCache.get(cacheKey);
-      }
-      const sourceLength = source.length;
-      const targetLength = target.length;
-      if (Math.abs(sourceLength - targetLength) > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
-        featureSearchFuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
-        return Number.POSITIVE_INFINITY;
-      }
-      const previous = new Array(targetLength + 1);
-      const current = new Array(targetLength + 1);
-      for (let i = 0; i <= targetLength; i += 1) {
-        previous[i] = i;
-      }
-      for (let i = 1; i <= sourceLength; i += 1) {
-        current[0] = i;
-        let bestInRow = current[0];
-        const sourceChar = source.charAt(i - 1);
-        for (let j = 1; j <= targetLength; j += 1) {
-          const cost = sourceChar === target.charAt(j - 1) ? 0 : 1;
-          current[j] = Math.min(
-            previous[j] + 1,
-            current[j - 1] + 1,
-            previous[j - 1] + cost
-          );
-          if (current[j] < bestInRow) {
-            bestInRow = current[j];
-          }
-        }
-        if (bestInRow > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
-          featureSearchFuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
-          return Number.POSITIVE_INFINITY;
-        }
-        for (let j = 0; j <= targetLength; j += 1) {
-          previous[j] = current[j];
-        }
-      }
-      const result = previous[targetLength];
-      featureSearchFuzzyCache.set(cacheKey, result);
-      return result;
-    };
-
-    const computeFuzzyTokenScore = (token, entryToken) => {
-      if (!token || !entryToken) {
-        return 0;
-      }
-      if (token.length <= 2 || entryToken.length <= 2) {
-        return 0;
-      }
-      const distance = getFuzzyDistance(token, entryToken);
-      if (!Number.isFinite(distance) || distance > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
-        return 0;
-      }
-      if (distance === 0) {
-        return 3;
-      }
-      if (distance === 1) {
-        return 2;
-      }
-      return 1;
-    };
-
-    const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
-      if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
-        return { score: 0, matched: 0 };
-      }
-      const validQueryTokens = Array.isArray(queryTokens)
-        ? queryTokens.filter(Boolean)
-        : [];
-      if (validQueryTokens.length === 0) {
-        return { score: 0, matched: 0 };
-      }
-      let total = 0;
-      let matched = 0;
-      for (const token of validQueryTokens) {
-        let best = 0;
-        for (const entryToken of entryTokens) {
-          if (!entryToken) continue;
-          if (entryToken === token) {
-            best = 3;
-            break;
-          }
-          if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
-            best = Math.max(best, 2);
-          } else if (entryToken.includes(token) || token.includes(entryToken)) {
-            best = Math.max(best, 1);
-          } else {
-            const fuzzyScore = computeFuzzyTokenScore(token, entryToken);
-            if (fuzzyScore > 0) {
-              best = Math.max(best, fuzzyScore);
-            }
-          }
-        }
-        if (best > 0) {
-          matched += 1;
-          total += best;
-        }
-      }
-      if (matched === 0) {
-        return { score: 0, matched: 0 };
-      }
-      return { score: total, matched };
-    };
-
     const escapeFeatureSearchRegExp = value =>
       value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -11020,187 +10626,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return distance <= 3 && distance / maxLength <= 0.4;
     };
-    
-    function findBestSearchMatch(map, key, tokens = []) {
-      const queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
-      const hasKey = Boolean(key);
-      if (!hasKey && queryTokens.length === 0) return null;
-    
-      const toResult = (
-        entryKey,
-        entryValue,
-        matchType,
-        score = 0,
-        matchedCount = 0,
-        extras = {}
-      ) => ({
-        key: entryKey,
-        value: entryValue,
-        matchType,
-        score,
-        matchedCount,
-        ...extras
-      });
-    
-      const flattened = [];
-      for (const [entryKey, entryValue] of map.entries()) {
-        if (!entryValue) continue;
-        if (Array.isArray(entryValue)) {
-          for (const value of entryValue) {
-            if (value) flattened.push([entryKey, value]);
-          }
-        } else {
-          flattened.push([entryKey, entryValue]);
-        }
-      }
-    
-      if (hasKey) {
-        const exactCandidates = flattened.filter(([entryKey]) => entryKey === key);
-        if (exactCandidates.length) {
-          let bestEntry = exactCandidates[0][1];
-          let bestDetails = queryTokens.length > 0
-            ? computeTokenMatchDetails(bestEntry?.tokens || [], queryTokens)
-            : { score: Number.POSITIVE_INFINITY, matched: queryTokens.length };
-          for (const [, entryValue] of exactCandidates.slice(1)) {
-            if (!queryTokens.length) break;
-            const details = computeTokenMatchDetails(entryValue?.tokens || [], queryTokens);
-            if (
-              details.score > bestDetails.score ||
-              (details.score === bestDetails.score && details.matched > bestDetails.matched)
-            ) {
-              bestDetails = details;
-              bestEntry = entryValue;
-            }
-          }
-          return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
-        }
-      }
-    
-      let bestTokenMatch = null;
-      let bestTokenScore = 0;
-      let bestTokenMatched = 0;
-      let bestTokenKeyDistance = Number.POSITIVE_INFINITY;
-      let bestPrefixMatch = null;
-      let bestPrefixScore = Number.NEGATIVE_INFINITY;
-      let bestPrefixMatched = 0;
-      let bestPrefixLength = Number.POSITIVE_INFINITY;
-      let bestSubsetMatch = null;
-      let bestSubsetScore = Number.NEGATIVE_INFINITY;
-      let bestSubsetMatched = 0;
-      let bestSubsetLength = -1;
-      let bestPartialMatch = null;
-      let bestPartialScore = Number.NEGATIVE_INFINITY;
-      let bestPartialMatched = 0;
-      let bestFuzzyMatch = null;
-      let bestFuzzyDistance = Number.POSITIVE_INFINITY;
-      let bestFuzzyLength = Number.POSITIVE_INFINITY;
-    
-      const keyLength = hasKey ? key.length : 0;
-    
-      for (const [entryKey, entryValue] of flattened) {
-        if (!entryValue) continue;
-        const entryTokens = entryValue?.tokens || [];
-        const tokenDetails = queryTokens.length
-          ? computeTokenMatchDetails(entryTokens, queryTokens)
-          : { score: 0, matched: 0 };
-    
-        if (hasKey && entryKey.startsWith(key)) {
-          const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched);
-          if (
-            !bestPrefixMatch ||
-            score > bestPrefixScore ||
-            (score === bestPrefixScore &&
-              (tokenDetails.matched > bestPrefixMatched ||
-                (tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)))
-          ) {
-            bestPrefixMatch = candidate;
-            bestPrefixScore = score;
-            bestPrefixMatched = tokenDetails.matched;
-            bestPrefixLength = entryKey.length;
-          }
-        }
-    
-        if (queryTokens.length) {
-          const distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
-          if (
-            tokenDetails.score > bestTokenScore ||
-            (tokenDetails.score === bestTokenScore &&
-              (tokenDetails.matched > bestTokenMatched ||
-                (tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)))
-          ) {
-            bestTokenMatch = toResult(entryKey, entryValue, 'token', tokenDetails.score, tokenDetails.matched);
-            bestTokenScore = tokenDetails.score;
-            bestTokenMatched = tokenDetails.matched;
-            bestTokenKeyDistance = distance;
-          }
-        }
-    
-        if (hasKey && key.startsWith(entryKey)) {
-          const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched);
-          if (
-            !bestSubsetMatch ||
-            score > bestSubsetScore ||
-            (score === bestSubsetScore &&
-              (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched))
-          ) {
-            bestSubsetMatch = candidate;
-            bestSubsetScore = score;
-            bestSubsetMatched = tokenDetails.matched;
-            bestSubsetLength = entryKey.length;
-          }
-        } else if (
-          hasKey &&
-          (entryKey.includes(key) || key.includes(entryKey))
-        ) {
-          const candidate = toResult(entryKey, entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
-          if (
-            !bestPartialMatch ||
-            tokenDetails.score > bestPartialScore ||
-            (tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched)
-          ) {
-            bestPartialMatch = candidate;
-            bestPartialScore = tokenDetails.score;
-            bestPartialMatched = tokenDetails.matched;
-          }
-        }
-    
-        if (hasKey && entryKey) {
-          const fuzzyDistance = computeLevenshteinDistance(entryKey, key);
-          if (isAcceptableFuzzyMatch(entryKey, key, fuzzyDistance)) {
-            if (
-              !bestFuzzyMatch ||
-              fuzzyDistance < bestFuzzyDistance ||
-              (fuzzyDistance === bestFuzzyDistance && entryKey.length < bestFuzzyLength)
-            ) {
-              bestFuzzyMatch = toResult(entryKey, entryValue, 'fuzzy', tokenDetails.score, tokenDetails.matched, {
-                fuzzyDistance
-              });
-              bestFuzzyDistance = fuzzyDistance;
-              bestFuzzyLength = entryKey.length;
-            }
-          }
-        }
-      }
-    
-      if (bestTokenMatch && bestTokenScore > 0) {
-        return bestTokenMatch;
-      }
-      if (bestPrefixMatch) {
-        return bestPrefixMatch;
-      }
-      if (bestSubsetMatch) {
-        return bestSubsetMatch;
-      }
-      if (bestPartialMatch) {
-        return bestPartialMatch;
-      }
-      if (bestFuzzyMatch) {
-        return bestFuzzyMatch;
-      }
-      return null;
-    }
     
     var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
     const existingDevicesHeading = document.getElementById("existingDevicesHeading");
