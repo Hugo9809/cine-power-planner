@@ -996,6 +996,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
 
   let mergedProjectInfo = null;
+  let projectInfoSnapshotForExport = null;
   projectInfoCandidates.forEach((candidate) => {
     if (!candidate) return;
     if (!mergedProjectInfo) {
@@ -1011,7 +1012,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       : mergedProjectInfo;
     const clonedSnapshot = cloneProjectInfoForStorage(snapshotForExport);
     if (clonedSnapshot && typeof clonedSnapshot === 'object') {
-      currentSetup.projectInfo = clonedSnapshot;
+      projectInfoSnapshotForExport = clonedSnapshot;
     }
   }
   const gearSelectors = cloneGearListSelectors(getGearListSelectors());
@@ -1020,6 +1021,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
+  if (currentSetup.gearListAndProjectRequirementsGenerated && projectInfoSnapshotForExport) {
+    currentSetup.projectInfo = projectInfoSnapshotForExport;
+  }
   const key = getCurrentSetupKey();
   const feedback = loadFeedbackSafe()[key] || [];
   if (feedback.length) {

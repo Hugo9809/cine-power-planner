@@ -817,6 +817,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     });
   }
   var mergedProjectInfo = null;
+  var projectInfoSnapshotForExport = null;
   projectInfoCandidates.forEach(function (candidate) {
     if (!candidate) return;
     if (!mergedProjectInfo) {
@@ -831,7 +832,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     }) : mergedProjectInfo;
     var clonedSnapshot = cloneProjectInfoForStorage(snapshotForExport);
     if (clonedSnapshot && _typeof(clonedSnapshot) === 'object') {
-      currentSetup.projectInfo = clonedSnapshot;
+      projectInfoSnapshotForExport = clonedSnapshot;
     }
   }
   var gearSelectors = cloneGearListSelectors(getGearListSelectors());
@@ -840,6 +841,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   var combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
+  if (currentSetup.gearListAndProjectRequirementsGenerated && projectInfoSnapshotForExport) {
+    currentSetup.projectInfo = projectInfoSnapshotForExport;
+  }
   var deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;

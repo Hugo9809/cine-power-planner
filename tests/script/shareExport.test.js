@@ -268,7 +268,7 @@ describe('project sharing helpers', () => {
     }
   });
 
-  test('downloadSharedProject includes stored project requirements when current info is missing', () => {
+  test('downloadSharedProject omits stored project requirements when nothing is generated', () => {
     const loadProjectMock = jest.fn((key) => {
       if (typeof key === 'string' && key.trim() === 'Exported Project') {
         return {
@@ -311,16 +311,52 @@ describe('project sharing helpers', () => {
     expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
     const [payload] = downloadPayloadMock.mock.calls[0];
     const parsed = JSON.parse(payload);
-    expect(parsed.projectInfo).toEqual(expect.objectContaining({
-      projectName: 'Exported Project',
-      notes: 'Stored notes',
-    }));
+    expect(parsed).not.toHaveProperty('projectInfo');
     expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
 
-  test('downloadSharedProject merges current and stored project requirements', () => {
+  test('downloadSharedProject skips current project info when gear list is empty', () => {
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        downloadBackupPayload: downloadPayloadMock,
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'Empty Gear Project',
+          typedName: 'Empty Gear Project',
+          storageKey: 'Empty Gear Project',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const { downloadSharedProject } = env.utils;
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Empty Gear Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    global.currentProjectInfo = {
+      projectName: 'Empty Gear Project',
+      viewfinderEyeLeatherColor: 'Red',
+      monitoringConfiguration: 'Onboard Only',
+    };
+
+    downloadSharedProject('empty.json', false);
+
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadPayloadMock.mock.calls[0];
+    const parsed = JSON.parse(payload);
+    expect(parsed).not.toHaveProperty('projectInfo');
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
+    delete global.currentProjectInfo;
+  });
+
+  test('downloadSharedProject merges current and stored project requirements after generation', () => {
     const loadProjectMock = jest.fn((key) => {
       if (typeof key === 'string' && key.trim() === 'Merged Project') {
         return {
@@ -348,6 +384,7 @@ describe('project sharing helpers', () => {
         })),
         buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
         syncAutoGearMonitorFieldVisibility: jest.fn(),
+        gearListGetCurrentHtmlImpl: jest.fn(() => '<ul><li>Generated</li></ul>'),
       },
     });
 
@@ -374,7 +411,7 @@ describe('project sharing helpers', () => {
       contacts: 'Producer',
       schedule: 'Night shoot',
     }));
-    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(true);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
