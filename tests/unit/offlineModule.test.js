@@ -303,6 +303,71 @@ describe('cineOffline module', () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
+  test('triggerReload falls back to history.replaceState when navigation helpers fail', () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
+
+    const origin = 'https://example.test';
+    let currentHref = `${origin}/app/index.html?forceReload=prevToken#section`;
+    const location = { reload: jest.fn() };
+    Object.defineProperty(location, 'href', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return currentHref;
+      },
+      set() {
+        // Simulate browsers ignoring href assignments when navigation is blocked.
+      },
+    });
+    location.replace = jest.fn(() => {
+      throw new Error('replace blocked');
+    });
+    location.assign = jest.fn(() => {
+      throw new Error('assign blocked');
+    });
+
+    let historyState = { previous: true };
+    const history = {
+      get state() {
+        return historyState;
+      },
+      replaceState: jest.fn((state, _title, url) => {
+        historyState = state;
+        if (typeof url === 'string') {
+          if (url.startsWith('http')) {
+            currentHref = url;
+          } else if (url.startsWith('/')) {
+            currentHref = `${origin}${url}`;
+          } else {
+            currentHref = `${origin}/${url}`;
+          }
+        }
+      }),
+    };
+
+    const windowMock = {
+      location,
+      history,
+      setTimeout: jest.fn(),
+    };
+
+    const result = internal.triggerReload(windowMock);
+
+    expect(result).toBe(true);
+    expect(history.replaceState).toHaveBeenCalledTimes(1);
+    const [, , urlArg] = history.replaceState.mock.calls[0];
+    expect(typeof urlArg).toBe('string');
+    expect(urlArg).toContain('/app/index.html?');
+    expect(urlArg).toContain('forceReload=');
+    expect(location.reload).toHaveBeenCalledTimes(1);
+    expect(currentHref).toContain('forceReload=fr5hugk0');
+    expect(currentHref).toContain('#section');
+    expect(location.replace).toHaveBeenCalledTimes(1);
+    expect(location.assign).toHaveBeenCalledTimes(1);
+
+    nowSpy.mockRestore();
+  });
+
     test('registerServiceWorker registers immediately when the document is already loaded', async () => {
       const register = jest.fn(() => Promise.resolve('registered'));
       const navigatorMock = { serviceWorker: { register } };
