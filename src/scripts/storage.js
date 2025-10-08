@@ -1196,6 +1196,17 @@ function cloneAutoBackupMetadata(metadata) {
     createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
     changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
     removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+    payloadSignature: typeof metadata.payloadSignature === 'string'
+      ? metadata.payloadSignature
+      : null,
+    payloadCompression: isPlainObject(metadata.payloadCompression)
+      ? { ...metadata.payloadCompression }
+      : null,
+    compressedPayload: isPlainObject(metadata.compressedPayload)
+      ? cloneAutoBackupValue(metadata.compressedPayload, { stripMetadata: true })
+      : metadata.compressedPayload && typeof metadata.compressedPayload === 'string'
+        ? metadata.compressedPayload
+        : null,
   };
 }
 
@@ -1294,12 +1305,62 @@ function isCompressedAutoBackupSnapshotPayload(payload) {
 
 function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, options) {
   if (!payload || typeof payload !== 'object') {
-    return { payload, compression: null, compressed: false };
+    return {
+      payload,
+      compression: null,
+      compressed: false,
+      reused: false,
+      payloadSignature: null,
+    };
   }
 
   const opts = options || {};
   if (opts.disableCompression) {
-    return { payload, compression: null, compressed: false };
+    return {
+      payload,
+      compression: null,
+      compressed: false,
+      reused: false,
+      payloadSignature: typeof opts.payloadSignature === 'string'
+        ? opts.payloadSignature
+        : null,
+    };
+  }
+
+  const shouldReport = opts.reportCompression !== false;
+
+  let computedSignature = null;
+  try {
+    computedSignature = typeof opts.payloadSignature === 'string'
+      ? opts.payloadSignature
+      : createStableValueSignature(payload);
+  } catch (signatureError) {
+    computedSignature = null;
+    console.warn(
+      'Unable to compute stable signature for automatic backup payload before compression',
+      signatureError,
+    );
+  }
+
+  const existingSignature = typeof opts.existingPayloadSignature === 'string'
+    ? opts.existingPayloadSignature
+    : null;
+
+  if (
+    existingSignature
+    && computedSignature
+    && existingSignature === computedSignature
+    && isCompressedAutoBackupSnapshotPayload(opts.existingCompressedPayload)
+  ) {
+    return {
+      payload: cloneAutoBackupValue(opts.existingCompressedPayload, { stripMetadata: true }),
+      compression: isPlainObject(opts.existingPayloadCompression)
+        ? { ...opts.existingPayloadCompression }
+        : null,
+      compressed: true,
+      reused: true,
+      payloadSignature: computedSignature,
+    };
   }
 
   let serialized;
@@ -1307,16 +1368,34 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
     serialized = JSON.stringify(payload);
   } catch (error) {
     console.warn('Unable to serialize auto backup payload before compression', error);
-    return { payload, compression: null, compressed: false };
+    return {
+      payload,
+      compression: null,
+      compressed: false,
+      reused: false,
+      payloadSignature: computedSignature,
+    };
   }
 
   if (typeof serialized !== 'string' || serialized.length < AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH) {
-    return { payload, compression: null, compressed: false };
+    return {
+      payload,
+      compression: null,
+      compressed: false,
+      reused: false,
+      payloadSignature: computedSignature,
+    };
   }
 
   const candidate = createCompressedJsonStorageCandidate(serialized);
   if (!candidate || typeof candidate.serialized !== 'string') {
-    return { payload, compression: null, compressed: false };
+    return {
+      payload,
+      compression: null,
+      compressed: false,
+      reused: false,
+      payloadSignature: computedSignature,
+    };
   }
 
   const savings = candidate.originalLength - candidate.wrappedLength;
@@ -1329,7 +1408,8 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
   };
 
   if (
-    typeof console !== 'undefined'
+    shouldReport
+    && typeof console !== 'undefined'
     && typeof console.warn === 'function'
     && savings > 0
   ) {
@@ -1351,6 +1431,8 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
       compressionVariant: candidate.compressionVariant || null,
     },
     compressed: true,
+    reused: false,
+    payloadSignature: computedSignature,
   };
 }
 
@@ -1481,6 +1563,26 @@ function expandAutoBackupEntries(container, options) {
         changedKeys: changedKeys.slice(),
         removedKeys: removedKeys.slice(),
       };
+
+      try {
+        metadata.payloadSignature = createStableValueSignature(payload);
+      } catch (payloadSignatureError) {
+        metadata.payloadSignature = null;
+        console.warn(
+          'Unable to compute stable signature for automatic backup payload during expansion',
+          payloadSignatureError,
+        );
+      }
+
+      if (isCompressedAutoBackupSnapshotPayload(snapshot.payload)) {
+        metadata.compressedPayload = cloneAutoBackupValue(snapshot.payload, { stripMetadata: true });
+        metadata.payloadCompression = isPlainObject(snapshot.payloadCompression)
+          ? { ...snapshot.payloadCompression }
+          : null;
+      } else {
+        metadata.compressedPayload = null;
+        metadata.payloadCompression = null;
+      }
 
       defineAutoBackupMetadata(expanded, metadata);
       cache.set(name, expanded);
@@ -1642,12 +1744,41 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
+      let payloadSignature;
+      try {
+        payloadSignature = createStableValueSignature(normalizedValue);
+      } catch (signatureError) {
+        payloadSignature = null;
+        console.warn(
+          'Unable to compute stable signature for automatic backup payload before serialization',
+          signatureError,
+        );
+      }
       const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
         disableCompression: disableCompressionForName,
+        payloadSignature,
+        existingCompressedPayload: metadata ? metadata.compressedPayload : null,
+        existingPayloadCompression: metadata ? metadata.payloadCompression : null,
+        existingPayloadSignature: metadata ? metadata.payloadSignature : null,
       });
       snapshot.payload = prepared.payload;
       if (prepared.compression) {
         snapshot.payloadCompression = prepared.compression;
+      }
+      if (metadata) {
+        const resolvedSignature = typeof prepared.payloadSignature === 'string'
+          ? prepared.payloadSignature
+          : payloadSignature;
+        metadata.payloadSignature = resolvedSignature || null;
+        if (prepared.compressed) {
+          metadata.compressedPayload = cloneAutoBackupValue(prepared.payload, { stripMetadata: true });
+          metadata.payloadCompression = prepared.compression
+            ? { ...prepared.compression }
+            : null;
+        } else {
+          metadata.compressedPayload = null;
+          metadata.payloadCompression = null;
+        }
       }
       serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
@@ -1669,12 +1800,41 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
+      let payloadSignature;
+      try {
+        payloadSignature = createStableValueSignature(normalizedValue);
+      } catch (signatureError) {
+        payloadSignature = null;
+        console.warn(
+          'Unable to compute stable signature for automatic backup payload before serialization',
+          signatureError,
+        );
+      }
       const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
         disableCompression: disableCompressionForName,
+        payloadSignature,
+        existingCompressedPayload: metadata ? metadata.compressedPayload : null,
+        existingPayloadCompression: metadata ? metadata.payloadCompression : null,
+        existingPayloadSignature: metadata ? metadata.payloadSignature : null,
       });
       snapshot.payload = prepared.payload;
       if (prepared.compression) {
         snapshot.payloadCompression = prepared.compression;
+      }
+      if (metadata) {
+        const resolvedSignature = typeof prepared.payloadSignature === 'string'
+          ? prepared.payloadSignature
+          : payloadSignature;
+        metadata.payloadSignature = resolvedSignature || null;
+        if (prepared.compressed) {
+          metadata.compressedPayload = cloneAutoBackupValue(prepared.payload, { stripMetadata: true });
+          metadata.payloadCompression = prepared.compression
+            ? { ...prepared.compression }
+            : null;
+        } else {
+          metadata.compressedPayload = null;
+          metadata.payloadCompression = null;
+        }
       }
       serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
@@ -1693,12 +1853,41 @@ function serializeAutoBackupEntries(entries, options) {
       changedKeys: diff.changedKeys,
       removedKeys: diff.removedKeys,
     };
+    let payloadSignature;
+    try {
+      payloadSignature = createStableValueSignature(diff.payload);
+    } catch (signatureError) {
+      payloadSignature = null;
+      console.warn(
+        'Unable to compute stable signature for automatic backup delta payload before serialization',
+        signatureError,
+      );
+    }
     const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name, {
       disableCompression: disableCompressionForName,
+      payloadSignature,
+      existingCompressedPayload: metadata ? metadata.compressedPayload : null,
+      existingPayloadCompression: metadata ? metadata.payloadCompression : null,
+      existingPayloadSignature: metadata ? metadata.payloadSignature : null,
     });
     snapshot.payload = prepared.payload;
     if (prepared.compression) {
       snapshot.payloadCompression = prepared.compression;
+    }
+    if (metadata) {
+      const resolvedSignature = typeof prepared.payloadSignature === 'string'
+        ? prepared.payloadSignature
+        : payloadSignature;
+      metadata.payloadSignature = resolvedSignature || null;
+      if (prepared.compressed) {
+        metadata.compressedPayload = cloneAutoBackupValue(prepared.payload, { stripMetadata: true });
+        metadata.payloadCompression = prepared.compression
+          ? { ...prepared.compression }
+          : null;
+      } else {
+        metadata.compressedPayload = null;
+        metadata.payloadCompression = null;
+      }
     }
     serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
   });
