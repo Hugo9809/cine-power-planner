@@ -385,33 +385,105 @@ function captureProjectLookupSnapshotForCache(lookup) {
   };
 }
 
+function cloneProjectSnapshotValueForFreeze(value, seen) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  let localSeen = seen;
+  if (!localSeen && typeof WeakMap === 'function') {
+    localSeen = new WeakMap();
+  }
+
+  if (localSeen) {
+    if (localSeen.has(value)) {
+      return localSeen.get(value);
+    }
+  }
+
+  if (Array.isArray(value)) {
+    const clonedArray = new Array(value.length);
+    if (localSeen) {
+      localSeen.set(value, clonedArray);
+    }
+    for (let index = 0; index < value.length; index += 1) {
+      clonedArray[index] = cloneProjectSnapshotValueForFreeze(
+        value[index],
+        localSeen,
+      );
+    }
+    return clonedArray;
+  }
+
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const clonedObject = {};
+  if (localSeen) {
+    localSeen.set(value, clonedObject);
+  }
+
+  const keys = Object.keys(value);
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    clonedObject[key] = cloneProjectSnapshotValueForFreeze(
+      value[key],
+      localSeen,
+    );
+  }
+
+  return clonedObject;
+}
+
+function deepFreezeProjectSnapshotValue(value, seen) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  let localSeen = seen;
+  if (!localSeen && typeof WeakSet === 'function') {
+    localSeen = new WeakSet();
+  }
+
+  if (localSeen) {
+    if (localSeen.has(value)) {
+      return value;
+    }
+    localSeen.add(value);
+  }
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      deepFreezeProjectSnapshotValue(value[index], localSeen);
+    }
+  } else if (isPlainObject(value)) {
+    const keys = Object.keys(value);
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+      deepFreezeProjectSnapshotValue(value[key], localSeen);
+    }
+  }
+
+  try {
+    Object.freeze(value);
+  } catch (freezeError) {
+    void freezeError;
+  }
+
+  return value;
+}
+
 function freezeProjectSnapshotProjects(projects) {
   if (!isPlainObject(projects)) {
     return {};
   }
 
-  const frozen = {};
-  const keys = Object.keys(projects);
-  for (let index = 0; index < keys.length; index += 1) {
-    const key = keys[index];
-    const entry = projects[key];
-    if (entry && typeof entry === 'object') {
-      try {
-        Object.freeze(entry);
-      } catch (freezeError) {
-        void freezeError;
-      }
-    }
-    frozen[key] = entry;
+  const cloned = cloneProjectSnapshotValueForFreeze(projects);
+  if (cloned && typeof cloned === 'object') {
+    deepFreezeProjectSnapshotValue(cloned);
   }
-
-  try {
-    Object.freeze(frozen);
-  } catch (freezeRootError) {
-    void freezeRootError;
-  }
-
-  return frozen;
+  return cloned;
 }
 
 function setProjectReadCacheSnapshot(snapshot) {
