@@ -4808,9 +4808,196 @@ try {
   var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
   if (scope) {
     scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
+    scope.__cineShowGlobalLoadingIndicator = showGlobalLoadingIndicator;
   }
 } catch (indicatorExposeError) {
   console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
+}
+
+var GLOBAL_LOADING_INDICATOR_ID = 'cineGlobalLoadingIndicator';
+var globalLoadingIndicatorRefCount = 0;
+
+function resolveGlobalLoadingIndicatorMessage(fallbackMessage) {
+  if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
+    return fallbackMessage.trim();
+  }
+  var langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang] ? texts[currentLang] : null;
+  var fallbackTexts = texts && _typeof(texts.en) === 'object' && texts.en ? texts.en : null;
+  var localized = langTexts && typeof langTexts.globalLoadingIndicator === 'string' ? langTexts.globalLoadingIndicator.trim() : '';
+  if (localized) {
+    return localized;
+  }
+  var fallback = fallbackTexts && typeof fallbackTexts.globalLoadingIndicator === 'string' ? fallbackTexts.globalLoadingIndicator.trim() : '';
+  if (fallback) {
+    return fallback;
+  }
+  return 'Loading…';
+}
+
+function refreshGlobalLoadingIndicatorText() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  var indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator) {
+    return;
+  }
+  var textTarget = indicator.querySelector('.global-loading-indicator-text');
+  if (!textTarget) {
+    return;
+  }
+  var mode = indicator.dataset.messageMode || 'auto';
+  if (mode === 'custom') {
+    var customMessage = indicator.dataset.customMessage || '';
+    if (customMessage) {
+      textTarget.textContent = customMessage;
+    }
+    return;
+  }
+  var message = resolveGlobalLoadingIndicatorMessage();
+  textTarget.textContent = message;
+  indicator.dataset.currentMessage = message;
+}
+
+function showGlobalLoadingIndicator(message) {
+  if (typeof document === 'undefined') {
+    return function () {};
+  }
+  var container = ensureNotificationContainer();
+  if (!container) {
+    return function () {};
+  }
+  ensureAutoBackupSpinnerStyles();
+  var indicator = document.getElementById(GLOBAL_LOADING_INDICATOR_ID);
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = GLOBAL_LOADING_INDICATOR_ID;
+    indicator.style.display = 'flex';
+    indicator.style.alignItems = 'center';
+    indicator.style.gap = '0.75rem';
+    indicator.style.padding = '0.75rem 1.25rem';
+    indicator.style.marginTop = '0.5rem';
+    indicator.style.borderRadius = '0.75rem';
+    indicator.style.border = 'none';
+    indicator.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
+    indicator.style.background = 'rgba(32, 40, 62, 0.92)';
+    indicator.style.color = '#ffffff';
+    indicator.setAttribute('role', 'status');
+    indicator.setAttribute('aria-live', 'polite');
+    var spinner = document.createElement('span');
+    spinner.style.display = 'inline-block';
+    spinner.style.width = '1.5rem';
+    spinner.style.height = '1.5rem';
+    spinner.style.borderRadius = '50%';
+    spinner.style.border = '0.2rem solid rgba(255, 255, 255, 0.3)';
+    spinner.style.borderTopColor = '#ffffff';
+    spinner.style.animation = 'cineAutoBackupSpinnerRotate 1s linear infinite';
+    spinner.setAttribute('aria-hidden', 'true');
+    indicator.appendChild(spinner);
+    var textNode = document.createElement('span');
+    textNode.className = 'global-loading-indicator-text';
+    indicator.appendChild(textNode);
+    container.appendChild(indicator);
+  }
+  var resolvedMessage = resolveGlobalLoadingIndicatorMessage(message);
+  var isCustomMessage = Boolean(message && typeof message === 'string' && message.trim());
+  var textTarget = indicator.querySelector('.global-loading-indicator-text');
+  if (textTarget) {
+    textTarget.textContent = resolvedMessage;
+  }
+  indicator.dataset.messageMode = isCustomMessage ? 'custom' : 'auto';
+  if (isCustomMessage) {
+    indicator.dataset.customMessage = resolvedMessage;
+  } else {
+    indicator.dataset.customMessage = '';
+    indicator.dataset.currentMessage = resolvedMessage;
+  }
+  globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount);
+  globalLoadingIndicatorRefCount += 1;
+  indicator.dataset.count = String(globalLoadingIndicatorRefCount);
+  indicator.style.display = 'flex';
+  return function () {
+    globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
+    if (globalLoadingIndicatorRefCount === 0) {
+      indicator.remove();
+      if (!container.children.length) {
+        container.remove();
+      }
+    }
+  };
+}
+
+function installGlobalFetchLoadingIndicator() {
+  var fetchScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
+  if (!fetchScope || typeof fetchScope.fetch !== 'function') {
+    return;
+  }
+  if (fetchScope.__cineFetchWithLoadingIndicatorInstalled) {
+    return;
+  }
+  var originalFetch = fetchScope.fetch;
+  var getMessage = function getMessage() {
+    return resolveGlobalLoadingIndicatorMessage();
+  };
+  var showIndicator = typeof fetchScope.__cineShowGlobalLoadingIndicator === 'function' ? fetchScope.__cineShowGlobalLoadingIndicator : showGlobalLoadingIndicator;
+  var finalizeHide = function finalizeHide(hide) {
+    if (typeof hide === 'function') {
+      try {
+        hide();
+      } catch (hideError) {
+        console.warn('Failed to hide global loading indicator after fetch', hideError);
+      }
+    }
+  };
+  fetchScope.fetch = function fetchWithLoadingIndicator(input, init) {
+    var hide = null;
+    try {
+      hide = showIndicator(getMessage());
+    } catch (indicatorError) {
+      console.warn('Failed to show global loading indicator before fetch', indicatorError);
+      hide = null;
+    }
+    var response;
+    try {
+      response = originalFetch.apply(this, arguments);
+    } catch (syncError) {
+      finalizeHide(hide);
+      throw syncError;
+    }
+    if (!response || typeof response.then !== 'function') {
+      finalizeHide(hide);
+      return response;
+    }
+    if (typeof response.finally === 'function') {
+      return response.finally(function () {
+        finalizeHide(hide);
+      });
+    }
+    return response.then(function (value) {
+      finalizeHide(hide);
+      return value;
+    }, function (error) {
+      finalizeHide(hide);
+      throw error;
+    });
+  };
+  fetchScope.__cineFetchWithLoadingIndicatorInstalled = true;
+}
+
+try {
+  installGlobalFetchLoadingIndicator();
+} catch (loadingInstallError) {
+  console.warn('Failed to install global loading indicator for fetch', loadingInstallError);
+}
+
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('languagechange', function () {
+    try {
+      refreshGlobalLoadingIndicatorText();
+    } catch (languageIndicatorError) {
+      console.warn('Failed to refresh global loading indicator after language change', languageIndicatorError);
+    }
+  });
 }
 function getDiffText(key) {
   var fallbackValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
