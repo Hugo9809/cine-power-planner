@@ -4872,7 +4872,7 @@ function saveJSONToStorage(
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
-  const compressionBlocked = Boolean(disableCompression);
+  let compressionBlocked = Boolean(disableCompression);
 
   const rawGetter = getRawStorageGetter(storage);
   const loadRawValue = (targetKey) => readRawStorageValue(storage, targetKey, rawGetter);
@@ -5043,6 +5043,14 @@ function saveJSONToStorage(
   let quotaRecoveryFailed = false;
   let compressionSweepAttempted = false;
 
+  const enableCompressionForRetry = () => {
+    if (!compressionBlocked) {
+      return false;
+    }
+    compressionBlocked = false;
+    return true;
+  };
+
   maybeEnableProactiveCompression();
 
   const registerQuotaRecoveryStep = () => {
@@ -5067,6 +5075,8 @@ function saveJSONToStorage(
             storage,
             key,
             value,
+            compressionBlocked,
+            enableCompression: enableCompressionForRetry,
             ...context,
           }) === true
         ) {
@@ -5097,6 +5107,8 @@ function saveJSONToStorage(
 
   let attempts = 0;
   while (attempts < MAX_SAVE_ATTEMPTS) {
+    maybeEnableProactiveCompression();
+
     attempts += 1;
 
     const serialized = getSerializedForAttempt();
@@ -6166,15 +6178,28 @@ function saveSetups(setups) {
     serializedSetups,
     "Error saving setups to localStorage:",
     {
-      onQuotaExceeded: () => {
+      onQuotaExceeded: (quotaError, context) => {
         const removedKey = removeOldestAutoBackupEntry(serializedSetups);
-        if (!removedKey) {
-          return false;
+        if (removedKey) {
+          console.warn(
+            `Removed automatic backup "${removedKey}" to free up storage space before saving setups.`,
+          );
+          return true;
         }
-        console.warn(
-          `Removed automatic backup "${removedKey}" to free up storage space before saving setups.`,
-        );
-        return true;
+
+        if (
+          context
+          && typeof context.enableCompression === 'function'
+          && context.enableCompression()
+        ) {
+          console.warn(
+            'Enabled emergency compression while saving setups to prevent data loss after storage quota issues.',
+            quotaError,
+          );
+          return true;
+        }
+
+        return false;
       },
     },
   );
@@ -7474,15 +7499,28 @@ function persistAllProjects(projects) {
     "Error saving project to localStorage:",
     {
       disableCompression: true,
-      onQuotaExceeded: () => {
+      onQuotaExceeded: (quotaError, context) => {
         const removedKey = removeOldestAutoBackupEntry(serializedProjects);
-        if (!removedKey) {
-          return false;
+        if (removedKey) {
+          console.warn(
+            `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
+          );
+          return true;
         }
-        console.warn(
-          `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
-        );
-        return true;
+
+        if (
+          context
+          && typeof context.enableCompression === 'function'
+          && context.enableCompression()
+        ) {
+          console.warn(
+            'Enabled emergency compression while saving projects to preserve user data after storage quota issues.',
+            quotaError,
+          );
+          return true;
+        }
+
+        return false;
       },
     },
   );
