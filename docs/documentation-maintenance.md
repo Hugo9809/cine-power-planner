@@ -7,6 +7,13 @@ internet connection. Use this guide whenever you add, remove or adjust functiona
 condensed run-through before code review, follow the [Documentation Update Checklist](documentation-update-checklist.md)
 alongside this guide so no surface or translation is missed.
 
+> **Retired guides:** The transitional modularisation playbooks that referenced the older
+> “Camera Power Planner” naming have been archived. They no longer describe the current
+> module boundaries or offline safeguards, so rely on the active architecture references
+> instead—namely the [App Core Module Map](architecture/app-core-modules.md) and the
+> [Module Registry guide](architecture/module-registry.md)—when updating help or
+> translations.【F:docs/architecture/app-core-modules.md†L1-L34】【F:docs/architecture/module-registry.md†L1-L188】
+
 Run the recurring [Documentation Audit Checklist](documentation-audit-checklist.md) between feature
 cycles to spot-check localized READMEs, printable manuals, help topics and Quick safeguards logs
 against the runtime safeguards described below. The audit keeps long-lived releases aligned with
