@@ -85,6 +85,12 @@ module.exports = [
       },
     },
   },
+  {
+    files: ['src/scripts/modern-support-check.js'],
+    languageOptions: {
+      sourceType: 'module',
+    },
+  },
   ...appScriptConfigs,
   {
     files: ['tests/**'],
