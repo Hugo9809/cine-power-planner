@@ -989,6 +989,11 @@ coverage and recovery instructions. Each update should:
 - Cross-check the [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) so every
   workflow change includes updated README copy, help topics, printable runbooks, translations and
   rehearsal evidence before sign-off.
+- Capture the artefacts listed in the [Documentation Verification Packet](docs/documentation-verification-packet.md)
+  so every release stores synchronized manuals, rehearsal exports and verification logs in redundant
+  offline locations. Attach the packet location to your verification notes so future crews know where
+  to retrieve the canonical documentation bundle when rehearsing saves, shares, imports, backups and
+  restores.
 
 ## Development
 
