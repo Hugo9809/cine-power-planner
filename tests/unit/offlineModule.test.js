@@ -207,17 +207,49 @@ describe('cineOffline module', () => {
 
     const location = {
       href: 'https://example.test/app?foo=bar#section',
-        replace: jest.fn(),
-        reload: jest.fn(),
-      };
-      const result = internal.triggerReload({ location });
+      replace: jest.fn(),
+      assign: jest.fn(),
+      reload: jest.fn(),
+    };
+    const result = internal.triggerReload({ location });
 
-      expect(result).toBe(true);
-      expect(location.replace).toHaveBeenCalledTimes(1);
-      const replacedUrl = location.replace.mock.calls[0][0];
-      expect(replacedUrl).toMatch(/forceReload=.*#section$/);
-      expect(replacedUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
-      expect(location.reload).not.toHaveBeenCalled();
+    expect(result).toBe(true);
+    expect(location.replace).toHaveBeenCalledTimes(1);
+    const replacedUrl = location.replace.mock.calls[0][0];
+    expect(replacedUrl).toMatch(/forceReload=.*#section$/);
+    expect(replacedUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
+    expect(location.reload).not.toHaveBeenCalled();
+
+    nowSpy.mockRestore();
+  });
+
+  test('triggerReload resolves relative location hrefs using origin and pathname', () => {
+    const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
+
+    let currentHref = 'index.html?foo=bar#section';
+    const location = {
+      origin: 'https://example.test',
+      pathname: '/app/index.html',
+      get href() {
+        return currentHref;
+      },
+      set href(value) {
+        currentHref = value;
+      },
+      replace: jest.fn((value) => {
+        currentHref = value;
+      }),
+      assign: jest.fn(),
+      reload: jest.fn(),
+    };
+
+    const result = internal.triggerReload({ location });
+
+    expect(result).toBe(true);
+    expect(location.replace).toHaveBeenCalledTimes(1);
+    const replacedUrl = location.replace.mock.calls[0][0];
+    expect(replacedUrl).toBe('https://example.test/app/index.html?foo=bar&forceReload=fr5hugk0#section');
+    expect(location.reload).not.toHaveBeenCalled();
 
     nowSpy.mockRestore();
   });

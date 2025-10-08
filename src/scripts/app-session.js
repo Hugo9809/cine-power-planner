@@ -9099,6 +9099,98 @@ function readLocationHrefSafe(locationLike) {
   }
 }
 
+function readLocationPathnameSafe(locationLike) {
+  if (!locationLike || typeof locationLike !== 'object') {
+    return '';
+  }
+
+  try {
+    const pathname = locationLike.pathname;
+    return typeof pathname === 'string' ? pathname : '';
+  } catch (error) {
+    void error;
+    return '';
+  }
+}
+
+function readLocationOriginSafe(locationLike) {
+  if (!locationLike || typeof locationLike !== 'object') {
+    return '';
+  }
+
+  try {
+    const origin = locationLike.origin;
+    if (typeof origin === 'string' && origin) {
+      return origin;
+    }
+  } catch (error) {
+    void error;
+  }
+
+  const href = readLocationHrefSafe(locationLike);
+  if (!href) {
+    return '';
+  }
+
+  if (typeof URL === 'function') {
+    try {
+      return new URL(href).origin;
+    } catch (originError) {
+      void originError;
+    }
+  }
+
+  const originMatch = href.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
+  return originMatch && originMatch[1] ? originMatch[1] : '';
+}
+
+function getForceReloadBaseCandidates(locationLike, originalHref) {
+  const candidates = [];
+  const unique = new Set();
+
+  const addCandidate = value => {
+    if (typeof value !== 'string') {
+      return;
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed || unique.has(trimmed)) {
+      return;
+    }
+
+    unique.add(trimmed);
+    candidates.push(trimmed);
+  };
+
+  const safeHref = readLocationHrefSafe(locationLike);
+  if (safeHref) {
+    addCandidate(safeHref);
+  }
+
+  if (typeof originalHref === 'string' && originalHref) {
+    addCandidate(originalHref);
+  }
+
+  const origin = readLocationOriginSafe(locationLike);
+  const pathname = readLocationPathnameSafe(locationLike);
+
+  if (origin) {
+    if (pathname) {
+      addCandidate(`${origin}${pathname}`);
+    }
+    addCandidate(`${origin}/`);
+  }
+
+  if (typeof window !== 'undefined' && window && window.location) {
+    const windowHref = readLocationHrefSafe(window.location);
+    if (windowHref) {
+      addCandidate(windowHref);
+    }
+  }
+
+  return candidates;
+}
+
 function normaliseForceReloadHref(value, baseHref) {
   if (typeof value !== 'string') {
     return '';
@@ -9132,6 +9224,7 @@ function buildForceReloadHref(locationLike, paramName) {
   const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
   const timestamp = Date.now().toString(36);
   const originalHref = readLocationHrefSafe(locationLike);
+  const baseCandidates = getForceReloadBaseCandidates(locationLike, originalHref);
 
   if (!originalHref) {
     return {
@@ -9143,29 +9236,22 @@ function buildForceReloadHref(locationLike, paramName) {
   }
 
   if (typeof URL === 'function') {
-    try {
-      const url = new URL(originalHref);
-      url.searchParams.set(param, timestamp);
-      return {
-        originalHref,
-        nextHref: url.toString(),
-        param,
-        timestamp,
-      };
-    } catch (urlError) {
-      void urlError;
+    const urlCandidates = [originalHref, ...baseCandidates];
+
+    for (let index = 0; index < urlCandidates.length; index += 1) {
+      const candidate = urlCandidates[index];
 
       try {
-        const derived = new URL(originalHref, originalHref);
-        derived.searchParams.set(param, timestamp);
+        const url = index === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        url.searchParams.set(param, timestamp);
         return {
           originalHref,
-          nextHref: derived.toString(),
+          nextHref: url.toString(),
           param,
           timestamp,
         };
-      } catch (fallbackError) {
-        void fallbackError;
+      } catch (candidateError) {
+        void candidateError;
       }
     }
   }
@@ -9187,6 +9273,24 @@ function buildForceReloadHref(locationLike, paramName) {
     href += `&${param}=${timestamp}`;
   } else if (href) {
     href += `?${param}=${timestamp}`;
+  }
+
+  if (typeof URL === 'function') {
+    for (let index = 0; index < baseCandidates.length; index += 1) {
+      const candidate = baseCandidates[index];
+
+      try {
+        const absolute = new URL(href + hash, candidate).toString();
+        return {
+          originalHref,
+          nextHref: absolute,
+          param,
+          timestamp,
+        };
+      } catch (absoluteError) {
+        void absoluteError;
+      }
+    }
   }
 
   return {
