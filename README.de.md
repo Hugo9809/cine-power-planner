@@ -402,7 +402,7 @@ npm run test:data
 
 `npm run help` listet alle Skripte, `--help` liefert Details.
 
-> **Katalogaktualisierung.** Der FIZ-Handeinheitenkatalog enthält jetzt Tilta's Nucleus-M II gemeinsam mit neuen Profilen für Prestons HU4, cmotions cPRO-Handeinheit, Teradeks CTRL.3, DJIs Focus Pro-Handeinheit, Hedéns YMER-3-Handeinheit, Freeflys Pilot Pro-Handcontroller und Redrocks microRemote-Handcontroller, sodass Teams offline mehr Systeme vergleichen können, ohne die App zu verlassen.
+> **Katalogaktualisierung.** Der FIZ-Handeinheitenkatalog enthält jetzt TILTAs Nucleus-M und Nucleus-M II gemeinsam mit den Nano- und Nano II-Handrädern, Prestons HU4, cmotions cPRO-Handeinheit, Chrosziels MagNum-Handeinheit, Teradeks CTRL.3, DJIs Focus- und Focus Pro-Handeinheiten plus dem RS Focus Wheel (2022), Hedéns YMER-3-Handeinheit, Freeflys Pilot Pro-Handcontroller, Redrocks microRemote-Handcontroller sowie SmallRigs MagicFIZ-Handgriff, sodass Teams offline mehr Systeme vergleichen können, ohne die App zu verlassen.
 
 ## Entwicklung
 

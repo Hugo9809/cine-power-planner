@@ -460,6 +460,24 @@ const fizData = {
       "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LCS)",
       "notes": "3-axis wireless compact unit with integrated lens mapping."
     },
+    "Tilta Nucleus-M FIZ Hand Unit": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "LEMO 7-pin",
+          "notes": "Optional tether for hardline camera control"
+        },
+        {
+          "type": "Micro-USB",
+          "notes": "Charging and configuration"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (2x 18650) or External via tether",
+      "batteryType": "2x 18650 Li-ion (user supplied)",
+      "connectivity": "Wireless (proprietary 2.4 GHz Tilta link) or Wired (7-pin tether)",
+      "notes": "Original Nucleus-M 3-axis FIZ hand unit with adjustable focus wheel tension, illuminated marks, and direct motor control when tethered. Compatible with legacy and current Nucleus-M motors."
+    },
     "Tilta Nucleus-M II FIZ Hand Unit": {
       "powerDrawWatts": null,
       "fizConnectors": [
@@ -473,6 +491,34 @@ const fizData = {
       "batteryType": "Sony NP-F550",
       "connectivity": "Wireless (compatible with Nucleus-series controllers and motors) or Wired (USB-C for updates)",
       "notes": "Updated hand unit with adjustable hand wheel damping, electronic focus marking disc, built-in lens mapping and expanded camera control options."
+    },
+    "Tilta Nucleus Nano Hand Wheel Controller": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "Micro-USB",
+          "notes": "Charging and firmware"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (14500 Li-ion) or External 5V via Micro-USB",
+      "batteryType": "14500 Li-ion",
+      "connectivity": "Wireless (2.4 GHz link to Nano motor) or Wired (Micro-USB for configuration)",
+      "notes": "Compact single-knob controller for the original Nucleus Nano ecosystem with adjustable damping and quick lens calibration."
+    },
+    "Tilta Nucleus Nano II Hand Controller": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging, configuration and wired camera control"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (built-in Li-ion) or External USB-C",
+      "batteryType": "Integrated Li-ion (7.4 V, 3400 mAh equivalent)",
+      "connectivity": "Wireless (Bluetooth LE and 2.4 GHz link to Nano II motors) or Wired (USB-C tether)",
+      "notes": "Next-generation Nano II controller with full-color display, assignable buttons, lens mapping storage and support for focus, iris and zoom control."
     },
     "Preston Hand Unit 4 (HU4)": {
       "powerDrawWatts": 5,
@@ -510,6 +556,24 @@ const fizData = {
       "connectivity": "Wireless (cPRO 2.4 GHz FHSS) or Wired (LBUS)",
       "notes": "Ergonomic 3-axis controller with lens data, customizable force feedback, focus tracking tools, and compatibility with cPRO and cvolution receivers."
     },
+    "Chrosziel MagNum Hand Unit (MN-100R)": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "LEMO 4-pin",
+          "notes": "Serial link to MagNum receivers"
+        },
+        {
+          "type": "USB",
+          "notes": "Charging and firmware"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Sony NP-FM500H) or External via receiver tether",
+      "batteryType": "Sony NP-FM500H",
+      "connectivity": "Wireless (2.4 GHz MagNum link) or Wired (LEMO serial tether)",
+      "notes": "Modular three-channel MagNum hand unit with bright status display, force-adjustable focus knob and hot-swappable batteries for Chrosziel CDM series motors."
+    },
     "Teradek RT CTRL.3": {
       "powerDrawWatts": 5,
       "fizConnectors": [
@@ -528,6 +592,24 @@ const fizData = {
       "connectivity": "Wireless (Teradek RT FHSS up to ~1500 m) or Wired (LEMO 4-pin to MDR)",
       "notes": "3-axis wireless hand unit with adjustable focus knob damping, swappable iris slider and zoom rocker, integrated OLED lens data display, and full lens mapping support."
     },
+    "DJI Focus Hand Unit": {
+      "powerDrawWatts": 4,
+      "fizConnectors": [
+        {
+          "type": "USB",
+          "notes": "Charging and firmware"
+        },
+        {
+          "type": "LEMO 7-pin",
+          "notes": "Optional wired tether to Focus motor"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (built-in Li-ion) or External via tether",
+      "batteryType": "Integrated Li-ion (3400 mAh)",
+      "connectivity": "Wireless (DJI 2.4/5.8 GHz FHSS) or Wired (7-pin tether)",
+      "notes": "Legacy DJI Focus controller with adjustable wheel tension, hard stops and camera run/stop support for Ronin gimbals and Inspire rigs."
+    },
     "DJI Focus Pro Hand Unit": {
       "powerDrawWatts": 4,
       "fizConnectors": [
@@ -541,6 +623,20 @@ const fizData = {
       "batteryType": "Integrated Li-ion (2600 mAh)",
       "connectivity": "Wireless (DJI 2.4/5.8 GHz link with Focus Pro ecosystem) or Wired (USB-C for updates)",
       "notes": "Compact controller for the Focus Pro ecosystem with customizable focus wheel tension, vibration feedback for range alerts, and direct pairing to the LiDAR Range Finder."
+    },
+    "DJI RS Focus Wheel (2022)": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Powered and controlled via Ronin gimbals"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "External (powered by compatible DJI RS gimbal)",
+      "batteryType": "N/A (draws power from gimbal)",
+      "connectivity": "Wired (USB-C pass-through via gimbal, wireless hop handled by gimbal to motor)",
+      "notes": "Detachable RS-series focus wheel with programmable endpoints, photo/video trigger buttons and native control over the 2022 RS Focus motor through the gimbal bus."
     },
     "Hedén YMER-3 Hand Control": {
       "powerDrawWatts": null,
@@ -595,6 +691,20 @@ const fizData = {
       "batteryType": "Canon LP-E6",
       "connectivity": "Wireless (2.4 GHz microRemote link) or Wired (LEMO 5-pin to BaseStation)",
       "notes": "Programmable hand controller with illuminated marking disk, adjustable hard stops, and multi-axis expansion when paired with Redrock's thumb and finger controllers."
+    },
+    "SmallRig MagicFIZ Wireless Handgrip": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging, configuration and pass-through power"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (1400 mAh Li-ion) or External USB-C",
+      "batteryType": "Integrated Li-ion (1400 mAh)",
+      "connectivity": "Wireless (2.4 GHz MagicFIZ link) or Wired (USB-C for tethered control)",
+      "notes": "Lightweight handgrip controller for SmallRig MagicFIZ motors featuring OLED status display, start/stop trigger, configurable A/B points and gimbal mounting brackets."
     }
   },
   "controllers": {

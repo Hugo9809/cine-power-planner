@@ -904,7 +904,7 @@ Add `--help` to any helper command for usage notes and review generated JSON
 diffs before opening a pull request. `npm run help` prints a summary of all
 available scripts.
 
-> **Catalog update.** The FIZ hand unit catalog now lists Tilta's Nucleus-M II controller alongside fresh profiles for Preston's HU4, cmotion's cPRO hand unit, Teradek's CTRL.3, DJI's Focus Pro hand unit, Hedén's YMER-3 hand control, Freefly's Pilot Pro hand controller, and Redrock's microRemote hand controller so offline planners can compare more ecosystems without leaving the app.
+> **Catalog update.** The FIZ hand unit catalog now lists Tilta's Nucleus-M and Nucleus-M II controllers alongside Nano and Nano II hand wheels, Preston's HU4, cmotion's cPRO hand unit, Chrosziel's MagNum hand unit, Teradek's CTRL.3, DJI's Focus and Focus Pro hand units plus the RS Focus Wheel (2022), Hedén's YMER-3 hand control, Freefly's Pilot Pro hand controller, Redrock's microRemote hand controller, and SmallRig's MagicFIZ handgrip so offline planners can compare more ecosystems without leaving the app.
 
 ## Repository Layout & Offline Assets
 

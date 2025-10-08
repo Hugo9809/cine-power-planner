@@ -404,7 +404,7 @@ npm run test:data
 
 Ajoutez `--help` à n’importe quelle commande pour obtenir de l’aide et consultez les diffs générés avant d’ouvrir une pull request. `npm run help` récapitule les scripts disponibles.
 
-> **Mise à jour du catalogue.** Le catalogue des poignées FIZ inclut désormais le contrôleur Nucleus-M II de Tilta ainsi que de nouveaux profils pour la HU4 de Preston, la poignée cPRO de cmotion, la CTRL.3 de Teradek, la poignée Focus Pro de DJI, la poignée YMER-3 de Hedén, le contrôleur Pilot Pro de Freefly et la poignée microRemote de Redrock afin de comparer davantage d’écosystèmes hors ligne sans quitter l’application.
+> **Mise à jour du catalogue.** Le catalogue des poignées FIZ inclut désormais les contrôleurs Nucleus-M et Nucleus-M II de Tilta ainsi que les molettes Nano et Nano II, la HU4 de Preston, la poignée cPRO de cmotion, la poignée MagNum de Chrosziel, la CTRL.3 de Teradek, les poignées Focus et Focus Pro de DJI plus la RS Focus Wheel (2022), la poignée YMER-3 de Hedén, le contrôleur Pilot Pro de Freefly, la poignée microRemote de Redrock et la poignée MagicFIZ de SmallRig afin de comparer davantage d’écosystèmes hors ligne sans quitter l’application.
 
 ## Développement
 
