@@ -360,9 +360,10 @@ Use Cine Power Planner end-to-end with the following routine:
   layouts and runtime observations.
 - **Auto-saves protect in-progress work.** While a project is open the planner
   writes incremental changes in the background. Timestamped `auto-backup-…`
-  versions appear in the project selector every 10 minutes, when you switch
-  projects, import or export data, before reloads and after heavy edit streaks
-  so you can roll back without leaving the interface.
+  versions appear in the project selector every 10 minutes or after roughly 50
+  tracked changes. Switching projects, importing or exporting data, or preparing
+  to reload also captures an immediate snapshot even if that cadence hasn't
+  elapsed so you can roll back without leaving the interface.
 - **Quick safeguards capture full backups instantly.** Open **Settings → Data &
   Storage → Quick safeguards** to download a fresh planner backup or jump
   straight to the restore tools without leaving your current tab; each run is
@@ -605,9 +606,10 @@ Use Cine Power Planner end-to-end with the following routine:
 ## Backup & Recovery
 
 - **Saved project snapshots** – the selector keeps every plan you save and
-  creates timestamped `auto-backup-…` entries every 10 minutes, when you switch
-  projects, import or export data, before reloads and after long edit bursts so
-  you can roll back without losing changes.
+  creates timestamped `auto-backup-…` entries every 10 minutes or after roughly
+  50 tracked edits so you can roll back without losing changes. Switching
+  projects, importing or exporting data, or preparing to reload also triggers an
+  immediate snapshot even if that cadence hasn't elapsed.
 - **Full planner backups** – **Settings → Backup & Restore → Backup** downloads
   `planner-backup.json` with projects, custom devices, runtime feedback,
   favorites, automatic gear rules and UI state. Restores create a safety copy

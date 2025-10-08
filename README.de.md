@@ -160,7 +160,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 ## Speichern & Projektverwaltung
 
 - **Manuelle Saves halten Versionen bewusst.** Projektnamen eingeben und **Enter**/**Speichern** drücken. Jede Version bewahrt Geräte, Anforderungen, Listen, Favoriten, Diagramm-Layouts und Laufzeitbeobachtungen.
-- **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten, beim Projektwechsel, nach Importen oder Exporten, vor dem Neuladen und nach längeren Bearbeitungsphasen.
+- **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten oder nach ungefähr 50 protokollierten Änderungen. Beim Projektwechsel, Import, Export oder vor dem Neuladen legt die App zusätzlich sofort eine neue Sicherung an, auch wenn der Takt noch nicht überschritten ist.
 - **Quick safeguards sichern sofort.** Öffne **Einstellungen → Daten & Speicher → Quick safeguards**, um ohne Tab-Wechsel ein Vollbackup zu laden oder direkt zum Wiederherstellungsbereich zu springen; jeder Lauf erscheint im Dashboard, damit du die JSON sofort ablegen kannst.【F:index.html†L2548-L2570】
 - **Auto-Backups bei Bedarf einblenden.** Über **Einstellungen → Backup & Wiederherstellung → Auto-Backups anzeigen** lassen sich die Zeitstempel im Selector sichtbar machen.
 - **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
@@ -236,7 +236,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - Service Worker cached alle Assets, Updates warten auf deine Freigabe via **Neu laden erzwingen**.
 - Projekte, Laufzeitdaten, Favoriten, Custom-Geräte, Themes und Listen liegen im Browser-Speicher. Unterstützte Browser erhalten Persistenz-Anfragen, um Löschrisiken zu mindern.
-- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten, beim Projektwechsel, nach Importen oder Exporten, vor dem Neuladen und nach längeren Bearbeitungsphasen; stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln ergänzen die Timeline. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
+- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten oder nach rund 50 festgehaltenen Änderungen. Bei Projektwechseln, Importen, Exporten oder vor dem Neuladen erstellt die App zusätzlich sofort eine neue Aufnahme, selbst wenn dieser Takt noch läuft; stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln ergänzen die Timeline. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
 - Blockiert der Browser Downloads, öffnet die App einen Tab **Manueller Download** mit dem JSON, damit du es in eine `.json`-Datei kopierst und auf vertrauenswürdigen Offline-Medien ablegst.
 - Nutze **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**, um zwei Stände zu vergleichen, Kontext in **Vorfallsnotizen** festzuhalten und ein Prüfprotokoll für Übergaben zu exportieren.
 - Starte **Wiederherstellungsprobe** in **Einstellungen → Backup & Wiederherstellung**, lade das Backup in eine Wegwerf-Sandbox, prüfe die Vergleichstabelle und bestätige die Integrität, bevor du **Wiederherstellen** auf die Live-Daten anwendest.
@@ -264,7 +264,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 ## Backup & Wiederherstellung
 
-- **Gespeicherte Projektsnapshots** – Projektliste speichert alle Saves und erzeugt alle zehn Minuten `auto-backup-…`.
+- **Gespeicherte Projektsnapshots** – Projektliste speichert alle Saves und erzeugt alle zehn Minuten oder nach rund 50 Änderungen `auto-backup-…`.
 - **Vollbackups** – **Einstellungen → Backup & Wiederherstellung → Backup** erstellt `planner-backup.json` inkl. aller Projekte, Geräte, Regeln und UI-States; vor jeder Wiederherstellung wird ein Sicherheitsbackup angelegt.
 - **Quick safeguards-Bereich** – In **Einstellungen → Daten & Speicher** steht ein eigener **Quick safeguards**-Block für Ein-Klick-Backups oder den Sprung zu Restore-Tools bereit, damit zusätzliche Kopien ohne Kontextwechsel entstehen.【F:index.html†L2548-L2570】
 - **Backup-Verlauf** – Jede Vollsicherung schreibt einen Eintrag, der sich in **Einstellungen → Daten & Speicher** prüfen oder zusammen mit dem Archiv exportieren lässt. Zeitstempel und Dateinamen bleiben so auch offline nachvollziehbar.
