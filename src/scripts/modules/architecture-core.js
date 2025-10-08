@@ -17,16 +17,82 @@
     return {};
   }
 
-  function resolveScopeCollector() {
+  const LOCAL_SCOPE = baseDetectGlobalScope();
+
+  function resolveScopeUtils(scope) {
+    const primaryScope = scope || LOCAL_SCOPE;
+
     if (typeof require === 'function') {
       try {
-        const required = require('./helpers/scope-collector.js');
-        if (required && typeof required.createCollector === 'function') {
+        const required = require('./helpers/scope-utils.js');
+        if (required && typeof required === 'object') {
           return required;
         }
       } catch (error) {
         void error;
       }
+    }
+
+    const candidates = [];
+
+    function pushCandidate(candidate) {
+      if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(candidate) === -1) {
+        candidates.push(candidate);
+      }
+    }
+
+    pushCandidate(primaryScope);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      try {
+        const utils = candidate && candidate.cineScopeUtils;
+        if (utils && typeof utils === 'object') {
+          return utils;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+
+    return null;
+  }
+
+  const SCOPE_UTILS = resolveScopeUtils(LOCAL_SCOPE);
+
+  const detectGlobalScope =
+    SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function'
+      ? function detectWithUtils() {
+          try {
+            return SCOPE_UTILS.detectGlobalScope();
+          } catch (error) {
+            void error;
+          }
+          return baseDetectGlobalScope();
+        }
+      : baseDetectGlobalScope;
+
+  const tryRequire =
+    SCOPE_UTILS && typeof SCOPE_UTILS.tryRequire === 'function'
+      ? SCOPE_UTILS.tryRequire
+      : tryRequireFallback;
+
+  const defineHiddenProperty =
+    SCOPE_UTILS && typeof SCOPE_UTILS.defineHiddenProperty === 'function'
+      ? SCOPE_UTILS.defineHiddenProperty
+      : defineHiddenPropertyFallback;
+
+  function resolveScopeCollector() {
+    const required = tryRequire('./helpers/scope-collector.js');
+    if (required && typeof required.createCollector === 'function') {
+      return required;
     }
 
     const candidates = [];
@@ -40,7 +106,14 @@
       }
     }
 
-    pushCandidate(baseDetectGlobalScope());
+    pushCandidate(LOCAL_SCOPE);
+
+    try {
+      pushCandidate(detectGlobalScope());
+    } catch (error) {
+      void error;
+    }
+
     if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
     if (typeof window !== 'undefined') pushCandidate(window);
     if (typeof self !== 'undefined') pushCandidate(self);
@@ -95,7 +168,12 @@
   }
 
   function collectCandidateScopesImpl(primary, detect, extras) {
-    const detectFn = typeof detect === 'function' ? detect : baseDetectGlobalScope;
+    if (SCOPE_UTILS && typeof SCOPE_UTILS.collectCandidateScopes === 'function') {
+      const detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
+      return SCOPE_UTILS.collectCandidateScopes(primary, extras, detectFn);
+    }
+
+    const detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
 
     if (createScopeCollector) {
       const collector = resolveHelperCollector(detectFn, extras);
@@ -138,7 +216,7 @@
     return scopes.slice();
   }
 
-  function tryRequireImpl(modulePath) {
+  function tryRequireFallback(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -151,7 +229,7 @@
     }
   }
 
-  function defineHiddenPropertyImpl(target, key, value) {
+  function defineHiddenPropertyFallback(target, key, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
       return false;
     }
@@ -281,16 +359,16 @@
   }
 
   function resolveBuiltinImmutabilityImpl(options) {
-    const tryRequire = options && typeof options.tryRequire === 'function' ? options.tryRequire : tryRequireImpl;
+    const tryRequireFn = options && typeof options.tryRequire === 'function' ? options.tryRequire : tryRequire;
     const collectCandidateScopes =
       options && typeof options.collectCandidateScopes === 'function'
         ? options.collectCandidateScopes
         : function collect() {
-            return collectCandidateScopesImpl(null, baseDetectGlobalScope, []);
+            return collectCandidateScopesImpl(null, detectGlobalScope, []);
           };
 
     try {
-      const required = tryRequire('./helpers/immutability-builtins.js');
+      const required = tryRequireFn('./helpers/immutability-builtins.js');
       if (required && typeof required === 'object') {
         return required;
       }
@@ -465,7 +543,7 @@
 
     let cachedPrimaryScope = null;
 
-    function detectGlobalScope() {
+    function detectPrimaryScope() {
       try {
         if (detectOverride) {
           const detected = detectOverride();
@@ -482,13 +560,13 @@
         return cachedPrimaryScope;
       }
 
-      const detected = customPrimaryScope || baseDetectGlobalScope();
+      const detected = customPrimaryScope || detectGlobalScope();
       cachedPrimaryScope = detected;
       return detected;
     }
 
     function getPrimaryScope() {
-      return detectGlobalScope();
+      return detectPrimaryScope();
     }
 
     const additionalScopes = Array.isArray(settings.additionalScopes)
@@ -497,16 +575,16 @@
         })
       : [];
 
-    const tryRequire = typeof settings.tryRequire === 'function'
+    const tryRequireFn = typeof settings.tryRequire === 'function'
       ? function tryRequireWithOverride(modulePath) {
           try {
             return settings.tryRequire(modulePath);
           } catch (error) {
             void error;
           }
-          return tryRequireImpl(modulePath);
+          return tryRequire(modulePath);
         }
-      : tryRequireImpl;
+      : tryRequire;
 
     const pendingQueueKey =
       typeof settings.pendingQueueKey === 'string' && settings.pendingQueueKey
@@ -518,11 +596,11 @@
     const warnOverride = typeof settings.safeWarn === 'function' ? settings.safeWarn : null;
 
     function collectCandidateScopes(primary) {
-      return collectCandidateScopesImpl(primary || customPrimaryScope, detectGlobalScope, additionalScopes);
+      return collectCandidateScopesImpl(primary || customPrimaryScope, detectPrimaryScope, additionalScopes);
     }
 
     const builtinImmutability = resolveBuiltinImmutabilityImpl({
-      tryRequire,
+      tryRequire: tryRequireFn,
       collectCandidateScopes,
     });
 
@@ -531,7 +609,7 @@
 
     function resolveImmutability(scope) {
       try {
-        const resolved = resolveImmutabilityImpl(scope, tryRequire, collectCandidateScopes);
+        const resolved = resolveImmutabilityImpl(scope, tryRequireFn, collectCandidateScopes);
         if (resolved) {
           activeImmutability = resolved;
           return resolved;
@@ -609,8 +687,8 @@
       safeWarnImpl(message, detail);
     }
 
-    const defineHiddenProperty = function defineHiddenPropertyBound(target, key, value) {
-      return defineHiddenPropertyImpl(target, key, value);
+    const defineHiddenPropertyFn = function defineHiddenPropertyBound(target, key, value) {
+      return defineHiddenProperty(target, key, value);
     };
 
     return Object.freeze({
@@ -619,7 +697,7 @@
       collectCandidateScopes,
       tryRequire,
       resolveFromScopes,
-      defineHiddenProperty,
+      defineHiddenProperty: defineHiddenPropertyFn,
       ensureQueue,
       freezeDeep,
       safeWarn,
