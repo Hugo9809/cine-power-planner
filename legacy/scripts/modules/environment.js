@@ -280,6 +280,51 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     queueModuleRegistrationForScope(targetScope, name, api, options);
     return false;
   }
+  function isEthereumProviderCandidate(value) {
+    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      return false;
+    }
+
+    if (PRIMARY_SCOPE && _typeof(PRIMARY_SCOPE) === 'object') {
+      try {
+        if (value === PRIMARY_SCOPE.ethereum) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+        return true;
+      }
+    }
+
+    try {
+      if (value.isMetaMask === true) {
+        return true;
+      }
+    } catch (inspectionError) {
+      if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+        return true;
+      }
+    }
+
+    try {
+      if (typeof value.request === 'function' && typeof value.on === 'function') {
+        if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+          return true;
+        }
+
+        var ctorName = value.constructor && value.constructor.name;
+        if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+          return true;
+        }
+      }
+    } catch (accessError) {
+      void accessError;
+      return true;
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
@@ -313,7 +358,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
-    if (shouldBypassDeepFreeze(value)) {
+    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
       return value;
     }
     if (seen.has(value)) {
@@ -323,6 +368,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var keys = Object.getOwnPropertyNames(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
+      var descriptor = void 0;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+      if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
+        continue;
+      }
       var child = void 0;
       try {
         child = value[key];
@@ -331,6 +386,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         child = undefined;
       }
       if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        continue;
+      }
+      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
         continue;
       }
       fallbackFreezeDeep(child, seen);
@@ -343,6 +401,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function freezeDeep(value, seen) {
+    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      return value;
+    }
+    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
+      return value;
+    }
     var base = getModuleBase();
     var freeze = base && typeof base.freezeDeep === 'function' ? base.freezeDeep : fallbackFreezeDeep;
     return freeze(value, seen);

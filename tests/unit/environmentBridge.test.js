@@ -36,4 +36,22 @@ describe('environment-bridge', () => {
       }
     }
   });
+
+  test('freezeDeep skips invoking accessors with side effects', () => {
+    const bridge = require('../../src/scripts/modules/environment-bridge.js');
+    const target = {};
+    const accessSpy = jest.fn(() => ({ nested: {} }));
+
+    Object.defineProperty(target, 'danger', {
+      configurable: true,
+      enumerable: true,
+      get: accessSpy,
+    });
+
+    const frozen = bridge.freezeDeep(target);
+
+    expect(frozen).toBe(target);
+    expect(Object.isFrozen(target)).toBe(true);
+    expect(accessSpy).not.toHaveBeenCalled();
+  });
 });
