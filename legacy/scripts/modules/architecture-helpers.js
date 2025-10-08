@@ -71,7 +71,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var ARCHITECTURE_CORE = resolveArchitectureCore(LOCAL_SCOPE);
   var CORE_INSTANCE = ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function' ? ARCHITECTURE_CORE.createCore({
     primaryScope: LOCAL_SCOPE,
-    pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
+    pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY
   }) : null;
   function fallbackCollectCandidateScopes(primary) {
     var scopes = [];
@@ -93,9 +93,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function detectWithArchitecture() {
     if (CORE_INSTANCE && typeof CORE_INSTANCE.detectGlobalScope === 'function') {
       try {
-        var detectedCore = CORE_INSTANCE.detectGlobalScope();
-        if (detectedCore) {
-          return detectedCore;
+        var detected = CORE_INSTANCE.detectGlobalScope();
+        if (detected) {
+          return detected;
         }
       } catch (error) {
         void error;
@@ -103,9 +103,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
       try {
-        var detected = ARCHITECTURE.detectGlobalScope();
-        if (detected) {
-          return detected;
+        var _detected = ARCHITECTURE.detectGlobalScope();
+        if (_detected) {
+          return _detected;
         }
       } catch (error) {
         void error;
@@ -129,9 +129,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var target = primary || PRIMARY_SCOPE;
     if (CORE_INSTANCE && typeof CORE_INSTANCE.collectCandidateScopes === 'function') {
       try {
-        var collectedCore = CORE_INSTANCE.collectCandidateScopes(target);
-        if (Array.isArray(collectedCore) && collectedCore.length > 0) {
-          return collectedCore;
+        var collected = CORE_INSTANCE.collectCandidateScopes(target);
+        if (Array.isArray(collected) && collected.length > 0) {
+          return collected;
         }
       } catch (error) {
         void error;
@@ -139,9 +139,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
       try {
-        var collected = ARCHITECTURE.collectCandidateScopes(target);
-        if (Array.isArray(collected) && collected.length > 0) {
-          return collected;
+        var _collected = ARCHITECTURE.collectCandidateScopes(target);
+        if (Array.isArray(_collected) && _collected.length > 0) {
+          return _collected;
         }
       } catch (error) {
         void error;
@@ -171,9 +171,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function tryRequireWithArchitecture(modulePath) {
     if (CORE_INSTANCE && typeof CORE_INSTANCE.tryRequire === 'function') {
       try {
-        var resultCore = CORE_INSTANCE.tryRequire(modulePath);
-        if (typeof resultCore !== 'undefined') {
-          return resultCore;
+        var result = CORE_INSTANCE.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
         }
       } catch (error) {
         void error;
@@ -181,9 +181,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
       try {
-        var result = ARCHITECTURE.tryRequire(modulePath);
-        if (typeof result !== 'undefined') {
-          return result;
+        var _result = ARCHITECTURE.tryRequire(modulePath);
+        if (typeof _result !== 'undefined') {
+          return _result;
         }
       } catch (error) {
         void error;
@@ -195,9 +195,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var targetScope = scope || PRIMARY_SCOPE;
     if (CORE_INSTANCE && typeof CORE_INSTANCE.resolveImmutability === 'function') {
       try {
-        var resolvedCore = CORE_INSTANCE.resolveImmutability(targetScope);
-        if (resolvedCore && _typeof(resolvedCore) === 'object') {
-          return resolvedCore;
+        var resolved = CORE_INSTANCE.resolveImmutability(targetScope);
+        if (resolved && _typeof(resolved) === 'object') {
+          return resolved;
         }
       } catch (error) {
         void error;
@@ -304,9 +304,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var targetScope = scope || PRIMARY_SCOPE;
     if (CORE_INSTANCE && typeof CORE_INSTANCE.ensureQueue === 'function') {
       try {
-        var resolvedCore = CORE_INSTANCE.ensureQueue(targetScope, key);
-        if (Array.isArray(resolvedCore)) {
-          return resolvedCore;
+        var resolved = CORE_INSTANCE.ensureQueue(targetScope, key);
+        if (Array.isArray(resolved)) {
+          return resolved;
         }
       } catch (error) {
         void error;
@@ -314,9 +314,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function') {
       try {
-        var resolved = ARCHITECTURE.ensureQueue(targetScope, key);
-        if (Array.isArray(resolved)) {
-          return resolved;
+        var _resolved = ARCHITECTURE.ensureQueue(targetScope, key);
+        if (Array.isArray(_resolved)) {
+          return _resolved;
         }
       } catch (error) {
         void error;
@@ -368,13 +368,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var keys = Object.getOwnPropertyNames(value);
       for (var index = 0; index < keys.length; index += 1) {
         var key = keys[index];
-        var descriptor = Object.getOwnPropertyDescriptor(value, key);
-        if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+        var child = void 0;
+        try {
+          child = value[key];
+        } catch (accessError) {
+          void accessError;
+          child = undefined;
+        }
+        if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
           continue;
         }
-        freeze(descriptor.value, seen);
+        freeze(child, seen);
       }
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     }
     return {
       shouldBypassDeepFreeze: shouldBypass,

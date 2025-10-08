@@ -32,6 +32,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof global !== 'undefined') pushScope(global);
     return scopes;
   }
+  var LOGGING_DEEP_CLONE = function resolveLoggingDeepClone() {
+    var scope = fallbackDetectGlobalScope();
+    if (scope && typeof scope.__cineDeepClone === 'function') {
+      return scope.__cineDeepClone;
+    }
+    return function loggingFallbackDeepClone(value) {
+      if (value === null || _typeof(value) !== 'object') {
+        return value;
+      }
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (cloneError) {
+        void cloneError;
+      }
+      return value;
+    };
+  }();
   function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
@@ -117,6 +134,109 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackTryRequire;
   }();
+  var structuredCloneCandidates = function collectStructuredCloneCandidates() {
+    var candidates = [];
+    function addCandidate(fn, scope) {
+      if (typeof fn !== 'function') {
+        return;
+      }
+      var alreadyPresent = candidates.some(function (candidate) {
+        return candidate && candidate.fn === fn;
+      });
+      if (!alreadyPresent) {
+        candidates.push({
+          fn: fn,
+          scope: scope || null
+        });
+      }
+    }
+    if (MODULE_GLOBALS) {
+      if (typeof MODULE_GLOBALS.structuredClone === 'function') {
+        addCandidate(MODULE_GLOBALS.structuredClone, MODULE_GLOBALS);
+      }
+      if (typeof MODULE_GLOBALS.getStructuredClone === 'function') {
+        try {
+          var resolved = MODULE_GLOBALS.getStructuredClone();
+          addCandidate(resolved, MODULE_GLOBALS);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    if (ENV_BRIDGE) {
+      if (typeof ENV_BRIDGE.structuredClone === 'function') {
+        addCandidate(ENV_BRIDGE.structuredClone, ENV_BRIDGE);
+      }
+      if (typeof ENV_BRIDGE.getStructuredClone === 'function') {
+        try {
+          var _resolved = ENV_BRIDGE.getStructuredClone();
+          addCandidate(_resolved, ENV_BRIDGE);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    if (MODULE_ENV) {
+      if (typeof MODULE_ENV.structuredClone === 'function') {
+        addCandidate(MODULE_ENV.structuredClone, MODULE_ENV);
+      }
+      if (typeof MODULE_ENV.getStructuredClone === 'function') {
+        try {
+          var _resolved2 = MODULE_ENV.getStructuredClone();
+          addCandidate(_resolved2, MODULE_ENV);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    var scopes = fallbackCollectCandidateScopes(GLOBAL_SCOPE);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      var candidate = scope.structuredClone;
+      if (typeof candidate === 'function') {
+        addCandidate(candidate, scope);
+      }
+    }
+    return candidates;
+  }();
+  var cachedStructuredCloneCandidate = null;
+  function tryStructuredCloneValue(value) {
+    if (cachedStructuredCloneCandidate) {
+      try {
+        var candidate = cachedStructuredCloneCandidate;
+        return {
+          success: true,
+          value: candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value)
+        };
+      } catch (error) {
+        void error;
+        cachedStructuredCloneCandidate = null;
+      }
+    }
+    for (var index = 0; index < structuredCloneCandidates.length; index += 1) {
+      var _candidate = structuredCloneCandidates[index];
+      if (!_candidate || typeof _candidate.fn !== 'function') {
+        continue;
+      }
+      try {
+        var cloned = _candidate.scope ? _candidate.fn.call(_candidate.scope, value) : _candidate.fn(value);
+        cachedStructuredCloneCandidate = _candidate;
+        return {
+          success: true,
+          value: cloned
+        };
+      } catch (error) {
+        void error;
+      }
+    }
+    return {
+      success: false,
+      value: null
+    };
+  }
   function resolveModuleRegistry(scope) {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
@@ -338,14 +458,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var keys = Object.getOwnPropertyNames(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+      var child = void 0;
+      try {
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
+      }
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, visited);
+      fallbackFreezeDeep(child, visited);
     }
     try {
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     } catch (freezeError) {
       void freezeError;
       return value;
@@ -403,6 +534,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackSafeWarn;
   }();
+  var CONSOLE_METHODS = ['debug', 'info', 'warn', 'error', 'log'];
+  var CONSOLE_PROXY_FLAG = typeof Symbol === 'function' ? Symbol.for('cineLoggingConsoleProxyInstalled') : '__cineLoggingConsoleProxyInstalled__';
+  var ORIGINAL_CONSOLE_FUNCTIONS = function captureOriginalConsoleFunctions() {
+    var store = Object.create(null);
+    if (typeof console === 'undefined' || !console) {
+      return store;
+    }
+    for (var index = 0; index < CONSOLE_METHODS.length; index += 1) {
+      var method = CONSOLE_METHODS[index];
+      try {
+        var fn = console[method];
+        store[method] = typeof fn === 'function' ? fn : null;
+      } catch (error) {
+        store[method] = null;
+        void error;
+      }
+    }
+    return store;
+  }();
+  var consoleProxyInstalled = false;
+  var consoleProxyInstallationAttempted = false;
+  var consoleProxyInstallationFailed = false;
+  var lastConsoleCaptureState = null;
+  var consoleProxyWarningIssued = false;
+  var consoleProxyGuardDepth = 0;
   var exposeGlobal = function resolveExposeGlobal() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.exposeGlobal === 'function') {
       return function exposeGlobal(name, value, options) {
@@ -457,6 +613,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
   var LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
   var HISTORY_MIN_LIMIT = 50;
+  var HISTORY_ABSOLUTE_MIN_LIMIT = 1;
   var HISTORY_MAX_LIMIT = 2000;
   var HISTORY_STORAGE_KEY = '__cineLoggingHistory';
   var CONFIG_STORAGE_KEY = '__cineLoggingConfig';
@@ -467,7 +624,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     historyLimit: 400,
     consoleOutput: true,
     persistSession: true,
-    captureGlobalErrors: true
+    captureGlobalErrors: true,
+    captureConsole: false
   };
   var DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
   function cloneDefaultConfig() {
@@ -477,7 +635,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       historyLimit: DEFAULT_CONFIG_VALUES.historyLimit,
       consoleOutput: DEFAULT_CONFIG_VALUES.consoleOutput,
       persistSession: DEFAULT_CONFIG_VALUES.persistSession,
-      captureGlobalErrors: DEFAULT_CONFIG_VALUES.captureGlobalErrors
+      captureGlobalErrors: DEFAULT_CONFIG_VALUES.captureGlobalErrors,
+      captureConsole: DEFAULT_CONFIG_VALUES.captureConsole
     };
   }
   var activeConfig = cloneDefaultConfig();
@@ -485,6 +644,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var logSubscribers = new Set();
   var configSubscribers = new Set();
   var attachedErrorTargets = typeof WeakSet === 'function' ? new WeakSet() : [];
+  var runtimeEntryCount = 0;
+  var totalEntriesDropped = 0;
+  var lastHistoryDrop = null;
   function normalizeLevel(value, fallbackLevel) {
     var fallback = typeof fallbackLevel === 'string' ? fallbackLevel : activeConfig.level;
     if (typeof value === 'string') {
@@ -542,18 +704,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return typeof fallback === 'boolean' ? fallback : false;
   }
-  function clampHistoryLimit(value) {
+  function clampHistoryLimit(value, options) {
+    var allowReducedMinimum = options && options.allowReducedMin === true ? true : false;
+    var effectiveMinimum = allowReducedMinimum ? HISTORY_ABSOLUTE_MIN_LIMIT : HISTORY_MIN_LIMIT;
     if (typeof value === 'number' && Number.isFinite(value)) {
       var absolute = Math.abs(Math.floor(value));
       if (!absolute) {
         return activeConfig.historyLimit;
       }
-      return Math.max(HISTORY_MIN_LIMIT, Math.min(HISTORY_MAX_LIMIT, absolute));
+      return Math.max(effectiveMinimum, Math.min(HISTORY_MAX_LIMIT, absolute));
     }
     if (typeof value === 'string' && value) {
       var parsed = Number(value);
       if (Number.isFinite(parsed)) {
-        return clampHistoryLimit(parsed);
+        return clampHistoryLimit(parsed, options);
       }
     }
     return activeConfig.historyLimit;
@@ -625,6 +789,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return value.toString();
       }
     }
+    if (typeof RegExp !== 'undefined' && value instanceof RegExp) {
+      try {
+        return value.toString();
+      } catch (error) {
+        void error;
+      }
+      return '[RegExp]';
+    }
     if (value instanceof Error) {
       var errorOutput = {
         name: value.name,
@@ -658,28 +830,149 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void error;
         }
       }
-      if (nextDepth >= 4) {
-        var ctorName = value.constructor && value.constructor.name;
-        return ctorName ? "[".concat(ctorName, "]") : Object.prototype.toString.call(value);
+      if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+        return {
+          __type: 'ArrayBuffer',
+          byteLength: value.byteLength
+        };
       }
-      if (Array.isArray(value)) {
-        var maxItems = 20;
-        var result = [];
-        var len = Math.min(value.length, maxItems);
-        for (var index = 0; index < len; index += 1) {
-          result.push(sanitizeForLog(value[index], nextDepth + 1, visited));
+      if (typeof DataView !== 'undefined' && value instanceof DataView) {
+        return {
+          __type: 'DataView',
+          byteOffset: value.byteOffset,
+          byteLength: value.byteLength
+        };
+      }
+      if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' && ArrayBuffer.isView(value)) {
+        var ctorName = value.constructor && value.constructor.name;
+        var maxPreview = 32;
+        var _length = typeof value.length === 'number' ? value.length : 0;
+        var preview = [];
+        var previewLength = Math.min(_length, maxPreview);
+        for (var index = 0; index < previewLength; index += 1) {
+          preview.push(value[index]);
         }
-        if (value.length > maxItems) {
-          result.push("\u2026 (".concat(value.length - maxItems, " more)"));
+        var summary = {
+          __type: ctorName || 'TypedArray',
+          length: _length,
+          byteOffset: typeof value.byteOffset === 'number' ? value.byteOffset : 0,
+          byteLength: typeof value.byteLength === 'number' ? value.byteLength : 0
+        };
+        if (preview.length) {
+          summary.preview = preview;
+        }
+        if (_length > maxPreview) {
+          summary.__truncatedItems = _length - maxPreview;
+        }
+        return summary;
+      }
+      var mapCtor = typeof Map === 'function' ? Map : null;
+      if (mapCtor && value instanceof mapCtor) {
+        var entries = [];
+        var maxEntries = 30;
+        var _index = 0;
+        value.forEach(function (mapValue, mapKey) {
+          if (_index < maxEntries) {
+            entries.push({
+              key: sanitizeForLog(mapKey, nextDepth + 1, visited),
+              value: sanitizeForLog(mapValue, nextDepth + 1, visited)
+            });
+          }
+          _index += 1;
+        });
+        var result = {
+          __type: 'Map',
+          size: typeof value.size === 'number' ? value.size : _index,
+          entries: entries
+        };
+        if (_index > maxEntries) {
+          result.__truncatedEntries = _index - maxEntries;
         }
         return result;
+      }
+      var setCtor = typeof Set === 'function' ? Set : null;
+      if (setCtor && value instanceof setCtor) {
+        var items = [];
+        var maxItems = 30;
+        var _index2 = 0;
+        value.forEach(function (item) {
+          if (_index2 < maxItems) {
+            items.push(sanitizeForLog(item, nextDepth + 1, visited));
+          }
+          _index2 += 1;
+        });
+        var _result = {
+          __type: 'Set',
+          size: typeof value.size === 'number' ? value.size : _index2,
+          values: items
+        };
+        if (_index2 > maxItems) {
+          _result.__truncatedValues = _index2 - maxItems;
+        }
+        return _result;
+      }
+      var urlParamsCtor = typeof URLSearchParams === 'function' ? URLSearchParams : null;
+      if (urlParamsCtor && value instanceof urlParamsCtor) {
+        var params = [];
+        var iterator = typeof value.entries === 'function' ? value.entries() : null;
+        var truncated = 0;
+        if (iterator && typeof iterator.next === 'function') {
+          var maxPairs = 40;
+          var count = 0;
+          var next = iterator.next();
+          while (!next.done) {
+            if (count < maxPairs) {
+              var pair = next.value || [];
+              params.push({
+                key: sanitizeForLog(pair[0], nextDepth + 1, visited),
+                value: sanitizeForLog(pair[1], nextDepth + 1, visited)
+              });
+            }
+            count += 1;
+            next = iterator.next();
+          }
+          if (count > params.length) {
+            truncated = count - params.length;
+          }
+        }
+        var _result2 = {
+          __type: 'URLSearchParams',
+          entries: params
+        };
+        if (truncated > 0) {
+          _result2.__truncatedEntries = truncated;
+        }
+        return _result2;
+      }
+      if (typeof URL === 'function' && value instanceof URL) {
+        try {
+          return value.toString();
+        } catch (error) {
+          void error;
+        }
+      }
+      if (nextDepth >= 4) {
+        var _ctorName = value.constructor && value.constructor.name;
+        return _ctorName ? "[".concat(_ctorName, "]") : Object.prototype.toString.call(value);
+      }
+      if (Array.isArray(value)) {
+        var _maxItems = 20;
+        var _result3 = [];
+        var len = Math.min(value.length, _maxItems);
+        for (var _index3 = 0; _index3 < len; _index3 += 1) {
+          _result3.push(sanitizeForLog(value[_index3], nextDepth + 1, visited));
+        }
+        if (value.length > _maxItems) {
+          _result3.push("\u2026 (".concat(value.length - _maxItems, " more)"));
+        }
+        return _result3;
       }
       var output = {};
       var keys = Object.keys(value);
       var maxKeys = 30;
       var length = Math.min(keys.length, maxKeys);
-      for (var _index = 0; _index < length; _index += 1) {
-        var key = keys[_index];
+      for (var _index4 = 0; _index4 < length; _index4 += 1) {
+        var key = keys[_index4];
         try {
           output[key] = sanitizeForLog(value[key], nextDepth + 1, visited);
         } catch (error) {
@@ -692,8 +985,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof Object.getOwnPropertySymbols === 'function') {
         var symbols = Object.getOwnPropertySymbols(value);
         var symbolLength = Math.min(symbols.length, 5);
-        for (var _index2 = 0; _index2 < symbolLength; _index2 += 1) {
-          var symbolKey = symbols[_index2];
+        for (var _index5 = 0; _index5 < symbolLength; _index5 += 1) {
+          var symbolKey = symbols[_index5];
           var symbolName = _typeof(symbolKey) === 'symbol' ? symbolKey.toString() : String(symbolKey);
           try {
             output[symbolName] = sanitizeForLog(value[symbolKey], nextDepth + 1, visited);
@@ -703,15 +996,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       if (!keys.length) {
-        var _ctorName = value.constructor && value.constructor.name;
-        if (_ctorName) {
-          output.__className = _ctorName;
+        var _ctorName2 = value.constructor && value.constructor.name;
+        if (_ctorName2) {
+          output.__className = _ctorName2;
         }
       }
       return output;
     }
+    var structuredCloneResult = tryStructuredCloneValue(value);
+    if (structuredCloneResult.success) {
+      return structuredCloneResult.value;
+    }
     try {
-      return JSON.parse(JSON.stringify(value));
+      return LOGGING_DEEP_CLONE(value);
     } catch (error) {
       void error;
     }
@@ -771,7 +1068,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         historyLimit: activeConfig.historyLimit,
         consoleOutput: activeConfig.consoleOutput,
         persistSession: activeConfig.persistSession,
-        captureGlobalErrors: activeConfig.captureGlobalErrors
+        captureGlobalErrors: activeConfig.captureGlobalErrors,
+        captureConsole: activeConfig.captureConsole
       }));
     } catch (error) {
       safeWarn('cineLogging: Unable to persist logging config', error);
@@ -792,11 +1090,54 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       safeWarn('cineLogging: Unable to persist log history', error);
     }
   }
-  function enforceHistoryLimit() {
-    var limit = Math.max(HISTORY_MIN_LIMIT, Math.min(HISTORY_MAX_LIMIT, Math.floor(activeConfig.historyLimit)));
-    while (logHistory.length > limit) {
-      logHistory.shift();
+  function getEffectiveHistoryLimit() {
+    var effectiveMinimum = activeConfig.persistSession === false ? HISTORY_ABSOLUTE_MIN_LIMIT : HISTORY_MIN_LIMIT;
+    return Math.max(effectiveMinimum, Math.min(HISTORY_MAX_LIMIT, Math.floor(activeConfig.historyLimit)));
+  }
+  function recordHistoryDrop(removedEntries, limit, options) {
+    if (!Array.isArray(removedEntries) || removedEntries.length === 0) {
+      return;
     }
+    totalEntriesDropped += removedEntries.length;
+    var source = options && typeof options.source === 'string' && options.source.trim() ? options.source.trim() : 'enforce';
+    var oldestEntry = removedEntries[0] || null;
+    var newestEntry = removedEntries[removedEntries.length - 1] || null;
+    var dropTimestamp = Date.now();
+    var dropIsoTimestamp = '';
+    try {
+      dropIsoTimestamp = new Date(dropTimestamp).toISOString();
+    } catch (error) {
+      void error;
+      dropIsoTimestamp = String(dropTimestamp);
+    }
+    lastHistoryDrop = freezeDeep({
+      count: removedEntries.length,
+      limit: limit,
+      source: source,
+      timestamp: dropTimestamp,
+      isoTimestamp: dropIsoTimestamp,
+      oldestEntryId: oldestEntry && typeof oldestEntry.id === 'string' ? oldestEntry.id : null,
+      oldestEntryTimestamp: oldestEntry && typeof oldestEntry.timestamp === 'number' ? oldestEntry.timestamp : null,
+      oldestEntryIsoTimestamp: oldestEntry && typeof oldestEntry.isoTimestamp === 'string' ? oldestEntry.isoTimestamp : null,
+      newestEntryId: newestEntry && typeof newestEntry.id === 'string' ? newestEntry.id : null,
+      newestEntryTimestamp: newestEntry && typeof newestEntry.timestamp === 'number' ? newestEntry.timestamp : null,
+      newestEntryIsoTimestamp: newestEntry && typeof newestEntry.isoTimestamp === 'string' ? newestEntry.isoTimestamp : null
+    });
+    safeWarn('cineLogging: history trimmed to enforce retention limit', {
+      limit: limit,
+      removed: removedEntries.length,
+      source: source
+    });
+  }
+  function enforceHistoryLimit(options) {
+    var limit = getEffectiveHistoryLimit();
+    if (logHistory.length <= limit) {
+      return 0;
+    }
+    var overflow = logHistory.length - limit;
+    var removedEntries = logHistory.splice(0, overflow);
+    recordHistoryDrop(removedEntries, limit, options);
+    return overflow;
   }
   function shouldRecord(level) {
     return getLevelPriority(level) >= getLevelPriority(activeConfig.historyLevel);
@@ -812,7 +1153,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function appendEntry(entry) {
     logHistory.push(entry);
-    enforceHistoryLimit();
+    runtimeEntryCount += 1;
+    enforceHistoryLimit({
+      source: 'append'
+    });
     persistHistorySafe();
     notifyLogSubscribers(entry);
   }
@@ -859,7 +1203,370 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
-  function logInternal(level, message, detail, context) {
+  function arrayFromArrayLike(value) {
+    if (!value || typeof value.length !== 'number') {
+      return [];
+    }
+    var length = value.length;
+    var result = new Array(length);
+    for (var index = 0; index < length; index += 1) {
+      result[index] = value[index];
+    }
+    return result;
+  }
+  function getConsoleLevelForMethod(method) {
+    if (method === 'error') {
+      return 'error';
+    }
+    if (method === 'warn') {
+      return 'warn';
+    }
+    if (method === 'info') {
+      return 'info';
+    }
+    return 'debug';
+  }
+  function getStoredConsoleFunction(method) {
+    if (typeof method !== 'string' || !method) {
+      return null;
+    }
+    if (Object.prototype.hasOwnProperty.call(ORIGINAL_CONSOLE_FUNCTIONS, method)) {
+      var stored = ORIGINAL_CONSOLE_FUNCTIONS[method];
+      if (typeof stored === 'function') {
+        return stored;
+      }
+    }
+    if (typeof console !== 'undefined' && console) {
+      var candidate = null;
+      try {
+        candidate = console[method];
+      } catch (error) {
+        candidate = null;
+        void error;
+      }
+      if (typeof candidate === 'function' && (!candidate || !candidate[CONSOLE_PROXY_FLAG])) {
+        return candidate;
+      }
+    }
+    if ((method === 'debug' || method === 'log') && typeof ORIGINAL_CONSOLE_FUNCTIONS.log === 'function') {
+      return ORIGINAL_CONSOLE_FUNCTIONS.log;
+    }
+    if (method === 'info') {
+      if (typeof ORIGINAL_CONSOLE_FUNCTIONS.info === 'function') {
+        return ORIGINAL_CONSOLE_FUNCTIONS.info;
+      }
+      if (typeof ORIGINAL_CONSOLE_FUNCTIONS.log === 'function') {
+        return ORIGINAL_CONSOLE_FUNCTIONS.log;
+      }
+    }
+    if (method === 'warn') {
+      if (typeof ORIGINAL_CONSOLE_FUNCTIONS.warn === 'function') {
+        return ORIGINAL_CONSOLE_FUNCTIONS.warn;
+      }
+      if (typeof ORIGINAL_CONSOLE_FUNCTIONS.error === 'function') {
+        return ORIGINAL_CONSOLE_FUNCTIONS.error;
+      }
+    }
+    if (method === 'error' && typeof ORIGINAL_CONSOLE_FUNCTIONS.error === 'function') {
+      return ORIGINAL_CONSOLE_FUNCTIONS.error;
+    }
+    return null;
+  }
+  function invokeConsoleMethod(method, args) {
+    var fn = getStoredConsoleFunction(method);
+    if (typeof fn !== 'function') {
+      return undefined;
+    }
+    var receiver = typeof console !== 'undefined' && console ? console : GLOBAL_SCOPE && GLOBAL_SCOPE.console ? GLOBAL_SCOPE.console : null;
+    var finalArgs = Array.isArray(args) ? args : arrayFromArrayLike(args);
+    try {
+      return fn.apply(receiver, finalArgs);
+    } catch (applyError) {
+      void applyError;
+      try {
+        return Function.prototype.apply.call(fn, receiver, finalArgs);
+      } catch (callError) {
+        void callError;
+      }
+    }
+    return undefined;
+  }
+  function recordConsoleMessage(method, args, meta) {
+    var level = getConsoleLevelForMethod(method);
+    var rawArgs = Array.isArray(args) ? args : arrayFromArrayLike(args);
+    var messageParts = [];
+    for (var index = 0; index < rawArgs.length; index += 1) {
+      var value = rawArgs[index];
+      var valueType = _typeof(value);
+      if (valueType === 'string') {
+        messageParts.push(value);
+      } else if (valueType === 'number' || valueType === 'boolean') {
+        messageParts.push(String(value));
+      } else if (valueType === 'symbol') {
+        try {
+          messageParts.push(value.toString());
+        } catch (symbolError) {
+          void symbolError;
+        }
+      }
+    }
+    var message = messageParts.join(' ').trim();
+    if (!message) {
+      message = "[console.".concat(method || level, "]");
+    }
+    var detailPayload = null;
+    if (rawArgs.length) {
+      try {
+        detailPayload = {
+          arguments: sanitizeForLog(rawArgs)
+        };
+      } catch (detailError) {
+        detailPayload = {
+          arguments: rawArgs.slice()
+        };
+        void detailError;
+      }
+    }
+    var contextMeta = {
+      channel: 'console',
+      method: method || 'log'
+    };
+    if (meta && _typeof(meta) === 'object') {
+      var metaKeys = Object.keys(meta);
+      for (var _index6 = 0; _index6 < metaKeys.length; _index6 += 1) {
+        var key = metaKeys[_index6];
+        try {
+          contextMeta[key] = sanitizeForLog(meta[key]);
+        } catch (metaError) {
+          contextMeta[key] = meta[key];
+          void metaError;
+        }
+      }
+    }
+    return logInternal(level, message, detailPayload, {
+      namespace: 'console',
+      meta: contextMeta
+    }, {
+      silentConsole: true
+    });
+  }
+  function installConsoleProxies() {
+    if (consoleProxyInstalled) {
+      return true;
+    }
+    consoleProxyInstallationAttempted = true;
+    if (typeof console === 'undefined' || !console) {
+      consoleProxyInstallationFailed = true;
+      return false;
+    }
+    try {
+      if (console[CONSOLE_PROXY_FLAG]) {
+        consoleProxyInstalled = true;
+        consoleProxyInstallationFailed = false;
+        return true;
+      }
+    } catch (flagReadError) {
+      void flagReadError;
+    }
+    var installedAny = false;
+    var _loop = function _loop() {
+      var method = CONSOLE_METHODS[index];
+      var base = getStoredConsoleFunction(method);
+      if (typeof base !== 'function') {
+        try {
+          var candidate = console[method];
+          if (typeof candidate === 'function' && (!candidate || !candidate[CONSOLE_PROXY_FLAG])) {
+            base = candidate;
+          }
+        } catch (resolveError) {
+          base = null;
+          void resolveError;
+        }
+      }
+      if (!Object.prototype.hasOwnProperty.call(ORIGINAL_CONSOLE_FUNCTIONS, method) || ORIGINAL_CONSOLE_FUNCTIONS[method] === null) {
+        ORIGINAL_CONSOLE_FUNCTIONS[method] = typeof base === 'function' ? base : ORIGINAL_CONSOLE_FUNCTIONS[method];
+      }
+      if (typeof base !== 'function') {
+        return 1;
+      }
+      var proxy = function consoleProxy() {
+        var argsArray = arrayFromArrayLike(arguments);
+        consoleProxyGuardDepth += 1;
+        try {
+          if (consoleProxyGuardDepth === 1) {
+            var firstArg = argsArray.length ? argsArray[0] : null;
+            var skipCapture = typeof firstArg === 'string' && firstArg.indexOf('cineLogging:') === 0;
+            if (!skipCapture) {
+              try {
+                recordConsoleMessage(method, argsArray, {
+                  captured: true
+                });
+              } catch (recordError) {
+                void recordError;
+              }
+            }
+          }
+          return invokeConsoleMethod(method, argsArray);
+        } finally {
+          consoleProxyGuardDepth -= 1;
+          if (consoleProxyGuardDepth < 0) {
+            consoleProxyGuardDepth = 0;
+          }
+        }
+      };
+      try {
+        Object.defineProperty(proxy, CONSOLE_PROXY_FLAG, {
+          configurable: true,
+          enumerable: false,
+          writable: false,
+          value: true
+        });
+      } catch (defineError) {
+        proxy[CONSOLE_PROXY_FLAG] = true;
+        void defineError;
+      }
+      try {
+        console[method] = proxy;
+        installedAny = true;
+      } catch (assignError) {
+        void assignError;
+      }
+    };
+    for (var index = 0; index < CONSOLE_METHODS.length; index += 1) {
+      if (_loop()) continue;
+    }
+    if (installedAny) {
+      consoleProxyInstalled = true;
+      consoleProxyInstallationFailed = false;
+      try {
+        Object.defineProperty(console, CONSOLE_PROXY_FLAG, {
+          configurable: true,
+          enumerable: false,
+          writable: false,
+          value: true
+        });
+      } catch (flagError) {
+        try {
+          console[CONSOLE_PROXY_FLAG] = true;
+        } catch (assignFlagError) {
+          void assignFlagError;
+        }
+        void flagError;
+      }
+    } else {
+      consoleProxyInstallationFailed = true;
+    }
+    return consoleProxyInstalled;
+  }
+  function removeConsoleProxies() {
+    if (!consoleProxyInstalled) {
+      return false;
+    }
+    if (typeof console === 'undefined' || !console) {
+      consoleProxyInstalled = false;
+      return false;
+    }
+    var restoredAny = false;
+    for (var index = 0; index < CONSOLE_METHODS.length; index += 1) {
+      var method = CONSOLE_METHODS[index];
+      var original = ORIGINAL_CONSOLE_FUNCTIONS[method];
+      try {
+        if (typeof original === 'function') {
+          console[method] = original;
+          restoredAny = true;
+        } else if (method !== 'log' && method !== 'info') {
+          delete console[method];
+        }
+      } catch (restoreError) {
+        void restoreError;
+      }
+    }
+    try {
+      if (console && console[CONSOLE_PROXY_FLAG]) {
+        if (typeof Object.defineProperty === 'function') {
+          Object.defineProperty(console, CONSOLE_PROXY_FLAG, {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: false
+          });
+        } else {
+          console[CONSOLE_PROXY_FLAG] = false;
+        }
+      }
+    } catch (flagError) {
+      void flagError;
+    }
+    consoleProxyInstalled = false;
+    return restoredAny;
+  }
+  function syncConsoleCaptureState() {
+    if (!activeConfig.captureConsole) {
+      if (consoleProxyInstalled) {
+        removeConsoleProxies();
+      }
+      if (lastConsoleCaptureState !== 'disabled') {
+        logInternal('info', 'Console output capture disabled', {
+          installed: false
+        }, {
+          namespace: 'logging',
+          meta: {
+            channel: 'console',
+            lifecycle: 'sync'
+          }
+        }, {
+          silentConsole: true
+        });
+        lastConsoleCaptureState = 'disabled';
+      }
+      consoleProxyWarningIssued = false;
+      consoleProxyInstallationFailed = false;
+      return true;
+    }
+    var installed = installConsoleProxies();
+    if (!installed) {
+      if (!consoleProxyWarningIssued) {
+        safeWarn('cineLogging: Unable to capture console output for diagnostics.');
+        consoleProxyWarningIssued = true;
+      }
+      lastConsoleCaptureState = 'failed';
+      return false;
+    }
+    consoleProxyWarningIssued = false;
+    if (lastConsoleCaptureState !== 'enabled') {
+      logInternal('info', 'Console output capture enabled', {
+        installed: true
+      }, {
+        namespace: 'logging',
+        meta: {
+          channel: 'console',
+          lifecycle: 'sync'
+        }
+      }, {
+        silentConsole: true
+      });
+      lastConsoleCaptureState = 'enabled';
+    }
+    return true;
+  }
+  function isConsoleCaptureActive() {
+    return Boolean(activeConfig.captureConsole) && consoleProxyInstalled === true;
+  }
+  function enableConsoleCapture(options) {
+    var setOptions = options && _typeof(options) === 'object' ? options : null;
+    setConfig({
+      captureConsole: true
+    }, setOptions || undefined);
+    return isConsoleCaptureActive();
+  }
+  function disableConsoleCapture(options) {
+    var setOptions = options && _typeof(options) === 'object' ? options : null;
+    setConfig({
+      captureConsole: false
+    }, setOptions || undefined);
+    return isConsoleCaptureActive();
+  }
+  function logInternal(level, message, detail, context, options) {
     var normalizedLevel = normalizeLevel(level, 'info');
     var timestamp = Date.now();
     var isoTimestamp = '';
@@ -885,34 +1592,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (shouldRecord(normalizedLevel)) {
       appendEntry(entry);
     }
-    if (shouldOutputToConsole(normalizedLevel)) {
+    var internalOptions = options && _typeof(options) === 'object' ? options : null;
+    if (shouldOutputToConsole(normalizedLevel) && (!internalOptions || internalOptions.silentConsole !== true)) {
       var descriptor = LOG_LEVEL_MAP[normalizedLevel] || LOG_LEVEL_MAP.info;
       var methodName = descriptor.consoleMethod;
-      var consoleMethod = typeof console !== 'undefined' && console && typeof console[methodName] === 'function' ? console[methodName] : typeof console !== 'undefined' && console && typeof console.log === 'function' ? console.log : null;
-      if (typeof consoleMethod === 'function') {
-        var prefixParts = ['[cine]'];
-        if (namespace) {
-          prefixParts.push("[".concat(namespace, "]"));
-        }
-        prefixParts.push(entry.isoTimestamp);
-        var prefix = prefixParts.join(' ');
-        var consoleArgs = ["".concat(prefix, " ").concat(entry.message)];
-        if (detail !== undefined) {
-          consoleArgs.push(detail);
-        } else if (entry.detail !== null) {
-          consoleArgs.push(entry.detail);
-        }
-        if (entry.meta !== null) {
-          consoleArgs.push({
-            meta: entry.meta
-          });
-        }
-        try {
-          consoleMethod.apply(console, consoleArgs);
-        } catch (error) {
-          void error;
-        }
+      var prefixParts = ['[cine]'];
+      if (namespace) {
+        prefixParts.push("[".concat(namespace, "]"));
       }
+      prefixParts.push(entry.isoTimestamp);
+      var prefix = prefixParts.join(' ');
+      var consoleArgs = ["".concat(prefix, " ").concat(entry.message)];
+      if (detail !== undefined) {
+        consoleArgs.push(detail);
+      } else if (entry.detail !== null) {
+        consoleArgs.push(entry.detail);
+      }
+      if (entry.meta !== null) {
+        consoleArgs.push({
+          meta: entry.meta
+        });
+      }
+      invokeConsoleMethod(methodName, consoleArgs);
     }
     return entry;
   }
@@ -935,12 +1636,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       historyLimit: activeConfig.historyLimit,
       consoleOutput: activeConfig.consoleOutput,
       persistSession: activeConfig.persistSession,
-      captureGlobalErrors: activeConfig.captureGlobalErrors
+      captureGlobalErrors: activeConfig.captureGlobalErrors,
+      captureConsole: activeConfig.captureConsole
     });
   }
   function getHistory(options) {
     var limit = options && typeof options.limit !== 'undefined' ? options.limit : undefined;
     return getHistorySnapshot(limit);
+  }
+  function cloneLastDropSnapshot() {
+    if (!lastHistoryDrop) {
+      return null;
+    }
+    return freezeDeep({
+      count: typeof lastHistoryDrop.count === 'number' ? lastHistoryDrop.count : 0,
+      limit: typeof lastHistoryDrop.limit === 'number' ? lastHistoryDrop.limit : getEffectiveHistoryLimit(),
+      source: typeof lastHistoryDrop.source === 'string' ? lastHistoryDrop.source : 'enforce',
+      timestamp: typeof lastHistoryDrop.timestamp === 'number' ? lastHistoryDrop.timestamp : null,
+      isoTimestamp: typeof lastHistoryDrop.isoTimestamp === 'string' ? lastHistoryDrop.isoTimestamp : null,
+      oldestEntryId: typeof lastHistoryDrop.oldestEntryId === 'string' ? lastHistoryDrop.oldestEntryId : null,
+      oldestEntryTimestamp: typeof lastHistoryDrop.oldestEntryTimestamp === 'number' ? lastHistoryDrop.oldestEntryTimestamp : null,
+      oldestEntryIsoTimestamp: typeof lastHistoryDrop.oldestEntryIsoTimestamp === 'string' ? lastHistoryDrop.oldestEntryIsoTimestamp : null,
+      newestEntryId: typeof lastHistoryDrop.newestEntryId === 'string' ? lastHistoryDrop.newestEntryId : null,
+      newestEntryTimestamp: typeof lastHistoryDrop.newestEntryTimestamp === 'number' ? lastHistoryDrop.newestEntryTimestamp : null,
+      newestEntryIsoTimestamp: typeof lastHistoryDrop.newestEntryIsoTimestamp === 'string' ? lastHistoryDrop.newestEntryIsoTimestamp : null
+    });
+  }
+  function getStats() {
+    return freezeDeep({
+      runtimeEntries: runtimeEntryCount,
+      retainedEntries: logHistory.length,
+      droppedEntries: totalEntriesDropped,
+      historyLimit: getEffectiveHistoryLimit(),
+      lastDrop: cloneLastDropSnapshot(),
+      consoleCapture: freezeDeep({
+        configured: activeConfig.captureConsole === true,
+        installed: consoleProxyInstalled,
+        attempted: consoleProxyInstallationAttempted,
+        failed: consoleProxyInstallationFailed
+      })
+    });
   }
   function clearHistory(options) {
     logHistory.length = 0;
@@ -993,8 +1728,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       merged[key] = baseMeta[key];
     }
     var metaKeys = Object.keys(meta);
-    for (var _index3 = 0; _index3 < metaKeys.length; _index3 += 1) {
-      var _key = metaKeys[_index3];
+    for (var _index7 = 0; _index7 < metaKeys.length; _index7 += 1) {
+      var _key = metaKeys[_index7];
       merged[_key] = sanitizeForLog(meta[_key]);
     }
     return merged;
@@ -1153,6 +1888,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var changed = false;
     var captureChanged = false;
     var limitChanged = false;
+    var consoleCaptureChanged = false;
+    var nextPersistSession = Object.prototype.hasOwnProperty.call(overrides, 'persistSession') ? booleanFromValue(overrides.persistSession, activeConfig.persistSession) : activeConfig.persistSession;
     if (Object.prototype.hasOwnProperty.call(overrides, 'level')) {
       var nextLevel = normalizeLevel(overrides.level, activeConfig.level);
       if (nextLevel !== activeConfig.level) {
@@ -1168,7 +1905,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     if (Object.prototype.hasOwnProperty.call(overrides, 'historyLimit')) {
-      var nextLimit = clampHistoryLimit(overrides.historyLimit);
+      var nextLimit = clampHistoryLimit(overrides.historyLimit, {
+        allowReducedMin: nextPersistSession === false
+      });
       if (nextLimit !== activeConfig.historyLimit) {
         activeConfig.historyLimit = nextLimit;
         changed = true;
@@ -1183,11 +1922,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     if (Object.prototype.hasOwnProperty.call(overrides, 'persistSession')) {
-      var nextPersist = booleanFromValue(overrides.persistSession, activeConfig.persistSession);
-      if (nextPersist !== activeConfig.persistSession) {
-        activeConfig.persistSession = nextPersist;
+      if (nextPersistSession !== activeConfig.persistSession) {
+        activeConfig.persistSession = nextPersistSession;
         changed = true;
       }
+    }
+    if (activeConfig.persistSession && activeConfig.historyLimit < HISTORY_MIN_LIMIT) {
+      activeConfig.historyLimit = HISTORY_MIN_LIMIT;
+      changed = true;
+      limitChanged = true;
     }
     if (Object.prototype.hasOwnProperty.call(overrides, 'captureGlobalErrors')) {
       var nextCapture = booleanFromValue(overrides.captureGlobalErrors, activeConfig.captureGlobalErrors);
@@ -1197,17 +1940,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         captureChanged = true;
       }
     }
+    if (Object.prototype.hasOwnProperty.call(overrides, 'captureConsole')) {
+      var nextConsoleCapture = booleanFromValue(overrides.captureConsole, activeConfig.captureConsole);
+      if (nextConsoleCapture !== activeConfig.captureConsole) {
+        activeConfig.captureConsole = nextConsoleCapture;
+        changed = true;
+        consoleCaptureChanged = true;
+      }
+    }
     return {
       changed: changed,
       captureChanged: captureChanged,
-      limitChanged: limitChanged
+      limitChanged: limitChanged,
+      consoleCaptureChanged: consoleCaptureChanged
     };
   }
   function setConfig(overrides, options) {
     var previousCapture = activeConfig.captureGlobalErrors;
+    var previousConsoleCapture = activeConfig.captureConsole;
     var result = applyConfig(overrides);
     if (result.limitChanged) {
-      enforceHistoryLimit();
+      enforceHistoryLimit({
+        source: 'config'
+      });
     }
     if (result.changed && (!options || options.persist !== false)) {
       persistConfigSafe();
@@ -1218,6 +1973,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (!previousCapture && activeConfig.captureGlobalErrors) {
       attachGlobalErrorListeners();
+    }
+    if (result.consoleCaptureChanged || previousConsoleCapture !== activeConfig.captureConsole) {
+      syncConsoleCaptureState();
     }
     if (result.changed) {
       notifyConfigSubscribers(getConfigSnapshot());
@@ -1317,6 +2075,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (params.has('cineLogCapture')) {
         assignUpdate('captureGlobalErrors', params.get('cineLogCapture'));
       }
+      if (params.has('cineLogConsoleCapture')) {
+        assignUpdate('captureConsole', params.get('cineLogConsoleCapture'));
+      }
     } else {
       var query = search.charAt(0) === '?' ? search.slice(1) : search;
       var parts = query.split('&');
@@ -1340,6 +2101,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           assignUpdate('persistSession', value);
         } else if (key === 'cineLogCapture') {
           assignUpdate('captureGlobalErrors', value);
+        } else if (key === 'cineLogConsoleCapture') {
+          assignUpdate('captureConsole', value);
         }
       }
     }
@@ -1407,7 +2170,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           logHistory.push(entry);
         }
       }
-      enforceHistoryLimit();
+      enforceHistoryLimit({
+        source: 'restore'
+      });
     } catch (error) {
       safeWarn('cineLogging: Unable to restore log history from storage', error);
     }
@@ -1423,11 +2188,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   initialiseConfig();
   loadPersistedHistory();
+  syncConsoleCaptureState();
   if (activeConfig.captureGlobalErrors) {
     attachGlobalErrorListeners();
   }
   debug('cineLogging initialized', {
-    config: getConfigSnapshot()
+    config: getConfigSnapshot(),
+    stats: getStats()
   }, {
     namespace: 'logging',
     meta: {
@@ -1442,11 +2209,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     error: error,
     createLogger: createLogger,
     getHistory: getHistory,
+    getStats: getStats,
     clearHistory: clearHistory,
     getConfig: getConfigSnapshot,
     setConfig: setConfig,
     subscribe: subscribe,
     subscribeConfig: subscribeConfig,
+    enableConsoleCapture: enableConsoleCapture,
+    disableConsoleCapture: disableConsoleCapture,
+    syncConsoleCapture: syncConsoleCaptureState,
+    isConsoleCaptureActive: isConsoleCaptureActive,
     constants: freezeDeep({
       LOG_LEVELS: LOG_LEVELS,
       DEFAULT_CONFIG: DEFAULT_CONFIG

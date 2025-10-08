@@ -1173,11 +1173,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "connectors": ["LBUS 4-pin (LEMO)", "LBUS 4-pin (LEMO)"],
             "orientation": "straight-straight",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI cforce mini", "ARRI cforce mini RF", "ARRI cforce plus", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1"],
+            "compatibleDevices": ["ARRI cforce mini", "ARRI cforce mini RF", "ARRI cforce plus", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips", "ARRI Hi-5 (via RIA-1/LCUBE)"],
             "compatibleCameras": ["ARRI ALEXA Mini", "ARRI ALEXA Mini LF", "ARRI ALEXA 35 (via RIA-1 / EF Mount LBUS)"],
             "notes": "Generic LBUS interconnect for chaining LBUS devices.",
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lens-motors-and-encoders"
             }, {
@@ -1195,11 +1195,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "lengthM": 0.2,
             "orientation": "straight-straight",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1"],
+            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips", "ARRI Hi-5 (via RIA-1/LCUBE)"],
             "compatibleCameras": ["ARRI ALEXA Mini", "ARRI ALEXA Mini LF"],
             "notes": "Short jumper for closely mounted LBUS devices.",
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
             }]
@@ -1213,10 +1213,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "lengthM": 0.3,
             "orientation": "straight-straight",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1"],
+            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips"],
             "compatibleCameras": ["ARRI ALEXA Mini", "ARRI ALEXA Mini LF"],
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
             }]
@@ -1229,11 +1229,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "lengthM": 0.4,
             "orientation": "straight-straight",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1"],
+            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips"],
             "compatibleCameras": ["ARRI ALEXA Mini", "ARRI ALEXA Mini LF"],
             "notes": "ARRI lists 0.2/0.3/0.5/0.8/1.5 m as standard lengths; 0.4 m variant not found on manufacturer lists.",
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
             }]
@@ -1247,10 +1247,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "lengthM": 0.5,
             "orientation": "straight-straight",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1"],
+            "compatibleDevices": ["ARRI cforce mini", "ARRI Master Grips", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips"],
             "compatibleCameras": ["ARRI ALEXA Mini", "ARRI ALEXA Mini LF"],
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
             }]
@@ -1264,10 +1264,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "to": "LBUS 4-pin (LEMO) right-angle",
             "orientation": "right-angle to right-angle",
             "type": "LBUS data/power cable",
-            "compatibleDevices": ["ARRI Master Grips", "ARRI cforce mini", "ARRI OCU-1"],
+            "compatibleDevices": ["ARRI Master Grips", "ARRI cforce mini", "ARRI OCU-1", "ARRI RIA-1", "ARRI NIA-1"],
             "compatibleControllers": ["ARRI OCU-1", "ARRI Master Grips"],
             "compatibleCameras": ["ARRI ALEXA family (via LBUS accessories)"],
-            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"],
+            "useCase": ["Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"],
             "provenance": [{
               "url": "https://www.bhphotovideo.com/c/product/1310382-REG/arri_k2_0013040_cable_lbus_angled_to.html"
             }, {

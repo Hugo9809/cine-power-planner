@@ -624,6 +624,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     try {
+      if (typeof module !== 'undefined' && module && typeof module.constructor === 'function' && value instanceof module.constructor) {
+        return true;
+      }
+    } catch (moduleCheckError) {
+      void moduleCheckError;
+    }
+    try {
       if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
         return true;
       }
@@ -659,16 +666,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return value;
     }
     seen.add(value);
-    var keys = Object.getOwnPropertyNames(value);
+    var keys = [];
+    try {
+      keys = Object.getOwnPropertyNames(value);
+    } catch (inspectionError) {
+      void inspectionError;
+      if (typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function') {
+        try {
+          keys = Reflect.ownKeys(value).filter(function filterStringKeys(key) {
+            return typeof key === 'string';
+          });
+        } catch (reflectError) {
+          void reflectError;
+          keys = [];
+        }
+      }
+    }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+      if (key === 'web3' && value === GLOBAL_SCOPE) {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, seen);
+      var hasOwn = true;
+      try {
+        hasOwn = Object.prototype.hasOwnProperty.call(value, key);
+      } catch (hasOwnError) {
+        void hasOwnError;
+        hasOwn = true;
+      }
+      if (!hasOwn) {
+        continue;
+      }
+      var child = void 0;
+      try {
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
+      }
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        continue;
+      }
+      try {
+        fallbackFreezeDeep(child, seen);
+      } catch (childError) {
+        void childError;
+      }
     }
-    return Object.freeze(value);
+    try {
+      return Object.freeze(value);
+    } catch (freezeError) {
+      void freezeError;
+      return value;
+    }
   }
   var freezeDeep = function resolveFreezeDeep() {
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function') {
