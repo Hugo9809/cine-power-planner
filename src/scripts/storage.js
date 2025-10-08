@@ -5049,13 +5049,40 @@ function removeOldestAutoBackupEntry(container) {
     return null;
   }
 
+  const removeFromEntries = (entries, { respectRename = true } = {}) => {
+    if (!Array.isArray(entries) || entries.length === 0) {
+      return null;
+    }
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      if (!entry || typeof entry.key !== 'string') {
+        continue;
+      }
+
+      const hasValue = Object.prototype.hasOwnProperty.call(container, entry.key);
+      const value = hasValue ? container[entry.key] : undefined;
+
+      if (!hasValue || value === undefined || value === null || typeof value !== 'object') {
+        delete container[entry.key];
+        return entry.key;
+      }
+
+      if (respectRename && isRenamedAutoBackupEntry(container, entry.key)) {
+        continue;
+      }
+
+      delete container[entry.key];
+      return entry.key;
+    }
+
+    return null;
+  };
+
   const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   const duplicateAutoBackupKey = removeSingleDuplicateAutoBackupEntry(container, autoBackups);
   if (duplicateAutoBackupKey) {
     return duplicateAutoBackupKey;
-  }
-  if (autoBackups.length > 0) {
-    console.warn('Unable to free space by removing automatic backups because all versions are unique.');
   }
 
   const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
@@ -5063,8 +5090,25 @@ function removeOldestAutoBackupEntry(container) {
   if (duplicateDeletionBackupKey) {
     return duplicateDeletionBackupKey;
   }
+
+  const oldestDeletionBackupKey = removeFromEntries(deletionBackups, { respectRename: false });
+  if (oldestDeletionBackupKey) {
+    return oldestDeletionBackupKey;
+  }
   if (deletionBackups.length > 0) {
-    console.warn('Unable to free space by removing pre-deletion backups because all versions are unique.');
+    console.warn(
+      'Unable to free space by removing pre-deletion backups because all copies appear to be protected.',
+    );
+  }
+
+  const oldestAutoBackupKey = removeFromEntries(autoBackups, { respectRename: true });
+  if (oldestAutoBackupKey) {
+    return oldestAutoBackupKey;
+  }
+  if (autoBackups.length > 0) {
+    console.warn(
+      'Unable to free space by removing automatic backups because the remaining copies were renamed or protected.',
+    );
   }
 
   return null;
