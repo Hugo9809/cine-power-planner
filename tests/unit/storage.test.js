@@ -1785,6 +1785,16 @@ describe('clearAllData', () => {
     expect(getDecodedLocalStorageItem(`${legacySetupKey}__backup`)).toBeNull();
     expect(sessionStorage.getItem(legacySessionKey)).toBeNull();
   });
+
+  test('clears diagnostics storage to guarantee a fresh console session', () => {
+    localStorage.setItem('__cineLoggingHistory', JSON.stringify([{ id: 'event-1' }]));
+    sessionStorage.setItem('__cineLoggingConfig', JSON.stringify({ persistSession: true }));
+
+    clearAllData();
+
+    expect(localStorage.getItem('__cineLoggingHistory')).toBeNull();
+    expect(sessionStorage.getItem('__cineLoggingConfig')).toBeNull();
+  });
 });
 
 describe('export/import all data', () => {

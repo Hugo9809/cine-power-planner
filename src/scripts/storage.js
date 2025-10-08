@@ -9864,7 +9864,7 @@ function clearAllData() {
   ]);
   const prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 
-  const collectKeysWithPrefixes = (storage) => {
+  const collectStorageKeys = (storage, predicate = () => true) => {
     if (!storage) {
       return [];
     }
@@ -9879,8 +9879,7 @@ function clearAllData() {
         } catch (error) {
           console.warn('Unable to inspect storage key during factory reset', error);
         }
-        if (typeof candidateKey === 'string'
-          && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+        if (typeof candidateKey === 'string' && predicate(candidateKey)) {
           keys.push(candidateKey);
         }
       }
@@ -9892,8 +9891,7 @@ function clearAllData() {
         const candidateKeys = storage.keys();
         if (Array.isArray(candidateKeys)) {
           candidateKeys.forEach((candidateKey) => {
-            if (typeof candidateKey === 'string'
-              && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+            if (typeof candidateKey === 'string' && predicate(candidateKey)) {
               keys.push(candidateKey);
             }
           });
@@ -9907,8 +9905,7 @@ function clearAllData() {
     if (typeof storage.forEach === 'function') {
       try {
         storage.forEach((value, candidateKey) => {
-          if (typeof candidateKey === 'string'
-            && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+          if (typeof candidateKey === 'string' && predicate(candidateKey)) {
             keys.push(candidateKey);
           }
         });
@@ -9923,7 +9920,10 @@ function clearAllData() {
 
   const deletePrefixedKeys = (storages) => {
     storages.forEach((storage) => {
-      const keysToRemove = collectKeysWithPrefixes(storage);
+      const keysToRemove = collectStorageKeys(
+        storage,
+        (candidateKey) => prefixedKeys.some(prefix => candidateKey.startsWith(prefix)),
+      );
       if (!keysToRemove.length) {
         return;
       }
@@ -9939,6 +9939,40 @@ function clearAllData() {
 
   deletePrefixedKeys(storageCandidates);
   deletePrefixedKeys(sessionCandidates);
+
+  const clearStorages = (storages) => {
+    storages.forEach((storage) => {
+      if (!storage) {
+        return;
+      }
+      let cleared = false;
+      if (typeof storage.clear === 'function') {
+        try {
+          storage.clear();
+          cleared = true;
+        } catch (error) {
+          console.warn('Unable to clear storage during factory reset', error);
+        }
+      }
+      if (cleared) {
+        return;
+      }
+      const keysToRemove = collectStorageKeys(storage);
+      if (!keysToRemove.length) {
+        return;
+      }
+      keysToRemove.forEach((key) => {
+        try {
+          deleteFromStorage(storage, key, msg);
+        } catch (error) {
+          console.warn('Unable to remove storage key during factory reset', key, error);
+        }
+      });
+    });
+  };
+
+  clearStorages(storageCandidates);
+  clearStorages(sessionCandidates);
 }
 
 // --- Export/Import All Planner Data ---
