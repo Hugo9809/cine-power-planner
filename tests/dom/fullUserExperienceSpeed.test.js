@@ -1,4 +1,6 @@
-const { performance } = require('perf_hooks');
+const { performance: nodePerformance } = require('perf_hooks');
+
+const getPerformance = () => global.performance ?? nodePerformance;
 
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
@@ -91,11 +93,12 @@ describe('full user experience speed test', () => {
         return;
       }
       target[name] = (...args) => {
-        const start = performance.now();
+        const performanceApi = getPerformance();
+        const start = performanceApi.now();
         try {
           return original.apply(target, args);
         } finally {
-          const durationMs = performance.now() - start;
+          const durationMs = performanceApi.now() - start;
           storageTimings.push({ action: name, durationMs });
         }
       };
@@ -107,9 +110,10 @@ describe('full user experience speed test', () => {
     const timings = [];
     const storageTimings = [];
     const measure = (label, fn) => {
-      const start = performance.now();
+      const performanceApi = getPerformance();
+      const start = performanceApi.now();
       const result = fn();
-      const durationMs = performance.now() - start;
+      const durationMs = performanceApi.now() - start;
       timings.push({ label, durationMs });
       return result;
     };

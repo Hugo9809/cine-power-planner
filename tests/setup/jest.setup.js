@@ -4,6 +4,63 @@ const { ensureConsoleFacade } = require('./consoleFacade');
 
 const activeConsole = ensureConsoleFacade() || console;
 
+const makePropertyWritable = (target, property) => {
+  if (!target) {
+    return;
+  }
+
+  const descriptor = Object.getOwnPropertyDescriptor(target, property);
+  if (!descriptor) {
+    return;
+  }
+
+  if ('value' in descriptor) {
+    if (descriptor.writable === true && descriptor.configurable === true) {
+      return;
+    }
+
+    try {
+      Object.defineProperty(target, property, {
+        configurable: true,
+        enumerable: descriptor.enumerable ?? true,
+        writable: true,
+        value: descriptor.value,
+      });
+    } catch (error) {
+      void error;
+    }
+    return;
+  }
+
+  if (descriptor.configurable !== true) {
+    return;
+  }
+
+  try {
+    Object.defineProperty(target, property, {
+      configurable: true,
+      enumerable: descriptor.enumerable ?? true,
+      get: descriptor.get,
+      set: descriptor.set,
+    });
+  } catch (error) {
+    void error;
+  }
+};
+
+const originalSpyOn = jest.spyOn.bind(jest);
+jest.spyOn = (target, property, accessType) => {
+  try {
+    return originalSpyOn(target, property, accessType);
+  } catch (error) {
+    if (error instanceof TypeError && /Cannot assign to read only property/.test(String(error?.message ?? error))) {
+      makePropertyWritable(target, property);
+      return originalSpyOn(target, property, accessType);
+    }
+    throw error;
+  }
+};
+
 const originalDateNow = Date.now;
 
 try {
@@ -66,6 +123,65 @@ const suppressMessages = (originalFn, patterns) => {
   };
 };
 
+const getConsoleTargets = (initial) => {
+  const targets = [];
+  const visited = new Set();
+  let current = initial;
+  while (current && !visited.has(current)) {
+    targets.push(current);
+    visited.add(current);
+    current = current.__cameraPowerPlannerOriginal;
+  }
+  return targets;
+};
+
+const safelyReplaceConsoleMethod = (target, method, createReplacement) => {
+  if (!target || typeof createReplacement !== 'function') {
+    return;
+  }
+
+  getConsoleTargets(target).forEach((consoleTarget) => {
+    const original = consoleTarget[method];
+    const replacement = createReplacement(original);
+    if (!replacement || replacement === original) {
+      return;
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(consoleTarget, method);
+
+    if (descriptor) {
+      if (typeof descriptor.set === 'function') {
+        try {
+          descriptor.set.call(consoleTarget, replacement);
+          return;
+        } catch (error) {
+          void error;
+        }
+      }
+
+      if (descriptor.writable || descriptor.configurable) {
+        try {
+          Object.defineProperty(consoleTarget, method, {
+            configurable: true,
+            enumerable: descriptor.enumerable ?? true,
+            writable: true,
+            value: replacement,
+          });
+          return;
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    try {
+      consoleTarget[method] = replacement;
+    } catch (error) {
+      void error;
+    }
+  });
+};
+
 if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
   const suppressedWarns = [
     /^Failed to .*backup/i,
@@ -92,8 +208,12 @@ if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
     /^Error loading .* from localStorage/i,
   ];
 
-  activeConsole.warn = suppressMessages(activeConsole.warn?.bind(activeConsole), suppressedWarns);
-  activeConsole.error = suppressMessages(activeConsole.error?.bind(activeConsole), suppressedErrors);
+  safelyReplaceConsoleMethod(activeConsole, 'warn', (original) =>
+    suppressMessages(typeof original === 'function' ? original.bind(activeConsole) : original, suppressedWarns),
+  );
+  safelyReplaceConsoleMethod(activeConsole, 'error', (original) =>
+    suppressMessages(typeof original === 'function' ? original.bind(activeConsole) : original, suppressedErrors),
+  );
   activeConsole.__cameraPowerPlannerPatched = true;
 }
 

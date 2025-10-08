@@ -1,6 +1,9 @@
 const createProject = (name, environment, pattern) => ({
   displayName: name,
   testEnvironment: environment,
+  testEnvironmentOptions: {
+    globalsCleanup: 'off',
+  },
   testMatch: [pattern],
   setupFiles: ['<rootDir>/tests/setup/consoleFacade.js', 'jest-localstorage-mock'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
