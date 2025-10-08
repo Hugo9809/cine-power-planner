@@ -992,6 +992,8 @@ var AUTO_BACKUP_METADATA_PROPERTY = '__cineAutoBackupMetadata';
 var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
 var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
 var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
+var PROJECT_ACTIVITY_WINDOW_MS = 10 * 60 * 1000;
+var projectActivityTimestamps = new Map();
 var AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH = 2048;
 
 function isAutoBackupStorageKey(name) {
@@ -1281,7 +1283,9 @@ function expandAutoBackupEntries(container, options) {
       return cache.get(name);
     }
 
-    const value = container[name];
+    const rawValue = container[name];
+    const restored = restoreCompressedProjectEntry(rawValue, name);
+    const value = restored.restored ? restored.value : rawValue;
     if (!isPlainObject(value)) {
       const clonedValue = cloneAutoBackupValue(value);
       cache.set(name, clonedValue);
@@ -2272,6 +2276,171 @@ function decodeCompressedJsonStorageValue(raw) {
   }
 
   return { success: true, value: decoded.value, metadata: parsed };
+}
+
+function restoreCompressedProjectEntry(value, contextName) {
+  if (typeof value === 'string') {
+    const decoded = decodeCompressedJsonStorageValue(value);
+    if (!decoded.success || typeof decoded.value !== 'string') {
+      return { restored: false, value };
+    }
+
+    try {
+      return { restored: true, value: JSON.parse(decoded.value) };
+    } catch (parseError) {
+      console.warn(
+        'Unable to parse decompressed project entry payload',
+        contextName || 'project entry',
+        parseError,
+      );
+      return { restored: false, value };
+    }
+  }
+
+  if (isPlainObject(value) && value[STORAGE_COMPRESSION_FLAG_KEY] === true) {
+    let serialized;
+    try {
+      serialized = JSON.stringify(value);
+    } catch (serializationError) {
+      console.warn(
+        'Unable to reserialize compressed project entry wrapper before restoration',
+        contextName || 'project entry',
+        serializationError,
+      );
+      return { restored: false, value };
+    }
+
+    if (typeof serialized === 'string' && serialized) {
+      return restoreCompressedProjectEntry(serialized, contextName);
+    }
+  }
+
+  return { restored: false, value };
+}
+
+function markProjectActivity(name, timestamp) {
+  if (typeof name !== 'string') {
+    return;
+  }
+
+  const recordTime = typeof timestamp === 'number' && Number.isFinite(timestamp)
+    ? timestamp
+    : Date.now();
+
+  projectActivityTimestamps.set(name, recordTime);
+}
+
+function removeProjectActivity(name) {
+  if (typeof name !== 'string') {
+    return;
+  }
+
+  projectActivityTimestamps.delete(name);
+}
+
+function pruneProjectActivityCache(validKeys) {
+  if (!projectActivityTimestamps || typeof projectActivityTimestamps.forEach !== 'function') {
+    return;
+  }
+
+  projectActivityTimestamps.forEach((timestamp, key) => {
+    const hasKey = validKeys && typeof validKeys.has === 'function' ? validKeys.has(key) : true;
+    if (!hasKey) {
+      projectActivityTimestamps.delete(key);
+      return;
+    }
+
+    if (!Number.isFinite(timestamp) || timestamp < 0) {
+      projectActivityTimestamps.delete(key);
+    }
+  });
+}
+
+function ensureProjectEntryUncompressed(value, contextName) {
+  const restored = restoreCompressedProjectEntry(value, contextName);
+  if (restored.restored) {
+    return restored.value;
+  }
+  return value;
+}
+
+function ensureProjectEntryCompressed(value, contextName) {
+  if (typeof value === 'string') {
+    const decoded = decodeCompressedJsonStorageValue(value);
+    if (decoded.success) {
+      return value;
+    }
+
+    if (!value) {
+      return value;
+    }
+
+    try {
+      JSON.parse(value);
+    } catch (nonJsonStringError) {
+      return value;
+    }
+
+    const candidate = createCompressedJsonStorageCandidate(value);
+    if (candidate && typeof candidate.serialized === 'string' && candidate.serialized) {
+      return candidate.serialized;
+    }
+    return value;
+  }
+
+  if (value === null || value === undefined || typeof value !== 'object') {
+    return value;
+  }
+
+  let serialized;
+  try {
+    serialized = JSON.stringify(value);
+  } catch (serializationError) {
+    console.warn(
+      'Unable to serialize project entry before compression',
+      contextName || 'project entry',
+      serializationError,
+    );
+    return value;
+  }
+
+  if (typeof serialized !== 'string' || !serialized) {
+    return value;
+  }
+
+  const candidate = createCompressedJsonStorageCandidate(serialized);
+  if (candidate && typeof candidate.serialized === 'string' && candidate.serialized) {
+    return candidate.serialized;
+  }
+
+  return value;
+}
+
+function applyProjectEntryCompression(container) {
+  if (!isPlainObject(container)) {
+    return container;
+  }
+
+  const keys = Object.keys(container);
+  const now = Date.now();
+  const threshold = now - PROJECT_ACTIVITY_WINDOW_MS;
+  const validKeys = new Set(keys);
+
+  pruneProjectActivityCache(validKeys);
+
+  keys.forEach((key) => {
+    const timestamp = projectActivityTimestamps.has(key)
+      ? projectActivityTimestamps.get(key)
+      : null;
+    const keepUncompressed = Number.isFinite(timestamp) && timestamp >= threshold;
+    if (keepUncompressed) {
+      container[key] = ensureProjectEntryUncompressed(container[key], key);
+    } else {
+      container[key] = ensureProjectEntryCompressed(container[key], key);
+    }
+  });
+
+  return container;
 }
 
 function maybeDecompressStoredString(raw, options) {
@@ -4286,6 +4455,18 @@ function createStableValueSignature(value) {
     return value ? 'boolean:true' : 'boolean:false';
   }
   if (typeof value === 'string') {
+    const decoded = decodeCompressedJsonStorageValue(value);
+    if (decoded.success && typeof decoded.value === 'string') {
+      try {
+        const parsed = JSON.parse(decoded.value);
+        return createStableValueSignature(parsed);
+      } catch (signatureParseError) {
+        console.warn(
+          'Unable to decode compressed string while computing stable value signature',
+          signatureParseError,
+        );
+      }
+    }
     return `string:${value}`;
   }
   if (typeof value === 'symbol') {
@@ -7151,6 +7332,11 @@ function cloneProjectPowerSelection(selection) {
 }
 
 function normalizeProject(data) {
+  const restored = restoreCompressedProjectEntry(data);
+  if (restored.restored) {
+    return normalizeProject(restored.value);
+  }
+
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
     if (parsed.success) {
@@ -7858,6 +8044,7 @@ function persistAllProjects(projects) {
   const serializedProjects = serializeAutoBackupEntries(projects, {
     isAutoBackupKey: isAutoBackupStorageKey,
   });
+  applyProjectEntryCompression(serializedProjects);
   invalidateProjectReadCache();
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
   saveJSONToStorage(
@@ -7883,6 +8070,15 @@ function persistAllProjects(projects) {
 
 function loadProject(name) {
   let { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
+  let resolvedKey = null;
+
+  if (name !== undefined) {
+    resolvedKey = resolveProjectKey(projects, lookup, name, { preferExact: true });
+    if (resolvedKey !== null && resolvedKey !== undefined) {
+      markProjectActivity(resolvedKey);
+    }
+  }
+
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
@@ -7895,7 +8091,6 @@ function loadProject(name) {
   if (name === undefined) {
     return projects;
   }
-  const resolvedKey = resolveProjectKey(projects, lookup, name, { preferExact: true });
   if (
     resolvedKey !== null
     && resolvedKey !== undefined
@@ -8110,9 +8305,12 @@ function saveProject(name, project) {
     && renamedFromKey !== storageKey
   ) {
     delete projects[renamedFromKey];
+    removeProjectActivity(renamedFromKey);
   }
 
-  projects[storageKey || ''] = normalized;
+  const finalKey = storageKey || '';
+  projects[finalKey] = normalized;
+  markProjectActivity(finalKey);
   persistAllProjects(projects);
 }
 
@@ -8123,6 +8321,9 @@ function deleteProject(name) {
       PROJECT_STORAGE_KEY,
       "Error deleting project from localStorage:",
     );
+    if (projectActivityTimestamps && typeof projectActivityTimestamps.clear === 'function') {
+      projectActivityTimestamps.clear();
+    }
     return;
   }
 
@@ -8148,6 +8349,7 @@ function deleteProject(name) {
     return;
   }
   delete projects[key];
+  removeProjectActivity(key);
   if (Object.keys(projects).length === 0) {
     deleteFromStorage(
       getSafeLocalStorage(),
