@@ -8706,20 +8706,68 @@ function loadAutoGearPresets() {
   return Array.isArray(normalized) ? normalized : [];
 }
 
+function readActiveAutoGearPresetIds() {
+  const ids = new Set();
+  const pushId = (candidate) => {
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim();
+      if (trimmed) {
+        ids.add(trimmed);
+      }
+    }
+  };
+
+  if (typeof loadAutoGearActivePresetId === 'function') {
+    try {
+      pushId(loadAutoGearActivePresetId());
+    } catch (error) {
+      console.warn('Unable to read automatic gear active preset id while evaluating compression policy.', error);
+    }
+  }
+
+  if (typeof loadAutoGearAutoPresetId === 'function') {
+    try {
+      pushId(loadAutoGearAutoPresetId());
+    } catch (error) {
+      console.warn('Unable to read automatic gear auto preset id while evaluating compression policy.', error);
+    }
+  }
+
+  return ids;
+}
+
 function saveAutoGearPresets(presets, options = {}) {
   const opts = options || {};
-  const { skipNormalization = false } = opts;
+  const { skipNormalization = false, disableCompression: disableCompressionOverride } = opts;
   const safePresets = Array.isArray(presets) ? presets.slice() : [];
   const normalizedPresets = skipNormalization
     ? safePresets
     : (Array.isArray(safePresets) ? normalizeLegacyLongGopStructure(safePresets) : []);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY);
+
+  let disableCompression = typeof disableCompressionOverride === 'boolean'
+    ? disableCompressionOverride
+    : false;
+
+  if (disableCompressionOverride === undefined) {
+    const activePresetIds = readActiveAutoGearPresetIds();
+    if (activePresetIds.size > 0) {
+      disableCompression = normalizedPresets.some(
+        (preset) => preset
+          && typeof preset === 'object'
+          && typeof preset.id === 'string'
+          && activePresetIds.has(preset.id),
+      );
+    }
+  }
+
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
     normalizedPresets,
     "Error saving automatic gear presets to localStorage:",
+    disableCompression ? { disableCompression: true } : undefined,
   );
   return normalizedPresets;
 }
@@ -8813,12 +8861,7 @@ function removeAutoGearPresetFromStorage(presetId, storage) {
     return;
   }
 
-  saveJSONToStorage(
-    safeStorage,
-    AUTO_GEAR_PRESETS_STORAGE_KEY,
-    filteredPresets,
-    "Error saving automatic gear presets to localStorage:",
-  );
+  saveAutoGearPresets(filteredPresets, { skipNormalization: true });
 }
 
 function loadAutoGearActivePresetId() {
