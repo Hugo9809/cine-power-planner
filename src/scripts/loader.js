@@ -1533,6 +1533,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     core: [
       'legacy/polyfills/core-js-bundle.min.js',
       'legacy/polyfills/regenerator-runtime.js',
+      'src/vendor/regenerator-runtime-fallback.js',
       'legacy/scripts/globalthis-polyfill.js',
       'legacy/data/devices/index.js',
       'legacy/data/devices/cameras.js',

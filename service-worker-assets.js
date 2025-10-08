@@ -195,6 +195,7 @@
   "./src/styles/style.css",
   "./src/vendor/lottie-light.min.js",
   "./src/vendor/lz-string.min.js",
+  "./src/vendor/regenerator-runtime-fallback.js",
   "./tools/checkConsistency.js",
   "./tools/cliHelp.js",
   "./tools/findMissingAttributes.js",
