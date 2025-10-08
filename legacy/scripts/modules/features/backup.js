@@ -1,6 +1,3 @@
-function _construct(t, e, r) { if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments); var o = [null]; o.push.apply(o, e); var p = new (t.bind.apply(t, o))(); return r && _setPrototypeOf(p, r.prototype), p; }
-function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -71,11 +68,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var keys = Object.getOwnPropertyNames(target);
         for (var index = 0; index < keys.length; index += 1) {
           var key = keys[index];
-          var descriptor = Object.getOwnPropertyDescriptor(target, key);
-          if (!descriptor || descriptor.get || descriptor.set) {
+          var child = void 0;
+          try {
+            child = target[key];
+          } catch (accessError) {
+            void accessError;
+            child = undefined;
+          }
+          if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
             continue;
           }
-          freeze(descriptor.value);
+          freeze(child);
         }
         Object.freeze(target);
       } catch (error) {
@@ -117,7 +120,117 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'autoGearBackupRetention', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory', 'fullBackups'];
   var BACKUP_DATA_COMPLEX_KEYS = new Set(['devices', 'setups', 'session', 'sessions', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'preferences', 'fullBackupHistory', 'fullBackups', 'customFonts']);
   function isPlainObject(value) {
-    return value !== null && _typeof(value) === 'object' && !Array.isArray(value);
+    if (value === null || _typeof(value) !== 'object') {
+      return false;
+    }
+    if (Array.isArray(value)) {
+      return false;
+    }
+    var tag = Object.prototype.toString.call(value);
+    if (tag !== '[object Object]') {
+      return false;
+    }
+    var prototype;
+    try {
+      prototype = Object.getPrototypeOf(value);
+    } catch (error) {
+      void error;
+      return false;
+    }
+    return prototype === null || prototype === Object.prototype;
+  }
+  function isMapLike(value) {
+    if (!value || _typeof(value) !== 'object') {
+      return false;
+    }
+    var tag = Object.prototype.toString.call(value);
+    if (tag === '[object Map]') {
+      return true;
+    }
+    if (typeof Map !== 'undefined') {
+      try {
+        if (value instanceof Map) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return typeof value.size === 'number' && typeof value.entries === 'function' && typeof value.forEach === 'function' && typeof value.get === 'function' && typeof value.set === 'function';
+  }
+  function convertMapLikeKey(key) {
+    if (typeof key === 'string') {
+      return key;
+    }
+    if (typeof key === 'number' || typeof key === 'boolean' || typeof key === 'bigint') {
+      return String(key);
+    }
+    if (_typeof(key) === 'symbol') {
+      return key.description || key.toString();
+    }
+    if (key && _typeof(key) === 'object') {
+      try {
+        var json = JSON.stringify(key);
+        if (json && json !== '{}') {
+          return json;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    try {
+      return String(key);
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+  function convertMapLikeToObject(mapLike) {
+    if (!isMapLike(mapLike)) {
+      return null;
+    }
+    var snapshot = Object.create(null);
+    var assignEntry = function assignEntry(rawKey, value) {
+      var key = convertMapLikeKey(rawKey);
+      if (key === null || key === undefined) {
+        return;
+      }
+      if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+        return;
+      }
+      snapshot[key] = value;
+    };
+    var iterated = false;
+    if (typeof mapLike.entries === 'function') {
+      try {
+        var iterator = mapLike.entries();
+        if (iterator && typeof iterator.next === 'function') {
+          for (var step = iterator.next(); !step.done; step = iterator.next()) {
+            var entry = step && step.value;
+            if (Array.isArray(entry) && entry.length >= 2) {
+              assignEntry(entry[0], entry[1]);
+            }
+          }
+          iterated = true;
+        }
+      } catch (error) {
+        console.warn('Unable to iterate map-like backup value entries', error);
+      }
+    }
+    if (!iterated && typeof mapLike.forEach === 'function') {
+      try {
+        mapLike.forEach(function (value, key) {
+          assignEntry(key, value);
+        });
+        iterated = true;
+      } catch (error) {
+        console.warn('Unable to iterate map-like backup value via forEach', error);
+      }
+    }
+    if (!Object.keys(snapshot).length && !iterated) {
+      return null;
+    }
+    return snapshot;
   }
   function formatFullBackupFilename(date) {
     var safeDate = date instanceof Date && !Number.isNaN(date.valueOf()) ? date : new Date();
@@ -372,12 +485,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function convertEntriesToSnapshot(section) {
     if (!section) return null;
     var source = section;
+    if (isMapLike(source)) {
+      var converted = convertMapLikeToObject(source);
+      if (converted) {
+        source = converted;
+      }
+    }
     if (typeof source === 'string') {
       var parsed = null;
       try {
         parsed = JSON.parse(source);
       } catch (error) {
         parsed = null;
+        void error;
       }
       if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
         source = parsed;
@@ -426,14 +546,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return Object.keys(snapshot).length ? snapshot : null;
   }
   function extractFirstMatchingSnapshot(source, keys) {
-    if (!isPlainObject(source)) return {
-      snapshot: null,
-      keyUsed: null
-    };
+    var resolvedSource = source;
+    if (!isPlainObject(resolvedSource)) {
+      if (isMapLike(resolvedSource)) {
+        var converted = convertMapLikeToObject(resolvedSource);
+        if (converted && isPlainObject(converted)) {
+          resolvedSource = converted;
+        } else {
+          return {
+            snapshot: null,
+            keyUsed: null
+          };
+        }
+      } else {
+        return {
+          snapshot: null,
+          keyUsed: null
+        };
+      }
+    }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
-      var snapshot = convertEntriesToSnapshot(source[key]);
+      if (!Object.prototype.hasOwnProperty.call(resolvedSource, key)) continue;
+      var snapshot = convertEntriesToSnapshot(resolvedSource[key]);
       if (snapshot) {
         return {
           snapshot: snapshot,
@@ -501,9 +636,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function buildLegacyStorageFromRoot(source, metadataKeys) {
-    if (!isPlainObject(source)) return null;
+    var resolvedSource = source;
+    if (isMapLike(resolvedSource)) {
+      var converted = convertMapLikeToObject(resolvedSource);
+      if (converted) {
+        resolvedSource = converted;
+      }
+    }
+    if (!isPlainObject(resolvedSource)) return null;
     var snapshot = Object.create(null);
-    Object.entries(source).forEach(function (_ref15) {
+    Object.entries(resolvedSource).forEach(function (_ref15) {
       var _ref16 = _slicedToArray(_ref15, 2),
         key = _ref16[0],
         value = _ref16[1];
@@ -514,6 +656,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return Object.keys(snapshot).length ? snapshot : null;
   }
   function convertLegacyDataEntriesToObject(entries) {
+    if (isMapLike(entries)) {
+      var converted = convertMapLikeToObject(entries);
+      if (converted) {
+        return converted;
+      }
+    }
     if (!Array.isArray(entries)) {
       return null;
     }
@@ -565,13 +713,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return Object.keys(snapshot).length ? snapshot : null;
   }
   function normalizeBackupDataSection(section) {
+    if (isMapLike(section)) {
+      var converted = convertMapLikeToObject(section);
+      if (converted) {
+        return normalizeBackupDataSection(converted);
+      }
+    }
     if (isPlainObject(section)) {
       return section;
     }
     if (Array.isArray(section)) {
-      var converted = convertLegacyDataEntriesToObject(section);
-      if (converted) {
-        return converted;
+      var _converted = convertLegacyDataEntriesToObject(section);
+      if (_converted) {
+        return _converted;
       }
     }
     if (typeof section === 'string') {
@@ -618,6 +772,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return target;
   }
+  var CONTROL_CHARACTER_REGEX = new RegExp("[".concat(String.fromCharCode(0), "-").concat(String.fromCharCode(31)).concat(String.fromCharCode(127), "]"), 'g');
   function sanitizeBackupPayload(raw) {
     if (raw === null || raw === undefined) {
       return '';
@@ -719,7 +874,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return text;
     }
     try {
-      return text.replace(/[\u0000-\u001f\u007f]/g, '');
+      return text.replace(CONTROL_CHARACTER_REGEX, '');
     } catch (error) {
       console.warn('Failed to strip control characters from backup payload', error);
       return text;
@@ -751,7 +906,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   function extractBackupSections(raw) {
-    var parsed = isPlainObject(raw) ? raw : {};
+    var parsed;
+    if (isPlainObject(raw)) {
+      parsed = raw;
+    } else if (isMapLike(raw)) {
+      var converted = convertMapLikeToObject(raw);
+      parsed = isPlainObject(converted) ? converted : {};
+    } else {
+      parsed = {};
+    }
     var versionValue = typeof parsed.version === 'string' ? parsed.version : typeof parsed.appVersion === 'string' ? parsed.appVersion : typeof parsed.applicationVersion === 'string' ? parsed.applicationVersion : undefined;
     var settingsResult = extractFirstMatchingSnapshot(parsed, ['settings', 'localStorage', 'storage', 'storedSettings', 'values', 'entries']);
     var sessionResult = extractFirstMatchingSnapshot(parsed, ['sessionStorage', 'session', 'sessions', 'sessionState', 'sessionEntries']);
@@ -1040,26 +1203,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (parts.length < 5) {
       return null;
     }
-    var baseParts = [];
-    for (var index = 0; index < 5; index += 1) {
-      baseParts.push(Number(parts[index]));
+    var baseParts = parts.slice(0, 5).map(function (part) {
+      return Number(part);
+    });
+    if (baseParts.some(function (value) {
+      return Number.isNaN(value);
+    })) {
+      return null;
     }
-    for (var i = 0; i < baseParts.length; i += 1) {
-      if (Number.isNaN(baseParts[i])) {
-        return null;
-      }
-    }
-    var year = baseParts[0];
-    var month = baseParts[1];
-    var day = baseParts[2];
-    var hour = baseParts[3];
-    var minute = baseParts[4];
+    var _baseParts = _slicedToArray(baseParts, 5),
+      year = _baseParts[0],
+      month = _baseParts[1],
+      day = _baseParts[2],
+      hour = _baseParts[3],
+      minute = _baseParts[4];
     var includeSeconds = false;
     var seconds = 0;
     var labelStartIndex = 5;
     if (parts.length > labelStartIndex) {
       var secondsCandidate = parts[labelStartIndex];
-      if (/^\d{1,2}$/u.test(secondsCandidate)) {
+      if (/^[0-9]{1,2}$/.test(secondsCandidate)) {
         includeSeconds = true;
         seconds = Number(secondsCandidate);
         labelStartIndex += 1;
@@ -1069,9 +1232,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else if (!config.secondsOptional) {
       return null;
     }
-    var labelParts = parts.slice(labelStartIndex);
-    var label = labelParts.join('-').trim();
-    var date = _construct(Date, [year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0]);
+    var label = parts.slice(labelStartIndex).join('-').trim();
+    var date = new Date(year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0);
     return {
       type: config.type,
       date: Number.isNaN(date.valueOf()) ? null : date,

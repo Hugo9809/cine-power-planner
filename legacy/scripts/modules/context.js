@@ -89,19 +89,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor = null;
+      var child = void 0;
       try {
-        descriptor = Object.getOwnPropertyDescriptor(value, key);
-      } catch (descriptorError) {
-        void descriptorError;
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
       }
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, seen);
+      fallbackFreezeDeep(child, seen);
     }
     try {
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     } catch (freezeError) {
       void freezeError;
       return value;
@@ -218,6 +224,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
   var pendingQueueKey = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string' ? ARCHITECTURE_HELPERS.pendingQueueKey : DEFAULT_PENDING_QUEUE_KEY;
   function updatePendingQueueKey(source) {
     if (!source || _typeof(source) !== 'object' && typeof source !== 'function') {
@@ -238,7 +245,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       pendingQueueKey = source.PENDING_QUEUE_KEY;
     }
   }
-  var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   if (MODULE_SYSTEM) {
     updatePendingQueueKey(MODULE_SYSTEM);
