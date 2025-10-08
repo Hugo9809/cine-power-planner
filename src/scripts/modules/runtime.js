@@ -224,14 +224,40 @@
     return PRIMARY_SCOPE;
   })();
 
+  const CANDIDATE_SCOPES_CACHE = typeof WeakMap === 'function' ? new WeakMap() : null;
+
   function collectCandidateScopes(scope) {
     const targetScope = scope || GLOBAL_SCOPE;
+    const eligibleForCache =
+      !!CANDIDATE_SCOPES_CACHE &&
+      targetScope &&
+      (typeof targetScope === 'object' || typeof targetScope === 'function');
+
+    if (eligibleForCache) {
+      try {
+        const cached = CANDIDATE_SCOPES_CACHE.get(targetScope);
+        if (cached && Array.isArray(cached) && cached.length > 0) {
+          return cached.slice();
+        }
+      } catch (cacheReadError) {
+        void cacheReadError;
+      }
+    }
 
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
       try {
         const scopes = MODULE_SYSTEM.collectCandidateScopes(targetScope);
         if (Array.isArray(scopes) && scopes.length > 0) {
-          return scopes;
+          const result = scopes.slice();
+          if (eligibleForCache) {
+            try {
+              const toCache = typeof Object.freeze === 'function' ? Object.freeze(result.slice()) : result.slice();
+              CANDIDATE_SCOPES_CACHE.set(targetScope, toCache);
+            } catch (cacheWriteError) {
+              void cacheWriteError;
+            }
+          }
+          return result;
         }
       } catch (error) {
         void error;
@@ -242,14 +268,33 @@
       try {
         const fromContext = ENVIRONMENT_CONTEXT.collectCandidateScopes(targetScope);
         if (Array.isArray(fromContext) && fromContext.length > 0) {
-          return fromContext;
+          const result = fromContext.slice();
+          if (eligibleForCache) {
+            try {
+              const toCache = typeof Object.freeze === 'function' ? Object.freeze(result.slice()) : result.slice();
+              CANDIDATE_SCOPES_CACHE.set(targetScope, toCache);
+            } catch (cacheWriteError) {
+              void cacheWriteError;
+            }
+          }
+          return result;
         }
       } catch (error) {
         void error;
       }
     }
 
-    return fallbackCollectCandidateScopes(targetScope);
+    const fallbackScopes = fallbackCollectCandidateScopes(targetScope);
+    const result = Array.isArray(fallbackScopes) ? fallbackScopes.slice() : [];
+    if (eligibleForCache && result.length > 0) {
+      try {
+        const toCache = typeof Object.freeze === 'function' ? Object.freeze(result.slice()) : result.slice();
+        CANDIDATE_SCOPES_CACHE.set(targetScope, toCache);
+      } catch (cacheWriteError) {
+        void cacheWriteError;
+      }
+    }
+    return result;
   }
 
   const MODULE_ENV =
@@ -768,6 +813,8 @@
     return false;
   }
 
+  const FULLY_FROZEN_OBJECTS = typeof WeakSet === 'function' ? new WeakSet() : null;
+
   function fallbackFreezeDeep(value, seen = new WeakSet()) {
     if (!value || typeof value !== 'object') {
       return value;
@@ -777,11 +824,25 @@
       return value;
     }
 
+    if (FULLY_FROZEN_OBJECTS && FULLY_FROZEN_OBJECTS.has(value)) {
+      return value;
+    }
+
     if (seen.has(value)) {
       return value;
     }
 
     seen.add(value);
+
+    let alreadyFrozen = false;
+    if (typeof Object.isFrozen === 'function') {
+      try {
+        alreadyFrozen = Object.isFrozen(value);
+      } catch (inspectionError) {
+        void inspectionError;
+        alreadyFrozen = false;
+      }
+    }
 
     let keys = [];
     try {
@@ -837,12 +898,31 @@
       }
     }
 
-      try {
-        return Object.freeze(value);
-      } catch (freezeError) {
-        void freezeError;
-        return value;
+    if (alreadyFrozen) {
+      if (FULLY_FROZEN_OBJECTS) {
+        try {
+          FULLY_FROZEN_OBJECTS.add(value);
+        } catch (cacheError) {
+          void cacheError;
+        }
       }
+      return value;
+    }
+
+    try {
+      const frozen = Object.freeze(value);
+      if (FULLY_FROZEN_OBJECTS) {
+        try {
+          FULLY_FROZEN_OBJECTS.add(frozen || value);
+        } catch (cacheError) {
+          void cacheError;
+        }
+      }
+      return frozen;
+    } catch (freezeError) {
+      void freezeError;
+      return value;
+    }
   }
 
   const freezeDeep = (function resolveFreezeDeep() {
