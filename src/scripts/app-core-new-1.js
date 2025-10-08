@@ -11440,6 +11440,91 @@ let pinkModeAnimatedIconLastTemplateName = null;
 const pinkModeAnimatedIconPlacementHistory = [];
 const pinkModeIconRainInstances = new Set();
 let pinkModeIconRainLastTriggeredAt = 0;
+const pinkModeBodyReadyQueue = [];
+let pinkModeBodyReadyScheduled = false;
+let pinkModeBodyReadyTimerId = null;
+
+function flushPinkModeBodyReadyQueue() {
+  if (!pinkModeBodyReadyQueue.length) {
+    return;
+  }
+
+  const callbacks = pinkModeBodyReadyQueue.splice(0, pinkModeBodyReadyQueue.length);
+  for (const callback of callbacks) {
+    if (typeof callback !== 'function') {
+      continue;
+    }
+    try {
+      callback();
+    } catch (error) {
+      console.warn('Could not run deferred pink mode callback', error);
+    }
+  }
+}
+
+function schedulePinkModeBodyReadyCheck() {
+  if (pinkModeBodyReadyTimerId) {
+    return;
+  }
+
+  pinkModeBodyReadyTimerId = setTimeout(() => {
+    pinkModeBodyReadyTimerId = null;
+
+    if (typeof document === 'undefined' || !document) {
+      pinkModeBodyReadyScheduled = false;
+      pinkModeBodyReadyQueue.length = 0;
+      return;
+    }
+
+    if (document.body) {
+      pinkModeBodyReadyScheduled = false;
+      flushPinkModeBodyReadyQueue();
+      return;
+    }
+
+    if (document.readyState === 'loading') {
+      const resume = () => {
+        document.removeEventListener('DOMContentLoaded', resume);
+        schedulePinkModeBodyReadyCheck();
+      };
+
+      try {
+        document.addEventListener('DOMContentLoaded', resume, { once: true });
+      } catch (listenerError) {
+        void listenerError;
+        document.addEventListener('DOMContentLoaded', resume);
+      }
+      return;
+    }
+
+    schedulePinkModeBodyReadyCheck();
+  }, 16);
+}
+
+function whenPinkModeBodyReady(callback) {
+  if (typeof callback !== 'function' || typeof document === 'undefined') {
+    return false;
+  }
+
+  if (document.body) {
+    callback();
+    return true;
+  }
+
+  if (!pinkModeBodyReadyQueue.includes(callback)) {
+    pinkModeBodyReadyQueue.push(callback);
+  }
+
+  if (!pinkModeBodyReadyScheduled) {
+    pinkModeBodyReadyScheduled = true;
+    schedulePinkModeBodyReadyCheck();
+  } else if (!pinkModeBodyReadyTimerId) {
+    schedulePinkModeBodyReadyCheck();
+  }
+
+  return true;
+}
+
 let pinkModeAnimatedIconPressListenerCleanup = null;
 let pinkModeAnimatedIconLastTouchTime = 0;
 
@@ -12281,12 +12366,16 @@ function spawnPinkModeIconRainInstance(templates) {
 }
 
 function triggerPinkModeIconRain() {
-  if (
-    typeof window === 'undefined' ||
-    typeof document === 'undefined' ||
-    !document.body ||
-    (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches)
-  ) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return;
+  }
+
+  if (!document.body) {
+    whenPinkModeBodyReady(triggerPinkModeIconRain);
+    return;
+  }
+
+  if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
     return;
   }
 
@@ -12689,7 +12778,11 @@ function startPinkModeAnimatedIcons() {
   if (pinkModeAnimatedIconsActive) {
     return;
   }
-  if (!document || !document.body) {
+  if (typeof document === 'undefined' || !document) {
+    return;
+  }
+  if (!document.body) {
+    whenPinkModeBodyReady(startPinkModeAnimatedIcons);
     return;
   }
   if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
