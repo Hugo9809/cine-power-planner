@@ -7890,11 +7890,19 @@ if (helpButton && helpDialog) {
         queryText: rawQuery || normalizedQuery
       });
     }
+    var showNoResults = hasQuery && visibleCount === 0;
     if (helpNoResults) {
-      if (visibleCount > 0) {
+      if (!showNoResults) {
         helpNoResults.setAttribute('hidden', '');
       } else {
         helpNoResults.removeAttribute('hidden');
+      }
+    }
+    if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+      if (!showNoResults) {
+        helpNoResultsSuggestions.setAttribute('hidden', '');
+      } else {
+        helpNoResultsSuggestions.removeAttribute('hidden');
       }
     }
     if (helpSearchClear) {
@@ -8874,6 +8882,9 @@ if (helpButton && helpDialog) {
           section.removeAttribute('hidden');
           if (helpNoResults) {
             helpNoResults.setAttribute('hidden', '');
+          }
+          if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+            helpNoResultsSuggestions.setAttribute('hidden', '');
           }
           syncHelpQuickLinksVisibility();
         }

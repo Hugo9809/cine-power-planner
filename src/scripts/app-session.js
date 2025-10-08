@@ -24,12 +24,13 @@
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
+          updateStorageRequirementTypeOptions,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
           suspendProjectPersistence, resumeProjectPersistence,
           isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
-          helpResultsSummary, helpResultsAssist,
+          helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence */
 /* eslint-enable no-redeclare */
@@ -10416,12 +10417,20 @@ if (helpButton && helpDialog) {
         queryText: rawQuery || normalizedQuery
       });
     }
+    const showNoResults = hasQuery && visibleCount === 0;
     if (helpNoResults) {
       // Show or hide the "no results" indicator
-      if (visibleCount > 0) {
+      if (!showNoResults) {
         helpNoResults.setAttribute('hidden', '');
       } else {
         helpNoResults.removeAttribute('hidden');
+      }
+    }
+    if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+      if (!showNoResults) {
+        helpNoResultsSuggestions.setAttribute('hidden', '');
+      } else {
+        helpNoResultsSuggestions.removeAttribute('hidden');
       }
     }
     if (helpSearchClear) {
@@ -11517,6 +11526,9 @@ if (helpButton && helpDialog) {
           section.removeAttribute('hidden');
           if (helpNoResults) {
             helpNoResults.setAttribute('hidden', '');
+          }
+          if (typeof helpNoResultsSuggestions !== 'undefined' && helpNoResultsSuggestions) {
+            helpNoResultsSuggestions.setAttribute('hidden', '');
           }
           syncHelpQuickLinksVisibility();
         }

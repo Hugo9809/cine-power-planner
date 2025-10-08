@@ -4225,6 +4225,27 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   gap: 0.75rem;
 }
 
+.help-callout.help-no-results {
+  box-shadow: inset 4px 0 0 0 var(--warning-color, #ff9f1c);
+  border-color: color-mix(in srgb, var(--warning-color, #ff9f1c) 45%, transparent);
+}
+
+@supports not (color: color-mix(in srgb, red 50%, white)) {
+  .help-callout.help-no-results {
+    border-color: rgba(255, 159, 28, 0.35);
+  }
+}
+
+.help-callout.help-no-results h4 {
+  color: var(--warning-color, #ff9f1c);
+}
+
+.help-no-results ul {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.25em;
+}
+
 .help-callout h4 {
   margin: 0;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));

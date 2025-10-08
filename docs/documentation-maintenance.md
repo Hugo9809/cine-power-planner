@@ -44,6 +44,9 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】 Document
    any new navigation tips—like the quick-link keyboard guidance surfaced through
    `helpResultsAssist`—so translations and hover help mirror the latest behaviour.【F:index.html†L2641-L2663】【F:src/scripts/app-session.js†L8427-L8486】【F:src/scripts/translations.js†L1327-L1340】
+   The new no-results recovery callout (`#helpNoResultsSuggestions`) keeps operators pointed at
+   safe backup workflows—document each of its steps when you adjust help topics so every
+   translation and offline manual explains how to recover quickly.【F:index.html†L2784-L2804】【F:src/scripts/app-core-new-1.js†L10095-L10142】【F:src/scripts/app-session.js†L10404-L10436】
    Highlight that the global feature search now promotes matches whose labels appear on screen
    before keyword-only hits, that wrapping a phrase in double quotes forces an exact match, and
    that quoted phrases rise to the top so crews know the full control name they typed will surface

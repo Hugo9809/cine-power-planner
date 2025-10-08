@@ -2785,7 +2785,28 @@
         Tip: Press Tab to move into the quick links, or press Enter to open the top visible
         topic.
       </p>
-      <p id="helpNoResults" aria-live="polite" hidden>No results found.</p>
+      <p id="helpNoResults" aria-live="polite" hidden>
+        No help topics match your search. Try shorter keywords, synonyms or clear the field to
+        browse everything.
+      </p>
+      <div
+        id="helpNoResultsSuggestions"
+        class="help-callout help-no-results"
+        role="note"
+        aria-live="polite"
+        hidden
+      >
+        <h4 id="helpNoResultsSuggestionsHeading">Need a different result?</h4>
+        <p id="helpNoResultsSuggestionsIntro">
+          Try these steps to get back on track while keeping your data safe:
+        </p>
+        <ul id="helpNoResultsSuggestionsList">
+          <li id="helpNoResultsSuggestionClear"></li>
+          <li id="helpNoResultsSuggestionSynonyms"></li>
+          <li id="helpNoResultsSuggestionQuickStart"></li>
+          <li id="helpNoResultsSuggestionBackup"></li>
+        </ul>
+      </div>
       <div id="helpSections">
         <section
           data-help-section
@@ -2980,6 +3001,16 @@
                 ><strong>Restore</strong></a
               >
               always creates a fresh safety copy so nothing is lost when you undo a change.
+            </p>
+            <h5 id="helpDataAuditHeading">Monthly data health check</h5>
+            <ol id="helpDataAuditList">
+              <li id="helpDataAuditStep1"></li>
+              <li id="helpDataAuditStep2"></li>
+              <li id="helpDataAuditStep3"></li>
+              <li id="helpDataAuditStep4"></li>
+            </ol>
+            <p id="helpDataAuditNote" class="help-callout-note">
+              Log the results in your backup rotation checklist so you always know which copies were verified offline.
             </p>
           </div>
           <div
