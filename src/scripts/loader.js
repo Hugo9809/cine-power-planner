@@ -1270,6 +1270,8 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var optionalCheckScript = document.createElement('script');
+    var optionalCheckSources = ['src/scripts/modern-support-check.mjs', 'src/scripts/modern-support-check.js'];
+    var optionalCheckIndex = 0;
     var resolved = false;
     var fallbackTimeoutId = null;
 
@@ -1297,7 +1299,25 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
 
     optionalCheckScript.type = 'module';
-    optionalCheckScript.src = 'src/scripts/modern-support-check.js';
+
+    function setOptionalCheckSource(index) {
+      var nextSource = optionalCheckSources[index];
+      if (!nextSource) {
+        finalize(false);
+        return;
+      }
+      optionalCheckIndex = index;
+      try {
+        optionalCheckScript.setAttribute('src', nextSource);
+      } catch (setSourceError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to configure modern support check source.', setSourceError);
+        }
+        finalize(false);
+      }
+    }
+
+    setOptionalCheckSource(optionalCheckIndex);
     optionalCheckScript.onload = function () {
       var supported = !!(globalScope && globalScope[OPTIONAL_CHAINING_FLAG]);
       if (!supported) {
@@ -1309,6 +1329,14 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       finalize(supported);
     };
     optionalCheckScript.onerror = function (event) {
+      var nextIndex = optionalCheckIndex + 1;
+      if (nextIndex < optionalCheckSources.length) {
+        if (typeof console !== 'undefined' && typeof console.info === 'function') {
+          console.info('Retrying modern support check with fallback source:', optionalCheckSources[nextIndex]);
+        }
+        setOptionalCheckSource(nextIndex);
+        return;
+      }
       var syntaxError = isSyntaxErrorEvent(event);
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         if (syntaxError) {
