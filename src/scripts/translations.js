@@ -1071,6 +1071,7 @@ const texts = {
     category_cables: "Cables",
     category_camera_support: "Camera Support",
     category_chargers: "Chargers",
+    category_cardReaders: "Card Reader",
 
     lensSpecBrandLabel: "Brand",
     lensSpecTypeLabel: "Lens Type",
@@ -1826,6 +1827,7 @@ const texts = {
     category_cables: "Cavi",
     category_camera_support: "Supporto camera",
     category_chargers: "Caricatori",
+    category_cardReaders: "Lettore di schede",
 
     lensSpecBrandLabel: "Marca",
     lensSpecTypeLabel: "Tipo di obiettivo",
@@ -3368,6 +3370,7 @@ const texts = {
     category_cables: "Cables",
     category_camera_support: "Soporte de cámara",
     category_chargers: "Cargadores",
+    category_cardReaders: "Lector de tarjetas",
 
     lensSpecBrandLabel: "Marca",
     lensSpecTypeLabel: "Tipo de óptica",
@@ -4919,6 +4922,7 @@ const texts = {
     category_cables: "Câbles",
     category_camera_support: "Support caméra",
     category_chargers: "Chargeurs",
+    category_cardReaders: "Lecteur de cartes",
 
     lensSpecBrandLabel: "Marque",
     lensSpecTypeLabel: "Type d'optique",
@@ -6482,6 +6486,7 @@ const texts = {
     category_cables: "Kabel",
     category_camera_support: "Kamera-Support",
     category_chargers: "Ladegeräte",
+    category_cardReaders: "Kartenleser",
 
     lensSpecBrandLabel: "Marke",
     lensSpecTypeLabel: "Objektivtyp",
@@ -7794,6 +7799,8 @@ const categoryNames = {
     "iosVideo": "iOS Video",
     "videoAssist": "Video Assist",
     "media": "Recording Media",
+    "accessories.cardReaders": "Card Reader",
+    "cardReaders": "Card Reader",
     "lenses": "Lens",
     "filterOptions": "Filter Option"
   },
@@ -7819,6 +7826,8 @@ const categoryNames = {
     "iosVideo": "Video iOS",
     "videoAssist": "Video assist",
     "media": "Supporto di registrazione",
+    "accessories.cardReaders": "Lettore di schede",
+    "cardReaders": "Lettore di schede",
     "lenses": "Obiettivo",
     "filterOptions": "Opzione filtro"
   },
@@ -7844,6 +7853,8 @@ const categoryNames = {
     "iosVideo": "Video iOS",
     "videoAssist": "Asistente de vídeo",
     "media": "Soporte de grabación",
+    "accessories.cardReaders": "Lector de tarjetas",
+    "cardReaders": "Lector de tarjetas",
     "lenses": "Lente",
     "filterOptions": "Opción de filtro"
   },
@@ -7869,6 +7880,8 @@ const categoryNames = {
     "iosVideo": "Vidéo iOS",
     "videoAssist": "Assistant vidéo",
     "media": "Support d'enregistrement",
+    "accessories.cardReaders": "Lecteur de cartes",
+    "cardReaders": "Lecteur de cartes",
     "lenses": "Objectif",
     "filterOptions": "Option de filtre"
   },
@@ -7894,6 +7907,8 @@ const categoryNames = {
     "iosVideo": "iOS Video",
     "videoAssist": "Video Assist",
     "media": "Aufnahmemedium",
+    "accessories.cardReaders": "Kartenleser",
+    "cardReaders": "Kartenleser",
     "lenses": "Objektiv",
     "filterOptions": "Filteroption"
   },

@@ -3934,7 +3934,7 @@ function getCustomItemsContainer(key) {
 const CUSTOM_CATEGORY_SUGGESTION_SOURCES = {
   camera: ['cameras'],
   'camera-support': ['accessories.cameraSupport'],
-  media: ['media', 'accessories.media'],
+  media: ['media', 'accessories.media', 'accessories.cardReaders'],
   lens: ['lenses'],
   'lens-support': ['accessories.cameraSupport', 'accessories.rigging'],
   'matte-box-filter': ['accessories.matteboxes', 'accessories.filters'],

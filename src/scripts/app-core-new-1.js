@@ -14302,6 +14302,7 @@ const deviceManagerPreferredOrder = [
   "accessories.chargers",
   "accessories.videoAssist",
   "accessories.media",
+  "accessories.cardReaders",
   "accessories.filters",
   "accessories.matteboxes",
   "accessories.rigging",
@@ -14318,6 +14319,7 @@ function normalizeCategoryKey(key) {
   if (key.startsWith("accessories.cables.")) return "accessories.cables";
   if (key === "videoAssist" && devices?.accessories?.videoAssist) return "accessories.videoAssist";
   if (key === "media" && devices?.accessories?.media) return "accessories.media";
+  if (key === "cardReaders" && devices?.accessories?.cardReaders) return "accessories.cardReaders";
   return key;
 }
 

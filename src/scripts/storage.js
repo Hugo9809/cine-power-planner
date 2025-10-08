@@ -3797,6 +3797,7 @@ var ACCESSORY_COLLECTION_KEYS = [
   'cables',
   'videoAssist',
   'media',
+  'cardReaders',
   'tripodHeads',
   'tripods',
   'sliders',

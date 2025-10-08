@@ -173,6 +173,18 @@
         "model"
       ]
     },
+    "cardReaders": {
+      "attributes": [
+        "brand",
+        "model",
+        "kNumber",
+        "supportedMedia",
+        "interface",
+        "slots",
+        "busPowered",
+        "notes"
+      ]
+    },
     "powerPlates": {
       "attributes": [
         "brand",
