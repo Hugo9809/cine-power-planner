@@ -4016,6 +4016,9 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
 }
 
 function persistCustomItemsChange() {
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
   if (typeof saveCurrentGearList === 'function') {
     saveCurrentGearList();
   }
@@ -6630,6 +6633,7 @@ function ensureGearListActions() {
             }
 
             if (shouldSync) {
+                markProjectFormDataDirty();
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
@@ -6647,6 +6651,7 @@ function ensureGearListActions() {
                 updateCustomItemPreview(target.closest('.gear-custom-item'));
             }
             if (target.matches('input, textarea')) {
+                markProjectFormDataDirty();
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
