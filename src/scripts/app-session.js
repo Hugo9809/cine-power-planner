@@ -33,7 +33,7 @@
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty */
+          markProjectFormDataDirty, loadAutoGearMonitorDefaults */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -14065,14 +14065,31 @@ function syncGearListFilterValue(storageId, value, isSelected) {
   }
 }
 
-function renderFilterDetails() {
+function renderFilterDetails(providedTokens) {
   const select = resolveFilterSelectElement();
   if (!select) return;
   const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
-  const existingSelections = collectFilterSelections();
-  const existingTokens = existingSelections
-    ? parseFilterTokens(existingSelections)
-    : (currentProjectInfo && currentProjectInfo.filter ? parseFilterTokens(currentProjectInfo.filter) : []);
+  let existingTokens;
+  if (Array.isArray(providedTokens)) {
+    existingTokens = providedTokens
+      .filter(token => token && token.type)
+      .map(token => ({
+        type: token.type,
+        size: token.size,
+        values: token.values === undefined
+          ? undefined
+          : (Array.isArray(token.values) ? token.values.slice() : token.values)
+      }));
+  } else {
+    const existingSelections = collectFilterSelections();
+    if (existingSelections) {
+      existingTokens = parseFilterTokens(existingSelections);
+    } else if (currentProjectInfo && currentProjectInfo.filter) {
+      existingTokens = parseFilterTokens(currentProjectInfo.filter);
+    } else {
+      existingTokens = [];
+    }
+  }
   const existingMap = new Map(existingTokens.map(token => [token.type, token]));
   const details = selected.map(type => {
     const prev = existingMap.get(type) || {};
