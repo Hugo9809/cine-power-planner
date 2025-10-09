@@ -860,6 +860,32 @@ main.legal-content {
   flex-wrap: wrap;
 }
 
+.person-avatar {
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--surface-200);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  overflow: hidden;
+}
+
+.person-avatar--has-image {
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.person-avatar-initials {
+  font-size: 0.85rem;
+}
+
 .person-row select {
   flex: 0 0 160px;
   min-width: 140px;
@@ -870,10 +896,16 @@ main.legal-content {
   min-width: 160px;
 }
 
-.person-row button {
+.person-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   flex: 0 0 auto;
+}
+
+.person-actions button {
   margin: 0;
-  align-self: stretch;
+  align-self: center;
 }
 
 .storage-row {
@@ -7359,6 +7391,347 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   .battery-comparison-section td {
     white-space: normal;
     overflow-wrap: anywhere;
+  }
+}
+
+/* Contacts dialog */
+#contactsDialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+#contactsDialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.contacts-dialog {
+  width: min(100%, 880px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3.2vw, 28px);
+  padding: clamp(20px, 4vw, 32px);
+}
+
+.contacts-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-size);
+}
+
+.contacts-dialog-header h2 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
+  font-weight: var(--font-weight-regular);
+}
+
+.contacts-dialog-close {
+  margin: 0;
+  padding: 0.35rem;
+  border-radius: 50%;
+  line-height: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.contacts-dialog-description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: 1.5;
+}
+
+.contacts-form fieldset {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: clamp(16px, 3vw, 24px);
+  background: var(--panel-bg);
+}
+
+.contacts-form legend {
+  font-weight: var(--font-weight-medium);
+  padding: 0 6px;
+}
+
+.contacts-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 24px);
+  align-items: start;
+}
+
+.contact-photo-field {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-photo-preview {
+  width: clamp(120px, 18vw, 160px);
+  height: clamp(120px, 18vw, 160px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--surface-200), var(--surface-100));
+  border: 1px dashed var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  position: relative;
+}
+
+.contact-photo-preview::after {
+  content: attr(data-initials);
+  pointer-events: none;
+}
+
+.contact-photo-preview--has-image {
+  background-size: cover;
+  background-position: center;
+  border-style: solid;
+  color: transparent;
+}
+
+.contact-photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-photo-actions label {
+  font-weight: var(--font-weight-medium);
+}
+
+.contact-photo-actions input[type='file'] {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.contact-photo-remove {
+  align-self: flex-start;
+  margin: 0;
+}
+
+.contacts-help-text {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  line-height: 1.4;
+}
+
+.contacts-form-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.contacts-form-fields label {
+  font-weight: var(--font-weight-medium);
+}
+
+.contacts-form-fields input,
+.contacts-form-fields select {
+  width: 100%;
+}
+
+.contacts-message {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.contacts-message[hidden] {
+  display: none !important;
+}
+
+.contacts-message[data-status-type] {
+  padding: 0.5em 0.75em;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  display: inline-block;
+}
+
+.contacts-message[data-status-type='success'] {
+  background: var(--status-success-bg);
+  color: var(--status-success-text-color);
+}
+
+.contacts-message[data-status-type='error'] {
+  background: var(--status-error-bg);
+  color: var(--status-error-text-color);
+}
+
+.contacts-message[data-status-type='info'] {
+  color: var(--text-color);
+}
+
+.contacts-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.contacts-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 18px);
+}
+
+.contacts-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.contacts-list-header h3 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  font-weight: var(--font-weight-medium);
+}
+
+.contacts-empty {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--panel-border);
+  border-radius: var(--border-radius);
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--panel-bg);
+}
+
+.contacts-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2.4vw, 20px);
+  padding: clamp(12px, 2.5vw, 20px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
+}
+
+.contact-card-avatar {
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--surface-200);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-medium);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  letter-spacing: 0.04em;
+  overflow: hidden;
+}
+
+.contact-card-avatar--has-image {
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.contact-card-details {
+  flex: 1 1 auto;
+  display: grid;
+  gap: 4px;
+}
+
+.contact-card-name {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+}
+
+.contact-card-role {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.contact-card-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+}
+
+.contact-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.contact-card-actions button {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .contacts-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-photo-field {
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .contact-photo-actions {
+    flex: 1 1 220px;
+  }
+
+  .contact-photo-preview {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contacts-dialog {
+    padding: clamp(16px, 4vw, 24px);
+  }
+
+  .contacts-form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .contacts-form-actions button {
+    width: 100%;
+  }
+
+  .contact-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .contact-card-avatar {
+    margin: 0 auto;
+  }
+
+  .contact-card-actions {
+    justify-content: stretch;
+  }
+
+  .contact-card-actions button {
+    flex: 1 1 auto;
   }
 }
 

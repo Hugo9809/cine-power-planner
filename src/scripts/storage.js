@@ -251,6 +251,7 @@ var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -2442,6 +2443,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
+  CONTACTS_STORAGE_KEY,
 ]);
 
 Array.from(RAW_STORAGE_BACKUP_KEYS).forEach((key) => {
@@ -2459,6 +2461,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: FEEDBACK_STORAGE_KEY }),
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: CONTACTS_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
   () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
   () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
@@ -8394,6 +8397,14 @@ function sanitizeImportedCrewEntries(entries) {
     if (email) {
       result.email = email;
     }
+    const contactId = typeof entry.contactId === 'string' ? entry.contactId.trim() : '';
+    if (contactId) {
+      result.contactId = contactId;
+    }
+    const profileImage = typeof entry.profileImage === 'string' ? entry.profileImage.trim() : '';
+    if (profileImage) {
+      result.profileImage = profileImage;
+    }
     const note = typeof entry.text === 'string' ? entry.text.trim() : '';
     if (note) {
       result.text = note;
@@ -10218,6 +10229,128 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
 }
 
 // --- Favorites Storage ---
+function generateContactStorageId(existingIds) {
+  const prefix = 'contact-';
+  let candidate = '';
+  let attempts = 0;
+  do {
+    const randomPart = Math.random().toString(36).slice(2, 10);
+    candidate = `${prefix}${Date.now().toString(36)}-${randomPart}`;
+    attempts += 1;
+  } while (existingIds.has(candidate) && attempts < 20);
+  existingIds.add(candidate);
+  return candidate;
+}
+
+function normalizeStoredContactEntry(entry, existingIds) {
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+
+  const normalized = {};
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+  const email = typeof entry.email === 'string' ? entry.email.trim() : '';
+  const role = typeof entry.role === 'string' ? entry.role.trim() : '';
+  const profileImage = typeof entry.profileImage === 'string' ? entry.profileImage.trim() : '';
+  const fallbackImage = typeof entry.photo === 'string' ? entry.photo.trim() : '';
+
+  const hasData = name || phone || email || role || profileImage || fallbackImage;
+  if (!hasData) {
+    return null;
+  }
+
+  let id = typeof entry.id === 'string' ? entry.id.trim() : '';
+  if (!id && typeof entry.contactId === 'string') {
+    id = entry.contactId.trim();
+  }
+  if (!id) {
+    id = generateContactStorageId(existingIds);
+  } else if (existingIds.has(id)) {
+    id = generateContactStorageId(existingIds);
+  } else {
+    existingIds.add(id);
+  }
+
+  normalized.id = id;
+  if (name) normalized.name = name;
+  if (role) normalized.role = role;
+  if (phone) normalized.phone = phone;
+  if (email) normalized.email = email;
+  const imageValue = profileImage || fallbackImage;
+  if (imageValue) {
+    normalized.profileImage = imageValue;
+  }
+  if (typeof entry.createdAt === 'string' && entry.createdAt.trim()) {
+    normalized.createdAt = entry.createdAt.trim();
+  }
+  if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
+    normalized.updatedAt = entry.updatedAt.trim();
+  }
+
+  return normalized;
+}
+
+// --- Contacts Storage ---
+function loadContacts() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    "Error loading contacts from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  const existingIds = new Set();
+  return parsed
+    .map(entry => normalizeStoredContactEntry(entry, existingIds))
+    .filter(Boolean);
+}
+
+function saveContacts(entries) {
+  const safeStorage = getSafeLocalStorage();
+  if (!entries || (Array.isArray(entries) && entries.length === 0)) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting contacts from localStorage:",
+    );
+    return;
+  }
+
+  if (!Array.isArray(entries)) {
+    console.warn('Ignoring invalid contacts payload. Expected an array.');
+    return;
+  }
+
+  const existingIds = new Set();
+  const normalized = entries
+    .map(entry => normalizeStoredContactEntry(entry, existingIds))
+    .filter(Boolean);
+
+  if (!normalized.length) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting contacts from localStorage:",
+    );
+    return;
+  }
+
+  ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    normalized,
+    "Error saving contacts to localStorage:",
+  );
+}
+
+// --- Favorites Storage ---
 function loadFavorites() {
   applyLegacyStorageMigrations();
   const safeStorage = getSafeLocalStorage();
@@ -11030,6 +11163,7 @@ function clearAllData() {
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
@@ -11372,10 +11506,11 @@ function clearAllData() {
       devices: loadDeviceData(),
       setups: loadSetups(),
       session: loadSessionState(),
-      feedback: loadFeedback(),
-      project: loadProject(),
-      favorites: loadFavorites(),
-      autoGearRules: loadAutoGearRules(),
+    feedback: loadFeedback(),
+    project: loadProject(),
+    favorites: loadFavorites(),
+    contacts: loadContacts(),
+    autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
       autoGearPresets: loadAutoGearPresets(),
@@ -11943,6 +12078,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
   assignJSONValue(PROJECT_STORAGE_KEY, 'project');
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(CONTACTS_STORAGE_KEY, 'contacts');
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -12097,6 +12233,9 @@ function importAllData(allData, options = {}) {
   }
   if (hasOwn('favorites')) {
     saveFavorites(allData.favorites);
+  }
+  if (hasOwn('contacts')) {
+    saveContacts(allData.contacts);
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
@@ -12297,6 +12436,8 @@ var STORAGE_API = {
   saveSessionState,
   loadFavorites,
   saveFavorites,
+  loadContacts,
+  saveContacts,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

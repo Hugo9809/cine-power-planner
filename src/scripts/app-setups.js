@@ -2136,15 +2136,22 @@ function collectProjectFormData() {
             const nameInput = row.querySelector('.person-name');
             const phoneInput = row.querySelector('.person-phone');
             const emailInput = row.querySelector('.person-email');
+            const contactIdInput = row.querySelector('.person-contact-id');
+            const profileImageInput = row.querySelector('.person-profile-image');
             const role = typeof roleValue === 'string'
                 ? roleValue.trim()
                 : (roleValue == null ? '' : String(roleValue));
             const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
-            return { role, name, phone, email };
+            const contactId = typeof contactIdInput?.value === 'string' ? contactIdInput.value.trim() : '';
+            const profileImage = typeof profileImageInput?.value === 'string' ? profileImageInput.value : '';
+            const person = { role, name, phone, email };
+            if (contactId) person.contactId = contactId;
+            if (profileImage) person.profileImage = profileImage;
+            return person;
         })
-        .filter(person => person.role || person.name || person.phone || person.email);
+        .filter(person => person.role || person.name || person.phone || person.email || person.contactId);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {

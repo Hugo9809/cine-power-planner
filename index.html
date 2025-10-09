@@ -197,6 +197,21 @@
       <li><a href="#projectRequirementsOutput" data-nav-key="projectRequirementsNav">Project Requirements</a></li>
       <li><a href="#gearListOutput" data-nav-key="gearListNav">Gear List</a></li>
       <li><a href="#device-manager" data-nav-key="deviceManagerHeading">Device Library</a></li>
+      <li>
+        <button
+          type="button"
+          id="contactsNavButton"
+          data-nav-key="contactsNav"
+          data-sidebar-action="open-contacts"
+          data-open-contacts
+          aria-haspopup="dialog"
+          aria-controls="contactsDialog"
+          data-feature-search="true"
+          data-feature-search-keywords="contacts crew address book team reuse"
+        >
+          Contacts
+        </button>
+      </li>
       <li class="sidebar-divider" role="separator" aria-hidden="true"></li>
       <li>
         <button
@@ -6076,6 +6091,73 @@
         <button type="submit" id="sharedImportConfirmBtn">Apply</button>
       </div>
     </form>
+  </dialog>
+
+  <dialog
+    id="contactsDialog"
+    class="app-modal"
+    aria-labelledby="contactsDialogTitle"
+    aria-modal="true"
+    hidden
+  >
+    <div class="modal-surface modal-surface-scrollable contacts-dialog">
+      <header class="contacts-dialog-header">
+        <h2 id="contactsDialogTitle">Crew contacts</h2>
+        <button type="button" id="contactsDialogClose" class="contacts-dialog-close">
+          <span class="visually-hidden">Close</span>
+          <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF131;</span>
+        </button>
+      </header>
+      <p id="contactsDialogDescription" class="contacts-dialog-description">
+        Save crew members for future projects.
+      </p>
+      <form id="contactForm" class="contacts-form" novalidate>
+        <fieldset>
+          <legend id="contactFormLegend">Save contact</legend>
+          <div class="contacts-form-grid">
+            <div class="contact-photo-field">
+              <div
+                id="contactPhotoPreview"
+                class="contact-photo-preview"
+                role="img"
+                aria-hidden="true"
+              ></div>
+              <div class="contact-photo-actions">
+                <label for="contactPhoto" id="contactPhotoLabel">Profile picture</label>
+                <input type="file" id="contactPhoto" accept="image/*" />
+                <input type="hidden" id="contactPhotoData" />
+                <button type="button" id="contactPhotoRemove" class="contact-photo-remove"></button>
+                <p id="contactPhotoStatus" class="contacts-help-text" hidden></p>
+              </div>
+            </div>
+            <div class="contacts-form-fields">
+              <label for="contactName" id="contactNameLabel">Name</label>
+              <input type="text" id="contactName" autocomplete="name" required />
+              <label for="contactRole" id="contactRoleLabel">Crew role</label>
+              <select id="contactRole"></select>
+              <label for="contactPhone" id="contactPhoneLabel">Phone</label>
+              <input type="tel" id="contactPhone" autocomplete="tel" />
+              <label for="contactEmail" id="contactEmailLabel">Email</label>
+              <input type="email" id="contactEmail" autocomplete="email" />
+            </div>
+          </div>
+        </fieldset>
+        <p id="contactFormMessage" class="contacts-message" role="status" aria-live="polite" hidden></p>
+        <div class="contacts-form-actions">
+          <button type="button" id="resetContactButton">Reset</button>
+          <button type="submit" id="saveContactButton" class="primary">Save contact</button>
+        </div>
+      </form>
+      <section class="contacts-list-section" aria-labelledby="contactsListHeading">
+        <div class="contacts-list-header">
+          <h3 id="contactsListHeading">Saved contacts</h3>
+          <p id="contactsListHelp" class="contacts-help-text"></p>
+        </div>
+        <p id="contactsEmptyState" class="contacts-empty" hidden></p>
+        <ul id="contactsList" class="contacts-list"></ul>
+        <p id="contactsStatusMessage" class="contacts-message" role="status" aria-live="polite" hidden></p>
+      </section>
+    </div>
   </dialog>
 
   <dialog id="projectDialog" class="app-modal" aria-labelledby="projectDialogHeading">
