@@ -1121,6 +1121,14 @@ main.legal-content {
   margin: 0;
 }
 
+.gear-item-edit-form .form-row label,
+.gear-item-edit-form .form-row .form-row-label {
+  flex: initial;
+  min-width: 0;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
 .gear-item-edit-form .form-row--full {
   grid-column: 1 / -1;
 }
