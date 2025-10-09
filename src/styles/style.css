@@ -8358,6 +8358,8 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
   min-width: 1.85rem;
   height: 1.85rem;
   padding: 0.25rem;
+  align-self: flex-start;
+  margin-top: 0.1rem;
   border-radius: calc(var(--border-radius) * 0.9);
   border: 1px solid color-mix(in srgb, var(--accent-color) 32%, transparent);
   background: color-mix(in srgb, var(--panel-bg) 90%, transparent);
