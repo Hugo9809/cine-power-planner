@@ -1,4 +1,5 @@
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
+const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 
 const createQuotaStorage = (initialData = {}) => {
@@ -113,6 +114,62 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
 
     expect(global.window.alert).toHaveBeenCalledTimes(1);
     expect(global.window.alert).toHaveBeenCalledWith(expectedMessage);
+  });
+
+  test('does not compress entries stored in sessionStorage fallback', () => {
+    const { saveDeviceData } = storageModule;
+    const heavyNote = 'Important storage note '.repeat(1200);
+    const heavyDeviceData = {
+      cameras: {},
+      monitors: {},
+      video: {},
+      viewfinders: {},
+      directorMonitors: {},
+      iosVideo: {},
+      videoAssist: {},
+      media: {},
+      lenses: {},
+      batteries: {},
+      batteryHotswaps: {},
+      wirelessReceivers: {},
+      accessories: {
+        chargers: {},
+        cages: {},
+        cardReaders: {},
+        powerPlates: {},
+        cameraSupport: {},
+        matteboxes: {},
+        filters: {},
+        rigging: {},
+        batteries: {},
+        cables: {},
+        videoAssist: {},
+        media: {},
+        tripodHeads: {},
+        tripods: {},
+        sliders: {},
+        cameraStabiliser: {},
+        grip: {},
+        carts: {},
+      },
+      fiz: { motors: {}, handUnits: {}, controllers: {}, distance: {} },
+      filterOptions: [],
+      notes: heavyNote,
+    };
+
+    saveDeviceData(heavyDeviceData);
+
+    const stored = global.sessionStorage.getItem(DEVICE_KEY);
+    expect(typeof stored).toBe('string');
+    expect(stored).not.toContain('__cineStorageCompressed');
+
+    const parsed = JSON.parse(stored);
+    expect(parsed.notes).toBe(heavyNote);
+
+    const backup = global.sessionStorage.getItem(`${DEVICE_KEY}__backup`);
+    if (backup) {
+      expect(backup).not.toContain('__cineStorageCompressed');
+    }
   });
 });
 
