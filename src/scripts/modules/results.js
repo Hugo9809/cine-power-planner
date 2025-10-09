@@ -637,6 +637,120 @@
     return runtimeHours >= 10 ? runtimeHours.toFixed(1) : runtimeHours.toFixed(2);
   }
 
+  function formatCurrentForSummary(current) {
+    if (!Number.isFinite(current)) {
+      return '0.00';
+    }
+    return current.toFixed(2);
+  }
+
+  function resolvePinsStatusText(resolveText, options) {
+    var current = Number.isFinite(options.current) ? options.current : 0;
+    var limit = Number.isFinite(options.limit) ? options.limit : null;
+
+    if (current <= 0) {
+      return resolveText('resultsPlainSummaryPinsZero');
+    }
+
+    if (!Number.isFinite(limit) || limit <= 0) {
+      var unknownTemplate = resolveText('resultsPlainSummaryPinsUnknown');
+      return replaceSummaryTokens(unknownTemplate, {
+        current: formatCurrentForSummary(current),
+      });
+    }
+
+    var tokens = {
+      current: formatCurrentForSummary(current),
+      max: String(limit),
+    };
+
+    if (current > limit) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsExceeded'), tokens);
+    }
+
+    if (current >= limit * 0.8) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsNear'), tokens);
+    }
+
+    return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsOk'), tokens);
+  }
+
+  function resolveDtapStatusText(resolveText, options) {
+    var current = Number.isFinite(options.current) ? options.current : 0;
+    var limit = Number.isFinite(options.limit) ? options.limit : null;
+    var hasRating = options.hasRating;
+    var allowed = options.allowed;
+    var bMountCam = options.bMountCam;
+
+    if (!allowed) {
+      if (bMountCam) {
+        return resolveText('resultsPlainSummaryDtapUnavailableBMount');
+      }
+      if (!hasRating) {
+        var missingTemplate = resolveText('resultsPlainSummaryDtapUnknown');
+        return replaceSummaryTokens(missingTemplate, {
+          current: formatCurrentForSummary(current),
+        });
+      }
+      return resolveText('resultsPlainSummaryDtapUnavailable');
+    }
+
+    if (current <= 0) {
+      return resolveText('resultsPlainSummaryDtapZero');
+    }
+
+    if (!Number.isFinite(limit) || limit <= 0) {
+      var unknownTemplate = resolveText('resultsPlainSummaryDtapUnknown');
+      return replaceSummaryTokens(unknownTemplate, {
+        current: formatCurrentForSummary(current),
+      });
+    }
+
+    var tokens = {
+      current: formatCurrentForSummary(current),
+      max: String(limit),
+    };
+
+    if (current > limit) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapExceeded'), tokens);
+    }
+
+    if (current >= limit * 0.8) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapNear'), tokens);
+    }
+
+    return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapOk'), tokens);
+  }
+
+  function buildPowerOutputSummaryText(resolveText, options) {
+    if (typeof resolveText !== 'function') {
+      return '';
+    }
+
+    var opts = options || {};
+    var parts = [];
+    var pinsText = resolvePinsStatusText(resolveText, {
+      current: opts.current,
+      limit: opts.pinLimit,
+    });
+    if (pinsText) {
+      parts.push(pinsText);
+    }
+
+    var dtapText = resolveDtapStatusText(resolveText, {
+      current: opts.current,
+      limit: opts.dtapLimit,
+      hasRating: opts.hasDtapRating,
+      allowed: opts.dtapAllowed,
+      bMountCam: opts.bMountCam,
+    });
+    if (dtapText) {
+      parts.push(dtapText);
+    }
+
+    return parts.join(' ');
+  }
+
   function buildPlainSummaryText(summaryOptions) {
     var opts = summaryOptions || {};
     var summaryPrompt = getNonEmptyString(opts.summaryPrompt);
@@ -1245,6 +1359,12 @@
       'resultsPlainSummaryText',
       'resultsPlainSummaryTextElem'
     );
+    var resultsPlainSummaryNoteTarget = resolveElementFromOptions(
+      opts,
+      'resultsPlainSummaryNoteElem',
+      'resultsPlainSummaryNote',
+      'resultsPlainSummaryNoteElem'
+    );
 
     var totalPowerTarget = resolveElementFromOptions(opts, 'totalPowerElem', 'totalPower', 'totalPowerElem');
     var breakdownListTarget = resolveElementFromOptions(opts, 'breakdownListElem', 'breakdownList', 'breakdownListElem');
@@ -1271,6 +1391,7 @@
     runtimeFeedbackState.elements.controllerSelects = controllerSelects;
     runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummaryTarget;
     runtimeFeedbackState.elements.resultsPlainSummaryTextElem = resultsPlainSummaryTextTarget;
+    runtimeFeedbackState.elements.resultsPlainSummaryNoteElem = resultsPlainSummaryNoteTarget;
     runtimeFeedbackState.elements.totalPowerElem = totalPowerTarget;
     runtimeFeedbackState.elements.breakdownListElem = breakdownListTarget;
     runtimeFeedbackState.elements.totalCurrent144Elem = totalCurrent144Target;
@@ -1821,6 +1942,22 @@
       } else {
         setStatusMessageFn(dtapWarnTarget, '');
         setStatusLevelFn(dtapWarnTarget, null);
+      }
+
+      var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {
+        current: totalCurrentLow,
+        pinLimit: maxPinA,
+        dtapLimit: maxDtapA,
+        hasDtapRating: hasDtapRating,
+        dtapAllowed: dtapAllowed,
+        bMountCam: bMountCam,
+      });
+      if (resultsPlainSummaryNoteTarget) {
+        try {
+          resultsPlainSummaryNoteTarget.textContent = outputsSummaryText;
+        } catch (error) {
+          void error;
+        }
       }
     }
 
