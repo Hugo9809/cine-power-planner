@@ -1075,6 +1075,8 @@ main.legal-content {
 .gear-item-edit-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: clamp(0.75rem, 2vw, 1rem);
   padding: clamp(0.85rem, 2.2vw, 1.1rem);
   border-radius: var(--border-radius);
@@ -1086,6 +1088,56 @@ main.legal-content {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.gear-item-edit-back,
+.gear-item-edit-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--button-icon-gap);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 80%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 94%, transparent);
+  color: var(--text-color);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.gear-item-edit-back:hover,
+.gear-item-edit-back:focus-visible,
+.gear-item-edit-reset:hover,
+.gear-item-edit-reset:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 18%, var(--surface-color) 82%);
+  color: var(--text-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.gear-item-edit-back:focus-visible,
+.gear-item-edit-reset:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 60%, #ffffff 40%);
+  outline-offset: 2px;
+}
+
+.gear-item-edit-reset[disabled],
+.gear-item-edit-reset[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.gear-item-edit-reset[disabled]:hover,
+.gear-item-edit-reset[disabled]:focus-visible,
+.gear-item-edit-reset[aria-disabled="true"]:hover,
+.gear-item-edit-reset[aria-disabled="true"]:focus-visible {
+  background: color-mix(in srgb, var(--surface-color) 94%, transparent);
+  box-shadow: none;
 }
 
 .gear-item-edit-dialog h3 {
@@ -1221,6 +1273,31 @@ body.dark-mode .gear-item-edit-header,
 .dark-mode .gear-item-edit-header {
   background: color-mix(in srgb, var(--surface-color) 82%, var(--accent-color) 18%);
   border-color: color-mix(in srgb, var(--panel-border) 55%, var(--accent-color) 45%);
+}
+
+html.dark-mode .gear-item-edit-back,
+body.dark-mode .gear-item-edit-back,
+.dark-mode .gear-item-edit-back,
+html.dark-mode .gear-item-edit-reset,
+body.dark-mode .gear-item-edit-reset,
+.dark-mode .gear-item-edit-reset {
+  background: color-mix(in srgb, var(--surface-color) 86%, transparent);
+  border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+}
+
+html.dark-mode .gear-item-edit-back:hover,
+body.dark-mode .gear-item-edit-back:hover,
+.dark-mode .gear-item-edit-back:hover,
+html.dark-mode .gear-item-edit-back:focus-visible,
+body.dark-mode .gear-item-edit-back:focus-visible,
+.dark-mode .gear-item-edit-back:focus-visible,
+html.dark-mode .gear-item-edit-reset:hover,
+body.dark-mode .gear-item-edit-reset:hover,
+.dark-mode .gear-item-edit-reset:hover,
+html.dark-mode .gear-item-edit-reset:focus-visible,
+body.dark-mode .gear-item-edit-reset:focus-visible,
+.dark-mode .gear-item-edit-reset:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 26%, var(--surface-color) 74%);
 }
 
 html.dark-mode .gear-item-edit-preview,

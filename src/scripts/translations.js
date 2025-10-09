@@ -1441,6 +1441,8 @@ const texts = {
     gearListEditCancel: "Cancel",
     gearListEditButton: "Edit gear item",
     gearListEditCustomItem: "Edit custom item",
+    gearListEditBack: "Back",
+    gearListEditReset: "Reset name & attributes",
     gearListLensCoverageWarning: "This lens may not cover the full sensor of this camera!",
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp:
@@ -2297,6 +2299,8 @@ const texts = {
     gearListEditCancel: "Annulla",
     gearListEditButton: "Modifica elemento della lista",
     gearListEditCustomItem: "Modifica elemento personalizzato",
+    gearListEditBack: "Indietro",
+    gearListEditReset: "Ripristina nome e caratteristiche",
     gearListLensCoverageWarning: "Questo obiettivo potrebbe non coprire interamente il sensore di questa camera!",
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp:
@@ -3976,6 +3980,8 @@ const texts = {
     gearListEditCancel: "Cancelar",
     gearListEditButton: "Editar elemento del equipo",
     gearListEditCustomItem: "Editar elemento personalizado",
+    gearListEditBack: "Volver",
+    gearListEditReset: "Restablecer nombre y atributos",
     gearListLensCoverageWarning: "¡Este objetivo puede que no cubra por completo el sensor de esta cámara!",
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp:
@@ -5656,6 +5662,8 @@ const texts = {
     gearListEditCancel: "Annuler",
     gearListEditButton: "Modifier l’élément de matériel",
     gearListEditCustomItem: "Modifier l’élément personnalisé",
+    gearListEditBack: "Retour",
+    gearListEditReset: "Réinitialiser le nom et les caractéristiques",
     gearListLensCoverageWarning: "Cet objectif pourrait ne pas couvrir entièrement le capteur de cette caméra !",
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp:
@@ -7348,6 +7356,8 @@ const texts = {
     gearListEditCancel: "Abbrechen",
     gearListEditButton: "Gear-Element bearbeiten",
     gearListEditCustomItem: "Benutzerdefinierten Eintrag bearbeiten",
+    gearListEditBack: "Zurück",
+    gearListEditReset: "Name und Attribute zurücksetzen",
     gearListLensCoverageWarning: "Dieses Objektiv deckt den Sensor dieser Kamera möglicherweise nicht vollständig ab!",
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp:
