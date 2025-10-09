@@ -2199,8 +2199,8 @@ function getFocusScalePreference() {
 
 function getFocusScaleLabelForLang(lang = currentLang, scale = focusScalePreference) {
   const normalized = normalizeFocusScale(scale);
-  const langTexts = texts && typeof texts === 'object' ? texts[lang] : null;
-  const fallbackTexts = texts && typeof texts === 'object' ? texts.en : null;
+  const langTexts = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   const key = normalized === FOCUS_SCALE_VALUES.imperial ? 'focusScaleImperial' : 'focusScaleMetric';
   const valueFromLang = langTexts && typeof langTexts[key] === 'string' ? langTexts[key].trim() : '';
   if (valueFromLang) {
@@ -2224,9 +2224,22 @@ function resolveLanguageCode(lang) {
   return 'en';
 }
 
+function getAllTranslations() {
+  if (typeof texts !== 'undefined' && texts && typeof texts === 'object') {
+    return texts;
+  }
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.texts === 'object' && CORE_GLOBAL_SCOPE.texts) {
+    return CORE_GLOBAL_SCOPE.texts;
+  }
+  if (typeof window !== 'undefined' && typeof window.texts === 'object' && window.texts) {
+    return window.texts;
+  }
+  return {};
+}
+
 function getLanguageTexts(lang) {
   const resolved = resolveLanguageCode(lang);
-  const allTexts = (typeof texts !== 'undefined' && texts) || {};
+  const allTexts = getAllTranslations();
   if (allTexts && typeof allTexts[resolved] === 'object') {
     return allTexts[resolved] || {};
   }
@@ -2234,6 +2247,16 @@ function getLanguageTexts(lang) {
     return allTexts.en || {};
   }
   return {};
+}
+
+function resolveTextEntry(langTexts, fallbackTexts, key, defaultValue = '') {
+  if (langTexts && typeof langTexts[key] === 'string' && langTexts[key]) {
+    return langTexts[key];
+  }
+  if (fallbackTexts && typeof fallbackTexts[key] === 'string' && fallbackTexts[key]) {
+    return fallbackTexts[key];
+  }
+  return defaultValue;
 }
 
 function formatNumberForLang(lang, value, options) {
@@ -3080,8 +3103,8 @@ function updateMountVoltageInputsFromState() {
 }
 
 function getTemplateString(lang, key, fallback) {
-  const localeTexts = texts && texts[lang] ? texts[lang] : null;
-  const defaultTexts = texts && texts.en ? texts.en : null;
+  const localeTexts = getLanguageTexts(lang);
+  const defaultTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   if (localeTexts && typeof localeTexts[key] === 'string') {
     return localeTexts[key];
   }
@@ -3129,24 +3152,25 @@ function refreshTotalCurrentLabels(lang = currentLang, mount = null, voltages = 
   );
 }
 
-function updateMountVoltageSettingLabels(lang = currentLang) {
-  const localeTexts = texts && texts[lang] ? texts[lang] : texts.en;
-  if (!localeTexts) return;
-  if (mountVoltageHeadingElem) {
-    mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading
-      || texts.en?.mountVoltageSettingsHeading
-      || 'Battery mount voltages';
-    const helpText = localeTexts.mountVoltageSettingsHelp
-      || texts.en?.mountVoltageSettingsHelp
-      || '';
+  function updateMountVoltageSettingLabels(lang = currentLang) {
+    const localeTexts = getLanguageTexts(lang);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    if (!localeTexts && !fallbackTexts) return;
+    if (mountVoltageHeadingElem) {
+      mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading
+        || fallbackTexts.mountVoltageSettingsHeading
+        || 'Battery mount voltages';
+      const helpText = localeTexts.mountVoltageSettingsHelp
+        || fallbackTexts.mountVoltageSettingsHelp
+        || '';
     if (helpText) {
       mountVoltageHeadingElem.setAttribute('data-help', helpText);
     }
   }
-  if (mountVoltageDescriptionElem) {
-    mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription
-      || texts.en?.mountVoltageDescription
-      || '';
+    if (mountVoltageDescriptionElem) {
+      mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription
+        || fallbackTexts.mountVoltageDescription
+        || '';
   }
   if (mountVoltageNoteElem) {
     mountVoltageNoteElem.textContent = localeTexts.mountVoltageNote
@@ -3817,65 +3841,69 @@ function getAutoGearSelectorOptions(type, itemOrContext) {
 
 function getAutoGearSelectorLabel(type) {
   const normalizedType = normalizeAutoGearSelectorType(type);
-  const langTexts = texts[currentLang] || texts.en || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   if (normalizedType === 'monitor') {
     return langTexts.autoGearSelectorMonitorOption
-      || texts.en?.autoGearSelectorMonitorOption
+      || fallbackTexts.autoGearSelectorMonitorOption
       || 'Monitor selector';
   }
   if (normalizedType === 'directorMonitor') {
     return langTexts.autoGearSelectorDirectorOption
-      || texts.en?.autoGearSelectorDirectorOption
+      || fallbackTexts.autoGearSelectorDirectorOption
       || 'Director monitor selector';
   }
   if (normalizedType === 'tripodHeadBrand') {
     return langTexts.autoGearSelectorTripodHeadOption
-      || texts.en?.autoGearSelectorTripodHeadOption
+      || fallbackTexts.autoGearSelectorTripodHeadOption
       || 'Tripod head selector';
   }
   if (normalizedType === 'tripodBowl') {
     return langTexts.autoGearSelectorTripodBowlOption
-      || texts.en?.autoGearSelectorTripodBowlOption
+      || fallbackTexts.autoGearSelectorTripodBowlOption
       || 'Tripod bowl selector';
   }
   if (normalizedType === 'tripodTypes') {
     return langTexts.autoGearSelectorTripodTypesOption
-      || texts.en?.autoGearSelectorTripodTypesOption
+      || fallbackTexts.autoGearSelectorTripodTypesOption
       || 'Tripod type selector';
   }
   if (normalizedType === 'tripodSpreader') {
     return langTexts.autoGearSelectorTripodSpreaderOption
-      || texts.en?.autoGearSelectorTripodSpreaderOption
+      || fallbackTexts.autoGearSelectorTripodSpreaderOption
       || 'Tripod spreader selector';
   }
   if (normalizedType === 'fizHandUnit') {
     return langTexts.autoGearSelectorFizHandUnitOption
-      || texts.en?.autoGearSelectorFizHandUnitOption
+      || fallbackTexts.autoGearSelectorFizHandUnitOption
       || 'FIZ hand unit selector';
   }
   return langTexts.autoGearSelectorNoneOption
-    || texts.en?.autoGearSelectorNoneOption
+    || fallbackTexts.autoGearSelectorNoneOption
     || 'No selector';
 }
 
 function getAutoGearSelectorScrollHint() {
-  const langTexts = texts[currentLang] || texts.en || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   return langTexts.autoGearSelectorScrollHint
-    || texts.en?.autoGearSelectorScrollHint
+    || fallbackTexts.autoGearSelectorScrollHint
     || 'Scroll to see more devices.';
 }
 
 function getAutoGearSelectorDefaultPlaceholder() {
-  const langTexts = texts[currentLang] || texts.en || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   return langTexts.autoGearSelectorDefaultPlaceholder
-    || texts.en?.autoGearSelectorDefaultPlaceholder
+    || fallbackTexts.autoGearSelectorDefaultPlaceholder
     || 'Choose a default device';
 }
 
 function getAutoGearMonitorDefaultPlaceholder() {
-  const langTexts = texts[currentLang] || texts.en || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   return langTexts.autoGearMonitorDefaultPlaceholder
-    || texts.en?.autoGearMonitorDefaultPlaceholder
+    || fallbackTexts.autoGearMonitorDefaultPlaceholder
     || 'Use recommended automatically';
 }
 
@@ -5151,15 +5179,16 @@ function updateAutoGearItemButtonState(type) {
   const normalizedType = type === 'remove' ? 'remove' : 'add';
   const button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
   if (!button) return;
-  const langTexts = texts[currentLang] || texts.en || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   const isEditing = autoGearEditorActiveItem?.listType === normalizedType;
   const defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
   const defaultLabel = langTexts[defaultKey]
-    || texts.en?.[defaultKey]
+    || fallbackTexts[defaultKey]
     || button.textContent
     || '';
   const updateLabel = langTexts.autoGearUpdateItemButton
-    || texts.en?.autoGearUpdateItemButton
+    || fallbackTexts.autoGearUpdateItemButton
     || defaultLabel;
   const label = isEditing ? updateLabel : defaultLabel;
   const glyph = isEditing
@@ -6306,9 +6335,11 @@ function formatOwnGearQuantityText(quantity) {
   return trimmed;
 }
 
-function formatOwnGearCountText(count, langTexts) {
+function formatOwnGearCountText(count, langTexts, fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE)) {
   const templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
-  const template = langTexts[templateKey] || texts[DEFAULT_LANGUAGE]?.[templateKey] || '';
+  const template = (langTexts && langTexts[templateKey])
+    || (fallbackTexts && fallbackTexts[templateKey])
+    || '';
   if (!template) {
     return count > 0 ? String(count) : '';
   }
@@ -6322,7 +6353,7 @@ function updateOwnGearSummary() {
   if (!ownGearListSummary) {
     return;
   }
-  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(currentLang);
   const summary = formatOwnGearCountText(ownGearItems.length, langTexts);
   if (summary) {
     ownGearListSummary.textContent = summary;
@@ -6579,7 +6610,7 @@ function renderOwnGearList() {
     return;
   }
   ownGearListElem.innerHTML = '';
-  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(currentLang);
   if (!ownGearItems.length) {
     if (ownGearEmptyState) {
       ownGearEmptyState.removeAttribute('hidden');
@@ -6678,12 +6709,13 @@ function updateOwnGearSaveButtonState() {
   if (!ownGearSaveButton) {
     return;
   }
-  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   if (ownGearEditingId) {
-    const label = langTexts.ownGearUpdateButton || 'Update item';
+    const label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
     setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
   } else {
-    const label = langTexts.ownGearSaveButton || 'Save item';
+    const label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
     setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.add);
   }
 }
@@ -6712,11 +6744,14 @@ function handleOwnGearSubmit(event) {
   if (!ownGearNameInput) {
     return;
   }
-  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   const rawName = ownGearNameInput.value || '';
   const trimmedName = rawName.trim();
   if (!trimmedName) {
-    const message = langTexts.ownGearNameRequired || 'Enter an item name to continue.';
+    const message = langTexts.ownGearNameRequired
+      || fallbackTexts.ownGearNameRequired
+      || 'Enter an item name to continue.';
     ownGearNameInput.setCustomValidity(message);
     ownGearNameInput.reportValidity();
     return;
@@ -6726,7 +6761,9 @@ function handleOwnGearSubmit(event) {
   const quantityResult = normalizeOwnGearQuantityInput(ownGearQuantityInput ? ownGearQuantityInput.value : '');
   if (!quantityResult.valid) {
     if (ownGearQuantityInput) {
-      const message = langTexts.ownGearQuantityInvalid || 'Enter a non-negative quantity.';
+      const message = langTexts.ownGearQuantityInvalid
+        || fallbackTexts.ownGearQuantityInvalid
+        || 'Enter a non-negative quantity.';
       ownGearQuantityInput.setCustomValidity(message);
       ownGearQuantityInput.reportValidity();
     }
@@ -6813,7 +6850,7 @@ function removeOwnGearItem(id) {
     return;
   }
   const item = ownGearItems[index];
-  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(currentLang);
   const confirmTemplate = langTexts.ownGearDeleteConfirm || 'Remove “%s” from your gear list?';
   let confirmMessage = confirmTemplate;
   if (confirmTemplate.includes('%s')) {
@@ -6853,15 +6890,16 @@ function openOwnGearDialog() {
 }
 
 function applyOwnGearLocalization(lang) {
-  const langTexts = texts[lang] || texts[DEFAULT_LANGUAGE] || {};
+  const langTexts = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
   if (ownGearDialog) {
     const title = document.getElementById('ownGearDialogHeading');
     if (title) {
-      title.textContent = langTexts.ownGearDialogTitle || 'Own gear';
+      title.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
     }
     const description = document.getElementById('ownGearDialogDescription');
     if (description) {
-      const text = langTexts.ownGearDialogDescription || '';
+      const text = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
       description.textContent = text;
       if (text) {
         description.setAttribute('data-help', text);
@@ -6872,10 +6910,10 @@ function applyOwnGearLocalization(lang) {
   }
   const addHeading = document.getElementById('ownGearAddHeading');
   if (addHeading) {
-    addHeading.textContent = langTexts.ownGearAddHeading || 'Add gear';
+    addHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
   }
   if (ownGearAddHelp) {
-    const helpText = langTexts.ownGearAddHelp || '';
+    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHelp', '');
     ownGearAddHelp.textContent = helpText;
     if (helpText) {
       ownGearAddHelp.removeAttribute('hidden');
@@ -6887,66 +6925,72 @@ function applyOwnGearLocalization(lang) {
   }
   const nameLabel = document.getElementById('ownGearNameLabel');
   if (nameLabel) {
-    nameLabel.textContent = langTexts.ownGearNameLabel || 'Item';
+    nameLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
   }
   if (ownGearNameInput) {
-    if (langTexts.ownGearNamePlaceholder) {
-      ownGearNameInput.setAttribute('placeholder', langTexts.ownGearNamePlaceholder);
+    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
+    if (placeholder) {
+      ownGearNameInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearNameInput.removeAttribute('placeholder');
     }
-    if (langTexts.ownGearNameHelp) {
-      ownGearNameInput.setAttribute('data-help', langTexts.ownGearNameHelp);
+    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameHelp', '');
+    if (helpText) {
+      ownGearNameInput.setAttribute('data-help', helpText);
     } else {
       ownGearNameInput.removeAttribute('data-help');
     }
   }
   const quantityLabel = document.getElementById('ownGearQuantityLabel');
   if (quantityLabel) {
-    quantityLabel.textContent = langTexts.ownGearQuantityLabel || 'Quantity';
+    quantityLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
   }
   if (ownGearQuantityInput) {
-    if (langTexts.ownGearQuantityPlaceholder) {
-      ownGearQuantityInput.setAttribute('placeholder', langTexts.ownGearQuantityPlaceholder);
+    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
+    if (placeholder) {
+      ownGearQuantityInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearQuantityInput.removeAttribute('placeholder');
     }
-    if (langTexts.ownGearQuantityHelp) {
-      ownGearQuantityInput.setAttribute('data-help', langTexts.ownGearQuantityHelp);
+    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
+    if (helpText) {
+      ownGearQuantityInput.setAttribute('data-help', helpText);
     } else {
       ownGearQuantityInput.removeAttribute('data-help');
     }
   }
   const notesLabel = document.getElementById('ownGearNotesLabel');
   if (notesLabel) {
-    notesLabel.textContent = langTexts.ownGearNotesLabel || 'Notes';
+    notesLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
   }
   if (ownGearNotesInput) {
-    if (langTexts.ownGearNotesPlaceholder) {
-      ownGearNotesInput.setAttribute('placeholder', langTexts.ownGearNotesPlaceholder);
+    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
+    if (placeholder) {
+      ownGearNotesInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearNotesInput.removeAttribute('placeholder');
     }
-    if (langTexts.ownGearNotesHelp) {
-      ownGearNotesInput.setAttribute('data-help', langTexts.ownGearNotesHelp);
+    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
+    if (helpText) {
+      ownGearNotesInput.setAttribute('data-help', helpText);
     } else {
       ownGearNotesInput.removeAttribute('data-help');
     }
   }
   if (ownGearResetButton) {
-    const label = langTexts.ownGearResetButton || 'Reset';
+    const label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
     setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
   }
   if (ownGearCloseButton) {
-    const label = langTexts.ownGearCloseButton || 'Close';
+    const label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
     setButtonLabelWithIcon(ownGearCloseButton, label, ICON_GLYPHS.circleX);
   }
   const listHeading = document.getElementById('ownGearListHeading');
   if (listHeading) {
-    listHeading.textContent = langTexts.ownGearListHeading || 'Your gear';
+    listHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
   }
   if (ownGearEmptyState) {
-    ownGearEmptyState.textContent = langTexts.ownGearListEmpty || 'No gear saved yet.';
+    ownGearEmptyState.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
   }
   updateOwnGearSaveButtonState();
   renderOwnGearList();
@@ -8050,11 +8094,18 @@ function updateViewfinderExtensionVisibility() {
 function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
   if (!label) return;
-  label.setAttribute('data-help', texts[currentLang].batterySelectHelp);
-  if (getSelectedPlate() === 'B-Mount') {
-    label.textContent = texts[currentLang].batteryBMountLabel || 'B-Mount Battery:';
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+  const helpText = resolveTextEntry(langTexts, fallbackTexts, 'batterySelectHelp', '');
+  if (helpText) {
+    label.setAttribute('data-help', helpText);
   } else {
-    label.textContent = texts[currentLang].batteryLabel;
+    label.removeAttribute('data-help');
+  }
+  if (getSelectedPlate() === 'B-Mount') {
+    label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
+  } else {
+    label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
   }
 }
 
@@ -8250,6 +8301,9 @@ function checkFizCompatibility() {
   const compatElem = document.getElementById('compatWarning');
   if (!compatElem) return;
 
+  const langTexts = getLanguageTexts(currentLang);
+  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+
   let incompatible = false;
   const arr = Array.from(brands);
 
@@ -8267,7 +8321,8 @@ function checkFizCompatibility() {
   }
 
   if (incompatible) {
-    setStatusMessage(compatElem, texts[currentLang].incompatibleFIZWarning);
+    const warning = resolveTextEntry(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
+    setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
   } else {
     setStatusMessage(compatElem, '');
@@ -8293,7 +8348,10 @@ function checkFizController() {
   });
   const hasRemoteController = controllers.some(n => /ria-1|umc-4|cforce.*rf/i.test(n)) || motors.some(n => /cforce.*rf/i.test(n));
   if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
-    setStatusMessage(compatElem, texts[currentLang].amiraCforceRemoteWarning);
+    const langTexts = getLanguageTexts(currentLang);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const warning = resolveTextEntry(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
+    setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
     return;
   }
@@ -8321,7 +8379,10 @@ function checkFizController() {
   });
 
   if (needController && !hasController) {
-    setStatusMessage(compatElem, texts[currentLang].missingFIZControllerWarning);
+    const langTexts = getLanguageTexts(currentLang);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const warning = resolveTextEntry(langTexts, fallbackTexts, 'missingFIZControllerWarning', '');
+    setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
   }
 }
@@ -8362,24 +8423,27 @@ function checkArriCompatibility() {
   const clmRegex = /CLM-[345]/i;
   const hasCLM = motors.some(m => clmRegex.test(m));
   if (hasCLM && !usesUMC4) {
-    msg = texts[currentLang].arriCLMNoUMC4Warning;
+    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
   } else if (usesUMC4 && motors.some(m => !clmRegex.test(m))) {
-    msg = texts[currentLang].arriUMC4Warning;
+    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
   } else if ((usesRIA1 || usesRF) && motors.some(m => clmRegex.test(m))) {
-    msg = texts[currentLang].arriRIA1Warning;
+    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
   } else if (
     distance &&
     distance !== 'None' &&
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
-    msg = texts[currentLang].distanceControllerWarning;
+    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
   } else if (onlyMasterGrip && !usesRF) {
-    msg = texts[currentLang].masterGripWirelessWarning;
+    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
   }
 
   if (msg) {
     setStatusMessage(compatElem, msg);
-    if (msg === texts[currentLang].arriUMC4Warning) {
+    const langTexts = getLanguageTexts(currentLang);
+    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    const umcWarning = resolveTextEntry(langTexts, fallbackTexts, 'arriUMC4Warning', '');
+    if (msg === umcWarning && umcWarning) {
       setStatusLevel(compatElem, 'warning');
     } else {
       setStatusLevel(compatElem, 'danger');
