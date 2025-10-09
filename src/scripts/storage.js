@@ -3596,7 +3596,18 @@ function maybeDecompressStoredString(raw, options) {
 }
 
 function attemptStorageCompressionSweep(storage, options) {
-  if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+  if (
+    !storage
+    || typeof storage.length !== 'number'
+    || typeof storage.key !== 'function'
+  ) {
+    return { success: false, compressed: 0, freed: 0 };
+  }
+
+  if (isSessionStorageInstance(storage)) {
+    // Session storage entries are intentionally left uncompressed to prioritize
+    // short-lived data integrity over quota recoveries. Compressing them risks
+    // losing user context during transient errors, so skip sweeps entirely.
     return { success: false, compressed: 0, freed: 0 };
   }
 
