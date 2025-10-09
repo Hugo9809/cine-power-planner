@@ -3352,7 +3352,25 @@ function finalizeDeviceSchemaLoad(candidate) {
     deviceSchema = cachedDeviceSchema || {};
   }
 
-  populateCategoryOptions();
+  schedulePopulateCategoryOptions();
+}
+
+function schedulePopulateCategoryOptions() {
+  const triggerPopulate = () => {
+    try {
+      populateCategoryOptions();
+    } catch (error) {
+      console.error('populateCategoryOptions failed during scheduled execution', error);
+    }
+  };
+
+  if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+    window.setTimeout(triggerPopulate, 0);
+  } else if (typeof setTimeout === 'function') {
+    setTimeout(triggerPopulate, 0);
+  } else {
+    triggerPopulate();
+  }
 }
 
 const cachedDeviceSchema = loadCachedDeviceSchema();
@@ -7070,11 +7088,23 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     initializeContactsModule();
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runLayoutInitialization, { once: true });
-  } else {
-    runLayoutInitialization();
-  }
+  const scheduleLayoutInitialization = () => {
+    const invoke = () => {
+      if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+        window.setTimeout(runLayoutInitialization, 0);
+      } else {
+        runLayoutInitialization();
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', invoke, { once: true });
+    } else {
+      invoke();
+    }
+  };
+
+  scheduleLayoutInitialization();
 }
 
 /**
@@ -14294,6 +14324,14 @@ function updateSelectIconBoxes(sel) {
   });
 }
 
+try {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.updateSelectIconBoxes !== 'function') {
+    globalThis.updateSelectIconBoxes = updateSelectIconBoxes;
+  }
+} catch (assignSelectIconError) {
+  console.warn('Failed to expose updateSelectIconBoxes globally', assignSelectIconError);
+}
+
 setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
   if (!button) return;
   const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
@@ -14393,6 +14431,19 @@ function createHiddenLabel(forId, text) {
   label.setAttribute('for', forId);
   label.textContent = typeof text === 'string' ? text : '';
   return label;
+}
+
+try {
+  if (typeof globalThis !== 'undefined') {
+    if (typeof globalThis.ensureElementId !== 'function') {
+      globalThis.ensureElementId = ensureElementId;
+    }
+    if (typeof globalThis.createHiddenLabel !== 'function') {
+      globalThis.createHiddenLabel = createHiddenLabel;
+    }
+  }
+} catch (globalAssignError) {
+  console.warn('Failed to expose accessibility helpers globally', globalAssignError);
 }
 
 function getProjectFormText(key, defaultValue = '') {
