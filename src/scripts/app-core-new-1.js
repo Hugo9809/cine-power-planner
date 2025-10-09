@@ -6036,6 +6036,28 @@ function setupResponsiveControls() {
   relocate();
 }
 
+var gearItemTranslations = {};
+// Load translations when not already present (mainly for tests)
+if (typeof texts === 'undefined') {
+  try {
+    const translations = require('./translations.js');
+    window.texts = translations.texts;
+    window.categoryNames = translations.categoryNames;
+    window.gearItems = translations.gearItems;
+    gearItemTranslations = translations.gearItems || {};
+  } catch (e) {
+    console.warn('Failed to load translations', e);
+  }
+} else {
+  gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
+}
+
+const DEFAULT_LANGUAGE = "en";
+const SUPPORTED_LANGUAGES =
+  typeof texts === "object" && texts !== null
+    ? Object.keys(texts)
+    : [DEFAULT_LANGUAGE];
+
 let ownGearItems = [];
 let ownGearEditingId = null;
 let ownGearDialog = null;
@@ -8381,29 +8403,6 @@ function checkArriCompatibility() {
     }
   }
 }
-
-var gearItemTranslations = {};
-// Load translations when not already present (mainly for tests)
-if (typeof texts === 'undefined') {
-  try {
-    const translations = require('./translations.js');
-    window.texts = translations.texts;
-    window.categoryNames = translations.categoryNames;
-    window.gearItems = translations.gearItems;
-    gearItemTranslations = translations.gearItems || {};
-  } catch (e) {
-    console.warn('Failed to load translations', e);
-  }
-} else {
-  gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
-}
-
-
-const DEFAULT_LANGUAGE = "en";
-const SUPPORTED_LANGUAGES =
-  typeof texts === "object" && texts !== null
-    ? Object.keys(texts)
-    : [DEFAULT_LANGUAGE];
 
 function resolveLanguagePreference(candidate) {
   if (!candidate) {
