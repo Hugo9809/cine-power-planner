@@ -6233,6 +6233,236 @@ function createOwnGearActionButton(label, icon, onClick, options = {}) {
   return button;
 }
 
+var ICON_FONT_KEYS = Object.freeze({
+  ESSENTIAL: 'essential',
+  FILM: 'film',
+  GADGET: 'gadget',
+  UICONS: 'uicons',
+  TEXT: 'text'
+});
+
+const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
+
+function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
+  const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+  return Object.freeze({ char, font: normalizedFont });
+}
+
+function resolveIconGlyph(glyph) {
+  if (!glyph) {
+    return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
+  }
+  if (glyph.markup) {
+    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    return {
+      markup: glyph.markup,
+      className: glyph.className || '',
+      font: ICON_FONT_KEYS.UICONS,
+      size
+    };
+  }
+  if (typeof glyph === 'string') {
+    return { char: glyph, font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
+  }
+  if (typeof glyph === 'object') {
+    const char = typeof glyph.char === 'string' ? glyph.char : '';
+    const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
+      ? glyph.font
+      : ICON_FONT_KEYS.UICONS;
+    const className = typeof glyph.className === 'string' ? glyph.className : '';
+    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    if (glyph.markup) {
+      return {
+        markup: glyph.markup,
+        className,
+        font: fontKey,
+        size
+      };
+    }
+    return { char, font: fontKey, className, size };
+  }
+  return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
+}
+
+function applyIconGlyph(element, glyph) {
+  if (!element) return;
+  const resolved = resolveIconGlyph(glyph);
+  if (resolved.markup) {
+    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+    element.setAttribute('aria-hidden', 'true');
+    if (resolved.className) {
+      resolved.className
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach(cls => element.classList.add(cls));
+    }
+    element.removeAttribute('data-icon-font');
+    return;
+  }
+  const char = resolved.char || '';
+  element.textContent = char;
+  if (char) {
+    element.setAttribute('data-icon-font', resolved.font);
+  } else {
+    element.removeAttribute('data-icon-font');
+  }
+}
+
+function formatSvgCoordinate(value) {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Math.round(value * 100) / 100;
+  if (Number.isInteger(rounded)) return String(rounded);
+  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+function positionSvgMarkup(markup, centerX, centerY, size = 24) {
+  if (typeof markup !== 'string') {
+    return { markup: '', x: '0', y: '0' };
+  }
+  const trimmed = markup.trim();
+  if (!trimmed) {
+    return { markup: '', x: '0', y: '0' };
+  }
+  const half = size / 2;
+  const x = formatSvgCoordinate(centerX);
+  const y = formatSvgCoordinate(centerY);
+  const width = formatSvgCoordinate(size);
+  const height = formatSvgCoordinate(size);
+  const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
+    let attrText = attrs
+      .replace(/\s+x\s*=\s*"[^"]*"/gi, '')
+      .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
+      .trim();
+    const additions = [];
+    const hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+    const hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+    if (!hasWidth) additions.push(`width="${width}"`);
+    if (!hasHeight) additions.push(`height="${height}"`);
+    additions.push(`x="-${formatSvgCoordinate(half)}"`);
+    additions.push(`y="-${formatSvgCoordinate(half)}"`);
+    attrText = [attrText, ...additions].filter(Boolean).join(' ').trim();
+    return attrText ? `<svg ${attrText}>` : '<svg>';
+  });
+  return { markup: cleaned, x, y };
+}
+
+function glyphText(glyph) {
+  const resolved = resolveIconGlyph(glyph);
+  return resolved.char || '';
+}
+
+const PRODUCTION_COMPANY_ICON = iconGlyph('\\uE2D5', ICON_FONT_KEYS.UICONS);
+const RENTAL_HOUSE_ICON = iconGlyph('\\uEA09', ICON_FONT_KEYS.UICONS);
+const ASPECT_RATIO_ICON = iconGlyph('\\uE86E', ICON_FONT_KEYS.UICONS);
+const REQUIRED_SCENARIOS_ICON = iconGlyph('\\uF4D4', ICON_FONT_KEYS.UICONS);
+const MONITORING_SUPPORT_ICON = iconGlyph('\\uEFFC', ICON_FONT_KEYS.UICONS);
+
+const STAR_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z"
+      fill="currentColor"
+      stroke="currentColor"
+      stroke-width="0"
+    />
+  </svg>
+`.trim();
+
+var ICON_GLYPHS = Object.freeze({
+  batteryBolt: iconGlyph('\\uE1A6', ICON_FONT_KEYS.UICONS),
+  batteryFull: iconGlyph('\\uE1A9', ICON_FONT_KEYS.UICONS),
+  bolt: iconGlyph('\\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
+  plug: iconGlyph('\\uEE75', ICON_FONT_KEYS.UICONS),
+  sliders: iconGlyph('\\uF143', ICON_FONT_KEYS.ESSENTIAL),
+  screen: iconGlyph('\\uF11D', ICON_FONT_KEYS.GADGET),
+  brightness: iconGlyph('\\uE2B3', ICON_FONT_KEYS.UICONS),
+  wifi: iconGlyph('\\uF4AC', ICON_FONT_KEYS.UICONS),
+  gears: iconGlyph('\\uE8AF', ICON_FONT_KEYS.UICONS),
+  controller: iconGlyph('\\uF117', ICON_FONT_KEYS.GADGET),
+  distance: iconGlyph('\\uEFB9', ICON_FONT_KEYS.UICONS),
+  sensor: iconGlyph('\\uEC2B', ICON_FONT_KEYS.UICONS),
+  viewfinder: iconGlyph('\\uF114', ICON_FONT_KEYS.FILM),
+  camera: iconGlyph('\\uE333', ICON_FONT_KEYS.UICONS),
+  trash: iconGlyph('\\uF254', ICON_FONT_KEYS.ESSENTIAL),
+  reload: iconGlyph('\\uF202', ICON_FONT_KEYS.ESSENTIAL),
+  load: iconGlyph('\\uE0E0', ICON_FONT_KEYS.UICONS),
+  installApp: iconGlyph('\\uE9D4', ICON_FONT_KEYS.UICONS),
+  add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
+  minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
+  arrowLeft: Object.freeze({ char: '←', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
+  check: iconGlyph('\\uE3D8', ICON_FONT_KEYS.UICONS),
+  fileExport: iconGlyph('\\uE7AB', ICON_FONT_KEYS.UICONS),
+  fileImport: iconGlyph('\\uE7C7', ICON_FONT_KEYS.UICONS),
+  save: iconGlyph('\\uF207', ICON_FONT_KEYS.ESSENTIAL),
+  share: iconGlyph('\\uF219', ICON_FONT_KEYS.ESSENTIAL),
+  paperPlane: iconGlyph('\\uED67', ICON_FONT_KEYS.UICONS),
+  magnet: iconGlyph('\\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
+  codec: iconGlyph('\\uE4CD', ICON_FONT_KEYS.UICONS),
+  timecode: iconGlyph('\\uF10E', ICON_FONT_KEYS.FILM),
+  audioIn: iconGlyph('\\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
+  audioOut: iconGlyph('\\uF22F', ICON_FONT_KEYS.ESSENTIAL),
+  note: iconGlyph('\\uF13E', ICON_FONT_KEYS.ESSENTIAL),
+  overview: iconGlyph('\\uF1F5', ICON_FONT_KEYS.UICONS),
+  gearList: iconGlyph('\\uE467', ICON_FONT_KEYS.UICONS),
+  feedback: iconGlyph('\\uE791', ICON_FONT_KEYS.UICONS),
+  resetView: iconGlyph('\\uEB6D', ICON_FONT_KEYS.UICONS),
+  pin: iconGlyph('\\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
+  sun: iconGlyph('\\uF1FE', ICON_FONT_KEYS.UICONS),
+  moon: iconGlyph('\\uEC7E', ICON_FONT_KEYS.UICONS),
+  circleX: iconGlyph('\\uF131', ICON_FONT_KEYS.ESSENTIAL),
+  settingsGeneral: iconGlyph('\\uE5A3', ICON_FONT_KEYS.UICONS),
+  settingsAutoGear: iconGlyph('\\uE8AF', ICON_FONT_KEYS.UICONS),
+  settingsAccessibility: iconGlyph('\\uF392', ICON_FONT_KEYS.UICONS),
+  settingsBackup: iconGlyph('\\uE5BD', ICON_FONT_KEYS.UICONS),
+  settingsData: iconGlyph('\\uE5C7', ICON_FONT_KEYS.UICONS),
+  settingsAbout: iconGlyph('\\uEA4F', ICON_FONT_KEYS.UICONS),
+  star: Object.freeze({
+    markup: STAR_ICON_SVG,
+    className: 'icon-svg favorite-star-icon'
+  }),
+  warning: iconGlyph('\\uF26F', ICON_FONT_KEYS.ESSENTIAL)
+});
+
+function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
+  if (!glyph) return '';
+  let opts = {};
+  let resolvedClassName = 'info-icon';
+  if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
+    resolvedClassName = classNameOrOptions || '';
+    if (options && typeof options === 'object') {
+      opts = options;
+    }
+  } else if (classNameOrOptions && typeof classNameOrOptions === 'object') {
+    opts = classNameOrOptions;
+    resolvedClassName = classNameOrOptions.className || 'info-icon';
+  }
+  if (typeof opts.className === 'string') {
+    resolvedClassName = opts.className;
+  }
+  const styleParts = [];
+  if (typeof opts.size === 'string' && opts.size.trim()) {
+    styleParts.push(`--icon-size: ${opts.size.trim()}`);
+  }
+  if (typeof opts.scale === 'string' && opts.scale.trim()) {
+    styleParts.push(`--icon-scale: ${opts.scale.trim()}`);
+  }
+  if (typeof opts.style === 'string' && opts.style.trim()) {
+    styleParts.push(opts.style.trim());
+  }
+  const styleAttr = styleParts.length ? ` style="${styleParts.join(';')}"` : '';
+  const resolved = resolveIconGlyph(glyph);
+  const classes = ['icon-glyph'];
+  if (resolvedClassName) classes.unshift(resolvedClassName);
+  if (resolved.markup) {
+    if (resolved.className) classes.push(resolved.className);
+    const markup = ensureSvgHasAriaHidden(resolved.markup);
+    return `<span class="${classes.join(' ')}"${styleAttr} aria-hidden="true">${markup}</span>`;
+  }
+  const char = resolved.char || '';
+  if (!char) return '';
+  return `<span class="${classes.join(' ')}"${styleAttr} data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
+}
+
 function renderOwnGearList() {
   if (!ownGearListElem) {
     return;
@@ -12172,236 +12402,6 @@ var crewRoles = [
   'Dolly Grip',
   'Rigging Grip'
 ];
-
-var ICON_FONT_KEYS = Object.freeze({
-  ESSENTIAL: 'essential',
-  FILM: 'film',
-  GADGET: 'gadget',
-  UICONS: 'uicons',
-  TEXT: 'text'
-});
-
-const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
-
-function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
-  const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-  return Object.freeze({ char, font: normalizedFont });
-}
-
-function resolveIconGlyph(glyph) {
-  if (!glyph) {
-    return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
-  }
-  if (glyph.markup) {
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    return {
-      markup: glyph.markup,
-      className: glyph.className || '',
-      font: ICON_FONT_KEYS.UICONS,
-      size
-    };
-  }
-  if (typeof glyph === 'string') {
-    return { char: glyph, font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
-  }
-  if (typeof glyph === 'object') {
-    const char = typeof glyph.char === 'string' ? glyph.char : '';
-    const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
-      ? glyph.font
-      : ICON_FONT_KEYS.UICONS;
-    const className = typeof glyph.className === 'string' ? glyph.className : '';
-    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-    if (glyph.markup) {
-      return {
-        markup: glyph.markup,
-        className,
-        font: fontKey,
-        size
-      };
-    }
-    return { char, font: fontKey, className, size };
-  }
-  return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
-}
-
-function applyIconGlyph(element, glyph) {
-  if (!element) return;
-  const resolved = resolveIconGlyph(glyph);
-  if (resolved.markup) {
-    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-    element.setAttribute('aria-hidden', 'true');
-    if (resolved.className) {
-      resolved.className
-        .split(/\s+/)
-        .filter(Boolean)
-        .forEach(cls => element.classList.add(cls));
-    }
-    element.removeAttribute('data-icon-font');
-    return;
-  }
-  const char = resolved.char || '';
-  element.textContent = char;
-  if (char) {
-    element.setAttribute('data-icon-font', resolved.font);
-  } else {
-    element.removeAttribute('data-icon-font');
-  }
-}
-
-function formatSvgCoordinate(value) {
-  if (!Number.isFinite(value)) return '0';
-  const rounded = Math.round(value * 100) / 100;
-  if (Number.isInteger(rounded)) return String(rounded);
-  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-}
-
-function positionSvgMarkup(markup, centerX, centerY, size = 24) {
-  if (typeof markup !== 'string') {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const trimmed = markup.trim();
-  if (!trimmed) {
-    return { markup: '', x: '0', y: '0' };
-  }
-  const half = size / 2;
-  const x = formatSvgCoordinate(centerX);
-  const y = formatSvgCoordinate(centerY);
-  const width = formatSvgCoordinate(size);
-  const height = formatSvgCoordinate(size);
-  const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
-    let attrText = attrs
-      .replace(/\s+x\s*=\s*"[^"]*"/gi, '')
-      .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
-      .trim();
-    const additions = [];
-    const hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
-    const hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
-    if (!hasWidth) additions.push(`width="${width}"`);
-    if (!hasHeight) additions.push(`height="${height}"`);
-    additions.push(`x="-${formatSvgCoordinate(half)}"`);
-    additions.push(`y="-${formatSvgCoordinate(half)}"`);
-    attrText = [attrText, ...additions].filter(Boolean).join(' ').trim();
-    return attrText ? `<svg ${attrText}>` : '<svg>';
-  });
-  return { markup: cleaned, x, y };
-}
-
-function glyphText(glyph) {
-  const resolved = resolveIconGlyph(glyph);
-  return resolved.char || '';
-}
-
-const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
-const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
-const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
-const REQUIRED_SCENARIOS_ICON = iconGlyph('\uF4D4', ICON_FONT_KEYS.UICONS);
-const MONITORING_SUPPORT_ICON = iconGlyph('\uEFFC', ICON_FONT_KEYS.UICONS);
-
-const STAR_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z"
-      fill="currentColor"
-      stroke="currentColor"
-      stroke-width="0"
-    />
-  </svg>
-`.trim();
-
-var ICON_GLYPHS = Object.freeze({
-  batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
-  batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
-  bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
-  plug: iconGlyph('\uEE75', ICON_FONT_KEYS.UICONS),
-  sliders: iconGlyph('\uF143', ICON_FONT_KEYS.ESSENTIAL),
-  screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
-  brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
-  wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-  controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
-  distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph('\uEC2B', ICON_FONT_KEYS.UICONS),
-  viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
-  camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
-  trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
-  reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
-  load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
-  installApp: iconGlyph('\uE9D4', ICON_FONT_KEYS.UICONS),
-  add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  arrowLeft: Object.freeze({ char: '←', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
-  check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
-  fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
-  fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
-  save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
-  share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
-  paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
-  magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
-  codec: iconGlyph('\uE4CD', ICON_FONT_KEYS.UICONS),
-  timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
-  audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
-  audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
-  gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
-  feedback: iconGlyph('\uE791', ICON_FONT_KEYS.UICONS),
-  resetView: iconGlyph('\uEB6D', ICON_FONT_KEYS.UICONS),
-  pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
-  moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
-  circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
-  settingsGeneral: iconGlyph('\uE5A3', ICON_FONT_KEYS.UICONS),
-  settingsAutoGear: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-  settingsAccessibility: iconGlyph('\uF392', ICON_FONT_KEYS.UICONS),
-  settingsBackup: iconGlyph('\uE5BD', ICON_FONT_KEYS.UICONS),
-  settingsData: iconGlyph('\uE5C7', ICON_FONT_KEYS.UICONS),
-  settingsAbout: iconGlyph('\uEA4F', ICON_FONT_KEYS.UICONS),
-  star: Object.freeze({
-    markup: STAR_ICON_SVG,
-    className: 'icon-svg favorite-star-icon'
-  }),
-  warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL)
-});
-
-function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
-  if (!glyph) return '';
-  let opts = {};
-  let resolvedClassName = 'info-icon';
-  if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
-    resolvedClassName = classNameOrOptions || '';
-    if (options && typeof options === 'object') {
-      opts = options;
-    }
-  } else if (classNameOrOptions && typeof classNameOrOptions === 'object') {
-    opts = classNameOrOptions;
-    resolvedClassName = classNameOrOptions.className || 'info-icon';
-  }
-  if (typeof opts.className === 'string') {
-    resolvedClassName = opts.className;
-  }
-  const styleParts = [];
-  if (typeof opts.size === 'string' && opts.size.trim()) {
-    styleParts.push(`--icon-size: ${opts.size.trim()}`);
-  }
-  if (typeof opts.scale === 'string' && opts.scale.trim()) {
-    styleParts.push(`--icon-scale: ${opts.scale.trim()}`);
-  }
-  if (typeof opts.style === 'string' && opts.style.trim()) {
-    styleParts.push(opts.style.trim());
-  }
-  const styleAttr = styleParts.length ? ` style="${styleParts.join(';')}"` : '';
-  const resolved = resolveIconGlyph(glyph);
-  const classes = ['icon-glyph'];
-  if (resolvedClassName) classes.unshift(resolvedClassName);
-  if (resolved.markup) {
-    if (resolved.className) classes.push(resolved.className);
-    const markup = ensureSvgHasAriaHidden(resolved.markup);
-    return `<span class="${classes.join(' ')}"${styleAttr} aria-hidden="true">${markup}</span>`;
-  }
-  const char = resolved.char || '';
-  if (!char) return '';
-  return `<span class="${classes.join(' ')}"${styleAttr} data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
-}
 
 const HORSE_ICON_SVG = `
   <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
