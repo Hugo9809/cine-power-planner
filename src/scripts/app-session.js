@@ -13632,6 +13632,109 @@ function populateEnvironmentDropdowns() {
 function populateLensDropdown() {
   if (!lensSelect) return;
 
+  const resolveFocusScaleMode = () => {
+    const scope =
+      (typeof globalThis !== 'undefined' && globalThis)
+      || (typeof window !== 'undefined' && window)
+      || (typeof self !== 'undefined' && self)
+      || (typeof global !== 'undefined' && global)
+      || null;
+    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+      ? scope.focusScalePreference
+      : null;
+    const fallbackPreference =
+      typeof sessionFocusScale !== 'undefined' && sessionFocusScale
+        ? sessionFocusScale
+        : typeof focusScalePreference === 'string'
+          ? focusScalePreference
+          : null;
+    const rawPreference = scopePreference || fallbackPreference || 'metric';
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        return normalizeFocusScale(rawPreference);
+      } catch (normalizeError) {
+        void normalizeError;
+      }
+    }
+    const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+    return normalized === 'imperial' ? 'imperial' : 'metric';
+  };
+  const focusScaleMode = resolveFocusScaleMode();
+  const useImperialFocusScale = focusScaleMode === 'imperial';
+  const { lang: focusScaleLang } = resolveCompatibilityTexts();
+  const formatLensNumber = (value, options = {}) => {
+    const numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
+      ? options.maximumFractionDigits
+      : 0;
+    const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
+      ? options.minimumFractionDigits
+      : Math.min(0, maximumFractionDigits);
+    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+      try {
+        return new Intl.NumberFormat(focusScaleLang, {
+          maximumFractionDigits,
+          minimumFractionDigits,
+        }).format(numeric);
+      } catch (formatError) {
+        void formatError;
+      }
+    }
+    const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+    try {
+      return numeric.toFixed(digits);
+    } catch (toFixedError) {
+      void toFixedError;
+    }
+    return String(numeric);
+  };
+  const formatLensWeight = (value) => {
+    const numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      const pounds = numeric / 453.59237;
+      const digits = pounds >= 10 ? 1 : 2;
+      const formatted = formatLensNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+      return formatted ? `${formatted} lb` : '';
+    }
+    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+    return formatted ? `${formatted} g` : '';
+  };
+  const formatLensDiameter = (value) => {
+    const numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      const inches = numeric / 25.4;
+      const digits = inches >= 10 ? 1 : 2;
+      const formatted = formatLensNumber(inches, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+      return formatted ? `${formatted} in` : '';
+    }
+    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+    return formatted ? `${formatted} mm` : '';
+  };
+  const formatLensMinFocus = (value) => {
+    const numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      const feet = numeric * 3.280839895;
+      const digits = feet < 10 ? 2 : 1;
+      const formatted = formatLensNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+      return formatted ? `${formatted} ft` : '';
+    }
+    const digits = numeric < 1 ? 2 : 1;
+    const formatted = formatLensNumber(numeric, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    return formatted ? `${formatted} m` : '';
+  };
+
   const lensData =
     (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
     || (devices && devices.accessories && devices.accessories.lenses)
@@ -13661,15 +13764,24 @@ function populateLensDropdown() {
     opt.value = name;
     const lens = lensData[name] || {};
     const attrs = [];
-    if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+    const formattedWeight = formatLensWeight(lens.weight_g);
+    if (formattedWeight) attrs.push(formattedWeight);
     if (lens.clampOn) {
-      if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+      if (lens.frontDiameterMm) {
+        const formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
+        attrs.push(formattedDiameter ? `${formattedDiameter} clamp-on` : 'clamp-on');
+      }
       else attrs.push('clamp-on');
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
     const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-    if (minFocus) attrs.push(`${minFocus}m min focus`);
+    if (Number.isFinite(minFocus) && minFocus > 0) {
+      const formattedMinFocus = formatLensMinFocus(minFocus);
+      if (formattedMinFocus) {
+        attrs.push(`${formattedMinFocus} min focus`);
+      }
+    }
     opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
     if (previousSelection.has(name)) {
       opt.selected = true;
