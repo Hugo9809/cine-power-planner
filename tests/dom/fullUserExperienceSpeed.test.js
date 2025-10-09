@@ -219,6 +219,25 @@ describe('full user experience speed test', () => {
     expect(Array.isArray(firstCustomGroup)).toBe(true);
     expect(firstCustomGroup[0]).toEqual({ quantity: '2', name: 'Spare Batteries' });
 
+    const strippedHtml = gearListOutput.innerHTML.replace(/<button[^>]*data-gear-custom-add[^>]*>.*?<\/button>/gis, '');
+    measure('restore gear list after stripping custom controls', () => {
+      utils.displayGearAndRequirements(strippedHtml);
+    });
+
+    const restoredAddButton = gearListOutput.querySelector('[data-gear-custom-add]');
+    expect(restoredAddButton).not.toBeNull();
+    const restoredLabel = restoredAddButton.querySelector('span');
+    expect(restoredLabel).not.toBeNull();
+    expect(restoredLabel.textContent.trim().length).toBeGreaterThan(0);
+
+    const restoredSection = gearListOutput.querySelector('.gear-custom-section');
+    expect(restoredSection).not.toBeNull();
+    expect(restoredSection.getAttribute('data-gear-custom-key')).toBeTruthy();
+    const restoredItemsContainer = restoredSection.querySelector('.gear-custom-items');
+    expect(restoredItemsContainer).not.toBeNull();
+    expect(restoredItemsContainer.getAttribute('data-gear-custom-list')).toBeTruthy();
+    expect(restoredItemsContainer.getAttribute('aria-live')).toBe('polite');
+
     measure('save current gear list', () => {
       utils.saveCurrentGearList();
     });

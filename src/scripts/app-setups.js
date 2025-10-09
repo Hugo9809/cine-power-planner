@@ -4700,6 +4700,100 @@ function enhanceGearListItems(container) {
   });
 }
 
+function ensureGearListCustomControls(container) {
+  const scope = container || gearListOutput;
+  if (!scope || typeof scope.querySelectorAll !== 'function') {
+    return;
+  }
+  const doc = scope.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+
+  scope.querySelectorAll('tbody.category-group').forEach(group => {
+    const header = group.querySelector('.gear-category-header');
+    if (!header) return;
+    const labelElement = header.querySelector('.gear-category-label');
+    const categoryLabel = labelElement && labelElement.textContent
+      ? labelElement.textContent.trim()
+      : header.textContent.trim();
+    if (!categoryLabel) return;
+
+    let categoryKey = group.getAttribute('data-gear-custom-key');
+    if (!categoryKey) {
+      categoryKey = createCustomCategoryKey(categoryLabel);
+      group.setAttribute('data-gear-custom-key', categoryKey);
+    }
+
+    const rows = Array.from(group.querySelectorAll('tr'));
+    const bodyRow = rows.find(row => !row.classList.contains('category-row'));
+    const bodyCell = bodyRow ? bodyRow.querySelector('td') : null;
+    if (!bodyCell) return;
+
+    let customSection = bodyCell.querySelector('.gear-custom-section');
+    if (!customSection) {
+      customSection = doc.createElement('div');
+      customSection.className = 'gear-custom-section';
+      bodyCell.appendChild(customSection);
+    }
+    customSection.setAttribute('data-gear-custom-key', categoryKey);
+    customSection.setAttribute('data-gear-custom-category', categoryLabel);
+
+    let itemsContainer = customSection.querySelector('.gear-custom-items');
+    if (!itemsContainer) {
+      itemsContainer = doc.createElement('div');
+      itemsContainer.className = 'gear-custom-items';
+      customSection.appendChild(itemsContainer);
+    }
+    itemsContainer.setAttribute('data-gear-custom-list', categoryKey);
+    itemsContainer.setAttribute('data-gear-custom-category', categoryLabel);
+    itemsContainer.setAttribute('aria-live', 'polite');
+
+    Array.from(bodyCell.children).forEach(child => {
+      if (child === customSection) return;
+      if (child.classList && child.classList.contains('gear-custom-item')) {
+        itemsContainer.appendChild(child);
+      }
+    });
+
+    const standardItems = bodyCell.querySelector('.gear-standard-items');
+    if (standardItems && standardItems.nextElementSibling !== customSection) {
+      standardItems.insertAdjacentElement('afterend', customSection);
+    } else if (!standardItems && customSection.parentElement !== bodyCell) {
+      bodyCell.appendChild(customSection);
+    }
+
+    let addButton = header.querySelector('[data-gear-custom-add]');
+    const addLabel = resolveGearListCustomText('gearListAddCustomItem', 'Add custom item');
+    const addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', {
+      category: categoryLabel,
+    });
+    if (!addButton) {
+      addButton = doc.createElement('button');
+      addButton.type = 'button';
+      addButton.className = 'gear-custom-add-btn';
+      header.appendChild(addButton);
+    }
+    addButton.setAttribute('data-gear-custom-add', categoryKey);
+    addButton.setAttribute('data-gear-custom-category', categoryLabel);
+    addButton.setAttribute('aria-label', addAria);
+
+    if (!addButton.querySelector('.btn-icon')) {
+      const addIconHtml = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
+        ? iconMarkup(ICON_GLYPHS.add, { className: 'btn-icon' })
+        : '';
+      if (addIconHtml) {
+        addButton.insertAdjacentHTML('afterbegin', addIconHtml);
+      }
+    }
+
+    let textSpan = addButton.querySelector('span');
+    if (!textSpan) {
+      textSpan = doc.createElement('span');
+      addButton.appendChild(textSpan);
+    }
+    textSpan.textContent = addLabel;
+  });
+}
+
 function buildGearItemEditContext() {
   return {
     dialog: resolveElementById('gearItemEditDialog', 'gearItemEditDialog'),
