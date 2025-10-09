@@ -5595,11 +5595,69 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEXT: 'text'
   });
   var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
+  function toCodePointChar(value, radix) {
+    var codePoint = parseInt(value, radix);
+    if (!Number.isFinite(codePoint) || codePoint < 0) {
+      return null;
+    }
+    try {
+      if (typeof String.fromCodePoint === 'function') {
+        return String.fromCodePoint(codePoint);
+      }
+    } catch (rangeError) {
+      void rangeError;
+    }
+    if (codePoint <= 0xffff) {
+      return String.fromCharCode(codePoint);
+    }
+    return null;
+  }
+
+  function normalizeGlyphChar(char) {
+    if (typeof char !== 'string') {
+      return '';
+    }
+    var trimmed = char.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
+    if (unicodeMatch) {
+      var decoded = toCodePointChar(unicodeMatch[1], 16);
+      if (decoded) {
+        return decoded;
+      }
+    }
+    var unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
+    if (unicodeBraceMatch) {
+      var _decoded = toCodePointChar(unicodeBraceMatch[1], 16);
+      if (_decoded) {
+        return _decoded;
+      }
+    }
+    var hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
+    if (hexEntityMatch) {
+      var _decoded2 = toCodePointChar(hexEntityMatch[1], 16);
+      if (_decoded2) {
+        return _decoded2;
+      }
+    }
+    var decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
+    if (decimalEntityMatch) {
+      var _decoded3 = toCodePointChar(decimalEntityMatch[1], 10);
+      if (_decoded3) {
+        return _decoded3;
+      }
+    }
+    return trimmed;
+  }
+
   function iconGlyph(char) {
     var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
     var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+    var normalizedChar = normalizeGlyphChar(char);
     return Object.freeze({
-      char: char,
+      char: normalizedChar,
       font: normalizedFont
     });
   }
@@ -5623,14 +5681,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     if (typeof glyph === 'string') {
       return {
-        char: glyph,
+        char: normalizeGlyphChar(glyph),
         font: ICON_FONT_KEYS.UICONS,
         className: '',
         size: undefined
       };
     }
     if (_typeof(glyph) === 'object') {
-      var char = typeof glyph.char === 'string' ? glyph.char : '';
+      var char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
       var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
       var className = typeof glyph.className === 'string' ? glyph.className : '';
       var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;

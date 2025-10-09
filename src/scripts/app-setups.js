@@ -8065,7 +8065,7 @@ const AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS = 'auto-gear-highlight-context';
 const ONBOARD_MONITOR_RIGGING_ITEM_NAME = 'ULCS Arm mit 3/8" und 1/4" double';
 const ONBOARD_MONITOR_RIGGING_ITEM_ID = 'autoGearMonitorRiggingItem';
 const ONBOARD_MONITOR_RIGGING_RULE_ID = 'autoGearMonitorRiggingHighlight';
-const AUTO_GEAR_HIGHLIGHT_ICON = '\uE8AF';
+const AUTO_GEAR_HIGHLIGHT_ICON = '';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
     'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';

@@ -7681,13 +7681,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         prefix = '';
       } else if (includeSign === false || includeSign === 'negative') {
         if (isNegative) {
-          prefix = '\u2013';
+          prefix = '–';
         }
       } else {
         if (isPositive) {
           prefix = '+';
         } else if (isNegative) {
-          prefix = '\u2013';
+          prefix = '–';
         }
       }
       const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);

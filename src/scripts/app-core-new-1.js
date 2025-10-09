@@ -2366,12 +2366,12 @@ function formatTemperatureForDisplay(celsius, options = {}) {
     prefix = '';
   } else if (includeSign === false || includeSign === 'negative') {
     if (isNegative) {
-      prefix = '\u2013';
+      prefix = '–';
     }
   } else if (isPositive) {
     prefix = '+';
   } else if (isNegative) {
-    prefix = '\u2013';
+    prefix = '–';
   }
   const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
   return `${prefix}${formatted} ${symbol}`;
@@ -6403,9 +6403,72 @@ var ICON_FONT_KEYS = Object.freeze({
 
 const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
 
+function toCodePointChar(value, radix) {
+  const codePoint = parseInt(value, radix);
+  if (!Number.isFinite(codePoint) || codePoint < 0) {
+    return null;
+  }
+  try {
+    if (typeof String.fromCodePoint === 'function') {
+      return String.fromCodePoint(codePoint);
+    }
+  } catch (rangeError) {
+    void rangeError;
+  }
+  if (codePoint <= 0xffff) {
+    return String.fromCharCode(codePoint);
+  }
+  return null;
+}
+
+function normalizeGlyphChar(char) {
+  if (typeof char !== 'string') {
+    return '';
+  }
+  const trimmed = char.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  const unicodeMatch = trimmed.match(/^(?:\\)+u([0-9A-Fa-f]{4})$/);
+  if (unicodeMatch) {
+    const decoded = toCodePointChar(unicodeMatch[1], 16);
+    if (decoded) {
+      return decoded;
+    }
+  }
+
+  const unicodeBraceMatch = trimmed.match(/^(?:\\)+u\{([0-9A-Fa-f]+)\}$/);
+  if (unicodeBraceMatch) {
+    const decoded = toCodePointChar(unicodeBraceMatch[1], 16);
+    if (decoded) {
+      return decoded;
+    }
+  }
+
+  const hexEntityMatch = trimmed.match(/^&#x([0-9A-Fa-f]+);$/i);
+  if (hexEntityMatch) {
+    const decoded = toCodePointChar(hexEntityMatch[1], 16);
+    if (decoded) {
+      return decoded;
+    }
+  }
+
+  const decimalEntityMatch = trimmed.match(/^&#(\d+);$/);
+  if (decimalEntityMatch) {
+    const decoded = toCodePointChar(decimalEntityMatch[1], 10);
+    if (decoded) {
+      return decoded;
+    }
+  }
+
+  return trimmed;
+}
+
 function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
   const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-  return Object.freeze({ char, font: normalizedFont });
+  const normalizedChar = normalizeGlyphChar(char);
+  return Object.freeze({ char: normalizedChar, font: normalizedFont });
 }
 
 function resolveIconGlyph(glyph) {
@@ -6422,10 +6485,15 @@ function resolveIconGlyph(glyph) {
     };
   }
   if (typeof glyph === 'string') {
-    return { char: glyph, font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
+    return {
+      char: normalizeGlyphChar(glyph),
+      font: ICON_FONT_KEYS.UICONS,
+      className: '',
+      size: undefined
+    };
   }
   if (typeof glyph === 'object') {
-    const char = typeof glyph.char === 'string' ? glyph.char : '';
+    const char = typeof glyph.char === 'string' ? normalizeGlyphChar(glyph.char) : '';
     const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
       ? glyph.font
       : ICON_FONT_KEYS.UICONS;
