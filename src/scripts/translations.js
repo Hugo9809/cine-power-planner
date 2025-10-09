@@ -70,6 +70,9 @@ const texts = {
     openHelpNav: "Help Center",
     openHelpNavHelp:
       "Open the in-app help guide with tutorials, troubleshooting tips and shortcuts.",
+    openContactsNav: "Contacts",
+    openContactsNavHelp:
+      "Open the contacts manager to reuse crew details, photos and communication info across projects.",
     setupManageHeadingHelp:
       "Manage saved projects: save, load, or clear configurations.",
     deviceSelectionHeadingHelp:
@@ -1376,7 +1379,13 @@ const texts = {
       crewRoleLabel: "Crew role",
       crewNameLabel: "Crew member name",
       crewPhoneLabel: "Crew member phone",
-      crewEmailLabel: "Crew member email"
+      crewEmailLabel: "Crew member email",
+      addContactButton: "Add from contacts",
+      manageContactsButton: "Manage contacts",
+      linkContactButton: "Link contact",
+      saveContactButton: "Save as contact",
+      unlinkContactButton: "Detach contact",
+      contactLinkedBadge: "Linked contact"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -1414,6 +1423,36 @@ const texts = {
       sliderBowl: "Slider Bowl",
       easyrig: "Further Stabilisation",
       storageRequirements: "Storage & Media"
+    },
+    contacts: {
+      dialogTitle: "Crew contacts",
+      dialogIntro:
+        "Store crew members as reusable contacts with phone numbers, emails, roles and profile pictures.",
+      linkNotice: "Select a contact to attach it to the highlighted crew row.",
+      emptyState: "No contacts saved yet.",
+      newContact: "New contact",
+      importButton: "Import vCard",
+      importDescription: "Import vCard (.vcf) files to add crew members in bulk.",
+      importResult: "Imported {count} contacts.",
+      importPartial: "Imported {imported} contacts; {skipped} were skipped because details were missing.",
+      importError: "The file could not be imported. Use a valid vCard (.vcf) file.",
+      save: "Save contact",
+      addToProject: "Add to project",
+      delete: "Delete contact",
+      deleteConfirmation: "Remove this contact? Linked crew rows keep their current details.",
+      contactSaved: "Contact saved.",
+      contactUpdated: "Contact updated.",
+      contactDeleted: "Contact deleted.",
+      contactLinked: "Contact linked to crew row.",
+      contactDetached: "Contact detached from crew row.",
+      photoUpload: "Upload photo",
+      photoRemove: "Remove photo",
+      photoTooLarge: "Please choose an image smaller than 300 KB.",
+      addToRow: "Use contact",
+      saveError: "Unable to save contacts.",
+      missingDetails: "Enter at least a name, phone or email.",
+      untitledContact: "Unnamed contact",
+      close: "Close contacts"
     },
     crewRoles: {
       "Producer": "Producer",
@@ -1773,6 +1812,9 @@ const texts = {
     openHelpNav: "Centro assistenza",
     openHelpNavHelp:
       "Apri la guida in-app con tutorial, suggerimenti per la risoluzione dei problemi e scorciatoie.",
+    openContactsNav: "Contatti",
+    openContactsNavHelp:
+      "Apri il gestore dei contatti per riutilizzare i dettagli della troupe in progetti futuri.",
     setupManageHeadingHelp:
       "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
     deviceSelectionHeadingHelp:
@@ -2256,7 +2298,13 @@ const texts = {
       crewRoleLabel: "Ruolo della troupe",
       crewNameLabel: "Nome membro della troupe",
       crewPhoneLabel: "Telefono membro della troupe",
-      crewEmailLabel: "Email membro della troupe"
+      crewEmailLabel: "Email membro della troupe",
+      addContactButton: "Aggiungi dai contatti",
+      manageContactsButton: "Gestisci contatti",
+      linkContactButton: "Collega contatto",
+      saveContactButton: "Salva come contatto",
+      unlinkContactButton: "Scollega contatto",
+      contactLinkedBadge: "Contatto collegato"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -2294,6 +2342,36 @@ const texts = {
       sliderBowl: "Slider bowl",
       easyrig: "Stabilizzazione aggiuntiva",
       storageRequirements: "Archiviazione e supporti"
+    },
+    contacts: {
+      dialogTitle: "Contatti troupe",
+      dialogIntro:
+        "Salva i membri della troupe come contatti riutilizzabili con numeri di telefono, email, ruoli e foto profilo.",
+      linkNotice: "Seleziona un contatto da collegare alla riga della troupe evidenziata.",
+      emptyState: "Nessun contatto salvato.",
+      newContact: "Nuovo contatto",
+      importButton: "Importa vCard",
+      importDescription: "Importa file vCard (.vcf) per aggiungere più contatti in una volta.",
+      importResult: "Importati {count} contatti.",
+      importPartial: "Importati {imported} contatti; {skipped} sono stati ignorati perché mancavano dati.",
+      importError: "Impossibile importare il file. Usa un vCard (.vcf) valido.",
+      save: "Salva contatto",
+      addToProject: "Aggiungi al progetto",
+      delete: "Elimina contatto",
+      deleteConfirmation: "Rimuovere questo contatto? Le righe collegate mantengono i dati attuali.",
+      contactSaved: "Contatto salvato.",
+      contactUpdated: "Contatto aggiornato.",
+      contactDeleted: "Contatto eliminato.",
+      contactLinked: "Contatto collegato alla riga.",
+      contactDetached: "Contatto scollegato dalla riga.",
+      photoUpload: "Carica foto",
+      photoRemove: "Rimuovi foto",
+      photoTooLarge: "Scegli un'immagine inferiore a 300 KB.",
+      addToRow: "Usa contatto",
+      saveError: "Impossibile salvare i contatti.",
+      missingDetails: "Inserisci almeno nome, telefono o email.",
+      untitledContact: "Contatto senza nome",
+      close: "Chiudi contatti"
     },
     crewRoles: {
       "Producer": "Produttore",
@@ -3463,6 +3541,9 @@ const texts = {
     openHelpNav: "Centro de ayuda",
     openHelpNavHelp:
       "Abrir la guía de ayuda integrada con tutoriales, consejos de resolución de problemas y atajos.",
+    openContactsNav: "Contactos",
+    openContactsNavHelp:
+      "Abre el gestor de contactos para reutilizar los datos del equipo en proyectos futuros.",
     setupManageHeadingHelp:
       "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp:
@@ -3959,7 +4040,13 @@ const texts = {
       crewRoleLabel: "Rol del equipo",
       crewNameLabel: "Nombre del miembro del equipo",
       crewPhoneLabel: "Teléfono del miembro del equipo",
-      crewEmailLabel: "Correo del miembro del equipo"
+      crewEmailLabel: "Correo del miembro del equipo",
+      addContactButton: "Añadir desde contactos",
+      manageContactsButton: "Gestionar contactos",
+      linkContactButton: "Vincular contacto",
+      saveContactButton: "Guardar como contacto",
+      unlinkContactButton: "Desvincular contacto",
+      contactLinkedBadge: "Contacto vinculado"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -3997,6 +4084,36 @@ const texts = {
       sliderBowl: "Bowl del slider",
       easyrig: "Estabilización adicional",
       storageRequirements: "Almacenamiento y soportes"
+    },
+    contacts: {
+      dialogTitle: "Contactos del equipo",
+      dialogIntro:
+        "Guarda miembros del equipo como contactos reutilizables con teléfonos, correos, roles y fotos.",
+      linkNotice: "Selecciona un contacto para vincularlo a la fila del equipo resaltada.",
+      emptyState: "No hay contactos guardados.",
+      newContact: "Nuevo contacto",
+      importButton: "Importar vCard",
+      importDescription: "Importa archivos vCard (.vcf) para añadir varios contactos de una vez.",
+      importResult: "Se importaron {count} contactos.",
+      importPartial: "Se importaron {imported} contactos; se omitieron {skipped} por falta de datos.",
+      importError: "No se pudo importar el archivo. Usa un vCard (.vcf) válido.",
+      save: "Guardar contacto",
+      addToProject: "Añadir al proyecto",
+      delete: "Eliminar contacto",
+      deleteConfirmation: "¿Eliminar este contacto? Las filas vinculadas conservarán sus datos.",
+      contactSaved: "Contacto guardado.",
+      contactUpdated: "Contacto actualizado.",
+      contactDeleted: "Contacto eliminado.",
+      contactLinked: "Contacto vinculado a la fila.",
+      contactDetached: "Contacto desvinculado de la fila.",
+      photoUpload: "Subir foto",
+      photoRemove: "Quitar foto",
+      photoTooLarge: "Elige una imagen menor de 300 KB.",
+      addToRow: "Usar contacto",
+      saveError: "No se pudieron guardar los contactos.",
+      missingDetails: "Introduce al menos un nombre, teléfono o correo.",
+      untitledContact: "Contacto sin nombre",
+      close: "Cerrar contactos"
     },
     crewRoles: {
       "Producer": "Productor",
@@ -5167,6 +5284,9 @@ const texts = {
     openHelpNav: "Centre d’aide",
     openHelpNavHelp:
       "Ouvrir l’aide intégrée avec tutoriels, conseils de dépannage et raccourcis.",
+    openContactsNav: "Contacts",
+    openContactsNavHelp:
+      "Ouvrir le gestionnaire de contacts pour réutiliser les membres de l’équipe sur plusieurs projets.",
     setupManageHeadingHelp:
       "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
     deviceSelectionHeadingHelp:
@@ -5660,10 +5780,16 @@ const texts = {
       crewNamePlaceholder: "Nom",
       crewPhonePlaceholder: "Téléphone",
       crewEmailPlaceholder: "Courriel",
-      crewRoleLabel: "Rôle de l'équipe",
-      crewNameLabel: "Nom du membre de l'équipe",
-      crewPhoneLabel: "Téléphone du membre de l'équipe",
-      crewEmailLabel: "Courriel du membre de l'équipe"
+      crewRoleLabel: "Rôle de l’équipe",
+      crewNameLabel: "Nom du membre de l’équipe",
+      crewPhoneLabel: "Téléphone du membre de l’équipe",
+      crewEmailLabel: "Courriel du membre de l’équipe",
+      addContactButton: "Ajouter depuis les contacts",
+      manageContactsButton: "Gérer les contacts",
+      linkContactButton: "Lier un contact",
+      saveContactButton: "Enregistrer comme contact",
+      unlinkContactButton: "Dissocier le contact",
+      contactLinkedBadge: "Contact lié"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -5701,6 +5827,41 @@ const texts = {
       sliderBowl: "Slider bowl",
       easyrig: "Stabilisation complémentaire",
       storageRequirements: "Stockage et supports"
+    },
+    contacts: {
+      dialogTitle: "Contacts de l’équipe",
+      dialogIntro:
+        "Enregistrez les membres de l’équipe comme contacts réutilisables avec téléphone, courriel, rôles et photo de profil.",
+      linkNotice:
+        "Sélectionnez un contact pour l’attacher à la ligne d’équipe en surbrillance.",
+      emptyState: "Aucun contact enregistré pour le moment.",
+      newContact: "Nouveau contact",
+      importButton: "Importer une vCard",
+      importDescription:
+        "Importez des fichiers vCard (.vcf) pour ajouter plusieurs membres d’équipe.",
+      importResult: "Import de {count} contacts.",
+      importPartial:
+        "{imported} contacts importés ; {skipped} ignorés faute d’informations.",
+      importError:
+        "Impossible d’importer le fichier. Utilisez un fichier vCard (.vcf) valide.",
+      save: "Enregistrer le contact",
+      addToProject: "Ajouter au projet",
+      delete: "Supprimer le contact",
+      deleteConfirmation:
+        "Supprimer ce contact ? Les lignes d’équipe liées conservent leurs données actuelles.",
+      contactSaved: "Contact enregistré.",
+      contactUpdated: "Contact mis à jour.",
+      contactDeleted: "Contact supprimé.",
+      contactLinked: "Contact lié à la ligne d’équipe.",
+      contactDetached: "Contact dissocié de la ligne d’équipe.",
+      photoUpload: "Téléverser une photo",
+      photoRemove: "Supprimer la photo",
+      photoTooLarge: "Choisissez une image de moins de 300 Ko.",
+      addToRow: "Utiliser ce contact",
+      saveError: "Impossible d’enregistrer les contacts.",
+      missingDetails: "Indiquez au moins un nom, un téléphone ou un courriel.",
+      untitledContact: "Contact sans nom",
+      close: "Fermer les contacts"
     },
     crewRoles: {
       "Producer": "Producteur",
@@ -6882,6 +7043,9 @@ const texts = {
     openHelpNav: "Hilfe-Center",
     openHelpNavHelp:
       "Die integrierte Hilfe mit Anleitungen, Tipps zur Fehlerbehebung und Tastenkürzeln öffnen.",
+    openContactsNav: "Kontakte",
+    openContactsNavHelp:
+      "Öffne den Kontaktmanager, um Teamdaten projektübergreifend zu nutzen.",
     setupManageHeadingHelp:
       "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
     deviceSelectionHeadingHelp:
@@ -7379,7 +7543,13 @@ const texts = {
       crewRoleLabel: "Rolle im Team",
       crewNameLabel: "Name des Crewmitglieds",
       crewPhoneLabel: "Telefon des Crewmitglieds",
-      crewEmailLabel: "E-Mail des Crewmitglieds"
+      crewEmailLabel: "E-Mail des Crewmitglieds",
+      addContactButton: "Aus Kontakten hinzufügen",
+      manageContactsButton: "Kontakte verwalten",
+      linkContactButton: "Kontakt verknüpfen",
+      saveContactButton: "Als Kontakt speichern",
+      unlinkContactButton: "Kontakt lösen",
+      contactLinkedBadge: "Verknüpfter Kontakt"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",
@@ -7417,6 +7587,42 @@ const texts = {
       sliderBowl: "Slider-Schale",
       easyrig: "Weitere Stabilisierung",
       storageRequirements: "Speicher & Medien"
+    },
+    contacts: {
+      dialogTitle: "Teamkontakte",
+      dialogIntro:
+        "Speichere Crew-Mitglieder als wiederverwendbare Kontakte mit Telefonnummern, E-Mails, Rollen und Profilbildern.",
+      linkNotice:
+        "Wähle einen Kontakt, um ihn mit der markierten Teamzeile zu verknüpfen.",
+      emptyState: "Noch keine Kontakte gespeichert.",
+      newContact: "Neuer Kontakt",
+      importButton: "vCard importieren",
+      importDescription:
+        "Importiere vCard-Dateien (.vcf), um mehrere Crew-Mitglieder auf einmal hinzuzufügen.",
+      importResult: "{count} Kontakte importiert.",
+      importPartial:
+        "{imported} Kontakte importiert; {skipped} ohne vollständige Angaben übersprungen.",
+      importError:
+        "Datei konnte nicht importiert werden. Verwende eine gültige vCard-Datei (.vcf).",
+      save: "Kontakt speichern",
+      addToProject: "Zum Projekt hinzufügen",
+      delete: "Kontakt löschen",
+      deleteConfirmation:
+        "Diesen Kontakt entfernen? Verknüpfte Teamzeilen behalten ihre aktuellen Angaben.",
+      contactSaved: "Kontakt gespeichert.",
+      contactUpdated: "Kontakt aktualisiert.",
+      contactDeleted: "Kontakt gelöscht.",
+      contactLinked: "Kontakt mit Teamzeile verknüpft.",
+      contactDetached: "Kontakt von der Teamzeile getrennt.",
+      photoUpload: "Foto hochladen",
+      photoRemove: "Foto entfernen",
+      photoTooLarge: "Bitte ein Bild unter 300 KB auswählen.",
+      addToRow: "Kontakt verwenden",
+      saveError: "Kontakte konnten nicht gespeichert werden.",
+      missingDetails:
+        "Gib mindestens einen Namen, eine Telefonnummer oder eine E-Mail an.",
+      untitledContact: "Kontakt ohne Namen",
+      close: "Kontakte schließen"
     },
     crewRoles: {
       "Producer": "Produzent",

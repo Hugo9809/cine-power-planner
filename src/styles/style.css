@@ -525,6 +525,139 @@ textarea {
   color: var(--status-error-text-color);
 }
 
+.contacts-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+}
+
+.contacts-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-size);
+  align-items: center;
+}
+
+.contacts-link-notice {
+  font-weight: var(--font-weight-bold);
+  color: var(--muted-text-color);
+}
+
+.contacts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gap-size);
+}
+
+.contact-card { 
+  display: flex; 
+  align-items: center; 
+  gap: var(--gap-size); 
+  padding: var(--gap-size); 
+  border: 1px solid var(--panel-border); 
+  border-radius: var(--border-radius); 
+  background: var(--surface-color); 
+  box-shadow: var(--panel-shadow); 
+}
+
+.contact-card:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.contact-card.contact-card--active {
+  border-color: color-mix(in srgb, var(--panel-border) 50%, var(--accent-color));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.contact-card-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.contact-card-name {
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.contact-card-role,
+.contact-card-meta {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: 0.9em;
+}
+
+.contact-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: stretch;
+}
+
+.contact-form {
+  display: grid;
+  gap: var(--gap-size);
+}
+
+.contact-form fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contact-photo-field {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-size);
+  flex-wrap: wrap;
+}
+
+.contact-photo-preview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--muted-text-color);
+  font-weight: var(--font-weight-bold);
+}
+
+.contact-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.contact-photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.contact-fields {
+  display: grid;
+  gap: var(--spacing-sm);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.contact-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-size);
+  justify-content: flex-end;
+}
+
+.contacts-empty {
+  margin: 0;
+  font-style: italic;
+  color: var(--muted-text-color);
+}
+
 .results-plain-summary {
   margin-block: 1.5rem;
   padding: 1.25rem 1.5rem;
@@ -855,9 +988,51 @@ main.legal-content {
 
 .person-row {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: var(--gap-size);
   flex-wrap: wrap;
+}
+
+.person-row.person-row-linked {
+  border-inline-start: 3px solid var(--accent-color);
+  padding-inline-start: calc(var(--spacing-sm));
+  border-radius: var(--border-radius);
+}
+
+.person-row.person-row-contact-pending {
+  border-inline-start: 3px dashed var(--accent-color);
+  padding-inline-start: calc(var(--spacing-sm));
+  border-radius: var(--border-radius);
+}
+
+.person-avatar {
+  flex: 0 0 3rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--control-bg);
+  color: var(--muted-text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  position: relative;
+  overflow: hidden;
+}
+
+.person-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.person-avatar span {
+  font-size: 1rem;
+}
+
+.person-avatar.person-avatar-empty {
+  background: var(--panel-bg);
 }
 
 .person-row select {
@@ -873,6 +1048,18 @@ main.legal-content {
 .person-row button {
   flex: 0 0 auto;
   margin: 0;
+  align-self: center;
+}
+
+.person-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: stretch;
+}
+
+.person-actions button {
+  min-width: 0;
   align-self: stretch;
 }
 

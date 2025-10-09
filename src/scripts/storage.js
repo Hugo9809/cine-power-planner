@@ -251,6 +251,7 @@ var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -2474,6 +2475,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
+  CONTACTS_STORAGE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
   FOCUS_SCALE_STORAGE_KEY_NAME,
 ]);
@@ -2493,6 +2495,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: FEEDBACK_STORAGE_KEY }),
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: CONTACTS_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
   () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
   () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
@@ -4455,6 +4458,7 @@ var PRIMARY_STORAGE_KEYS = [
   FEEDBACK_STORAGE_KEY,
   PROJECT_STORAGE_KEY,
   FAVORITES_STORAGE_KEY,
+  CONTACTS_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   AUTO_GEAR_RULES_STORAGE_KEY,
   AUTO_GEAR_SEEDED_STORAGE_KEY,
@@ -8454,6 +8458,20 @@ function sanitizeImportedCrewEntries(entries) {
     if (role) {
       result.role = role;
     }
+    const contactId = typeof entry.contactId === 'string' ? entry.contactId.trim() : '';
+    if (contactId) {
+      result.contactId = contactId;
+    }
+    const avatar = normalizeContactAvatar(
+      typeof entry.avatar === 'string'
+        ? entry.avatar
+        : typeof entry.photo === 'string'
+          ? entry.photo
+          : '',
+    );
+    if (avatar) {
+      result.avatar = avatar;
+    }
     if (Object.keys(result).length) {
       sanitized.push(result);
     }
@@ -8514,6 +8532,128 @@ function sanitizeImportedProjectInfo(info) {
 
   const normalizedWithLegacySupport = normalizeLegacyLongGopStructure(normalized);
   return normalizedWithLegacySupport;
+}
+
+function generateContactId(seed) {
+  const baseSeed = seed !== null && seed !== undefined ? String(seed) : '';
+  if (typeof crypto !== 'undefined' && crypto && typeof crypto.randomUUID === 'function') {
+    try {
+      return crypto.randomUUID();
+    } catch (error) {
+      void error;
+    }
+  }
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 8);
+  return baseSeed
+    ? `contact-${timestamp}-${random}-${baseSeed}`
+    : `contact-${timestamp}-${random}`;
+}
+
+function normalizeContactAvatar(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^data:image\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return '';
+}
+
+function normalizeContactEntry(entry, seed) {
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+
+  const normalized = {};
+  const idSource = typeof entry.id === 'string' ? entry.id.trim() : '';
+  normalized.id = idSource || generateContactId(seed);
+
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  const role = typeof entry.role === 'string' ? entry.role.trim() : '';
+  const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+  const email = typeof entry.email === 'string' ? entry.email.trim() : '';
+  const avatar = normalizeContactAvatar(
+    typeof entry.avatar === 'string'
+      ? entry.avatar
+      : typeof entry.photo === 'string'
+        ? entry.photo
+        : '',
+  );
+
+  const createdAtRaw = entry.createdAt;
+  const updatedAtRaw = entry.updatedAt;
+  const createdAt = typeof createdAtRaw === 'number' && Number.isFinite(createdAtRaw)
+    ? createdAtRaw
+    : typeof createdAtRaw === 'string' && createdAtRaw.trim()
+      ? Number(createdAtRaw)
+      : null;
+  const updatedAt = typeof updatedAtRaw === 'number' && Number.isFinite(updatedAtRaw)
+    ? updatedAtRaw
+    : typeof updatedAtRaw === 'string' && updatedAtRaw.trim()
+      ? Number(updatedAtRaw)
+      : null;
+
+  if (name) normalized.name = name;
+  if (role) normalized.role = role;
+  if (phone) normalized.phone = phone;
+  if (email) normalized.email = email;
+  if (avatar) normalized.avatar = avatar;
+
+  const referenceTime = Date.now();
+  normalized.createdAt = Number.isFinite(createdAt) ? createdAt : referenceTime;
+  normalized.updatedAt = Number.isFinite(updatedAt) ? updatedAt : referenceTime;
+
+  if (!normalized.name && !normalized.phone && !normalized.email) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function normalizeImportedContacts(value) {
+  if (value === null || value === undefined) {
+    return [];
+  }
+
+  let entries = [];
+  if (Array.isArray(value)) {
+    entries = value.slice();
+  } else if (isPlainObject(value)) {
+    entries = Object.values(value);
+  } else {
+    const parsed = typeof value === 'string' ? tryParseJSONLike(value) : { success: false };
+    if (parsed.success && (Array.isArray(parsed.parsed) || isPlainObject(parsed.parsed))) {
+      return normalizeImportedContacts(parsed.parsed);
+    }
+    return [];
+  }
+
+  const normalized = [];
+  const seen = new Set();
+  entries.forEach((entry, index) => {
+    const normalizedEntry = normalizeContactEntry(entry, `import-${index}`);
+    if (!normalizedEntry) {
+      return;
+    }
+    let { id } = normalizedEntry;
+    if (!id || seen.has(id)) {
+      id = generateContactId(`import-${index}-${seen.size}`);
+      normalizedEntry.id = id;
+    }
+    while (seen.has(id)) {
+      id = generateContactId(`import-${index}-${seen.size}`);
+      normalizedEntry.id = id;
+    }
+    seen.add(id);
+    normalized.push(normalizedEntry);
+  });
+
+  return normalized;
 }
 
 function cloneAutoGearRules(rules) {
@@ -10308,6 +10448,119 @@ function saveFavorites(favs) {
   );
 }
 
+// --- Contact Storage ---
+function normalizeContactCollection(collection) {
+  if (collection === null || collection === undefined) {
+    return [];
+  }
+
+  if (Array.isArray(collection)) {
+    return collection.slice();
+  }
+
+  if (isPlainObject(collection)) {
+    return Object.values(collection);
+  }
+
+  return [];
+}
+
+function loadContacts() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    "Error loading contacts from localStorage:",
+    [],
+    {
+      validate: (value) =>
+        value === null
+        || Array.isArray(value)
+        || isPlainObject(value),
+    },
+  );
+
+  const rawEntries = normalizeContactCollection(parsed);
+  const seen = new Set();
+  const contacts = [];
+  rawEntries.forEach((entry, index) => {
+    const normalized = normalizeContactEntry(entry, `stored-${index}`);
+    if (!normalized) {
+      return;
+    }
+    let { id } = normalized;
+    if (!id) {
+      id = generateContactId(`stored-${index}`);
+      normalized.id = id;
+    }
+    while (seen.has(id)) {
+      id = generateContactId(`stored-${index}-${seen.size}`);
+      normalized.id = id;
+    }
+    seen.add(id);
+    contacts.push(normalized);
+  });
+
+  return contacts;
+}
+
+function saveContacts(contacts) {
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) return;
+
+  if (contacts === null || contacts === undefined) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting contacts from localStorage:",
+    );
+    return;
+  }
+
+  if (!Array.isArray(contacts)) {
+    console.warn('Ignoring invalid contacts payload. Expected an array.');
+    return;
+  }
+
+  const seen = new Set();
+  const normalized = [];
+  contacts.forEach((entry, index) => {
+    const normalizedEntry = normalizeContactEntry(entry, `save-${index}`);
+    if (!normalizedEntry) {
+      return;
+    }
+    let { id } = normalizedEntry;
+    if (!id) {
+      id = generateContactId(`save-${index}`);
+      normalizedEntry.id = id;
+    }
+    while (seen.has(id)) {
+      id = generateContactId(`save-${index}-${seen.size}`);
+      normalizedEntry.id = id;
+    }
+    seen.add(id);
+    normalized.push(normalizedEntry);
+  });
+
+  if (!normalized.length) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting contacts from localStorage:",
+    );
+    return;
+  }
+
+  ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    normalized,
+    "Error saving contacts to localStorage:",
+  );
+}
+
 // --- User Feedback Storage ---
 function loadFeedback() {
   applyLegacyStorageMigrations();
@@ -11082,6 +11335,7 @@ function clearAllData() {
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
@@ -11432,6 +11686,7 @@ function clearAllData() {
       feedback: loadFeedback(),
       project: loadProject(),
       favorites: loadFavorites(),
+      contacts: loadContacts(),
       autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
@@ -12000,6 +12255,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
   assignJSONValue(PROJECT_STORAGE_KEY, 'project');
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(CONTACTS_STORAGE_KEY, 'contacts');
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -12167,6 +12423,10 @@ function importAllData(allData, options = {}) {
   }
   if (hasOwn('favorites')) {
     saveFavorites(allData.favorites);
+  }
+  if (hasOwn('contacts')) {
+    const contacts = normalizeImportedContacts(allData.contacts);
+    saveContacts(contacts);
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
@@ -12385,6 +12645,8 @@ var STORAGE_API = {
   saveSessionState,
   loadFavorites,
   saveFavorites,
+  loadContacts,
+  saveContacts,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

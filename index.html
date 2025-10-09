@@ -220,6 +220,17 @@
           Help Center
         </button>
       </li>
+      <li>
+        <button
+          type="button"
+          data-nav-key="openContactsNav"
+          data-sidebar-action="open-contacts"
+          aria-haspopup="dialog"
+          aria-controls="contactsDialog"
+        >
+          Contacts
+        </button>
+      </li>
     </ul>
   </nav>
   <div id="menuOverlay" class="hidden"></div>
@@ -5992,6 +6003,61 @@
       </div>
     </div>
   </dialog>
+
+  <dialog
+    id="contactsDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contactsDialogTitle"
+    tabindex="-1"
+    hidden
+  >
+    <div class="modal-surface modal-surface-scrollable contacts-modal" data-allow-hover-help>
+      <button id="closeContacts">Close</button>
+      <h2 id="contactsDialogTitle">Crew Contacts</h2>
+      <p id="contactsDialogIntro">
+        Save crew members as reusable contacts with phone numbers, emails and profile pictures. Add them to projects in one tap.
+      </p>
+      <p id="contactsLinkNotice" class="contacts-link-notice" hidden></p>
+      <div class="contacts-toolbar">
+        <button type="button" id="newContactButton">New contact</button>
+        <button type="button" id="importContactsButton">Import vCard</button>
+      </div>
+      <p id="contactsStatus" class="status-message" aria-live="polite" hidden></p>
+      <div id="contactsList" class="contacts-list" role="list"></div>
+      <p id="contactsEmptyMessage" class="contacts-empty">No contacts saved yet.</p>
+      <form id="contactForm" class="contact-form" novalidate>
+        <fieldset>
+          <legend id="contactFormLegend" class="visually-hidden">Contact details</legend>
+          <div class="contact-photo-field">
+            <div class="contact-photo-preview" id="contactPhotoPreview" aria-hidden="true"></div>
+            <div class="contact-photo-actions">
+              <button type="button" id="contactPhotoButton">Upload photo</button>
+              <button type="button" id="contactPhotoRemove" hidden>Remove photo</button>
+            </div>
+            <input type="file" id="contactPhotoInput" accept="image/*" hidden />
+          </div>
+          <div class="contact-fields">
+            <label for="contactName" id="contactNameLabel">Name</label>
+            <input type="text" id="contactName" autocomplete="off" />
+            <label for="contactRole" id="contactRoleLabel">Crew role</label>
+            <select id="contactRole"></select>
+            <label for="contactPhone" id="contactPhoneLabel">Phone</label>
+            <input type="tel" id="contactPhone" autocomplete="tel" />
+            <label for="contactEmail" id="contactEmailLabel">Email</label>
+            <input type="email" id="contactEmail" autocomplete="email" />
+          </div>
+        </fieldset>
+        <div class="contact-form-actions">
+          <button type="button" id="saveContactButton">Save contact</button>
+          <button type="button" id="addContactToProjectButton">Add to project</button>
+          <button type="button" id="deleteContactButton">Delete contact</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+  <input type="file" id="contactsVcfInput" accept=".vcf,text/vcard" hidden />
   <dialog
     id="powerWarningDialog"
     class="app-modal"
@@ -6189,6 +6255,12 @@
               <div id="crewContainer" role="group" aria-labelledby="crewLabel"></div>
               <button type="button" id="addPersonBtn">
                 <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE02E;</span>
+              </button>
+              <button type="button" id="addContactBtn">
+                <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF404;</span>
+              </button>
+              <button type="button" id="manageContactsBtn">
+                <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE5BD;</span>
               </button>
             </div>
             <div class="form-row" id="prepListRow">
