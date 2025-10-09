@@ -71,7 +71,12 @@ update the repository or hand off a project at the end of the day.
    long enough to verify the factory “every five shooting days” consumables rule
    multiplies Bluestar eye leathers, Pro Gaff rolls, clapper sticks, Kimtech
    wipes and Sprigs to cover longer schedules automatically.
-9. **Log the drill.** Append a verification note (timestamp, machine, operator
+9. **Run the Monthly data health check.** Open the help dialog, locate
+   **Monthly data health check** and follow the linked steps to capture a fresh
+   full backup through **Settings → Data & Storage → Quick safeguards → Download
+   full backup**, export each active project, reload offline and complete
+   **Restore rehearsal** before recording the results in your rotation log.【F:index.html†L2548-L2570】【F:index.html†L3060-L3089】【F:src/scripts/translations.js†L1674-L1682】
+10. **Log the drill.** Append a verification note (timestamp, machine, operator
    and files inspected) to your archival log or create one beside the exports
    if it does not exist yet. Pair the note with checksum manifests so every
    crew member can prove when the save → share → import rehearsal succeeded.

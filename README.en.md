@@ -683,6 +683,12 @@ repeatable verification loop:
   then repeat the pre-flight validation above. Archive the passing backup with a
   changelog entry so future crews know which revisions were certified for
   offline work.
+- **Monthly help center audit (use the built-in checklist).** Open **Help →
+  Monthly data health check**, follow the guided steps to capture a fresh full
+  backup from **Settings → Data & Storage → Quick safeguards → Download full
+  backup**, export each active project, reload offline to confirm the cached
+  interface and finish with **Restore rehearsal** before logging the outcome in
+  your rotation log.
 - **Redundancy rotation (monthly or before archiving).** Store the most recent
   planner backup, a verified `project-name.json` bundle (rename to `.cpproject`
   if your asset tracker expects it) and a ZIP of the repository on at least two
