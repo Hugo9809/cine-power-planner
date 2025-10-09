@@ -5888,6 +5888,9 @@ function setupSideMenu() {
       if (typeof openOwnGearDialog === 'function') {
         openOwnGearDialog();
       }
+    } else if (action === 'open-contacts') {
+      initializeContactsModule();
+      openDialog(contactsDialog);
     }
   };
 
@@ -6682,6 +6685,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   const runLayoutInitialization = () => {
     initializeLayoutControls();
     initializeOwnGearManager();
+    initializeContactsModule();
   };
 
   if (document.readyState === 'loading') {
@@ -11961,6 +11965,38 @@ function setLanguage(lang) {
       email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
     };
     const crewRoleLabels = texts[lang].crewRoles || (texts.en && texts.en.crewRoles) || {};
+    const fallbackContacts = texts.en?.contacts || {};
+    const contactsTexts = texts[lang]?.contacts || fallbackContacts;
+    if (contactsDialogHeading && contactsTexts.heading) {
+      contactsDialogHeading.textContent = contactsTexts.heading;
+    }
+    if (contactsDialogDescription && contactsTexts.description) {
+      contactsDialogDescription.textContent = contactsTexts.description;
+    }
+    if (contactsAddButtonLabel && contactsTexts.addContactButton) {
+      contactsAddButtonLabel.textContent = contactsTexts.addContactButton;
+    }
+    if (contactsAddButton && contactsTexts.addContactButton) {
+      contactsAddButton.setAttribute('aria-label', contactsTexts.addContactButton);
+      contactsAddButton.setAttribute('data-help', contactsTexts.addContactButton);
+    }
+    if (contactsImportButtonLabel && contactsTexts.importButton) {
+      contactsImportButtonLabel.textContent = contactsTexts.importButton;
+    }
+    if (contactsImportButton && contactsTexts.importButton) {
+      contactsImportButton.setAttribute('aria-label', contactsTexts.importButton);
+      contactsImportButton.setAttribute('data-help', contactsTexts.importButton);
+    }
+    if (contactsImportHint && contactsTexts.importHint) {
+      contactsImportHint.textContent = contactsTexts.importHint;
+    }
+    if (contactsEmptyState && contactsTexts.emptyState) {
+      contactsEmptyState.textContent = contactsTexts.emptyState;
+    }
+    if (contactsCloseButton && contactsTexts.close) {
+      contactsCloseButton.textContent = contactsTexts.close;
+    }
+    renderContactsList();
     document.querySelectorAll('#crewContainer .person-row').forEach(row => {
       const roleSelect = row.querySelector('select');
       if (roleSelect) {
@@ -11977,6 +12013,19 @@ function setLanguage(lang) {
       if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+      const contactSelect = row.querySelector('.person-contact-select');
+      if (contactSelect) {
+        setContactSelectOptions(contactSelect, contactSelect.value);
+      }
+      const saveButton = row.querySelector('.person-save-contact');
+      if (saveButton) {
+        setButtonLabelWithIcon(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+      }
+      const manageButton = row.querySelector('.person-manage-contacts');
+      if (manageButton) {
+        setButtonLabelWithIcon(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+      }
+      updateRowLinkedBadge(row);
     });
     const stripTrailingPunctuation = value => (typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value);
     const addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
@@ -12136,6 +12185,21 @@ var returnContainer = document.getElementById("returnContainer");
 const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
 const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
+const contactsDialog = document.getElementById("contactsDialog");
+const contactsForm = document.getElementById("contactsForm");
+const contactsDialogHeading = document.getElementById("contactsDialogHeading");
+const contactsDialogDescription = document.getElementById("contactsDialogDescription");
+const contactsAddButton = document.getElementById("contactsAddButton");
+const contactsAddButtonLabel = document.getElementById("contactsAddButtonLabel");
+const contactsImportButton = document.getElementById("contactsImportButton");
+const contactsImportButtonLabel = document.getElementById("contactsImportButtonLabel");
+const contactsImportInput = document.getElementById("contactsImportInput");
+const contactsImportHint = document.getElementById("contactsImportHint");
+const contactsList = document.getElementById("contactsList");
+const contactsEmptyState = document.getElementById("contactsEmptyState");
+const contactsCloseButton = document.getElementById("contactsCloseButton");
+const contactsAnnouncement = document.getElementById("contactsAnnouncement");
+const openContactsBtn = document.getElementById("openContactsBtn");
 
 var monitoringConfigurationUserChanged = false;
 
@@ -14166,50 +14230,985 @@ function getProjectFormText(key, defaultValue = '') {
   return fallback || defaultValue;
 }
 
+const CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
+const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
+let contactsCache = [];
+let contactsInitialized = false;
+
+function getContactsText(key, defaultValue = '') {
+  const fallbackContacts = texts?.en?.contacts || {};
+  const contactsTexts = texts?.[currentLang]?.contacts || fallbackContacts;
+  const localized = contactsTexts && typeof contactsTexts[key] === 'string'
+    ? contactsTexts[key].trim()
+    : '';
+  if (localized) return localized;
+  const fallback = fallbackContacts && typeof fallbackContacts[key] === 'string'
+    ? fallbackContacts[key].trim()
+    : '';
+  return fallback || defaultValue;
+}
+
+function generateContactId() {
+  return `contact-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function sanitizeContactValue(value) {
+  if (typeof value !== 'string') return '';
+  return value.trim();
+}
+
+function normalizeContactEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const id = sanitizeContactValue(entry.id) || generateContactId();
+  const name = sanitizeContactValue(entry.name);
+  const role = sanitizeContactValue(entry.role);
+  const phone = sanitizeContactValue(entry.phone);
+  const email = sanitizeContactValue(entry.email);
+  const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
+    ? entry.avatar
+    : '';
+  const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+  const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+  const normalized = { id, name, role, phone, email, createdAt, updatedAt };
+  if (avatar) normalized.avatar = avatar;
+  return normalized;
+}
+
+function sortContacts(list) {
+  return (Array.isArray(list) ? list.filter(Boolean) : [])
+    .map(normalizeContactEntry)
+    .filter(Boolean)
+    .sort((a, b) => {
+      const nameA = (a?.name || '').toLowerCase();
+      const nameB = (b?.name || '').toLowerCase();
+      if (nameA && nameB && nameA !== nameB) {
+        return nameA.localeCompare(nameB);
+      }
+      if (nameA && !nameB) return -1;
+      if (!nameA && nameB) return 1;
+      return (a?.createdAt || 0) - (b?.createdAt || 0);
+    });
+}
+
+function loadStoredContacts() {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CONTACTS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return sortContacts(parsed);
+  } catch (error) {
+    console.warn('Failed to load contacts from storage', error);
+    return [];
+  }
+}
+
+function saveContactsToStorage(contacts) {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts));
+  } catch (error) {
+    console.warn('Failed to save contacts to storage', error);
+  }
+}
+
+function getContactById(id) {
+  if (!id) return null;
+  return contactsCache.find(contact => contact.id === id) || null;
+}
+
+function getContactDisplayLabel(contact) {
+  if (!contact) return '';
+  const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
+  const base = contact.name || contact.email || contact.phone || contact.role || contact.id;
+  const roleLabel = contact.role ? (roleLabels[contact.role] || contact.role) : '';
+  if (base && roleLabel && roleLabel !== base) {
+    return `${base} — ${roleLabel}`;
+  }
+  return base || roleLabel || contact.id;
+}
+
+function setContactSelectOptions(select, selectedId) {
+  if (!select) return;
+  const currentValue = typeof selectedId === 'string' ? selectedId : select.value;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = getContactsText('selectPlaceholder', 'Select contact');
+  select.appendChild(placeholder);
+  contactsCache.forEach(contact => {
+    const option = document.createElement('option');
+    option.value = contact.id;
+    option.textContent = getContactDisplayLabel(contact);
+    if (contact.id === currentValue) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  });
+  if (currentValue && !contactsCache.some(contact => contact.id === currentValue)) {
+    const fallback = document.createElement('option');
+    fallback.value = currentValue;
+    fallback.textContent = getContactsText('missingContactFallback', 'Saved contact');
+    fallback.selected = true;
+    select.appendChild(fallback);
+  }
+}
+
+function updateContactPickers() {
+  if (!crewContainer) return;
+  const selects = crewContainer.querySelectorAll('.person-contact-select');
+  selects.forEach(select => setContactSelectOptions(select));
+}
+
+function getAvatarInitial(value) {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed) return trimmed.charAt(0).toUpperCase();
+  }
+  return '•';
+}
+
+function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
+  if (!container) return;
+  const visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
+  if (!visual) return;
+  while (visual.firstChild) {
+    visual.removeChild(visual.firstChild);
+  }
+  if (avatarValue) {
+    const img = document.createElement('img');
+    img.src = avatarValue;
+    img.alt = '';
+    visual.appendChild(img);
+  } else {
+    const span = document.createElement('span');
+    span.className = initialClass;
+    span.textContent = getAvatarInitial(fallbackName);
+    visual.appendChild(span);
+  }
+}
+
+function setRowAvatar(row, avatarValue, options = {}) {
+  if (!row) return;
+  const dataInput = row.querySelector('.person-avatar-data');
+  if (dataInput) {
+    dataInput.value = avatarValue || '';
+  }
+  const nameInput = row.querySelector('.person-name');
+  const fallbackName = options && Object.prototype.hasOwnProperty.call(options, 'name')
+    ? options.name
+    : nameInput?.value;
+  const avatarContainer = row.querySelector('.person-avatar');
+  updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
+}
+
+function refreshRowAvatarInitial(row) {
+  if (!row) return;
+  const dataInput = row.querySelector('.person-avatar-data');
+  if (dataInput && dataInput.value) return;
+  const nameInput = row.querySelector('.person-name');
+  const avatarContainer = row.querySelector('.person-avatar');
+  updateAvatarVisual(avatarContainer, '', nameInput ? nameInput.value : '', 'person-avatar-initial');
+}
+
+function detachCrewRowContact(row, options = {}) {
+  if (!row) return;
+  const { preserveSelect = false } = options || {};
+  delete row.dataset.contactId;
+  if (!preserveSelect) {
+    const contactSelect = row.querySelector('.person-contact-select');
+    if (contactSelect) contactSelect.value = '';
+  }
+  updateRowLinkedBadge(row);
+}
+
+function updateRowLinkedBadge(row) {
+  if (!row) return;
+  const badge = row.querySelector('.person-linked-badge');
+  if (!badge) return;
+  const contactId = row.dataset.contactId;
+  if (!contactId) {
+    badge.hidden = true;
+    return;
+  }
+  const contact = getContactById(contactId);
+  const baseLabel = getContactsText('linkedBadge', 'Linked to contact');
+  if (contact && contact.name) {
+    badge.textContent = `${baseLabel}: ${contact.name}`;
+  } else {
+    badge.textContent = baseLabel;
+  }
+  badge.hidden = false;
+}
+
+function handleCrewRowManualChange(row) {
+  if (!row || row.dataset.syncingContact === '1') return;
+  const wasLinked = Boolean(row.dataset.contactId);
+  if (wasLinked) {
+    detachCrewRowContact(row);
+    announceContactsMessage(getContactsText('contactDetached', 'Crew row disconnected from saved contact.'));
+  }
+  refreshRowAvatarInitial(row);
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  scheduleProjectAutoSave(true);
+}
+
+function readAvatarFile(file, onSuccess, onError) {
+  if (!file) return;
+  if (file.size > CONTACT_AVATAR_MAX_BYTES) {
+    if (typeof onError === 'function') onError('tooLarge');
+    return;
+  }
+  const reader = new FileReader();
+  reader.addEventListener('load', () => {
+    const result = typeof reader.result === 'string' ? reader.result : '';
+    if (result && typeof onSuccess === 'function') {
+      onSuccess(result);
+    }
+  });
+  reader.addEventListener('error', () => {
+    if (typeof onError === 'function') onError('readError');
+  });
+  try {
+    reader.readAsDataURL(file);
+  } catch (error) {
+    if (typeof onError === 'function') onError('readError');
+  }
+}
+
+function handleAvatarFileSelection(row, file) {
+  readAvatarFile(
+    file,
+    dataUrl => {
+      setRowAvatar(row, dataUrl);
+      if (row.dataset.contactId) {
+        detachCrewRowContact(row);
+      }
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
+      scheduleProjectAutoSave(true);
+    },
+    reason => {
+      if (reason === 'tooLarge') {
+        announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+      } else {
+        announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+      }
+    }
+  );
+}
+
+function announceContactsMessage(message) {
+  if (!contactsAnnouncement) return;
+  contactsAnnouncement.textContent = message || '';
+}
+
+function applyContactToCrewRow(row, contact, options = {}) {
+  if (!row || !contact) return;
+  const { skipDirty = false, skipAnnouncement = false } = options || {};
+  row.dataset.syncingContact = '1';
+  try {
+    const roleSel = row.querySelector('select[name="crewRole"]');
+    if (roleSel) {
+      if (contact.role && !Array.from(roleSel.options).some(opt => opt.value === contact.role)) {
+        const opt = document.createElement('option');
+        opt.value = contact.role;
+        const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
+        opt.textContent = roleLabels[contact.role] || contact.role;
+        roleSel.appendChild(opt);
+      }
+      if (contact.role) {
+        roleSel.value = contact.role;
+      }
+    }
+    const nameInput = row.querySelector('.person-name');
+    if (nameInput) nameInput.value = contact.name || '';
+    const phoneInput = row.querySelector('.person-phone');
+    if (phoneInput) phoneInput.value = contact.phone || '';
+    const emailInput = row.querySelector('.person-email');
+    if (emailInput) emailInput.value = contact.email || '';
+    setRowAvatar(row, contact.avatar || '', { name: contact.name });
+    row.dataset.contactId = contact.id;
+    const contactSelect = row.querySelector('.person-contact-select');
+    if (contactSelect) {
+      setContactSelectOptions(contactSelect, contact.id);
+    }
+  } finally {
+    delete row.dataset.syncingContact;
+  }
+  updateRowLinkedBadge(row);
+  if (!skipDirty && typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  if (!skipDirty) {
+    scheduleProjectAutoSave(true);
+  }
+  if (!skipAnnouncement) {
+    announceContactsMessage(getContactsText('contactApplied', 'Crew row updated from contact.'));
+  }
+}
+
+function updateCrewRowsForContact(contact) {
+  if (!crewContainer || !contact) return;
+  const rows = crewContainer.querySelectorAll('.person-row');
+  rows.forEach(row => {
+    if (row.dataset.contactId === contact.id) {
+      applyContactToCrewRow(row, contact, { skipAnnouncement: true });
+    }
+  });
+}
+
+function getCrewRowSnapshot(row) {
+  if (!row) return null;
+  const roleSel = row.querySelector('select[name="crewRole"]');
+  const nameInput = row.querySelector('.person-name');
+  const phoneInput = row.querySelector('.person-phone');
+  const emailInput = row.querySelector('.person-email');
+  const avatarInput = row.querySelector('.person-avatar-data');
+  return {
+    role: sanitizeContactValue(roleSel?.value || ''),
+    name: sanitizeContactValue(nameInput?.value || ''),
+    phone: sanitizeContactValue(phoneInput?.value || ''),
+    email: sanitizeContactValue(emailInput?.value || ''),
+    avatar: sanitizeContactValue(avatarInput?.value || ''),
+    contactId: sanitizeContactValue(row.dataset.contactId || '')
+  };
+}
+
+function deleteContact(contactId) {
+  if (!contactId) return;
+  const index = contactsCache.findIndex(contact => contact.id === contactId);
+  if (index === -1) return;
+  contactsCache.splice(index, 1);
+  contactsCache = sortContacts(contactsCache);
+  saveContactsToStorage(contactsCache);
+  renderContactsList();
+  updateContactPickers();
+  if (crewContainer) {
+    const rows = crewContainer.querySelectorAll('.person-row');
+    rows.forEach(row => {
+      if (row.dataset.contactId === contactId) {
+        detachCrewRowContact(row);
+      }
+    });
+  }
+  announceContactsMessage(getContactsText('contactDeleted', 'Contact removed. Project rows keep their details.'));
+}
+
+function saveCrewRowAsContact(row) {
+  const snapshot = getCrewRowSnapshot(row);
+  if (!snapshot) return;
+  if (!snapshot.name && !snapshot.email && !snapshot.phone) {
+    announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email or phone number before saving this contact.'));
+    return;
+  }
+  const now = Date.now();
+  if (snapshot.contactId) {
+    const existing = getContactById(snapshot.contactId);
+    if (existing) {
+      existing.name = snapshot.name || existing.name;
+      existing.role = snapshot.role || existing.role;
+      existing.phone = snapshot.phone || existing.phone;
+      existing.email = snapshot.email || existing.email;
+      if (snapshot.avatar) {
+        existing.avatar = snapshot.avatar;
+      } else if (!existing.avatar) {
+        delete existing.avatar;
+      }
+      existing.updatedAt = now;
+      contactsCache = sortContacts(contactsCache);
+      saveContactsToStorage(contactsCache);
+      renderContactsList({ focusContactId: existing.id });
+      updateContactPickers();
+      updateCrewRowsForContact(existing);
+      announceContactsMessage(getContactsText('contactUpdated', 'Contact updated.'));
+      return;
+    }
+  }
+
+  const newContact = normalizeContactEntry({
+    id: snapshot.contactId || generateContactId(),
+    name: snapshot.name,
+    role: snapshot.role,
+    phone: snapshot.phone,
+    email: snapshot.email,
+    avatar: snapshot.avatar,
+    createdAt: now,
+    updatedAt: now
+  });
+  contactsCache.push(newContact);
+  contactsCache = sortContacts(contactsCache);
+  saveContactsToStorage(contactsCache);
+  renderContactsList({ focusContactId: newContact.id });
+  updateContactPickers();
+  applyContactToCrewRow(row, newContact, { skipAnnouncement: true });
+  announceContactsMessage(getContactsText('contactSaved', 'Contact saved for future projects.'));
+}
+
+function parseVCard(text) {
+  if (typeof text !== 'string') return [];
+  const normalized = text.replace(/\r\n?/g, '\n');
+  const folded = [];
+  normalized.split('\n').forEach(line => {
+    if (/^[ \t]/.test(line) && folded.length) {
+      folded[folded.length - 1] += line.replace(/^[ \t]/, '');
+    } else {
+      folded.push(line);
+    }
+  });
+  const contacts = [];
+  let current = null;
+  folded.forEach(line => {
+    if (/^BEGIN:VCARD/i.test(line)) {
+      current = { name: '', role: '', phone: '', email: '', avatar: '' };
+      return;
+    }
+    if (/^END:VCARD/i.test(line)) {
+      if (current && (current.name || current.email || current.phone)) {
+        contacts.push({ ...current });
+      }
+      current = null;
+      return;
+    }
+    if (!current) return;
+    const [rawKey, ...rawValueParts] = line.split(':');
+    if (!rawValueParts.length) return;
+    const keySegments = rawKey.split(';');
+    const baseKey = keySegments[0]?.toUpperCase();
+    const value = rawValueParts.join(':').trim();
+    if (!baseKey) return;
+    if (baseKey === 'FN') {
+      current.name = sanitizeContactValue(value);
+      return;
+    }
+    if (baseKey === 'N' && !current.name) {
+      current.name = value
+        .split(';')
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      return;
+    }
+    if (baseKey === 'TEL') {
+      if (!current.phone) current.phone = sanitizeContactValue(value);
+      return;
+    }
+    if (baseKey === 'EMAIL') {
+      if (!current.email) current.email = sanitizeContactValue(value);
+      return;
+    }
+    if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
+      current.role = sanitizeContactValue(value);
+      return;
+    }
+    if (baseKey === 'ORG' && !current.role) {
+      current.role = sanitizeContactValue(value);
+      return;
+    }
+    if (baseKey === 'PHOTO') {
+      let dataValue = value;
+      if (!dataValue) return;
+      if (/^data:/i.test(dataValue)) {
+        current.avatar = dataValue;
+        return;
+      }
+      const params = keySegments.slice(1);
+      let mime = 'image/jpeg';
+      params.forEach(param => {
+        const [paramKey, paramValue] = param.split('=');
+        if (!paramValue) return;
+        const normalizedKey = paramKey.trim().toUpperCase();
+        const normalizedValue = paramValue.trim();
+        if (normalizedKey === 'MEDIATYPE') {
+          mime = normalizedValue;
+        } else if (normalizedKey === 'TYPE') {
+          const lowered = normalizedValue.toLowerCase();
+          if (lowered.includes('/')) {
+            mime = lowered;
+          } else {
+            mime = `image/${lowered}`;
+          }
+        }
+      });
+      current.avatar = `data:${mime};base64,${dataValue}`;
+    }
+  });
+  return contacts
+    .map(entry => ({
+      name: sanitizeContactValue(entry.name),
+      role: sanitizeContactValue(entry.role),
+      phone: sanitizeContactValue(entry.phone),
+      email: sanitizeContactValue(entry.email),
+      avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
+    }))
+    .filter(entry => entry.name || entry.email || entry.phone);
+}
+
+function mergeImportedContacts(imported) {
+  if (!Array.isArray(imported) || !imported.length) {
+    announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
+    return { added: 0, updated: 0 };
+  }
+  let added = 0;
+  let updated = 0;
+  imported.forEach(entry => {
+    const candidate = {
+      name: sanitizeContactValue(entry.name || ''),
+      role: sanitizeContactValue(entry.role || ''),
+      phone: sanitizeContactValue(entry.phone || ''),
+      email: sanitizeContactValue(entry.email || ''),
+      avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
+    };
+    const existing = contactsCache.find(contact => {
+      if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
+      if (candidate.phone && contact.phone) {
+        const normalizedCandidate = candidate.phone.replace(/\D+/g, '');
+        const normalizedExisting = contact.phone.replace(/\D+/g, '');
+        if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
+      }
+      if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
+      return false;
+    });
+    if (existing) {
+      if (candidate.name) existing.name = candidate.name;
+      if (candidate.role) existing.role = candidate.role;
+      if (candidate.phone) existing.phone = candidate.phone;
+      if (candidate.email) existing.email = candidate.email;
+      if (candidate.avatar) existing.avatar = candidate.avatar;
+      existing.updatedAt = Date.now();
+      updated += 1;
+      updateCrewRowsForContact(existing);
+    } else {
+      const contact = normalizeContactEntry({
+        id: generateContactId(),
+        name: candidate.name,
+        role: candidate.role,
+        phone: candidate.phone,
+        email: candidate.email,
+        avatar: candidate.avatar,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+      contactsCache.push(contact);
+      added += 1;
+    }
+  });
+  contactsCache = sortContacts(contactsCache);
+  saveContactsToStorage(contactsCache);
+  renderContactsList();
+  updateContactPickers();
+  if (added || updated) {
+    const template = getContactsText('importSummary', '{added} added, {updated} updated.');
+    announceContactsMessage(template.replace('{added}', added).replace('{updated}', updated));
+  } else {
+    announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
+  }
+  return { added, updated };
+}
+
+function createContactCard(contact) {
+  const card = document.createElement('article');
+  card.className = 'contact-card';
+  card.setAttribute('role', 'listitem');
+  card.dataset.contactId = contact.id;
+
+  const header = document.createElement('div');
+  header.className = 'contact-card-header';
+
+  const avatarContainer = document.createElement('div');
+  avatarContainer.className = 'contact-card-avatar';
+  const avatarVisual = document.createElement('div');
+  avatarVisual.className = 'contact-card-avatar-visual';
+  avatarContainer.appendChild(avatarVisual);
+  updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+  const avatarButton = document.createElement('button');
+  avatarButton.type = 'button';
+  const avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+  avatarButton.setAttribute('aria-label', avatarLabel);
+  avatarButton.setAttribute('title', avatarLabel);
+  avatarContainer.appendChild(avatarButton);
+  const avatarInput = document.createElement('input');
+  avatarInput.type = 'file';
+  avatarInput.accept = 'image/*';
+  avatarInput.className = 'visually-hidden';
+  avatarInput.tabIndex = -1;
+  avatarContainer.appendChild(avatarInput);
+  header.appendChild(avatarContainer);
+
+  const title = document.createElement('strong');
+  title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
+  header.appendChild(title);
+
+  card.appendChild(header);
+
+  const fields = document.createElement('div');
+  fields.className = 'contact-card-fields';
+
+  const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.value = contact.name || '';
+  const nameFieldId = ensureElementId(nameInput, `${contact.id}-name`);
+  const nameLabel = document.createElement('label');
+  nameLabel.setAttribute('for', nameFieldId);
+  nameLabel.textContent = getContactsText('nameLabel', 'Name');
+  const nameWrapper = document.createElement('div');
+  nameWrapper.className = 'contact-field';
+  nameWrapper.append(nameLabel, nameInput);
+  fields.appendChild(nameWrapper);
+
+  const roleSelect = document.createElement('select');
+  const roleFieldId = ensureElementId(roleSelect, `${contact.id}-role`);
+  const rolePlaceholder = document.createElement('option');
+  rolePlaceholder.value = '';
+  rolePlaceholder.textContent = getContactsText('rolePlaceholder', 'Select role');
+  roleSelect.appendChild(rolePlaceholder);
+  crewRoles.forEach(role => {
+    const option = document.createElement('option');
+    option.value = role;
+    option.textContent = roleLabels[role] || role;
+    roleSelect.appendChild(option);
+  });
+  if (contact.role && !crewRoles.includes(contact.role)) {
+    const extraOption = document.createElement('option');
+    extraOption.value = contact.role;
+    extraOption.textContent = roleLabels[contact.role] || contact.role;
+    roleSelect.appendChild(extraOption);
+  }
+  roleSelect.value = contact.role || '';
+  const roleLabelElem = document.createElement('label');
+  roleLabelElem.setAttribute('for', roleFieldId);
+  roleLabelElem.textContent = getContactsText('roleLabel', 'Crew role');
+  const roleWrapper = document.createElement('div');
+  roleWrapper.className = 'contact-field';
+  roleWrapper.append(roleLabelElem, roleSelect);
+  fields.appendChild(roleWrapper);
+
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'tel';
+  phoneInput.value = contact.phone || '';
+  const phoneFieldId = ensureElementId(phoneInput, `${contact.id}-phone`);
+  const phoneLabelElem = document.createElement('label');
+  phoneLabelElem.setAttribute('for', phoneFieldId);
+  phoneLabelElem.textContent = getContactsText('phoneLabel', 'Phone');
+  const phoneWrapper = document.createElement('div');
+  phoneWrapper.className = 'contact-field';
+  phoneWrapper.append(phoneLabelElem, phoneInput);
+  fields.appendChild(phoneWrapper);
+
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.value = contact.email || '';
+  const emailFieldId = ensureElementId(emailInput, `${contact.id}-email`);
+  const emailLabelElem = document.createElement('label');
+  emailLabelElem.setAttribute('for', emailFieldId);
+  emailLabelElem.textContent = getContactsText('emailLabel', 'Email');
+  const emailWrapper = document.createElement('div');
+  emailWrapper.className = 'contact-field';
+  emailWrapper.append(emailLabelElem, emailInput);
+  fields.appendChild(emailWrapper);
+
+  card.appendChild(fields);
+
+  const actions = document.createElement('div');
+  actions.className = 'contact-card-actions';
+
+  const useButton = document.createElement('button');
+  useButton.type = 'button';
+  setButtonLabelWithIcon(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
+  useButton.addEventListener('click', () => {
+    createCrewRow({ ...contact, contactId: contact.id });
+    closeDialog(contactsDialog);
+    announceContactsMessage(getContactsText('contactAddedToProject', 'Contact added to the current project.'));
+  });
+  actions.appendChild(useButton);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  setButtonLabelWithIcon(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
+  deleteButton.addEventListener('click', () => {
+    const confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
+    if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
+    deleteContact(contact.id);
+  });
+  actions.appendChild(deleteButton);
+
+  card.appendChild(actions);
+
+  const persist = (resort = false) => {
+    contact.updatedAt = Date.now();
+    saveContactsToStorage(contactsCache);
+    updateContactPickers();
+    updateCrewRowsForContact(contact);
+    if (resort) {
+      contactsCache = sortContacts(contactsCache);
+      renderContactsList({ focusContactId: contact.id });
+    }
+  };
+
+  nameInput.addEventListener('input', () => {
+    contact.name = sanitizeContactValue(nameInput.value);
+    title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
+    updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+    persist();
+  });
+  nameInput.addEventListener('blur', () => persist(true));
+
+  roleSelect.addEventListener('change', () => {
+    contact.role = sanitizeContactValue(roleSelect.value);
+    persist();
+  });
+  phoneInput.addEventListener('input', () => {
+    contact.phone = sanitizeContactValue(phoneInput.value);
+    persist();
+  });
+  emailInput.addEventListener('input', () => {
+    contact.email = sanitizeContactValue(emailInput.value);
+    persist();
+  });
+
+  avatarButton.addEventListener('click', event => {
+    if (event.shiftKey) {
+      contact.avatar = '';
+      updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
+      persist();
+      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+      return;
+    }
+    avatarInput.click();
+  });
+
+  avatarInput.addEventListener('change', () => {
+    const [file] = avatarInput.files || [];
+    if (!file) return;
+    readAvatarFile(file, dataUrl => {
+      contact.avatar = dataUrl;
+      updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
+      persist();
+      announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+    }, reason => {
+      if (reason === 'tooLarge') {
+        announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+      } else {
+        announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+      }
+    });
+    avatarInput.value = '';
+  });
+
+  return { card, focusTarget: nameInput };
+}
+
+function renderContactsList(options = {}) {
+  if (!contactsList) return;
+  const { focusContactId = null } = options || {};
+  while (contactsList.firstChild) {
+    contactsList.removeChild(contactsList.firstChild);
+  }
+  if (!contactsCache.length) {
+    if (contactsEmptyState) contactsEmptyState.hidden = false;
+    return;
+  }
+  if (contactsEmptyState) contactsEmptyState.hidden = true;
+  let focusTarget = null;
+  contactsCache.forEach(contact => {
+    const { card, focusTarget: target } = createContactCard(contact);
+    contactsList.appendChild(card);
+    if (focusContactId && contact.id === focusContactId) {
+      focusTarget = target;
+    }
+  });
+  if (focusTarget) {
+    requestAnimationFrame(() => focusTarget.focus());
+  }
+}
+
+function initializeContactsModule() {
+  if (contactsInitialized) return;
+  contactsInitialized = true;
+  contactsCache = loadStoredContacts();
+  renderContactsList();
+  updateContactPickers();
+
+  if (contactsAddButton) {
+    contactsAddButton.addEventListener('click', () => {
+      const newContact = normalizeContactEntry({
+        id: generateContactId(),
+        name: '',
+        role: '',
+        phone: '',
+        email: '',
+        avatar: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+      contactsCache.push(newContact);
+      renderContactsList({ focusContactId: newContact.id });
+      saveContactsToStorage(contactsCache);
+      updateContactPickers();
+      announceContactsMessage(getContactsText('contactDraftCreated', 'New contact ready. Fill in the details.'));
+    });
+  }
+
+  if (contactsImportButton && contactsImportInput) {
+    contactsImportButton.addEventListener('click', () => contactsImportInput.click());
+    contactsImportInput.addEventListener('change', () => {
+      const [file] = contactsImportInput.files || [];
+      if (!file) return;
+      file.text()
+        .then(text => mergeImportedContacts(parseVCard(text)))
+        .catch(() => {
+          announceContactsMessage(getContactsText('importError', 'Could not import the selected file.'));
+        })
+        .finally(() => {
+          contactsImportInput.value = '';
+        });
+    });
+  }
+
+  contactsCloseButton?.addEventListener('click', () => closeDialog(contactsDialog));
+
+  contactsForm?.addEventListener('submit', event => {
+    event.preventDefault();
+    closeDialog(contactsDialog);
+  });
+
+  contactsDialog?.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeDialog(contactsDialog);
+  });
+
+  openContactsBtn?.addEventListener('click', event => {
+    event.preventDefault();
+    openDialog(contactsDialog);
+  });
+}
+
 function createCrewRow(data = {}) {
   if (!crewContainer) return;
   const row = document.createElement('div');
   row.className = 'person-row';
-  const roleSel = document.createElement('select');
-  roleSel.name = 'crewRole';
-  crewRoles.forEach(r => {
-    const opt = document.createElement('option');
-    opt.value = r;
-    const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
-    opt.textContent = roleLabels[r] || r;
-    roleSel.appendChild(opt);
-  });
-  if (data.role) roleSel.value = data.role;
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.name = 'crewName';
+
   const fallbackProjectForm = texts.en?.projectForm || {};
   const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
-  nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
-  nameInput.className = 'person-name';
-  nameInput.value = data.name || '';
-  const phoneInput = document.createElement('input');
-  phoneInput.type = 'tel';
-  phoneInput.name = 'crewPhone';
-  phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
-  phoneInput.className = 'person-phone';
-  phoneInput.value = data.phone || '';
-  const emailInput = document.createElement('input');
-  emailInput.type = 'email';
-  emailInput.name = 'crewEmail';
-  emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
-  emailInput.className = 'person-email';
-  emailInput.value = data.email || '';
+  const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
+
   const crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
   const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
   const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
   const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+  const crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
+  const avatarChangeLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+
+  const avatarDataInput = document.createElement('input');
+  avatarDataInput.type = 'hidden';
+  avatarDataInput.className = 'person-avatar-data';
+  avatarDataInput.value = typeof data.avatar === 'string' ? data.avatar : '';
+  row.appendChild(avatarDataInput);
+
+  const avatarContainer = document.createElement('div');
+  avatarContainer.className = 'person-avatar';
+  const avatarVisual = document.createElement('div');
+  avatarVisual.className = 'person-avatar-visual';
+  avatarContainer.appendChild(avatarVisual);
+  const avatarButton = document.createElement('button');
+  avatarButton.type = 'button';
+  avatarButton.setAttribute('aria-label', avatarChangeLabel);
+  avatarButton.setAttribute('title', avatarChangeLabel);
+  avatarButton.setAttribute('data-help', avatarChangeLabel);
+  avatarContainer.appendChild(avatarButton);
+  const avatarFileInput = document.createElement('input');
+  avatarFileInput.type = 'file';
+  avatarFileInput.accept = 'image/*';
+  avatarFileInput.className = 'visually-hidden';
+  avatarFileInput.tabIndex = -1;
+  avatarContainer.appendChild(avatarFileInput);
+
+  const roleSel = document.createElement('select');
+  roleSel.name = 'crewRole';
+  roleSel.className = 'person-role-select';
+  crewRoles.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.textContent = roleLabels[r] || r;
+    roleSel.appendChild(opt);
+  });
+  if (data.role && !crewRoles.includes(data.role)) {
+    const opt = document.createElement('option');
+    opt.value = data.role;
+    opt.textContent = roleLabels[data.role] || data.role;
+    roleSel.appendChild(opt);
+  }
+  if (data.role) roleSel.value = data.role;
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.name = 'crewName';
+  nameInput.className = 'person-name';
+  nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
+  nameInput.value = data.name || '';
+
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'tel';
+  phoneInput.name = 'crewPhone';
+  phoneInput.className = 'person-phone';
+  phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
+  phoneInput.value = data.phone || '';
+
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.name = 'crewEmail';
+  emailInput.className = 'person-email';
+  emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
+  emailInput.value = data.email || '';
+
+  const contactSelect = document.createElement('select');
+  contactSelect.className = 'person-contact-select';
+  setContactSelectOptions(contactSelect, data.contactId);
+
   const roleLabel = createHiddenLabel(ensureElementId(roleSel, crewRoleLabelText), crewRoleLabelText);
   const nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
   const phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
   const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+  const contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
+
+  const fieldsWrapper = document.createElement('div');
+  fieldsWrapper.className = 'person-fields';
+  fieldsWrapper.append(roleSel, nameInput, phoneInput, emailInput, contactSelect);
+
+  const actions = document.createElement('div');
+  actions.className = 'person-actions';
+
+  const linkedBadge = document.createElement('span');
+  linkedBadge.className = 'person-linked-badge';
+  linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+  linkedBadge.hidden = true;
+  actions.appendChild(linkedBadge);
+
+  const saveContactBtn = document.createElement('button');
+  saveContactBtn.type = 'button';
+  saveContactBtn.className = 'person-save-contact';
+  setButtonLabelWithIcon(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+  saveContactBtn.addEventListener('click', () => saveCrewRowAsContact(row));
+  actions.appendChild(saveContactBtn);
+
+  const manageContactsBtn = document.createElement('button');
+  manageContactsBtn.type = 'button';
+  manageContactsBtn.className = 'person-manage-contacts';
+  setButtonLabelWithIcon(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+  manageContactsBtn.addEventListener('click', () => openDialog(contactsDialog));
+  actions.appendChild(manageContactsBtn);
+
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
+  removeBtn.className = 'person-remove-btn';
   const removeBase = texts[currentLang]?.projectForm?.removeEntry
     || texts.en?.projectForm?.removeEntry
     || 'Remove';
@@ -14228,7 +15227,62 @@ function createCrewRow(data = {}) {
     }
     scheduleProjectAutoSave(true);
   });
-  row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
+  actions.appendChild(removeBtn);
+
+  [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(label => row.appendChild(label));
+  row.appendChild(avatarContainer);
+  row.appendChild(fieldsWrapper);
+  row.appendChild(actions);
+
+  if (data.contactId) {
+    row.dataset.contactId = data.contactId;
+  }
+
+  setRowAvatar(row, avatarDataInput.value, { name: data.name });
+  updateRowLinkedBadge(row);
+
+  avatarButton.addEventListener('click', event => {
+    if (event.shiftKey) {
+      setRowAvatar(row, '');
+      handleCrewRowManualChange(row);
+      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+      return;
+    }
+    avatarFileInput.click();
+  });
+
+  avatarFileInput.addEventListener('change', () => {
+    const [file] = avatarFileInput.files || [];
+    if (file) {
+      handleAvatarFileSelection(row, file);
+    }
+    avatarFileInput.value = '';
+  });
+
+  roleSel.addEventListener('change', () => handleCrewRowManualChange(row));
+  nameInput.addEventListener('input', () => {
+    refreshRowAvatarInitial(row);
+    handleCrewRowManualChange(row);
+  });
+  phoneInput.addEventListener('input', () => handleCrewRowManualChange(row));
+  emailInput.addEventListener('input', () => handleCrewRowManualChange(row));
+
+  contactSelect.addEventListener('change', () => {
+    const selectedId = contactSelect.value;
+    if (!selectedId) {
+      detachCrewRowContact(row, { preserveSelect: true });
+      handleCrewRowManualChange(row);
+      return;
+    }
+    const contact = getContactById(selectedId);
+    if (contact) {
+      applyContactToCrewRow(row, contact);
+    } else {
+      announceContactsMessage(getContactsText('contactMissingDetails', 'Saved contact not available.'));
+      detachCrewRowContact(row, { preserveSelect: true });
+    }
+  });
+
   crewContainer.appendChild(row);
   if (typeof markProjectFormDataDirty === 'function') {
     markProjectFormDataDirty();
