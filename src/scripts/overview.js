@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference */
 
 let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
@@ -747,6 +747,7 @@ function generatePrintableOverview(config = {}) {
         return null;
     };
     const lensDataset = resolveLensDataset();
+    const fallbackTexts = (texts && typeof texts === 'object' && texts.en) || {};
     const numberFormatterCache = new Map();
     const getNumberFormatter = (options) => {
         const key = JSON.stringify(options || {});
@@ -776,6 +777,33 @@ function generatePrintableOverview(config = {}) {
         }
         const maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
         return num.toFixed(maximumFractionDigits);
+    };
+    const normalizeFocusScaleValue = (value) => {
+        const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+        return normalized === 'imperial' ? 'imperial' : 'metric';
+    };
+    const resolveFocusScalePreference = () => {
+        const scope = resolveOverviewCloneScope();
+        if (scope && typeof scope.focusScalePreference === 'string') {
+            return scope.focusScalePreference;
+        }
+        if (typeof focusScalePreference === 'string') {
+            return focusScalePreference;
+        }
+        return 'metric';
+    };
+    const formatFocusScalePreference = () => {
+        const preference = normalizeFocusScaleValue(resolveFocusScalePreference());
+        const key = preference === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
+        const labelFromLang = t && typeof t[key] === 'string' ? t[key].trim() : '';
+        if (labelFromLang) {
+            return labelFromLang;
+        }
+        const labelFromFallback = typeof fallbackTexts[key] === 'string' ? fallbackTexts[key].trim() : '';
+        if (labelFromFallback) {
+            return labelFromFallback;
+        }
+        return preference === 'imperial' ? 'Imperial' : 'Metric';
     };
     const formatLengthMm = (value) => {
         const formatted = formatNumber(value, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
@@ -913,6 +941,7 @@ function generatePrintableOverview(config = {}) {
             addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
         }
         addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
+        addLensBox('lensSpecFocusScaleLabel', formatFocusScalePreference());
         if (!infoBoxes.length) {
             return '';
         }

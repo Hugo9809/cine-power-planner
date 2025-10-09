@@ -296,6 +296,7 @@
     let pinkModeEnabled = false;
     let settingsInitialPinkMode = false;
     let settingsInitialTemperatureUnit = 'celsius';
+    let settingsInitialFocusScale = 'metric';
     let settingsInitialShowAutoBackups = false;
 
     function getRoot() {
@@ -843,6 +844,21 @@
       }
     }
 
+    function getFocusScale() {
+      if (typeof preferences.getFocusScale === 'function') {
+        return preferences.getFocusScale();
+      }
+      return preferences.focusScale || 'metric';
+    }
+
+    function setFocusScale(value) {
+      if (typeof preferences.setFocusScale === 'function') {
+        preferences.setFocusScale(value);
+      } else {
+        preferences.focusScale = value;
+      }
+    }
+
     function rememberSettingsTemperatureUnitBaseline() {
       const current = getTemperatureUnit();
       settingsInitialTemperatureUnit = typeof current === 'string' ? current : 'celsius';
@@ -867,6 +883,33 @@
         }
       } else if (settings.temperatureUnit) {
         settings.temperatureUnit.value = baseline;
+      }
+    }
+
+    function rememberSettingsFocusScaleBaseline() {
+      const current = getFocusScale();
+      settingsInitialFocusScale = typeof current === 'string' ? current : 'metric';
+    }
+
+    function revertSettingsFocusScaleIfNeeded() {
+      const baseline = typeof settingsInitialFocusScale === 'string'
+        ? settingsInitialFocusScale
+        : 'metric';
+
+      const applyPreference = preferences.applyFocusScalePreference;
+      if (typeof applyPreference === 'function') {
+        if (getFocusScale() !== baseline) {
+          try {
+            applyPreference(baseline, { persist: false, forceUpdate: true });
+            setFocusScale(baseline);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Failed to revert focus scale preference.', error);
+          }
+        } else if (settings.focusScale) {
+          settings.focusScale.value = baseline;
+        }
+      } else if (settings.focusScale) {
+        settings.focusScale.value = baseline;
       }
     }
 
@@ -1067,6 +1110,8 @@
       revertSettingsPinkModeIfNeeded,
       rememberSettingsTemperatureUnitBaseline,
       revertSettingsTemperatureUnitIfNeeded,
+      rememberSettingsFocusScaleBaseline,
+      revertSettingsFocusScaleIfNeeded,
       applyShowAutoBackupsPreference,
       rememberSettingsShowAutoBackupsBaseline,
       revertSettingsShowAutoBackupsIfNeeded,

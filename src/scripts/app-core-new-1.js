@@ -2022,6 +2022,44 @@ function resolveTemperatureStorageKey() {
 }
 
 const TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
+const FOCUS_SCALE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_focusScale';
+
+function resolveFocusScaleStorageKey() {
+  const scope =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof global !== 'undefined'
+          ? global
+          : undefined;
+
+  const fallback = FOCUS_SCALE_STORAGE_KEY_FALLBACK;
+  const existing =
+    scope && typeof scope.FOCUS_SCALE_STORAGE_KEY === 'string'
+      ? scope.FOCUS_SCALE_STORAGE_KEY
+      : fallback;
+
+  if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY !== 'string') {
+    try {
+      scope.FOCUS_SCALE_STORAGE_KEY = existing;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY_NAME !== 'string') {
+    try {
+      scope.FOCUS_SCALE_STORAGE_KEY_NAME = existing;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return existing;
+}
+
+const FOCUS_SCALE_STORAGE_KEY = resolveFocusScaleStorageKey();
 const TEMPERATURE_UNITS = {
   celsius: 'celsius',
   fahrenheit: 'fahrenheit'
@@ -2033,6 +2071,40 @@ const TEMPERATURE_SCENARIOS = [
   { celsius: -10, factor: 0.625, color: '#5bc0de' },
   { celsius: -20, factor: 0.5, color: '#0275d8' }
 ];
+
+const FOCUS_SCALE_VALUES = Object.freeze({
+  metric: 'metric',
+  imperial: 'imperial',
+});
+
+function normalizeFocusScale(value) {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (normalized === FOCUS_SCALE_VALUES.imperial) {
+    return FOCUS_SCALE_VALUES.imperial;
+  }
+  return FOCUS_SCALE_VALUES.metric;
+}
+
+function getFocusScalePreference() {
+  return focusScalePreference;
+}
+
+function getFocusScaleLabelForLang(lang = currentLang, scale = focusScalePreference) {
+  const normalized = normalizeFocusScale(scale);
+  const langTexts = texts && typeof texts === 'object' ? texts[lang] : null;
+  const fallbackTexts = texts && typeof texts === 'object' ? texts.en : null;
+  const key = normalized === FOCUS_SCALE_VALUES.imperial ? 'focusScaleImperial' : 'focusScaleMetric';
+  const valueFromLang = langTexts && typeof langTexts[key] === 'string' ? langTexts[key].trim() : '';
+  if (valueFromLang) {
+    return valueFromLang;
+  }
+  const valueFromFallback =
+    fallbackTexts && typeof fallbackTexts[key] === 'string' ? fallbackTexts[key].trim() : '';
+  if (valueFromFallback) {
+    return valueFromFallback;
+  }
+  return normalized === FOCUS_SCALE_VALUES.imperial ? 'Imperial' : 'Metric';
+}
 
 function resolveLanguageCode(lang) {
   if (typeof lang === 'string' && lang.trim()) {
@@ -2327,6 +2399,37 @@ function applyTemperatureUnitPreference(unit, options = {}) {
   }
 }
 
+function applyFocusScalePreference(scale, options = {}) {
+  const normalized = normalizeFocusScale(scale);
+  const { persist = true, forceUpdate = false, reRender = true } = options || {};
+  if (!forceUpdate && focusScalePreference === normalized) {
+    return;
+  }
+  focusScalePreference = normalized;
+  updateGlobalFocusScalePreference(focusScalePreference);
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not save focus scale preference', error);
+      }
+    }
+  }
+  if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+    settingsFocusScale.value = focusScalePreference;
+  }
+  if (reRender && typeof refreshGearListIfVisible === 'function') {
+    try {
+      refreshGearListIfVisible();
+    } catch (refreshError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to refresh gear list after focus scale preference change', refreshError);
+      }
+    }
+  }
+}
+
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 var localeSort = (a, b) => collator.compare(a, b);
 
@@ -2369,6 +2472,28 @@ function updateGlobalDevicesReference(value) {
   callCoreFunctionIfAvailable('populateLensDropdown', [], { defer: true });
 }
 
+function updateGlobalFocusScalePreference(value) {
+  if (!DEVICE_GLOBAL_SCOPE) {
+    return;
+  }
+
+  try {
+    DEVICE_GLOBAL_SCOPE.focusScalePreference = value;
+  } catch (assignError) {
+    try {
+      Object.defineProperty(DEVICE_GLOBAL_SCOPE, 'focusScalePreference', {
+        configurable: true,
+        writable: true,
+        value,
+      });
+    } catch (defineError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose focus scale preference globally.', defineError);
+      }
+    }
+  }
+}
+
 function initializeDeviceDatabase() {
   if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
     return DEVICE_GLOBAL_SCOPE.devices;
@@ -2401,6 +2526,7 @@ var devices = initializeDeviceDatabase();
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
 var temperatureUnit = TEMPERATURE_UNITS.celsius;
+var focusScalePreference = FOCUS_SCALE_VALUES.metric;
 var autoGearBackupDateFormatter =
   typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -2431,10 +2557,22 @@ try {
     if (storedTemperatureUnit) {
       temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
     }
+    const storedFocusScale = localStorage.getItem(FOCUS_SCALE_STORAGE_KEY);
+    if (storedFocusScale) {
+      focusScalePreference = normalizeFocusScale(storedFocusScale);
+    } else {
+      try {
+        localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
+      } catch (focusScaleStoreError) {
+        console.warn('Could not persist default focus scale preference', focusScaleStoreError);
+      }
+    }
   }
 } catch (error) {
-  console.warn('Could not load temperature unit preference', error);
+  console.warn('Could not load temperature or focus scale preference', error);
 }
+
+updateGlobalFocusScalePreference(focusScalePreference);
 
 var SUPPORTED_MOUNT_VOLTAGE_TYPES = (function resolveSupportedMounts() {
   if (
@@ -8906,6 +9044,23 @@ function setLanguage(lang) {
         option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
       });
       settingsTemperatureUnit.value = temperatureUnit;
+    }
+  }
+  const settingsFocusScaleLabel = document.getElementById('settingsFocusScaleLabel');
+  if (settingsFocusScaleLabel) {
+    settingsFocusScaleLabel.textContent = texts[lang].focusScaleSetting;
+    const focusScaleHelp =
+      texts[lang].focusScaleSettingHelp || texts[lang].focusScaleSetting;
+    settingsFocusScaleLabel.setAttribute('data-help', focusScaleHelp);
+    if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+      settingsFocusScale.setAttribute('data-help', focusScaleHelp);
+      settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
+      Array.from(settingsFocusScale.options || []).forEach(option => {
+        if (!option) return;
+        const normalized = normalizeFocusScale(option.value);
+        option.textContent = getFocusScaleLabelForLang(lang, normalized);
+      });
+      settingsFocusScale.value = focusScalePreference;
     }
   }
   const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
@@ -16612,6 +16767,7 @@ var settingsPinkMode = document.getElementById("settingsPinkMode");
 var accentColorInput = document.getElementById("accentColorInput");
 var accentColorResetButton = document.getElementById("accentColorReset");
 var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+var settingsFocusScale = document.getElementById('settingsFocusScale');
 var settingsFontSize = document.getElementById("settingsFontSize");
 var settingsFontFamily = document.getElementById("settingsFontFamily");
 const localFontsButton = document.getElementById("localFontsButton");
@@ -18708,6 +18864,8 @@ const CORE_RUNTIME_CONSTANTS = {
   TEMPERATURE_STORAGE_KEY,
   TEMPERATURE_UNITS,
   TEMPERATURE_SCENARIOS,
+  FOCUS_SCALE_STORAGE_KEY,
+  FOCUS_SCALE_VALUES,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
 };
