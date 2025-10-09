@@ -4728,7 +4728,7 @@
               </li>
               <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
               <li>
-                Each category includes an <strong>Add custom item</strong> button so you can append unique gear with your own quantity, name and attributes. After creating an entry, tap the inline edit icon to adjust values, add rental notes or exclude the item from the rental house without leaving the gear list. Notes you add appear directly under the preview so everyone sees the context, and the minus button inside the entry still removes items the moment plans change.
+                Each category includes an <strong>Add custom item</strong> button so you can append unique gear with your own quantity, name and attributes. After creating an entry, tap the inline edit icon to open the refreshed popup with its live summary—there you can adjust values, add rental notes or use the dedicated exclude-from-rental button without leaving the gear list. Notes you add appear directly under the preview so everyone sees the context, and the minus button inside the entry still removes items the moment plans change.
               </li>
               <li>
                 Custom entries save instantly, are included in share links, backups and restores, and remain pinned to their category in printable overviews so collaborators always see the manual additions alongside generated items.
@@ -6061,37 +6061,44 @@
     aria-labelledby="gearItemEditTitle"
   >
     <form id="gearItemEditForm" method="dialog" class="modal-surface gear-item-edit-form">
-      <h3 id="gearItemEditTitle">Edit gear item</h3>
+      <div class="gear-item-edit-header">
+        <div class="gear-item-edit-header-body">
+          <h3 id="gearItemEditTitle">Edit gear item</h3>
+          <p id="gearItemEditPreview" class="gear-item-edit-preview" hidden></p>
+        </div>
+      </div>
       <div class="gear-item-edit-fields">
-        <div class="form-row">
-          <label id="gearItemEditQuantityLabel" for="gearItemEditQuantity">Quantity</label>
-          <input
-            id="gearItemEditQuantity"
-            name="gearItemEditQuantity"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-          />
+        <div class="gear-item-edit-grid">
+          <div class="form-row">
+            <label id="gearItemEditQuantityLabel" for="gearItemEditQuantity">Quantity</label>
+            <input
+              id="gearItemEditQuantity"
+              name="gearItemEditQuantity"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+            />
+          </div>
+          <div class="form-row">
+            <label id="gearItemEditNameLabel" for="gearItemEditName">Item name</label>
+            <input
+              id="gearItemEditName"
+              name="gearItemEditName"
+              type="text"
+              autocomplete="off"
+            />
+          </div>
+          <div class="form-row">
+            <label id="gearItemEditAttributesLabel" for="gearItemEditAttributes">Attributes</label>
+            <input
+              id="gearItemEditAttributes"
+              name="gearItemEditAttributes"
+              type="text"
+              autocomplete="off"
+            />
+          </div>
         </div>
-        <div class="form-row">
-          <label id="gearItemEditNameLabel" for="gearItemEditName">Item name</label>
-          <input
-            id="gearItemEditName"
-            name="gearItemEditName"
-            type="text"
-            autocomplete="off"
-          />
-        </div>
-        <div class="form-row">
-          <label id="gearItemEditAttributesLabel" for="gearItemEditAttributes">Attributes</label>
-          <input
-            id="gearItemEditAttributes"
-            name="gearItemEditAttributes"
-            type="text"
-            autocomplete="off"
-          />
-        </div>
-        <div class="form-row">
+        <div class="form-row form-row--full">
           <label id="gearItemEditNoteLabel" for="gearItemEditNote">Note</label>
           <textarea
             id="gearItemEditNote"
@@ -6100,10 +6107,20 @@
             autocomplete="off"
           ></textarea>
         </div>
-        <label id="gearItemEditRentalContainer" class="gear-item-edit-checkbox">
-          <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
-          <span id="gearItemEditRentalLabel">Exclude from rental house</span>
-        </label>
+        <section
+          id="gearItemEditRentalSection"
+          class="gear-item-edit-rental"
+          aria-labelledby="gearItemEditRentalLabel"
+        >
+          <label id="gearItemEditRentalContainer" class="gear-item-edit-checkbox">
+            <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
+            <span id="gearItemEditRentalLabel">Exclude from rental house</span>
+          </label>
+          <button type="button" id="gearItemEditRentalToggle" class="gear-item-edit-rental-btn">
+            <span id="gearItemEditRentalToggleText">Exclude from rental house</span>
+          </button>
+          <p id="gearItemEditRentalDescription" class="gear-item-edit-rental-description"></p>
+        </section>
       </div>
       <div class="dialog-actions">
         <button type="button" id="gearItemEditCancel">Cancel</button>
