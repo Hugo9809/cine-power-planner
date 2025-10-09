@@ -221,6 +221,96 @@ var COMPRESSION_CANDIDATE_CACHE_MISS =
 var STORAGE_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(8);
 var MIGRATION_BACKUP_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(6);
 
+var AUTO_BACKUP_COMPRESSION_CACHE =
+  typeof Map === 'function'
+    ? new Map()
+    : null;
+var AUTO_BACKUP_COMPRESSION_CACHE_KEYS = [];
+var AUTO_BACKUP_COMPRESSION_CACHE_LIMIT = 16;
+
+function cloneAutoBackupCompressionValue(value) {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+
+  var clone = {};
+  var keys = Object.keys(value);
+  for (var index = 0; index < keys.length; index += 1) {
+    var key = keys[index];
+    clone[key] = value[key];
+  }
+
+  return clone;
+}
+
+function readAutoBackupCompressionCache(signature) {
+  if (!AUTO_BACKUP_COMPRESSION_CACHE || typeof signature !== 'string' || !signature) {
+    return null;
+  }
+
+  var cached;
+  try {
+    cached = AUTO_BACKUP_COMPRESSION_CACHE.get(signature);
+  } catch (cacheReadError) {
+    cached = null;
+    void cacheReadError;
+  }
+
+  if (!cached || !cached.payload) {
+    return null;
+  }
+
+  return {
+    payload: cloneAutoBackupCompressionValue(cached.payload),
+    compression: cached.compression
+      ? cloneAutoBackupCompressionValue(cached.compression)
+      : null,
+  };
+}
+
+function writeAutoBackupCompressionCache(signature, payload, compression) {
+  if (
+    !AUTO_BACKUP_COMPRESSION_CACHE
+    || typeof signature !== 'string'
+    || !signature
+    || !isCompressedAutoBackupSnapshotPayload(payload)
+  ) {
+    return;
+  }
+
+  var entry = {
+    payload: cloneAutoBackupCompressionValue(payload),
+    compression: compression ? cloneAutoBackupCompressionValue(compression) : null,
+  };
+
+  try {
+    AUTO_BACKUP_COMPRESSION_CACHE.set(signature, entry);
+  } catch (cacheStoreError) {
+    void cacheStoreError;
+    return;
+  }
+
+  var existingIndex = AUTO_BACKUP_COMPRESSION_CACHE_KEYS.indexOf(signature);
+  if (existingIndex !== -1) {
+    AUTO_BACKUP_COMPRESSION_CACHE_KEYS.splice(existingIndex, 1);
+  }
+
+  AUTO_BACKUP_COMPRESSION_CACHE_KEYS.push(signature);
+
+  while (AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length > AUTO_BACKUP_COMPRESSION_CACHE_LIMIT) {
+    var oldest = AUTO_BACKUP_COMPRESSION_CACHE_KEYS.shift();
+    if (!oldest || oldest === signature) {
+      continue;
+    }
+
+    try {
+      AUTO_BACKUP_COMPRESSION_CACHE.delete(oldest);
+    } catch (cacheDeleteError) {
+      void cacheDeleteError;
+    }
+  }
+}
+
 // Allow unlimited compression warnings so diagnostics are never suppressed.
 var COMPRESSION_WARNING_LIMIT = Number.POSITIVE_INFINITY;
 var COMPRESSION_WARNING_BATCH_SIZE = 8;
@@ -1481,15 +1571,41 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
     && existingSignature === computedSignature
     && isCompressedAutoBackupSnapshotPayload(opts.existingCompressedPayload)
   ) {
+    const reusedPayload = cloneAutoBackupValue(opts.existingCompressedPayload, { stripMetadata: true });
+    const reusedCompression = isPlainObject(opts.existingPayloadCompression)
+      ? { ...opts.existingPayloadCompression }
+      : null;
+    if (
+      !opts.disableCompression
+      && typeof computedSignature === 'string'
+      && computedSignature
+    ) {
+      writeAutoBackupCompressionCache(computedSignature, reusedPayload, reusedCompression);
+    }
     return {
-      payload: cloneAutoBackupValue(opts.existingCompressedPayload, { stripMetadata: true }),
-      compression: isPlainObject(opts.existingPayloadCompression)
-        ? { ...opts.existingPayloadCompression }
-        : null,
+      payload: reusedPayload,
+      compression: reusedCompression,
       compressed: true,
       reused: true,
       payloadSignature: computedSignature,
     };
+  }
+
+  if (
+    !opts.disableCompression
+    && typeof computedSignature === 'string'
+    && computedSignature
+  ) {
+    const cached = readAutoBackupCompressionCache(computedSignature);
+    if (cached && cached.payload) {
+      return {
+        payload: cached.payload,
+        compression: cached.compression,
+        compressed: true,
+        reused: true,
+        payloadSignature: computedSignature,
+      };
+    }
   }
 
   let serialized;
@@ -1535,6 +1651,30 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
     compressedLength: candidate.wrappedLength,
     compressionVariant: candidate.compressionVariant || null,
   };
+
+  const compressionInfo =
+    typeof candidate.originalLength === 'number'
+      && Number.isFinite(candidate.originalLength)
+      && typeof candidate.wrappedLength === 'number'
+      && Number.isFinite(candidate.wrappedLength)
+      ? {
+        originalLength: candidate.originalLength,
+        compressedLength: candidate.wrappedLength,
+        compressionVariant: candidate.compressionVariant || null,
+      }
+      : null;
+
+  if (
+    !opts.disableCompression
+    && typeof computedSignature === 'string'
+    && computedSignature
+  ) {
+    writeAutoBackupCompressionCache(
+      computedSignature,
+      compressedPayload,
+      compressionInfo,
+    );
+  }
 
   if (
     shouldReport
