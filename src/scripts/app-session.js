@@ -33,7 +33,9 @@
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty, loadAutoGearMonitorDefaults */
+          markProjectFormDataDirty, loadAutoGearMonitorDefaults,
+          settingsFocusScale, focusScalePreference, normalizeFocusScale,
+          applyFocusScalePreference: true */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -4719,6 +4721,8 @@ let rememberSettingsPinkModeBaseline = () => {};
 let revertSettingsPinkModeIfNeeded = () => {};
 let rememberSettingsTemperatureUnitBaseline = () => {};
 let revertSettingsTemperatureUnitIfNeeded = () => {};
+let rememberSettingsFocusScaleBaseline = () => {};
+let revertSettingsFocusScaleIfNeeded = () => {};
 let applyShowAutoBackupsPreference = () => {};
 let rememberSettingsShowAutoBackupsBaseline = () => {};
 let revertSettingsShowAutoBackupsIfNeeded = () => {};
@@ -4754,6 +4758,7 @@ const appearanceContext = {
     relaxedSpacing: typeof settingsRelaxedSpacing !== 'undefined' ? settingsRelaxedSpacing : null,
     showAutoBackups: typeof settingsShowAutoBackups !== 'undefined' ? settingsShowAutoBackups : null,
     temperatureUnit: typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : null,
+    focusScale: typeof settingsFocusScale !== 'undefined' ? settingsFocusScale : null,
   },
   accent: {
     accentColorInput: typeof accentColorInput !== 'undefined' ? accentColorInput : null,
@@ -4813,6 +4818,26 @@ const appearanceContext = {
       temperatureUnit = value;
     },
     applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    getFocusScale: () => {
+      const globalScale = typeof focusScalePreference === 'string'
+        ? focusScalePreference
+        : sessionFocusScale;
+      sessionFocusScale =
+        typeof normalizeFocusScale === 'function' ? normalizeFocusScale(globalScale) : globalScale;
+      return sessionFocusScale;
+    },
+    setFocusScale: value => {
+      sessionFocusScale =
+        typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
+    },
+    applyFocusScalePreference:
+      typeof applyFocusScalePreference === 'function'
+        ? (value, opts) => {
+            applyFocusScalePreference(value, opts);
+            sessionFocusScale =
+              typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
+          }
+        : null,
     getShowAutoBackups: () => showAutoBackups,
     setShowAutoBackups: value => {
       showAutoBackups = Boolean(value);
@@ -4864,6 +4889,8 @@ if (appearanceModule) {
   revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
   rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
   revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  rememberSettingsFocusScaleBaseline = appearanceModule.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
+  revertSettingsFocusScaleIfNeeded = appearanceModule.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
   applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
   rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
   revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
@@ -4882,6 +4909,9 @@ if (appearanceModule) {
 }
 
 let darkModeEnabled = false;
+let sessionFocusScale = typeof focusScalePreference === 'string'
+  ? focusScalePreference
+  : 'metric';
 try {
   const stored = localStorage.getItem("darkMode");
   if (stored !== null) {
@@ -4929,6 +4959,7 @@ try {
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
+rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
@@ -4961,6 +4992,22 @@ if (settingsTemperatureUnit) {
       });
     }
   });
+}
+
+if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+  settingsFocusScale.addEventListener('change', () => {
+    if (typeof applyFocusScalePreference === 'function') {
+      applyFocusScalePreference(settingsFocusScale.value, { persist: false });
+      sessionFocusScale =
+        typeof normalizeFocusScale === 'function'
+          ? normalizeFocusScale(settingsFocusScale.value)
+          : settingsFocusScale.value;
+    }
+  });
+}
+
+if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+  settingsFocusScale.value = sessionFocusScale;
 }
 
 const mountVoltageInputNodes = Array.from(
@@ -5041,6 +5088,7 @@ const mountVoltageResetButtonRef = (() => {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsFocusScaleBaseline();
     rememberSettingsShowAutoBackupsBaseline();
       rememberSettingsMountVoltagesBaseline();
       const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
@@ -5139,6 +5187,8 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -5241,6 +5291,16 @@ const mountVoltageResetButtonRef = (() => {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
+      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+        if (typeof applyFocusScalePreference === 'function') {
+          applyFocusScalePreference(settingsFocusScale.value);
+        }
+        rememberSettingsFocusScaleBaseline();
+        sessionFocusScale =
+          typeof normalizeFocusScale === 'function'
+            ? normalizeFocusScale(settingsFocusScale.value)
+            : settingsFocusScale.value;
+      }
       applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
         persist: true,
         triggerUpdate: true
@@ -5289,6 +5349,7 @@ const mountVoltageResetButtonRef = (() => {
       collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
+      rememberSettingsFocusScaleBaseline();
       rememberSettingsShowAutoBackupsBaseline();
       rememberSettingsMountVoltagesBaseline();
       closeDialog(settingsDialog);
@@ -5302,6 +5363,8 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -5322,6 +5385,8 @@ const mountVoltageResetButtonRef = (() => {
     rememberSettingsPinkModeBaseline();
     revertSettingsTemperatureUnitIfNeeded();
     rememberSettingsTemperatureUnitBaseline();
+    revertSettingsFocusScaleIfNeeded();
+    rememberSettingsFocusScaleBaseline();
     revertSettingsShowAutoBackupsIfNeeded();
     rememberSettingsShowAutoBackupsBaseline();
     revertSettingsMountVoltagesIfNeeded();
@@ -13145,6 +13210,8 @@ if (helpButton && helpDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       invokeSessionRevertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');

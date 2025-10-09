@@ -1,7 +1,7 @@
 // storage.js - Handles reading from and writing to localStorage.
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
-          resetMountVoltagePreferences */
+          resetMountVoltagePreferences, applyFocusScalePreference */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName */
 
 (function initializeStorageModule() {
@@ -1350,6 +1350,7 @@ ensureCustomFontStorageKeyName();
 
 var CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 var TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_temperatureUnit';
+var FOCUS_SCALE_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_focusScale';
 
 function resolveTemperatureUnitStorageKey() {
   if (!GLOBAL_SCOPE) {
@@ -1386,6 +1387,38 @@ function resolveTemperatureUnitStorageKey() {
 }
 
 var TEMPERATURE_UNIT_STORAGE_KEY_NAME = resolveTemperatureUnitStorageKey();
+var FOCUS_SCALE_STORAGE_KEY_NAME = (function resolveFocusScaleStorageKey() {
+  if (!GLOBAL_SCOPE) {
+    return FOCUS_SCALE_STORAGE_KEY_DEFAULT;
+  }
+
+  const existing =
+    typeof GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY === 'string'
+      ? GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY
+      : FOCUS_SCALE_STORAGE_KEY_DEFAULT;
+
+  if (GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY !== existing) {
+    try {
+      GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY = existing;
+    } catch (assignError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to assign focus scale storage key globally.', assignError);
+      }
+    }
+  }
+
+  if (GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY_NAME !== existing) {
+    try {
+      GLOBAL_SCOPE.FOCUS_SCALE_STORAGE_KEY_NAME = existing;
+    } catch (defineError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose focus scale storage key globally.', defineError);
+      }
+    }
+  }
+
+  return existing;
+})();
 var AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 var AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 var AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -2442,6 +2475,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
+  FOCUS_SCALE_STORAGE_KEY_NAME,
 ]);
 
 Array.from(RAW_STORAGE_BACKUP_KEYS).forEach((key) => {
@@ -11336,6 +11370,11 @@ function clearAllData() {
       preferences.temperatureUnit = temperatureUnit;
     }
 
+    const focusScale = readLocalStorageValue(FOCUS_SCALE_STORAGE_KEY_NAME);
+    if (focusScale) {
+      preferences.focusScale = focusScale;
+    }
+
     return preferences;
   }
 
@@ -12044,6 +12083,19 @@ function convertStorageSnapshotToData(snapshot) {
     }
   }
 
+  const focusScaleEntry = readSnapshotEntry(snapshot, FOCUS_SCALE_STORAGE_KEY_NAME);
+  if (focusScaleEntry) {
+    markSnapshotEntry(focusScaleEntry);
+    const storedScale = parseSnapshotStringValue(focusScaleEntry);
+    if (typeof storedScale === 'string') {
+      const normalizedScale = storedScale.trim();
+      if (normalizedScale) {
+        preferences.focusScale = normalizedScale;
+        hasAssignments = true;
+      }
+    }
+  }
+
   const mountVoltageEntry = readSnapshotEntry(snapshot, mountVoltageKeyName);
   if (mountVoltageEntry) {
     markSnapshotEntry(mountVoltageEntry);
@@ -12133,6 +12185,24 @@ function importAllData(allData, options = {}) {
         }
       } else if (unit === null) {
         safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY_NAME, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, 'focusScale')) {
+      const scale = prefs.focusScale;
+      if (typeof scale === 'string') {
+        const normalizedScale = scale.trim();
+        if (normalizedScale) {
+          safeSetLocalStorage(FOCUS_SCALE_STORAGE_KEY_NAME, normalizedScale);
+          if (typeof applyFocusScalePreference === 'function') {
+            try {
+              applyFocusScalePreference(normalizedScale, { persist: false, forceUpdate: true });
+            } catch (focusScaleError) {
+              console.warn('Unable to apply imported focus scale preference', focusScaleError);
+            }
+          }
+        }
+      } else if (scale === null) {
+        safeSetLocalStorage(FOCUS_SCALE_STORAGE_KEY_NAME, null);
       }
     }
     if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {
