@@ -3060,6 +3060,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 95,
           "minFocusMeters": 0.28,
@@ -3074,7 +3075,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS High Speed MK III 25mm T1.3": {
           "brand": "ZEISS",
@@ -3085,6 +3087,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 75,
           "minFocusMeters": 0.25,
@@ -3100,6 +3103,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 64,
           "minFocusMeters": 0.3,
@@ -3115,6 +3119,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 62,
           "minFocusMeters": 0.6,
@@ -3130,6 +3135,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 75,
           "minFocusMeters": 0.7,
@@ -3145,6 +3151,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 85,
           "minFocusMeters": 0.91,
@@ -3159,7 +3166,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Tokina Vista One 18mm T1.5": {
           "brand": "Tokina",
@@ -3227,6 +3235,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.24,
           "weight_g": 1600,
           "notes": "Full-frame 1:1 macro prime with LDS support contacts."
@@ -3241,6 +3250,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.31,
           "weight_g": 1750,
           "notes": "Macro prime delivering 1:1 reproduction with swappable mounts."
@@ -3255,6 +3265,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.41,
           "weight_g": 1900,
           "notes": "Long macro covering full frame with extended working distance."
@@ -3314,7 +3325,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 50mm T2.4": {
           "brand": "LOMO",
@@ -3324,7 +3336,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 75mm T2.4": {
           "brand": "LOMO",
@@ -3334,7 +3347,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 100mm T3.2": {
           "brand": "LOMO",
@@ -3344,7 +3358,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Canon CN7x17 17-120mm T2.95-3.9": {
           "brand": "Canon",
@@ -3371,6 +3386,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 0.6,
           "weight_g": 3400,
           "lengthMm": 233.3,
@@ -3386,6 +3402,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 1,
           "weight_g": 3500,
           "lengthMm": 238.4,
@@ -3415,6 +3432,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 10,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.3,
           "weight_g": 1200,
           "imageCircleMm": 43.3,
@@ -3526,7 +3544,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
           "brand": "Angénieux",
@@ -3619,6 +3638,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 25,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -3636,6 +3656,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -3840,6 +3861,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1.5,
           "weight_g": 3250,
           "imageCircleMm": 44.7,
@@ -4028,6 +4050,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.22,
           "weight_g": 1800,
           "lengthMm": 112
@@ -4118,6 +4141,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.38,
           "weight_g": 1000,
           "lengthMm": 91,
@@ -4178,6 +4202,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1,
           "weight_g": 1200,
           "lengthMm": 91,
@@ -4207,6 +4232,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 2.6,
           "weight_g": 2600,
           "lengthMm": 166
@@ -4316,7 +4342,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 40mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -4327,7 +4354,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 50mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -4354,7 +4382,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 75mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -4395,7 +4424,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
           "brand": "ZEISS",
@@ -4465,7 +4495,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 24mm T1.5": {
           "brand": "ZEISS",
@@ -4475,7 +4506,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 35mm T1.5": {
           "brand": "ZEISS",
@@ -4485,7 +4517,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 50mm T1.5": {
           "brand": "ZEISS",
@@ -4495,7 +4528,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 75mm T1.5": {
           "brand": "ZEISS",
@@ -4505,7 +4539,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 100mm T1.5": {
           "brand": "ZEISS",
@@ -4515,7 +4550,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Supreme Prime Radiance 18mm T1.5": {
           "brand": "ZEISS",
@@ -4771,7 +4807,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 40mm T2.0": {
           "brand": "Leitz",
@@ -4828,7 +4865,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 135mm T2.0": {
           "brand": "Leitz",
@@ -5348,7 +5386,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke S7/i FF 60mm T2.5": {
           "brand": "Cooke",
@@ -5391,7 +5430,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke S7/i FF 300mm T3.3": {
           "brand": "Cooke",
@@ -5434,7 +5474,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke S8/i FF 27mm T1.4": {
           "brand": "Cooke",
@@ -5461,7 +5502,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke S8/i FF 40mm T1.4": {
           "brand": "Cooke",
@@ -5472,7 +5514,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke S8/i FF 50mm T1.4": {
           "brand": "Cooke",
@@ -5483,7 +5526,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 28.2
         },
         "Cooke S8/i FF 65mm T1.4": {
           "brand": "Cooke",
@@ -5510,7 +5554,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Cooke S8/i FF 100mm T1.4": {
           "brand": "Cooke",
@@ -5521,7 +5566,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Fujinon Premista 19-45mm T2.9": {
           "brand": "Fujinon",
@@ -5612,7 +5658,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "DZOFilm Vespid 50mm T2.1": {
           "brand": "DZOFilm",
@@ -5623,7 +5670,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "DZOFilm Vespid 75mm T2.1": {
           "brand": "DZOFilm",
@@ -5634,7 +5682,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Meike FF Prime 24mm T2.1": {
           "brand": "Meike",
@@ -5645,7 +5694,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "Meike FF Prime 35mm T2.1": {
           "brand": "Meike",
@@ -5656,7 +5706,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "Cooke S4/i 12mm T2.0": {
           "brand": "Cooke",
@@ -5974,6 +6025,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 61,
           "minFocusMeters": 0.2,
           "weight_g": 820,
@@ -5989,6 +6041,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.2,
           "weight_g": 860,
@@ -6004,6 +6057,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.23,
           "weight_g": 820,
@@ -6019,6 +6073,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.33,
           "weight_g": 1040,
@@ -6034,6 +6089,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.38,
           "weight_g": 1630,
           "notes": "Front Ø110 mm; longer prime"
@@ -6046,7 +6102,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 25mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6056,7 +6113,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 35mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6066,7 +6124,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 40mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6076,7 +6135,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 75mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6086,7 +6146,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "P+S Technik Kowa Prominar 40mm T2.3": {
           "brand": "P+S Technik",
@@ -6970,7 +7031,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 27mm T1.3 LF": {
           "brand": "SIGMA",
@@ -6980,7 +7042,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 32mm T1.3 LF": {
           "brand": "SIGMA",
@@ -6990,7 +7053,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 35mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7000,7 +7064,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 40mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7010,7 +7075,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 50mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7020,7 +7086,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 65mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7030,7 +7097,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 75mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7040,7 +7108,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "NiSi AUREUS Prime 18mm T1.4": {
           "brand": "NiSi",

@@ -3805,6 +3805,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 95,
           "minFocusMeters": 0.28,
@@ -3819,7 +3820,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS High Speed MK III 25mm T1.3": {
           "brand": "ZEISS",
@@ -3830,6 +3832,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 75,
           "minFocusMeters": 0.25,
@@ -3845,6 +3848,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 64,
           "minFocusMeters": 0.3,
@@ -3860,6 +3864,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 62,
           "minFocusMeters": 0.6,
@@ -3875,6 +3880,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 75,
           "minFocusMeters": 0.7,
@@ -3890,6 +3896,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "mount": "PL",
           "lengthMm": 85,
           "minFocusMeters": 0.91,
@@ -3904,7 +3911,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Tokina Vista One 18mm T1.5": {
           "brand": "Tokina",
@@ -3976,6 +3984,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.24,
           "weight_g": 1600,
           "notes": "Full-frame 1:1 macro prime; includes LDS metadata contacts"
@@ -3990,6 +3999,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.31,
           "weight_g": 1750,
           "notes": "Full-frame macro with user-swappable mount options and 300° focus rotation"
@@ -4004,6 +4014,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 50,
           "minFocusMeters": 0.41,
           "weight_g": 1900,
           "notes": "Long macro prime covering full frame with extended close focus"
@@ -4063,7 +4074,8 @@ const gear = {
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 50mm T2.4": {
           "brand": "LOMO",
@@ -4073,7 +4085,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 75mm T2.4": {
           "brand": "LOMO",
@@ -4083,7 +4096,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "LOMO Anamorphic RF 100mm T3.2": {
           "brand": "LOMO",
@@ -4093,7 +4107,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Canon CN7x17 17-120mm T2.95-3.9": {
           "brand": "Canon",
@@ -4121,6 +4136,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 0.6,
           "weight_g": 3400,
           "lengthMm": 233.3,
@@ -4136,6 +4152,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 1,
           "weight_g": 3500,
           "lengthMm": 238.4,
@@ -4165,6 +4182,7 @@ const gear = {
           "rodLengthCm": 10,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.3,
           "weight_g": 1200,
           "imageCircleMm": 43.3,
@@ -4434,6 +4452,7 @@ const gear = {
           "rodLengthCm": 25,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -4451,6 +4470,7 @@ const gear = {
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -4655,6 +4675,7 @@ const gear = {
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1.5,
           "weight_g": 3250,
           "imageCircleMm": 44.7,
@@ -4740,6 +4761,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 43.27,
           "minFocusMeters": 1,
           "weight_g": 3600,
           "imageCircleMm": 46,
@@ -4845,6 +4867,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.22,
           "weight_g": 1800,
           "lengthMm": 112
@@ -4874,6 +4897,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 43.27,
           "minFocusMeters": 0.28,
           "weight_g": 1200,
           "lengthMm": 91,
@@ -4935,6 +4959,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.38,
           "weight_g": 1000,
           "lengthMm": 91,
@@ -4995,6 +5020,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1,
           "weight_g": 1200,
           "lengthMm": 91,
@@ -5024,6 +5050,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 2.6,
           "weight_g": 2600,
           "lengthMm": 166
@@ -5133,7 +5160,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 40mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -5144,7 +5172,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 50mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -5171,7 +5200,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Master Prime 75mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -5212,7 +5242,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
           "brand": "ZEISS",
@@ -5282,7 +5313,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 24mm T1.5": {
           "brand": "ZEISS",
@@ -5292,7 +5324,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 35mm T1.5": {
           "brand": "ZEISS",
@@ -5302,7 +5335,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 50mm T1.5": {
           "brand": "ZEISS",
@@ -5312,7 +5346,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 75mm T1.5": {
           "brand": "ZEISS",
@@ -5322,7 +5357,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Nano Prime 100mm T1.5": {
           "brand": "ZEISS",
@@ -5332,7 +5368,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "ZEISS Supreme Prime Radiance 18mm T1.5": {
           "brand": "ZEISS",
@@ -5588,7 +5625,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 40mm T2.0": {
           "brand": "Leitz",
@@ -5645,7 +5683,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36
         },
         "Leitz Summicron-C 135mm T2.0": {
           "brand": "Leitz",
@@ -6852,6 +6891,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 61,
           "minFocusMeters": 0.2,
           "weight_g": 820,
@@ -6867,6 +6907,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.2,
           "weight_g": 860,
@@ -6882,6 +6923,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.23,
           "weight_g": 820,
@@ -6897,6 +6939,7 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "lengthMm": 69,
           "minFocusMeters": 0.33,
           "weight_g": 1040,
@@ -6924,7 +6967,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 25mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6934,7 +6978,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 35mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6944,7 +6989,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 40mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6954,7 +7000,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "Cooke Speed Panchro 75mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -6964,7 +7011,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 31.14
         },
         "P+S Technik Kowa Prominar 40mm T2.3": {
           "brand": "P+S Technik",
@@ -7828,7 +7876,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 28.2
         },
         "Sony FE 24–70mm f/2.8 G Master II": {
           "brand": "Sony",
@@ -7838,7 +7887,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Sony FE 70–200mm f/2.8 G Master II": {
           "brand": "Sony",
@@ -7848,7 +7898,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 28mm f/2.8": {
           "brand": "Minolta",
@@ -7858,7 +7909,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 35mm f/1.4": {
           "brand": "Minolta",
@@ -7868,7 +7920,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 50mm f/1.4": {
           "brand": "Minolta",
@@ -7878,7 +7931,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 85mm f/1.8": {
           "brand": "Minolta",
@@ -7888,7 +7942,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "SIGMA Aizu Prime Line 25mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7898,7 +7953,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 27mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7908,7 +7964,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 32mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7918,7 +7975,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 35mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7928,7 +7986,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 40mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7938,7 +7997,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 50mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7948,7 +8008,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 65mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7958,7 +8019,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "SIGMA Aizu Prime Line 75mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7968,7 +8030,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "NiSi AUREUS Prime 18mm T1.4": {
           "brand": "NiSi",
@@ -8618,6 +8681,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "anamorphic",
           "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
           "notes": "Proteus wide 2x anamorphic prime with full-frame/VV coverage and drop-in rear filter slot."
         },
         "Laowa Proteus 2x 45mm T2": {
@@ -8631,6 +8695,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "anamorphic",
           "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
           "notes": "Normal-length Proteus 2x anamorphic with unified 114 mm fronts across the set."
         },
         "Laowa Proteus 2x 60mm T2": {
@@ -8644,6 +8709,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "anamorphic",
           "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
           "notes": "Proteus mid-tele prime—brace with rods when adding motors or heavy matte boxes."
         },
         "Laowa Proteus 2x 85mm T2": {
@@ -8657,6 +8723,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "anamorphic",
           "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
           "notes": "Longest Proteus focal length retaining the same housing and 114 mm clamp-on interface."
         },
         "NiSi Athena Prime 14mm T2.4": {
@@ -8808,6 +8875,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 43.27,
           "minFocusMeters": 0.5,
           "notes": "Flex Zoom wide with interchangeable PL/EF mounts, Cooke /i metadata, and servo-ready drive port."
         },
@@ -8821,6 +8889,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 43.27,
           "minFocusMeters": 1,
           "notes": "Tele Flex Zoom sharing the 114 mm front, consistent gear spacing, and swap-ready mount system."
         }
