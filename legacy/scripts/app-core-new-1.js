@@ -114,6 +114,261 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var CORE_TEMPERATURE_QUEUE_KEY = "__cinePendingTemperatureNote";
   var CORE_TEMPERATURE_RENDER_NAME = "renderTemperatureNote";
+  var ICON_FONT_KEYS = Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text'
+  });
+  var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
+  function iconGlyph(char) {
+    var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
+    var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+    return Object.freeze({
+      char: char,
+      font: normalizedFont
+    });
+  }
+  function resolveIconGlyph(glyph) {
+    if (!glyph) {
+      return {
+        char: '',
+        font: ICON_FONT_KEYS.UICONS,
+        className: '',
+        size: undefined
+      };
+    }
+    if (glyph.markup) {
+      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      return {
+        markup: glyph.markup,
+        className: glyph.className || '',
+        font: ICON_FONT_KEYS.UICONS,
+        size: size
+      };
+    }
+    if (typeof glyph === 'string') {
+      return {
+        char: glyph,
+        font: ICON_FONT_KEYS.UICONS,
+        className: '',
+        size: undefined
+      };
+    }
+    if (_typeof(glyph) === 'object') {
+      var char = typeof glyph.char === 'string' ? glyph.char : '';
+      var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
+      var className = typeof glyph.className === 'string' ? glyph.className : '';
+      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      if (glyph.markup) {
+        return {
+          markup: glyph.markup,
+          className: className,
+          font: fontKey,
+          size: _size
+        };
+      }
+      return {
+        char: char,
+        font: fontKey,
+        className: className,
+        size: _size
+      };
+    }
+    return {
+      char: '',
+      font: ICON_FONT_KEYS.UICONS,
+      className: '',
+      size: undefined
+    };
+  }
+  function applyIconGlyph(element, glyph) {
+    if (!element) return;
+    var resolved = resolveIconGlyph(glyph);
+    if (resolved.markup) {
+      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+      element.setAttribute('aria-hidden', 'true');
+      if (resolved.className) {
+        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
+          return element.classList.add(cls);
+        });
+      }
+      element.removeAttribute('data-icon-font');
+      return;
+    }
+    var char = resolved.char || '';
+    element.textContent = char;
+    if (char) {
+      element.setAttribute('data-icon-font', resolved.font);
+    } else {
+      element.removeAttribute('data-icon-font');
+    }
+  }
+  function formatSvgCoordinate(value) {
+    if (!Number.isFinite(value)) return '0';
+    var rounded = Math.round(value * 100) / 100;
+    if (Number.isInteger(rounded)) return String(rounded);
+    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  }
+  function positionSvgMarkup(markup, centerX, centerY) {
+    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
+    if (typeof markup !== 'string') {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var trimmed = markup.trim();
+    if (!trimmed) {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var half = size / 2;
+    var x = formatSvgCoordinate(centerX);
+    var y = formatSvgCoordinate(centerY);
+    var width = formatSvgCoordinate(size);
+    var height = formatSvgCoordinate(size);
+    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
+      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
+      var additions = [];
+      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
+      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
+      additions.push("x=\"".concat(formatSvgCoordinate(half * -1), "\""));
+      additions.push("y=\"".concat(formatSvgCoordinate(half * -1), "\""));
+      attrText = [attrText].concat(_toConsumableArray(additions)).filter(Boolean).join(' ').trim();
+      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
+    });
+    return {
+      markup: cleaned,
+      x: x,
+      y: y
+    };
+  }
+  function glyphText(glyph) {
+    var resolved = resolveIconGlyph(glyph);
+    return resolved.char || '';
+  }
+  var PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
+  var RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
+  var ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
+  var REQUIRED_SCENARIOS_ICON = iconGlyph('\uF4D4', ICON_FONT_KEYS.UICONS);
+  var MONITORING_SUPPORT_ICON = iconGlyph('\uEFFC', ICON_FONT_KEYS.UICONS);
+  var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
+  var ICON_GLYPHS = Object.freeze({
+    batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
+    batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
+    bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
+    plug: iconGlyph('\uEE75', ICON_FONT_KEYS.UICONS),
+    sliders: iconGlyph('\uF143', ICON_FONT_KEYS.ESSENTIAL),
+    screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
+    brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
+    wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
+    gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
+    controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
+    distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
+    sensor: iconGlyph('\uEC2B', ICON_FONT_KEYS.UICONS),
+    viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
+    camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
+    trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
+    reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
+    load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
+    installApp: iconGlyph('\uE9D4', ICON_FONT_KEYS.UICONS),
+    add: Object.freeze({
+      char: '+',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    minus: Object.freeze({
+      char: '\u2212',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    arrowLeft: Object.freeze({
+      char: '\u2190',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
+    fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
+    fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
+    save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
+    share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
+    paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
+    magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
+    codec: iconGlyph('\uE4CD', ICON_FONT_KEYS.UICONS),
+    timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
+    audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
+    audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
+    note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
+    overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
+    gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
+    feedback: iconGlyph('\uE791', ICON_FONT_KEYS.UICONS),
+    resetView: iconGlyph('\uEB6D', ICON_FONT_KEYS.UICONS),
+    pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
+    sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
+    moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
+    circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
+    settingsGeneral: iconGlyph('\uE5A3', ICON_FONT_KEYS.UICONS),
+    settingsAutoGear: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
+    settingsAccessibility: iconGlyph('\uF392', ICON_FONT_KEYS.UICONS),
+    settingsBackup: iconGlyph('\uE5BD', ICON_FONT_KEYS.UICONS),
+    settingsData: iconGlyph('\uE5C7', ICON_FONT_KEYS.UICONS),
+    settingsAbout: iconGlyph('\uEA4F', ICON_FONT_KEYS.UICONS),
+    star: Object.freeze({
+      markup: STAR_ICON_SVG,
+      className: 'icon-svg favorite-star-icon'
+    }),
+    warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL)
+  });
+  function iconMarkup(glyph) {
+    var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    if (!glyph) return '';
+    var opts = {};
+    var resolvedClassName = 'info-icon';
+    if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
+      resolvedClassName = classNameOrOptions || '';
+      if (options && _typeof(options) === 'object') {
+        opts = options;
+      }
+    } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
+      opts = classNameOrOptions;
+      resolvedClassName = classNameOrOptions.className || 'info-icon';
+    }
+    if (typeof opts.className === 'string') {
+      resolvedClassName = opts.className;
+    }
+    var styleParts = [];
+    if (typeof opts.size === 'string' && opts.size.trim()) {
+      styleParts.push("--icon-size: ".concat(opts.size.trim()));
+    }
+    if (typeof opts.scale === 'string' && opts.scale.trim()) {
+      styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
+    }
+    if (typeof opts.style === 'string' && opts.style.trim()) {
+      styleParts.push(opts.style.trim());
+    }
+    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
+    var resolved = resolveIconGlyph(glyph);
+    var classes = ['icon-glyph'];
+    if (resolvedClassName) classes.unshift(resolvedClassName);
+    if (resolved.markup) {
+      if (resolved.className) classes.push(resolved.className);
+      var markup = ensureSvgHasAriaHidden(resolved.markup);
+      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
+    }
+    var char = resolved.char || '';
+    if (!char) return '';
+    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
+  }
   function getCoreGlobalObject() {
     if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === "object") {
       return CORE_GLOBAL_SCOPE;
@@ -9540,257 +9795,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var storageNeedsContainer = document.getElementById("storageNeedsContainer");
   var addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
   var monitoringConfigurationUserChanged = false;
-  var crewRoles = ['Producer', 'Production Manager', 'Director', 'Assistant Director', 'Production Assistant', 'DoP', 'Camera Operator', 'B-Camera Operator', 'Steadicam Operator', 'Drone Operator', '1st AC', '2nd AC', 'DIT', 'Video Operator', 'Key Gaffer', 'Gaffer', 'Best Boy Electric', 'Electrician', 'Rigging Gaffer', 'Key Grip', 'Best Boy Grip', 'Grip', 'Dolly Grip', 'Rigging Grip'];
-  var ICON_FONT_KEYS = Object.freeze({
-    ESSENTIAL: 'essential',
-    FILM: 'film',
-    GADGET: 'gadget',
-    UICONS: 'uicons',
-    TEXT: 'text'
-  });
-  var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
-  function iconGlyph(char) {
-    var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
-    var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-    return Object.freeze({
-      char: char,
-      font: normalizedFont
-    });
-  }
-  function resolveIconGlyph(glyph) {
-    if (!glyph) {
-      return {
-        char: '',
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (glyph.markup) {
-      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      return {
-        markup: glyph.markup,
-        className: glyph.className || '',
-        font: ICON_FONT_KEYS.UICONS,
-        size: size
-      };
-    }
-    if (typeof glyph === 'string') {
-      return {
-        char: glyph,
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (_typeof(glyph) === 'object') {
-      var char = typeof glyph.char === 'string' ? glyph.char : '';
-      var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
-      var className = typeof glyph.className === 'string' ? glyph.className : '';
-      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      if (glyph.markup) {
-        return {
-          markup: glyph.markup,
-          className: className,
-          font: fontKey,
-          size: _size
-        };
-      }
-      return {
-        char: char,
-        font: fontKey,
-        className: className,
-        size: _size
-      };
-    }
-    return {
-      char: '',
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  function applyIconGlyph(element, glyph) {
-    if (!element) return;
-    var resolved = resolveIconGlyph(glyph);
-    if (resolved.markup) {
-      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-      element.setAttribute('aria-hidden', 'true');
-      if (resolved.className) {
-        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
-          return element.classList.add(cls);
-        });
-      }
-      element.removeAttribute('data-icon-font');
-      return;
-    }
-    var char = resolved.char || '';
-    element.textContent = char;
-    if (char) {
-      element.setAttribute('data-icon-font', resolved.font);
-    } else {
-      element.removeAttribute('data-icon-font');
-    }
-  }
-  function formatSvgCoordinate(value) {
-    if (!Number.isFinite(value)) return '0';
-    var rounded = Math.round(value * 100) / 100;
-    if (Number.isInteger(rounded)) return String(rounded);
-    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-  }
-  function positionSvgMarkup(markup, centerX, centerY) {
-    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
-    if (typeof markup !== 'string') {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var trimmed = markup.trim();
-    if (!trimmed) {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var half = size / 2;
-    var x = formatSvgCoordinate(centerX);
-    var y = formatSvgCoordinate(centerY);
-    var width = formatSvgCoordinate(size);
-    var height = formatSvgCoordinate(size);
-    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
-      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
-      var additions = [];
-      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
-      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
-      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
-      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
-      additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
-      additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
-      attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
-      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
-    });
-    return {
-      markup: cleaned,
-      x: x,
-      y: y
-    };
-  }
-  function glyphText(glyph) {
-    var resolved = resolveIconGlyph(glyph);
-    return resolved.char || '';
-  }
-  var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
-  var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
-  var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
-  var REQUIRED_SCENARIOS_ICON = iconGlyph("\uF4D4", ICON_FONT_KEYS.UICONS);
-  var MONITORING_SUPPORT_ICON = iconGlyph("\uEFFC", ICON_FONT_KEYS.UICONS);
-  var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
-  var ICON_GLYPHS = Object.freeze({
-    batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
-    batteryFull: iconGlyph("\uE1A9", ICON_FONT_KEYS.UICONS),
-    bolt: iconGlyph("\uF1F8", ICON_FONT_KEYS.ESSENTIAL),
-    plug: iconGlyph("\uEE75", ICON_FONT_KEYS.UICONS),
-    sliders: iconGlyph("\uF143", ICON_FONT_KEYS.ESSENTIAL),
-    screen: iconGlyph("\uF11D", ICON_FONT_KEYS.GADGET),
-    brightness: iconGlyph("\uE2B3", ICON_FONT_KEYS.UICONS),
-    wifi: iconGlyph("\uF4AC", ICON_FONT_KEYS.UICONS),
-    gears: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
-    controller: iconGlyph("\uF117", ICON_FONT_KEYS.GADGET),
-    distance: iconGlyph("\uEFB9", ICON_FONT_KEYS.UICONS),
-    sensor: iconGlyph("\uEC2B", ICON_FONT_KEYS.UICONS),
-    viewfinder: iconGlyph("\uF114", ICON_FONT_KEYS.FILM),
-    camera: iconGlyph("\uE333", ICON_FONT_KEYS.UICONS),
-    trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
-    reload: iconGlyph("\uF202", ICON_FONT_KEYS.ESSENTIAL),
-    load: iconGlyph("\uE0E0", ICON_FONT_KEYS.UICONS),
-    installApp: iconGlyph("\uE9D4", ICON_FONT_KEYS.UICONS),
-    add: Object.freeze({
-      char: '+',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    minus: Object.freeze({
-      char: '−',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    check: iconGlyph("\uE3D8", ICON_FONT_KEYS.UICONS),
-    fileExport: iconGlyph("\uE7AB", ICON_FONT_KEYS.UICONS),
-    fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
-    save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
-    share: iconGlyph("\uF219", ICON_FONT_KEYS.ESSENTIAL),
-    paperPlane: iconGlyph("\uED67", ICON_FONT_KEYS.UICONS),
-    magnet: iconGlyph("\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
-    codec: iconGlyph("\uE4CD", ICON_FONT_KEYS.UICONS),
-    timecode: iconGlyph("\uF10E", ICON_FONT_KEYS.FILM),
-    audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
-    audioOut: iconGlyph("\uF22F", ICON_FONT_KEYS.ESSENTIAL),
-    note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
-    overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
-    gearList: iconGlyph("\uE467", ICON_FONT_KEYS.UICONS),
-    feedback: iconGlyph("\uE791", ICON_FONT_KEYS.UICONS),
-    resetView: iconGlyph("\uEB6D", ICON_FONT_KEYS.UICONS),
-    pin: iconGlyph("\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
-    sun: iconGlyph("\uF1FE", ICON_FONT_KEYS.UICONS),
-    moon: iconGlyph("\uEC7E", ICON_FONT_KEYS.UICONS),
-    circleX: iconGlyph("\uF131", ICON_FONT_KEYS.ESSENTIAL),
-    settingsGeneral: iconGlyph("\uE5A3", ICON_FONT_KEYS.UICONS),
-    settingsAutoGear: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
-    settingsAccessibility: iconGlyph("\uF392", ICON_FONT_KEYS.UICONS),
-    settingsBackup: iconGlyph("\uE5BD", ICON_FONT_KEYS.UICONS),
-    settingsData: iconGlyph("\uE5C7", ICON_FONT_KEYS.UICONS),
-    settingsAbout: iconGlyph("\uEA4F", ICON_FONT_KEYS.UICONS),
-    star: Object.freeze({
-      markup: STAR_ICON_SVG,
-      className: 'icon-svg favorite-star-icon'
-    }),
-    warning: iconGlyph("\uF26F", ICON_FONT_KEYS.ESSENTIAL)
-  });
-  function iconMarkup(glyph) {
-    var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    if (!glyph) return '';
-    var opts = {};
-    var resolvedClassName = 'info-icon';
-    if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
-      resolvedClassName = classNameOrOptions || '';
-      if (options && _typeof(options) === 'object') {
-        opts = options;
-      }
-    } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
-      opts = classNameOrOptions;
-      resolvedClassName = classNameOrOptions.className || 'info-icon';
-    }
-    if (typeof opts.className === 'string') {
-      resolvedClassName = opts.className;
-    }
-    var styleParts = [];
-    if (typeof opts.size === 'string' && opts.size.trim()) {
-      styleParts.push("--icon-size: ".concat(opts.size.trim()));
-    }
-    if (typeof opts.scale === 'string' && opts.scale.trim()) {
-      styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
-    }
-    if (typeof opts.style === 'string' && opts.style.trim()) {
-      styleParts.push(opts.style.trim());
-    }
-    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
-    var resolved = resolveIconGlyph(glyph);
-    var classes = ['icon-glyph'];
-    if (resolvedClassName) classes.unshift(resolvedClassName);
-    if (resolved.markup) {
-      if (resolved.className) classes.push(resolved.className);
-      var markup = ensureSvgHasAriaHidden(resolved.markup);
-      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
-    }
-    var char = resolved.char || '';
-    if (!char) return '';
-    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
-  }
+    var crewRoles = ['Producer', 'Production Manager', 'Director', 'Assistant Director', 'Production Assistant', 'DoP', 'Camera Operator', 'B-Camera Operator', 'Steadicam Operator', 'Drone Operator', '1st AC', '2nd AC', 'DIT', 'Video Operator', 'Key Gaffer', 'Gaffer', 'Best Boy Electric', 'Electrician', 'Rigging Gaffer', 'Key Grip', 'Best Boy Grip', 'Grip', 'Dolly Grip', 'Rigging Grip'];
   var HORSE_ICON_SVG = "\n  <svg viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z\"\n      fill=\"#805333\"\n    />\n    <path\n      d=\"m30.18 42.82c1.073 2.7 2.6 9.993 3.357 13.8a2 2 0 0 1-1.964 2.38h-28.573a2 2 0 0 1-2-2v-18c0-2.55 10.03-22.11 23.99-23.87Z\"\n      fill=\"#a56a43\"\n    />\n    <path\n      d=\"m55.67 48.46-6.34 2.97a6 6 0 0 1-7.98-2.88l-.25-.54-.76-1.6a4.956 4.956 0 0 0-4.68-2.87c-.22.01-.44.02-.66.02a16.019 16.019 0 0 1-8.28-29.66c-1.81-2.97-3.45-8.03 2.03-12.49a2.1 2.1 0 0 1 2.5 0c4.23 3.45 4.21 7.25 3.16 10.17a16 16 0 0 1 15.91 11.36l5.31 11.31 2.92 6.22a6.008 6.008 0 0 1-2.88 7.99Z\"\n      fill=\"#cb8252\"\n    />\n    <circle cx=\"42\" cy=\"26\" r=\"3\" fill=\"#2c2f38\" />\n    <circle cx=\"54\" cy=\"43\" r=\"1\" fill=\"#805333\" />\n    <path\n      d=\"m58.55 40.47-2.92-6.22-14.53 13.76.25.54a6 6 0 0 0 7.98 2.88l6.34-2.97a6.008 6.008 0 0 0 2.88-7.99Zm-4.55 3.53a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z\"\n      fill=\"#cf976a\"\n    />\n    <circle cx=\"41\" cy=\"25\" r=\"1.25\" fill=\"#ecf0f1\" />\n  </svg>\n".trim();
   var PINK_MODE_ICON_FILES = Object.freeze(['src/illustrations/unicorns/unicorn.svg', 'src/illustrations/unicorns/unicorn-2.svg', 'src/illustrations/unicorns/celebrate.svg', 'src/illustrations/unicorns/sunglasses.svg', 'src/illustrations/unicorns/toy.svg']);
   function createPinkModeIconImageMarkup(path) {
