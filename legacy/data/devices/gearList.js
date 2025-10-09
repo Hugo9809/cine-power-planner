@@ -4008,9 +4008,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2000,
-          "lengthMm": 130
+          "lengthMm": 130,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 10mm T2.1": {
           "brand": "ARRI/ZEISS",
@@ -4022,9 +4024,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2900,
-          "lengthMm": 172
+          "lengthMm": 172,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 12mm T2.0": {
           "brand": "ARRI/ZEISS",
@@ -4036,9 +4040,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.3,
           "weight_g": 2000,
-          "lengthMm": 140
+          "lengthMm": 140,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 14mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -4413,7 +4419,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lensType": "spherical",
           "minFocusMeters": 1,
           "weight_g": 2900,
-          "lengthMm": 205
+          "imageCircleMm": 31.14,
+          "lengthMm": 205,
+          "notes": "ZEISS lists ≥31.14 mm image circle; optimized for Super 35 coverage."
         },
         "ZEISS Master Prime 135mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -6089,10 +6097,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
+          "imageCircleMm": 55,
           "minFocusMeters": 0.38,
           "weight_g": 1630,
-          "notes": "Front Ø110 mm; longer prime"
+          "notes": "Front Ø110 mm; longer prime; manufacturer rates 55 mm image circle at infinity and 62 mm at close focus."
         },
         "Cooke Speed Panchro 18mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
