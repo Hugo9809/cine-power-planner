@@ -33,7 +33,10 @@
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty */
+          markProjectFormDataDirty, applyLensFocusScalePreference,
+          getLensFocusScalePreference, setLensFocusScalePreference,
+          settingsLensFocusScale, lensFocusScalePreference,
+          loadAutoGearMonitorDefaults */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -4719,6 +4722,8 @@ let rememberSettingsPinkModeBaseline = () => {};
 let revertSettingsPinkModeIfNeeded = () => {};
 let rememberSettingsTemperatureUnitBaseline = () => {};
 let revertSettingsTemperatureUnitIfNeeded = () => {};
+let rememberSettingsLensFocusScaleBaseline = () => {};
+let revertSettingsLensFocusScaleIfNeeded = () => {};
 let applyShowAutoBackupsPreference = () => {};
 let rememberSettingsShowAutoBackupsBaseline = () => {};
 let revertSettingsShowAutoBackupsIfNeeded = () => {};
@@ -4754,6 +4759,7 @@ const appearanceContext = {
     relaxedSpacing: typeof settingsRelaxedSpacing !== 'undefined' ? settingsRelaxedSpacing : null,
     showAutoBackups: typeof settingsShowAutoBackups !== 'undefined' ? settingsShowAutoBackups : null,
     temperatureUnit: typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : null,
+    lensFocusScale: typeof settingsLensFocusScale !== 'undefined' ? settingsLensFocusScale : null,
   },
   accent: {
     accentColorInput: typeof accentColorInput !== 'undefined' ? accentColorInput : null,
@@ -4813,6 +4819,28 @@ const appearanceContext = {
       temperatureUnit = value;
     },
     applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    getLensFocusScale: () => {
+      if (typeof getLensFocusScalePreference === 'function') {
+        try {
+          return getLensFocusScalePreference();
+        } catch (lensPreferenceError) {
+          void lensPreferenceError;
+        }
+      }
+      if (typeof lensFocusScalePreference === 'string' && lensFocusScalePreference) {
+        return lensFocusScalePreference;
+      }
+      return 'metric';
+    },
+    setLensFocusScale: value => {
+      if (typeof setLensFocusScalePreference === 'function') {
+        setLensFocusScalePreference(value);
+      } else if (typeof applyLensFocusScalePreference === 'function') {
+        applyLensFocusScalePreference(value, { persist: false, forceUpdate: true });
+      }
+    },
+    applyLensFocusScalePreference:
+      typeof applyLensFocusScalePreference === 'function' ? applyLensFocusScalePreference : null,
     getShowAutoBackups: () => showAutoBackups,
     setShowAutoBackups: value => {
       showAutoBackups = Boolean(value);
@@ -4864,6 +4892,8 @@ if (appearanceModule) {
   revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
   rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
   revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  rememberSettingsLensFocusScaleBaseline = appearanceModule.rememberSettingsLensFocusScaleBaseline || rememberSettingsLensFocusScaleBaseline;
+  revertSettingsLensFocusScaleIfNeeded = appearanceModule.revertSettingsLensFocusScaleIfNeeded || revertSettingsLensFocusScaleIfNeeded;
   applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
   rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
   revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
@@ -4929,6 +4959,7 @@ try {
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
+rememberSettingsLensFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 
@@ -4957,6 +4988,16 @@ if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', () => {
     if (typeof applyTemperatureUnitPreference === 'function') {
       applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
+        persist: false
+      });
+    }
+  });
+}
+
+if (settingsLensFocusScale) {
+  settingsLensFocusScale.addEventListener('change', () => {
+    if (typeof applyLensFocusScalePreference === 'function') {
+      applyLensFocusScalePreference(settingsLensFocusScale.value, {
         persist: false
       });
     }
@@ -5041,6 +5082,7 @@ const mountVoltageResetButtonRef = (() => {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsLensFocusScaleBaseline();
     rememberSettingsShowAutoBackupsBaseline();
       rememberSettingsMountVoltagesBaseline();
       const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
@@ -5074,6 +5116,13 @@ const mountVoltageResetButtonRef = (() => {
       }
     }
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
+    if (settingsLensFocusScale) {
+      const focusScaleValue =
+        typeof getLensFocusScalePreference === 'function'
+          ? getLensFocusScalePreference()
+          : lensFocusScalePreference;
+      settingsLensFocusScale.value = focusScaleValue;
+    }
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
@@ -5139,6 +5188,8 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsLensFocusScaleIfNeeded();
+      rememberSettingsLensFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -5241,6 +5292,10 @@ const mountVoltageResetButtonRef = (() => {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
+      if (settingsLensFocusScale) {
+        applyLensFocusScalePreference(settingsLensFocusScale.value);
+        rememberSettingsLensFocusScaleBaseline();
+      }
       applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
         persist: true,
         triggerUpdate: true
@@ -5289,6 +5344,7 @@ const mountVoltageResetButtonRef = (() => {
       collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
+      rememberSettingsLensFocusScaleBaseline();
       rememberSettingsShowAutoBackupsBaseline();
       rememberSettingsMountVoltagesBaseline();
       closeDialog(settingsDialog);
@@ -5302,6 +5358,8 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsLensFocusScaleIfNeeded();
+      rememberSettingsLensFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -5322,6 +5380,8 @@ const mountVoltageResetButtonRef = (() => {
     rememberSettingsPinkModeBaseline();
     revertSettingsTemperatureUnitIfNeeded();
     rememberSettingsTemperatureUnitBaseline();
+    revertSettingsLensFocusScaleIfNeeded();
+    rememberSettingsLensFocusScaleBaseline();
     revertSettingsShowAutoBackupsIfNeeded();
     rememberSettingsShowAutoBackupsBaseline();
     revertSettingsMountVoltagesIfNeeded();
@@ -13051,6 +13111,8 @@ if (helpButton && helpDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsLensFocusScaleIfNeeded();
+      rememberSettingsLensFocusScaleBaseline();
       invokeSessionRevertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');

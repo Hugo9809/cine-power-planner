@@ -296,6 +296,7 @@
     let pinkModeEnabled = false;
     let settingsInitialPinkMode = false;
     let settingsInitialTemperatureUnit = 'celsius';
+    let settingsInitialLensFocusScale = 'metric';
     let settingsInitialShowAutoBackups = false;
 
     function getRoot() {
@@ -870,6 +871,60 @@
       }
     }
 
+    function getLensFocusScale() {
+      if (typeof preferences.getLensFocusScale === 'function') {
+        try {
+          return preferences.getLensFocusScale();
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: getLensFocusScale failed.', error);
+        }
+      }
+      if (typeof preferences.lensFocusScale === 'string') {
+        return preferences.lensFocusScale;
+      }
+      return 'metric';
+    }
+
+    function setLensFocusScale(value) {
+      if (typeof preferences.setLensFocusScale === 'function') {
+        try {
+          preferences.setLensFocusScale(value);
+          return;
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: setLensFocusScale failed.', error);
+        }
+      }
+      preferences.lensFocusScale = typeof value === 'string' ? value : getLensFocusScale();
+    }
+
+    function rememberSettingsLensFocusScaleBaseline() {
+      const current = getLensFocusScale();
+      settingsInitialLensFocusScale = typeof current === 'string' && current ? current : 'metric';
+    }
+
+    function revertSettingsLensFocusScaleIfNeeded() {
+      const baseline = typeof settingsInitialLensFocusScale === 'string' && settingsInitialLensFocusScale
+        ? settingsInitialLensFocusScale
+        : 'metric';
+
+      const applyPreference = preferences.applyLensFocusScalePreference;
+      if (typeof applyPreference === 'function') {
+        const current = getLensFocusScale();
+        if (current !== baseline) {
+          try {
+            applyPreference(baseline, { persist: false, forceUpdate: true });
+            setLensFocusScale(baseline);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Failed to revert lens focus scale preference.', error);
+          }
+        } else if (settings.lensFocusScale) {
+          settings.lensFocusScale.value = baseline;
+        }
+      } else if (settings.lensFocusScale) {
+        settings.lensFocusScale.value = baseline;
+      }
+    }
+
     function getShowAutoBackups() {
       if (typeof preferences.getShowAutoBackups === 'function') {
         return !!preferences.getShowAutoBackups();
@@ -1067,6 +1122,8 @@
       revertSettingsPinkModeIfNeeded,
       rememberSettingsTemperatureUnitBaseline,
       revertSettingsTemperatureUnitIfNeeded,
+      rememberSettingsLensFocusScaleBaseline,
+      revertSettingsLensFocusScaleIfNeeded,
       applyShowAutoBackupsPreference,
       rememberSettingsShowAutoBackupsBaseline,
       revertSettingsShowAutoBackupsIfNeeded,

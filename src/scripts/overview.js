@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, getLensFocusScalePreference, lensFocusScalePreference, lensFocusScale */
 
 let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
@@ -870,6 +870,32 @@ function generatePrintableOverview(config = {}) {
     const formatRodStandard = (value) => normalizeStringValue(value);
     const formatMount = (value) => normalizeStringValue(value);
     const formatNotes = (value) => normalizeStringValue(value);
+    const resolveLensFocusScalePreference = () => {
+        if (typeof getLensFocusScalePreference === 'function') {
+            try {
+                const preference = getLensFocusScalePreference();
+                if (typeof preference === 'string' && preference.trim()) {
+                    return preference.trim().toLowerCase();
+                }
+            } catch (error) {
+                void error;
+            }
+        }
+        if (typeof lensFocusScalePreference === 'string' && lensFocusScalePreference.trim()) {
+            return lensFocusScalePreference.trim().toLowerCase();
+        }
+        if (typeof lensFocusScale === 'string' && lensFocusScale.trim()) {
+            return lensFocusScale.trim().toLowerCase();
+        }
+        return 'metric';
+    };
+    const formatLensFocusScalePreference = () => {
+        const preference = resolveLensFocusScalePreference();
+        if (preference === 'imperial') {
+            return t.lensFocusScaleImperialOption || 'Imperial (feet)';
+        }
+        return t.lensFocusScaleMetricOption || 'Metric (meters)';
+    };
     const createLensInfoHtml = (lensInfo) => {
         if (!lensInfo || typeof lensInfo !== 'object') {
             return '';
@@ -912,6 +938,7 @@ function generatePrintableOverview(config = {}) {
         if (Object.prototype.hasOwnProperty.call(lensInfo, 'needsLensSupport')) {
             addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
         }
+        addLensBox('lensSpecFocusScaleLabel', resolveLensFocusScalePreference(), formatLensFocusScalePreference);
         addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
         if (!infoBoxes.length) {
             return '';

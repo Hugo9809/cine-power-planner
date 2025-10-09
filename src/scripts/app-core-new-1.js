@@ -2026,6 +2026,11 @@ const TEMPERATURE_UNITS = {
   celsius: 'celsius',
   fahrenheit: 'fahrenheit'
 };
+const LENS_FOCUS_SCALE_STORAGE_KEY = 'cameraPowerPlanner_lensFocusScale';
+const LENS_FOCUS_SCALES = {
+  metric: 'metric',
+  imperial: 'imperial'
+};
 const TEMPERATURE_SCENARIOS = [
   { celsius: 40, factor: 1.0, color: '#d9534f' },
   { celsius: 25, factor: 1.0, color: '#5cb85c' },
@@ -2033,6 +2038,56 @@ const TEMPERATURE_SCENARIOS = [
   { celsius: -10, factor: 0.625, color: '#5bc0de' },
   { celsius: -20, factor: 0.5, color: '#0275d8' }
 ];
+
+function normalizeLensFocusScale(value) {
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === LENS_FOCUS_SCALES.imperial) {
+      return LENS_FOCUS_SCALES.imperial;
+    }
+    if (normalized === LENS_FOCUS_SCALES.metric) {
+      return LENS_FOCUS_SCALES.metric;
+    }
+  }
+  return LENS_FOCUS_SCALES.metric;
+}
+
+function getLensFocusScalePreference() {
+  return normalizeLensFocusScale(lensFocusScalePreference);
+}
+
+function setLensFocusScalePreference(value) {
+  lensFocusScalePreference = normalizeLensFocusScale(value);
+}
+
+function applyLensFocusScalePreference(scale, options = {}) {
+  const normalized = normalizeLensFocusScale(scale);
+  const config = typeof options === 'object' && options !== null ? options : {};
+  const { persist = true, forceUpdate = false } = config;
+
+  if (!forceUpdate && normalizeLensFocusScale(lensFocusScalePreference) === normalized) {
+    if (typeof settingsLensFocusScale !== 'undefined' && settingsLensFocusScale) {
+      settingsLensFocusScale.value = normalized;
+    }
+    return;
+  }
+
+  lensFocusScalePreference = normalized;
+
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(LENS_FOCUS_SCALE_STORAGE_KEY, normalized);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not save lens focus scale preference', error);
+      }
+    }
+  }
+
+  if (typeof settingsLensFocusScale !== 'undefined' && settingsLensFocusScale) {
+    settingsLensFocusScale.value = normalized;
+  }
+}
 
 function resolveLanguageCode(lang) {
   if (typeof lang === 'string' && lang.trim()) {
@@ -2401,6 +2456,7 @@ var devices = initializeDeviceDatabase();
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
 var temperatureUnit = TEMPERATURE_UNITS.celsius;
+var lensFocusScalePreference = LENS_FOCUS_SCALES.metric;
 var autoGearBackupDateFormatter =
   typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -2431,9 +2487,13 @@ try {
     if (storedTemperatureUnit) {
       temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
     }
+    const storedLensFocusScale = localStorage.getItem(LENS_FOCUS_SCALE_STORAGE_KEY);
+    if (storedLensFocusScale) {
+      lensFocusScalePreference = normalizeLensFocusScale(storedLensFocusScale);
+    }
   }
 } catch (error) {
-  console.warn('Could not load temperature unit preference', error);
+  console.warn('Could not load stored preference values', error);
 }
 
 var SUPPORTED_MOUNT_VOLTAGE_TYPES = (function resolveSupportedMounts() {
@@ -8906,6 +8966,35 @@ function setLanguage(lang) {
         option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
       });
       settingsTemperatureUnit.value = temperatureUnit;
+    }
+  }
+  const settingsLensFocusScaleLabel = document.getElementById('settingsLensFocusScaleLabel');
+  if (settingsLensFocusScaleLabel) {
+    const focusScaleLabel =
+      texts[lang].lensFocusScaleSetting || settingsLensFocusScaleLabel.textContent;
+    settingsLensFocusScaleLabel.textContent = focusScaleLabel;
+    const focusScaleHelp =
+      texts[lang].lensFocusScaleSettingHelp || focusScaleLabel;
+    settingsLensFocusScaleLabel.setAttribute('data-help', focusScaleHelp);
+    if (typeof settingsLensFocusScale !== 'undefined' && settingsLensFocusScale) {
+      settingsLensFocusScale.setAttribute('data-help', focusScaleHelp);
+      settingsLensFocusScale.setAttribute('aria-label', focusScaleLabel);
+      Array.from(settingsLensFocusScale.options || []).forEach(option => {
+        if (!option) return;
+        const normalized = normalizeLensFocusScale(option.value);
+        if (normalized === LENS_FOCUS_SCALES.imperial) {
+          option.textContent =
+            texts[lang].lensFocusScaleImperialOption
+            || texts.en?.lensFocusScaleImperialOption
+            || 'Imperial (feet)';
+        } else {
+          option.textContent =
+            texts[lang].lensFocusScaleMetricOption
+            || texts.en?.lensFocusScaleMetricOption
+            || 'Metric (meters)';
+        }
+      });
+      settingsLensFocusScale.value = getLensFocusScalePreference();
     }
   }
   const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
@@ -16612,6 +16701,7 @@ var settingsPinkMode = document.getElementById("settingsPinkMode");
 var accentColorInput = document.getElementById("accentColorInput");
 var accentColorResetButton = document.getElementById("accentColorReset");
 var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+var settingsLensFocusScale = document.getElementById('settingsLensFocusScale');
 var settingsFontSize = document.getElementById("settingsFontSize");
 var settingsFontFamily = document.getElementById("settingsFontFamily");
 const localFontsButton = document.getElementById("localFontsButton");
@@ -18708,6 +18798,8 @@ const CORE_RUNTIME_CONSTANTS = {
   TEMPERATURE_STORAGE_KEY,
   TEMPERATURE_UNITS,
   TEMPERATURE_SCENARIOS,
+  LENS_FOCUS_SCALE_STORAGE_KEY,
+  LENS_FOCUS_SCALES,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
 };

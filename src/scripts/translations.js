@@ -169,6 +169,12 @@ const texts = {
     temperatureUnitSetting: "Temperature unit",
     temperatureUnitSettingHelp:
       "Choose whether temperatures are shown in Celsius or Fahrenheit throughout the app.",
+    lensFocusScaleSetting: "Lens focus scale",
+    lensFocusScaleSettingHelp:
+      "Choose whether lens focus markings are shown as metric or imperial in lens summaries and exports.",
+    lensFocusScaleMetricOption: "Metric (meters)",
+    lensFocusScaleImperialOption: "Imperial (feet)",
+    lensSpecFocusScaleLabel: "Focus scale",
     mountVoltageSettingsHeading: "Battery mount voltages",
     mountVoltageSettingsHelp:
       "Adjust the voltages used for current draw calculations across B-Mount, V-Mount and Gold Mount setups.",
@@ -2333,6 +2339,12 @@ const texts = {
     temperatureUnitSetting: "Unità di temperatura",
     temperatureUnitSettingHelp:
       "Scegli se mostrare le temperature in Celsius o Fahrenheit in tutta l'app.",
+    lensFocusScaleSetting: "Scala di fuoco delle ottiche",
+    lensFocusScaleSettingHelp:
+      "Determina se le scale di fuoco vengono mostrate in sistema metrico o imperiale nei riepiloghi.",
+    lensFocusScaleMetricOption: "Metrico (metri)",
+    lensFocusScaleImperialOption: "Imperiale (piedi)",
+    lensSpecFocusScaleLabel: "Scala di messa a fuoco",
     mountVoltageSettingsHeading: "Tensioni dei battery mount",
     mountVoltageSettingsHelp:
       "Regola le tensioni usate nei calcoli della corrente per configurazioni B-Mount, V-Mount e Gold Mount.",
@@ -3996,6 +4008,12 @@ const texts = {
     temperatureUnitSetting: "Unidad de temperatura",
     temperatureUnitSettingHelp:
       "Elige si mostrar las temperaturas en grados Celsius o Fahrenheit en toda la aplicación.",
+    lensFocusScaleSetting: "Escala de enfoque de los objetivos",
+    lensFocusScaleSettingHelp:
+      "Define si las escalas de enfoque se muestran en métricas o en imperiales dentro de los resúmenes.",
+    lensFocusScaleMetricOption: "Métrico (metros)",
+    lensFocusScaleImperialOption: "Imperial (pies)",
+    lensSpecFocusScaleLabel: "Escala de enfoque",
     mountVoltageSettingsHeading: "Tensiones de los soportes de batería",
     mountVoltageSettingsHelp:
       "Ajusta las tensiones utilizadas en los cálculos de corriente para configuraciones B-Mount, V-Mount y Gold Mount.",
@@ -5660,6 +5678,12 @@ const texts = {
     temperatureUnitSetting: "Unité de température",
     temperatureUnitSettingHelp:
       "Choisissez d'afficher les températures en Celsius ou en Fahrenheit dans toute l'application.",
+    lensFocusScaleSetting: "Échelle de mise au point des objectifs",
+    lensFocusScaleSettingHelp:
+      "Définit si les échelles de mise au point sont affichées en métrique ou en impérial dans les résumés.",
+    lensFocusScaleMetricOption: "Métrique (mètres)",
+    lensFocusScaleImperialOption: "Impériale (pieds)",
+    lensSpecFocusScaleLabel: "Échelle de mise au point",
     mountVoltageSettingsHeading: "Tensions des supports de batterie",
     mountVoltageSettingsHelp:
       "Ajustez les tensions utilisées pour les calculs de courant avec les configurations B-Mount, V-Mount et Gold Mount.",
@@ -7336,6 +7360,12 @@ const texts = {
     temperatureUnitSetting: "Temperatureinheit",
     temperatureUnitSettingHelp:
       "Wählen Sie, ob Temperaturen in Celsius oder Fahrenheit in der gesamten App angezeigt werden.",
+    lensFocusScaleSetting: "Fokusskala der Objektive",
+    lensFocusScaleSettingHelp:
+      "Legt fest, ob Fokusskalen in Übersichten metrisch oder imperial dargestellt werden.",
+    lensFocusScaleMetricOption: "Metrisch (Meter)",
+    lensFocusScaleImperialOption: "Imperial (Fuß)",
+    lensSpecFocusScaleLabel: "Fokusskala",
     mountVoltageSettingsHeading: "Batterie-Mount-Spannungen",
     mountVoltageSettingsHelp:
       "Passen Sie die Spannungen an, die für die Stromberechnung bei B-Mount-, V-Mount- und Gold-Mount-Konfigurationen verwendet werden.",
