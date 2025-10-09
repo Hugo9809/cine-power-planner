@@ -8748,9 +8748,17 @@ body.dark-mode.pink-mode #gearListOutput h2,
     display: flex;
     width: 100%;
   }
+  #gearListFilterDetails .filter-detail-size .select-wrapper {
+    display: inline-flex;
+    width: auto;
+  }
   #gearListOutput .select-wrapper select,
   #projectRequirementsOutput .select-wrapper select {
     flex: 1 1 auto;
+  }
+  #gearListFilterDetails .filter-detail-size .select-wrapper select {
+    flex: 0 0 auto;
+    width: var(--gear-select-width, auto);
   }
   #gearListOutput select,
   #projectRequirementsOutput select {
