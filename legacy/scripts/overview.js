@@ -497,22 +497,62 @@ function generatePrintableOverview() {
     var maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
     return num.toFixed(maximumFractionDigits);
   };
+  var usesImperialMeasurements = function usesImperialMeasurements() {
+    return normalizeFocusScaleValue(resolveFocusScalePreference()) === 'imperial';
+  };
   var formatLengthMm = function formatLengthMm(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (usesImperialMeasurements()) {
+      var inches = numeric / 25.4;
+      var imperialFormatted = formatNumber(inches, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0
+      });
+      return imperialFormatted ? "".concat(imperialFormatted, " in") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 1,
       minimumFractionDigits: 0
     });
     return formatted ? "".concat(formatted, " mm") : '';
   };
   var formatRodLength = function formatRodLength(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (usesImperialMeasurements()) {
+      var inches = numeric / 2.54;
+      var imperialFormatted = formatNumber(inches, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0
+      });
+      return imperialFormatted ? "".concat(imperialFormatted, " in") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 1,
       minimumFractionDigits: 0
     });
     return formatted ? "".concat(formatted, " cm") : '';
   };
   var formatWeight = function formatWeight(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (usesImperialMeasurements()) {
+      var pounds = numeric / 453.59237;
+      var digits = pounds < 10 ? 2 : 1;
+      var imperialFormatted = formatNumber(pounds, {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: 0
+      });
+      return imperialFormatted ? "".concat(imperialFormatted, " lb") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
     });
@@ -540,6 +580,15 @@ function generatePrintableOverview() {
     var num = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(num)) {
       return '';
+    }
+    if (usesImperialMeasurements()) {
+      var feet = num * 3.280839895;
+      var imperialDigits = feet < 3 ? 2 : 1;
+      var imperialFormatted = formatNumber(feet, {
+        maximumFractionDigits: imperialDigits,
+        minimumFractionDigits: imperialDigits
+      });
+      return imperialFormatted ? "".concat(imperialFormatted, " ft") : '';
     }
     var digits = num < 1 ? 2 : 1;
     var formatted = formatNumber(num, {

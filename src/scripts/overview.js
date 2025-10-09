@@ -805,16 +805,45 @@ function generatePrintableOverview(config = {}) {
         }
         return preference === 'imperial' ? 'Imperial' : 'Metric';
     };
+    const usesImperialMeasurements = () => normalizeFocusScaleValue(resolveFocusScalePreference()) === 'imperial';
     const formatLengthMm = (value) => {
-        const formatted = formatNumber(value, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (usesImperialMeasurements()) {
+            const inches = numeric / 25.4;
+            const formatted = formatNumber(inches, { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} in` : '';
+        }
+        const formatted = formatNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
         return formatted ? `${formatted} mm` : '';
     };
     const formatRodLength = (value) => {
-        const formatted = formatNumber(value, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (usesImperialMeasurements()) {
+            const inches = numeric / 2.54;
+            const formatted = formatNumber(inches, { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} in` : '';
+        }
+        const formatted = formatNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
         return formatted ? `${formatted} cm` : '';
     };
     const formatWeight = (value) => {
-        const formatted = formatNumber(value, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (usesImperialMeasurements()) {
+            const pounds = numeric / 453.59237;
+            const digits = pounds < 10 ? 2 : 1;
+            const formatted = formatNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} lb` : '';
+        }
+        const formatted = formatNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
         return formatted ? `${formatted} g` : '';
     };
     const resolveMinFocusMeters = (lensInfo) => {
@@ -839,6 +868,12 @@ function generatePrintableOverview(config = {}) {
         const num = typeof value === 'string' ? Number(value) : value;
         if (!Number.isFinite(num)) {
             return '';
+        }
+        if (usesImperialMeasurements()) {
+            const feet = num * 3.280839895;
+            const digits = feet < 3 ? 2 : 1;
+            const formatted = formatNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+            return formatted ? `${formatted} ft` : '';
         }
         const digits = num < 1 ? 2 : 1;
         const formatted = formatNumber(num, { maximumFractionDigits: digits, minimumFractionDigits: digits });
