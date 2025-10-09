@@ -4551,10 +4551,22 @@ function applyGearItemData(element, data = {}, options = {}) {
   } else {
     element.removeAttribute('data-gear-note');
   }
-  if (!element.getAttribute('data-gear-original-name')) {
-    const originalName = element.getAttribute('data-gear-name');
-    if (originalName) {
-      element.setAttribute('data-gear-original-name', originalName);
+  if (!element.hasAttribute('data-gear-original-name')) {
+    const originalLabel = element.getAttribute('data-gear-label');
+    const originalNameAttr = typeof originalLabel === 'string' && originalLabel.trim()
+      ? originalLabel
+      : element.getAttribute('data-gear-name');
+    if (typeof originalNameAttr === 'string') {
+      element.setAttribute('data-gear-original-name', originalNameAttr);
+    } else {
+      element.setAttribute('data-gear-original-name', trimmedName || '');
+    }
+  }
+  if (!element.hasAttribute('data-gear-original-attributes')) {
+    if (element.hasAttribute('data-gear-attributes')) {
+      element.setAttribute('data-gear-original-attributes', element.getAttribute('data-gear-attributes') || '');
+    } else {
+      element.setAttribute('data-gear-original-attributes', trimmedAttributes || '');
     }
   }
   const combinedName = trimmedAttributes
@@ -4681,6 +4693,9 @@ function buildGearItemEditContext() {
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalLabel: resolveElementById('gearItemEditRentalLabel', 'gearItemEditRentalLabel'),
+    backButton: resolveElementById('gearItemEditBack', 'gearItemEditBack'),
+    backButtonLabel: resolveElementById('gearItemEditBackText', 'gearItemEditBackText'),
+    resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
   };
@@ -4710,6 +4725,8 @@ function getGearItemEditTexts() {
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
+    backLabel: langTexts.gearListEditBack || fallbackTexts.gearListEditBack || 'Back',
+    resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name & attributes',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
   };
 }
@@ -4735,6 +4752,20 @@ function applyGearItemEditDialogTexts(context) {
   if (context.rentalLabel) {
     context.rentalLabel.textContent = textsForDialog.rentalLabel;
   }
+  if (context.backButton) {
+    context.backButton.setAttribute('aria-label', textsForDialog.backLabel);
+    context.backButton.setAttribute('title', textsForDialog.backLabel);
+    if (context.backButtonLabel) {
+      context.backButtonLabel.textContent = textsForDialog.backLabel;
+    } else {
+      context.backButton.textContent = textsForDialog.backLabel;
+    }
+  }
+  if (context.resetButton) {
+    context.resetButton.textContent = textsForDialog.resetLabel;
+    context.resetButton.setAttribute('aria-label', textsForDialog.resetLabel);
+    context.resetButton.setAttribute('title', textsForDialog.resetLabel);
+  }
   if (context.cancelButton) {
     context.cancelButton.textContent = textsForDialog.cancelLabel;
     context.cancelButton.setAttribute('aria-label', textsForDialog.cancelLabel);
@@ -4747,8 +4778,125 @@ function applyGearItemEditDialogTexts(context) {
 let gearItemEditDialogBound = false;
 let activeGearItemEditTarget = null;
 
+function getGearItemOriginalData(element) {
+  const fallback = { name: '', attributes: '' };
+  if (!element) {
+    return fallback;
+  }
+  let originalName = '';
+  let originalAttributes = '';
+  if (element.hasAttribute('data-gear-original-name')) {
+    const storedName = element.getAttribute('data-gear-original-name');
+    originalName = typeof storedName === 'string' ? storedName : '';
+  }
+  if (element.hasAttribute('data-gear-original-attributes')) {
+    const storedAttributes = element.getAttribute('data-gear-original-attributes');
+    originalAttributes = typeof storedAttributes === 'string' ? storedAttributes : '';
+  }
+  const fallbackData = getGearItemData(element);
+  if (!originalName) {
+    const labelAttr = element.getAttribute('data-gear-label');
+    if (labelAttr && labelAttr.trim()) {
+      originalName = labelAttr.trim();
+    }
+  }
+  if (!originalName && fallbackData && typeof fallbackData.name === 'string') {
+    originalName = fallbackData.name;
+  }
+  if (!originalAttributes) {
+    const attrAttr = element.getAttribute('data-gear-attributes');
+    if (typeof attrAttr === 'string') {
+      originalAttributes = attrAttr.trim();
+    }
+  }
+  if (!originalAttributes && fallbackData && typeof fallbackData.attributes === 'string') {
+    originalAttributes = fallbackData.attributes;
+  }
+  return {
+    name: typeof originalName === 'string' ? originalName : '',
+    attributes: typeof originalAttributes === 'string' ? originalAttributes : '',
+  };
+}
+
+function updateGearItemEditResetState() {
+  const context = getGearItemEditContext();
+  if (!context || !context.resetButton) {
+    return;
+  }
+  if (!activeGearItemEditTarget) {
+    context.resetButton.disabled = true;
+    return;
+  }
+  const original = activeGearItemEditTarget.originalData || getGearItemOriginalData(activeGearItemEditTarget.element);
+  const currentName = context.nameInput ? String(context.nameInput.value || '').trim() : '';
+  const currentAttributes = context.attributesInput ? String(context.attributesInput.value || '').trim() : '';
+  const originalName = typeof original.name === 'string' ? original.name.trim() : '';
+  const originalAttributes = typeof original.attributes === 'string' ? original.attributes.trim() : '';
+  const unchanged = currentName === originalName && currentAttributes === originalAttributes;
+  context.resetButton.disabled = unchanged;
+}
+
+function handleGearItemEditDialogBack(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  const context = getGearItemEditContext();
+  if (context && context.dialog) {
+    context.dialog.close('back');
+  }
+}
+
+function handleGearItemEditReset(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  const context = getGearItemEditContext();
+  if (!context) {
+    return;
+  }
+  const target = activeGearItemEditTarget && activeGearItemEditTarget.element ? activeGearItemEditTarget : null;
+  if (!target || !target.element) {
+    updateGearItemEditResetState();
+    return;
+  }
+  const original = target.originalData || getGearItemOriginalData(target.element);
+  if (context.nameInput) {
+    context.nameInput.value = typeof original.name === 'string' ? original.name : '';
+  }
+  if (context.attributesInput) {
+    context.attributesInput.value = typeof original.attributes === 'string' ? original.attributes : '';
+  }
+  updateGearItemEditResetState();
+  if (context.nameInput && typeof context.nameInput.focus === 'function') {
+    try {
+      context.nameInput.focus({ preventScroll: true });
+    } catch (focusError) {
+      void focusError;
+    }
+  }
+}
+
+function handleGearItemEditDialogBackdropPointerDown(event) {
+  if (!event) {
+    return;
+  }
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog) {
+    return;
+  }
+  if (event.target !== context.dialog) {
+    return;
+  }
+  if (typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  context.dialog.close('backdrop');
+}
+
 function handleGearItemEditFormSubmit(event) {
-  event.preventDefault();
+  if (event) {
+    event.preventDefault();
+  }
   const context = getGearItemEditContext();
   if (!context || !context.dialog) {
     return;
@@ -4812,6 +4960,7 @@ function handleGearItemEditDialogClose() {
     context.nameInput.removeAttribute('list');
   }
   activeGearItemEditTarget = null;
+  updateGearItemEditResetState();
   if (targetEntry && targetEntry.isConnected) {
     const editBtn = targetEntry.querySelector('[data-gear-edit]');
     if (editBtn && typeof editBtn.focus === 'function') {
@@ -4838,8 +4987,21 @@ function bindGearItemEditDialog(context) {
   if (context.cancelButton) {
     context.cancelButton.addEventListener('click', handleGearItemEditDialogCancel);
   }
+  if (context.backButton) {
+    context.backButton.addEventListener('click', handleGearItemEditDialogBack);
+  }
+  if (context.resetButton) {
+    context.resetButton.addEventListener('click', handleGearItemEditReset);
+  }
+  if (context.nameInput) {
+    context.nameInput.addEventListener('input', updateGearItemEditResetState);
+  }
+  if (context.attributesInput) {
+    context.attributesInput.addEventListener('input', updateGearItemEditResetState);
+  }
   context.dialog.addEventListener('cancel', handleGearItemEditDialogCancel);
   context.dialog.addEventListener('close', handleGearItemEditDialogClose);
+  context.dialog.addEventListener('pointerdown', handleGearItemEditDialogBackdropPointerDown);
   gearItemEditDialogBound = true;
 }
 
@@ -4860,6 +5022,7 @@ function openGearItemEditor(element, options = {}) {
     }
   }
   const data = getGearItemData(element);
+  const originalData = getGearItemOriginalData(element);
   applyGearItemEditDialogTexts(context);
   const allowRentalToggle = options && options.allowRentalToggle === false ? false : true;
   if (context.quantityInput) {
@@ -4896,7 +5059,8 @@ function openGearItemEditor(element, options = {}) {
       ? `${textsForDialog.dialogTitle} — ${previewText}`
       : textsForDialog.dialogTitle;
   }
-  activeGearItemEditTarget = { element, options: options || {} };
+  activeGearItemEditTarget = { element, options: options || {}, originalData };
+  updateGearItemEditResetState();
   try {
     if (typeof context.dialog.showModal === 'function') {
       context.dialog.showModal();

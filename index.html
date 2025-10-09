@@ -6061,7 +6061,13 @@
     aria-labelledby="gearItemEditTitle"
   >
     <form id="gearItemEditForm" method="dialog" class="modal-surface gear-item-edit-form">
-      <h3 id="gearItemEditTitle">Edit gear item</h3>
+      <div class="gear-item-edit-header">
+        <button type="button" id="gearItemEditBack" class="gear-item-edit-back">
+          <span class="gear-item-edit-back-icon" aria-hidden="true">&#x2190;</span>
+          <span id="gearItemEditBackText" class="gear-item-edit-back-text">Back</span>
+        </button>
+        <h3 id="gearItemEditTitle">Edit gear item</h3>
+      </div>
       <div class="gear-item-edit-fields">
         <div class="form-row">
           <label id="gearItemEditQuantityLabel" for="gearItemEditQuantity">Quantity</label>
@@ -6106,6 +6112,7 @@
         </label>
       </div>
       <div class="dialog-actions">
+        <button type="button" id="gearItemEditReset" class="gear-item-edit-reset">Reset name &amp; attributes</button>
         <button type="button" id="gearItemEditCancel">Cancel</button>
         <button type="submit" id="gearItemEditSave" class="primary">Save</button>
       </div>
