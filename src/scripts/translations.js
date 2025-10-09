@@ -88,7 +88,29 @@ const texts = {
     resultsPlainSummaryUnlimited:
       "With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.",
     resultsPlainSummaryNote:
-      "The planner saves these numbers offline automatically. Update your backups after big changes.",
+      "Pins and D-Tap status updates as you add gear.",
+    resultsPlainSummaryPinsZero: "Pins: no 12V draw yet.",
+    resultsPlainSummaryPinsOk:
+      "Pins: {current}A within the {max}A limit.",
+    resultsPlainSummaryPinsNear:
+      "Pins: {current}A is close to the {max}A limit.",
+    resultsPlainSummaryPinsExceeded:
+      "Pins: {current}A exceeds the {max}A limit.",
+    resultsPlainSummaryPinsUnknown:
+      "Pins: draw is {current}A but no limit is documented.",
+    resultsPlainSummaryDtapZero: "D-Tap: idle.",
+    resultsPlainSummaryDtapOk:
+      "D-Tap: {current}A within the {max}A rating.",
+    resultsPlainSummaryDtapNear:
+      "D-Tap: {current}A is close to the {max}A rating.",
+    resultsPlainSummaryDtapExceeded:
+      "D-Tap: {current}A exceeds the {max}A rating.",
+    resultsPlainSummaryDtapUnavailable:
+      "D-Tap: auxiliary port disabled for this battery selection.",
+    resultsPlainSummaryDtapUnavailableBMount:
+      "D-Tap: B-Mount cameras disable the aux port.",
+    resultsPlainSummaryDtapUnknown:
+      "D-Tap: rating missing, treat {current}A with caution.",
     resultsPlainSummaryUnnamedBattery: "your selected battery",
     deviceManagerHeadingHelp:
       "Add, edit or remove entries from the device database, including categories, subcategories and attributes.",
@@ -1767,7 +1789,29 @@ const texts = {
     resultsPlainSummaryUnlimited:
       "Con {batteryName} il tuo setup assorbe {totalPower} W, quindi l'autonomia rimane virtualmente illimitata. Tieni comunque collegata una batteria carica prima di girare.",
     resultsPlainSummaryNote:
-      "Il planner salva questi valori offline in automatico. Aggiorna i backup dopo modifiche importanti.",
+      "Lo stato di pin e D-Tap si aggiorna mentre aggiungi attrezzatura.",
+    resultsPlainSummaryPinsZero: "Pin: nessun assorbimento 12V al momento.",
+    resultsPlainSummaryPinsOk:
+      "Pin: {current}A entro il limite di {max}A.",
+    resultsPlainSummaryPinsNear:
+      "Pin: {current}A è vicino al limite di {max}A.",
+    resultsPlainSummaryPinsExceeded:
+      "Pin: {current}A supera il limite di {max}A.",
+    resultsPlainSummaryPinsUnknown:
+      "Pin: l'assorbimento è {current}A ma il limite non è indicato.",
+    resultsPlainSummaryDtapZero: "D-Tap: inattivo.",
+    resultsPlainSummaryDtapOk:
+      "D-Tap: {current}A entro la portata di {max}A.",
+    resultsPlainSummaryDtapNear:
+      "D-Tap: {current}A è vicino alla portata di {max}A.",
+    resultsPlainSummaryDtapExceeded:
+      "D-Tap: {current}A supera la portata di {max}A.",
+    resultsPlainSummaryDtapUnavailable:
+      "D-Tap: porta ausiliaria disattivata per questa batteria.",
+    resultsPlainSummaryDtapUnavailableBMount:
+      "D-Tap: le camere B-Mount disattivano la porta ausiliaria.",
+    resultsPlainSummaryDtapUnknown:
+      "D-Tap: portata non indicata, gestisci con cautela {current}A.",
     resultsPlainSummaryUnnamedBattery: "la batteria selezionata",
     deviceManagerHeadingHelp:
       "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi, inclusi categorie, sottocategorie e attributi.",
@@ -3433,7 +3477,29 @@ const texts = {
     resultsPlainSummaryUnlimited:
       "Con {batteryName} tu equipo consume {totalPower} W, así que la autonomía es prácticamente ilimitada. Asegúrate de tener una batería cargada conectada antes de grabar.",
     resultsPlainSummaryNote:
-      "El planificador guarda estos datos offline automáticamente. Actualiza tus copias de seguridad después de cambios importantes.",
+      "El estado de los pines y del D-Tap se actualiza a medida que añades equipo.",
+    resultsPlainSummaryPinsZero: "Pines: sin consumo de 12V por ahora.",
+    resultsPlainSummaryPinsOk:
+      "Pines: {current}A dentro del límite de {max}A.",
+    resultsPlainSummaryPinsNear:
+      "Pines: {current}A está cerca del límite de {max}A.",
+    resultsPlainSummaryPinsExceeded:
+      "Pines: {current}A supera el límite de {max}A.",
+    resultsPlainSummaryPinsUnknown:
+      "Pines: el consumo es {current}A pero no hay límite documentado.",
+    resultsPlainSummaryDtapZero: "D-Tap: inactivo.",
+    resultsPlainSummaryDtapOk:
+      "D-Tap: {current}A dentro del rango de {max}A.",
+    resultsPlainSummaryDtapNear:
+      "D-Tap: {current}A está cerca del rango de {max}A.",
+    resultsPlainSummaryDtapExceeded:
+      "D-Tap: {current}A supera el rango de {max}A.",
+    resultsPlainSummaryDtapUnavailable:
+      "D-Tap: puerto auxiliar desactivado para esta batería.",
+    resultsPlainSummaryDtapUnavailableBMount:
+      "D-Tap: las cámaras B-Mount desactivan el puerto auxiliar.",
+    resultsPlainSummaryDtapUnknown:
+      "D-Tap: sin rango documentado, maneja con precaución {current}A.",
     resultsPlainSummaryUnnamedBattery: "la batería seleccionada",
     deviceManagerHeadingHelp:
       "Añade, edita o elimina entradas de la base de datos de dispositivos, incluidas categorías, subcategorías y atributos.",
@@ -5113,7 +5179,29 @@ const texts = {
     resultsPlainSummaryUnlimited:
       "Avec {batteryName}, votre configuration consomme {totalPower} W : l'autonomie reste donc illimitée. Gardez tout de même une batterie chargée branchée avant de tourner.",
     resultsPlainSummaryNote:
-      "Le planificateur enregistre ces données hors ligne automatiquement. Mettez à jour vos sauvegardes après des modifications importantes.",
+      "L’état des broches et du D-Tap se met à jour au fil des ajouts d’équipement.",
+    resultsPlainSummaryPinsZero: "Broches : aucune consommation 12 V pour l’instant.",
+    resultsPlainSummaryPinsOk:
+      "Broches : {current}A dans la limite de {max}A.",
+    resultsPlainSummaryPinsNear:
+      "Broches : {current}A se rapproche de la limite de {max}A.",
+    resultsPlainSummaryPinsExceeded:
+      "Broches : {current}A dépasse la limite de {max}A.",
+    resultsPlainSummaryPinsUnknown:
+      "Broches : consommation de {current}A sans limite documentée.",
+    resultsPlainSummaryDtapZero: "D-Tap : inactif.",
+    resultsPlainSummaryDtapOk:
+      "D-Tap : {current}A dans la plage de {max}A.",
+    resultsPlainSummaryDtapNear:
+      "D-Tap : {current}A se rapproche de la plage de {max}A.",
+    resultsPlainSummaryDtapExceeded:
+      "D-Tap : {current}A dépasse la plage de {max}A.",
+    resultsPlainSummaryDtapUnavailable:
+      "D-Tap : port auxiliaire désactivé pour cette batterie.",
+    resultsPlainSummaryDtapUnavailableBMount:
+      "D-Tap : les caméras B-Mount désactivent ce port auxiliaire.",
+    resultsPlainSummaryDtapUnknown:
+      "D-Tap : plage non renseignée, manipulez {current}A avec prudence.",
     resultsPlainSummaryUnnamedBattery: "la batterie sélectionnée",
     deviceManagerHeadingHelp:
       "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils, y compris les catégories, sous-catégories et attributs.",
@@ -6804,7 +6892,29 @@ const texts = {
     resultsPlainSummaryUnlimited:
       "Mit {batteryName} zieht dein Aufbau {totalPower} W und die Laufzeit bleibt praktisch unbegrenzt. Halte vor dem Dreh trotzdem einen geladenen Akku bereit.",
     resultsPlainSummaryNote:
-      "Die Angaben werden offline automatisch gespeichert. Aktualisiere nach größeren Änderungen deine Sicherungen.",
+      "Der Status von Pins und D-Tap aktualisiert sich, sobald du Ausrüstung hinzufügst.",
+    resultsPlainSummaryPinsZero: "Pins: aktuell kein 12V-Verbrauch.",
+    resultsPlainSummaryPinsOk:
+      "Pins: {current}A innerhalb des Limits von {max}A.",
+    resultsPlainSummaryPinsNear:
+      "Pins: {current}A liegt nahe am Limit von {max}A.",
+    resultsPlainSummaryPinsExceeded:
+      "Pins: {current}A überschreitet das Limit von {max}A.",
+    resultsPlainSummaryPinsUnknown:
+      "Pins: {current}A Verbrauch ohne dokumentiertes Limit.",
+    resultsPlainSummaryDtapZero: "D-Tap: inaktiv.",
+    resultsPlainSummaryDtapOk:
+      "D-Tap: {current}A innerhalb der Angabe von {max}A.",
+    resultsPlainSummaryDtapNear:
+      "D-Tap: {current}A liegt nahe an der Angabe von {max}A.",
+    resultsPlainSummaryDtapExceeded:
+      "D-Tap: {current}A überschreitet die Angabe von {max}A.",
+    resultsPlainSummaryDtapUnavailable:
+      "D-Tap: Zusatzport für diese Batterie deaktiviert.",
+    resultsPlainSummaryDtapUnavailableBMount:
+      "D-Tap: B-Mount-Kameras deaktivieren diesen Zusatzport.",
+    resultsPlainSummaryDtapUnknown:
+      "D-Tap: keine Angabe, behandle {current}A vorsichtig.",
     resultsPlainSummaryUnnamedBattery: "dein ausgewählter Akku",
     deviceManagerHeadingHelp:
       "Füge Einträge zur Gerätedatenbank hinzu, bearbeite oder entferne sie – inklusive Kategorien, Unterkategorien und Attributen.",

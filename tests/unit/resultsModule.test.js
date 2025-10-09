@@ -119,7 +119,19 @@ describe('cineResults module', () => {
         resultsPlainSummaryNeedBattery: 'Pick a battery to get runtime.',
         resultsPlainSummaryRuntime: '{batteryName} {hours}h {batteryCount} packs {totalPower}W',
         resultsPlainSummaryUnlimited: 'Unlimited with {batteryName} at {totalPower}W',
-        resultsPlainSummaryNote: 'Numbers save offline.',
+        resultsPlainSummaryNote: 'Pins and D-Tap status updates as you add gear.',
+        resultsPlainSummaryPinsZero: 'Pins idle.',
+        resultsPlainSummaryPinsOk: 'Pins OK {current}/{max}.',
+        resultsPlainSummaryPinsNear: 'Pins near {current}/{max}.',
+        resultsPlainSummaryPinsExceeded: 'Pins exceeded {current}/{max}.',
+        resultsPlainSummaryPinsUnknown: 'Pins unknown {current}.',
+        resultsPlainSummaryDtapZero: 'DTAP idle.',
+        resultsPlainSummaryDtapOk: 'DTAP OK {current}/{max}.',
+        resultsPlainSummaryDtapNear: 'DTAP near {current}/{max}.',
+        resultsPlainSummaryDtapExceeded: 'DTAP exceeded {current}/{max}.',
+        resultsPlainSummaryDtapUnavailable: 'DTAP disabled.',
+        resultsPlainSummaryDtapUnavailableBMount: 'DTAP off for B-Mount.',
+        resultsPlainSummaryDtapUnknown: 'DTAP unknown {current}.',
         resultsPlainSummaryUnnamedBattery: 'your selected battery',
         totalPowerLabel: 'Total Power',
         totalPowerHelp: 'Shows the maximum draw.',
@@ -160,7 +172,9 @@ describe('cineResults module', () => {
     expect(elements.resultsPlainSummaryElem.attributes['data-help']).toBe('Plain summary help');
     expect(elements.resultsPlainSummaryTitleElem.textContent).toBe('Quick recap');
     expect(elements.resultsPlainSummaryTextElem.textContent).toBe('Add gear for summary.');
-    expect(elements.resultsPlainSummaryNoteElem.textContent).toBe('Numbers save offline.');
+    expect(elements.resultsPlainSummaryNoteElem.textContent).toBe(
+      'Pins and D-Tap status updates as you add gear.',
+    );
     expect(elements.breakdownListElem.attributes['data-help']).toBe('Power distribution details');
     expect(elements.totalPowerLabel.textContent).toBe('Total Power');
     expect(elements.totalPowerLabel.attributes['data-help']).toBe('Shows the maximum draw.');
@@ -248,6 +262,7 @@ describe('cineResults module', () => {
     batteryTableElem.innerHTML = '';
     const resultsPlainSummaryElem = createElement('');
     const resultsPlainSummaryTextElem = createElement('');
+    const resultsPlainSummaryNoteElem = createElement('');
 
     const breakdownListElem = {
       _html: '',
@@ -324,7 +339,19 @@ describe('cineResults module', () => {
           'With {batteryName}, expect about {hours} hours of runtime. Pack {batteryCount} batteries for a 10-hour day. Your rig currently draws {totalPower} W.',
         resultsPlainSummaryUnlimited:
           'With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.',
-        resultsPlainSummaryNote: 'The planner saves these numbers offline automatically. Update your backups after big changes.',
+        resultsPlainSummaryNote: 'Pins and D-Tap status updates as you add gear.',
+        resultsPlainSummaryPinsZero: 'Pins: no 12V draw yet.',
+        resultsPlainSummaryPinsOk: 'Pins: {current}A within the {max}A limit.',
+        resultsPlainSummaryPinsNear: 'Pins: {current}A is close to the {max}A limit.',
+        resultsPlainSummaryPinsExceeded: 'Pins: {current}A exceeds the {max}A limit.',
+        resultsPlainSummaryPinsUnknown: 'Pins: draw is {current}A but no limit is documented.',
+        resultsPlainSummaryDtapZero: 'D-Tap: idle.',
+        resultsPlainSummaryDtapOk: 'D-Tap: {current}A within the {max}A rating.',
+        resultsPlainSummaryDtapNear: 'D-Tap: {current}A is close to the {max}A rating.',
+        resultsPlainSummaryDtapExceeded: 'D-Tap: {current}A exceeds the {max}A rating.',
+        resultsPlainSummaryDtapUnavailable: 'D-Tap: auxiliary port disabled for this battery selection.',
+        resultsPlainSummaryDtapUnavailableBMount: 'D-Tap: B-Mount cameras disable the aux port.',
+        resultsPlainSummaryDtapUnknown: 'D-Tap: rating missing, treat {current}A with caution.',
         resultsPlainSummaryUnnamedBattery: 'your selected battery',
       },
     };
@@ -388,6 +415,7 @@ describe('cineResults module', () => {
         setupDiagramContainer,
         resultsPlainSummaryElem,
         resultsPlainSummaryTextElem,
+        resultsPlainSummaryNoteElem,
       },
       motorSelects,
       controllerSelects,
@@ -430,6 +458,9 @@ describe('cineResults module', () => {
     expect(runtimeAverageNoteElem.textContent).toBe('Average note');
     expect(resultsPlainSummaryTextElem.textContent).toBe(
       'With BatteryA, expect about 3.20 hours of runtime. Pack 4 batteries for a 10-hour day. Your rig currently draws 41.0 W.'
+    );
+    expect(resultsPlainSummaryNoteElem.textContent).toBe(
+      'Pins: 1.90A within the 9A limit. D-Tap: B-Mount cameras disable the aux port.',
     );
     expect(pinWarnElem.textContent).toContain('Pin OK');
     expect(setStatusMessage).toHaveBeenCalledWith(
