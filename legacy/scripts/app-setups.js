@@ -82,6 +82,173 @@ var localizationScope = getGlobalScope();
 if (localizationScope && typeof localizationScope.getLocalizedText !== 'function') {
   localizationScope.getLocalizedText = localGetLocalizedText;
 }
+var RENTAL_HOUSE_DATALIST_ID = 'rentalHouseOptions';
+function resolveRentalHouseCatalog() {
+  var candidates = [];
+  if (typeof require === 'function') {
+    try {
+      var moduleExport = require('../data/rental-houses.js');
+      if (Array.isArray(moduleExport) && moduleExport.length) {
+        candidates.push(moduleExport);
+      } else if (moduleExport && Array.isArray(moduleExport.rentalHouses) && moduleExport.rentalHouses.length) {
+        candidates.push(moduleExport.rentalHouses);
+      } else if (moduleExport && Array.isArray(moduleExport.default) && moduleExport.default.length) {
+        candidates.push(moduleExport.default);
+      }
+    } catch (catalogLoadError) {
+      var message = catalogLoadError && catalogLoadError.message ? catalogLoadError.message : '';
+      if (catalogLoadError && catalogLoadError.code !== 'MODULE_NOT_FOUND' && !/Cannot find module/i.test(message)) {
+        try {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Unable to load rental house catalog module', catalogLoadError);
+          }
+        } catch (warnError) {
+          void warnError;
+        }
+      }
+    }
+  }
+  var scope = getGlobalScope();
+  if (scope) {
+    var scopedDevices = scope.devices;
+    if (scopedDevices && Array.isArray(scopedDevices.rentalHouses) && scopedDevices.rentalHouses.length) {
+      candidates.push(scopedDevices.rentalHouses);
+    }
+    if (Array.isArray(scope.rentalHouses) && scope.rentalHouses.length) {
+      candidates.push(scope.rentalHouses);
+    }
+  }
+  if (typeof devices !== 'undefined' && devices && Array.isArray(devices.rentalHouses) && devices.rentalHouses.length) {
+    candidates.push(devices.rentalHouses);
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var candidate = candidates[index];
+    if (Array.isArray(candidate) && candidate.length) {
+      return candidate.slice();
+    }
+  }
+  return [];
+}
+var rentalHouseCatalog = resolveRentalHouseCatalog();
+function normalizeRentalHouseKey(value) {
+  if (!value) return '';
+  return String(value).trim().replace(/[\u2012\u2013\u2014\u2015]/g, '-').toLowerCase();
+}
+var rentalHouseLookup = function () {
+  var map = Object.create(null);
+  rentalHouseCatalog.forEach(function (entry) {
+    if (!entry || typeof entry !== 'object' && typeof entry !== 'function') {
+      return;
+    }
+    var key = normalizeRentalHouseKey(entry.name);
+    if (key && !map[key]) {
+      map[key] = entry;
+    }
+  });
+  return map;
+}();
+function formatRentalHouseLocation(entry) {
+  var parts = [];
+  var city = entry && entry.city ? String(entry.city).trim() : '';
+  var country = entry && entry.country ? String(entry.country).trim() : '';
+  if (city) parts.push(city);
+  if (country) parts.push(country);
+  return parts.join(', ');
+}
+function formatRentalHouseTooltip(entry) {
+  if (!entry || typeof entry !== 'object') return '';
+  var segments = [];
+  var location = formatRentalHouseLocation(entry);
+  var address = entry.address ? String(entry.address).trim() : '';
+  var phone = entry.phone ? String(entry.phone).trim() : '';
+  var email = entry.email ? String(entry.email).trim() : '';
+  if (location) segments.push(location);
+  if (address) segments.push(address);
+  if (phone) segments.push(phone);
+  if (email) segments.push(email);
+  return segments.join(' • ');
+}
+function resolveRentalHouseInput() {
+  if (typeof document === 'undefined') return null;
+  return document.getElementById('rentalHouse');
+}
+function ensureRentalHouseDatalist(input) {
+  if (!input || typeof document === 'undefined') return null;
+  var listId = input.getAttribute('list');
+  if (!listId) {
+    listId = RENTAL_HOUSE_DATALIST_ID;
+    input.setAttribute('list', listId);
+  }
+  var datalist = listId ? document.getElementById(listId) : null;
+  if (!datalist) {
+    datalist = document.createElement('datalist');
+    datalist.id = listId;
+    input.insertAdjacentElement('afterend', datalist);
+  }
+  return datalist;
+}
+function renderRentalHouseSuggestions() {
+  var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : resolveRentalHouseInput();
+  if (!input || !rentalHouseCatalog.length) return;
+  var datalist = ensureRentalHouseDatalist(input);
+  if (!datalist) return;
+  var signature = rentalHouseCatalog.map(function (entry) {
+    return entry && entry.name ? String(entry.name).trim() : '';
+  }).filter(Boolean).join('|');
+  if (datalist.__rentalHouseSignature === signature) {
+    return;
+  }
+  var fragment = document.createDocumentFragment();
+  var seen = Object.create(null);
+  rentalHouseCatalog.forEach(function (entry) {
+    if (!entry || typeof entry !== 'object' && typeof entry !== 'function') return;
+    var name = entry.name ? String(entry.name).trim() : '';
+    if (!name) return;
+    var key = normalizeRentalHouseKey(name);
+    if (seen[key]) return;
+    var option = document.createElement('option');
+    option.value = name;
+    var label = formatRentalHouseLocation(entry);
+    if (label) option.label = label;
+    fragment.appendChild(option);
+    seen[key] = true;
+  });
+  datalist.innerHTML = '';
+  datalist.appendChild(fragment);
+  datalist.__rentalHouseSignature = signature;
+}
+function updateRentalHouseAssistiveDetails() {
+  var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : resolveRentalHouseInput();
+  if (!input) return;
+  var value = typeof input.value === 'string' ? input.value.trim() : '';
+  var match = value ? rentalHouseLookup[normalizeRentalHouseKey(value)] : null;
+  if (match) {
+    var tooltip = formatRentalHouseTooltip(match);
+    if (tooltip) {
+      input.title = tooltip;
+      input.setAttribute('data-help', tooltip);
+      return;
+    }
+  }
+  input.removeAttribute('title');
+  input.removeAttribute('data-help');
+}
+var initialRentalHouseInput = resolveRentalHouseInput();
+if (initialRentalHouseInput) {
+  if (rentalHouseCatalog.length) {
+    renderRentalHouseSuggestions(initialRentalHouseInput);
+  }
+  updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+  initialRentalHouseInput.addEventListener('input', function () {
+    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+  });
+  initialRentalHouseInput.addEventListener('change', function () {
+    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+  });
+  initialRentalHouseInput.addEventListener('blur', function () {
+    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+  });
+}
 function hasMeaningfulPowerSelection(value) {
   if (typeof value !== 'string') return false;
   var trimmed = value.trim();
@@ -2220,6 +2387,11 @@ function populateProjectForm() {
       });
     }
   });
+  if (projectForm) {
+    var rentalInput = projectForm.querySelector('#rentalHouse');
+    renderRentalHouseSuggestions(rentalInput);
+    updateRentalHouseAssistiveDetails(rentalInput);
+  }
   markProjectFormDataDirty();
 }
 function ensureZoomRemoteSetup(info) {
