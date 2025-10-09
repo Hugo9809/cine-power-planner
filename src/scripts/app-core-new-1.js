@@ -7067,7 +7067,23 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   const runLayoutInitialization = () => {
     initializeLayoutControls();
     initializeOwnGearManager();
-    initializeContactsModule();
+    const startContactsModule = () => {
+      try {
+        initializeContactsModule();
+      } catch (contactsError) {
+        console.error('Contacts module failed to initialize', contactsError);
+      }
+    };
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(startContactsModule);
+    } else if (typeof Promise === 'function') {
+      Promise.resolve().then(startContactsModule).catch(error => {
+        console.error('Deferred contacts initialization failed', error);
+        startContactsModule();
+      });
+    } else {
+      setTimeout(startContactsModule, 0);
+    }
   };
 
   if (document.readyState === 'loading') {
@@ -12584,6 +12600,8 @@ var returnContainer = document.getElementById("returnContainer");
 const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
 const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
+var contactsCache = [];
+var contactsInitialized = false;
 const contactsDialog = document.getElementById("contactsDialog");
 const contactsForm = document.getElementById("contactsForm");
 const contactsDialogHeading = document.getElementById("contactsDialogHeading");
@@ -14410,8 +14428,6 @@ function getProjectFormText(key, defaultValue = '') {
 
 const CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
-let contactsCache = [];
-let contactsInitialized = false;
 
 function getContactsText(key, defaultValue = '') {
   const fallbackContacts = texts?.en?.contacts || {};
