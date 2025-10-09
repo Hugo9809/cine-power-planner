@@ -140,6 +140,70 @@
       ? GLOBAL_SCOPE.__cineDeepClone
       : storageCreateResilientDeepClone(GLOBAL_SCOPE);
 
+  const knownSessionStorages =
+    typeof WeakSet === 'function' ? new WeakSet() : null;
+
+  function registerKnownSessionStorage(storage) {
+    if (
+      !knownSessionStorages
+      || typeof knownSessionStorages.add !== 'function'
+      || !storage
+    ) {
+      return;
+    }
+
+    try {
+      knownSessionStorages.add(storage);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function resolveSessionStorageFromScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const candidate = scope.sessionStorage;
+      if (candidate && typeof candidate.getItem === 'function') {
+        return candidate;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  (function primeSessionStorageCandidates() {
+    const scopes = [
+      GLOBAL_SCOPE,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal
+        ? GLOBAL_SCOPE.__cineGlobal
+        : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidate = resolveSessionStorageFromScope(scopes[index]);
+      if (candidate) {
+        registerKnownSessionStorage(candidate);
+      }
+    }
+
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        registerKnownSessionStorage(sessionStorage);
+      } catch (error) {
+        void error;
+      }
+    }
+  })();
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone !== 'function') {
     try {
       GLOBAL_SCOPE.__cineDeepClone = STORAGE_DEEP_CLONE;
@@ -4578,6 +4642,7 @@ function initializeSafeLocalStorage() {
       if ('sessionStorage' in window) {
         const storage = verifyStorage(window.sessionStorage);
         if (storage) {
+          registerKnownSessionStorage(storage);
           console.warn('Falling back to sessionStorage; data persists for this tab only.');
           alertSessionFallback();
           return { storage, type: 'session' };
@@ -6064,6 +6129,59 @@ function applyLegacyStorageMigrations() {
 }
 
 // Generic helpers for storage access
+function isSessionStorageInstance(storage) {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return false;
+  }
+
+  if (
+    knownSessionStorages
+    && typeof knownSessionStorages.has === 'function'
+    && knownSessionStorages.has(storage)
+  ) {
+    return true;
+  }
+
+  if (
+    safeLocalStorageInfo
+    && safeLocalStorageInfo.type === 'session'
+    && safeLocalStorageInfo.storage === storage
+  ) {
+    registerKnownSessionStorage(storage);
+    return true;
+  }
+
+  if (
+    typeof SAFE_LOCAL_STORAGE !== 'undefined'
+    && SAFE_LOCAL_STORAGE
+    && safeLocalStorageInfo
+    && safeLocalStorageInfo.type === 'session'
+    && SAFE_LOCAL_STORAGE === storage
+  ) {
+    registerKnownSessionStorage(storage);
+    return true;
+  }
+
+  const scopes = [
+    GLOBAL_SCOPE,
+    GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal ? GLOBAL_SCOPE.__cineGlobal : null,
+    GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const candidate = resolveSessionStorageFromScope(scopes[index]);
+    if (candidate && candidate === storage) {
+      registerKnownSessionStorage(candidate);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function loadJSONFromStorage(
   storage,
   key,
@@ -6437,8 +6555,10 @@ function saveJSONToStorage(
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
-  const compressionBlocked = Boolean(disableCompression);
-  const allowQuotaCompression = forceCompressionOnQuota === true;
+  const sessionScopedStorage = isSessionStorageInstance(storage);
+  const compressionBlocked = sessionScopedStorage || Boolean(disableCompression);
+  const allowQuotaCompression =
+    sessionScopedStorage ? false : forceCompressionOnQuota === true;
 
   const rawGetter = getRawStorageGetter(storage);
   const loadRawValue = (targetKey) => readRawStorageValue(storage, targetKey, rawGetter);
