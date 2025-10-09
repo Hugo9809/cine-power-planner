@@ -1108,6 +1108,9 @@ main.legal-content {
   transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
   flex-shrink: 0;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .gear-item-edit-back:hover,
@@ -1229,6 +1232,8 @@ main.legal-content {
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  white-space: normal;
+  text-align: center;
 }
 
 .gear-item-edit-rental-btn:hover,
@@ -1412,6 +1417,12 @@ body.dark-mode .gear-item-edit-rental-btn.is-active,
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: clamp(0.75rem, 2vw, 1.25rem);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.dialog-actions > * {
+  flex: 0 0 auto;
 }
 
 #setup-manager .share-import-row {

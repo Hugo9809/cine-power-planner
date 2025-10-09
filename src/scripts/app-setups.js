@@ -4717,14 +4717,11 @@ function buildGearItemEditContext() {
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
     rentalLabel: resolveElementById('gearItemEditRentalLabel', 'gearItemEditRentalLabel'),
     rentalToggleButton: resolveElementById('gearItemEditRentalToggle', 'gearItemEditRentalToggle'),
-    rentalToggleText: resolveElementById('gearItemEditRentalToggleText', 'gearItemEditRentalToggleText'),
     rentalDescription: resolveElementById('gearItemEditRentalDescription', 'gearItemEditRentalDescription'),
     cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
     backButton: resolveElementById('gearItemEditBack', 'gearItemEditBack'),
-    backButtonText: resolveElementById('gearItemEditBackText', 'gearItemEditBackText'),
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
-    resetButtonText: resolveElementById('gearItemEditResetText', 'gearItemEditResetText'),
     resetDefaults: null,
     currentAttributes: '',
   };
@@ -4782,28 +4779,39 @@ function applyGearItemEditDialogTexts(context) {
     context.rentalLabel.textContent = textsForDialog.rentalLabel;
   }
   if (context.backButton) {
-    context.backButton.setAttribute('aria-label', textsForDialog.backLabel);
-    context.backButton.title = textsForDialog.backLabel;
-  }
-  if (context.backButtonText) {
-    context.backButtonText.textContent = textsForDialog.backLabel;
+    const backLabel = textsForDialog.backLabel;
+    context.backButton.setAttribute('aria-label', backLabel);
+    context.backButton.title = backLabel;
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      const backGlyph = ICON_GLYPHS.arrowLeft || ICON_GLYPHS.minus || ICON_GLYPHS.circleX;
+      setButtonLabelWithIcon(context.backButton, backLabel, backGlyph);
+    } else {
+      context.backButton.textContent = backLabel;
+    }
   }
   if (context.resetButton) {
-    context.resetButton.setAttribute('aria-label', textsForDialog.resetLabel);
-    context.resetButton.title = textsForDialog.resetLabel;
-  }
-  if (context.resetButtonText) {
-    context.resetButtonText.textContent = textsForDialog.resetLabel;
+    const resetLabel = textsForDialog.resetLabel;
+    context.resetButton.setAttribute('aria-label', resetLabel);
+    context.resetButton.title = resetLabel;
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      const resetGlyph = ICON_GLYPHS.reload || ICON_GLYPHS.save;
+      setButtonLabelWithIcon(context.resetButton, resetLabel, resetGlyph);
+    } else {
+      context.resetButton.textContent = resetLabel;
+    }
   }
   const rentalTexts = getGearListRentalToggleTexts();
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
   const rentalNote = rentalTexts.noteLabel || '';
-  if (context.rentalToggleText) {
-    context.rentalToggleText.textContent = baseToggleLabel;
-  }
   if (context.rentalToggleButton) {
     context.rentalToggleButton.setAttribute('aria-label', baseToggleLabel);
     context.rentalToggleButton.title = baseToggleLabel;
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      const toggleGlyph = ICON_GLYPHS.circleX || ICON_GLYPHS.minus;
+      setButtonLabelWithIcon(context.rentalToggleButton, baseToggleLabel, toggleGlyph);
+    } else {
+      context.rentalToggleButton.textContent = baseToggleLabel;
+    }
   }
   if (context.rentalDescription) {
     context.rentalDescription.textContent = rentalNote;
@@ -4824,11 +4832,21 @@ function applyGearItemEditDialogTexts(context) {
     }
   }
   if (context.cancelButton) {
-    context.cancelButton.textContent = textsForDialog.cancelLabel;
-    context.cancelButton.setAttribute('aria-label', textsForDialog.cancelLabel);
+    const cancelLabel = textsForDialog.cancelLabel;
+    context.cancelButton.setAttribute('aria-label', cancelLabel);
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      setButtonLabelWithIcon(context.cancelButton, cancelLabel, ICON_GLYPHS.circleX || ICON_GLYPHS.minus);
+    } else {
+      context.cancelButton.textContent = cancelLabel;
+    }
   }
   if (context.saveButton) {
-    context.saveButton.textContent = textsForDialog.saveLabel;
+    const saveLabel = textsForDialog.saveLabel;
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      setButtonLabelWithIcon(context.saveButton, saveLabel, ICON_GLYPHS.save);
+    } else {
+      context.saveButton.textContent = saveLabel;
+    }
   }
 }
 
@@ -4913,11 +4931,14 @@ function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) 
     const buttonLabel = shouldExclude ? onLabel : offLabel;
     context.rentalToggleButton.title = buttonLabel;
     context.rentalToggleButton.setAttribute('aria-label', buttonLabel);
-    if (context.rentalToggleText) {
-      context.rentalToggleText.textContent = buttonLabel;
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+      const glyph = shouldExclude
+        ? (ICON_GLYPHS.circleX || ICON_GLYPHS.minus)
+        : (ICON_GLYPHS.check || ICON_GLYPHS.add);
+      setButtonLabelWithIcon(context.rentalToggleButton, buttonLabel, glyph);
+    } else {
+      context.rentalToggleButton.textContent = buttonLabel;
     }
-  } else if (context.rentalToggleText) {
-    context.rentalToggleText.textContent = shouldExclude ? onLabel : offLabel;
   }
   if (context.rentalDescription) {
     context.rentalDescription.hidden = !context.rentalDescription.textContent;
