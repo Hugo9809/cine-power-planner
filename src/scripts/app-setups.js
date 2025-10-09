@@ -4491,9 +4491,13 @@ function applyGearItemData(element, data = {}, options = {}) {
   const trimmedName = typeof data.name === 'string'
     ? data.name.trim()
     : String(data.name ?? '').trim();
-  const trimmedAttributes = typeof data.attributes === 'string'
-    ? data.attributes.trim()
-    : String(data.attributes ?? '').trim();
+  const hasAttributesField = Object.prototype.hasOwnProperty.call(data, 'attributes');
+  const rawAttributes = hasAttributesField
+    ? data.attributes
+    : element.getAttribute('data-gear-attributes');
+  const trimmedAttributes = typeof rawAttributes === 'string'
+    ? rawAttributes.trim()
+    : String(rawAttributes ?? '').trim();
   const trimmedNote = typeof data.note === 'string'
     ? data.note.trim()
     : String(data.note ?? '').trim();
@@ -4542,10 +4546,12 @@ function applyGearItemData(element, data = {}, options = {}) {
   } else {
     element.removeAttribute('data-gear-label');
   }
-  if (trimmedAttributes) {
-    element.setAttribute('data-gear-attributes', trimmedAttributes);
-  } else {
-    element.removeAttribute('data-gear-attributes');
+  if (hasAttributesField) {
+    if (trimmedAttributes) {
+      element.setAttribute('data-gear-attributes', trimmedAttributes);
+    } else {
+      element.removeAttribute('data-gear-attributes');
+    }
   }
   if (trimmedNote) {
     element.setAttribute('data-gear-note', trimmedNote);
@@ -4676,8 +4682,6 @@ function buildGearItemEditContext() {
     quantityLabel: resolveElementById('gearItemEditQuantityLabel', 'gearItemEditQuantityLabel'),
     nameInput: resolveElementById('gearItemEditName', 'gearItemEditName'),
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
-    attributesInput: resolveElementById('gearItemEditAttributes', 'gearItemEditAttributes'),
-    attributesLabel: resolveElementById('gearItemEditAttributesLabel', 'gearItemEditAttributesLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
@@ -4711,7 +4715,6 @@ function getGearItemEditTexts() {
     dialogTitle: langTexts.gearListEditDialogTitle || fallbackTexts.gearListEditDialogTitle || 'Edit gear item',
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
-    attributesLabel: langTexts.gearListEditAttributesLabel || fallbackTexts.gearListEditAttributesLabel || 'Attributes',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
@@ -4735,9 +4738,6 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.nameLabel) {
     context.nameLabel.textContent = textsForDialog.nameLabel;
-  }
-  if (context.attributesLabel) {
-    context.attributesLabel.textContent = textsForDialog.attributesLabel;
   }
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
@@ -4786,7 +4786,6 @@ function computeGearItemEditPreviewText(context) {
   if (!context) return '';
   const quantity = context.quantityInput ? context.quantityInput.value.trim() : '';
   const name = context.nameInput ? context.nameInput.value.trim() : '';
-  const attributes = context.attributesInput ? context.attributesInput.value.trim() : '';
   const segments = [];
   if (quantity) {
     segments.push(`${quantity}x`);
@@ -4794,11 +4793,7 @@ function computeGearItemEditPreviewText(context) {
   if (name) {
     segments.push(name);
   }
-  let preview = segments.join(' ').trim();
-  if (attributes) {
-    preview = preview ? `${preview} (${attributes})` : `(${attributes})`;
-  }
-  return preview.trim();
+  return segments.join(' ').trim();
 }
 
 function updateGearItemEditPreview(context) {
@@ -4903,10 +4898,23 @@ function handleGearItemEditFormSubmit(event) {
     activeGearItemEditTarget = null;
     return;
   }
+  const originalData = activeGearItemEditTarget && activeGearItemEditTarget.originalData;
+  const preservedAttributes = (() => {
+    if (context && context.attributesInput) {
+      return context.attributesInput.value;
+    }
+    if (originalData && Object.prototype.hasOwnProperty.call(originalData, 'attributes')) {
+      return originalData.attributes;
+    }
+    const fallback = getGearItemData(targetEntry);
+    return fallback && Object.prototype.hasOwnProperty.call(fallback, 'attributes')
+      ? fallback.attributes
+      : '';
+  })();
   const data = {
     quantity: context.quantityInput ? context.quantityInput.value : '',
     name: context.nameInput ? context.nameInput.value : '',
-    attributes: context.attributesInput ? context.attributesInput.value : '',
+    attributes: preservedAttributes,
     note: context.noteInput ? context.noteInput.value : '',
     rentalExcluded: allowRentalToggle && context.rentalCheckbox
       ? context.rentalCheckbox.checked
@@ -4990,7 +4998,7 @@ function bindGearItemEditDialog(context) {
   }
   context.dialog.addEventListener('cancel', handleGearItemEditDialogCancel);
   context.dialog.addEventListener('close', handleGearItemEditDialogClose);
-  const previewInputs = [context.quantityInput, context.nameInput, context.attributesInput];
+  const previewInputs = [context.quantityInput, context.nameInput];
   previewInputs.forEach(input => {
     if (!input) return;
     input.addEventListener('input', handleGearItemEditFieldInput);
@@ -5036,9 +5044,6 @@ function openGearItemEditor(element, options = {}) {
       context.nameInput.removeAttribute('list');
     }
   }
-  if (context.attributesInput) {
-    context.attributesInput.value = data.attributes || '';
-  }
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
   }
@@ -5065,7 +5070,7 @@ function openGearItemEditor(element, options = {}) {
       ? `${textsForDialog.dialogTitle} — ${previewText}`
       : textsForDialog.dialogTitle;
   }
-  activeGearItemEditTarget = { element, options: options || {} };
+  activeGearItemEditTarget = { element, options: options || {}, originalData: data };
   try {
     if (typeof context.dialog.showModal === 'function') {
       context.dialog.showModal();
