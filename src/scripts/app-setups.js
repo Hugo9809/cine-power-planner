@@ -4628,7 +4628,7 @@ function ensureGearItemEditButton(element) {
     button.setAttribute('title', editTexts.editButtonLabel);
   }
   if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object') {
-    button.innerHTML = iconMarkup(ICON_GLYPHS.note, { className: 'btn-icon' });
+    button.innerHTML = iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' });
   }
   const noteSpan = element.querySelector('.gear-item-note');
   if (noteSpan) {
@@ -5111,7 +5111,7 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
     ? iconMarkup(ICON_GLYPHS.minus, { className: 'btn-icon' })
     : '';
   const editIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
-    ? iconMarkup(ICON_GLYPHS.note, { className: 'btn-icon' })
+    ? iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' })
     : '';
   const rentalTexts = getGearListRentalToggleTexts();
   const noteLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel : '';
