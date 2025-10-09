@@ -412,8 +412,47 @@ describe('project sharing helpers', () => {
       schedule: 'Night shoot',
     }));
     expect(parsed.gearListAndProjectRequirementsGenerated).toBe(true);
+    expect(parsed.gearList).toBe('<ul><li>Generated</li></ul>');
+    expect(parsed).not.toHaveProperty('projectHtml');
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
+  });
+
+  test('downloadSharedProject includes split project and gear HTML when available', () => {
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        downloadBackupPayload: downloadPayloadMock,
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'HTML Project',
+          typedName: 'HTML Project',
+          storageKey: 'HTML Project',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+        gearListGetCurrentHtmlImpl: jest.fn(() => '<section>Project</section><ul><li>Gear</li></ul>'),
+        splitGearListHtml: jest.fn(() => ({
+          projectHtml: '<section>Project</section>',
+          gearHtml: '<ul><li>Gear</li></ul>',
+        })),
+      },
+    });
+
+    const { downloadSharedProject } = env.utils;
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'HTML Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    downloadSharedProject('html.json', false);
+
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadPayloadMock.mock.calls[0];
+    const parsed = JSON.parse(payload);
+    expect(parsed.projectHtml).toBe('<section>Project</section>');
+    expect(parsed.gearList).toBe('<ul><li>Gear</li></ul>');
   });
 
   test('downloadSharedProject omits changed device diffs from payload', () => {
