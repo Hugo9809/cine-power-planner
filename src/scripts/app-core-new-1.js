@@ -109,7 +109,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
 
-const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
 function coreJsonDeepClone(value) {
   if (value === null || typeof value !== 'object') {
     return value;
@@ -267,6 +267,109 @@ function ensureCoreGlobalValue(name, fallbackValue) {
   }
 
   return value;
+}
+
+function getEscapeHtmlFunction() {
+  try {
+    return typeof escapeHtml === 'function' ? escapeHtml : null;
+  } catch (maybeReferenceError) {
+    if (maybeReferenceError && maybeReferenceError.name === 'ReferenceError') {
+      return null;
+    }
+    throw maybeReferenceError;
+  }
+}
+
+function escapeButtonLabelSafely(text) {
+  if (typeof text !== 'string' || text === '') {
+    return '';
+  }
+  const escapeFn = getEscapeHtmlFunction();
+  if (escapeFn) {
+    try {
+      return escapeFn(text);
+    } catch (escapeError) {
+      void escapeError;
+    }
+  }
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getIconMarkupFunction() {
+  try {
+    if (typeof iconMarkup === 'function') {
+      return iconMarkup;
+    }
+  } catch (maybeReferenceError) {
+    if (!(maybeReferenceError && maybeReferenceError.name === 'ReferenceError')) {
+      throw maybeReferenceError;
+    }
+  }
+  if (
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE === 'object' &&
+    typeof CORE_GLOBAL_SCOPE.iconMarkup === 'function'
+  ) {
+    return CORE_GLOBAL_SCOPE.iconMarkup;
+  }
+  return null;
+}
+
+function resolveButtonIconMarkup(glyph) {
+  if (!glyph) {
+    return '';
+  }
+  const iconFactory = getIconMarkupFunction();
+  if (!iconFactory) {
+    return '';
+  }
+  try {
+    return iconFactory(glyph, 'btn-icon');
+  } catch (iconError) {
+    void iconError;
+  }
+  return '';
+}
+
+var setButtonLabelWithIcon =
+  CORE_GLOBAL_SCOPE &&
+  typeof CORE_GLOBAL_SCOPE === 'object' &&
+  typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function'
+    ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon
+    : function setButtonLabelWithIcon(button, label, glyph) {
+        if (!button) {
+          return;
+        }
+        let resolvedGlyph = glyph;
+        if (
+          resolvedGlyph === undefined &&
+          typeof ICON_GLYPHS !== 'undefined' &&
+          ICON_GLYPHS &&
+          ICON_GLYPHS.save
+        ) {
+          resolvedGlyph = ICON_GLYPHS.save;
+        }
+        const iconHtml = resolveButtonIconMarkup(resolvedGlyph);
+        const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+        button.innerHTML = `${iconHtml}${safeLabel}`;
+      };
+
+if (
+  CORE_GLOBAL_SCOPE &&
+  typeof CORE_GLOBAL_SCOPE === 'object' &&
+  typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon !== 'function'
+) {
+  try {
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+  } catch (setButtonAssignError) {
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    void setButtonAssignError;
+  }
 }
 
 var gridSnap = ensureCoreGlobalValue('gridSnap', () => false);
@@ -14061,11 +14164,20 @@ function updateSelectIconBoxes(sel) {
   });
 }
 
-function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
+setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
   if (!button) return;
-  const safeLabel = typeof label === 'string' ? escapeHtml(label) : '';
-  const iconHtml = iconMarkup(glyph, 'btn-icon');
+  const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+  const iconHtml = resolveButtonIconMarkup(glyph);
   button.innerHTML = `${iconHtml}${safeLabel}`;
+};
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  try {
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+  } catch (setButtonLabelAssignError) {
+    CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    void setButtonLabelAssignError;
+  }
 }
 
 function getLocalizedPathText(path, fallback = '') {
