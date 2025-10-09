@@ -14841,6 +14841,36 @@ function warnMissingMountVoltageHelper(helperName, error) {
   }
 }
 
+function fallbackParseVoltageValue(value, fallback) {
+  const toNumeric = candidate => {
+    if (typeof candidate === 'number') {
+      return candidate;
+    }
+    if (typeof candidate === 'string') {
+      const normalized = candidate.replace(',', '.');
+      return Number.parseFloat(normalized);
+    }
+    return Number.NaN;
+  };
+
+  const clampVoltage = numeric => {
+    const clamped = Math.min(1000, Math.max(0.1, numeric));
+    return Math.round(clamped * 100) / 100;
+  };
+
+  const numeric = toNumeric(value);
+  if (Number.isFinite(numeric) && numeric > 0) {
+    return clampVoltage(numeric);
+  }
+
+  const fallbackNumeric = toNumeric(fallback);
+  if (Number.isFinite(fallbackNumeric) && fallbackNumeric > 0) {
+    return clampVoltage(fallbackNumeric);
+  }
+
+  return 0;
+}
+
 function cloneMountVoltageDefaultsForSession() {
   const runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
   if (runtimeCloneMountVoltageMap) {
@@ -14862,14 +14892,7 @@ function cloneMountVoltageDefaultsForSession() {
   const clone = {};
   const parse = typeof parseVoltageValue === 'function'
     ? (value, fallback) => parseVoltageValue(value, fallback)
-    : (value, fallback) => {
-        const numeric = Number(value);
-        if (Number.isFinite(numeric)) {
-          return numeric;
-        }
-        const fallbackNumeric = Number(fallback);
-        return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
-      };
+    : (value, fallback) => fallbackParseVoltageValue(value, fallback);
   if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
     SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
       const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || {};
@@ -14927,14 +14950,7 @@ function collectMountVoltageFormValues() {
   const updated = getSessionMountVoltagePreferencesClone();
   const parse = typeof parseVoltageValue === 'function'
     ? (value, fallback) => parseVoltageValue(value, fallback)
-    : (value, fallback) => {
-        const numeric = Number(value);
-        if (Number.isFinite(numeric)) {
-          return numeric;
-        }
-        const fallbackNumeric = Number(fallback);
-        return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
-      };
+    : (value, fallback) => fallbackParseVoltageValue(value, fallback);
   const defaultClones = cloneMountVoltageDefaultsForSession();
   SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
     const fields = mountVoltageInputs?.[type];
