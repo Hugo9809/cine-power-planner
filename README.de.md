@@ -290,6 +290,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Pre-Flight (täglich/vor größeren Änderungen).** Manuell speichern, Backup und Bundle exportieren, in Testprofil importieren, prüfen, löschen.
 - **Offline-Probe (wöchentlich/vor Reisen).** Planner laden, Backup erstellen, offline gehen, `index.html` neu laden und auf klare Assets achten.
 - **Change-Control (nach Daten-/Script-Updates).** `npm test` laufen lassen und danach Pre-Flight wiederholen; Backup mit Changelog archivieren.
+- **Monatlicher Help-Center-Check (integrierte Checkliste).** **Hilfe → Monatlicher Daten-Gesundheitscheck** öffnen, über **Einstellungen → Daten & Speicherung → Schnelle Schutzmaßnahmen → Vollständiges Backup herunterladen** ein frisches Abbild sichern, alle aktiven Projekte exportieren, offline neu laden und mit **Wiederherstellungsprobe** abschließen, bevor du das Ergebnis im Rotationsprotokoll festhältst.
 - **Redundanz-Rotation (monatlich/vor Archivierung).** Neueste Backups, Bundle (ggf. `.cpproject`) und Repository-ZIP auf zwei Medien lagern und abwechselnd testen.
 
 ## Operative Checklisten

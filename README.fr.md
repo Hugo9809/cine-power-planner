@@ -292,6 +292,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Validation pré-vol (quotidienne ou avant changements majeurs).** Sauvegardez manuellement, exportez un backup complet et un bundle, importez-les dans un profil privé, vérifiez projets, règles, favoris et tableaux puis supprimez le profil.
 - **Répétition hors ligne (hebdomadaire ou avant déplacement).** Lancez le planner, déclenchez un backup, coupez tout réseau et rechargez `index.html`. Vérifiez l’indicateur, la netteté des Uicons et l’ouverture du projet vérifié.
 - **Contrôle de changement (après mise à jour des données ou scripts).** Exécutez `npm test` puis répétez la validation pré-vol. Archivez le backup validé avec une note de changement.
+- **Audit mensuel via le centre d’aide (check-list intégrée).** Ouvrez **Aide → Vérification mensuelle de l'intégrité des données**, suivez les étapes guidées pour capturer une nouvelle sauvegarde complète depuis **Paramètres → Données & stockage → Actions de sécurité rapides → Télécharger la sauvegarde complète**, exportez chaque projet actif, rechargez hors ligne pour confirmer l’interface en cache puis terminez par **Simulation de restauration** avant d’inscrire le résultat dans votre journal de rotation.
 - **Rotation de redondance (mensuelle ou avant archivage).** Stockez le backup le plus récent, un bundle vérifié (renommé `.cpproject` si besoin) et une archive ZIP du dépôt sur au moins deux supports. Alternez celui que vous testez pour détecter toute dégradation.
 
 ## Check-lists opérationnelles

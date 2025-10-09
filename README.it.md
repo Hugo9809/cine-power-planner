@@ -290,6 +290,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Validazione pre-flight (quotidiana o prima di modifiche importanti).** Salva manualmente, esporta backup completo e bundle, importali in un profilo privato, verifica progetti, regole, preferiti e dashboard, poi elimina il profilo.
 - **Esercizio offline (settimanale o prima di viaggi).** Avvia il planner, genera un backup, disconnettiti e ricarica `index.html`. Controlla indicatore offline, nitidezza degli Uicons e apertura del progetto verificato.
 - **Controllo cambi (dopo modifiche a dati o script).** Esegui `npm test`, ripeti la validazione pre-flight e archivia il backup approvato con una nota di modifica.
+- **Audit mensile dal centro assistenza (checklist integrata).** Apri **Guida → Controllo mensile dell'integrità dei dati**, segui i passaggi guidati per acquisire una nuova copia completa da **Impostazioni → Dati e archiviazione → Azioni rapide di sicurezza → Scarica backup completo**, esporta ogni progetto attivo, ricarica offline per confermare l’interfaccia in cache e chiudi con **Prova di ripristino** prima di annotare l’esito nel registro di rotazione.
 - **Rotazione della ridondanza (mensile o prima dell’archiviazione).** Conserva l’ultimo backup, un bundle verificato (rinominato `.cpproject` se serve) e uno ZIP del repository su almeno due supporti e alterna quale controllare per individuare degrado.
 
 ## Checklist operative

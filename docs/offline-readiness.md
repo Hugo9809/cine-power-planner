@@ -142,6 +142,26 @@ Re-run these checks each morning and evening while you are on location:
    a travel-safe duplicate. Note which copy was inspected so rotations catch potential
    media degradation early.
 
+### Monthly data health check rehearsal
+
+Run the Help Center’s guided **Monthly data health check** at least once per month (or any
+time you adjust documentation) so the offline drill stays aligned with production
+workflows:
+
+1. Open the help dialog, scroll to **Monthly data health check** and press each linked
+   step to follow the guided sequence. The runtime localises the checklist so every
+   workstation sees the correct labels before going offline.【F:index.html†L3060-L3091】【F:src/scripts/app-core-new-1.js†L12115-L12217】
+2. Start with **Settings → Data & Storage → Quick safeguards → Download full backup** to
+   capture a fresh snapshot before you review exports.【F:index.html†L2548-L2570】【F:src/scripts/translations.js†L1674-L1684】
+3. Export each active project with the linked share controls and store the files on at
+   least two offline destinations.
+4. Disconnect from the network, reload the planner from disk and confirm the offline
+   indicator, help topics and cached interface load exactly as documented.
+5. Finish with **Restore rehearsal** so the sandbox diff proves every project, device and
+   rule matches the export before you close the rehearsal without applying changes.【F:index.html†L3060-L3089】【F:src/scripts/translations.js†L1679-L1682】
+6. Log the outcome in your rotation or verification journal alongside the filenames you
+   audited so future crews inherit the evidence.
+
 ## 4. Quick diagnostics when something feels off
 
 If autosave stalls, a project looks incomplete or the offline badge disappears, follow
