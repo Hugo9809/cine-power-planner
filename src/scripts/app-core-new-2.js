@@ -8571,6 +8571,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const manualProjectNames = projectNames.filter((name) => typeof name === 'string' && !isAutomaticBackupName(name));
       const gearListCount = computeGearListCount(data.project, setups);
       const favoritesCount = computeFavoritesCount(data.favorites);
+      const contactsCount = Array.isArray(data.contacts)
+        ? data.contacts.filter((entry) => entry && typeof entry === 'object').length
+        : 0;
       const feedbackCount = computeFeedbackCount(data.feedback);
       const sessionData = data.session;
       const hasSession = Boolean(
@@ -8660,6 +8663,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           label: langTexts.storageKeyFavorites || 'Pinned favorites',
           value: formatCountText(lang, langTexts, 'storageFavoritesCount', favoritesCount),
           description: langTexts.storageKeyFavoritesDesc || '',
+        },
+        {
+          storageKey: 'cameraPowerPlanner_contacts',
+          label: langTexts.storageKeyContacts || 'Crew contacts',
+          value: formatCountText(lang, langTexts, 'storageContactsCount', contactsCount),
+          description: langTexts.storageKeyContactsDesc || '',
         },
         {
           storageKey: 'cameraPowerPlanner_feedback',

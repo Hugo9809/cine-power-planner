@@ -197,6 +197,17 @@
       <li><a href="#projectRequirementsOutput" data-nav-key="projectRequirementsNav">Project Requirements</a></li>
       <li><a href="#gearListOutput" data-nav-key="gearListNav">Gear List</a></li>
       <li><a href="#device-manager" data-nav-key="deviceManagerHeading">Device Library</a></li>
+      <li>
+        <button
+          type="button"
+          data-nav-key="openContactsNav"
+          data-sidebar-action="open-contacts"
+          aria-haspopup="dialog"
+          aria-controls="contactsDialog"
+        >
+          Contacts
+        </button>
+      </li>
       <li class="sidebar-divider" role="separator" aria-hidden="true"></li>
       <li>
         <button
@@ -882,6 +893,78 @@
     |
     <a id="privacyLink" href="legal/datenschutz-en.html">Privacy Policy</a>
   </footer>
+
+  <dialog
+    id="contactsDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contactsDialogTitle"
+    hidden
+  >
+    <div class="modal-surface modal-surface-scrollable contacts-dialog">
+      <header class="contacts-dialog-header">
+        <h2 id="contactsDialogTitle">Crew Contacts</h2>
+        <button
+          type="button"
+          id="contactsDialogClose"
+          class="contacts-dialog-close"
+          aria-label="Close"
+        >
+          <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF131;</span>
+        </button>
+      </header>
+      <div class="contacts-dialog-body">
+        <section class="contacts-list-section" aria-labelledby="contactsListHeading">
+          <div class="contacts-list-header">
+            <h3 id="contactsListHeading">Saved contacts</h3>
+            <button type="button" id="contactsNewButton">New contact</button>
+          </div>
+          <p id="contactsEmptyState" class="contacts-empty-state" hidden>
+            Save your crew as contacts to reuse them later.
+          </p>
+          <ul id="contactsList" class="contacts-list" role="list"></ul>
+        </section>
+        <section class="contacts-form-section" aria-labelledby="contactsFormHeading">
+          <h3 id="contactsFormHeading">Contact details</h3>
+          <form id="contactsForm">
+            <div class="contacts-field">
+              <label for="contactsRole">Crew role</label>
+              <select id="contactsRole" name="role"></select>
+            </div>
+            <div class="contacts-field">
+              <label for="contactsName">Crew member name</label>
+              <input type="text" id="contactsName" name="name" autocomplete="name" />
+            </div>
+            <div class="contacts-field">
+              <label for="contactsPhone">Crew member phone</label>
+              <input type="tel" id="contactsPhone" name="phone" autocomplete="tel" />
+            </div>
+            <div class="contacts-field">
+              <label for="contactsEmail">Crew member email</label>
+              <input type="email" id="contactsEmail" name="email" autocomplete="email" />
+            </div>
+            <div class="contacts-field contacts-avatar-field">
+              <label for="contactsAvatar">Profile picture</label>
+              <div class="contacts-avatar-input">
+                <div id="contactsAvatarPreviewWrapper" class="contacts-avatar-preview" aria-hidden="true">
+                  <img id="contactsAvatarPreviewImage" alt="" hidden loading="lazy" />
+                  <span id="contactsAvatarPreviewInitial">•</span>
+                </div>
+                <input type="file" id="contactsAvatar" name="avatar" accept="image/*" />
+                <button type="button" id="contactsAvatarRemove" class="contacts-avatar-remove" hidden>Remove photo</button>
+              </div>
+            </div>
+            <div class="contacts-form-actions">
+              <button type="submit" id="contactsSaveButton">Save contact</button>
+              <button type="button" id="contactsClearButton">Clear form</button>
+              <button type="button" id="contactsDeleteButton" class="contacts-delete-button" hidden>Delete</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
     <div class="modal-surface modal-surface-scrollable settings-content">
@@ -4624,6 +4707,10 @@
             </li>
             <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups so complex shoots are captured in one pass.</li>
             <li>Use the + buttons to add crew entries or prep/shoot ranges, and tap the − buttons to remove items as plans change.</li>
+            <li>
+              Open the <strong>Contacts</strong> manager from the sidebar to reuse saved crew members across projects.
+              Selecting a contact fills in role, phone, email and profile photo instantly, and updates linked rows automatically when the contact changes.
+            </li>
             <li>
               A live summary under <strong>Required Scenarios</strong> displays icon-labelled chips for every selection so you can confirm which accessory packs will trigger; those selections also appear in the
               <a

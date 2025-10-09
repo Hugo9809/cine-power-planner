@@ -1,6 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
-          normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState,
+          normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, populateFrameRateDropdown,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
@@ -2136,9 +2136,16 @@ function collectProjectFormData() {
             const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
-            return { role, name, phone, email };
+            const contactId = typeof row?.dataset?.contactId === 'string' ? row.dataset.contactId.trim() : '';
+            const contactName = typeof row?.dataset?.contactName === 'string' ? row.dataset.contactName.trim() : '';
+            const avatar = typeof row?.dataset?.avatar === 'string' ? row.dataset.avatar.trim() : '';
+            const person = { role, name, phone, email };
+            if (contactId) person.contactId = contactId;
+            if (contactName) person.contactName = contactName;
+            if (avatar) person.avatar = avatar;
+            return person;
         })
-        .filter(person => person.role || person.name || person.phone || person.email);
+        .filter(person => person.role || person.name || person.phone || person.email || person.contactId);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
@@ -4688,6 +4695,7 @@ function gearListGenerateHtmlImpl(info = {}) {
                 const safeName = escapeHtml(nameValue);
                 const detailLinks = [];
                 const detailText = [];
+                const avatarValue = typeof p.avatar === 'string' ? p.avatar.trim() : '';
                 const phoneValue = typeof p.phone === 'string' ? p.phone.trim() : (p.phone ? String(p.phone).trim() : '');
                 if (phoneValue) {
                     const phoneHref = formatPhoneHref(phoneValue);
@@ -4714,7 +4722,10 @@ function gearListGenerateHtmlImpl(info = {}) {
                 const plainDetails = detailText.length ? ` (${detailText.join(', ')})` : '';
                 const rolePrefixHtml = roleLabel ? `${safeRole}: ` : '';
                 const rolePrefixText = roleLabel ? `${roleLabel}: ` : '';
-                crewEntriesHtml.push(`<span class="crew-entry">${rolePrefixHtml}${safeName}${linkDetails}</span>`);
+                const avatarHtml = avatarValue
+                    ? `<span class="crew-entry-avatar"><img src="${escapeHtml(avatarValue)}" alt="${safeName}" loading="lazy" /></span>`
+                    : '';
+                crewEntriesHtml.push(`<span class="crew-entry">${avatarHtml}<span class="crew-entry-text">${rolePrefixHtml}${safeName}${linkDetails}</span></span>`);
                 crewEntriesText.push(`${rolePrefixText}${nameValue}${plainDetails}`);
             });
         if (crewEntriesHtml.length) {

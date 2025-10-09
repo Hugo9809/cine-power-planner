@@ -187,6 +187,7 @@ var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -2199,6 +2200,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
+  CONTACTS_STORAGE_KEY,
 ]);
 
 Array.from(RAW_STORAGE_BACKUP_KEYS).forEach((key) => {
@@ -2216,6 +2218,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: FEEDBACK_STORAGE_KEY }),
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: CONTACTS_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
   () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
   () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
@@ -9912,6 +9915,125 @@ function saveFavorites(favs) {
   );
 }
 
+function normalizeCrewContactAvatar(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^data:image\//i.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^(?:\.\/|\/?src\/|images\/)/.test(trimmed)) {
+    return trimmed;
+  }
+  return '';
+}
+
+function normalizeCrewContactEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const id = typeof entry.id === 'string' ? entry.id.trim() : '';
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!id || !name) {
+    return null;
+  }
+
+  const normalized = { id, name };
+  const assignString = (prop, value) => {
+    if (typeof value !== 'string') {
+      return;
+    }
+    const trimmed = value.trim();
+    if (trimmed) {
+      normalized[prop] = trimmed;
+    }
+  };
+
+  assignString('role', entry.role);
+  assignString('phone', entry.phone);
+  assignString('email', entry.email);
+
+  const avatar = normalizeCrewContactAvatar(entry.avatar);
+  if (avatar) {
+    normalized.avatar = avatar;
+  }
+
+  const createdAt = typeof entry.createdAt === 'string' ? entry.createdAt.trim() : '';
+  if (createdAt) {
+    normalized.createdAt = createdAt;
+  }
+  const updatedAt = typeof entry.updatedAt === 'string' ? entry.updatedAt.trim() : '';
+  if (updatedAt) {
+    normalized.updatedAt = updatedAt;
+  }
+
+  return normalized;
+}
+
+function normalizeCrewContactCollection(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  const deduped = new Map();
+  value.forEach((entry) => {
+    const normalized = normalizeCrewContactEntry(entry);
+    if (!normalized) {
+      return;
+    }
+    deduped.set(normalized.id, normalized);
+  });
+  return Array.from(deduped.values());
+}
+
+function loadCrewContacts() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    "Error loading crew contacts from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  return normalizeCrewContactCollection(parsed);
+}
+
+function saveCrewContacts(contacts) {
+  const safeStorage = getSafeLocalStorage();
+  if (!Array.isArray(contacts) || !contacts.length) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting crew contacts from localStorage:",
+    );
+    return;
+  }
+
+  const normalized = normalizeCrewContactCollection(contacts);
+  if (!normalized.length) {
+    deleteFromStorage(
+      safeStorage,
+      CONTACTS_STORAGE_KEY,
+      "Error deleting crew contacts from localStorage:",
+    );
+    return;
+  }
+
+  ensurePreWriteMigrationBackup(safeStorage, CONTACTS_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    CONTACTS_STORAGE_KEY,
+    normalized,
+    "Error saving crew contacts to localStorage:",
+    { forceCompressionOnQuota: true },
+  );
+}
+
 // --- User Feedback Storage ---
 function loadFeedback() {
   applyLegacyStorageMigrations();
@@ -10686,6 +10808,7 @@ function clearAllData() {
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, CONTACTS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
@@ -11031,6 +11154,7 @@ function clearAllData() {
       feedback: loadFeedback(),
       project: loadProject(),
       favorites: loadFavorites(),
+      contacts: loadCrewContacts(),
       autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
@@ -11754,6 +11878,9 @@ function importAllData(allData, options = {}) {
   if (hasOwn('favorites')) {
     saveFavorites(allData.favorites);
   }
+  if (hasOwn('contacts')) {
+    saveCrewContacts(normalizeCrewContactCollection(allData.contacts));
+  }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
     const booleanPrefs = [
@@ -11953,6 +12080,8 @@ var STORAGE_API = {
   saveSessionState,
   loadFavorites,
   saveFavorites,
+  loadCrewContacts,
+  saveCrewContacts,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

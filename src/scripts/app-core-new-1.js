@@ -5540,6 +5540,8 @@ function setupSideMenu() {
       document.getElementById('settingsButton')?.click();
     } else if (action === 'open-help') {
       document.getElementById('helpButton')?.click();
+    } else if (action === 'open-contacts') {
+      openContactsDialog();
     }
   };
 
@@ -10867,6 +10869,8 @@ function setLanguage(lang) {
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
     });
+    updateAllCrewRowContactUi();
+    applyContactsLocalization();
     const stripTrailingPunctuation = value => (typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value);
     const addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
     if (addPersonBtn) {
@@ -11014,6 +11018,27 @@ const tripodBowlLabel = document.getElementById("tripodBowlLabel");
 const tripodTypesLabel = document.getElementById("tripodTypesLabel");
 const tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
 const projectSubmitBtn = document.getElementById("projectSubmit");
+const contactsDialog = document.getElementById("contactsDialog");
+const contactsDialogTitle = document.getElementById("contactsDialogTitle");
+const contactsDialogClose = document.getElementById("contactsDialogClose");
+const contactsListHeading = document.getElementById("contactsListHeading");
+const contactsNewButton = document.getElementById("contactsNewButton");
+const contactsList = document.getElementById("contactsList");
+const contactsEmptyState = document.getElementById("contactsEmptyState");
+const contactsForm = document.getElementById("contactsForm");
+const contactsFormHeading = document.getElementById("contactsFormHeading");
+const contactsRoleSelect = document.getElementById("contactsRole");
+const contactsNameInput = document.getElementById("contactsName");
+const contactsPhoneInput = document.getElementById("contactsPhone");
+const contactsEmailInput = document.getElementById("contactsEmail");
+const contactsAvatarInput = document.getElementById("contactsAvatar");
+const contactsAvatarPreviewWrapper = document.getElementById("contactsAvatarPreviewWrapper");
+const contactsAvatarPreviewImage = document.getElementById("contactsAvatarPreviewImage");
+const contactsAvatarPreviewInitial = document.getElementById("contactsAvatarPreviewInitial");
+const contactsAvatarRemoveBtn = document.getElementById("contactsAvatarRemove");
+const contactsSaveButton = document.getElementById("contactsSaveButton");
+const contactsClearButton = document.getElementById("contactsClearButton");
+const contactsDeleteButton = document.getElementById("contactsDeleteButton");
 var crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
 var prepContainer = document.getElementById("prepContainer");
@@ -13052,39 +13077,842 @@ function getProjectFormText(key, defaultValue = '') {
   return fallback || defaultValue;
 }
 
-function createCrewRow(data = {}) {
+const CREW_CONTACT_MAX_AVATAR_BYTES = 400 * 1024;
+const crewContactState = {
+  loaded: false,
+  contacts: [],
+  selectionTarget: null,
+  pendingApplyRow: null,
+  editingId: null,
+  formAvatar: '',
+};
+
+function getCrewContactsText(key, fallback = '') {
+  const contactTexts = (texts?.[currentLang]?.contacts) || (texts?.en?.contacts) || {};
+  const value = contactTexts[key];
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return fallback;
+}
+
+function cloneCrewContact(contact) {
+  if (!contact || typeof contact !== 'object') {
+    return null;
+  }
+  const id = typeof contact.id === 'string' ? contact.id.trim() : '';
+  const name = typeof contact.name === 'string' ? contact.name.trim() : '';
+  if (!id || !name) {
+    return null;
+  }
+  const clone = { id, name };
+  if (typeof contact.role === 'string' && contact.role.trim()) {
+    clone.role = contact.role.trim();
+  }
+  if (typeof contact.phone === 'string' && contact.phone.trim()) {
+    clone.phone = contact.phone.trim();
+  }
+  if (typeof contact.email === 'string' && contact.email.trim()) {
+    clone.email = contact.email.trim();
+  }
+  if (typeof contact.avatar === 'string' && contact.avatar.trim()) {
+    clone.avatar = contact.avatar.trim();
+  }
+  if (typeof contact.createdAt === 'string' && contact.createdAt.trim()) {
+    clone.createdAt = contact.createdAt.trim();
+  }
+  if (typeof contact.updatedAt === 'string' && contact.updatedAt.trim()) {
+    clone.updatedAt = contact.updatedAt.trim();
+  }
+  return clone;
+}
+
+function ensureCrewContactsLoaded() {
+  if (crewContactState.loaded) {
+    return crewContactState.contacts;
+  }
+  let stored = [];
+  if (typeof loadCrewContacts === 'function') {
+    try {
+      stored = loadCrewContacts();
+    } catch (error) {
+      console.warn('Failed to load crew contacts', error);
+      stored = [];
+    }
+  }
+  crewContactState.contacts = Array.isArray(stored)
+    ? stored.map((entry) => cloneCrewContact(entry)).filter(Boolean)
+    : [];
+  crewContactState.loaded = true;
+  return crewContactState.contacts;
+}
+
+function persistCrewContacts() {
+  if (typeof saveCrewContacts !== 'function') {
+    return;
+  }
+  try {
+    saveCrewContacts(crewContactState.contacts.map((entry) => cloneCrewContact(entry)).filter(Boolean));
+  } catch (error) {
+    console.warn('Failed to save crew contacts', error);
+  }
+}
+
+function findCrewContactById(id) {
+  if (!id) return null;
+  ensureCrewContactsLoaded();
+  for (let index = 0; index < crewContactState.contacts.length; index += 1) {
+    const contact = crewContactState.contacts[index];
+    if (contact && contact.id === id) {
+      return contact;
+    }
+  }
+  return null;
+}
+
+function deleteCrewContactById(id) {
+  if (!id) return false;
+  ensureCrewContactsLoaded();
+  const index = crewContactState.contacts.findIndex((entry) => entry && entry.id === id);
+  if (index === -1) {
+    return false;
+  }
+  crewContactState.contacts.splice(index, 1);
+  persistCrewContacts();
+  return true;
+}
+
+function generateCrewContactId() {
+  const now = Date.now().toString(36);
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `contact-${now}-${rand}`;
+}
+
+function getCrewRoleLabel(role) {
+  if (!role) return '';
+  const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
+  const label = roleLabels[role];
+  return typeof label === 'string' && label.trim() ? label.trim() : role;
+}
+
+function notifyProjectFormChanged() {
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+  if (typeof scheduleProjectAutoSave === 'function') {
+    scheduleProjectAutoSave(true);
+  }
+}
+
+function ensureCrewRoleOption(select, role) {
+  if (!select || !role) {
+    return;
+  }
+  const exists = Array.from(select.options || []).some((option) => option && option.value === role);
+  if (exists) {
+    return;
+  }
+  const option = document.createElement('option');
+  option.value = role;
+  option.textContent = getCrewRoleLabel(role);
+  select.appendChild(option);
+}
+
+function setCrewRowAvatar(row, avatar, name) {
+  if (!row) return;
+  const wrapper = row.querySelector('.person-avatar');
+  if (!wrapper) return;
+  const img = wrapper.querySelector('.person-avatar-img');
+  const initial = wrapper.querySelector('.person-avatar-initial');
+  const displayName = typeof name === 'string' && name.trim() ? name.trim() : (row.querySelector('.person-name')?.value || '');
+  if (avatar) {
+    if (img) {
+      img.src = avatar;
+      img.hidden = false;
+    }
+    wrapper.classList.add('has-image');
+    if (initial) {
+      initial.textContent = '';
+    }
+    row.dataset.avatar = avatar;
+  } else {
+    if (img) {
+      img.src = '';
+      img.hidden = true;
+    }
+    wrapper.classList.remove('has-image');
+    if (initial) {
+      const char = displayName.trim().charAt(0).toUpperCase();
+      initial.textContent = char || '•';
+    }
+    row.dataset.avatar = '';
+  }
+}
+
+function updateCrewRowAvatar(row) {
+  if (!row) return;
+  const currentAvatar = row.dataset.avatar || '';
+  const displayName = row.dataset.contactName || row.querySelector('.person-name')?.value || '';
+  setCrewRowAvatar(row, currentAvatar, displayName);
+}
+
+function updateCrewRowContactUi(row) {
+  if (!row) return;
+  const selectBtn = row.querySelector('.person-select-contact');
+  const saveBtn = row.querySelector('.person-save-contact');
+  const clearBtn = row.querySelector('.person-clear-contact');
+  const contactId = row.dataset.contactId || '';
+  const contactName = row.dataset.contactName || row.querySelector('.person-name')?.value || '';
+  const baseLabel = getProjectFormText('crewSelectContact', 'Add from contacts');
+  const linkedLabelTemplate = getProjectFormText('crewSelectContactLinked', 'Linked: {name}');
+  const linkedLabel = linkedLabelTemplate.replace('{name}', contactName || baseLabel);
+  if (selectBtn) {
+    const label = contactId ? linkedLabel : baseLabel;
+    setButtonLabelWithIcon(selectBtn, label, ICON_GLYPHS.add);
+    selectBtn.setAttribute('aria-label', label);
+    selectBtn.setAttribute('data-help', label);
+  }
+  if (saveBtn) {
+    const saveLabel = getProjectFormText('crewSaveContact', 'Save as contact');
+    setButtonLabelWithIcon(saveBtn, saveLabel, ICON_GLYPHS.save);
+    saveBtn.setAttribute('aria-label', saveLabel);
+    saveBtn.setAttribute('data-help', saveLabel);
+  }
+  if (clearBtn) {
+    const clearLabel = getProjectFormText('crewClearContact', 'Remove contact link');
+    setButtonLabelWithIcon(clearBtn, '', ICON_GLYPHS.circleX);
+    clearBtn.setAttribute('aria-label', clearLabel);
+    clearBtn.setAttribute('title', clearLabel);
+    clearBtn.setAttribute('data-help', clearLabel);
+    clearBtn.hidden = !contactId;
+  }
+}
+
+function updateAllCrewRowContactUi() {
   if (!crewContainer) return;
+  const rows = crewContainer.querySelectorAll('.person-row');
+  rows.forEach((row) => updateCrewRowContactUi(row));
+}
+
+function getCrewRowValues(row) {
+  if (!row) return {};
+  const roleSel = row.querySelector('select');
+  const nameInput = row.querySelector('.person-name');
+  const phoneInput = row.querySelector('.person-phone');
+  const emailInput = row.querySelector('.person-email');
+  return {
+    role: roleSel ? roleSel.value : '',
+    name: nameInput ? nameInput.value : '',
+    phone: phoneInput ? phoneInput.value : '',
+    email: emailInput ? emailInput.value : '',
+    avatar: row.dataset.avatar || '',
+  };
+}
+
+function applyContactToRow(row, contact, options = {}) {
+  if (!row || !contact) return;
+  const opts = options || {};
+  const roleSel = row.querySelector('select');
+  const nameInput = row.querySelector('.person-name');
+  const phoneInput = row.querySelector('.person-phone');
+  const emailInput = row.querySelector('.person-email');
+  const contactIdInput = row.querySelector('.person-contact-id');
+  row.dataset.contactId = contact.id;
+  row.dataset.contactName = contact.name || '';
+  if (contactIdInput) {
+    contactIdInput.value = contact.id;
+  }
+  if (roleSel && contact.role) {
+    ensureCrewRoleOption(roleSel, contact.role);
+    roleSel.value = contact.role;
+  }
+  if (nameInput) {
+    nameInput.value = contact.name || '';
+  }
+  if (phoneInput) {
+    phoneInput.value = contact.phone || '';
+  }
+  if (emailInput) {
+    emailInput.value = contact.email || '';
+  }
+  setCrewRowAvatar(row, contact.avatar || '', contact.name || '');
+  updateCrewRowContactUi(row);
+  if (!opts.skipMarkDirty) {
+    notifyProjectFormChanged();
+  }
+}
+
+function clearCrewContactFromRow(row, options = {}) {
+  if (!row) return;
+  const opts = options || {};
+  const contactIdInput = row.querySelector('.person-contact-id');
+  if (contactIdInput) {
+    contactIdInput.value = '';
+  }
+  row.dataset.contactId = '';
+  row.dataset.contactName = '';
+  row.dataset.avatar = '';
+  setCrewRowAvatar(row, '', row.querySelector('.person-name')?.value || '');
+  updateCrewRowContactUi(row);
+  if (!opts.skipMarkDirty) {
+    notifyProjectFormChanged();
+  }
+}
+
+function updateRowsForContact(contact) {
+  if (!crewContainer || !contact) return;
+  const rows = crewContainer.querySelectorAll('.person-row');
+  let changed = false;
+  rows.forEach((row) => {
+    if (row.dataset.contactId === contact.id) {
+      applyContactToRow(row, contact, { skipMarkDirty: true });
+      changed = true;
+    }
+  });
+  if (changed) {
+    notifyProjectFormChanged();
+  }
+}
+
+function clearRowsForDeletedContact(contactId) {
+  if (!crewContainer || !contactId) return;
+  const rows = crewContainer.querySelectorAll('.person-row');
+  let changed = false;
+  rows.forEach((row) => {
+    if (row.dataset.contactId === contactId) {
+      clearCrewContactFromRow(row, { skipMarkDirty: true });
+      changed = true;
+    }
+  });
+  if (changed) {
+    notifyProjectFormChanged();
+  }
+}
+
+function createContactAvatarElement(contact) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'contact-avatar';
+  const img = document.createElement('img');
+  img.className = 'contact-avatar-img';
+  img.alt = '';
+  if (contact.avatar) {
+    img.src = contact.avatar;
+    img.hidden = false;
+    wrapper.classList.add('has-image');
+  } else {
+    img.hidden = true;
+  }
+  wrapper.appendChild(img);
+  const initial = document.createElement('span');
+  initial.className = 'contact-avatar-initial';
+  const initialChar = (contact.name || '').trim().charAt(0).toUpperCase();
+  initial.textContent = initialChar || '•';
+  wrapper.appendChild(initial);
+  return wrapper;
+}
+
+function populateContactsRoleOptions(selectedValue = '') {
+  if (!contactsRoleSelect) return;
+  const previous = selectedValue || contactsRoleSelect.value || '';
+  while (contactsRoleSelect.firstChild) {
+    contactsRoleSelect.removeChild(contactsRoleSelect.firstChild);
+  }
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = getCrewContactsText('rolePlaceholder', getProjectFormText('crewRoleLabel', 'Crew role'));
+  contactsRoleSelect.appendChild(placeholder);
+  crewRoles.forEach((role) => {
+    const option = document.createElement('option');
+    option.value = role;
+    option.textContent = getCrewRoleLabel(role);
+    contactsRoleSelect.appendChild(option);
+  });
+  const restored = previous && Array.from(contactsRoleSelect.options).some((option) => option.value === previous)
+    ? previous
+    : '';
+  contactsRoleSelect.value = restored;
+}
+
+function setContactFormAvatar(value, name) {
+  crewContactState.formAvatar = value || '';
+  if (contactsAvatarPreviewWrapper) {
+    if (value) {
+      contactsAvatarPreviewWrapper.classList.add('has-image');
+    } else {
+      contactsAvatarPreviewWrapper.classList.remove('has-image');
+    }
+  }
+  if (contactsAvatarPreviewImage) {
+    if (value) {
+      contactsAvatarPreviewImage.src = value;
+      contactsAvatarPreviewImage.hidden = false;
+    } else {
+      contactsAvatarPreviewImage.src = '';
+      contactsAvatarPreviewImage.hidden = true;
+    }
+  }
+  if (contactsAvatarPreviewInitial) {
+    const nameSource = name || contactsNameInput?.value || '';
+    const initialChar = nameSource.trim().charAt(0).toUpperCase();
+    contactsAvatarPreviewInitial.textContent = initialChar || '•';
+  }
+  if (contactsAvatarRemoveBtn) {
+    contactsAvatarRemoveBtn.hidden = !value;
+  }
+}
+
+function startNewContact(prefill = null) {
+  crewContactState.editingId = null;
+  if (contactsForm) {
+    contactsForm.reset();
+  }
+  populateContactsRoleOptions(prefill && prefill.role ? prefill.role : '');
+  if (contactsRoleSelect && prefill && prefill.role) {
+    ensureCrewRoleOption(contactsRoleSelect, prefill.role);
+    contactsRoleSelect.value = prefill.role;
+  }
+  if (contactsNameInput) {
+    contactsNameInput.value = prefill && prefill.name ? prefill.name : '';
+  }
+  if (contactsPhoneInput) {
+    contactsPhoneInput.value = prefill && prefill.phone ? prefill.phone : '';
+  }
+  if (contactsEmailInput) {
+    contactsEmailInput.value = prefill && prefill.email ? prefill.email : '';
+  }
+  setContactFormAvatar(prefill && prefill.avatar ? prefill.avatar : '', prefill && prefill.name ? prefill.name : '');
+  if (contactsDeleteButton) {
+    contactsDeleteButton.hidden = true;
+    delete contactsDeleteButton.dataset.contactId;
+  }
+}
+
+function startEditContact(contact) {
+  if (!contact) {
+    startNewContact();
+    return;
+  }
+  crewContactState.editingId = contact.id;
+  if (contactsForm) {
+    contactsForm.reset();
+  }
+  populateContactsRoleOptions(contact.role || '');
+  if (contactsRoleSelect && contact.role) {
+    ensureCrewRoleOption(contactsRoleSelect, contact.role);
+    contactsRoleSelect.value = contact.role;
+  }
+  if (contactsNameInput) {
+    contactsNameInput.value = contact.name || '';
+  }
+  if (contactsPhoneInput) {
+    contactsPhoneInput.value = contact.phone || '';
+  }
+  if (contactsEmailInput) {
+    contactsEmailInput.value = contact.email || '';
+  }
+  setContactFormAvatar(contact.avatar || '', contact.name || '');
+  if (contactsDeleteButton) {
+    contactsDeleteButton.hidden = false;
+    contactsDeleteButton.dataset.contactId = contact.id;
+  }
+}
+
+function gatherContactFormData() {
+  return {
+    role: contactsRoleSelect ? contactsRoleSelect.value : '',
+    name: contactsNameInput ? contactsNameInput.value.trim() : '',
+    phone: contactsPhoneInput ? contactsPhoneInput.value.trim() : '',
+    email: contactsEmailInput ? contactsEmailInput.value.trim() : '',
+    avatar: crewContactState.formAvatar || '',
+  };
+}
+
+function renderContactsList() {
+  if (!contactsList) return;
+  ensureCrewContactsLoaded();
+  contactsList.innerHTML = '';
+  const contacts = crewContactState.contacts.slice().sort((a, b) => {
+    const nameA = (a?.name || '').toLowerCase();
+    const nameB = (b?.name || '').toLowerCase();
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
+  const emptyText = getCrewContactsText('emptyState', 'Save your crew as contacts to reuse them later.');
+  if (!contacts.length) {
+    if (contactsEmptyState) {
+      contactsEmptyState.textContent = emptyText;
+      contactsEmptyState.hidden = false;
+    }
+    return;
+  }
+  if (contactsEmptyState) {
+    contactsEmptyState.hidden = true;
+  }
+  const linkedId = crewContactState.selectionTarget && crewContactState.selectionTarget.dataset
+    ? crewContactState.selectionTarget.dataset.contactId
+    : '';
+  contacts.forEach((contact) => {
+    if (!contact) return;
+    const item = document.createElement('li');
+    item.className = 'contact-card';
+    item.dataset.contactId = contact.id;
+    if (linkedId && linkedId === contact.id) {
+      item.classList.add('contact-card-linked');
+    }
+    const header = document.createElement('div');
+    header.className = 'contact-card-header';
+    header.appendChild(createContactAvatarElement(contact));
+    const info = document.createElement('div');
+    info.className = 'contact-card-info';
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = contact.name || '';
+    info.appendChild(nameEl);
+    if (contact.role) {
+      const roleEl = document.createElement('p');
+      roleEl.className = 'contact-card-role';
+      roleEl.textContent = getCrewRoleLabel(contact.role);
+      info.appendChild(roleEl);
+    }
+    if (contact.phone) {
+      const phoneEl = document.createElement('p');
+      phoneEl.className = 'contact-card-detail';
+      phoneEl.textContent = contact.phone;
+      info.appendChild(phoneEl);
+    }
+    if (contact.email) {
+      const emailEl = document.createElement('p');
+      emailEl.className = 'contact-card-detail';
+      emailEl.textContent = contact.email;
+      info.appendChild(emailEl);
+    }
+    header.appendChild(info);
+    item.appendChild(header);
+    const actions = document.createElement('div');
+    actions.className = 'contact-card-actions';
+    const useBtn = document.createElement('button');
+    useBtn.type = 'button';
+    useBtn.dataset.contactAction = 'use';
+    useBtn.dataset.contactId = contact.id;
+    const useLabel = getCrewContactsText('useButton', 'Use in project');
+    setButtonLabelWithIcon(useBtn, useLabel, ICON_GLYPHS.check);
+    useBtn.setAttribute('aria-label', useLabel);
+    actions.appendChild(useBtn);
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.dataset.contactAction = 'edit';
+    editBtn.dataset.contactId = contact.id;
+    const editLabel = getCrewContactsText('editButton', 'Edit');
+    setButtonLabelWithIcon(editBtn, editLabel, ICON_GLYPHS.gears);
+    editBtn.setAttribute('aria-label', editLabel);
+    actions.appendChild(editBtn);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.dataset.contactAction = 'delete';
+    deleteBtn.dataset.contactId = contact.id;
+    const deleteLabel = getCrewContactsText('deleteButton', 'Delete');
+    setButtonLabelWithIcon(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
+    deleteBtn.setAttribute('aria-label', deleteLabel);
+    actions.appendChild(deleteBtn);
+    item.appendChild(actions);
+    contactsList.appendChild(item);
+  });
+}
+
+function handleContactsFormSubmit(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  if (contactsForm && typeof contactsForm.checkValidity === 'function' && !contactsForm.checkValidity()) {
+    contactsForm.reportValidity?.();
+    return;
+  }
+  const data = gatherContactFormData();
+  if (!data.name) {
+    if (contactsNameInput) {
+      contactsNameInput.focus();
+    }
+    return;
+  }
+  ensureCrewContactsLoaded();
+  const timestamp = new Date().toISOString();
+  if (crewContactState.editingId) {
+    const index = crewContactState.contacts.findIndex((entry) => entry && entry.id === crewContactState.editingId);
+    if (index === -1) {
+      crewContactState.editingId = null;
+      startNewContact();
+      renderContactsList();
+      return;
+    }
+    const updated = {
+      ...crewContactState.contacts[index],
+      role: data.role || '',
+      name: data.name,
+      phone: data.phone || '',
+      email: data.email || '',
+      avatar: data.avatar || '',
+      updatedAt: timestamp,
+    };
+    crewContactState.contacts[index] = updated;
+    persistCrewContacts();
+    renderContactsList();
+    updateRowsForContact(updated);
+    startEditContact(updated);
+    applyContactsLocalization();
+    return;
+  }
+  const newContact = {
+    id: generateCrewContactId(),
+    role: data.role || '',
+    name: data.name,
+    phone: data.phone || '',
+    email: data.email || '',
+    avatar: data.avatar || '',
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+  crewContactState.contacts.push(newContact);
+  persistCrewContacts();
+  renderContactsList();
+  if (crewContactState.pendingApplyRow) {
+    applyContactToRow(crewContactState.pendingApplyRow, newContact);
+    crewContactState.pendingApplyRow = null;
+    closeContactsDialog();
+    return;
+  }
+  if (crewContactState.selectionTarget) {
+    applyContactToRow(crewContactState.selectionTarget, newContact);
+    closeContactsDialog();
+    return;
+  }
+  startNewContact();
+  applyContactsLocalization();
+}
+
+function handleContactsListClick(event) {
+  const button = event.target && event.target.closest ? event.target.closest('[data-contact-action]') : null;
+  if (!button) return;
+  const action = button.dataset.contactAction;
+  const id = button.dataset.contactId;
+  const contact = findCrewContactById(id);
+  if (!contact) return;
+  if (action === 'use') {
+    if (crewContactState.selectionTarget) {
+      applyContactToRow(crewContactState.selectionTarget, contact);
+    } else {
+      const row = createCrewRow({
+        role: contact.role || '',
+        name: contact.name || '',
+        phone: contact.phone || '',
+        email: contact.email || '',
+        contactId: contact.id,
+        contactName: contact.name,
+        avatar: contact.avatar || '',
+      });
+      if (row) {
+        notifyProjectFormChanged();
+      }
+    }
+    closeContactsDialog();
+  } else if (action === 'edit') {
+    startEditContact(contact);
+    applyContactsLocalization();
+  } else if (action === 'delete') {
+    const confirmText = getCrewContactsText('deleteConfirm', 'Remove {name} from contacts?').replace('{name}', contact.name || '');
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      if (!window.confirm(confirmText)) {
+        return;
+      }
+    }
+    if (deleteCrewContactById(contact.id)) {
+      renderContactsList();
+      clearRowsForDeletedContact(contact.id);
+      startNewContact();
+      applyContactsLocalization();
+    }
+  }
+}
+
+function handleContactAvatarChange(event) {
+  const fileInput = event?.target;
+  if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+    return;
+  }
+  const file = fileInput.files[0];
+  if (file.size > CREW_CONTACT_MAX_AVATAR_BYTES) {
+    const limitKb = Math.floor(CREW_CONTACT_MAX_AVATAR_BYTES / 1024);
+    const message = getCrewContactsText('avatarTooLarge', `Choose an image smaller than {size} KB.`).replace('{size}', String(limitKb));
+    if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+      window.alert(message);
+    }
+    fileInput.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const result = reader.result;
+    if (typeof result === 'string') {
+      setContactFormAvatar(result, contactsNameInput?.value || '');
+    }
+  };
+  reader.onerror = () => {
+    console.warn('Unable to load contact avatar', reader.error);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleContactAvatarRemove(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  if (contactsAvatarInput) {
+    contactsAvatarInput.value = '';
+  }
+  setContactFormAvatar('', contactsNameInput?.value || '');
+}
+
+function openContactsDialog(options = {}) {
+  if (!contactsDialog) return;
+  ensureCrewContactsLoaded();
+  crewContactState.selectionTarget = options.targetRow || null;
+  crewContactState.pendingApplyRow = options.applyRow || null;
+  const preset = options.preset || (crewContactState.selectionTarget ? { ...getCrewRowValues(crewContactState.selectionTarget) } : null);
+  if (preset) {
+    startNewContact({ ...preset });
+  } else {
+    startNewContact();
+  }
+  applyContactsLocalization();
+  renderContactsList();
+  openDialog(contactsDialog);
+  if (options.focus === 'form' && contactsNameInput) {
+    contactsNameInput.focus();
+  }
+}
+
+function closeContactsDialog() {
+  if (!contactsDialog) return;
+  crewContactState.selectionTarget = null;
+  crewContactState.pendingApplyRow = null;
+  crewContactState.editingId = null;
+  crewContactState.formAvatar = '';
+  closeDialog(contactsDialog);
+}
+
+function applyContactsLocalization() {
+  const titleText = getCrewContactsText('dialogTitle', 'Crew Contacts');
+  if (contactsDialogTitle) {
+    contactsDialogTitle.textContent = titleText;
+  }
+  if (contactsDialog) {
+    contactsDialog.setAttribute('aria-label', titleText);
+  }
+  if (contactsListHeading) {
+    contactsListHeading.textContent = getCrewContactsText('listHeading', 'Saved contacts');
+  }
+  if (contactsDialogClose) {
+    const closeLabel = getCrewContactsText('closeButton', 'Close');
+    contactsDialogClose.setAttribute('aria-label', closeLabel);
+    contactsDialogClose.setAttribute('title', closeLabel);
+  }
+  if (contactsNewButton) {
+    const newLabel = getCrewContactsText('addButton', 'New contact');
+    setButtonLabelWithIcon(contactsNewButton, newLabel, ICON_GLYPHS.add);
+    contactsNewButton.setAttribute('aria-label', newLabel);
+  }
+  if (contactsFormHeading) {
+    contactsFormHeading.textContent = getCrewContactsText('formHeading', 'Contact details');
+  }
+  if (contactsEmptyState) {
+    contactsEmptyState.textContent = getCrewContactsText('emptyState', 'Save your crew as contacts to reuse them later.');
+  }
+  const roleLabel = document.querySelector('label[for="contactsRole"]');
+  if (roleLabel) {
+    roleLabel.textContent = getCrewContactsText('roleLabel', getProjectFormText('crewRoleLabel', 'Crew role'));
+  }
+  const nameLabel = document.querySelector('label[for="contactsName"]');
+  if (nameLabel) {
+    nameLabel.textContent = getCrewContactsText('nameLabel', getProjectFormText('crewNameLabel', 'Crew member name'));
+  }
+  const phoneLabel = document.querySelector('label[for="contactsPhone"]');
+  if (phoneLabel) {
+    phoneLabel.textContent = getCrewContactsText('phoneLabel', getProjectFormText('crewPhoneLabel', 'Crew member phone'));
+  }
+  const emailLabel = document.querySelector('label[for="contactsEmail"]');
+  if (emailLabel) {
+    emailLabel.textContent = getCrewContactsText('emailLabel', getProjectFormText('crewEmailLabel', 'Crew member email'));
+  }
+  const avatarLabel = document.querySelector('label[for="contactsAvatar"]');
+  if (avatarLabel) {
+    avatarLabel.textContent = getCrewContactsText('avatarLabel', 'Profile picture');
+  }
+  if (contactsAvatarRemoveBtn) {
+    const removeLabel = getCrewContactsText('avatarRemove', 'Remove photo');
+    setButtonLabelWithIcon(contactsAvatarRemoveBtn, removeLabel, ICON_GLYPHS.circleX);
+    contactsAvatarRemoveBtn.setAttribute('aria-label', removeLabel);
+  }
+  if (contactsSaveButton) {
+    const saveLabel = crewContactState.editingId
+      ? getCrewContactsText('updateButton', 'Update contact')
+      : getCrewContactsText('saveButton', 'Save contact');
+    setButtonLabelWithIcon(contactsSaveButton, saveLabel, ICON_GLYPHS.save);
+    contactsSaveButton.setAttribute('aria-label', saveLabel);
+  }
+  if (contactsClearButton) {
+    const clearLabel = getCrewContactsText('clearButton', 'Clear form');
+    setButtonLabelWithIcon(contactsClearButton, clearLabel, ICON_GLYPHS.circleX);
+    contactsClearButton.setAttribute('aria-label', clearLabel);
+  }
+  if (contactsDeleteButton && !contactsDeleteButton.hidden) {
+    const deleteLabel = getCrewContactsText('deleteButton', 'Delete');
+    setButtonLabelWithIcon(contactsDeleteButton, deleteLabel, ICON_GLYPHS.trash);
+    contactsDeleteButton.setAttribute('aria-label', deleteLabel);
+  }
+  populateContactsRoleOptions(contactsRoleSelect?.value || '');
+  updateAllCrewRowContactUi();
+  renderContactsList();
+}
+
+function createCrewRow(data = {}) {
+  if (!crewContainer) return null;
+  ensureCrewContactsLoaded();
   const row = document.createElement('div');
   row.className = 'person-row';
   const roleSel = document.createElement('select');
   roleSel.name = 'crewRole';
-  crewRoles.forEach(r => {
-    const opt = document.createElement('option');
-    opt.value = r;
+  crewRoles.forEach(role => {
+    const option = document.createElement('option');
+    option.value = role;
     const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
-    opt.textContent = roleLabels[r] || r;
-    roleSel.appendChild(opt);
+    option.textContent = roleLabels[role] || role;
+    roleSel.appendChild(option);
   });
-  if (data.role) roleSel.value = data.role;
+  if (data.role) {
+    ensureCrewRoleOption(roleSel, data.role);
+    roleSel.value = data.role;
+  }
+  const fallbackProjectForm = texts.en?.projectForm || {};
+  const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.name = 'crewName';
-  const fallbackProjectForm = texts.en?.projectForm || {};
-  const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
-  nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.className = 'person-name';
+  nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.value = data.name || '';
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
   phoneInput.name = 'crewPhone';
-  phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.className = 'person-phone';
+  phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.value = data.phone || '';
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
   emailInput.name = 'crewEmail';
-  emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
+  emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.value = data.email || '';
   const crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
   const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
@@ -13094,14 +13922,35 @@ function createCrewRow(data = {}) {
   const nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
   const phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
   const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+  const avatarWrapper = document.createElement('div');
+  avatarWrapper.className = 'person-avatar';
+  avatarWrapper.setAttribute('aria-hidden', 'true');
+  const avatarImg = document.createElement('img');
+  avatarImg.className = 'person-avatar-img';
+  avatarImg.alt = '';
+  avatarImg.hidden = true;
+  const avatarInitial = document.createElement('span');
+  avatarInitial.className = 'person-avatar-initial';
+  avatarInitial.textContent = '•';
+  avatarWrapper.append(avatarImg, avatarInitial);
+  const contactIdInput = document.createElement('input');
+  contactIdInput.type = 'hidden';
+  contactIdInput.className = 'person-contact-id';
+  contactIdInput.name = 'crewContactId';
+  const selectContactBtn = document.createElement('button');
+  selectContactBtn.type = 'button';
+  selectContactBtn.className = 'person-select-contact';
+  const saveContactBtn = document.createElement('button');
+  saveContactBtn.type = 'button';
+  saveContactBtn.className = 'person-save-contact';
+  const clearContactBtn = document.createElement('button');
+  clearContactBtn.type = 'button';
+  clearContactBtn.className = 'person-clear-contact';
+  clearContactBtn.hidden = true;
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  const removeBase = texts[currentLang]?.projectForm?.removeEntry
-    || texts.en?.projectForm?.removeEntry
-    || 'Remove';
-  const crewHeading = texts[currentLang]?.projectForm?.crewHeading
-    || texts.en?.projectForm?.crewHeading
-    || 'Crew';
+  const removeBase = projectFormTexts.removeEntry || fallbackProjectForm.removeEntry || 'Remove';
+  const crewHeading = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew';
   const removeCrewLabel = `${removeBase} ${crewHeading}`.trim();
   removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
   removeBtn.setAttribute('aria-label', removeCrewLabel);
@@ -13109,16 +13958,100 @@ function createCrewRow(data = {}) {
   removeBtn.setAttribute('data-help', removeCrewLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
-    if (typeof markProjectFormDataDirty === 'function') {
-      markProjectFormDataDirty();
-    }
-    scheduleProjectAutoSave(true);
+    notifyProjectFormChanged();
   });
-  row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
+  const actionsWrap = document.createElement('div');
+  actionsWrap.className = 'person-actions';
+  actionsWrap.append(selectContactBtn, saveContactBtn, clearContactBtn, removeBtn);
+  row.append(
+    roleLabel,
+    roleSel,
+    avatarWrapper,
+    nameLabel,
+    nameInput,
+    phoneLabel,
+    phoneInput,
+    emailLabel,
+    emailInput,
+    contactIdInput,
+    actionsWrap,
+  );
   crewContainer.appendChild(row);
-  if (typeof markProjectFormDataDirty === 'function') {
-    markProjectFormDataDirty();
+  roleSel.addEventListener('change', notifyProjectFormChanged);
+  nameInput.addEventListener('input', () => {
+    updateCrewRowAvatar(row);
+    notifyProjectFormChanged();
+  });
+  phoneInput.addEventListener('input', notifyProjectFormChanged);
+  emailInput.addEventListener('input', notifyProjectFormChanged);
+  selectContactBtn.addEventListener('click', () => {
+    openContactsDialog({ targetRow: row });
+  });
+  saveContactBtn.addEventListener('click', () => {
+    crewContactState.selectionTarget = row;
+    crewContactState.pendingApplyRow = row;
+    const preset = getCrewRowValues(row);
+    openContactsDialog({ targetRow: row, applyRow: row, preset, focus: 'form' });
+  });
+  clearContactBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    clearCrewContactFromRow(row);
+  });
+  if (data.phone && !phoneInput.value) {
+    phoneInput.value = data.phone;
   }
+  if (data.email && !emailInput.value) {
+    emailInput.value = data.email;
+  }
+  if (data.name && !nameInput.value) {
+    nameInput.value = data.name;
+  }
+  if (data.role && roleSel.value !== data.role) {
+    ensureCrewRoleOption(roleSel, data.role);
+    roleSel.value = data.role;
+  }
+  if (data.contactId) {
+    row.dataset.contactId = data.contactId;
+    contactIdInput.value = data.contactId;
+  } else {
+    row.dataset.contactId = '';
+  }
+  if (data.contactName) {
+    row.dataset.contactName = data.contactName;
+  } else {
+    row.dataset.contactName = '';
+  }
+  if (data.avatar) {
+    row.dataset.avatar = data.avatar;
+  } else {
+    row.dataset.avatar = '';
+  }
+  if (data.contactId) {
+    const storedContact = findCrewContactById(data.contactId);
+    if (storedContact) {
+      if (!data.role && storedContact.role) {
+        ensureCrewRoleOption(roleSel, storedContact.role);
+        roleSel.value = storedContact.role;
+      }
+      if (!data.name && storedContact.name) {
+        nameInput.value = storedContact.name;
+      }
+      if (!data.phone && storedContact.phone) {
+        phoneInput.value = storedContact.phone;
+      }
+      if (!data.email && storedContact.email) {
+        emailInput.value = storedContact.email;
+      }
+      row.dataset.contactName = storedContact.name || row.dataset.contactName || '';
+      if (!data.avatar && storedContact.avatar) {
+        row.dataset.avatar = storedContact.avatar;
+      }
+    }
+  }
+  updateCrewRowAvatar(row);
+  updateCrewRowContactUi(row);
+  markProjectFormDataDirty?.();
+  return row;
 }
 
 function createPrepRow(data = {}) {
@@ -13609,6 +14542,85 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
 
 if (addPersonBtn) {
   addPersonBtn.addEventListener('click', () => createCrewRow());
+}
+
+if (contactsDialog) {
+  contactsDialog.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeContactsDialog();
+  });
+}
+
+if (contactsDialogClose) {
+  contactsDialogClose.addEventListener('click', () => closeContactsDialog());
+}
+
+if (contactsNewButton) {
+  contactsNewButton.addEventListener('click', () => {
+    crewContactState.selectionTarget = null;
+    crewContactState.pendingApplyRow = null;
+    startNewContact();
+    applyContactsLocalization();
+    contactsNameInput?.focus();
+  });
+}
+
+if (contactsForm) {
+  contactsForm.addEventListener('submit', handleContactsFormSubmit);
+}
+
+if (contactsClearButton) {
+  contactsClearButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    startNewContact();
+    applyContactsLocalization();
+    contactsNameInput?.focus();
+  });
+}
+
+if (contactsDeleteButton) {
+  contactsDeleteButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const editingId = crewContactState.editingId;
+    if (!editingId) {
+      startNewContact();
+      applyContactsLocalization();
+      return;
+    }
+    const contact = findCrewContactById(editingId);
+    if (!contact) {
+      startNewContact();
+      applyContactsLocalization();
+      return;
+    }
+    const confirmText = getCrewContactsText('deleteConfirm', 'Remove {name} from contacts?').replace('{name}', contact.name || '');
+    if (typeof window === 'undefined' || typeof window.confirm !== 'function' || window.confirm(confirmText)) {
+      if (deleteCrewContactById(editingId)) {
+        renderContactsList();
+        clearRowsForDeletedContact(editingId);
+        startNewContact();
+        applyContactsLocalization();
+      }
+    }
+  });
+}
+
+if (contactsList) {
+  contactsList.addEventListener('click', handleContactsListClick);
+}
+
+if (contactsAvatarInput) {
+  contactsAvatarInput.addEventListener('change', handleContactAvatarChange);
+}
+
+if (contactsAvatarRemoveBtn) {
+  contactsAvatarRemoveBtn.addEventListener('click', handleContactAvatarRemove);
+}
+
+if (contactsNameInput) {
+  contactsNameInput.addEventListener('input', () => {
+    setContactFormAvatar(crewContactState.formAvatar, contactsNameInput.value || '');
+  });
 }
 if (addPrepBtn) {
   addPrepBtn.addEventListener('click', () => createPrepRow());

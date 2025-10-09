@@ -64,6 +64,9 @@ const texts = {
     gearListNav: "Gear List",
     gearListNavHelp: "View the generated gear list with all items and categories.",
     overviewExportTitleSuffix: "Gear List and Project Requirements",
+    openContactsNav: "Contacts",
+    openContactsNavHelp:
+      "Open the crew contacts manager to reuse saved crew members across projects.",
     openSettingsNav: "Settings",
     openSettingsNavHelp:
       "Open Settings to adjust language, themes, accessibility options and backups.",
@@ -1346,7 +1349,11 @@ const texts = {
       crewRoleLabel: "Crew role",
       crewNameLabel: "Crew member name",
       crewPhoneLabel: "Crew member phone",
-      crewEmailLabel: "Crew member email"
+      crewEmailLabel: "Crew member email",
+      crewSelectContact: "Add from contacts",
+      crewSelectContactLinked: "Linked: {name}",
+      crewSaveContact: "Save as contact",
+      crewClearContact: "Remove contact link"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -1383,6 +1390,29 @@ const texts = {
       sliderBowl: "Slider Bowl",
       easyrig: "Further Stabilisation",
       storageRequirements: "Storage & Media"
+    },
+    contacts: {
+      dialogTitle: "Crew Contacts",
+      listHeading: "Saved contacts",
+      addButton: "New contact",
+      formHeading: "Contact details",
+      emptyState: "Save your crew as contacts to reuse them later.",
+      roleLabel: "Crew role",
+      rolePlaceholder: "Select crew role",
+      nameLabel: "Crew member name",
+      phoneLabel: "Crew member phone",
+      emailLabel: "Crew member email",
+      avatarLabel: "Profile picture",
+      avatarRemove: "Remove photo",
+      saveButton: "Save contact",
+      updateButton: "Update contact",
+      clearButton: "Clear form",
+      deleteButton: "Delete",
+      useButton: "Use in project",
+      editButton: "Edit",
+      deleteConfirm: "Remove {name} from contacts?",
+      avatarTooLarge: "Choose an image smaller than {size} KB.",
+      closeButton: "Close"
     },
     crewRoles: {
       "Producer": "Producer",
@@ -1725,6 +1755,9 @@ const texts = {
     gearListNavHelp:
       "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
     overviewExportTitleSuffix: "Lista attrezzatura e requisiti di progetto",
+    openContactsNav: "Contatti",
+    openContactsNavHelp:
+      "Apri il gestore dei contatti della troupe per riutilizzare i membri salvati nei progetti futuri.",
     openSettingsNav: "Impostazioni",
     openSettingsNavHelp:
       "Apri le Impostazioni per modificare lingua, temi, opzioni di accessibilità e backup.",
@@ -2190,7 +2223,11 @@ const texts = {
       crewRoleLabel: "Ruolo della troupe",
       crewNameLabel: "Nome membro della troupe",
       crewPhoneLabel: "Telefono membro della troupe",
-      crewEmailLabel: "Email membro della troupe"
+      crewEmailLabel: "Email membro della troupe",
+      crewSelectContact: "Aggiungi dai contatti",
+      crewSelectContactLinked: "Collegato: {name}",
+      crewSaveContact: "Salva come contatto",
+      crewClearContact: "Rimuovi collegamento contatto"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -2227,6 +2264,30 @@ const texts = {
       sliderBowl: "Slider bowl",
       easyrig: "Stabilizzazione aggiuntiva",
       storageRequirements: "Archiviazione e supporti"
+    },
+    contacts: {
+      dialogTitle: "Contatti troupe",
+      listHeading: "Contatti salvati",
+      addButton: "Nuovo contatto",
+      formHeading: "Dettagli contatto",
+      emptyState:
+        "Salva i membri della troupe come contatti per riutilizzarli nei progetti futuri.",
+      roleLabel: "Ruolo della troupe",
+      rolePlaceholder: "Seleziona ruolo troupe",
+      nameLabel: "Nome membro della troupe",
+      phoneLabel: "Telefono membro della troupe",
+      emailLabel: "Email membro della troupe",
+      avatarLabel: "Foto profilo",
+      avatarRemove: "Rimuovi foto",
+      saveButton: "Salva contatto",
+      updateButton: "Aggiorna contatto",
+      clearButton: "Pulisci modulo",
+      deleteButton: "Elimina",
+      useButton: "Usa nel progetto",
+      editButton: "Modifica",
+      deleteConfirm: "Rimuovere {name} dai contatti?",
+      avatarTooLarge: "Scegli un'immagine più piccola di {size} KB.",
+      closeButton: "Chiudi"
     },
     crewRoles: {
       "Producer": "Produttore",
@@ -3373,6 +3434,9 @@ const texts = {
     gearListNavHelp:
       "Ver la lista de equipo generada con todos los artículos y categorías.",
     overviewExportTitleSuffix: "Lista de equipo y requisitos del proyecto",
+    openContactsNav: "Contactos",
+    openContactsNavHelp:
+      "Abrir el gestor de contactos del equipo para reutilizar miembros guardados en futuros proyectos.",
     openSettingsNav: "Ajustes",
     openSettingsNavHelp:
       "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
@@ -3851,7 +3915,11 @@ const texts = {
       crewRoleLabel: "Rol del equipo",
       crewNameLabel: "Nombre del miembro del equipo",
       crewPhoneLabel: "Teléfono del miembro del equipo",
-      crewEmailLabel: "Correo del miembro del equipo"
+      crewEmailLabel: "Correo del miembro del equipo",
+      crewSelectContact: "Añadir desde contactos",
+      crewSelectContactLinked: "Vinculado: {name}",
+      crewSaveContact: "Guardar como contacto",
+      crewClearContact: "Quitar vínculo de contacto"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -3888,6 +3956,30 @@ const texts = {
       sliderBowl: "Bowl del slider",
       easyrig: "Estabilización adicional",
       storageRequirements: "Almacenamiento y soportes"
+    },
+    contacts: {
+      dialogTitle: "Contactos del equipo",
+      listHeading: "Contactos guardados",
+      addButton: "Nuevo contacto",
+      formHeading: "Detalles del contacto",
+      emptyState:
+        "Guarda a tu equipo como contactos para reutilizarlos más adelante.",
+      roleLabel: "Rol del equipo",
+      rolePlaceholder: "Selecciona rol del equipo",
+      nameLabel: "Nombre del miembro del equipo",
+      phoneLabel: "Teléfono del miembro del equipo",
+      emailLabel: "Correo del miembro del equipo",
+      avatarLabel: "Foto de perfil",
+      avatarRemove: "Quitar foto",
+      saveButton: "Guardar contacto",
+      updateButton: "Actualizar contacto",
+      clearButton: "Limpiar formulario",
+      deleteButton: "Eliminar",
+      useButton: "Usar en el proyecto",
+      editButton: "Editar",
+      deleteConfirm: "¿Eliminar a {name} de los contactos?",
+      avatarTooLarge: "Elige una imagen menor de {size} KB.",
+      closeButton: "Cerrar"
     },
     crewRoles: {
       "Producer": "Productor",
@@ -5035,6 +5127,9 @@ const texts = {
     gearListNavHelp:
       "Voir la liste du matériel générée avec tous les éléments et catégories.",
     overviewExportTitleSuffix: "Liste du matériel et exigences du projet",
+    openContactsNav: "Contacts",
+    openContactsNavHelp:
+      "Ouvrir le gestionnaire de contacts de l’équipe pour réutiliser les membres enregistrés sur d’autres projets.",
     openSettingsNav: "Paramètres",
     openSettingsNavHelp:
       "Ouvrir les paramètres pour régler la langue, les thèmes, l’accessibilité et les sauvegardes.",
@@ -5513,7 +5608,11 @@ const texts = {
       crewRoleLabel: "Rôle de l'équipe",
       crewNameLabel: "Nom du membre de l'équipe",
       crewPhoneLabel: "Téléphone du membre de l'équipe",
-      crewEmailLabel: "Courriel du membre de l'équipe"
+      crewEmailLabel: "Courriel du membre de l'équipe",
+      crewSelectContact: "Ajouter depuis les contacts",
+      crewSelectContactLinked: "Lié : {name}",
+      crewSaveContact: "Enregistrer comme contact",
+      crewClearContact: "Supprimer le lien du contact"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -5550,6 +5649,30 @@ const texts = {
       sliderBowl: "Slider bowl",
       easyrig: "Stabilisation complémentaire",
       storageRequirements: "Stockage et supports"
+    },
+    contacts: {
+      dialogTitle: "Contacts de l'équipe",
+      listHeading: "Contacts enregistrés",
+      addButton: "Nouveau contact",
+      formHeading: "Détails du contact",
+      emptyState:
+        "Enregistrez votre équipe comme contacts pour les réutiliser plus tard.",
+      roleLabel: "Rôle de l'équipe",
+      rolePlaceholder: "Sélectionner un rôle",
+      nameLabel: "Nom du membre de l'équipe",
+      phoneLabel: "Téléphone du membre de l'équipe",
+      emailLabel: "Courriel du membre de l'équipe",
+      avatarLabel: "Photo de profil",
+      avatarRemove: "Retirer la photo",
+      saveButton: "Enregistrer le contact",
+      updateButton: "Mettre à jour le contact",
+      clearButton: "Effacer le formulaire",
+      deleteButton: "Supprimer",
+      useButton: "Utiliser dans le projet",
+      editButton: "Modifier",
+      deleteConfirm: "Retirer {name} des contacts ?",
+      avatarTooLarge: "Choisissez une image inférieure à {size} Ko.",
+      closeButton: "Fermer"
     },
     crewRoles: {
       "Producer": "Producteur",
@@ -6708,6 +6831,9 @@ const texts = {
     gearListNavHelp:
       "Die erzeugte Gear-Liste mit allen Geräten und Kategorien ansehen.",
     overviewExportTitleSuffix: "Gear-Liste und Projektanforderungen",
+    openContactsNav: "Kontakte",
+    openContactsNavHelp:
+      "Die Crew-Kontaktverwaltung öffnen, um gespeicherte Teammitglieder in zukünftigen Projekten erneut zu verwenden.",
     openSettingsNav: "Einstellungen",
     openSettingsNavHelp:
       "Einstellungen öffnen, um Sprache, Designs, Barrierefreiheit und Backups anzupassen.",
@@ -7187,7 +7313,11 @@ const texts = {
       crewRoleLabel: "Rolle im Team",
       crewNameLabel: "Name des Crewmitglieds",
       crewPhoneLabel: "Telefon des Crewmitglieds",
-      crewEmailLabel: "E-Mail des Crewmitglieds"
+      crewEmailLabel: "E-Mail des Crewmitglieds",
+      crewSelectContact: "Aus Kontakten hinzufügen",
+      crewSelectContactLinked: "Verknüpft: {name}",
+      crewSaveContact: "Als Kontakt speichern",
+      crewClearContact: "Kontaktverknüpfung entfernen"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",
@@ -7224,6 +7354,30 @@ const texts = {
       sliderBowl: "Slider-Schale",
       easyrig: "Weitere Stabilisierung",
       storageRequirements: "Speicher & Medien"
+    },
+    contacts: {
+      dialogTitle: "Crew-Kontakte",
+      listHeading: "Gespeicherte Kontakte",
+      addButton: "Neuer Kontakt",
+      formHeading: "Kontaktdaten",
+      emptyState:
+        "Speichere deine Crew als Kontakte, um sie später wiederzuverwenden.",
+      roleLabel: "Rolle im Team",
+      rolePlaceholder: "Crew-Rolle auswählen",
+      nameLabel: "Name des Crewmitglieds",
+      phoneLabel: "Telefon des Crewmitglieds",
+      emailLabel: "E-Mail des Crewmitglieds",
+      avatarLabel: "Profilbild",
+      avatarRemove: "Foto entfernen",
+      saveButton: "Kontakt speichern",
+      updateButton: "Kontakt aktualisieren",
+      clearButton: "Formular leeren",
+      deleteButton: "Löschen",
+      useButton: "Im Projekt verwenden",
+      editButton: "Bearbeiten",
+      deleteConfirm: "{name} aus den Kontakten entfernen?",
+      avatarTooLarge: "Wähle ein Bild kleiner als {size} KB.",
+      closeButton: "Schließen"
     },
     crewRoles: {
       "Producer": "Produzent",
