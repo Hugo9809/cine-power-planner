@@ -19,6 +19,8 @@ if (!('sessionStorage' in global.window)) {
 const lzString = require('lz-string/libs/lz-string');
 global.LZString = lzString;
 
+const LZString = require('lz-string/libs/lz-string');
+
 const {
   loadDeviceData,
   saveDeviceData,
@@ -110,11 +112,53 @@ const withGenerationFlag = (value, generated = true) => ({
   gearListAndProjectRequirementsGenerated: generated,
 });
 
+const decompressStorageEnvelope = (value) => {
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  if (value.__cineStorageCompressed === true && value.algorithm === 'lz-string') {
+    const variant = typeof value.compressionVariant === 'string' ? value.compressionVariant : 'utf16';
+    const payload = typeof value.data === 'string' ? value.data : '';
+    let decompressed;
+    try {
+      if (variant === 'utf16') {
+        decompressed = LZString.decompressFromUTF16(payload);
+      } else if (variant === 'base64') {
+        decompressed = LZString.decompressFromBase64(payload);
+      } else if (variant === 'uri') {
+        decompressed = LZString.decompressFromEncodedURIComponent(payload);
+      } else {
+        decompressed = LZString.decompress(payload);
+      }
+    } catch (error) {
+      throw new Error(`Automatic backup entry could not be decompressed: ${error.message}`);
+    }
+    if (!decompressed) {
+      throw new Error('Automatic backup entry could not be decompressed: empty payload.');
+    }
+    try {
+      return JSON.parse(decompressed);
+    } catch (parseError) {
+      throw new Error(`Automatic backup entry could not be parsed after decompression: ${parseError.message}`);
+    }
+  }
+  return value;
+};
+
 const expectAutoBackupSnapshot = (entry, expectedPayload, options = {}) => {
   expect(entry).toBeDefined();
-  expect(typeof entry).toBe('object');
-  expect(entry).toHaveProperty('__cineAutoBackupSnapshot');
-  const snapshot = entry.__cineAutoBackupSnapshot;
+  let normalizedEntry = entry;
+  if (typeof normalizedEntry === 'string') {
+    try {
+      normalizedEntry = JSON.parse(normalizedEntry);
+    } catch (parseError) {
+      throw new Error(`Automatic backup entry string could not be parsed: ${parseError.message}`);
+    }
+  }
+  normalizedEntry = decompressStorageEnvelope(normalizedEntry);
+  expect(normalizedEntry && typeof normalizedEntry === 'object').toBe(true);
+  expect(normalizedEntry).toHaveProperty('__cineAutoBackupSnapshot');
+  const snapshot = normalizedEntry.__cineAutoBackupSnapshot;
   expect(snapshot).toBeDefined();
   const expectedType = options.snapshotType || 'full';
   expect(snapshot.snapshotType).toBe(expectedType);
@@ -122,6 +166,56 @@ const expectAutoBackupSnapshot = (entry, expectedPayload, options = {}) => {
     expect(snapshot.base).toBe(options.base);
   }
   expect(snapshot.payload).toEqual(expectedPayload);
+};
+
+const rawCustomGearSelectors = {
+  '#gearListMonitor': 'SmallHD Cine 7',
+  __customItems: {
+    monitoring: [
+      { quantity: '1', name: 'Client Confidence Monitor', rentalExcluded: true },
+      { quantity: '2', name: 'Focus Puller Monitor', rentalExcluded: false },
+    ],
+  },
+  __rentalExclusions: {
+    'Client Confidence Monitor': true,
+  },
+};
+
+const expectedCustomGearSelectors = {
+  '#gearListMonitor': 'SmallHD Cine 7',
+  __customItems: {
+    monitoring: [
+      { quantity: '1', name: 'Client Confidence Monitor', rentalExcluded: 'true' },
+      { quantity: '2', name: 'Focus Puller Monitor', rentalExcluded: 'false' },
+    ],
+  },
+  __rentalExclusions: {
+    'Client Confidence Monitor': 'true',
+  },
+};
+
+const rawUpdatedGearSelectors = {
+  '#gearListMonitor': 'SmallHD Indie 7',
+  __customItems: {
+    monitoring: [
+      { quantity: '3', name: 'Video Village Monitor', rentalExcluded: true },
+    ],
+  },
+  __rentalExclusions: {
+    'Video Village Monitor': true,
+  },
+};
+
+const expectedUpdatedGearSelectors = {
+  '#gearListMonitor': 'SmallHD Indie 7',
+  __customItems: {
+    monitoring: [
+      { quantity: '3', name: 'Video Village Monitor', rentalExcluded: 'true' },
+    ],
+  },
+  __rentalExclusions: {
+    'Video Village Monitor': 'true',
+  },
 };
 
 const validDeviceData = {
@@ -140,6 +234,7 @@ const validDeviceData = {
   accessories: {
     chargers: {},
     cages: {},
+    cardReaders: {},
     powerPlates: {},
     cameraSupport: {},
     matteboxes: {},
@@ -943,6 +1038,28 @@ describe('project storage', () => {
     expect(loadProject('InfoProj')).toEqual(withGenerationFlag({ gearList: '<ul>Info</ul>', projectInfo: null }));
   });
 
+  test('saveProject preserves custom gear selector entries', () => {
+    saveProject('CustomSelectors', {
+      gearList: '<ul>Custom</ul>',
+      projectInfo: null,
+      gearSelectors: rawCustomGearSelectors,
+    });
+
+    const loaded = loadProject('CustomSelectors');
+    expect(loaded).toEqual(withGenerationFlag({
+      gearList: '<ul>Custom</ul>',
+      projectInfo: null,
+      gearSelectors: expectedCustomGearSelectors,
+    }));
+
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
+    expect(stored.CustomSelectors).toEqual(withGenerationFlag({
+      gearList: '<ul>Custom</ul>',
+      projectInfo: null,
+      gearSelectors: expectedCustomGearSelectors,
+    }));
+  });
+
   test('saveProject removes older duplicate auto backups before trimming unique entries', () => {
     const projects = {};
     for (let index = 0; index < 119; index += 1) {
@@ -993,12 +1110,20 @@ describe('project storage', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-01T10:20:00Z'));
 
-    const original = { gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } };
+    const original = {
+      gearList: '<ul>Initial</ul>',
+      projectInfo: { notes: 'original' },
+      gearSelectors: rawCustomGearSelectors,
+    };
     saveProject('Overwrite Demo', original);
 
     jest.setSystemTime(new Date('2024-05-01T10:21:30Z'));
 
-    const updated = { gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } };
+    const updated = {
+      gearList: '<ul>Updated</ul>',
+      projectInfo: { notes: 'updated' },
+      gearSelectors: rawUpdatedGearSelectors,
+    };
     saveProject('Overwrite Demo', updated);
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
@@ -1007,9 +1132,17 @@ describe('project storage', () => {
     expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
     expectAutoBackupSnapshot(
       stored[backupKeys[0]],
-      withGenerationFlag({ gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } }),
+      withGenerationFlag({
+        gearList: '<ul>Initial</ul>',
+        projectInfo: { notes: 'original' },
+        gearSelectors: expectedCustomGearSelectors,
+      }),
     );
-    expect(stored['Overwrite Demo']).toEqual(withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } }));
+    expect(stored['Overwrite Demo']).toEqual(withGenerationFlag({
+      gearList: '<ul>Updated</ul>',
+      projectInfo: { notes: 'updated' },
+      gearSelectors: expectedUpdatedGearSelectors,
+    }));
 
     jest.useRealTimers();
   });
@@ -1714,7 +1847,11 @@ describe('clearAllData', () => {
     saveDeviceData(validDeviceData);
     saveSetups({ A: { foo: 1 } });
     saveFeedback({ note: 'hi' });
-    saveProject('Proj', { gearList: '<ul></ul>' });
+    saveProject('Proj', {
+      gearList: '<ul></ul>',
+      projectInfo: null,
+      gearSelectors: rawCustomGearSelectors,
+    });
     saveFavorites({ cat: ['A'] });
     saveSessionState({ camera: 'CamA' });
     saveAutoGearRules([{ id: 'rule', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }]);
@@ -1808,7 +1945,11 @@ describe('export/import all data', () => {
     saveSetups({ A: { foo: 1 } });
     saveSessionState({ camera: 'CamA' });
     saveFeedback({ note: 'hi' });
-    saveProject('Proj', { gearList: '<ul></ul>' });
+    saveProject('Proj', {
+      gearList: '<ul></ul>',
+      projectInfo: null,
+      gearSelectors: rawCustomGearSelectors,
+    });
     saveFavorites({ cat: ['A'] });
     localStorage.setItem('darkMode', 'true');
     localStorage.setItem('pinkMode', 'true');
@@ -1857,7 +1998,11 @@ describe('export/import all data', () => {
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
       project: {
-        Proj: withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }),
+        Proj: withGenerationFlag({
+          gearList: '<ul></ul>',
+          projectInfo: null,
+          gearSelectors: expectedCustomGearSelectors,
+        }),
       },
       favorites: { cat: ['A'] },
       autoGearRules: rules,
@@ -2866,6 +3011,27 @@ describe('critical storage backup guard', () => {
     expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBe(JSON.stringify(validDeviceData));
     expect(result.ensured).toEqual(expect.arrayContaining([
       expect.objectContaining({ key: DEVICE_KEY }),
+    ]));
+  });
+
+  test('project backups capture custom gear selectors', () => {
+    saveProject('Backup Demo', {
+      gearList: '<ul>Backup</ul>',
+      projectInfo: null,
+      gearSelectors: rawCustomGearSelectors,
+    });
+
+    const result = ensureCriticalStorageBackups();
+    const backupRaw = getDecodedLocalStorageItem(backupKeyFor(PROJECT_KEY));
+    expect(typeof backupRaw).toBe('string');
+    const backupData = JSON.parse(backupRaw);
+    expect(backupData['Backup Demo']).toEqual(withGenerationFlag({
+      gearList: '<ul>Backup</ul>',
+      projectInfo: null,
+      gearSelectors: expectedCustomGearSelectors,
+    }));
+    expect(result.skipped).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: PROJECT_KEY }),
     ]));
   });
 
