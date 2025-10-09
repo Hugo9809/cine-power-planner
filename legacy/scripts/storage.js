@@ -6679,12 +6679,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
     var normalizedState = normalizeLegacyLongGopStructure(state);
-    var _ref12 = options || {},
-      _ref12$disableCompres = _ref12.disableCompression,
-      disableCompression = _ref12$disableCompres === void 0 ? false : _ref12$disableCompres;
-    var saveOptions = disableCompression ? {
-      disableCompression: true
-    } : undefined;
+    var normalizedOptions = isPlainObject(options) ? options : {};
+    if (normalizedOptions.disableCompression === false) {
+      console.warn('saveSessionState compression override ignored. Session storage compression is disabled to protect user data.');
+    }
+    var saveOptions = _objectSpread(_objectSpread({}, normalizedOptions), {}, {
+      disableCompression: true,
+      forceCompressionOnQuota: false
+    });
     saveJSONToStorage(safeStorage, SESSION_STATE_KEY, normalizedState, "Error saving session state to localStorage:", saveOptions);
   }
   function loadDeviceData() {
@@ -6854,10 +6856,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function updateSetups(callback) {
     var setups = loadSetups();
-    var _ref13 = callback(setups) || {},
-      result = _ref13.result,
-      _ref13$changed = _ref13.changed,
-      changed = _ref13$changed === void 0 ? true : _ref13$changed;
+    var _ref12 = callback(setups) || {},
+      result = _ref12.result,
+      _ref12$changed = _ref12.changed,
+      changed = _ref12$changed === void 0 ? true : _ref12$changed;
     if (changed) {
       saveSetups(setups);
     }
@@ -6969,10 +6971,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof label !== 'string') return '';
       return label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[:：]/g, '').replace(/[^a-zA-Z0-9]+/g, ' ').trim().toLowerCase();
     };
-    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref14) {
-      var _ref15 = _slicedToArray(_ref14, 2),
-        field = _ref15[0],
-        labels = _ref15[1];
+    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref13) {
+      var _ref14 = _slicedToArray(_ref13, 2),
+        field = _ref14[0],
+        labels = _ref14[1];
       labels.forEach(function (label) {
         var normalized = normalize(label);
         if (normalized && !map.has(normalized)) {
@@ -7101,10 +7103,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var clone = {};
-      Object.entries(value).forEach(function (_ref16) {
-        var _ref17 = _slicedToArray(_ref16, 2),
-          key = _ref17[0],
-          val = _ref17[1];
+      Object.entries(value).forEach(function (_ref15) {
+        var _ref16 = _slicedToArray(_ref15, 2),
+          key = _ref16[0],
+          val = _ref16[1];
         clone[key] = cloneProjectData(val);
       });
       return clone;
@@ -7199,10 +7201,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var normalized = {};
-    Object.entries(info).forEach(function (_ref18) {
-      var _ref19 = _slicedToArray(_ref18, 2),
-        key = _ref19[0],
-        raw = _ref19[1];
+    Object.entries(info).forEach(function (_ref17) {
+      var _ref18 = _slicedToArray(_ref17, 2),
+        key = _ref18[0],
+        raw = _ref18[1];
       if (raw === null || raw === undefined) {
         return;
       }
@@ -7516,10 +7518,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return serialized || '';
       }
       var _entries = [];
-      Object.entries(value).forEach(function (_ref20) {
-        var _ref21 = _slicedToArray(_ref20, 2),
-          key = _ref21[0],
-          candidate = _ref21[1];
+      Object.entries(value).forEach(function (_ref19) {
+        var _ref20 = _slicedToArray(_ref19, 2),
+          key = _ref20[0],
+          candidate = _ref20[1];
         var normalized = normalizeImportedFilterEntry(candidate, key);
         if (normalized) {
           _entries.push(normalized);
@@ -7574,10 +7576,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (isPlainObject(value)) {
         var nested = {};
-        Object.entries(value).forEach(function (_ref22) {
-          var _ref23 = _slicedToArray(_ref22, 2),
-            key = _ref23[0],
-            nestedValue = _ref23[1];
+        Object.entries(value).forEach(function (_ref21) {
+          var _ref22 = _slicedToArray(_ref21, 2),
+            key = _ref22[0],
+            nestedValue = _ref22[1];
           if (typeof key !== 'string' || !key) {
             return;
           }
@@ -7605,10 +7607,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return '';
     };
     var clone = {};
-    Object.entries(selectors).forEach(function (_ref24) {
-      var _ref25 = _slicedToArray(_ref24, 2),
-        id = _ref25[0],
-        value = _ref25[1];
+    Object.entries(selectors).forEach(function (_ref23) {
+      var _ref24 = _slicedToArray(_ref23, 2),
+        id = _ref24[0],
+        value = _ref24[1];
       if (typeof id !== 'string' || !id) {
         return;
       }
@@ -8093,13 +8095,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function readAllProjectsFromStorage() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref26 = options || {},
-      _ref26$forceRefresh = _ref26.forceRefresh,
-      forceRefresh = _ref26$forceRefresh === void 0 ? false : _ref26$forceRefresh,
-      _ref26$forMutation = _ref26.forMutation,
-      forMutation = _ref26$forMutation === void 0 ? false : _ref26$forMutation,
-      _ref26$skipAutoBackup = _ref26.skipAutoBackupExpansion,
-      skipAutoBackupExpansion = _ref26$skipAutoBackup === void 0 ? false : _ref26$skipAutoBackup;
+    var _ref25 = options || {},
+      _ref25$forceRefresh = _ref25.forceRefresh,
+      forceRefresh = _ref25$forceRefresh === void 0 ? false : _ref25$forceRefresh,
+      _ref25$forMutation = _ref25.forMutation,
+      forMutation = _ref25$forMutation === void 0 ? false : _ref25$forMutation,
+      _ref25$skipAutoBackup = _ref25.skipAutoBackupExpansion,
+      skipAutoBackupExpansion = _ref25$skipAutoBackup === void 0 ? false : _ref25$skipAutoBackup;
     applyLegacyStorageMigrations();
     var shouldUseCache = !skipAutoBackupExpansion;
     if (shouldUseCache && !forceRefresh) {
@@ -8299,9 +8301,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function persistAllProjects(projects) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref27 = options || {},
-      _ref27$skipCompressio = _ref27.skipCompression,
-      skipCompression = _ref27$skipCompressio === void 0 ? false : _ref27$skipCompressio;
+    var _ref26 = options || {},
+      _ref26$skipCompressio = _ref26.skipCompression,
+      skipCompression = _ref26$skipCompressio === void 0 ? false : _ref26$skipCompressio;
     var safeStorage = getSafeLocalStorage();
     enforceAutoBackupLimits(projects);
     var serializedProjects = serializeAutoBackupEntries(projects, {
@@ -8805,9 +8807,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var _importProject = ensureImporter();
       var count = 0;
-      entries.forEach(function (_ref28) {
-        var name = _ref28.name,
-          project = _ref28.project;
+      entries.forEach(function (_ref27) {
+        var name = _ref27.name,
+          project = _ref27.project;
         if (project === null || project === undefined) {
           return;
         }
@@ -8826,10 +8828,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(collection)) {
       var _importProject2 = ensureImporter();
-      Object.entries(collection).forEach(function (_ref29) {
-        var _ref30 = _slicedToArray(_ref29, 2),
-          name = _ref30[0],
-          proj = _ref30[1];
+      Object.entries(collection).forEach(function (_ref28) {
+        var _ref29 = _slicedToArray(_ref28, 2),
+          name = _ref29[0],
+          proj = _ref29[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
         _importProject2(typeof normalizedName === 'string' ? normalizedName : '', proj);
       });
@@ -9099,11 +9101,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _opts$skipNormalizati2 = opts.skipNormalization,
       skipNormalization = _opts$skipNormalizati2 === void 0 ? false : _opts$skipNormalizati2;
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
-    var _ref31 = skipNormalization ? {
+    var _ref30 = skipNormalization ? {
         normalized: safeBackups,
         changed: false
       } : normalizeLegacyLongGopBackups(safeBackups),
-      normalizedBackups = _ref31.normalized;
+      normalizedBackups = _ref30.normalized;
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
     var attemptedMigrationCleanup = false;
@@ -10051,10 +10053,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref32) {
-      var _ref33 = _slicedToArray(_ref32, 2),
-        key = _ref33[0],
-        val = _ref33[1];
+    Object.entries(value).forEach(function (_ref31) {
+      var _ref32 = _slicedToArray(_ref31, 2),
+        key = _ref32[0],
+        val = _ref32[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -10413,9 +10415,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref34 = options || {},
-      _ref34$skipSnapshotCo = _ref34.skipSnapshotConversion,
-      skipSnapshotConversion = _ref34$skipSnapshotCo === void 0 ? false : _ref34$skipSnapshotCo;
+    var _ref33 = options || {},
+      _ref33$skipSnapshotCo = _ref33.skipSnapshotConversion,
+      skipSnapshotConversion = _ref33$skipSnapshotCo === void 0 ? false : _ref33$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {
