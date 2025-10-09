@@ -8354,6 +8354,17 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
   align-self: flex-start;
 }
 
+#gearListOutput .gear-item-edit-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 26%, transparent);
+}
+
+html.dark-mode #gearListOutput .gear-item-edit-btn:focus-visible,
+body.dark-mode #gearListOutput .gear-item-edit-btn:focus-visible,
+.dark-mode #gearListOutput .gear-item-edit-btn:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 36%, transparent);
+}
+
 #gearListOutput .gear-item-edit-btn .btn-icon {
   --icon-size: var(--button-icon-size);
 }
