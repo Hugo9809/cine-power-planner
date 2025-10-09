@@ -4878,6 +4878,10 @@ function gearListGenerateHtmlImpl(info = {}) {
         }).join('') + '</div>' : '';
     const requirementsHeading = projectFormTexts.heading || 'Project Requirements';
     const infoHtml = infoEntries.length ? `<h3>${escapeHtml(requirementsHeading)}</h3>${boxesHtml}` : '';
+    const rentalToggleTexts = getGearListRentalToggleTexts();
+    const rentalNoteAttr = rentalToggleTexts.noteLabel && rentalToggleTexts.noteLabel.trim()
+        ? ` data-rental-note="${escapeHtml(rentalToggleTexts.noteLabel)}"`
+        : '';
     const formatItems = arr => {
         const counts = {};
         arr.filter(Boolean).map(addArriKNumber).forEach(rawItem => {
@@ -4895,7 +4899,7 @@ function gearListGenerateHtmlImpl(info = {}) {
             const current = counts[base].ctxCounts[ctx] || 0;
             counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
         });
-        const rentalTexts = getGearListRentalToggleTexts();
+        const rentalTexts = rentalToggleTexts;
         const noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim()
             ? ` data-rental-note="${escapeHtml(rentalTexts.noteLabel)}"`
             : '';
@@ -5506,8 +5510,10 @@ function gearListGenerateHtmlImpl(info = {}) {
         const selectId = `gearListMonitorBatteryHandheld${index}${roleId}`;
         const optionsHtml = buildBatteryOptions(selectedValue);
         const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="handheld" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
+        const dataName = `Monitoring Battery ${contextLabel}`;
+        const toggleHtml = buildRentalToggleMarkup(dataName, rentalToggleTexts);
         monitoringBatteryItems.push(
-            `<span class="gear-item" data-gear-name="${escapeHtml(`Monitoring Battery ${contextLabel}`)}">3x ${selectHtml} (${escapeHtml(contextLabel)})</span>`
+            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${rentalNoteAttr}>3x ${selectHtml} (${escapeHtml(contextLabel)}) ${toggleHtml}</span>`
         );
     });
     const bebob290 = Object.keys(batteryDatabase).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
@@ -5523,8 +5529,10 @@ function gearListGenerateHtmlImpl(info = {}) {
         const selectId = `gearListMonitorBatteryLarge${index}${roleId}`;
         const optionsHtml = buildBatteryOptions(selectedValue);
         const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="large" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
+        const dataName = `Monitoring Battery ${contextLabel}`;
+        const toggleHtml = buildRentalToggleMarkup(dataName, rentalToggleTexts);
         monitoringBatteryItems.push(
-            `<span class="gear-item" data-gear-name="${escapeHtml(`Monitoring Battery ${contextLabel}`)}">2x ${selectHtml} (${escapeHtml(contextLabel)})</span>`
+            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${rentalNoteAttr}>2x ${selectHtml} (${escapeHtml(contextLabel)}) ${toggleHtml}</span>`
         );
     });
     addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('<br>') : '');
@@ -5802,7 +5810,8 @@ function gearListGenerateHtmlImpl(info = {}) {
         const widthOpts = gaffWidths
             .map(val => `<option value="${val}"${val === width ? ' selected' : ''}>${val}</option>`)
             .join('');
-        return `<span class="gear-item" data-gear-name="Pro Gaff Tape">${proGaffCount}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select></span>`;
+        const toggleHtml = buildRentalToggleMarkup('Pro Gaff Tape', rentalToggleTexts);
+        return `<span class="gear-item" data-gear-name="Pro Gaff Tape"${rentalNoteAttr}>${proGaffCount}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select> ${toggleHtml}</span>`;
     }).join('<br>');
     let eyeLeatherHtml = '';
     if (eyeLeatherCount) {
@@ -5821,7 +5830,8 @@ function gearListGenerateHtmlImpl(info = {}) {
             ['black', 'Black']
         ];
         const options = colors.map(([val, label]) => `<option value="${val}"${val === eyeLeatherColor ? ' selected' : ''}>${label}</option>`).join('');
-        eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large">${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select></span>`;
+        const toggleHtml = buildRentalToggleMarkup('Bluestar eye leather made of microfiber oval, large', rentalToggleTexts);
+        eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large"${rentalNoteAttr}>${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select> ${toggleHtml}</span>`;
     }
     addRow('Miscellaneous', formatItems(miscItems));
     addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
