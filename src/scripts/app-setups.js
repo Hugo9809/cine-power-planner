@@ -4475,6 +4475,31 @@ function getGearItemData(element) {
   };
 }
 
+function getGearItemResetDefaults(element) {
+  if (!element) {
+    return {
+      name: '',
+      attributes: '',
+    };
+  }
+  const originalCombined = element.getAttribute('data-gear-original-name')
+    || element.getAttribute('data-gear-name')
+    || '';
+  const parsedOriginal = parseGearItemDisplayParts(originalCombined);
+  let originalName = element.getAttribute('data-gear-original-label') || '';
+  let originalAttributes = element.getAttribute('data-gear-original-attributes') || '';
+  if (!originalName && parsedOriginal.name) {
+    originalName = parsedOriginal.name;
+  }
+  if (!originalAttributes && parsedOriginal.attributes) {
+    originalAttributes = parsedOriginal.attributes;
+  }
+  return {
+    name: typeof originalName === 'string' ? originalName.trim() : '',
+    attributes: typeof originalAttributes === 'string' ? originalAttributes.trim() : '',
+  };
+}
+
 function applyGearItemData(element, data = {}, options = {}) {
   if (!element) return;
   const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
@@ -4556,6 +4581,13 @@ function applyGearItemData(element, data = {}, options = {}) {
     const originalName = element.getAttribute('data-gear-name');
     if (originalName) {
       element.setAttribute('data-gear-original-name', originalName);
+      const parsedOriginal = parseGearItemDisplayParts(originalName);
+      if (!element.getAttribute('data-gear-original-label') && parsedOriginal.name) {
+        element.setAttribute('data-gear-original-label', parsedOriginal.name);
+      }
+      if (!element.getAttribute('data-gear-original-attributes') && parsedOriginal.attributes) {
+        element.setAttribute('data-gear-original-attributes', parsedOriginal.attributes);
+      }
     }
   }
   const combinedName = trimmedAttributes
@@ -4689,6 +4721,11 @@ function buildGearItemEditContext() {
     rentalDescription: resolveElementById('gearItemEditRentalDescription', 'gearItemEditRentalDescription'),
     cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
+    backButton: resolveElementById('gearItemEditBack', 'gearItemEditBack'),
+    backButtonText: resolveElementById('gearItemEditBackText', 'gearItemEditBackText'),
+    resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
+    resetButtonText: resolveElementById('gearItemEditResetText', 'gearItemEditResetText'),
+    resetDefaults: null,
   };
 }
 
@@ -4717,6 +4754,8 @@ function getGearItemEditTexts() {
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
+    backLabel: langTexts.gearListEditBack || fallbackTexts.gearListEditBack || 'Back',
+    resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name & attributes',
   };
 }
 
@@ -4744,6 +4783,20 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.rentalLabel) {
     context.rentalLabel.textContent = textsForDialog.rentalLabel;
+  }
+  if (context.backButton) {
+    context.backButton.setAttribute('aria-label', textsForDialog.backLabel);
+    context.backButton.title = textsForDialog.backLabel;
+  }
+  if (context.backButtonText) {
+    context.backButtonText.textContent = textsForDialog.backLabel;
+  }
+  if (context.resetButton) {
+    context.resetButton.setAttribute('aria-label', textsForDialog.resetLabel);
+    context.resetButton.title = textsForDialog.resetLabel;
+  }
+  if (context.resetButtonText) {
+    context.resetButtonText.textContent = textsForDialog.resetLabel;
   }
   const rentalTexts = getGearListRentalToggleTexts();
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
@@ -4811,6 +4864,25 @@ function updateGearItemEditPreview(context) {
   return previewText;
 }
 
+function updateGearItemEditResetState(context) {
+  if (!context || !context.resetButton) {
+    return;
+  }
+  const defaults = context.resetDefaults || { name: '', attributes: '' };
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  const hasStoredOriginal = Boolean(targetEntry && targetEntry.hasAttribute('data-gear-original-name'));
+  const hasDefaults = hasStoredOriginal || Boolean((defaults.name && defaults.name.trim())
+    || (defaults.attributes && defaults.attributes.trim()));
+  const currentName = context.nameInput ? context.nameInput.value.trim() : '';
+  const currentAttributes = context.attributesInput ? context.attributesInput.value.trim() : '';
+  const defaultName = typeof defaults.name === 'string' ? defaults.name.trim() : '';
+  const defaultAttributes = typeof defaults.attributes === 'string' ? defaults.attributes.trim() : '';
+  const matchesDefaults = currentName === defaultName && currentAttributes === defaultAttributes;
+  const shouldDisable = !hasDefaults || matchesDefaults;
+  context.resetButton.disabled = shouldDisable;
+  context.resetButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+}
+
 function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) {
   if (!context) return;
   const rentalTexts = getGearListRentalToggleTexts();
@@ -4858,6 +4930,7 @@ function handleGearItemEditFieldInput() {
       ? `${textsForDialog.dialogTitle} — ${previewText}`
       : textsForDialog.dialogTitle;
   }
+  updateGearItemEditResetState(context);
 }
 
 function handleGearItemEditRentalCheckboxChange() {
@@ -4884,6 +4957,47 @@ function handleGearItemEditRentalButtonClick(event) {
     void error;
   }
   updateGearItemEditRentalControls(context, nextState, true);
+}
+
+function handleGearItemEditResetClick(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  const context = getGearItemEditContext();
+  if (!context || !context.resetButton || context.resetButton.disabled) {
+    return;
+  }
+  const defaults = context.resetDefaults || { name: '', attributes: '' };
+  if (context.nameInput) {
+    context.nameInput.value = defaults.name || '';
+  }
+  if (context.attributesInput) {
+    context.attributesInput.value = defaults.attributes || '';
+  }
+  handleGearItemEditFieldInput();
+  if (context.nameInput && typeof context.nameInput.focus === 'function') {
+    try {
+      context.nameInput.focus({ preventScroll: true });
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+function handleGearItemEditDialogBackdropPointerDown(event) {
+  if (!event) {
+    return;
+  }
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog) {
+    return;
+  }
+  if (event.target !== context.dialog) {
+    return;
+  }
+  event.preventDefault();
+  event.stopPropagation();
+  handleGearItemEditDialogCancel(event);
 }
 
 let gearItemEditDialogBound = false;
@@ -4961,6 +5075,13 @@ function handleGearItemEditDialogClose() {
     context.rentalToggleButton.classList.remove('is-active');
     context.rentalToggleButton.setAttribute('aria-pressed', 'false');
   }
+  if (context) {
+    context.resetDefaults = null;
+    if (context.resetButton) {
+      context.resetButton.disabled = false;
+      context.resetButton.setAttribute('aria-disabled', 'false');
+    }
+  }
   activeGearItemEditTarget = null;
   if (targetEntry && targetEntry.isConnected) {
     const editBtn = targetEntry.querySelector('[data-gear-edit]');
@@ -4988,8 +5109,20 @@ function bindGearItemEditDialog(context) {
   if (context.cancelButton) {
     context.cancelButton.addEventListener('click', handleGearItemEditDialogCancel);
   }
+  if (context.backButton) {
+    context.backButton.addEventListener('click', handleGearItemEditDialogCancel);
+  }
+  if (context.resetButton) {
+    context.resetButton.addEventListener('click', handleGearItemEditResetClick);
+  }
   context.dialog.addEventListener('cancel', handleGearItemEditDialogCancel);
   context.dialog.addEventListener('close', handleGearItemEditDialogClose);
+  if ('onpointerdown' in context.dialog) {
+    context.dialog.addEventListener('pointerdown', handleGearItemEditDialogBackdropPointerDown);
+  } else {
+    context.dialog.addEventListener('mousedown', handleGearItemEditDialogBackdropPointerDown);
+    context.dialog.addEventListener('touchstart', handleGearItemEditDialogBackdropPointerDown);
+  }
   const previewInputs = [context.quantityInput, context.nameInput, context.attributesInput];
   previewInputs.forEach(input => {
     if (!input) return;
@@ -5022,6 +5155,12 @@ function openGearItemEditor(element, options = {}) {
     }
   }
   const data = getGearItemData(element);
+  activeGearItemEditTarget = { element, options: options || {} };
+  context.resetDefaults = getGearItemResetDefaults(element);
+  if (context.resetButton) {
+    context.resetButton.disabled = false;
+    context.resetButton.setAttribute('aria-disabled', 'false');
+  }
   applyGearItemEditDialogTexts(context);
   const allowRentalToggle = options && options.allowRentalToggle === false ? false : true;
   if (context.quantityInput) {
@@ -5065,7 +5204,7 @@ function openGearItemEditor(element, options = {}) {
       ? `${textsForDialog.dialogTitle} — ${previewText}`
       : textsForDialog.dialogTitle;
   }
-  activeGearItemEditTarget = { element, options: options || {} };
+  updateGearItemEditResetState(context);
   try {
     if (typeof context.dialog.showModal === 'function') {
       context.dialog.showModal();
