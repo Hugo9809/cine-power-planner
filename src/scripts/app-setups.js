@@ -4,7 +4,8 @@
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
-          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown */
+          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
+          focusScalePreference */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -5869,20 +5870,135 @@ function gearListGenerateHtmlImpl(info = {}) {
         'gearListLensCoverageWarning',
         'This lens may not cover the full sensor of this camera!'
     );
+    const resolveFocusScaleMode = () => {
+        const scope =
+            (typeof globalThis !== 'undefined' && globalThis)
+            || (typeof window !== 'undefined' && window)
+            || (typeof self !== 'undefined' && self)
+            || (typeof global !== 'undefined' && global)
+            || null;
+        const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+            ? scope.focusScalePreference
+            : null;
+        const rawPreference = scopePreference
+            || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
+            || 'metric';
+        const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+        return normalized === 'imperial' ? 'imperial' : 'metric';
+    };
+    const focusScaleMode = resolveFocusScaleMode();
+    const useImperialFocusScale = focusScaleMode === 'imperial';
+    const focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
+    const formatLensNumber = (value, options = {}) => {
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
+            ? options.maximumFractionDigits
+            : 0;
+        const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
+            ? options.minimumFractionDigits
+            : Math.min(0, maximumFractionDigits);
+        if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+            try {
+                return new Intl.NumberFormat(focusScaleLang, {
+                    maximumFractionDigits,
+                    minimumFractionDigits,
+                }).format(numeric);
+            } catch (formatError) {
+                void formatError;
+            }
+        }
+        const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+        try {
+            return numeric.toFixed(digits);
+        } catch (toFixedError) {
+            void toFixedError;
+        }
+        return String(numeric);
+    };
+    const formatLensWeight = (value) => {
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (useImperialFocusScale) {
+            const pounds = numeric / 453.59237;
+            const digits = pounds >= 10 ? 1 : 2;
+            const formatted = formatLensNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} lb` : '';
+        }
+        const formatted = formatLensNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} g` : '';
+    };
+    const formatLensDiameter = (value) => {
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (useImperialFocusScale) {
+            const inches = numeric / 25.4;
+            const digits = inches >= 10 ? 1 : 2;
+            const formatted = formatLensNumber(inches, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} in` : '';
+        }
+        const formatted = formatLensNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} mm` : '';
+    };
+    const formatLensMinFocus = (value) => {
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (useImperialFocusScale) {
+            const feet = numeric * 3.280839895;
+            const digits = feet < 10 ? 2 : 1;
+            const formatted = formatLensNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+            return formatted ? `${formatted} ft` : '';
+        }
+        const digits = numeric < 1 ? 2 : 1;
+        const formatted = formatLensNumber(numeric, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+        return formatted ? `${formatted} m` : '';
+    };
+    const formatRodLength = (value) => {
+        const numeric = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(numeric)) {
+            return '';
+        }
+        if (useImperialFocusScale) {
+            const inches = numeric / 2.54;
+            const digits = inches >= 10 ? 1 : 2;
+            const formatted = formatLensNumber(inches, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+            return formatted ? `${formatted} in` : '';
+        }
+        const formatted = formatLensNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} cm` : '';
+    };
+
     const lensDisplayNames = selectedLensNames.map(name => {
         const lens = devices.lenses && devices.lenses[name];
         const base = addArriKNumber(name);
         if (!lens) return base;
         const attrs = [];
-        if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+        const formattedWeight = formatLensWeight(lens.weight_g);
+        if (formattedWeight) attrs.push(formattedWeight);
         if (lens.clampOn) {
-            if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+            if (lens.frontDiameterMm) {
+                const formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
+                attrs.push(formattedDiameter ? `${formattedDiameter} clamp-on` : 'clamp-on');
+            }
             else attrs.push('clamp-on');
         } else if (lens.clampOn === false) {
             attrs.push('no clamp-on');
         }
         const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-        if (minFocus) attrs.push(`${minFocus}m min focus`);
+        if (Number.isFinite(minFocus) && minFocus > 0) {
+            const formattedMinFocus = formatLensMinFocus(minFocus);
+            if (formattedMinFocus) {
+                attrs.push(`${formattedMinFocus} min focus`);
+            }
+        }
         const lensImageCircle = Number(lens.imageCircleMm ?? lens.imageCircle);
         const needsCoverageWarning = Number.isFinite(cameraRequiredImageCircle)
             && Number.isFinite(lensImageCircle)
@@ -5917,7 +6033,9 @@ function gearListGenerateHtmlImpl(info = {}) {
         const rodLength = lens.rodLengthCm || (baseRodType === '19mm' ? 45 : 30);
         const rodKey = `${baseRodType}-${rodLength}`;
         if (!addedRodPairs.has(rodKey)) {
-            lensSupportItems.push(`${baseRodType} rods ${rodLength}cm`);
+            const formattedRodLength = formatRodLength(rodLength);
+            const rodLengthLabel = formattedRodLength || `${rodLength}cm`;
+            lensSupportItems.push(`${baseRodType} rods ${rodLengthLabel}`);
             addedRodPairs.add(rodKey);
         }
         if (lens.needsLensSupport) {
