@@ -4658,12 +4658,20 @@ function ensureGearItemEditButton(element) {
   button.className = 'gear-item-edit-btn';
   button.setAttribute('data-gear-edit', '');
   const editTexts = getGearItemEditTexts();
-  if (editTexts.editButtonLabel) {
-    button.setAttribute('aria-label', editTexts.editButtonLabel);
-    button.setAttribute('title', editTexts.editButtonLabel);
+  const editLabel = editTexts.editButtonLabel || '';
+  if (editLabel) {
+    button.setAttribute('aria-label', editLabel);
+    button.setAttribute('title', editLabel);
   }
-  if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object') {
+  if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
+    setButtonLabelWithIcon(button, editLabel, ICON_GLYPHS.sliders);
+  } else if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
     button.innerHTML = iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' });
+    if (editLabel) {
+      button.appendChild(doc.createTextNode(editLabel));
+    }
+  } else if (editLabel) {
+    button.textContent = editLabel;
   }
   const noteSpan = element.querySelector('.gear-item-note');
   if (noteSpan) {
