@@ -1022,6 +1022,15 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
+  if (currentSetup.gearListAndProjectRequirementsGenerated) {
+    const { projectHtml, gearHtml } = gearListGetSafeHtmlSectionsImpl(combinedHtml);
+    if (projectHtml) {
+      currentSetup.projectHtml = projectHtml;
+    }
+    if (gearHtml) {
+      currentSetup.gearList = gearHtml;
+    }
+  }
   if (currentSetup.gearListAndProjectRequirementsGenerated && projectInfoSnapshotForExport) {
     currentSetup.projectInfo = projectInfoSnapshotForExport;
   }
