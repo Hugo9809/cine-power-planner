@@ -9098,4 +9098,93 @@ ensureLanguageAlignment(gearItems, {
   expectedLanguages: supportedLanguages,
 });
 
+const translationScope =
+  (typeof globalThis !== 'undefined' && globalThis)
+  || (typeof window !== 'undefined' && window)
+  || (typeof self !== 'undefined' && self)
+  || (typeof global !== 'undefined' && global)
+  || null;
+
+if (translationScope && (typeof translationScope === 'object' || typeof translationScope === 'function')) {
+  try {
+    translationScope.texts = texts;
+  } catch (textsAssignError) {
+    void textsAssignError;
+    translationScope.texts = texts;
+  }
+  try {
+    translationScope.categoryNames = categoryNames;
+  } catch (categoryAssignError) {
+    void categoryAssignError;
+    translationScope.categoryNames = categoryNames;
+  }
+  try {
+    translationScope.gearItems = gearItems;
+  } catch (gearAssignError) {
+    void gearAssignError;
+    translationScope.gearItems = gearItems;
+  }
+  try {
+    translationScope.__cineTranslationsReady = true;
+  } catch (flagError) {
+    void flagError;
+    translationScope.__cineTranslationsReady = true;
+  }
+}
+
+(function announceTranslationReadiness() {
+  const detail = { texts, categoryNames, gearItems };
+  const eventName = 'cineTranslationsReady';
+  let dispatched = false;
+
+  if (
+    typeof document !== 'undefined' &&
+    document &&
+    typeof document.dispatchEvent === 'function' &&
+    typeof CustomEvent === 'function'
+  ) {
+    try {
+      document.dispatchEvent(new CustomEvent(eventName, { detail }));
+      dispatched = true;
+    } catch (eventError) {
+      void eventError;
+    }
+  }
+
+  if (!dispatched && translationScope && typeof translationScope.dispatchEvent === 'function') {
+    const CustomEventCtor =
+      (typeof translationScope.CustomEvent === 'function' && translationScope.CustomEvent)
+      || (typeof CustomEvent === 'function' ? CustomEvent : null);
+    if (CustomEventCtor) {
+      try {
+        translationScope.dispatchEvent(new CustomEventCtor(eventName, { detail }));
+        dispatched = true;
+      } catch (scopeEventError) {
+        void scopeEventError;
+      }
+    }
+  }
+
+  if (!dispatched && typeof setTimeout === 'function') {
+    try {
+      setTimeout(() => {
+        if (
+          typeof document !== 'undefined' &&
+          document &&
+          typeof document.dispatchEvent === 'function' &&
+          typeof CustomEvent === 'function'
+        ) {
+          try {
+            document.dispatchEvent(new CustomEvent(eventName, { detail }));
+          } catch (delayedError) {
+            void delayedError;
+          }
+        }
+      }, 0);
+    } catch (timeoutError) {
+      void timeoutError;
+    }
+  }
+})();
+
 if (typeof module !== 'undefined' && module.exports) { module.exports = { texts, categoryNames, gearItems }; }

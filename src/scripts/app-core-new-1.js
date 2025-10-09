@@ -96,6 +96,146 @@ var CORE_PART1_RUNTIME_SCOPE =
 // dead zones when the scripts load out of order.
 const DEFAULT_LANGUAGE = 'en';
 
+const TRANSLATION_READY_EVENT_NAME = 'cineTranslationsReady';
+const translationReadyQueue = [];
+let translationReadyPollTimer = null;
+let translationReadyListenerAttached = false;
+
+function getTranslationGlobalScope() {
+  if (CORE_PART1_RUNTIME_SCOPE && typeof CORE_PART1_RUNTIME_SCOPE === 'object') {
+    return CORE_PART1_RUNTIME_SCOPE;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    return window;
+  }
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    return self;
+  }
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    return global;
+  }
+  return null;
+}
+
+function areTranslationsReady() {
+  const scope = getTranslationGlobalScope();
+  if (!scope) {
+    return false;
+  }
+
+  if (scope.__cineTranslationsReady === true) {
+    return true;
+  }
+
+  try {
+    const dataset = scope.texts;
+    if (dataset && typeof dataset === 'object' && Object.keys(dataset).length) {
+      return true;
+    }
+  } catch (accessError) {
+    void accessError;
+  }
+
+  return false;
+}
+
+function flushTranslationReadyQueue() {
+  if (!areTranslationsReady() || !translationReadyQueue.length) {
+    return;
+  }
+
+  const callbacks = translationReadyQueue.splice(0, translationReadyQueue.length);
+  for (let index = 0; index < callbacks.length; index += 1) {
+    const callback = callbacks[index];
+    if (typeof callback !== 'function') {
+      continue;
+    }
+    try {
+      callback();
+    } catch (callbackError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Translation readiness callback failed', callbackError);
+      }
+    }
+  }
+}
+
+function scheduleTranslationReadyPolling() {
+  if (translationReadyPollTimer || typeof setInterval !== 'function') {
+    return;
+  }
+
+  translationReadyPollTimer = setInterval(() => {
+    if (!areTranslationsReady()) {
+      return;
+    }
+
+    clearInterval(translationReadyPollTimer);
+    translationReadyPollTimer = null;
+    flushTranslationReadyQueue();
+  }, 50);
+}
+
+function attachTranslationReadyEventListener() {
+  if (translationReadyListenerAttached) {
+    return;
+  }
+
+  const scope = getTranslationGlobalScope();
+  const target =
+    (typeof document !== 'undefined' && document && typeof document.addEventListener === 'function')
+      ? document
+      : (scope && typeof scope.addEventListener === 'function')
+        ? scope
+        : null;
+
+  if (!target) {
+    return;
+  }
+
+  translationReadyListenerAttached = true;
+  const handler = () => {
+    translationReadyListenerAttached = false;
+    if (typeof target.removeEventListener === 'function') {
+      try {
+        target.removeEventListener(TRANSLATION_READY_EVENT_NAME, handler);
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+    if (translationReadyPollTimer) {
+      clearInterval(translationReadyPollTimer);
+      translationReadyPollTimer = null;
+    }
+    flushTranslationReadyQueue();
+  };
+
+  try {
+    target.addEventListener(TRANSLATION_READY_EVENT_NAME, handler, { once: true });
+  } catch (attachError) {
+    translationReadyListenerAttached = false;
+    void attachError;
+  }
+}
+
+function whenTranslationsReady(callback) {
+  if (typeof callback !== 'function') {
+    return;
+  }
+
+  if (areTranslationsReady()) {
+    callback();
+    return;
+  }
+
+  translationReadyQueue.push(callback);
+  attachTranslationReadyEventListener();
+  scheduleTranslationReadyPolling();
+}
+
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -7026,10 +7166,14 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     initializeContactsModule();
   };
 
+  const scheduleLayoutInitialization = () => {
+    whenTranslationsReady(runLayoutInitialization);
+  };
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runLayoutInitialization, { once: true });
+    document.addEventListener('DOMContentLoaded', scheduleLayoutInitialization, { once: true });
   } else {
-    runLayoutInitialization();
+    scheduleLayoutInitialization();
   }
 }
 
@@ -14331,6 +14475,13 @@ function createHiddenLabel(forId, text) {
   return label;
 }
 
+try {
+  exposeCoreRuntimeConstant('ensureElementId', ensureElementId);
+  exposeCoreRuntimeConstant('createHiddenLabel', createHiddenLabel);
+} catch (ensureElementIdExposeError) {
+  void ensureElementIdExposeError;
+}
+
 function getProjectFormText(key, defaultValue = '') {
   const fallbackProjectForm = texts?.en?.projectForm || {};
   const projectFormTexts = texts?.[currentLang]?.projectForm || fallbackProjectForm;
@@ -17244,7 +17395,7 @@ function populateCategoryOptions() {
   syncDeviceManagerCategories();
 }
 
-populateCategoryOptions();
+whenTranslationsReady(populateCategoryOptions);
 
 function getCategoryContainer(categoryKey, subcategory, { create = false } = {}) {
   if (!categoryKey) {
