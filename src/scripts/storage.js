@@ -195,9 +195,28 @@
       }
     }
 
-    if (typeof sessionStorage !== 'undefined') {
+    let directSessionStorage = null;
+
+    try {
+      const scope = GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object'
+        ? GLOBAL_SCOPE
+        : typeof window !== 'undefined' && window && typeof window === 'object'
+          ? window
+          : null;
+
+      if (scope && 'sessionStorage' in scope) {
+        directSessionStorage = scope.sessionStorage;
+      } else if (typeof sessionStorage !== 'undefined') {
+        directSessionStorage = sessionStorage;
+      }
+    } catch (error) {
+      directSessionStorage = null;
+      void error;
+    }
+
+    if (directSessionStorage) {
       try {
-        registerKnownSessionStorage(sessionStorage);
+        registerKnownSessionStorage(directSessionStorage);
       } catch (error) {
         void error;
       }
