@@ -1632,6 +1632,45 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, option
     };
   }
 
+  if (
+    !opts.disableCompression
+    && isCompressedAutoBackupSnapshotPayload(opts.existingCompressedPayload)
+  ) {
+    const decodedExisting = decodeCompressedJsonStorageValue(
+      opts.existingCompressedPayload.data,
+    );
+    if (decodedExisting.success && typeof decodedExisting.value === 'string') {
+      if (decodedExisting.value === serialized) {
+        const reusedPayload = cloneAutoBackupValue(opts.existingCompressedPayload, {
+          stripMetadata: true,
+        });
+        const reusedCompression = isPlainObject(opts.existingPayloadCompression)
+          ? { ...opts.existingPayloadCompression }
+          : null;
+        const resolvedSignature = typeof computedSignature === 'string'
+          && computedSignature
+          ? computedSignature
+          : (typeof existingSignature === 'string' && existingSignature
+            ? existingSignature
+            : null);
+        if (resolvedSignature) {
+          writeAutoBackupCompressionCache(
+            resolvedSignature,
+            reusedPayload,
+            reusedCompression,
+          );
+        }
+        return {
+          payload: reusedPayload,
+          compression: reusedCompression,
+          compressed: true,
+          reused: true,
+          payloadSignature: resolvedSignature,
+        };
+      }
+    }
+  }
+
   const candidate = createCompressedJsonStorageCandidate(serialized);
   if (!candidate || typeof candidate.serialized !== 'string') {
     return {
