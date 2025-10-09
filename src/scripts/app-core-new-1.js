@@ -12301,6 +12301,7 @@ function setLanguage(lang) {
   const fallbackProjectForm = texts.en && texts.en.projectForm ? texts.en.projectForm : {};
   const projectFormTexts = texts[lang].projectForm || fallbackProjectForm;
   if (projectFormTexts) {
+    resolveContactsDomRefs();
     const setLabelText = (element, key) => {
       if (!element) return;
       const value = projectFormTexts[key] || fallbackProjectForm[key];
@@ -12614,21 +12615,42 @@ var returnContainer = document.getElementById("returnContainer");
 const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
 const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
-const contactsDialog = document.getElementById("contactsDialog");
-const contactsForm = document.getElementById("contactsForm");
-const contactsDialogHeading = document.getElementById("contactsDialogHeading");
-const contactsDialogDescription = document.getElementById("contactsDialogDescription");
-const contactsAddButton = document.getElementById("contactsAddButton");
-const contactsAddButtonLabel = document.getElementById("contactsAddButtonLabel");
-const contactsImportButton = document.getElementById("contactsImportButton");
-const contactsImportButtonLabel = document.getElementById("contactsImportButtonLabel");
-const contactsImportInput = document.getElementById("contactsImportInput");
-const contactsImportHint = document.getElementById("contactsImportHint");
-const contactsList = document.getElementById("contactsList");
-const contactsEmptyState = document.getElementById("contactsEmptyState");
-const contactsCloseButton = document.getElementById("contactsCloseButton");
-const contactsAnnouncement = document.getElementById("contactsAnnouncement");
-const openContactsBtn = document.getElementById("openContactsBtn");
+let contactsDialog = null;
+let contactsForm = null;
+let contactsDialogHeading = null;
+let contactsDialogDescription = null;
+let contactsAddButton = null;
+let contactsAddButtonLabel = null;
+let contactsImportButton = null;
+let contactsImportButtonLabel = null;
+let contactsImportInput = null;
+let contactsImportHint = null;
+let contactsList = null;
+let contactsEmptyState = null;
+let contactsCloseButton = null;
+let contactsAnnouncement = null;
+let openContactsBtn = null;
+
+function resolveContactsDomRefs() {
+  if (typeof document === 'undefined') return;
+  contactsDialog = contactsDialog || document.getElementById('contactsDialog');
+  contactsForm = contactsForm || document.getElementById('contactsForm');
+  contactsDialogHeading = contactsDialogHeading || document.getElementById('contactsDialogHeading');
+  contactsDialogDescription =
+    contactsDialogDescription || document.getElementById('contactsDialogDescription');
+  contactsAddButton = contactsAddButton || document.getElementById('contactsAddButton');
+  contactsAddButtonLabel = contactsAddButtonLabel || document.getElementById('contactsAddButtonLabel');
+  contactsImportButton = contactsImportButton || document.getElementById('contactsImportButton');
+  contactsImportButtonLabel =
+    contactsImportButtonLabel || document.getElementById('contactsImportButtonLabel');
+  contactsImportInput = contactsImportInput || document.getElementById('contactsImportInput');
+  contactsImportHint = contactsImportHint || document.getElementById('contactsImportHint');
+  contactsList = contactsList || document.getElementById('contactsList');
+  contactsEmptyState = contactsEmptyState || document.getElementById('contactsEmptyState');
+  contactsCloseButton = contactsCloseButton || document.getElementById('contactsCloseButton');
+  contactsAnnouncement = contactsAnnouncement || document.getElementById('contactsAnnouncement');
+  openContactsBtn = openContactsBtn || document.getElementById('openContactsBtn');
+}
 
 var monitoringConfigurationUserChanged = false;
 
@@ -14734,6 +14756,7 @@ function handleAvatarFileSelection(row, file) {
 }
 
 function announceContactsMessage(message) {
+  resolveContactsDomRefs();
   if (!contactsAnnouncement) return;
   contactsAnnouncement.textContent = message || '';
 }
@@ -15236,6 +15259,7 @@ function createContactCard(contact) {
 }
 
 function renderContactsList(options = {}) {
+  resolveContactsDomRefs();
   if (!contactsList) return;
   const { focusContactId = null } = options || {};
   while (contactsList.firstChild) {
@@ -15260,6 +15284,7 @@ function renderContactsList(options = {}) {
 }
 
 function initializeContactsModule() {
+  resolveContactsDomRefs();
   if (contactsInitialized) return;
   contactsInitialized = true;
   contactsCache = loadStoredContacts();
