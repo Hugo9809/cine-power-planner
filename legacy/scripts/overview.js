@@ -330,6 +330,199 @@ function logOverview(level, message, detail, meta) {
   }
   return baseMeta.eventId;
 }
+var _pendingPrintCleanup = null;
+var RENTAL_PRINT_STORAGE_KEY = 'cineRentalPrintSections';
+function getRentalPrintSectionConfig() {
+  return [{
+    id: 'project',
+    selector: '#projectRequirementsOutput',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionProject',
+    fallbackLabel: 'Project Requirements'
+  }, {
+    id: 'devices',
+    selector: '#overviewDeviceSection',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionDevices',
+    fallbackLabel: 'Camera Setup Devices'
+  }, {
+    id: 'power',
+    selector: '#resultsSection',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionPower',
+    fallbackLabel: 'Power Summary'
+  }, {
+    id: 'diagram',
+    selector: '#setupDiagram',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionDiagram',
+    fallbackLabel: 'Camera Diagram'
+  }, {
+    id: 'gear',
+    selector: '#gearListOutput',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionGearList',
+    fallbackLabel: 'Gear List'
+  }, {
+    id: 'battery',
+    selector: '.battery-comparison-section',
+    defaultVisible: true,
+    labelKey: 'rentalPrintSectionBattery',
+    fallbackLabel: 'Battery Comparison'
+  }];
+}
+function loadRentalPrintPreferences() {
+  if (typeof localStorage === 'undefined') {
+    return null;
+  }
+  try {
+    var raw = localStorage.getItem(RENTAL_PRINT_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    var parsed = JSON.parse(raw);
+    if (!parsed || _typeof(parsed) !== 'object') {
+      return null;
+    }
+    return parsed;
+  } catch (error) {
+    logOverview('warn', 'Unable to read rental print section preferences.', error, {
+      action: 'rental-print-load-preferences'
+    });
+  }
+  return null;
+}
+function saveRentalPrintPreferences(preferences) {
+  if (typeof localStorage === 'undefined') {
+    return false;
+  }
+  try {
+    var serialized = JSON.stringify(preferences || {});
+    localStorage.setItem(RENTAL_PRINT_STORAGE_KEY, serialized);
+    return true;
+  } catch (error) {
+    logOverview('warn', 'Unable to persist rental print section preferences.', error, {
+      action: 'rental-print-save-preferences'
+    });
+  }
+  return false;
+}
+function runPendingPrintCleanup(reason) {
+  if (typeof _pendingPrintCleanup !== 'function') {
+    return;
+  }
+  var cleanup = _pendingPrintCleanup;
+  _pendingPrintCleanup = null;
+  try {
+    cleanup();
+  } catch (cleanupError) {
+    logOverview('warn', 'Failed to restore print state after workflow finished.', cleanupError, {
+      action: 'print-cleanup',
+      reason: reason
+    });
+  }
+}
+var rentalPrintDialogContext = null;
+function getRentalPrintDialogContext() {
+  if (rentalPrintDialogContext) {
+    return rentalPrintDialogContext;
+  }
+  if (typeof document === 'undefined') {
+    return null;
+  }
+  var dialog = document.getElementById('rentalPrintDialog');
+  if (!dialog) {
+    return null;
+  }
+  var form = dialog.querySelector('#rentalPrintForm');
+  var sections = dialog.querySelector('#rentalPrintSections');
+  var selectAllBtn = dialog.querySelector('#rentalPrintSelectAllBtn');
+  var cancelBtn = dialog.querySelector('#rentalPrintCancelBtn');
+  var confirmBtn = dialog.querySelector('#rentalPrintConfirmBtn');
+  var title = dialog.querySelector('#rentalPrintDialogTitle');
+  var description = dialog.querySelector('#rentalPrintDialogDescription');
+  if (!form || !sections || !title || !description || !selectAllBtn || !cancelBtn || !confirmBtn) {
+    return null;
+  }
+  rentalPrintDialogContext = {
+    dialog: dialog,
+    form: form,
+    sections: sections,
+    selectAllBtn: selectAllBtn,
+    cancelBtn: cancelBtn,
+    confirmBtn: confirmBtn,
+    title: title,
+    description: description
+  };
+  return rentalPrintDialogContext;
+}
+function populateRentalPrintDialog(context, preferences, onConfirm) {
+  var _texts, _texts2;
+  if (!context) {
+    return;
+  }
+  var langTexts = texts && texts[currentLang] || ((_texts = texts) === null || _texts === void 0 ? void 0 : _texts.en) || {};
+  var fallbackTexts = ((_texts2 = texts) === null || _texts2 === void 0 ? void 0 : _texts2.en) || {};
+  var title = langTexts.rentalPrintDialogTitle || fallbackTexts.rentalPrintDialogTitle || 'Export rental PDF';
+  var description = langTexts.rentalPrintDialogDescription || fallbackTexts.rentalPrintDialogDescription || 'Choose which sections should appear in the rental PDF.';
+  var sectionsLabel = langTexts.rentalPrintDialogSectionsLabel || fallbackTexts.rentalPrintDialogSectionsLabel || 'Sections to include';
+  var confirmLabel = langTexts.rentalPrintDialogConfirm || fallbackTexts.rentalPrintDialogConfirm || 'Export';
+  var cancelLabel = langTexts.rentalPrintDialogCancel || fallbackTexts.rentalPrintDialogCancel || 'Cancel';
+  var selectAllLabel = langTexts.rentalPrintDialogSelectAll || fallbackTexts.rentalPrintDialogSelectAll || 'Select all';
+  context.title.textContent = title;
+  context.description.textContent = description;
+  context.selectAllBtn.textContent = selectAllLabel;
+  context.cancelBtn.textContent = cancelLabel;
+  context.confirmBtn.textContent = confirmLabel;
+  context.sections.innerHTML = '';
+  var legend = document.createElement('legend');
+  legend.textContent = sectionsLabel;
+  context.sections.appendChild(legend);
+  var sectionConfig = getRentalPrintSectionConfig();
+  sectionConfig.forEach(function (section) {
+    var label = langTexts[section.labelKey] || fallbackTexts[section.labelKey] || section.fallbackLabel;
+    var wrapper = document.createElement('label');
+    wrapper.className = 'print-options-section';
+    var input = document.createElement('input');
+    input.type = 'checkbox';
+    input.name = 'rental-section';
+    input.value = section.id;
+    input.id = "rentalPrintSection_".concat(section.id);
+    var preferenceValue = preferences && Object.prototype.hasOwnProperty.call(preferences, section.id) ? preferences[section.id] : section.defaultVisible;
+    input.checked = preferenceValue !== false;
+    var textSpan = document.createElement('span');
+    textSpan.textContent = label;
+    wrapper.appendChild(input);
+    wrapper.appendChild(textSpan);
+    context.sections.appendChild(wrapper);
+  });
+  context.form._rentalConfirmHandler = typeof onConfirm === 'function' ? onConfirm : null;
+  if (!context.form.dataset.rentalDialogBound) {
+    context.form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var selections = {};
+      context.form.querySelectorAll('input[name="rental-section"]').forEach(function (input) {
+        selections[input.value] = input.checked;
+      });
+      saveRentalPrintPreferences(selections);
+      closeDialog(context.dialog);
+      if (typeof context.form._rentalConfirmHandler === 'function') {
+        context.form._rentalConfirmHandler(selections);
+      }
+    });
+    context.cancelBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      closeDialog(context.dialog);
+    });
+    context.selectAllBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      context.form.querySelectorAll('input[name="rental-section"]').forEach(function (input) {
+        input.checked = true;
+      });
+    });
+    context.form.dataset.rentalDialogBound = 'true';
+  }
+}
 function createOverviewLoggerProxy(baseMeta) {
   var frozenMeta = baseMeta && _typeof(baseMeta) === 'object' ? Object.freeze(_objectSpread({}, baseMeta)) : null;
   var proxy = {
@@ -356,6 +549,7 @@ function generatePrintableOverview() {
   var safeConfig = config && _typeof(config) === 'object' ? config : {};
   var _safeConfig$autoPrint = safeConfig.autoPrint,
     autoPrint = _safeConfig$autoPrint === void 0 ? false : _safeConfig$autoPrint;
+  runPendingPrintCleanup('overview-init');
   var escapeHtmlSafe = function escapeHtmlSafe(value) {
     return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value !== null && value !== void 0 ? value : '');
   };
@@ -468,6 +662,7 @@ function generatePrintableOverview() {
     return null;
   };
   var lensDataset = resolveLensDataset();
+  var fallbackTexts = texts && (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts.en || {};
   var numberFormatterCache = new Map();
   var getNumberFormatter = function getNumberFormatter(options) {
     var key = JSON.stringify(options || {});
@@ -497,22 +692,91 @@ function generatePrintableOverview() {
     var maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
     return num.toFixed(maximumFractionDigits);
   };
+  var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
+    var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+    return normalized === 'imperial' ? 'imperial' : 'metric';
+  };
+  var resolveFocusScalePreference = function resolveFocusScalePreference() {
+    var scope = resolveOverviewCloneScope();
+    if (scope && typeof scope.focusScalePreference === 'string') {
+      return scope.focusScalePreference;
+    }
+    if (typeof focusScalePreference === 'string') {
+      return focusScalePreference;
+    }
+    return 'metric';
+  };
+  var formatFocusScalePreference = function formatFocusScalePreference() {
+    var preference = normalizeFocusScaleValue(resolveFocusScalePreference());
+    var key = preference === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
+    var labelFromLang = t && typeof t[key] === 'string' ? t[key].trim() : '';
+    if (labelFromLang) {
+      return labelFromLang;
+    }
+    var labelFromFallback = typeof fallbackTexts[key] === 'string' ? fallbackTexts[key].trim() : '';
+    if (labelFromFallback) {
+      return labelFromFallback;
+    }
+    return preference === 'imperial' ? 'Imperial' : 'Metric';
+  };
+  var useImperialFocusScale = function useImperialFocusScale() {
+    return normalizeFocusScaleValue(resolveFocusScalePreference()) === 'imperial';
+  };
   var formatLengthMm = function formatLengthMm(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale()) {
+      var inches = numeric / 25.4;
+      var fractionDigits = inches >= 10 ? 1 : 2;
+      var _formatted = formatNumber(inches, {
+        maximumFractionDigits: fractionDigits,
+        minimumFractionDigits: 0
+      });
+      return _formatted ? "".concat(_formatted, " in") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 1,
       minimumFractionDigits: 0
     });
     return formatted ? "".concat(formatted, " mm") : '';
   };
   var formatRodLength = function formatRodLength(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale()) {
+      var inches = numeric / 2.54;
+      var fractionDigits = inches >= 10 ? 1 : 2;
+      var _formatted2 = formatNumber(inches, {
+        maximumFractionDigits: fractionDigits,
+        minimumFractionDigits: 0
+      });
+      return _formatted2 ? "".concat(_formatted2, " in") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 1,
       minimumFractionDigits: 0
     });
     return formatted ? "".concat(formatted, " cm") : '';
   };
   var formatWeight = function formatWeight(value) {
-    var formatted = formatNumber(value, {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale()) {
+      var pounds = numeric / 453.59237;
+      var fractionDigits = pounds >= 10 ? 1 : 2;
+      var _formatted3 = formatNumber(pounds, {
+        maximumFractionDigits: fractionDigits,
+        minimumFractionDigits: 0
+      });
+      return _formatted3 ? "".concat(_formatted3, " lb") : '';
+    }
+    var formatted = formatNumber(numeric, {
       maximumFractionDigits: 0,
       minimumFractionDigits: 0
     });
@@ -540,6 +804,15 @@ function generatePrintableOverview() {
     var num = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(num)) {
       return '';
+    }
+    if (useImperialFocusScale()) {
+      var feet = num * 3.280839895;
+      var _digits = feet < 10 ? 2 : 1;
+      var _formatted4 = formatNumber(feet, {
+        maximumFractionDigits: _digits,
+        minimumFractionDigits: _digits
+      });
+      return _formatted4 ? "".concat(_formatted4, " ft") : '';
     }
     var digits = num < 1 ? 2 : 1;
     var formatted = formatNumber(num, {
@@ -657,6 +930,7 @@ function generatePrintableOverview() {
       addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
     }
     addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
+    addLensBox('lensSpecFocusScaleLabel', formatFocusScalePreference());
     if (!infoBoxes.length) {
       return '';
     }
@@ -703,6 +977,8 @@ function generatePrintableOverview() {
     deviceListHtml += "<div class=\"device-category\"><h3>".concat(iconHtml).concat(heading, "</h3><div class=\"").concat(gridClasses, "\">").concat(sections[key].join(''), "</div></div>");
   });
   deviceListHtml += '</div>';
+  var deviceSectionHeading = deviceListHtml ? t.overviewDeviceSelectionHeading || t.deviceSelectionHeading || 'Device Selection' : '';
+  var deviceSectionHtml = deviceListHtml ? "<section id=\"overviewDeviceSection\" class=\"device-overview-section print-section\"><h2>".concat(escapeHtmlSafe(deviceSectionHeading), "</h2>").concat(deviceListHtml, "</section>") : '';
   var breakdownHtml = breakdownListElem.innerHTML;
   var batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
   var powerDiagramElem = typeof document !== 'undefined' ? document.getElementById('powerDiagram') : null;
@@ -926,7 +1202,7 @@ function generatePrintableOverview() {
         });
       }();
       if (shouldRenderGearList) {
-        gearSectionHtml = "<section id=\"gearListOutput\" class=\"gear-list-section\">".concat(parts.gearHtml, "</section>");
+        gearSectionHtml = "<section id=\"gearListOutput\" class=\"gear-list-section print-section\">".concat(parts.gearHtml, "</section>");
       }
     }
   }
@@ -952,7 +1228,25 @@ function generatePrintableOverview() {
     }
     return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
   }();
-  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n                <button id=\"exportPdfBtn\" class=\"print-btn export-pdf-btn\">").concat(exportIconHtml).concat(escapeHtmlSafe(exportPdfLabel), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>").concat(generatedOnDisplay, "</em></p>\n\n            ").concat(projectRequirementsHtml, "\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtml, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
+  var exportRentalPdfLabel = t.exportRentalPdfBtn || 'Export PDF for Rental House';
+  var rentalExportIconHtml = function () {
+    if (typeof iconMarkup === 'function' && ICON_GLYPHS) {
+      var glyph = ICON_GLYPHS.home || ICON_GLYPHS.house || ICON_GLYPHS.fileExport || null;
+      if (glyph) {
+        try {
+          return iconMarkup(glyph, 'btn-icon');
+        } catch (error) {
+          var glyphName = glyph === ICON_GLYPHS.home ? 'home' : glyph === ICON_GLYPHS.house ? 'house' : 'fileExport';
+          logOverview('warn', 'Unable to render rental export icon for overview dialog.', error, {
+            action: 'render-icon',
+            icon: glyphName
+          });
+        }
+      }
+    }
+    return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
+  }();
+  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n                <button id=\"exportPdfBtn\" class=\"print-btn export-pdf-btn\">").concat(exportIconHtml).concat(escapeHtmlSafe(exportPdfLabel), "</button>\n                <button id=\"exportRentalPdfBtn\" class=\"print-btn export-rental-btn\" data-feature-search=\"true\" data-feature-search-keywords=\"rental export pdf print\" title=\"").concat(escapeHtmlSafe(exportRentalPdfLabel), "\">").concat(rentalExportIconHtml).concat(escapeHtmlSafe(exportRentalPdfLabel), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>").concat(generatedOnDisplay, "</em></p>\n\n            ").concat(projectRequirementsHtml, "\n\n            ").concat(deviceSectionHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtml, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
   var overviewDialog = document.getElementById('overviewDialog');
   overviewDialog.innerHTML = overviewHtml;
   if (overviewDialog && !overviewDialog.hasAttribute('data-overview-outside-close')) {
@@ -968,6 +1262,90 @@ function generatePrintableOverview() {
     overviewDialog.setAttribute('data-overview-outside-close', '');
   }
   var content = overviewDialog.querySelector('#overviewDialogContent');
+  var triggerRentalPdfExport = function triggerRentalPdfExport() {
+    var selections = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (!overviewDialog || !content) {
+      logOverview('warn', 'Overview dialog is unavailable for rental export.', undefined, {
+        action: 'rental-print',
+        stage: 'dialog-missing'
+      });
+      return false;
+    }
+    runPendingPrintCleanup('pre-rental-print');
+    var normalizedSelections = selections && _typeof(selections) === 'object' ? selections : {};
+    var cleanupTasks = [];
+    var sectionConfig = getRentalPrintSectionConfig();
+    sectionConfig.forEach(function (section) {
+      var target = content.querySelector(section.selector);
+      if (!target) {
+        return;
+      }
+      var shouldShow = Object.prototype.hasOwnProperty.call(normalizedSelections, section.id) ? normalizedSelections[section.id] !== false : section.defaultVisible;
+      var hiddenClass = 'print-section-hidden';
+      var wasHidden = target.classList.contains(hiddenClass);
+      if (!shouldShow && !wasHidden) {
+        target.classList.add(hiddenClass);
+        cleanupTasks.push(function () {
+          return target.classList.remove(hiddenClass);
+        });
+      } else if (shouldShow && wasHidden) {
+        target.classList.remove(hiddenClass);
+        cleanupTasks.push(function () {
+          return target.classList.add(hiddenClass);
+        });
+      }
+    });
+    content.classList.add('rental-print-mode');
+    cleanupTasks.push(function () {
+      return content.classList.remove('rental-print-mode');
+    });
+    _pendingPrintCleanup = function pendingPrintCleanup() {
+      while (cleanupTasks.length) {
+        var task = cleanupTasks.pop();
+        try {
+          task();
+        } catch (cleanupError) {
+          logOverview('warn', 'Failed to restore rental print state.', cleanupError, {
+            action: 'rental-print-cleanup'
+          });
+        }
+      }
+      _pendingPrintCleanup = null;
+    };
+    var success = triggerPrintWorkflow({
+      preferFallback: true,
+      reason: 'rental-export'
+    });
+    if (!success) {
+      logOverview('error', 'Unable to open the rental PDF export workflow. Please enable pop-ups and try again.', undefined, {
+        action: 'rental-print',
+        stage: 'trigger',
+        result: 'not-started'
+      });
+      runPendingPrintCleanup('rental-print-failed');
+      return false;
+    }
+    var ensureCleanup = function ensureCleanup() {
+      return runPendingPrintCleanup('overview-closed');
+    };
+    overviewDialog.addEventListener('close', ensureCleanup, {
+      once: true
+    });
+    return true;
+  };
+  var rentalBtn = overviewDialog.querySelector('#exportRentalPdfBtn');
+  if (rentalBtn) {
+    rentalBtn.addEventListener('click', function () {
+      var preferences = loadRentalPrintPreferences() || {};
+      var dialogContext = getRentalPrintDialogContext();
+      if (dialogContext && dialogContext.dialog) {
+        populateRentalPrintDialog(dialogContext, preferences, triggerRentalPdfExport);
+        openDialog(dialogContext.dialog);
+      } else {
+        triggerRentalPdfExport(preferences);
+      }
+    });
+  }
   var applyThemeClasses = function applyThemeClasses(target) {
     if (!target || typeof document === 'undefined') return;
     var themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast', 'reduce-motion', 'relaxed-spacing'];
@@ -1049,6 +1427,7 @@ function generatePrintableOverview() {
   var removePrintMediaListener = null;
   var afterPrintRegistered = false;
   var _closeAfterPrint = function closeAfterPrint() {
+    runPendingPrintCleanup('close-after-print');
     if (removePrintMediaListener) {
       removePrintMediaListener();
       removePrintMediaListener = null;

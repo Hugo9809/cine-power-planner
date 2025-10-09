@@ -1840,6 +1840,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "ARRI Codex Compact Drive 1TB": {
           "brand": "ARRI",
           "model": "Codex Compact Drive 1TB",
+          "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
           "kNumber": "K2.0044880",
           "capacityGb": 960,
           "capacityTb": 1,
@@ -1848,6 +1849,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "ARRI Codex Compact Drive 2TB": {
           "brand": "ARRI",
           "model": "Codex Compact Drive 2TB",
+          "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
           "kNumber": "K2.0044881",
           "capacityGb": 1920,
           "capacityTb": 2,
@@ -1856,6 +1858,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "ARRI Codex Compact Drive Express 1TB": {
           "brand": "ARRI",
           "model": "Codex Compact Drive Express 1TB",
+          "sourceUrl": "https://www.arri.com/en/camera-systems/camera-components/recording-media/codex-compact-drive",
           "kNumber": "K2.0046663",
           "capacityGb": 960,
           "capacityTb": 1,
@@ -1863,7 +1866,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO CFexpress Type A 1TB": {
           "brand": "Angelbird",
-          "model": "AV PRO CFexpress Type A 1TB",
+          "model": "AV PRO CFexpress A 1TB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-cfexpress-a-3444/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -1871,7 +1875,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type A 160GB": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type A 160GB",
+          "model": "AV PRO SE CFexpress A 160GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-a-3448/",
           "kNumber": null,
           "capacityGb": 160,
           "capacityTb": 0.16,
@@ -1879,7 +1884,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type A 330GB": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type A 330GB",
+          "model": "AV PRO SE CFexpress A 330GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-a-3448/",
           "kNumber": null,
           "capacityGb": 330,
           "capacityTb": 0.33,
@@ -1887,7 +1893,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type B 512GB (v4 Mk2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type B v4 Mk2 512GB",
+          "model": "AV PRO SE CFexpress B v4 Mk2 512GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -1895,7 +1902,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type B 1TB (v4 Mk2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type B v4 Mk2 1TB",
+          "model": "AV PRO SE CFexpress B v4 Mk2 1TB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -1903,7 +1911,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type B 2TB (v4 Mk2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type B v4 Mk2 2TB",
+          "model": "AV PRO SE CFexpress B v4 Mk2 2TB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
           "kNumber": null,
           "capacityGb": 2048,
           "capacityTb": 2,
@@ -1911,7 +1920,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CFexpress Type B 4TB (v4 Mk2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CFexpress Type B v4 Mk2 4TB",
+          "model": "AV PRO SE CFexpress B v4 Mk2 4TB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-se-cfexpress-b-v4-mk2-3513/",
           "kNumber": null,
           "capacityGb": 4096,
           "capacityTb": 4,
@@ -1919,7 +1929,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO CF CFast 512GB": {
           "brand": "Angelbird",
-          "model": "AV PRO CF CFast 512GB",
+          "model": "AV PRO CF 512GB (CFast 2.0)",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-1350/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -1927,7 +1938,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO CF CFast 1TB": {
           "brand": "Angelbird",
-          "model": "AV PRO CF CFast 1TB",
+          "model": "AV PRO CF 1TB (CFast 2.0)",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-1350/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -1935,7 +1947,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SE CF CFast 256GB": {
           "brand": "Angelbird",
-          "model": "AV PRO SE CF CFast 256GB",
+          "model": "AV PRO SE CF 256GB (CFast 2.0)",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-cf-se-3417/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -1944,6 +1957,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO SD V90 64GB": {
           "brand": "Angelbird",
           "model": "AV PRO SD V90 64GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -1952,6 +1966,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO SD V90 128GB": {
           "brand": "Angelbird",
           "model": "AV PRO SD V90 128GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -1960,6 +1975,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO SD V90 256GB": {
           "brand": "Angelbird",
           "model": "AV PRO SD V90 256GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -1968,6 +1984,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO SD V90 512GB": {
           "brand": "Angelbird",
           "model": "AV PRO SD V90 512GB",
+          "sourceUrl": "https://www.angelbird.com/prod/av-pro-sd-v90-mk2-2400/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -1975,7 +1992,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SD V60 64GB (MK2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SD V60 MK2 64GB",
+          "model": "AV PRO SD V60 (MK2) 64GB",
+          "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -1983,7 +2001,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SD V60 128GB (MK2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SD V60 MK2 128GB",
+          "model": "AV PRO SD V60 (MK2) 128GB",
+          "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -1991,7 +2010,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SD V60 256GB (MK2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SD V60 MK2 256GB",
+          "model": "AV PRO SD V60 (MK2) 256GB",
+          "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -1999,7 +2019,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SD V60 512GB (MK2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SD V60 MK2 512GB",
+          "model": "AV PRO SD V60 (MK2) 512GB",
+          "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2007,7 +2028,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "Angelbird AV PRO SD V60 1TB (MK2)": {
           "brand": "Angelbird",
-          "model": "AV PRO SD V60 MK2 1TB",
+          "model": "AV PRO SD V60 (MK2) 1TB",
+          "sourceUrl": "https://www.angelbird.com/category/sdxctm-uhs-i-uhs-ii-38/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2016,6 +2038,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO microSD V30 128GB": {
           "brand": "Angelbird",
           "model": "AV PRO microSD V30 128GB",
+          "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2024,6 +2047,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO microSD V30 256GB": {
           "brand": "Angelbird",
           "model": "AV PRO microSD V30 256GB",
+          "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2032,6 +2056,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Angelbird AV PRO microSD V30 512GB": {
           "brand": "Angelbird",
           "model": "AV PRO microSD V30 512GB",
+          "sourceUrl": "https://www.angelbird.com/creative-freedom-hub/microsd-v30-uhs-i-14/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2056,6 +2081,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 80GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 80GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 80,
           "capacityTb": 0.08,
@@ -2064,6 +2090,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 160GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 160GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 160,
           "capacityTb": 0.16,
@@ -2072,6 +2099,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 320GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 320GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 320,
           "capacityTb": 0.32,
@@ -2080,6 +2108,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 480GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 480GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 480,
           "capacityTb": 0.48,
@@ -2088,6 +2117,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 640GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 640GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 640,
           "capacityTb": 0.64,
@@ -2096,6 +2126,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 960GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 960GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 960,
           "capacityTb": 0.96,
@@ -2104,6 +2135,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-G Series CFexpress Type A 1920GB": {
           "brand": "Sony",
           "model": "CEA-G Series CFexpress Type A 1920GB",
+          "sourceUrl": "https://www.sony.com/electronics/support/articles/00252738",
           "kNumber": null,
           "capacityGb": 1920,
           "capacityTb": 1.92,
@@ -2112,6 +2144,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-M Series CFexpress Type A 960GB": {
           "brand": "Sony",
           "model": "CEA-M Series CFexpress Type A 960GB",
+          "sourceUrl": "https://www.sony.com/lr/electronics/sd-cards/cea-m960t-cea-m1920t",
           "kNumber": null,
           "capacityGb": 960,
           "capacityTb": 0.96,
@@ -2120,6 +2153,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEA-M Series CFexpress Type A 1920GB": {
           "brand": "Sony",
           "model": "CEA-M Series CFexpress Type A 1920GB",
+          "sourceUrl": "https://www.sony.com/lr/electronics/sd-cards/cea-m960t-cea-m1920t",
           "kNumber": null,
           "capacityGb": 1920,
           "capacityTb": 1.92,
@@ -2128,6 +2162,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEB-G Series CFexpress Type B 128GB": {
           "brand": "Sony",
           "model": "CEB-G Series CFexpress Type B 128GB",
+          "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2136,6 +2171,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEB-G Series CFexpress Type B 240GB": {
           "brand": "Sony",
           "model": "CEB-G Series CFexpress Type B 240GB",
+          "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
           "kNumber": null,
           "capacityGb": 240,
           "capacityTb": 0.24,
@@ -2144,6 +2180,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEB-G Series CFexpress Type B 256GB": {
           "brand": "Sony",
           "model": "CEB-G Series CFexpress Type B 256GB",
+          "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2152,6 +2189,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEB-G Series CFexpress Type B 480GB": {
           "brand": "Sony",
           "model": "CEB-G Series CFexpress Type B 480GB",
+          "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
           "kNumber": null,
           "capacityGb": 480,
           "capacityTb": 0.48,
@@ -2160,6 +2198,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony CEB-G Series CFexpress Type B 512GB": {
           "brand": "Sony",
           "model": "CEB-G Series CFexpress Type B 512GB",
+          "sourceUrl": "https://www.sony.com/za/electronics/xqd-memory-cards/cfexpress-type-b-memory-card/specifications",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2168,6 +2207,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony SF-G TOUGH SDXC V90 32GB": {
           "brand": "Sony",
           "model": "SF-G TOUGH SDXC V90 32GB",
+          "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
           "kNumber": null,
           "capacityGb": 32,
           "capacityTb": 0.032,
@@ -2176,6 +2216,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony SF-G TOUGH SDXC V90 64GB": {
           "brand": "Sony",
           "model": "SF-G TOUGH SDXC V90 64GB",
+          "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2184,6 +2225,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony SF-G TOUGH SDXC V90 128GB": {
           "brand": "Sony",
           "model": "SF-G TOUGH SDXC V90 128GB",
+          "sourceUrl": "https://www.sony.com/ug/electronics/sd-cards/sf-gt-series",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2192,6 +2234,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 32GB": {
           "brand": "Sony",
           "model": "XQD G Series 32GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 32,
           "capacityTb": 0.032,
@@ -2200,6 +2243,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 64GB": {
           "brand": "Sony",
           "model": "XQD G Series 64GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2208,6 +2252,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 120GB": {
           "brand": "Sony",
           "model": "XQD G Series 120GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 120,
           "capacityTb": 0.12,
@@ -2216,6 +2261,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 128GB": {
           "brand": "Sony",
           "model": "XQD G Series 128GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2224,6 +2270,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 240GB": {
           "brand": "Sony",
           "model": "XQD G Series 240GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 240,
           "capacityTb": 0.24,
@@ -2232,6 +2279,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Sony XQD G Series 256GB": {
           "brand": "Sony",
           "model": "XQD G Series 256GB",
+          "sourceUrl": "https://pro.sony.com/bbsc/ssr/micro-xdcam/cat-broadcastcameras/product-QDAEX1%2FSC1/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2240,6 +2288,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED MINI-MAG 120GB": {
           "brand": "RED",
           "model": "MINI-MAG 120GB",
+          "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
           "kNumber": null,
           "capacityGb": 120,
           "capacityTb": 0.12,
@@ -2248,6 +2297,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED MINI-MAG 240GB": {
           "brand": "RED",
           "model": "MINI-MAG 240GB",
+          "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
           "kNumber": null,
           "capacityGb": 240,
           "capacityTb": 0.24,
@@ -2256,6 +2306,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED MINI-MAG 480GB": {
           "brand": "RED",
           "model": "MINI-MAG 480GB",
+          "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
           "kNumber": "750-0080",
           "capacityGb": 480,
           "capacityTb": 0.48,
@@ -2264,6 +2315,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED MINI-MAG 960GB": {
           "brand": "RED",
           "model": "MINI-MAG 960GB",
+          "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
           "kNumber": null,
           "capacityGb": 960,
           "capacityTb": 0.96,
@@ -2272,6 +2324,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "RED MINI-MAG 1TB": {
           "brand": "RED",
           "model": "MINI-MAG 1TB",
+          "sourceUrl": "https://docs.red.com/955-0047/MediaOperationGuide/Content/A_Technical_Specifications/RED_MINI-MAG.htm",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2304,6 +2357,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFexpress Type B 64GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFexpress Type B 64GB",
+          "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2312,6 +2366,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFexpress Type B 128GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFexpress Type B 128GB",
+          "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2320,6 +2375,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFexpress Type B 256GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFexpress Type B 256GB",
+          "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2328,6 +2384,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFexpress Type B 512GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFexpress Type B 512GB",
+          "sourceUrl": "https://shop.sandisk.com/en-in/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-pro-cfexpress-type-b",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2336,6 +2393,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFast 2.0 64GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFast 2.0 64GB",
+          "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2344,6 +2402,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFast 2.0 128GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFast 2.0 128GB",
+          "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2352,6 +2411,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFast 2.0 256GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFast 2.0 256GB",
+          "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2360,6 +2420,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO CFast 2.0 512GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO CFast 2.0 512GB",
+          "sourceUrl": "https://shop.sandisk.com/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-cfast-2-0%2Fdata-sheet-extreme-pro-cfast-2-0.pdf",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2368,6 +2429,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 32GB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 32GB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 32,
           "capacityTb": 0.032,
@@ -2376,6 +2438,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 64GB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 64GB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2384,6 +2447,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 128GB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 128GB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2392,6 +2456,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 256GB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 256GB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2400,6 +2465,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 512GB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 512GB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2408,6 +2474,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-I 1TB (200MB/s)": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-I 1TB (200MB/s)",
+          "sourceUrl": "https://shop.sandisk.com/en-ca/tools/documentRequestHandler?docPath=%2Fcontent%2Fdam%2Fdoc-library%2Fen_us%2Fassets%2Fpublic%2Fsandisk%2Fproduct%2Fmemory-cards%2Fextreme-pro-uhs-i-sd%2Fdata-sheet-extreme-pro-uhs-i-sd-200mbps.pdf",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2416,6 +2483,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 64GB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 64GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2424,6 +2492,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 128GB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 128GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2432,6 +2501,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 256GB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 256GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2440,6 +2510,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 512GB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 512GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2448,6 +2519,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 1TB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 1TB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2456,6 +2528,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme microSD UHS-I 2TB": {
           "brand": "SanDisk",
           "model": "Extreme microSD UHS-I 2TB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-uhs-i-microsd?sku=SDSQXAV-2T00-GN6MA",
           "kNumber": null,
           "capacityGb": 2048,
           "capacityTb": 2,
@@ -2464,6 +2537,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 64GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 64GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2472,6 +2546,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 128GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 128GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2480,6 +2555,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 256GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 256GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2488,6 +2564,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 400GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 400GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 400,
           "capacityTb": 0.4,
@@ -2496,6 +2573,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 512GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 512GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2504,6 +2582,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 1TB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 1TB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2512,6 +2591,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO microSD UHS-I 2TB": {
           "brand": "SanDisk",
           "model": "Extreme PRO microSD UHS-I 2TB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/microsd-cards/sandisk-extreme-pro-uhs-i-microsd",
           "kNumber": null,
           "capacityGb": 2048,
           "capacityTb": 2,
@@ -2520,6 +2600,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-II V90 64GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-II V90 64GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2528,6 +2609,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-II V90 128GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-II V90 128GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2536,6 +2618,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-II V90 256GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-II V90 256GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2544,6 +2627,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "SanDisk Extreme PRO SD UHS-II V90 512GB": {
           "brand": "SanDisk",
           "model": "Extreme PRO SD UHS-II V90 512GB",
+          "sourceUrl": "https://shop.sandisk.com/products/memory-cards/sd-cards/sandisk-extreme-pro-uhs-ii-v90-sd",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2552,6 +2636,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus microSD 128GB": {
           "brand": "Samsung",
           "model": "PRO Plus microSD 128GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2560,6 +2645,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus microSD 256GB": {
           "brand": "Samsung",
           "model": "PRO Plus microSD 256GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2568,6 +2654,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus microSD 512GB": {
           "brand": "Samsung",
           "model": "PRO Plus microSD 512GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2576,6 +2663,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus microSD 1TB": {
           "brand": "Samsung",
           "model": "PRO Plus microSD 1TB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/micro-sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2584,6 +2672,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus SD 64GB": {
           "brand": "Samsung",
           "model": "PRO Plus SD 64GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2592,6 +2681,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus SD 128GB": {
           "brand": "Samsung",
           "model": "PRO Plus SD 128GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2600,6 +2690,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus SD 256GB": {
           "brand": "Samsung",
           "model": "PRO Plus SD 256GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2608,6 +2699,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Samsung PRO Plus SD 512GB": {
           "brand": "Samsung",
           "model": "PRO Plus SD 512GB",
+          "sourceUrl": "https://semiconductor.samsung.com/consumer-storage/memory-card/sd-pro-plus/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2616,6 +2708,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress 4.0 Type B GOLD 512GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress 4.0 Type B GOLD 512GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2624,6 +2717,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress 4.0 Type B GOLD 1TB": {
           "brand": "Lexar",
           "model": "Professional CFexpress 4.0 Type B GOLD 1TB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2632,6 +2726,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress 4.0 Type B GOLD 2TB": {
           "brand": "Lexar",
           "model": "Professional CFexpress 4.0 Type B GOLD 2TB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
           "kNumber": null,
           "capacityGb": 2048,
           "capacityTb": 2,
@@ -2640,6 +2735,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress 4.0 Type B GOLD 4TB": {
           "brand": "Lexar",
           "model": "Professional CFexpress 4.0 Type B GOLD 4TB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-gold-cfexpress-4-0-type-b-card/",
           "kNumber": null,
           "capacityGb": 4096,
           "capacityTb": 4,
@@ -2648,6 +2744,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress Type B GOLD 128GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress Type B GOLD 128GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-b-card-gold-series/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2656,6 +2753,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress Type B GOLD 256GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress Type B GOLD 256GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-b-card-gold-series/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2664,6 +2762,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress Type A GOLD 80GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress Type A GOLD 80GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
           "kNumber": null,
           "capacityGb": 80,
           "capacityTb": 0.08,
@@ -2672,6 +2771,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress Type A GOLD 160GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress Type A GOLD 160GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
           "kNumber": null,
           "capacityGb": 160,
           "capacityTb": 0.16,
@@ -2680,6 +2780,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional CFexpress Type A GOLD 320GB": {
           "brand": "Lexar",
           "model": "Professional CFexpress Type A GOLD 320GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-cfexpress-type-a-card-gold-series/",
           "kNumber": null,
           "capacityGb": 320,
           "capacityTb": 0.32,
@@ -2688,6 +2789,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 3500x CFast 2.0 64GB": {
           "brand": "Lexar",
           "model": "Professional 3500x CFast 2.0 64GB",
+          "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2696,6 +2798,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 3500x CFast 2.0 128GB": {
           "brand": "Lexar",
           "model": "Professional 3500x CFast 2.0 128GB",
+          "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2704,6 +2807,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 3500x CFast 2.0 256GB": {
           "brand": "Lexar",
           "model": "Professional 3500x CFast 2.0 256GB",
+          "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2712,6 +2816,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 3500x CFast 2.0 512GB": {
           "brand": "Lexar",
           "model": "Professional 3500x CFast 2.0 512GB",
+          "sourceUrl": "https://media.accutechdata.com/resources/downloads/Lexar-ProductSheet-Pro-3500x-CFast.pdf",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2720,6 +2825,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 2000x SD GOLD 64GB": {
           "brand": "Lexar",
           "model": "Professional 2000x SD GOLD 64GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2728,6 +2834,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 2000x SD GOLD 128GB": {
           "brand": "Lexar",
           "model": "Professional 2000x SD GOLD 128GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2736,6 +2843,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 2000x SD GOLD 256GB": {
           "brand": "Lexar",
           "model": "Professional 2000x SD GOLD 256GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2744,6 +2852,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 2000x SD GOLD 512GB": {
           "brand": "Lexar",
           "model": "Professional 2000x SD GOLD 512GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-2000x-sdhc-sdxc-uhs-ii-card-gold-series/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2752,6 +2861,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x microSD SILVER 64GB": {
           "brand": "Lexar",
           "model": "Professional 1066x microSD SILVER 64GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2760,6 +2870,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x microSD SILVER 128GB": {
           "brand": "Lexar",
           "model": "Professional 1066x microSD SILVER 128GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2768,6 +2879,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x microSD SILVER 256GB": {
           "brand": "Lexar",
           "model": "Professional 1066x microSD SILVER 256GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2776,6 +2888,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x microSD SILVER 512GB": {
           "brand": "Lexar",
           "model": "Professional 1066x microSD SILVER 512GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2784,6 +2897,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x microSD SILVER 1TB": {
           "brand": "Lexar",
           "model": "Professional 1066x microSD SILVER 1TB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-microsdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -2792,6 +2906,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x SD SILVER 64GB": {
           "brand": "Lexar",
           "model": "Professional 1066x SD SILVER 64GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 64,
           "capacityTb": 0.064,
@@ -2800,6 +2915,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x SD SILVER 128GB": {
           "brand": "Lexar",
           "model": "Professional 1066x SD SILVER 128GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 128,
           "capacityTb": 0.128,
@@ -2808,6 +2924,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x SD SILVER 256GB": {
           "brand": "Lexar",
           "model": "Professional 1066x SD SILVER 256GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 256,
           "capacityTb": 0.256,
@@ -2816,6 +2933,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x SD SILVER 512GB": {
           "brand": "Lexar",
           "model": "Professional 1066x SD SILVER 512GB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 512,
           "capacityTb": 0.512,
@@ -2824,6 +2942,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "Lexar Professional 1066x SD SILVER 1TB": {
           "brand": "Lexar",
           "model": "Professional 1066x SD SILVER 1TB",
+          "sourceUrl": "https://americas.lexar.com/product/lexar-professional-1066x-sdxc-uhs-i-card-silver-series/",
           "kNumber": null,
           "capacityGb": 1024,
           "capacityTb": 1,
@@ -3179,9 +3298,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.28,
           "weight_g": 2300,
-          "notes": "Single-coated Vista One edition covering full-frame/VistaVision sensors."
+          "notes": "Single-coated Vista One edition; 300° focus rotation and large-format coverage"
         },
         "Tokina Vista One 25mm T1.5": {
           "brand": "Tokina",
@@ -3193,9 +3313,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.35,
           "weight_g": 2200,
-          "notes": "Large-format Vista One prime with single coating for vintage-style flare."
+          "notes": "Large-format Vista One prime with character single coating and matching 114 mm fronts"
         },
         "Tokina Vista One 35mm T1.5": {
           "brand": "Tokina",
@@ -3207,9 +3328,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.38,
           "weight_g": 2100,
-          "notes": "Covers large-format sensors; unified gear positions with other Vista One primes."
+          "notes": "Covers VistaVision sensors; single-coated for flare control and gentle halation"
         },
         "Tokina Vista One 50mm T1.5": {
           "brand": "Tokina",
@@ -3221,9 +3343,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.45,
           "weight_g": 2100,
-          "notes": "Vista One 50 mm maintains the T1.5 speed and 300° focus rotation."
+          "notes": "Vista One 50 mm maintains T1.5 speed with unified gear positions"
         },
         "IB/E Raptor Macro 60mm T2.9": {
           "brand": "IB/E Optics",
@@ -3238,7 +3361,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "imageCircleMm": 50,
           "minFocusMeters": 0.24,
           "weight_g": 1600,
-          "notes": "Full-frame 1:1 macro prime with LDS support contacts."
+          "notes": "Full-frame 1:1 macro prime; includes LDS metadata contacts"
         },
         "IB/E Raptor Macro 100mm T2.9": {
           "brand": "IB/E Optics",
@@ -3253,7 +3376,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "imageCircleMm": 50,
           "minFocusMeters": 0.31,
           "weight_g": 1750,
-          "notes": "Macro prime delivering 1:1 reproduction with swappable mounts."
+          "notes": "Full-frame macro with user-swappable mount options and 300° focus rotation"
         },
         "IB/E Raptor Macro 150mm T3.5": {
           "brand": "IB/E Optics",
@@ -3268,7 +3391,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "imageCircleMm": 50,
           "minFocusMeters": 0.41,
           "weight_g": 1900,
-          "notes": "Long macro covering full frame with extended working distance."
+          "notes": "Long macro prime covering full frame with extended close focus"
         },
         "Angénieux Optimo 15-40mm T2.6": {
           "brand": "Angénieux",
@@ -3371,10 +3494,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 0.85,
           "weight_g": 2900,
           "lengthMm": 254.9,
-          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
+          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area (≈31.4 mm image circle)."
         },
         "Canon CN-E Flex Zoom 14-35mm T1.7": {
           "brand": "Canon",
@@ -3432,7 +3556,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 10,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 0.3,
           "weight_g": 1200,
           "imageCircleMm": 43.3,
@@ -3545,7 +3668,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.3
         },
         "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
           "brand": "Angénieux",
@@ -3595,6 +3718,70 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 480,
           "notes": "Ultra 35 mode for the Optimo Ultra 12x system. Data from Angénieux Optimo Ultra 12x technical literature."
         },
+        "Angénieux Type EZ-1 30-90mm T2.0 (S35)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2150,
+          "imageCircleMm": 30,
+          "lengthMm": 226,
+          "notes": "Optimo Type EZ-1 in Super 35 configuration. Ships in PL with Angénieux IRO support for EF/E/RF mounts and converts to the FF/VV 45-135mm block without tools."
+        },
+        "Angénieux Type EZ-1 45-135mm T3.0 (FF)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2200,
+          "imageCircleMm": 46.3,
+          "lengthMm": 231,
+          "notes": "Full-frame/VV IRO block for the Optimo Type EZ-1. Maintains the same Ø114 mm front and close focus while stretching coverage to 46.3 mm."
+        },
+        "Angénieux Type EZ-2 15-40mm T2.0 (S35)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2100,
+          "imageCircleMm": 30,
+          "lengthMm": 226,
+          "notes": "Optimo Type EZ-2 wide zoom covering Super 35. Shares the Angénieux IRO quick-swap system for EF/E/RF mounts and drop-in rear filters."
+        },
+        "Angénieux Type EZ-2 22-60mm T3.0 (FF)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2150,
+          "imageCircleMm": 46.3,
+          "lengthMm": 231,
+          "notes": "Full-frame/VV configuration for the Optimo Type EZ-2. Retains Ø114 mm fronts and the same close-focus distance when converted with the IRO kit."
+        },
         "Angénieux Type EZ-3 45-165mm T2.3-3.0 (S35)": {
           "brand": "Angénieux",
           "frontDiameterMm": 114,
@@ -3638,7 +3825,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 25,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -3656,7 +3842,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2800,
           "imageCircleMm": 44.7,
@@ -3861,7 +4046,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 20,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 1.5,
           "weight_g": 3250,
           "imageCircleMm": 44.7,
@@ -3980,6 +4164,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.5,
           "minFocusMeters": 0.6,
           "lengthMm": 228,
           "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support."
@@ -3994,6 +4179,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.5,
           "minFocusMeters": 0.6,
           "lengthMm": 228,
           "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8."
@@ -4147,7 +4333,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 0.38,
           "weight_g": 1000,
           "lengthMm": 91,
@@ -4208,7 +4393,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14,
           "minFocusMeters": 1,
           "weight_g": 1200,
           "lengthMm": 91,
@@ -4224,9 +4408,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1.5,
           "weight_g": 1600,
-          "lengthMm": 119
+          "lengthMm": 119,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 180mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -5395,7 +5581,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 60mm T2.5": {
           "brand": "Cooke",
@@ -5439,7 +5625,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 300mm T3.3": {
           "brand": "Cooke",
@@ -5483,7 +5669,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 27mm T1.4": {
           "brand": "Cooke",
@@ -5511,7 +5697,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 40mm T1.4": {
           "brand": "Cooke",
@@ -5523,7 +5709,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 31.14
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 50mm T1.4": {
           "brand": "Cooke",
@@ -5535,7 +5721,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 28.2
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 65mm T1.4": {
           "brand": "Cooke",
@@ -5563,7 +5749,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 100mm T1.4": {
           "brand": "Cooke",
@@ -5575,7 +5761,55 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.31
+        },
+        "Cooke Varotal/i FF 19-40mm T2.9": {
+          "brand": "Cooke",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 3500,
+          "imageCircleMm": 46.3,
+          "lengthMm": 280,
+          "notes": "Cooke Varotal/i FF wide zoom with /i metadata, matched Ø114 mm front and 11-blade iris across the set."
+        },
+        "Cooke Varotal/i FF 30-95mm T2.9": {
+          "brand": "Cooke",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 3700,
+          "imageCircleMm": 46.3,
+          "lengthMm": 290,
+          "notes": "Mid-range Varotal/i FF zoom covering full frame/VV with consistent mechanics and Cooke /i data contacts."
+        },
+        "Cooke Varotal/i FF 85-215mm T2.9": {
+          "brand": "Cooke",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL or LPL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 60,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1.2,
+          "weight_g": 4100,
+          "imageCircleMm": 46.3,
+          "lengthMm": 320,
+          "notes": "Tele Varotal/i FF zoom matched to the 19-40 and 30-95mm lenses; supports Cooke /i metadata and full-frame coverage."
         },
         "Fujinon Premista 19-45mm T2.9": {
           "brand": "Fujinon",
@@ -5667,7 +5901,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.5
         },
         "DZOFilm Vespid 50mm T2.1": {
           "brand": "DZOFilm",
@@ -5679,7 +5913,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.5
         },
         "DZOFilm Vespid 75mm T2.1": {
           "brand": "DZOFilm",
@@ -5691,7 +5925,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 43.27
+          "imageCircleMm": 46.5
         },
         "Meike FF Prime 24mm T2.1": {
           "brand": "Meike",
@@ -5703,7 +5937,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 46.3
+          "imageCircleMm": 45
         },
         "Meike FF Prime 35mm T2.1": {
           "brand": "Meike",
@@ -5715,7 +5949,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "imageCircleMm": 46.3
+          "imageCircleMm": 45
         },
         "Cooke S4/i 12mm T2.0": {
           "brand": "Cooke",
@@ -6244,7 +6478,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.2
         },
         "Laowa Ranger 75-180mm T2.9": {
           "brand": "Laowa",
@@ -6255,7 +6490,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.2
         },
         "Sigma Cine FF High Speed Prime 14mm T2": {
           "brand": "Sigma",
@@ -6416,6 +6652,54 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "imageCircleMm": 43.3,
           "lengthMm": 156,
           "notes": "Long telephoto prime best paired with 15 mm support bridge or studio rods for steadiness."
+        },
+        "Sigma Cine FF Zoom 28-45mm T2": {
+          "brand": "Sigma",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.61,
+          "weight_g": 4490,
+          "imageCircleMm": 46.3,
+          "lengthMm": 226,
+          "notes": "Full-frame Sigma cinema zoom covering wide-to-standard angles with consistent 0.8 mod gears and Cooke /i-compatible metadata pads."
+        },
+        "Sigma Cine High Speed Zoom 50-100mm T2": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1.1,
+          "weight_g": 1970,
+          "imageCircleMm": 31,
+          "lengthMm": 197,
+          "notes": "Super 35 companion zoom to the 18-35mm with matching 95 mm fronts, long focus throw, and durable cine housing."
+        },
+        "Sigma Cine High Speed Zoom 18-35mm T2": {
+          "brand": "Sigma",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.28,
+          "weight_g": 1870,
+          "imageCircleMm": 31,
+          "lengthMm": 196,
+          "notes": "Super 35 high-speed zoom optimized for gimbals and handheld use while retaining 0.8 mod cine gears and 95 mm fronts."
         },
         "Tokina Vista 18mm T1.5": {
           "brand": "Tokina",
@@ -6969,7 +7253,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 28.2
         },
         "Sony FE 24–70mm f/2.8 G Master II": {
           "brand": "Sony",
@@ -6979,7 +7264,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Sony FE 70–200mm f/2.8 G Master II": {
           "brand": "Sony",
@@ -6989,7 +7275,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 28mm f/2.8": {
           "brand": "Minolta",
@@ -6999,7 +7286,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 35mm f/1.4": {
           "brand": "Minolta",
@@ -7009,7 +7297,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 50mm f/1.4": {
           "brand": "Minolta",
@@ -7019,7 +7308,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "Minolta 85mm f/1.8": {
           "brand": "Minolta",
@@ -7029,7 +7319,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.27
         },
         "SIGMA Aizu Prime Line 25mm T1.3 LF": {
           "brand": "SIGMA",
@@ -7127,7 +7418,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 24mm T1.4": {
           "brand": "NiSi",
@@ -7137,7 +7429,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 35mm T1.4": {
           "brand": "NiSi",
@@ -7147,7 +7440,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 50mm T1.4": {
           "brand": "NiSi",
@@ -7157,7 +7451,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 85mm T1.4": {
           "brand": "NiSi",
@@ -7167,7 +7462,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "IRIX Cine 150mm T3.0 Macro 1:1": {
           "brand": "IRIX",
@@ -7193,7 +7489,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "SIRUI Vision Prime 1 35mm T1.4": {
           "brand": "SIRUI",
@@ -7203,7 +7500,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "SIRUI Vision Prime 1 50mm T1.4": {
           "brand": "SIRUI",
@@ -7213,7 +7511,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "DJI DL-S 16mm F2.8 ASPH ND": {
           "brand": "DJI",
@@ -7288,7 +7587,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.7
         },
         "DZOFILM Pictor 12-25mm T2.8": {
           "brand": "DZOFILM",
@@ -7354,6 +7654,54 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 175,
           "notes": "Pictor 50–125mm T2.8 (S35) parfocal; 16-blade iris; 86 mm filter thread."
         },
+        "DZOFILM Catta Ace 18-35mm T2.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.51,
+          "weight_g": 1530,
+          "imageCircleMm": 43.5,
+          "lengthMm": 195,
+          "notes": "Full-frame Catta Ace wide zoom with lightweight 80 mm fronts and quick-change PL/EF mounts for run-and-gun rigs."
+        },
+        "DZOFILM Catta Ace 35-80mm T2.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.75,
+          "weight_g": 1650,
+          "imageCircleMm": 43.5,
+          "lengthMm": 199,
+          "notes": "Mid-range Catta Ace zoom balancing compact housing with unified gear spacing and rear drop-in filter slot."
+        },
+        "DZOFILM Catta Ace 70-135mm T2.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 1.1,
+          "weight_g": 1750,
+          "imageCircleMm": 43.5,
+          "lengthMm": 203,
+          "notes": "Telephoto Catta Ace zoom maintaining 80 mm fronts—add lightweight lens support when motors or matte boxes are installed."
+        },
         "DZOFILM Vespid Prime 12mm T2.8": {
           "brand": "DZOFILM",
           "frontDiameterMm": 80,
@@ -7362,7 +7710,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 16mm T2.8": {
           "brand": "DZOFILM",
@@ -7372,7 +7721,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 21mm T2.1": {
           "brand": "DZOFILM",
@@ -7382,7 +7732,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 25mm T2.1": {
           "brand": "DZOFILM",
@@ -7392,7 +7743,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 35mm T2.1": {
           "brand": "DZOFILM",
@@ -7402,7 +7754,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 40mm T2.1": {
           "brand": "DZOFILM",
@@ -7412,7 +7765,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 50mm T2.1": {
           "brand": "DZOFILM",
@@ -7422,7 +7776,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 75mm T2.1": {
           "brand": "DZOFILM",
@@ -7432,7 +7787,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 90mm T2.8 Macro": {
           "brand": "DZOFILM",
@@ -7442,7 +7798,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 100mm T2.1": {
           "brand": "DZOFILM",
@@ -7452,7 +7809,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 125mm T2.1": {
           "brand": "DZOFILM",
@@ -7462,7 +7820,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 16mm T2.8": {
           "brand": "DZOFILM",
@@ -7472,7 +7831,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 25mm T2.1": {
           "brand": "DZOFILM",
@@ -7482,7 +7842,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 35mm T2.1": {
           "brand": "DZOFILM",
@@ -7492,7 +7853,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 50mm T2.1": {
           "brand": "DZOFILM",
@@ -7502,7 +7864,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 75mm T2.1": {
           "brand": "DZOFILM",
@@ -7512,7 +7875,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 100mm T2.1": {
           "brand": "DZOFILM",
@@ -7522,7 +7886,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 125mm T2.1": {
           "brand": "DZOFILM",
@@ -7532,7 +7897,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 35mm T2.1": {
           "brand": "DZOFILM",
@@ -7542,7 +7908,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 50mm T2.1": {
           "brand": "DZOFILM",
@@ -7552,7 +7919,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 75mm T2.1": {
           "brand": "DZOFILM",
@@ -7562,7 +7930,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 18mm T1.9": {
           "brand": "DZOFILM",
@@ -7573,7 +7942,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 24mm T1.9": {
           "brand": "DZOFILM",
@@ -7584,7 +7954,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 35mm T1.9": {
           "brand": "DZOFILM",
@@ -7595,7 +7966,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 50mm T1.9": {
           "brand": "DZOFILM",
@@ -7606,7 +7978,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 85mm T1.9": {
           "brand": "DZOFILM",
@@ -7617,7 +7990,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 105mm T1.9": {
           "brand": "DZOFILM",
@@ -7628,7 +8002,274 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
+        },
+        "DZOFILM Gnosis 24mm T2.8 Macro": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.18,
+          "imageCircleMm": 46.5,
+          "notes": "1:1 macro prime with swappable PL/EF mounts and 300° focus rotation."
+        },
+        "DZOFILM Gnosis 32mm T2.8 Macro": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.23,
+          "imageCircleMm": 46.5,
+          "notes": "Macro-capable VistaVision prime sharing the Gnosis support foot and unified gear positions."
+        },
+        "DZOFILM Gnosis 65mm T2.8 Macro": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.37,
+          "imageCircleMm": 46.5,
+          "notes": "Longer Gnosis macro prime covering FF/VV with native support foot for studio rods."
+        },
+        "Laowa Proteus 2x 35mm T2": {
+          "brand": "Laowa",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
+          "notes": "Proteus wide 2x anamorphic prime with full-frame/VV coverage and drop-in rear filter slot."
+        },
+        "Laowa Proteus 2x 45mm T2": {
+          "brand": "Laowa",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
+          "notes": "Normal-length Proteus 2x anamorphic with unified 114 mm fronts across the set."
+        },
+        "Laowa Proteus 2x 60mm T2": {
+          "brand": "Laowa",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
+          "notes": "Proteus mid-tele prime—brace with rods when adding motors or heavy matte boxes."
+        },
+        "Laowa Proteus 2x 85mm T2": {
+          "brand": "Laowa",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "anamorphic",
+          "anamorphicSqueeze": 2,
+          "imageCircleMm": 31.14,
+          "notes": "Longest Proteus focal length retaining the same housing and 114 mm clamp-on interface."
+        },
+        "NiSi Athena Prime 14mm T2.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.2,
+          "imageCircleMm": 46,
+          "notes": "Ultra-wide Athena prime with full-frame coverage, 80 mm fronts, and matching 0.8 mod gears across the set."
+        },
+        "NiSi Athena Prime 18mm T2.2": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.2,
+          "imageCircleMm": 46,
+          "notes": "Wide Athena prime balancing minimal distortion with lightweight mechanics and the system's rear drop-in filter holder."
+        },
+        "NiSi Athena Prime 25mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.25,
+          "imageCircleMm": 46,
+          "notes": "Full-frame Athena prime with matched gear spacing, 77 mm front threads, and rear drop-in filter slot."
+        },
+        "NiSi Athena Prime 35mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "imageCircleMm": 46,
+          "notes": "Mid-wide Athena focal covering full frame with identical 77 mm front diameter and dual-scale markings."
+        },
+        "NiSi Athena Prime 40mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "imageCircleMm": 46,
+          "notes": "Natural perspective Athena prime maintaining matched gear spacing and integrated metadata pads for smart mounts."
+        },
+        "NiSi Athena Prime 50mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.45,
+          "imageCircleMm": 46,
+          "notes": "Standard Athena prime with consistent gear placement for quick swaps across the set and /i-style metadata pads."
+        },
+        "NiSi Athena Prime 65mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.55,
+          "imageCircleMm": 46,
+          "notes": "Short tele Athena prime that keeps the lightweight 77 mm front housing and synchronized 0.8 mod gears."
+        },
+        "NiSi Athena Prime 85mm T1.9": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "imageCircleMm": 46,
+          "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 77 mm fronts across the lineup."
+        },
+        "NiSi Athena Prime 135mm T2.2": {
+          "brand": "NiSi",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL / E / L / RF (swappable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1.1,
+          "imageCircleMm": 46,
+          "notes": "Longest Athena prime while retaining unified gear pitch, rear filter drawer, and metadata contacts for smart mounts."
+        },
+        "Sony FE C 16-35mm T3.1 G": {
+          "brand": "Sony",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3.1,
+          "mount": "Sony E",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.28,
+          "imageCircleMm": 43.3,
+          "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs; manufacturer lists ≈43.3 mm image circle."
+        },
+        "Canon Flex Zoom 20-50mm T2.4": {
+          "brand": "Canon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "PL / EF (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "imageCircleMm": 43.27,
+          "minFocusMeters": 0.5,
+          "notes": "Flex Zoom wide with interchangeable PL/EF mounts, Cooke /i metadata, and servo-ready drive port."
+        },
+        "Canon Flex Zoom 45-135mm T2.4": {
+          "brand": "Canon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.4,
+          "mount": "PL / EF (convertible)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "imageCircleMm": 43.27,
+          "minFocusMeters": 1,
+          "notes": "Tele Flex Zoom sharing the 114 mm front, consistent gear spacing, and swap-ready mount system."
         }
       },
       "tripodHeads": {

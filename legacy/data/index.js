@@ -1,6 +1,5 @@
-const devices = require('./devices');
-const rentalHouses = require('./rental-houses');
-
+var devices = require('./devices');
+var rentalHouses = require('./rental-houses');
 if (devices && !Object.prototype.hasOwnProperty.call(devices, 'rentalHouses')) {
   Object.defineProperty(devices, 'rentalHouses', {
     configurable: false,
@@ -9,5 +8,4 @@ if (devices && !Object.prototype.hasOwnProperty.call(devices, 'rentalHouses')) {
     writable: false
   });
 }
-
 module.exports = devices;

@@ -497,7 +497,9 @@ function handleSaveSetupClick() {
       if (renamingAutoBackup && finalIsAutoBackup) {
         markAutoBackupDataAsRenamed(storedProjectSnapshot);
       }
-      saveProject(finalName, storedProjectSnapshot);
+      saveProject(finalName, storedProjectSnapshot, {
+        skipOverwriteBackup: true
+      });
     } catch (error) {
       console.warn('Failed to preserve project data during setup rename', error);
     }
@@ -524,6 +526,8 @@ function handleSaveSetupClick() {
         saveProject(selectedName, {
           projectInfo: null,
           gearList: ''
+        }, {
+          skipOverwriteBackup: true
         });
       } catch (error) {
         console.warn('Failed to clear legacy project entry during setup rename', error);
@@ -851,7 +855,9 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
     }
-    saveProject(previousKey, previousPayload);
+    saveProject(previousKey, previousPayload, {
+      skipOverwriteBackup: true
+    });
   }
   if (typeof autoBackup === 'function' && normalizedTargetSelection !== normalizedLastSelection) {
     try {
@@ -989,7 +995,9 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
           } else if (storedProject !== null && storedProject !== void 0 && storedProject.gearSelectors && Object.keys(storedProject.gearSelectors).length) {
             payload.gearSelectors = storedProject.gearSelectors;
           }
-          saveProject(setupName, payload);
+          saveProject(setupName, payload, {
+            skipOverwriteBackup: true
+          });
         }
       }
     } else {
@@ -1587,18 +1595,67 @@ function autoBackup() {
     setups[backupName] = currentSetup;
     storeSetups(setups);
     if (typeof saveProject === 'function') {
+      var gearListText = typeof currentGearListHtml === 'string' ? currentGearListHtml : '';
+      var projectInfoSnapshot = currentSetup.projectInfo || null;
+      if (projectInfoSnapshot && typeof createProjectInfoSnapshotForStorage === 'function') {
+        try {
+          projectInfoSnapshot = createProjectInfoSnapshotForStorage(projectInfoSnapshot) || projectInfoSnapshot;
+        } catch (projectInfoSnapshotError) {
+          console.warn('Failed to normalize project info for auto backup payload', projectInfoSnapshotError);
+        }
+      }
+      if (projectInfoSnapshot && typeof callEventsCoreFunction === 'function') {
+        try {
+          var clonedInfo = callEventsCoreFunction('cloneProjectInfoForStorage', [projectInfoSnapshot], {
+            defaultValue: projectInfoSnapshot
+          });
+          if (clonedInfo) {
+            projectInfoSnapshot = clonedInfo;
+          }
+        } catch (projectInfoCloneError) {
+          console.warn('Failed to clone project info for auto backup payload', projectInfoCloneError);
+        }
+      }
       var payload = {
-        projectInfo: currentSetup.projectInfo || null,
-        gearListAndProjectRequirementsGenerated: Boolean(currentGearListHtml)
+        projectInfo: projectInfoSnapshot,
+        gearListAndProjectRequirementsGenerated: Boolean(gearListText)
       };
+      if (gearListText) {
+        payload.gearList = gearListText;
+      }
+      var currentPowerSelection = typeof getPowerSelectionSnapshot === 'function' ? getPowerSelectionSnapshot() : null;
+      if (currentPowerSelection && _typeof(currentPowerSelection) === 'object' && Object.keys(currentPowerSelection).length) {
+        payload.powerSelection = currentPowerSelection;
+      }
       if (gearSelectors && Object.keys(gearSelectors).length) {
         payload.gearSelectors = gearSelectors;
       }
+      if (typeof getDiagramManualPositions === 'function') {
+        try {
+          var diagramPositions = getDiagramManualPositions();
+          if (diagramPositions && _typeof(diagramPositions) === 'object' && Object.keys(diagramPositions).length) {
+            payload.diagramPositions = diagramPositions;
+          }
+        } catch (diagramError) {
+          console.warn('Failed to capture diagram positions for auto backup payload', diagramError);
+        }
+      }
       var activeRules = getProjectScopedAutoGearRules();
       if (activeRules && activeRules.length) {
-        payload.autoGearRules = activeRules;
+        var clonedRules = activeRules;
+        if (typeof callEventsCoreFunction === 'function') {
+          try {
+            clonedRules = callEventsCoreFunction('cloneProjectInfoForStorage', [activeRules], {
+              defaultValue: activeRules
+            }) || activeRules;
+          } catch (ruleCloneError) {
+            console.warn('Failed to clone auto gear rules for auto backup payload', ruleCloneError);
+          }
+        }
+        payload.autoGearRules = clonedRules;
       }
-      if (payload.projectInfo || payload.gearListAndProjectRequirementsGenerated || payload.gearSelectors && Object.keys(payload.gearSelectors).length || payload.autoGearRules) {
+      var hasPayloadContent = Boolean(payload.projectInfo && _typeof(payload.projectInfo) === 'object' && Object.keys(payload.projectInfo).length || payload.gearList || payload.gearListAndProjectRequirementsGenerated || payload.powerSelection && Object.keys(payload.powerSelection).length || payload.gearSelectors && Object.keys(payload.gearSelectors).length || payload.diagramPositions && Object.keys(payload.diagramPositions).length || payload.autoGearRules && payload.autoGearRules.length);
+      if (hasPayloadContent) {
         attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
       }

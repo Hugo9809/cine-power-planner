@@ -100,7 +100,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
+  function resolveModuleLinker(scope) {
+    if (typeof require === 'function') {
+      try {
+        return require('./helpers/module-linker.js');
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = fallbackCollectCandidateScopes(scope);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      try {
+        var linker = candidate && candidate.cineModuleLinker;
+        if (linker && _typeof(linker) === 'object') {
+          return linker;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  var MODULE_LINKER = resolveModuleLinker(LOCAL_SCOPE);
   function resolveModuleSystem(scope) {
     var targetScope = scope || LOCAL_SCOPE;
     if (typeof require === 'function') {
@@ -249,10 +272,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return result;
   }
-  var MODULE_ENV = (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleEnvironment === 'function' ? ENVIRONMENT_CONTEXT.resolveModuleEnvironment(GLOBAL_SCOPE) : null) || fallbackLoadModuleEnvironment(GLOBAL_SCOPE);
-  var ENV_BRIDGE = (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveEnvironmentBridge === 'function' ? ENVIRONMENT_CONTEXT.resolveEnvironmentBridge(GLOBAL_SCOPE) : null) || fallbackLoadEnvironmentBridge(GLOBAL_SCOPE);
-  var MODULE_GLOBALS = (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleGlobals === 'function' ? ENVIRONMENT_CONTEXT.resolveModuleGlobals(GLOBAL_SCOPE) : null) || fallbackResolveModuleGlobals(GLOBAL_SCOPE);
+  var MODULE_ENV = (MODULE_LINKER && typeof MODULE_LINKER.getModuleEnvironment === 'function' ? MODULE_LINKER.getModuleEnvironment() : null) || (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleEnvironment === 'function' ? ENVIRONMENT_CONTEXT.resolveModuleEnvironment(GLOBAL_SCOPE) : null) || fallbackLoadModuleEnvironment(GLOBAL_SCOPE);
+  var ENV_BRIDGE = (MODULE_LINKER && typeof MODULE_LINKER.getEnvironmentBridge === 'function' ? MODULE_LINKER.getEnvironmentBridge() : null) || (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveEnvironmentBridge === 'function' ? ENVIRONMENT_CONTEXT.resolveEnvironmentBridge(GLOBAL_SCOPE) : null) || fallbackLoadEnvironmentBridge(GLOBAL_SCOPE);
+  var MODULE_GLOBALS = (MODULE_LINKER && typeof MODULE_LINKER.getModuleGlobals === 'function' ? MODULE_LINKER.getModuleGlobals() : null) || (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleGlobals === 'function' ? ENVIRONMENT_CONTEXT.resolveModuleGlobals(GLOBAL_SCOPE) : null) || fallbackResolveModuleGlobals(GLOBAL_SCOPE);
   function informModuleGlobals(name, api) {
+    if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
+      MODULE_LINKER.recordModule(name, api);
+    }
     if (!MODULE_GLOBALS || typeof MODULE_GLOBALS.recordModule !== 'function') {
       return;
     }
@@ -263,6 +289,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   var tryRequire = function resolveTryRequire() {
+    if (MODULE_LINKER && typeof MODULE_LINKER.tryRequire === 'function') {
+      return MODULE_LINKER.tryRequire;
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function') {
       return function tryRequireWithSystem(modulePath) {
         var result = MODULE_SYSTEM.tryRequire(modulePath);
@@ -291,6 +320,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }();
   function fallbackResolveModuleRegistry(scope) {
     var targetScope = scope || GLOBAL_SCOPE;
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      var linked = MODULE_LINKER.getModuleRegistry(targetScope);
+      if (linked) {
+        return linked;
+      }
+    }
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
         var resolved = MODULE_GLOBALS.resolveModuleRegistry(targetScope);
@@ -356,6 +391,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return fallbackResolveModuleRegistry(targetScope);
   }
   var MODULE_REGISTRY = function () {
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      var linked = MODULE_LINKER.getModuleRegistry(GLOBAL_SCOPE);
+      if (linked) {
+        return linked;
+      }
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getModuleRegistry === 'function') {
       try {
         var viaSystem = MODULE_SYSTEM.getModuleRegistry(GLOBAL_SCOPE);
@@ -399,6 +440,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return resolveModuleRegistry();
   }();
   var PENDING_QUEUE_KEY = function resolvePendingKey() {
+    if (MODULE_LINKER && typeof MODULE_LINKER.getPendingQueueKey === 'function') {
+      var linkedKey = MODULE_LINKER.getPendingQueueKey();
+      if (typeof linkedKey === 'string' && linkedKey) {
+        return linkedKey;
+      }
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getPendingQueueKey === 'function') {
       try {
         var systemKey = MODULE_SYSTEM.getPendingQueueKey();

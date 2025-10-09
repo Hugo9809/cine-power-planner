@@ -217,6 +217,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var formatSvgCoordinate = fallbackGetter(context.formatSvgCoordinate, function (value) {
       return typeof GLOBAL_SCOPE.formatSvgCoordinate === 'function' ? GLOBAL_SCOPE.formatSvgCoordinate(value) : Number.isFinite(value) ? String(value) : '0';
     });
+    var getSafeGenerateConnectorSummary = fallbackGetter(context.getSafeGenerateConnectorSummary, function () {
+      if (MODULE_BASE && typeof MODULE_BASE.safeGenerateConnectorSummary === 'function') {
+        return MODULE_BASE.safeGenerateConnectorSummary.bind(MODULE_BASE);
+      }
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.safeGenerateConnectorSummary === 'function') {
+        return GLOBAL_SCOPE.safeGenerateConnectorSummary;
+      }
+      return null;
+    });
     var ensureArray = function ensureArray(value) {
       if (!value) return [];
       if (Array.isArray(value)) return value;
@@ -226,6 +235,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var manualPositions = {};
     var lastDiagramPositions = {};
     var cleanupDiagramInteractions = null;
+    var lastPopupEntries = {};
+    var lastPointerPosition = null;
     var resolveSetupContainer = function resolveSetupContainer() {
       return getSetupDiagramContainer();
     };
@@ -296,6 +307,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var resolveControllerSelects = function resolveControllerSelects() {
       return ensureArray(getControllerSelects());
+    };
+    var escapeHtml = function escapeHtml(value) {
+      if (value === null || value === undefined) return '';
+      return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+    var resolveDeviceInfo = function resolveDeviceInfo(devicesObj, categoryPath, name) {
+      if (!devicesObj || !categoryPath || !name) return null;
+      var segments = String(categoryPath).split('.').filter(Boolean);
+      var cursor = devicesObj;
+      for (var i = 0; i < segments.length; i += 1) {
+        var key = segments[i];
+        if (!cursor || _typeof(cursor) !== 'object') {
+          cursor = null;
+          break;
+        }
+        cursor = cursor[key];
+      }
+      if (!cursor || _typeof(cursor) !== 'object') return null;
+      try {
+        return cursor[name] || null;
+      } catch (error) {
+        void error;
+        return null;
+      }
+    };
+    var popupClassForCategory = function popupClassForCategory(category) {
+      if (!category) return '';
+      if (category === 'cameras') return 'diagram-popup--camera';
+      return '';
     };
     function normalizeDiagramPositionsInput(positions) {
       if (!positions || _typeof(positions) !== 'object') {
@@ -853,6 +893,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (distanceInChain) chain.push('distance');
       if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
       if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
+      if (pos.distance && !manualPositions.distance) {
+        var references = [];
+        var distanceIndex = chain.indexOf('distance');
+        if (distanceIndex !== -1) {
+          var prevId = distanceIndex > 0 ? chain[distanceIndex - 1] : null;
+          var _nextId = distanceIndex < chain.length - 1 ? chain[distanceIndex + 1] : null;
+          if (prevId && pos[prevId]) references.push(pos[prevId]);
+          if (_nextId && pos[_nextId]) references.push(pos[_nextId]);
+        }
+        if (references.length < 2) {
+          var fallbackIds = chain.filter(function (id) {
+            return id !== 'distance';
+          }).slice(0, 2);
+          fallbackIds.forEach(function (id) {
+            if (pos[id] && !references.includes(pos[id])) references.push(pos[id]);
+          });
+        }
+        if (references.length >= 2) {
+          pos.distance.x = (references[0].x + references[1].x) / 2;
+        } else if (references.length === 1) {
+          pos.distance.x = references[0].x;
+        }
+      }
       if (cam && chain.length) {
         var first = chain[0];
         if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
@@ -1131,6 +1194,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       setupDiagramContainer.innerHTML = '';
       if (popup) setupDiagramContainer.appendChild(popup);
       setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
+      var popupEntries = {};
+      var safeSummaryFn = getSafeGenerateConnectorSummary();
+      Object.entries(nodeMap).forEach(function (_ref5) {
+        var _pos$nodeId;
+        var _ref6 = _slicedToArray(_ref5, 2),
+          nodeId = _ref6[0],
+          meta = _ref6[1];
+        var label = ((_pos$nodeId = pos[nodeId]) === null || _pos$nodeId === void 0 ? void 0 : _pos$nodeId.label) || (meta === null || meta === void 0 ? void 0 : meta.name) || nodeId;
+        var safeLabel = escapeHtml(label);
+        var className = popupClassForCategory(meta === null || meta === void 0 ? void 0 : meta.category);
+        var summaryHtml = '';
+        if (typeof safeSummaryFn === 'function') {
+          var deviceInfo = resolveDeviceInfo(devices, meta === null || meta === void 0 ? void 0 : meta.category, meta === null || meta === void 0 ? void 0 : meta.name);
+          if (deviceInfo) {
+            try {
+              summaryHtml = safeSummaryFn(deviceInfo) || '';
+            } catch (summaryError) {
+              void summaryError;
+            }
+          }
+        }
+        var content = "<div class=\"diagram-popup-heading\"><strong>".concat(safeLabel, "</strong></div>");
+        if (summaryHtml) {
+          content += summaryHtml;
+        } else {
+          content += "<p>".concat(safeLabel, "</p>");
+        }
+        popupEntries[nodeId] = {
+          className: className,
+          content: content,
+          label: safeLabel
+        };
+      });
+      lastPopupEntries = popupEntries;
       var svgEl = setupDiagramContainer.querySelector('svg');
       if (!svgEl) return;
       var measureEl = resolveDiagramHint();
@@ -1146,12 +1243,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       lastDiagramPositions = Object.fromEntries(Object.entries(pos));
+      enableDiagramInteractions();
     }
     function enableDiagramInteractions() {
       var setupDiagramContainer = resolveSetupContainer();
       if (!setupDiagramContainer) return;
       var svg = setupDiagramContainer.querySelector('svg');
       if (!svg) return;
+      var popup = setupDiagramContainer.querySelector('#diagramPopup');
+      var hidePopup = function hidePopup() {
+        if (!popup) return;
+        popup.style.display = 'none';
+        popup.setAttribute('hidden', '');
+        popup.innerHTML = '';
+        popup.dataset.columns = '1';
+        popup.style.removeProperty('--diagram-popup-dynamic-width');
+      };
+      hidePopup();
       if (cleanupDiagramInteractions) cleanupDiagramInteractions();
       var root = svg.querySelector('#diagramRoot') || svg;
       var isTouch = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
@@ -1289,6 +1397,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         panPointerStart = pos;
         panStart = _objectSpread({}, pan);
         if (e.touches) e.preventDefault();
+        hidePopup();
       };
       var onPanMove = function onPanMove(e) {
         if (!panning || !panPointerStart) return;
@@ -1314,6 +1423,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         dragPointerStart = getPos(e);
         if (e.touches) e.preventDefault();
         e.stopPropagation();
+        hidePopup();
       };
       var onDragMove = function onDragMove(e) {
         if (!dragId || !dragPointerStart) return;
@@ -1361,6 +1471,155 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (checkSetupChanged) checkSetupChanged();
         if (e.touches) e.preventDefault();
       };
+      var activePopupNode = null;
+      var adjustPopupLayout = function adjustPopupLayout(entry, viewportWidth, viewportHeight, margin) {
+        if (!popup) return;
+        popup.dataset.columns = '1';
+        popup.style.removeProperty('--diagram-popup-dynamic-width');
+        var isCameraPopup = entry && typeof entry.className === 'string' && entry.className.includes('diagram-popup--camera') || popup.classList.contains('diagram-popup--camera');
+        if (!isCameraPopup) return;
+        if (!Number.isFinite(viewportHeight) || viewportHeight <= margin * 2) return;
+        var availableHeight = viewportHeight - margin * 2;
+        if (availableHeight <= 0) return;
+        var currentHeight = popup.scrollHeight;
+        if (!Number.isFinite(currentHeight) || currentHeight <= availableHeight) return;
+        var maxWidth = Number.isFinite(viewportWidth) && viewportWidth > margin * 2 ? Math.max(260, viewportWidth - margin * 2) : Infinity;
+        var baseWidth = 520;
+        var widthStep = 220;
+        var minColumnWidth = 220;
+        var appliedColumns = 1;
+        var appliedWidth = baseWidth;
+        for (var columns = 2; columns <= 4; columns += 1) {
+          var candidateWidth = Math.min(maxWidth, baseWidth + (columns - 1) * widthStep);
+          if (candidateWidth < columns * minColumnWidth) {
+            continue;
+          }
+          popup.style.setProperty('--diagram-popup-dynamic-width', "".concat(candidateWidth, "px"));
+          popup.dataset.columns = String(columns);
+          void popup.offsetHeight;
+          var updatedHeight = popup.scrollHeight;
+          appliedColumns = columns;
+          appliedWidth = candidateWidth;
+          if (Number.isFinite(updatedHeight) && updatedHeight <= availableHeight) {
+            break;
+          }
+        }
+        if (appliedColumns > 1) {
+          popup.dataset.columns = String(appliedColumns);
+          popup.style.setProperty('--diagram-popup-dynamic-width', "".concat(appliedWidth, "px"));
+          void popup.offsetHeight;
+        } else {
+          popup.dataset.columns = '1';
+          popup.style.removeProperty('--diagram-popup-dynamic-width');
+          void popup.offsetHeight;
+        }
+      };
+      var positionPopup = function positionPopup(nodeEl, entry) {
+        var _document$documentEle, _document$documentEle2;
+        if (!popup || !nodeEl) return;
+        var rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
+        if (!rect) return;
+        var viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth) ? windowObj.innerWidth : (document === null || document === void 0 || (_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+        var viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight) ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+        var margin = 12;
+        popup.style.visibility = 'hidden';
+        popup.style.display = 'block';
+        popup.removeAttribute('hidden');
+        adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
+        var popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
+        var left = rect.right + margin;
+        var top = rect.top;
+        if (popupRect) {
+          var pointer = lastPointerPosition;
+          var pointerOnRightSide = pointer && viewportWidth && Number.isFinite(pointer.x) && pointer.x >= viewportWidth * 0.55;
+          if (pointerOnRightSide) {
+            var preferredLeft = rect.left - popupRect.width - margin;
+            if (preferredLeft >= margin) {
+              left = preferredLeft;
+            } else if (viewportWidth) {
+              left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
+            } else {
+              left = Math.max(margin, preferredLeft);
+            }
+          } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
+            left = Math.max(margin, rect.left - popupRect.width - margin);
+          }
+          if (viewportWidth) {
+            if (left + popupRect.width > viewportWidth - margin) {
+              left = Math.max(margin, viewportWidth - popupRect.width - margin);
+            }
+            if (left < margin) {
+              left = margin;
+            }
+          }
+          if (viewportHeight && top + popupRect.height > viewportHeight - margin) {
+            top = Math.max(margin, viewportHeight - popupRect.height - margin);
+          }
+        }
+        popup.style.left = "".concat(Math.round(left), "px");
+        popup.style.top = "".concat(Math.round(top), "px");
+        popup.style.visibility = 'visible';
+      };
+      var updatePointerPosition = function updatePointerPosition(event) {
+        if (!event) return;
+        var clientX;
+        var clientY;
+        if (event.touches && event.touches.length) {
+          var touch = event.touches[0];
+          clientX = touch === null || touch === void 0 ? void 0 : touch.clientX;
+          clientY = touch === null || touch === void 0 ? void 0 : touch.clientY;
+        } else if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+          clientX = event.clientX;
+          clientY = event.clientY;
+        }
+        if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+          lastPointerPosition = {
+            x: clientX,
+            y: clientY
+          };
+        }
+      };
+      var showPopupForNode = function showPopupForNode(nodeEl) {
+        if (!popup || !nodeEl) return;
+        var nodeId = nodeEl.getAttribute('data-node');
+        if (!nodeId) {
+          hidePopup();
+          return;
+        }
+        var entry = lastPopupEntries[nodeId];
+        if (!entry) {
+          hidePopup();
+          return;
+        }
+        popup.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
+        popup.innerHTML = entry.content || '';
+        if (entry.label) {
+          popup.setAttribute('aria-label', entry.label);
+        } else {
+          popup.removeAttribute('aria-label');
+        }
+        activePopupNode = nodeEl;
+        positionPopup(nodeEl, entry);
+      };
+      var onNodeOver = function onNodeOver(e) {
+        updatePointerPosition(e);
+        var node = e.target.closest('.diagram-node');
+        if (!node || node === activePopupNode) return;
+        showPopupForNode(node);
+      };
+      var onNodeOut = function onNodeOut(e) {
+        if (!activePopupNode) return;
+        var related = e.relatedTarget;
+        if (related && activePopupNode.contains(related)) return;
+        if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
+        hidePopup();
+        activePopupNode = null;
+      };
+      var onSvgLeave = function onSvgLeave(e) {
+        if (svg.contains(e.relatedTarget)) return;
+        activePopupNode = null;
+        hidePopup();
+      };
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, {
         passive: false
@@ -1378,11 +1637,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
         windowObj.addEventListener('mouseup', onDragEnd);
         windowObj.addEventListener('touchend', onDragEnd);
+        windowObj.addEventListener('mousemove', updatePointerPosition);
+        windowObj.addEventListener('touchmove', updatePointerPosition, {
+          passive: true
+        });
       }
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, {
         passive: false
       });
+      svg.addEventListener('mouseover', onNodeOver);
+      svg.addEventListener('mouseout', onNodeOut);
+      svg.addEventListener('mouseleave', onSvgLeave);
+      var repositionActivePopup = function repositionActivePopup() {
+        if (!activePopupNode) return;
+        var nodeId = activePopupNode.getAttribute('data-node');
+        if (!nodeId) return;
+        var entry = lastPopupEntries[nodeId];
+        if (!entry) return;
+        positionPopup(activePopupNode, entry);
+      };
+      svg.addEventListener('mousemove', updatePointerPosition);
+      svg.addEventListener('touchstart', updatePointerPosition, {
+        passive: true
+      });
+      if (windowObj) {
+        windowObj.addEventListener('resize', repositionActivePopup);
+      }
       cleanupDiagramInteractions = function cleanupDiagramInteractions() {
         svg.removeEventListener('mousedown', onSvgMouseDown);
         svg.removeEventListener('touchstart', onSvgMouseDown);
@@ -1395,9 +1676,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           windowObj.removeEventListener('touchmove', onDragMove);
           windowObj.removeEventListener('mouseup', onDragEnd);
           windowObj.removeEventListener('touchend', onDragEnd);
+          windowObj.removeEventListener('mousemove', updatePointerPosition);
+          windowObj.removeEventListener('touchmove', updatePointerPosition);
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);
+        svg.removeEventListener('mouseover', onNodeOver);
+        svg.removeEventListener('mouseout', onNodeOut);
+        svg.removeEventListener('mouseleave', onSvgLeave);
+        svg.removeEventListener('mousemove', updatePointerPosition);
+        svg.removeEventListener('touchstart', updatePointerPosition);
+        if (windowObj) {
+          windowObj.removeEventListener('resize', repositionActivePopup);
+        }
       };
       apply();
     }
@@ -1417,9 +1708,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         cls: 'fiz',
         text: ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.diagramLegendFIZ) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.diagramLegendFIZ) || 'FIZ'
       }];
-      diagramLegend.innerHTML = legendItems.map(function (_ref5) {
-        var cls = _ref5.cls,
-          text = _ref5.text;
+      diagramLegend.innerHTML = legendItems.map(function (_ref7) {
+        var cls = _ref7.cls,
+          text = _ref7.text;
         return "<span><span class=\"swatch ".concat(cls, "\"></span>").concat(text, "</span>");
       }).join('');
     }
