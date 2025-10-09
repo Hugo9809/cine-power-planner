@@ -260,6 +260,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var pinkModeEnabled = false;
     var settingsInitialPinkMode = false;
     var settingsInitialTemperatureUnit = 'celsius';
+    var settingsInitialFocusScale = 'metric';
     var settingsInitialShowAutoBackups = false;
     function getRoot() {
       return doc && doc.documentElement ? doc.documentElement : null;
@@ -761,6 +762,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         preferences.temperatureUnit = value;
       }
     }
+    function getFocusScale() {
+      if (typeof preferences.getFocusScale === 'function') {
+        return preferences.getFocusScale();
+      }
+      return preferences.focusScale || 'metric';
+    }
+    function setFocusScale(value) {
+      if (typeof preferences.setFocusScale === 'function') {
+        preferences.setFocusScale(value);
+      } else {
+        preferences.focusScale = value;
+      }
+    }
     function rememberSettingsTemperatureUnitBaseline() {
       var current = getTemperatureUnit();
       settingsInitialTemperatureUnit = typeof current === 'string' ? current : 'celsius';
@@ -784,6 +798,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       } else if (settings.temperatureUnit) {
         settings.temperatureUnit.value = baseline;
+      }
+    }
+    function rememberSettingsFocusScaleBaseline() {
+      var current = getFocusScale();
+      settingsInitialFocusScale = typeof current === 'string' ? current : 'metric';
+    }
+    function revertSettingsFocusScaleIfNeeded() {
+      var baseline = typeof settingsInitialFocusScale === 'string' ? settingsInitialFocusScale : 'metric';
+      var applyPreference = preferences.applyFocusScalePreference;
+      if (typeof applyPreference === 'function') {
+        if (getFocusScale() !== baseline) {
+          try {
+            applyPreference(baseline, {
+              persist: false,
+              forceUpdate: true
+            });
+            setFocusScale(baseline);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Failed to revert focus scale preference.', error);
+          }
+        } else if (settings.focusScale) {
+          settings.focusScale.value = baseline;
+        }
+      } else if (settings.focusScale) {
+        settings.focusScale.value = baseline;
       }
     }
     function getShowAutoBackups() {
@@ -959,6 +998,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       revertSettingsPinkModeIfNeeded: revertSettingsPinkModeIfNeeded,
       rememberSettingsTemperatureUnitBaseline: rememberSettingsTemperatureUnitBaseline,
       revertSettingsTemperatureUnitIfNeeded: revertSettingsTemperatureUnitIfNeeded,
+      rememberSettingsFocusScaleBaseline: rememberSettingsFocusScaleBaseline,
+      revertSettingsFocusScaleIfNeeded: revertSettingsFocusScaleIfNeeded,
       applyShowAutoBackupsPreference: applyShowAutoBackupsPreference,
       rememberSettingsShowAutoBackupsBaseline: rememberSettingsShowAutoBackupsBaseline,
       revertSettingsShowAutoBackupsIfNeeded: revertSettingsShowAutoBackupsIfNeeded,

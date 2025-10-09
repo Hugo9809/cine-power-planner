@@ -21,16 +21,61 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
-  function resolveScopeCollector() {
+  var LOCAL_SCOPE = baseDetectGlobalScope();
+  function resolveScopeUtils(scope) {
+    var primaryScope = scope || LOCAL_SCOPE;
     if (typeof require === 'function') {
       try {
-        var required = require('./helpers/scope-collector.js');
-        if (required && typeof required.createCollector === 'function') {
+        var required = require('./helpers/scope-utils.js');
+        if (required && _typeof(required) === 'object') {
           return required;
         }
       } catch (error) {
         void error;
       }
+    }
+    var candidates = [];
+    function pushCandidate(candidate) {
+      if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(candidate) === -1) {
+        candidates.push(candidate);
+      }
+    }
+    pushCandidate(primaryScope);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      try {
+        var utils = candidate && candidate.cineScopeUtils;
+        if (utils && _typeof(utils) === 'object') {
+          return utils;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+    return null;
+  }
+  var SCOPE_UTILS = resolveScopeUtils(LOCAL_SCOPE);
+  var detectGlobalScope = SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function' ? function detectWithUtils() {
+    try {
+      return SCOPE_UTILS.detectGlobalScope();
+    } catch (error) {
+      void error;
+    }
+    return baseDetectGlobalScope();
+  } : baseDetectGlobalScope;
+  var tryRequire = SCOPE_UTILS && typeof SCOPE_UTILS.tryRequire === 'function' ? SCOPE_UTILS.tryRequire : tryRequireFallback;
+  var defineHiddenProperty = SCOPE_UTILS && typeof SCOPE_UTILS.defineHiddenProperty === 'function' ? SCOPE_UTILS.defineHiddenProperty : defineHiddenPropertyFallback;
+  function resolveScopeCollector() {
+    var required = tryRequire('./helpers/scope-collector.js');
+    if (required && typeof required.createCollector === 'function') {
+      return required;
     }
     var candidates = [];
     function pushCandidate(scope) {
@@ -41,7 +86,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         candidates.push(scope);
       }
     }
-    pushCandidate(baseDetectGlobalScope());
+    pushCandidate(LOCAL_SCOPE);
+    try {
+      pushCandidate(detectGlobalScope());
+    } catch (error) {
+      void error;
+    }
     if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
     if (typeof window !== 'undefined') pushCandidate(window);
     if (typeof self !== 'undefined') pushCandidate(self);
@@ -88,7 +138,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   function collectCandidateScopesImpl(primary, detect, extras) {
-    var detectFn = typeof detect === 'function' ? detect : baseDetectGlobalScope;
+    if (SCOPE_UTILS && typeof SCOPE_UTILS.collectCandidateScopes === 'function') {
+      var _detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
+      return SCOPE_UTILS.collectCandidateScopes(primary, extras, _detectFn);
+    }
+    var detectFn = typeof detect === 'function' ? detect : detectGlobalScope;
     if (createScopeCollector) {
       var collector = resolveHelperCollector(detectFn, extras);
       if (collector) {
@@ -122,7 +176,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return scopes.slice();
   }
-  function tryRequireImpl(modulePath) {
+  function tryRequireFallback(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -133,7 +187,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
-  function defineHiddenPropertyImpl(target, key, value) {
+  function defineHiddenPropertyFallback(target, key, value) {
     if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
       return false;
     }
@@ -242,12 +296,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   function resolveBuiltinImmutabilityImpl(options) {
-    var tryRequire = options && typeof options.tryRequire === 'function' ? options.tryRequire : tryRequireImpl;
+    var tryRequireFn = options && typeof options.tryRequire === 'function' ? options.tryRequire : tryRequire;
     var collectCandidateScopes = options && typeof options.collectCandidateScopes === 'function' ? options.collectCandidateScopes : function collect() {
-      return collectCandidateScopesImpl(null, baseDetectGlobalScope, []);
+      return collectCandidateScopesImpl(null, detectGlobalScope, []);
     };
     try {
-      var required = tryRequire('./helpers/immutability-builtins.js');
+      var required = tryRequireFn('./helpers/immutability-builtins.js');
       if (required && _typeof(required) === 'object') {
         return required;
       }
@@ -380,7 +434,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var customPrimaryScope = settings && (settings.primaryScope || settings.scope) && (_typeof(settings.primaryScope) === 'object' || typeof settings.primaryScope === 'function' ? settings.primaryScope : _typeof(settings.scope) === 'object' || typeof settings.scope === 'function' ? settings.scope : null);
     var detectOverride = typeof settings.detectGlobalScope === 'function' ? settings.detectGlobalScope : null;
     var cachedPrimaryScope = null;
-    function detectGlobalScope() {
+    function detectPrimaryScope() {
       try {
         if (detectOverride) {
           var _detected = detectOverride();
@@ -395,40 +449,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (cachedPrimaryScope) {
         return cachedPrimaryScope;
       }
-      var detected = customPrimaryScope || baseDetectGlobalScope();
+      var detected = customPrimaryScope || detectGlobalScope();
       cachedPrimaryScope = detected;
       return detected;
     }
     function getPrimaryScope() {
-      return detectGlobalScope();
+      return detectPrimaryScope();
     }
     var additionalScopes = Array.isArray(settings.additionalScopes) ? settings.additionalScopes.filter(function isObjectLike(value) {
       return value && (_typeof(value) === 'object' || typeof value === 'function');
     }) : [];
-    var tryRequire = typeof settings.tryRequire === 'function' ? function tryRequireWithOverride(modulePath) {
+    var tryRequireFn = typeof settings.tryRequire === 'function' ? function tryRequireWithOverride(modulePath) {
       try {
         return settings.tryRequire(modulePath);
       } catch (error) {
         void error;
       }
-      return tryRequireImpl(modulePath);
-    } : tryRequireImpl;
+      return tryRequire(modulePath);
+    } : tryRequire;
     var pendingQueueKey = typeof settings.pendingQueueKey === 'string' && settings.pendingQueueKey ? settings.pendingQueueKey : DEFAULT_PENDING_QUEUE_KEY;
     var resolveOverride = typeof settings.resolveFromScopes === 'function' ? settings.resolveFromScopes : null;
     var freezeOverride = typeof settings.freezeDeep === 'function' ? settings.freezeDeep : null;
     var warnOverride = typeof settings.safeWarn === 'function' ? settings.safeWarn : null;
     function collectCandidateScopes(primary) {
-      return collectCandidateScopesImpl(primary || customPrimaryScope, detectGlobalScope, additionalScopes);
+      return collectCandidateScopesImpl(primary || customPrimaryScope, detectPrimaryScope, additionalScopes);
     }
     var builtinImmutability = resolveBuiltinImmutabilityImpl({
-      tryRequire: tryRequire,
+      tryRequire: tryRequireFn,
       collectCandidateScopes: collectCandidateScopes
     });
     var fallbackImmutability = createFallbackImmutability(builtinImmutability);
     var activeImmutability = null;
     function resolveImmutability(scope) {
       try {
-        var resolved = resolveImmutabilityImpl(scope, tryRequire, collectCandidateScopes);
+        var resolved = resolveImmutabilityImpl(scope, tryRequireFn, collectCandidateScopes);
         if (resolved) {
           activeImmutability = resolved;
           return resolved;
@@ -495,8 +549,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       safeWarnImpl(message, detail);
     }
-    var defineHiddenProperty = function defineHiddenPropertyBound(target, key, value) {
-      return defineHiddenPropertyImpl(target, key, value);
+    var defineHiddenPropertyFn = function defineHiddenPropertyBound(target, key, value) {
+      return defineHiddenProperty(target, key, value);
     };
     return Object.freeze({
       detectGlobalScope: detectGlobalScope,
@@ -504,7 +558,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       collectCandidateScopes: collectCandidateScopes,
       tryRequire: tryRequire,
       resolveFromScopes: resolveFromScopes,
-      defineHiddenProperty: defineHiddenProperty,
+      defineHiddenProperty: defineHiddenPropertyFn,
       ensureQueue: ensureQueue,
       freezeDeep: freezeDeep,
       safeWarn: safeWarn,

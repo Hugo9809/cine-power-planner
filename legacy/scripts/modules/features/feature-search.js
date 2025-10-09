@@ -61,41 +61,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var ELLIPSIS_PATTERN = /[\u2026]/g;
   var TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
   var GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
-  var LIGATURE_ENTRIES = [
-    ['ß', 'ss'],
-    ['æ', 'ae'],
-    ['œ', 'oe'],
-    ['ø', 'o'],
-    ['þ', 'th'],
-    ['ð', 'd'],
-    ['đ', 'd'],
-    ['ħ', 'h'],
-    ['ı', 'i'],
-    ['ĳ', 'ij'],
-    ['ŋ', 'ng'],
-    ['ł', 'l'],
-    ['ſ', 's']
-  ];
-  var LIGATURE_PATTERNS = [];
-  for (var ligaturePatternIndex = 0; ligaturePatternIndex < LIGATURE_ENTRIES.length; ligaturePatternIndex += 1) {
-    LIGATURE_PATTERNS.push(new RegExp(LIGATURE_ENTRIES[ligaturePatternIndex][0], 'g'));
-  }
-
+  var LIGATURE_ENTRIES = [['ß', 'ss'], ['æ', 'ae'], ['œ', 'oe'], ['ø', 'o'], ['þ', 'th'], ['ð', 'd'], ['đ', 'd'], ['ħ', 'h'], ['ı', 'i'], ['ĳ', 'ij'], ['ŋ', 'ng'], ['ł', 'l'], ['ſ', 's']];
+  var LIGATURE_PATTERNS = LIGATURE_ENTRIES.map(function (entry) {
+    return new RegExp(entry[0], 'g');
+  });
   var NORMALIZE_CACHE_LIMIT = 400;
   var NORMALIZE_CACHE_MAX_LENGTH = 200;
   var CACHE_SUPPORTS_MAP = typeof Map === 'function';
   var NORMALIZE_CACHE = CACHE_SUPPORTS_MAP ? new Map() : [];
-
   function readNormalizedCache(value) {
     if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
       return null;
     }
-
     if (CACHE_SUPPORTS_MAP) {
       if (!NORMALIZE_CACHE.has(value)) {
         return null;
       }
-
       var cachedValue = NORMALIZE_CACHE.get(value);
       try {
         NORMALIZE_CACHE.delete(value);
@@ -103,32 +84,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (cacheUpdateError) {
         void cacheUpdateError;
       }
-
       return cachedValue;
     }
-
     for (var index = 0; index < NORMALIZE_CACHE.length; index += 1) {
       var entry = NORMALIZE_CACHE[index];
       if (!entry || entry.key !== value) {
         continue;
       }
-
       if (index !== NORMALIZE_CACHE.length - 1) {
         NORMALIZE_CACHE.splice(index, 1);
         NORMALIZE_CACHE.push(entry);
       }
-
       return entry.value;
     }
-
     return null;
   }
-
   function writeNormalizedCache(value, normalized) {
     if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
       return;
     }
-
     if (CACHE_SUPPORTS_MAP) {
       try {
         NORMALIZE_CACHE.set(value, normalized);
@@ -136,45 +110,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void cacheSetError;
         return;
       }
-
       if (NORMALIZE_CACHE.size <= NORMALIZE_CACHE_LIMIT) {
         return;
       }
-
       var oldestIterator = NORMALIZE_CACHE.keys();
       var oldestResult = oldestIterator && typeof oldestIterator.next === 'function' ? oldestIterator.next() : {
         done: true
       };
       if (oldestResult && oldestResult.done === false) {
-        NORMALIZE_CACHE["delete"](oldestResult.value);
+        NORMALIZE_CACHE.delete(oldestResult.value);
       }
       return;
     }
-
     NORMALIZE_CACHE.push({
       key: value,
       value: normalized
     });
-
     if (NORMALIZE_CACHE.length <= NORMALIZE_CACHE_LIMIT) {
       return;
     }
-
     NORMALIZE_CACHE.shift();
   }
-
   function normalizeSearchValue(value) {
     if (typeof value !== 'string') {
       return '';
     }
-
     var cached = readNormalizedCache(value);
     if (typeof cached === 'string') {
       return cached;
     }
-
     var normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
-
     if (typeof normalized.normalize === 'function') {
       try {
         normalized = normalized.normalize('NFKD');
@@ -182,39 +147,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
-    normalized = normalized
-      .replace(SPACE_VARIANTS_PATTERN, ' ')
-      .replace(APOSTROPHE_VARIANTS_PATTERN, ' ')
-      .replace(QUOTE_VARIANTS_PATTERN, ' ')
-      .replace(DASH_VARIANTS_PATTERN, ' ')
-      .replace(SLASH_VARIANTS_PATTERN, ' ')
-      .replace(MULTIPLY_VARIANTS_PATTERN, ' x ')
-      .replace(DEGREE_VARIANTS_PATTERN, ' deg ')
-      .replace(/\bdegrees?\b/gi, ' deg ')
-      .replace(/&/g, ' and ')
-      .replace(/\+/g, ' plus ')
-      .replace(/@/g, ' at ')
-      .replace(TRADEMARK_PATTERN, ' ')
-      .replace(ELLIPSIS_PATTERN, ' ')
-      .replace(GENERAL_PUNCTUATION_PATTERN, ' ');
-
+    normalized = normalized.replace(SPACE_VARIANTS_PATTERN, ' ').replace(APOSTROPHE_VARIANTS_PATTERN, ' ').replace(QUOTE_VARIANTS_PATTERN, ' ').replace(DASH_VARIANTS_PATTERN, ' ').replace(SLASH_VARIANTS_PATTERN, ' ').replace(MULTIPLY_VARIANTS_PATTERN, ' x ').replace(DEGREE_VARIANTS_PATTERN, ' deg ').replace(/\bdegrees?\b/gi, ' deg ').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/@/g, ' at ').replace(TRADEMARK_PATTERN, ' ').replace(ELLIPSIS_PATTERN, ' ').replace(GENERAL_PUNCTUATION_PATTERN, ' ');
     normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
-
     for (var ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
       var entry = LIGATURE_ENTRIES[ligatureIndex];
-      var replacement = entry[1];
       var pattern = LIGATURE_PATTERNS[ligatureIndex];
-      normalized = normalized.replace(pattern, replacement);
+      normalized = normalized.replace(pattern, entry[1]);
     }
-
-    normalized = normalized
-      .replace(/['"`]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
+    normalized = normalized.replace(/['"`]/g, ' ').replace(/\s+/g, ' ').trim();
     writeNormalizedCache(value, normalized);
-
     return normalized;
   }
   function sanitizeHighlightTokens(tokens) {

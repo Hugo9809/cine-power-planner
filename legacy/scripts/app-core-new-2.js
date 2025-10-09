@@ -7588,6 +7588,105 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       element.removeAttribute('title');
     }
+    var STORAGE_STATUS_STALE_PROJECT_MS = 1000 * 60 * 60 * 48;
+    var STORAGE_STATUS_STALE_AUTO_MS = 1000 * 60 * 60 * 12;
+    var STORAGE_STATUS_STALE_FULL_MS = 1000 * 60 * 60 * 24 * 7;
+    var storageStatusReminderElement = typeof storageStatusReminder !== 'undefined' ? storageStatusReminder : typeof document !== 'undefined' ? document.getElementById('storageStatusReminder') : null;
+    function resolveStatusText(langTexts, key) {
+      var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      if (langTexts && typeof langTexts[key] === 'string' && langTexts[key].trim()) {
+        return langTexts[key];
+      }
+      if (texts.en && typeof texts.en[key] === 'string' && texts.en[key].trim()) {
+        return texts.en[key];
+      }
+      return fallback;
+    }
+    function isValidTimestamp(date) {
+      return date instanceof Date && !Number.isNaN(date.getTime());
+    }
+    function updateStorageStatusReminder(manualInfo, autoInfo, fullBackupInfo, lang, langTexts) {
+      if (!storageStatusReminderElement) {
+        return;
+      }
+      while (storageStatusReminderElement.firstChild) {
+        storageStatusReminderElement.removeChild(storageStatusReminderElement.firstChild);
+      }
+      storageStatusReminderElement.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
+      var reminders = [];
+      var now = Date.now();
+      var manualDate = manualInfo && isValidTimestamp(manualInfo.date) ? manualInfo.date : null;
+      var autoDate = autoInfo && isValidTimestamp(autoInfo.date) ? autoInfo.date : null;
+      var fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date) ? fullBackupInfo.date : null;
+      var manualTimeText = manualDate ? formatStatusTimestamp(manualDate, lang, langTexts) || formatAbsoluteTimestamp(manualDate, lang) : '';
+      var autoTimeText = autoDate ? formatStatusTimestamp(autoDate, lang, langTexts) || formatAbsoluteTimestamp(autoDate, lang) : '';
+      var fullTimeText = fullBackupDate ? formatStatusTimestamp(fullBackupDate, lang, langTexts) || formatAbsoluteTimestamp(fullBackupDate, lang) : '';
+      if (!manualInfo || manualInfo.hasAny !== true) {
+        var text = resolveStatusText(langTexts, 'storageStatusReminderSaveProject');
+        if (text) {
+          reminders.push(text);
+        }
+      } else if (manualDate && now - manualDate.getTime() > STORAGE_STATUS_STALE_PROJECT_MS) {
+        var template = resolveStatusText(langTexts, 'storageStatusReminderRefreshProject');
+        if (template) {
+          reminders.push(template.replace('{time}', manualTimeText));
+        }
+      }
+      if (!autoInfo || autoInfo.hasAny !== true) {
+        var _text = resolveStatusText(langTexts, 'storageStatusReminderAutoBackupFirst');
+        if (_text) {
+          reminders.push(_text);
+        }
+      } else if (autoDate && now - autoDate.getTime() > STORAGE_STATUS_STALE_AUTO_MS) {
+        var _template0 = resolveStatusText(langTexts, 'storageStatusReminderAutoBackup');
+        if (_template0) {
+          reminders.push(_template0.replace('{time}', autoTimeText));
+        }
+      }
+      if (!fullBackupInfo || fullBackupInfo.hasAny !== true) {
+        var _text2 = resolveStatusText(langTexts, 'storageStatusReminderFullBackupFirst');
+        if (_text2) {
+          reminders.push(_text2);
+        }
+      } else if (fullBackupDate && now - fullBackupDate.getTime() > STORAGE_STATUS_STALE_FULL_MS) {
+        var _template1 = resolveStatusText(langTexts, 'storageStatusReminderFullBackup');
+        if (_template1) {
+          reminders.push(_template1.replace('{time}', fullTimeText));
+        }
+      }
+      if (reminders.length > 0) {
+        var list = document.createElement('ul');
+        list.className = 'storage-status-reminder-list';
+        reminders.forEach(function (text) {
+          if (!text) {
+            return;
+          }
+          var item = document.createElement('li');
+          item.textContent = text;
+          list.appendChild(item);
+        });
+        if (list.childElementCount > 0) {
+          storageStatusReminderElement.appendChild(list);
+          storageStatusReminderElement.classList.add('storage-status-reminder--warning');
+          storageStatusReminderElement.removeAttribute('hidden');
+          storageStatusReminderElement.setAttribute('data-help', list.textContent || reminders.join(' '));
+          return;
+        }
+      }
+      var okText = resolveStatusText(langTexts, 'storageStatusReminderUpToDate');
+      if (okText) {
+        var note = document.createElement('p');
+        note.className = 'storage-status-reminder-text';
+        note.textContent = okText;
+        storageStatusReminderElement.appendChild(note);
+        storageStatusReminderElement.classList.add('storage-status-reminder--ok');
+        storageStatusReminderElement.removeAttribute('hidden');
+        storageStatusReminderElement.setAttribute('data-help', okText);
+        return;
+      }
+      storageStatusReminderElement.setAttribute('hidden', '');
+      storageStatusReminderElement.removeAttribute('data-help');
+    }
     function createSummaryItemElement(item) {
       var li = document.createElement('li');
       li.className = 'storage-summary-item';
@@ -7780,6 +7879,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       applyStorageStatus(storageStatusLastProjectValue, manualInfo, lang, langTexts, manualProjectNames.length > 0);
       applyStorageStatus(storageStatusLastAutoBackupValue, autoInfo, lang, langTexts, autoBackupNames.length > 0);
       applyStorageStatus(storageStatusLastFullBackupValue, fullBackupInfo, lang, langTexts, fullBackupCount > 0);
+      updateStorageStatusReminder(manualInfo, autoInfo, fullBackupInfo, lang, langTexts);
       if (storageSummaryEmpty) {
         var hasData = Boolean(totalProjects || gearListCount || deviceSummary.total || favoritesCount || feedbackCount || hasSession || fullBackupCount);
         if (hasData) {
@@ -8022,21 +8122,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       scheduleFeatureSearchHistorySave();
     };
     var resolveRecentFeatureSearchOptions = function resolveRecentFeatureSearchOptions() {
-      loadFeatureSearchHistory();
-      if (!featureSearchHistory.size) return [];
-      var entries = Array.from(featureSearchHistory.values()).slice().sort(function (a, b) {
-        return b.lastUsed - a.lastUsed;
-      });
+      var recentEntries = resolveRecentFeatureSearchEntries();
+      if (!recentEntries.length) return [];
       var options = [];
       var seen = new Set();
-      var _iterator5 = _createForOfIteratorHelper(entries),
+      var _iterator5 = _createForOfIteratorHelper(recentEntries),
         _step5;
       try {
         for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var item = _step5.value;
-          if (!item || !item.key) continue;
-          var entry = featureSearchEntryIndex.get(item.key);
-          if (!entry) continue;
+          var entry = _step5.value;
           var option = buildFeatureSearchOptionData(entry);
           if (!option || !option.value || seen.has(option.value)) continue;
           seen.add(option.value);
@@ -8049,6 +8143,34 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         _iterator5.f();
       }
       return options;
+    };
+    var resolveRecentFeatureSearchEntries = function resolveRecentFeatureSearchEntries() {
+      loadFeatureSearchHistory();
+      if (!featureSearchHistory.size) return [];
+      var entries = Array.from(featureSearchHistory.values()).slice().sort(function (a, b) {
+        return b.lastUsed - a.lastUsed;
+      });
+      var results = [];
+      var seen = new Set();
+      var _iterator6 = _createForOfIteratorHelper(entries),
+        _step6;
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var item = _step6.value;
+          if (!item || !item.key) continue;
+          if (seen.has(item.key)) continue;
+          seen.add(item.key);
+          var entry = featureSearchEntryIndex.get(item.key);
+          if (!entry) continue;
+          results.push(entry);
+          if (results.length >= MAX_FEATURE_SEARCH_HISTORY) break;
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+      return results;
     };
     var createDefaultSearchNormalizer = function createDefaultSearchNormalizer() {
       var ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
@@ -8063,29 +8185,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var ELLIPSIS_PATTERN = /[\u2026]/g;
       var TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
       var GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
-      var LIGATURE_ENTRIES = [
-        ['ß', 'ss'],
-        ['æ', 'ae'],
-        ['œ', 'oe'],
-        ['ø', 'o'],
-        ['þ', 'th'],
-        ['ð', 'd'],
-        ['đ', 'd'],
-        ['ħ', 'h'],
-        ['ı', 'i'],
-        ['ĳ', 'ij'],
-        ['ŋ', 'ng'],
-        ['ł', 'l'],
-        ['ſ', 's']
-      ];
-
+      var ligatureEntries = [['ß', 'ss'], ['æ', 'ae'], ['œ', 'oe'], ['ø', 'o'], ['þ', 'th'], ['ð', 'd'], ['đ', 'd'], ['ħ', 'h'], ['ı', 'i'], ['ĳ', 'ij'], ['ŋ', 'ng'], ['ł', 'l'], ['ſ', 's']];
       return function (value) {
         if (typeof value !== 'string') {
           return '';
         }
-
         var normalized = value.replace(ZERO_WIDTH_SPACES_PATTERN, '');
-
         if (typeof normalized.normalize === 'function') {
           try {
             normalized = normalized.normalize('NFKD');
@@ -8093,43 +8198,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             void error;
           }
         }
-
-        normalized = normalized
-          .replace(SPACE_VARIANTS_PATTERN, ' ')
-          .replace(APOSTROPHE_VARIANTS_PATTERN, ' ')
-          .replace(QUOTE_VARIANTS_PATTERN, ' ')
-          .replace(DASH_VARIANTS_PATTERN, ' ')
-          .replace(SLASH_VARIANTS_PATTERN, ' ')
-          .replace(MULTIPLY_VARIANTS_PATTERN, ' x ')
-          .replace(DEGREE_VARIANTS_PATTERN, ' deg ')
-          .replace(/\bdegrees?\b/gi, ' deg ')
-          .replace(/&/g, ' and ')
-          .replace(/\+/g, ' plus ')
-          .replace(/@/g, ' at ')
-          .replace(TRADEMARK_PATTERN, ' ')
-          .replace(ELLIPSIS_PATTERN, ' ')
-          .replace(GENERAL_PUNCTUATION_PATTERN, ' ');
-
+        normalized = normalized.replace(SPACE_VARIANTS_PATTERN, ' ').replace(APOSTROPHE_VARIANTS_PATTERN, ' ').replace(QUOTE_VARIANTS_PATTERN, ' ').replace(DASH_VARIANTS_PATTERN, ' ').replace(SLASH_VARIANTS_PATTERN, ' ').replace(MULTIPLY_VARIANTS_PATTERN, ' x ').replace(DEGREE_VARIANTS_PATTERN, ' deg ').replace(/\bdegrees?\b/gi, ' deg ').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/@/g, ' at ').replace(TRADEMARK_PATTERN, ' ').replace(ELLIPSIS_PATTERN, ' ').replace(GENERAL_PUNCTUATION_PATTERN, ' ');
         normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
-
-        for (var ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
-          var entry = LIGATURE_ENTRIES[ligatureIndex];
-          var source = entry[0];
-          var replacement = entry[1];
+        for (var index = 0; index < ligatureEntries.length; index += 1) {
+          var _ligatureEntries$inde = _slicedToArray(ligatureEntries[index], 2),
+            source = _ligatureEntries$inde[0],
+            replacement = _ligatureEntries$inde[1];
           normalized = normalized.replace(new RegExp(source, 'g'), replacement);
         }
-
-        normalized = normalized
-          .replace(/['"`]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
+        normalized = normalized.replace(/['"`]/g, ' ').replace(/\s+/g, ' ').trim();
         return normalized;
       };
     };
-
     var fallbackNormalizeSearchValue = createDefaultSearchNormalizer();
-
     var normalizeSearchValue = function normalizeSearchValue(value) {
       try {
         if (featureSearchModuleApi && typeof featureSearchModuleApi.normalizeSearchValue === 'function') {
@@ -8383,11 +8464,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var normalized = [];
       var fragment = featureList ? document.createDocumentFragment() : null;
-      var _iterator6 = _createForOfIteratorHelper(values),
-        _step6;
+      var _iterator7 = _createForOfIteratorHelper(values),
+        _step7;
       try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var value = _step6.value;
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var value = _step7.value;
           var optionData = normalizeFeatureSearchOption(value);
           if (!optionData || !optionData.value) continue;
           normalized.push(optionData);
@@ -8404,9 +8485,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           fragment.appendChild(option);
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator7.e(err);
       } finally {
-        _iterator6.f();
+        _iterator7.f();
       }
       if (featureList) {
         featureList.innerHTML = '';
@@ -8420,33 +8501,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var values = [];
       var seen = new Set();
       var recentOptions = resolveRecentFeatureSearchOptions();
-      var _iterator7 = _createForOfIteratorHelper(recentOptions),
-        _step7;
+      var _iterator8 = _createForOfIteratorHelper(recentOptions),
+        _step8;
       try {
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var option = _step7.value;
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var option = _step8.value;
           if (!option || !option.value || seen.has(option.value)) continue;
           seen.add(option.value);
           values.push(option);
         }
       } catch (err) {
-        _iterator7.e(err);
+        _iterator8.e(err);
       } finally {
-        _iterator7.f();
+        _iterator8.f();
       }
-      var _iterator8 = _createForOfIteratorHelper(featureSearchDefaultOptions),
-        _step8;
+      var _iterator9 = _createForOfIteratorHelper(featureSearchDefaultOptions),
+        _step9;
       try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var _option = _step8.value;
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var _option = _step9.value;
           if (!_option || !_option.value || seen.has(_option.value)) continue;
           seen.add(_option.value);
           values.push(_option);
         }
       } catch (err) {
-        _iterator8.e(err);
+        _iterator9.e(err);
       } finally {
-        _iterator8.f();
+        _iterator9.f();
       }
       renderFeatureListOptions(values.length ? values : featureSearchDefaultOptions);
     }
@@ -8465,7 +8546,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       device: 3,
       help: 1
     };
-    var FEATURE_SEARCH_FILTER_ALIASES = new Map([['feature', 'feature'], ['features', 'feature'], ['setting', 'feature'], ['settings', 'feature'], ['action', 'action'], ['actions', 'action'], ['command', 'action'], ['commands', 'action'], ['device', 'device'], ['devices', 'device'], ['gear', 'device'], ['equipment', 'device'], ['help', 'help'], ['doc', 'help'], ['docs', 'help'], ['guide', 'help'], ['guides', 'help'], ['support', 'help']]);
+    var FEATURE_SEARCH_FILTER_ALIASES = new Map([['feature', 'feature'], ['features', 'feature'], ['setting', 'feature'], ['settings', 'feature'], ['action', 'action'], ['actions', 'action'], ['command', 'action'], ['commands', 'action'], ['device', 'device'], ['devices', 'device'], ['gear', 'device'], ['equipment', 'device'], ['help', 'help'], ['doc', 'help'], ['docs', 'help'], ['guide', 'help'], ['guides', 'help'], ['support', 'help'], ['recent', 'recent'], ['recents', 'recent'], ['recently', 'recent'], ['history', 'recent'], ['histories', 'recent'], ['frequent', 'recent'], ['frequently', 'recent']]);
     var FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
     var FEATURE_SEARCH_SMART_QUOTE_PATTERN = /[“”„«»]/g;
     var normalizeFeatureSearchQuotes = function normalizeFeatureSearchQuotes(value) {
@@ -8695,6 +8776,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         restoreFeatureSearchDefaults();
         return;
       }
+      if (filterType === 'recent') {
+        var recentEntries = resolveRecentFeatureSearchEntries();
+        if (!recentEntries.length) {
+          renderFeatureListOptions([]);
+          return;
+        }
+        var _values2 = [];
+        var _seen = new Set();
+        var _iterator0 = _createForOfIteratorHelper(recentEntries),
+          _step0;
+        try {
+          for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+            var entry = _step0.value;
+            if (_values2.length >= FEATURE_SEARCH_MAX_RESULTS) break;
+            var optionData = buildFeatureSearchOptionData(entry);
+            if (!optionData || !optionData.value || _seen.has(optionData.value)) continue;
+            _seen.add(optionData.value);
+            _values2.push(optionData);
+          }
+        } catch (err) {
+          _iterator0.e(err);
+        } finally {
+          _iterator0.f();
+        }
+        renderFeatureListOptions(_values2);
+        return;
+      }
       var filteredEntries = featureSearchEntries.filter(function (entry) {
         return ((entry === null || entry === void 0 ? void 0 : entry.type) || 'feature') === filterType;
       });
@@ -8707,21 +8815,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }).filter(Boolean).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator9 = _createForOfIteratorHelper(scored),
-        _step9;
+      var _iterator1 = _createForOfIteratorHelper(scored),
+        _step1;
       try {
-        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-          var item = _step9.value;
+        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+          var item = _step1.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
-          var _optionData = buildFeatureSearchOptionData(item.entry);
-          if (!_optionData || !_optionData.value || seen.has(_optionData.value)) continue;
-          seen.add(_optionData.value);
-          values.push(_optionData);
+          var _optionData2 = buildFeatureSearchOptionData(item.entry);
+          if (!_optionData2 || !_optionData2.value || seen.has(_optionData2.value)) continue;
+          seen.add(_optionData2.value);
+          values.push(_optionData2);
         }
       } catch (err) {
-        _iterator9.e(err);
+        _iterator1.e(err);
       } finally {
-        _iterator9.f();
+        _iterator1.f();
       }
       if (values.length === 0) {
         var fallback = filteredEntries.slice().sort(function (a, b) {
@@ -8729,21 +8837,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             sensitivity: 'base'
           });
         });
-        var _iterator0 = _createForOfIteratorHelper(fallback),
-          _step0;
+        var _iterator10 = _createForOfIteratorHelper(fallback),
+          _step10;
         try {
-          for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-            var entry = _step0.value;
+          for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+            var _entry = _step10.value;
             if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
-            var optionData = buildFeatureSearchOptionData(entry);
-            if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
-            seen.add(optionData.value);
-            values.push(optionData);
+            var _optionData = buildFeatureSearchOptionData(_entry);
+            if (!_optionData || !_optionData.value || seen.has(_optionData.value)) continue;
+            seen.add(_optionData.value);
+            values.push(_optionData);
           }
         } catch (err) {
-          _iterator0.e(err);
+          _iterator10.e(err);
         } finally {
-          _iterator0.f();
+          _iterator10.f();
         }
       }
       renderFeatureListOptions(values);
@@ -8767,7 +8875,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return phrase && phrase.toLowerCase();
       }).filter(Boolean)));
       updateFeatureSearchHighlightTokens(highlightTokens);
-      var entries = filterType ? featureSearchEntries.filter(function (entry) {
+      var isRecentFilter = filterType === 'recent';
+      if (!trimmed && isRecentFilter) {
+        renderFeatureSearchFilteredDefaults(filterType);
+        return;
+      }
+      var entries = isRecentFilter ? resolveRecentFeatureSearchEntries() : filterType ? featureSearchEntries.filter(function (entry) {
         return ((entry === null || entry === void 0 ? void 0 : entry.type) || 'feature') === filterType;
       }) : featureSearchEntries;
       if (entries.length === 0) {
@@ -8795,11 +8908,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var candidates = (meaningful.length > 0 ? meaningful : scored).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator1 = _createForOfIteratorHelper(candidates),
-        _step1;
+      var _iterator11 = _createForOfIteratorHelper(candidates),
+        _step11;
       try {
-        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-          var item = _step1.value;
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var item = _step11.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
           var optionData = buildFeatureSearchOptionData(item.entry);
           if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
@@ -8807,9 +8920,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           values.push(optionData);
         }
       } catch (err) {
-        _iterator1.e(err);
+        _iterator11.e(err);
       } finally {
-        _iterator1.f();
+        _iterator11.f();
       }
       if (values.length === 0) {
         if (filterType) {
@@ -8821,309 +8934,202 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       renderFeatureListOptions(values);
     }
-    var ROMAN_NUMERAL_VALUES = {
-      i: 1,
-      v: 5,
-      x: 10,
-      l: 50,
-      c: 100,
-      d: 500,
-      m: 1000
-    };
-    var ROMAN_NUMERAL_PATTERN = /^[ivxlcdm]+$/;
-    var parseMarkSuffix = function parseMarkSuffix(value) {
-      if (!value) {
+    var FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchEngineModule';
+    function createFeatureSearchEngineFallback() {
+      var FALLBACK_FUZZY_DISTANCE = 2;
+      function fallbackParseMarkSuffix(value) {
+        if (typeof value !== 'string' || !value) {
+          return {
+            cleaned: '',
+            number: null
+          };
+        }
+        var cleaned = value.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+        if (!cleaned) {
+          return {
+            cleaned: '',
+            number: null
+          };
+        }
+        if (/^\d+$/.test(cleaned)) {
+          return {
+            cleaned: cleaned,
+            number: parseInt(cleaned, 10)
+          };
+        }
         return {
-          cleaned: '',
+          cleaned: cleaned,
           number: null
         };
-      }
-      var cleaned = value.replace(/[^a-z0-9]+/g, '');
-      if (!cleaned) {
-        return {
-          cleaned: '',
-          number: null
-        };
-      }
-      var number = null;
-      if (/^\d+$/.test(cleaned)) {
-        number = parseInt(cleaned, 10);
-      } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
-        var total = 0;
-        var prev = 0;
-        for (var i = cleaned.length - 1; i >= 0; i -= 1) {
-          var char = cleaned[i];
-          var current = ROMAN_NUMERAL_VALUES[char];
-          if (!current) {
-            total = 0;
-            break;
-          }
-          if (current < prev) {
-            total -= current;
-          } else {
-            total += current;
-            prev = current;
-          }
-        }
-        if (total > 0) {
-          number = total;
-        }
       }
       return {
-        cleaned: cleaned,
-        number: number
+        FEATURE_SEARCH_FUZZY_MAX_DISTANCE: FALLBACK_FUZZY_DISTANCE,
+        searchKey: function searchKey(value) {
+          if (!value) {
+            return '';
+          }
+          return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '');
+        },
+        searchTokens: function searchTokens(value) {
+          if (!value) {
+            return [];
+          }
+          return String(value).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+        },
+        computeTokenMatchDetails: function computeTokenMatchDetails() {
+          return {
+            score: 0,
+            matched: 0
+          };
+        },
+        findBestSearchMatch: function findBestSearchMatch() {
+          return null;
+        },
+        getFuzzyDistance: function getFuzzyDistance() {
+          return Number.POSITIVE_INFINITY;
+        },
+        computeFuzzyTokenScore: function computeFuzzyTokenScore() {
+          return 0;
+        },
+        parseMarkSuffix: fallbackParseMarkSuffix,
+        normaliseMarkVariants: function normaliseMarkVariants(str) {
+          if (typeof str !== 'string' || !str) {
+            return str;
+          }
+          return str.replace(/\bmark\s*(\d+)\b/gi, 'mk$1');
+        },
+        normalizeUnicodeFractions: function normalizeUnicodeFractions(value) {
+          return value;
+        },
+        normalizeNumberWords: function normalizeNumberWords(value) {
+          return value;
+        },
+        normalizeSpellingVariants: function normalizeSpellingVariants(value) {
+          return value;
+        },
+        applySearchTokenSynonyms: function applySearchTokenSynonyms() {}
       };
-    };
-    var normaliseMarkVariants = function normaliseMarkVariants(str) {
-      return str.replace(/\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g, function (_match, _prefix, rawValue) {
-        var _parseMarkSuffix = parseMarkSuffix(rawValue),
-          cleaned = _parseMarkSuffix.cleaned,
-          number = _parseMarkSuffix.number;
-        if (!cleaned) return 'mk';
-        var suffix = number != null ? String(number) : cleaned;
-        return "mk".concat(suffix);
-      });
-    };
-    var UNICODE_FRACTIONS = new Map([['¼', '1/4'], ['½', '1/2'], ['¾', '3/4'], ['⅓', '1/3'], ['⅔', '2/3'], ['⅕', '1/5'], ['⅖', '2/5'], ['⅗', '3/5'], ['⅘', '4/5'], ['⅙', '1/6'], ['⅚', '5/6'], ['⅛', '1/8'], ['⅜', '3/8'], ['⅝', '5/8'], ['⅞', '7/8'], ['⅑', '1/9'], ['⅒', '1/10'], ['⅐', '1/7']]);
-    var UNICODE_FRACTION_PATTERN = UNICODE_FRACTIONS.size > 0 ? new RegExp("[".concat(Array.from(UNICODE_FRACTIONS.keys()).join(''), "]"), 'g') : null;
-    var normalizeUnicodeFractions = function normalizeUnicodeFractions(str) {
-      if (!UNICODE_FRACTION_PATTERN || typeof str !== 'string' || !str) {
-        return str;
+    }
+    function resolveFeatureSearchEngineModuleApi() {
+      var globalScope = typeof getCoreGlobalObject === 'function' ? getCoreGlobalObject() : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+      if (globalScope && globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
+        return globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY];
       }
-      return str.replace(UNICODE_FRACTION_PATTERN, function (match) {
-        return UNICODE_FRACTIONS.get(match) || match;
-      });
-    };
-    var NUMBER_WORD_ONES = new Map([['zero', 0], ['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6], ['seven', 7], ['eight', 8], ['nine', 9]]);
-    var NUMBER_WORD_TEENS = new Map([['ten', 10], ['eleven', 11], ['twelve', 12], ['thirteen', 13], ['fourteen', 14], ['fifteen', 15], ['sixteen', 16], ['seventeen', 17], ['eighteen', 18], ['nineteen', 19]]);
-    var NUMBER_WORD_TENS = new Map([['twenty', 20], ['thirty', 30], ['forty', 40], ['fifty', 50], ['sixty', 60], ['seventy', 70], ['eighty', 80], ['ninety', 90]]);
-    var NUMBER_WORD_BASE = new Map([].concat(_toConsumableArray(NUMBER_WORD_ONES), _toConsumableArray(NUMBER_WORD_TEENS), _toConsumableArray(NUMBER_WORD_TENS)));
-    var NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(function (a, b) {
-      return b.length - a.length;
-    });
-    var NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(function (a, b) {
-      return b.length - a.length;
-    });
-    var NUMBER_WORD_PATTERN = NUMBER_WORD_BASE.size > 0 ? new RegExp("\\b(?:".concat(NUMBER_WORD_BASE_KEYS.join('|'), ")(?:[\\s-](?:").concat(NUMBER_WORD_ONES_KEYS.join('|'), "))?\\b"), 'g') : null;
-    var normalizeNumberWords = function normalizeNumberWords(str) {
-      if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
-        return str;
-      }
-      return str.replace(NUMBER_WORD_PATTERN, function (match) {
-        var lower = match.toLowerCase();
-        if (NUMBER_WORD_BASE.has(lower)) {
-          return String(NUMBER_WORD_BASE.get(lower));
-        }
-        var parts = lower.split(/[\s-]+/).filter(Boolean);
-        if (parts.length === 2) {
-          var tens = NUMBER_WORD_TENS.get(parts[0]);
-          var ones = NUMBER_WORD_ONES.get(parts[1]);
-          if (typeof tens === 'number' && typeof ones === 'number') {
-            return String(tens + ones);
+      var moduleBase = (typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase || (globalScope && _typeof(globalScope.cineModuleBase) === 'object' ? globalScope.cineModuleBase : null);
+      function logModuleWarning(message, error) {
+        if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+          try {
+            moduleBase.safeWarn(message, error);
+            return;
+          } catch (warnError) {
+            void warnError;
           }
         }
-        return match;
-      });
-    };
-    var SPELLING_VARIANTS = new Map([['analyse', 'analyze'], ['analysed', 'analyzed'], ['analyses', 'analyzes'], ['analysing', 'analyzing'], ['behaviour', 'behavior'], ['behaviours', 'behaviors'], ['behavioural', 'behavioral'], ['behaviourally', 'behaviorally'], ['centre', 'center'], ['centres', 'centers'], ['colour', 'color'], ['colourful', 'colorful'], ['colouring', 'coloring'], ['colourings', 'colorings'], ['colourless', 'colorless'], ['colours', 'colors'], ['customisation', 'customization'], ['customisations', 'customizations'], ['customise', 'customize'], ['customised', 'customized'], ['customises', 'customizes'], ['customising', 'customizing'], ['defence', 'defense'], ['defences', 'defenses'], ['favour', 'favor'], ['favourable', 'favorable'], ['favourably', 'favorably'], ['favoured', 'favored'], ['favourite', 'favorite'], ['favourites', 'favorites'], ['favouring', 'favoring'], ['favours', 'favors'], ['licence', 'license'], ['licences', 'licenses'], ['localisation', 'localization'], ['localisations', 'localizations'], ['localise', 'localize'], ['localised', 'localized'], ['localises', 'localizes'], ['localising', 'localizing'], ['modelling', 'modeling'], ['modeller', 'modeler'], ['modellers', 'modelers'], ['optimisation', 'optimization'], ['optimisations', 'optimizations'], ['optimise', 'optimize'], ['optimised', 'optimized'], ['optimises', 'optimizes'], ['optimising', 'optimizing'], ['organisation', 'organization'], ['organisations', 'organizations'], ['organise', 'organize'], ['organised', 'organized'], ['organises', 'organizes'], ['organising', 'organizing'], ['personalisation', 'personalization'], ['personalisations', 'personalizations'], ['personalise', 'personalize'], ['personalised', 'personalized'], ['personalises', 'personalizes'], ['personalising', 'personalizing'], ['practise', 'practice'], ['practised', 'practiced'], ['practises', 'practices'], ['practising', 'practicing'], ['theatre', 'theater'], ['theatres', 'theaters'], ['traveller', 'traveler'], ['travellers', 'travelers'], ['travelling', 'traveling']]);
-    var SPELLING_VARIANT_PATTERN = SPELLING_VARIANTS.size > 0 ? new RegExp("\\b(".concat(Array.from(SPELLING_VARIANTS.keys()).join('|'), ")\\b"), 'g') : null;
-    var normalizeSpellingVariants = function normalizeSpellingVariants(str) {
-      if (!SPELLING_VARIANT_PATTERN) return str;
-      return str.replace(SPELLING_VARIANT_PATTERN, function (match) {
-        return SPELLING_VARIANTS.get(match) || match;
-      });
-    };
-    var applySearchTokenSynonyms = function applySearchTokenSynonyms(tokens, addToken) {
-      if (!tokens || typeof addToken !== 'function') {
-        return;
-      }
-      var baseTokens = Array.isArray(tokens) ? tokens : Array.from(tokens);
-      if (!Array.isArray(baseTokens) || baseTokens.length === 0) {
-        return;
-      }
-      var tokenSet = new Set(baseTokens);
-      var hasAny = function hasAny(values) {
-        return values.some(function (value) {
-          return tokenSet.has(value);
-        });
-      };
-      var hasAllGroups = function hasAllGroups(groups) {
-        return groups.every(function (group) {
-          var list = Array.isArray(group) ? group : [group];
-          return list.some(function (value) {
-            return tokenSet.has(value);
-          });
-        });
-      };
-      var addAll = function addAll(values) {
-        values.forEach(function (value) {
-          addToken(value);
-        });
-      };
-      if (hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) || hasAllGroups([['frame', 'frames'], ['per', 'persecond', 'persec'], ['second', 'seconds', 'sec']]) || hasAllGroups([['frame', 'frames'], ['rate']])) {
-        addAll(['fps', 'framerate', 'framepersecond', 'framespersecond', 'frame', 'frames', 'second', 'seconds']);
-      }
-      if (hasAny(['wh', 'watthour', 'watthours'])) {
-        addAll(['wh', 'watthour', 'watthours', 'watt', 'watts', 'hour', 'hours']);
-      } else if (hasAllGroups([['watt', 'watts'], ['hour', 'hours', 'hr', 'hrs']])) {
-        addAll(['wh', 'watthour', 'watthours']);
-      }
-      if (hasAny(['kwh', 'kilowatthour', 'kilowatthours'])) {
-        addAll(['kwh', 'kilowatthour', 'kilowatthours', 'kilowatt', 'kilowatts', 'watt', 'watts', 'hour', 'hours']);
-      } else if (hasAllGroups([['kilowatt', 'kilowatts', 'kw'], ['hour', 'hours', 'hr', 'hrs']])) {
-        addAll(['kwh', 'kilowatthour', 'kilowatthours']);
-      }
-      if (hasAny(['ah', 'amphour', 'amphours'])) {
-        addAll(['ah', 'amphour', 'amphours', 'amp', 'amps', 'ampere', 'amperes', 'hour', 'hours']);
-      } else if (hasAllGroups([['amp', 'amps', 'ampere', 'amperes'], ['hour', 'hours', 'hr', 'hrs']])) {
-        addAll(['ah', 'amphour', 'amphours']);
-      }
-      if (hasAny(['mah', 'milliamphour', 'milliamphours'])) {
-        addAll(['mah', 'milliamphour', 'milliamphours', 'milliamp', 'milliamps', 'milliampere', 'milliamperes', 'ma', 'hour', 'hours']);
-      } else if (hasAllGroups([['milliamp', 'milliamps', 'milliampere', 'milliamperes', 'ma'], ['hour', 'hours', 'hr', 'hrs']])) {
-        addAll(['mah', 'milliamphour', 'milliamphours']);
-      }
-      if (hasAny(['mp', 'megapixel', 'megapixels'])) {
-        addAll(['mp', 'megapixel', 'megapixels']);
-      }
-      if (hasAny(['mm', 'millimeter', 'millimeters'])) {
-        addAll(['mm', 'millimeter', 'millimeters']);
-      }
-      if (hasAny(['cm', 'centimeter', 'centimeters'])) {
-        addAll(['cm', 'centimeter', 'centimeters']);
-      }
-      if (hasAny(['ev', 'exposurevalue'])) {
-        addAll(['ev', 'exposurevalue', 'exposure', 'value']);
-      } else if (hasAllGroups([['exposure'], ['value']])) {
-        addAll(['ev', 'exposurevalue']);
-      }
-    };
-    var searchKey = function searchKey(str) {
-      if (!str) return '';
-      var value = String(str);
-      var normalized = value.toLowerCase();
-      if (typeof normalized.normalize === 'function') {
-        normalized = normalized.normalize('NFD');
-      }
-      normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
-      normalized = normalizeUnicodeFractions(normalized);
-      normalized = normalizeNumberWords(normalized);
-      normalized = normalizeSpellingVariants(normalized);
-      normalized = normaliseMarkVariants(normalized);
-      var simplified = normalized.replace(/[^a-z0-9]+/g, '');
-      if (simplified) return simplified;
-      return value.toLowerCase().replace(/\s+/g, '');
-    };
-    var searchTokens = function searchTokens(str) {
-      if (!str) return [];
-      var normalized = String(str).toLowerCase();
-      if (typeof normalized.normalize === 'function') {
-        normalized = normalized.normalize('NFD');
-      }
-      normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x by ');
-      normalized = normalizeUnicodeFractions(normalized);
-      var numberNormalized = normalizeNumberWords(normalized);
-      var tokens = new Set();
-      var initialWords = [];
-      var addToken = function addToken(token) {
-        if (!token) return;
-        var cleaned = token.replace(/[^a-z0-9]+/g, '');
-        if (cleaned) tokens.add(cleaned);
-      };
-      var isAlpha = function isAlpha(value) {
-        return /^[a-z]+$/.test(value);
-      };
-      var isNumeric = function isNumeric(value) {
-        return /^\d+$/.test(value);
-      };
-      var addAlphaNumericVariants = function addAlphaNumericVariants(segment) {
-        if (!segment) return;
-        var groups = segment.match(/[a-z]+|\d+/g);
-        if (!groups || groups.length <= 1) return;
-        groups.forEach(function (part) {
-          if (isNumeric(part) || part.length > 1) {
-            addToken(part);
-          }
-        });
-        for (var index = 0; index < groups.length - 1; index += 1) {
-          var current = groups[index];
-          var next = groups[index + 1];
-          if (!current || !next) continue;
-          var combined = "".concat(current).concat(next);
-          if (!combined || combined === segment) continue;
-          if (isAlpha(current) && isNumeric(next) || isNumeric(current) && isAlpha(next) || current.length > 1 && next.length > 1) {
-            addToken(combined);
-          }
-        }
-      };
-      var processParts = function processParts(strToProcess) {
-        var collectInitials = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-        strToProcess.split(/\s+/).forEach(function (part) {
-          if (!part) return;
-          addToken(part);
-          part.split(/[^a-z0-9]+/).filter(Boolean).forEach(function (segment) {
-            addToken(segment);
-            addAlphaNumericVariants(segment);
-            if (collectInitials && /^[a-z]/.test(segment)) {
-              initialWords.push(segment);
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            if (typeof error === 'undefined') {
+              console.warn(message);
+            } else {
+              console.warn(message, error);
             }
-          });
-        });
-      };
-      processParts(normalized, true);
-      if (numberNormalized !== normalized) {
-        processParts(numberNormalized);
+          } catch (consoleError) {
+            void consoleError;
+          }
+        }
       }
-      var spellingNormalized = normalizeSpellingVariants(numberNormalized);
-      if (spellingNormalized !== numberNormalized) {
-        processParts(spellingNormalized);
+      var candidates = [];
+      if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        var registry = null;
+        try {
+          registry = moduleBase.getModuleRegistry(globalScope);
+        } catch (error) {
+          logModuleWarning('Unable to resolve cine.features.featureSearchEngine module registry.', error);
+        }
+        if (registry && typeof registry.get === 'function') {
+          try {
+            var fromRegistry = registry.get('cine.features.featureSearchEngine');
+            if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+              candidates.push(fromRegistry);
+            }
+          } catch (error) {
+            logModuleWarning('Unable to read cine.features.featureSearchEngine module.', error);
+          }
+        }
       }
-      var markNormalized = normaliseMarkVariants(spellingNormalized);
-      if (markNormalized !== spellingNormalized) {
-        processParts(markNormalized);
+      var scopeCandidates = [];
+      if (globalScope && scopeCandidates.indexOf(globalScope) === -1) {
+        scopeCandidates.push(globalScope);
       }
-      if (initialWords.length >= 2) {
-        var MAX_INITIALISM_LENGTH = 6;
-        var initials = initialWords.map(function (word) {
-          return word[0];
-        }).filter(Boolean);
-        var limit = Math.min(initials.length, MAX_INITIALISM_LENGTH);
-        for (var start = 0; start < limit; start++) {
-          var current = '';
-          for (var index = start; index < limit; index++) {
-            current += initials[index];
-            if (current.length >= 2) {
-              addToken(current);
+      if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) {
+        scopeCandidates.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) {
+        scopeCandidates.push(window);
+      }
+      if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) {
+        scopeCandidates.push(self);
+      }
+      if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
+        scopeCandidates.push(global);
+      }
+      for (var index = 0; index < scopeCandidates.length; index += 1) {
+        var scope = scopeCandidates[index];
+        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+          continue;
+        }
+        try {
+          var exposed = scope.cineFeaturesFeatureSearchEngine;
+          if (exposed && candidates.indexOf(exposed) === -1) {
+            candidates.push(exposed);
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+      for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
+        var candidate = candidates[_index4];
+        if (candidate && typeof candidate.createEngine === 'function') {
+          if (globalScope && !globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
+            try {
+              globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY] = candidate;
+            } catch (error) {
+              void error;
             }
           }
+          return candidate;
         }
       }
-      var markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
-      var match;
-      var variantSource = spellingNormalized || normalized;
-      while ((match = markPattern.exec(variantSource)) !== null) {
-        var prefix = match[1];
-        var rawValue = match[2];
-        var _parseMarkSuffix2 = parseMarkSuffix(rawValue),
-          cleaned = _parseMarkSuffix2.cleaned,
-          number = _parseMarkSuffix2.number;
-        if (!cleaned) continue;
-        var altPrefix = prefix === 'mk' ? 'mark' : 'mk';
-        addToken(prefix);
-        addToken(altPrefix);
-        addToken(cleaned);
-        addToken("".concat(prefix).concat(cleaned));
-        addToken("".concat(altPrefix).concat(cleaned));
-        if (number != null) {
-          var numberToken = String(number);
-          addToken(numberToken);
-          addToken("".concat(prefix).concat(numberToken));
-          addToken("".concat(altPrefix).concat(numberToken));
-        }
-      }
-      applySearchTokenSynonyms(tokens, addToken);
-      return Array.from(tokens);
-    };
+      return null;
+    }
+    var featureSearchEngineModuleApi = resolveFeatureSearchEngineModuleApi();
+    var fallbackFeatureSearchEngine = createFeatureSearchEngineFallback();
+    var featureSearchEngine = featureSearchEngineModuleApi && typeof featureSearchEngineModuleApi.createEngine === 'function' ? featureSearchEngineModuleApi.createEngine() : fallbackFeatureSearchEngine;
+    var FEATURE_SEARCH_FUZZY_MAX_DISTANCE = Number.isFinite(featureSearchEngineModuleApi === null || featureSearchEngineModuleApi === void 0 ? void 0 : featureSearchEngineModuleApi.FEATURE_SEARCH_FUZZY_MAX_DISTANCE) ? featureSearchEngineModuleApi.FEATURE_SEARCH_FUZZY_MAX_DISTANCE : featureSearchEngine.FEATURE_SEARCH_FUZZY_MAX_DISTANCE || fallbackFeatureSearchEngine.FEATURE_SEARCH_FUZZY_MAX_DISTANCE;
+    var parseMarkSuffix = typeof featureSearchEngine.parseMarkSuffix === 'function' ? featureSearchEngine.parseMarkSuffix : fallbackFeatureSearchEngine.parseMarkSuffix;
+    var normaliseMarkVariants = typeof featureSearchEngine.normaliseMarkVariants === 'function' ? featureSearchEngine.normaliseMarkVariants : fallbackFeatureSearchEngine.normaliseMarkVariants;
+    var normalizeUnicodeFractions = typeof featureSearchEngine.normalizeUnicodeFractions === 'function' ? featureSearchEngine.normalizeUnicodeFractions : fallbackFeatureSearchEngine.normalizeUnicodeFractions;
+    var normalizeNumberWords = typeof featureSearchEngine.normalizeNumberWords === 'function' ? featureSearchEngine.normalizeNumberWords : fallbackFeatureSearchEngine.normalizeNumberWords;
+    var normalizeSpellingVariants = typeof featureSearchEngine.normalizeSpellingVariants === 'function' ? featureSearchEngine.normalizeSpellingVariants : fallbackFeatureSearchEngine.normalizeSpellingVariants;
+    var applySearchTokenSynonyms = typeof featureSearchEngine.applySearchTokenSynonyms === 'function' ? featureSearchEngine.applySearchTokenSynonyms : fallbackFeatureSearchEngine.applySearchTokenSynonyms;
+    var searchKey = typeof featureSearchEngine.searchKey === 'function' ? function (value) {
+      return featureSearchEngine.searchKey(value);
+    } : fallbackFeatureSearchEngine.searchKey;
+    var searchTokens = typeof featureSearchEngine.searchTokens === 'function' ? function (value) {
+      return featureSearchEngine.searchTokens(value);
+    } : fallbackFeatureSearchEngine.searchTokens;
+    var computeTokenMatchDetails = typeof featureSearchEngine.computeTokenMatchDetails === 'function' ? function (entryTokens, queryTokens) {
+      return featureSearchEngine.computeTokenMatchDetails(entryTokens, queryTokens);
+    } : fallbackFeatureSearchEngine.computeTokenMatchDetails;
+    var findBestSearchMatch = typeof featureSearchEngine.findBestSearchMatch === 'function' ? function (map, key) {
+      var tokens = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      return featureSearchEngine.findBestSearchMatch(map, key, tokens);
+    } : fallbackFeatureSearchEngine.findBestSearchMatch;
+    var getFuzzyDistance = typeof featureSearchEngine.getFuzzyDistance === 'function' ? function (source, target) {
+      return featureSearchEngine.getFuzzyDistance(source, target);
+    } : fallbackFeatureSearchEngine.getFuzzyDistance;
+    var computeFuzzyTokenScore = typeof featureSearchEngine.computeFuzzyTokenScore === 'function' ? function (token, entryToken) {
+      return featureSearchEngine.computeFuzzyTokenScore(token, entryToken);
+    } : fallbackFeatureSearchEngine.computeFuzzyTokenScore;
     var FEATURE_CONTEXT_LIMIT = 3;
     var toTitleCase = function toTitleCase(str) {
       return str.replace(/\b([a-z])/g, function (_, ch) {
@@ -9284,20 +9290,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!select) return '';
       var base = normalizeFeatureSearchDetail(entry.label || '').toLowerCase();
       var helpTexts = collectFeatureSearchHelpTexts(select);
-      var _iterator10 = _createForOfIteratorHelper(helpTexts),
-        _step10;
+      var _iterator12 = _createForOfIteratorHelper(helpTexts),
+        _step12;
       try {
-        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-          var text = _step10.value;
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var text = _step12.value;
           var detail = normalizeFeatureSearchDetail(text);
           if (detail && (!base || detail.toLowerCase() !== base)) {
             return detail;
           }
         }
       } catch (err) {
-        _iterator10.e(err);
+        _iterator12.e(err);
       } finally {
-        _iterator10.f();
+        _iterator12.f();
       }
       var contexts = collectFeatureContexts(select, base);
       if (contexts.length) {
@@ -9364,72 +9370,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         featureMap.set(baseKey, [existing, entry]);
       }
       return entry;
-    };
-    var computeTokenMatchDetails = function computeTokenMatchDetails() {
-      var entryTokens = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var queryTokens = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-      if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
-        return {
-          score: 0,
-          matched: 0
-        };
-      }
-      var validQueryTokens = Array.isArray(queryTokens) ? queryTokens.filter(Boolean) : [];
-      if (validQueryTokens.length === 0) {
-        return {
-          score: 0,
-          matched: 0
-        };
-      }
-      var total = 0;
-      var matched = 0;
-      var _iterator11 = _createForOfIteratorHelper(validQueryTokens),
-        _step11;
-      try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var token = _step11.value;
-          var best = 0;
-          var _iterator12 = _createForOfIteratorHelper(entryTokens),
-            _step12;
-          try {
-            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-              var entryToken = _step12.value;
-              if (!entryToken) continue;
-              if (entryToken === token) {
-                best = 3;
-                break;
-              }
-              if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
-                best = Math.max(best, 2);
-              } else if (entryToken.includes(token) || token.includes(entryToken)) {
-                best = Math.max(best, 1);
-              }
-            }
-          } catch (err) {
-            _iterator12.e(err);
-          } finally {
-            _iterator12.f();
-          }
-          if (best > 0) {
-            matched += 1;
-            total += best;
-          }
-        }
-      } catch (err) {
-        _iterator11.e(err);
-      } finally {
-        _iterator11.f();
-      }
-      if (matched === 0) {
-        return {
-          score: 0,
-          matched: 0
-        };
-      }
-      return {
-        score: total,
-        matched: matched
-      };
     };
     var escapeFeatureSearchRegExp = function escapeFeatureSearchRegExp(value) {
       return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -9582,8 +9522,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             _step14;
           try {
             for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-              var _text = _step14.value;
-              if (regex.test(_text)) {
+              var _text3 = _step14.value;
+              if (regex.test(_text3)) {
                 matched = true;
                 score = Math.max(score, validTokens.length * 6);
                 break;
@@ -9733,183 +9673,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return distance <= 3 && distance / maxLength <= 0.4;
     };
-    function findBestSearchMatch(map, key) {
-      var tokens = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      var queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
-      var hasKey = Boolean(key);
-      if (!hasKey && queryTokens.length === 0) return null;
-      var toResult = function toResult(entryKey, entryValue, matchType) {
-        var score = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-        var matchedCount = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-        var extras = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
-        return _objectSpread({
-          key: entryKey,
-          value: entryValue,
-          matchType: matchType,
-          score: score,
-          matchedCount: matchedCount
-        }, extras);
-      };
-      var flattened = [];
-      var _iterator16 = _createForOfIteratorHelper(map.entries()),
-        _step16;
-      try {
-        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-          var _step16$value = _slicedToArray(_step16.value, 2),
-            _entryKey = _step16$value[0],
-            _entryValue2 = _step16$value[1];
-          if (!_entryValue2) continue;
-          if (Array.isArray(_entryValue2)) {
-            var _iterator18 = _createForOfIteratorHelper(_entryValue2),
-              _step18;
-            try {
-              for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-                var value = _step18.value;
-                if (value) flattened.push([_entryKey, value]);
-              }
-            } catch (err) {
-              _iterator18.e(err);
-            } finally {
-              _iterator18.f();
-            }
-          } else {
-            flattened.push([_entryKey, _entryValue2]);
-          }
-        }
-      } catch (err) {
-        _iterator16.e(err);
-      } finally {
-        _iterator16.f();
-      }
-      if (hasKey) {
-        var exactCandidates = flattened.filter(function (_ref22) {
-          var _ref23 = _slicedToArray(_ref22, 1),
-            entryKey = _ref23[0];
-          return entryKey === key;
-        });
-        if (exactCandidates.length) {
-          var _bestEntry;
-          var bestEntry = exactCandidates[0][1];
-          var bestDetails = queryTokens.length > 0 ? computeTokenMatchDetails(((_bestEntry = bestEntry) === null || _bestEntry === void 0 ? void 0 : _bestEntry.tokens) || [], queryTokens) : {
-            score: Number.POSITIVE_INFINITY,
-            matched: queryTokens.length
-          };
-          var _iterator17 = _createForOfIteratorHelper(exactCandidates.slice(1)),
-            _step17;
-          try {
-            for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-              var _step17$value = _slicedToArray(_step17.value, 2),
-                entryValue = _step17$value[1];
-              if (!queryTokens.length) break;
-              var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
-              if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
-                bestDetails = details;
-                bestEntry = entryValue;
-              }
-            }
-          } catch (err) {
-            _iterator17.e(err);
-          } finally {
-            _iterator17.f();
-          }
-          return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
-        }
-      }
-      var bestTokenMatch = null;
-      var bestTokenScore = 0;
-      var bestTokenMatched = 0;
-      var bestTokenKeyDistance = Number.POSITIVE_INFINITY;
-      var bestPrefixMatch = null;
-      var bestPrefixScore = Number.NEGATIVE_INFINITY;
-      var bestPrefixMatched = 0;
-      var bestPrefixLength = Number.POSITIVE_INFINITY;
-      var bestSubsetMatch = null;
-      var bestSubsetScore = Number.NEGATIVE_INFINITY;
-      var bestSubsetMatched = 0;
-      var bestSubsetLength = -1;
-      var bestPartialMatch = null;
-      var bestPartialScore = Number.NEGATIVE_INFINITY;
-      var bestPartialMatched = 0;
-      var bestFuzzyMatch = null;
-      var bestFuzzyDistance = Number.POSITIVE_INFINITY;
-      var bestFuzzyLength = Number.POSITIVE_INFINITY;
-      var keyLength = hasKey ? key.length : 0;
-      for (var _i9 = 0, _flattened = flattened; _i9 < _flattened.length; _i9++) {
-        var _flattened$_i = _slicedToArray(_flattened[_i9], 2),
-          entryKey = _flattened$_i[0],
-          _entryValue = _flattened$_i[1];
-        if (!_entryValue) continue;
-        var entryTokens = (_entryValue === null || _entryValue === void 0 ? void 0 : _entryValue.tokens) || [];
-        var tokenDetails = queryTokens.length ? computeTokenMatchDetails(entryTokens, queryTokens) : {
-          score: 0,
-          matched: 0
-        };
-        if (hasKey && entryKey.startsWith(key)) {
-          var score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          var candidate = toResult(entryKey, _entryValue, 'keyPrefix', score, tokenDetails.matched);
-          if (!bestPrefixMatch || score > bestPrefixScore || score === bestPrefixScore && (tokenDetails.matched > bestPrefixMatched || tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)) {
-            bestPrefixMatch = candidate;
-            bestPrefixScore = score;
-            bestPrefixMatched = tokenDetails.matched;
-            bestPrefixLength = entryKey.length;
-          }
-        }
-        if (queryTokens.length) {
-          var distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
-          if (tokenDetails.score > bestTokenScore || tokenDetails.score === bestTokenScore && (tokenDetails.matched > bestTokenMatched || tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)) {
-            bestTokenMatch = toResult(entryKey, _entryValue, 'token', tokenDetails.score, tokenDetails.matched);
-            bestTokenScore = tokenDetails.score;
-            bestTokenMatched = tokenDetails.matched;
-            bestTokenKeyDistance = distance;
-          }
-        }
-        if (hasKey && key.startsWith(entryKey)) {
-          var _score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          var _candidate = toResult(entryKey, _entryValue, 'keySubset', _score, tokenDetails.matched);
-          if (!bestSubsetMatch || _score > bestSubsetScore || _score === bestSubsetScore && (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched)) {
-            bestSubsetMatch = _candidate;
-            bestSubsetScore = _score;
-            bestSubsetMatched = tokenDetails.matched;
-            bestSubsetLength = entryKey.length;
-          }
-        } else if (hasKey && (entryKey.includes(key) || key.includes(entryKey))) {
-          var _candidate2 = toResult(entryKey, _entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
-          if (!bestPartialMatch || tokenDetails.score > bestPartialScore || tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched) {
-            bestPartialMatch = _candidate2;
-            bestPartialScore = tokenDetails.score;
-            bestPartialMatched = tokenDetails.matched;
-          }
-        }
-        if (hasKey && entryKey) {
-          var fuzzyDistance = computeLevenshteinDistance(entryKey, key);
-          if (isAcceptableFuzzyMatch(entryKey, key, fuzzyDistance)) {
-            if (!bestFuzzyMatch || fuzzyDistance < bestFuzzyDistance || fuzzyDistance === bestFuzzyDistance && entryKey.length < bestFuzzyLength) {
-              bestFuzzyMatch = toResult(entryKey, _entryValue, 'fuzzy', tokenDetails.score, tokenDetails.matched, {
-                fuzzyDistance: fuzzyDistance
-              });
-              bestFuzzyDistance = fuzzyDistance;
-              bestFuzzyLength = entryKey.length;
-            }
-          }
-        }
-      }
-      if (bestTokenMatch && bestTokenScore > 0) {
-        return bestTokenMatch;
-      }
-      if (bestPrefixMatch) {
-        return bestPrefixMatch;
-      }
-      if (bestSubsetMatch) {
-        return bestSubsetMatch;
-      }
-      if (bestPartialMatch) {
-        return bestPartialMatch;
-      }
-      if (bestFuzzyMatch) {
-        return bestFuzzyMatch;
-      }
-      return null;
-    }
     var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
     var existingDevicesHeading = document.getElementById("existingDevicesHeading");
     var batteryComparisonSection = document.getElementById("batteryComparison");
@@ -10048,9 +9811,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return computeRelativeLuminance(pinkRgb);
     }();
     function shouldEnableDarkModeAccentBoost() {
-      var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        color = _ref24.color,
-        highContrast = _ref24.highContrast;
+      var _ref22 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        color = _ref22.color,
+        highContrast = _ref22.highContrast;
       if (typeof document === 'undefined') return false;
       if (!document.body || !document.body.classList.contains('dark-mode')) return false;
       if (document.body.classList.contains('pink-mode')) return false;
@@ -10200,20 +9963,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
           baseFontSize = computedFontSize;
         }
-        var _iterator19 = _createForOfIteratorHelper(uiScaleProperties),
-          _step19;
+        var _iterator16 = _createForOfIteratorHelper(uiScaleProperties),
+          _step16;
         try {
-          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-            var prop = _step19.value;
+          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+            var prop = _step16.value;
             var value = parseFloat(computedStyle.getPropertyValue(prop));
             if (Number.isFinite(value) && value > 0) {
               baseUIScaleValues[prop] = value;
             }
           }
         } catch (err) {
-          _iterator19.e(err);
+          _iterator16.e(err);
         } finally {
-          _iterator19.f();
+          _iterator16.f();
         }
       } catch (error) {
         console.warn('Unable to read computed styles for UI scaling', error);
@@ -10398,7 +10161,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _loadStoredCustomFonts() {
       _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee6() {
-        var stored, _iterator22, _step22, entry, normalized, _t5, _t6;
+        var stored, _iterator19, _step19, entry, normalized, _t5, _t6;
         return _regenerator().w(function (_context6) {
           while (1) switch (_context6.p = _context6.n) {
             case 0:
@@ -10409,15 +10172,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
               return _context6.a(2);
             case 1:
-              _iterator22 = _createForOfIteratorHelper(stored);
+              _iterator19 = _createForOfIteratorHelper(stored);
               _context6.p = 2;
-              _iterator22.s();
+              _iterator19.s();
             case 3:
-              if ((_step22 = _iterator22.n()).done) {
+              if ((_step19 = _iterator19.n()).done) {
                 _context6.n = 8;
                 break;
               }
-              entry = _step22.value;
+              entry = _step19.value;
               normalized = {
                 id: entry.id,
                 name: sanitizeCustomFontName(entry.name),
@@ -10443,10 +10206,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 9:
               _context6.p = 9;
               _t6 = _context6.v;
-              _iterator22.e(_t6);
+              _iterator19.e(_t6);
             case 10:
               _context6.p = 10;
-              _iterator22.f();
+              _iterator19.f();
               return _context6.f(10);
             case 11:
               return _context6.a(2);
@@ -10541,8 +10304,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee7(name, dataUrl) {
-        var _ref48,
-          _ref48$persist,
+        var _ref46,
+          _ref46$persist,
           persist,
           uniqueName,
           value,
@@ -10555,7 +10318,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.n) {
             case 0:
-              _ref48 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref48$persist = _ref48.persist, persist = _ref48$persist === void 0 ? true : _ref48$persist;
+              _ref46 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref46$persist = _ref46.persist, persist = _ref46$persist === void 0 ? true : _ref46$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -10602,7 +10365,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee8(fileList) {
-        var added, unsupported, failed, persistFailure, _i10, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i1, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
         return _regenerator().w(function (_context8) {
           while (1) switch (_context8.p = _context8.n) {
             case 0:
@@ -10620,13 +10383,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               unsupported = [];
               failed = [];
               persistFailure = false;
-              _i10 = 0, _Array$from = Array.from(fileList);
+              _i1 = 0, _Array$from = Array.from(fileList);
             case 2:
-              if (!(_i10 < _Array$from.length)) {
+              if (!(_i1 < _Array$from.length)) {
                 _context8.n = 9;
                 break;
               }
-              file = _Array$from[_i10];
+              file = _Array$from[_i1];
               if (isSupportedFontFile(file)) {
                 _context8.n = 3;
                 break;
@@ -10662,7 +10425,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               console.warn('Failed to import custom font', _t7);
               failed.push(file && typeof file.name === 'string' ? file.name : '');
             case 8:
-              _i10++;
+              _i1++;
               _context8.n = 2;
               break;
             case 9:
@@ -10802,7 +10565,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof window === 'undefined') return null;
       if (typeof window.queryLocalFonts === 'function') {
         return function () {
-          var _ref25 = _asyncToGenerator(_regenerator().m(function _callee(options) {
+          var _ref23 = _asyncToGenerator(_regenerator().m(function _callee(options) {
             var _t;
             return _regenerator().w(function (_context) {
               while (1) switch (_context.n) {
@@ -10816,7 +10579,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee);
           }));
           return function (_x9) {
-            return _ref25.apply(this, arguments);
+            return _ref23.apply(this, arguments);
           };
         }();
       }
@@ -10824,7 +10587,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var _navigator = navigator,
           fonts = _navigator.fonts;
         return function () {
-          var _ref26 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
+          var _ref24 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
             var _t2;
             return _regenerator().w(function (_context2) {
               while (1) switch (_context2.n) {
@@ -10838,7 +10601,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee2);
           }));
           return function (_x0) {
-            return _ref26.apply(this, arguments);
+            return _ref24.apply(this, arguments);
           };
         }();
       }
@@ -10958,7 +10721,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _requestLocalFonts() {
       _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee0() {
-        var fonts, added, duplicates, seenValues, _iterator23, _step23, font, rawName, name, _value4, _ensureFontFamilyOpti3, option, created, _t9, _t0;
+        var fonts, added, duplicates, seenValues, _iterator20, _step20, font, rawName, name, _value4, _ensureFontFamilyOpti3, option, created, _t9, _t0;
         return _regenerator().w(function (_context0) {
           while (1) switch (_context0.p = _context0.n) {
             case 0:
@@ -10984,15 +10747,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               added = [];
               duplicates = [];
               seenValues = new Set();
-              _iterator23 = _createForOfIteratorHelper(fonts);
+              _iterator20 = _createForOfIteratorHelper(fonts);
               _context0.p = 5;
-              _iterator23.s();
+              _iterator20.s();
             case 6:
-              if ((_step23 = _iterator23.n()).done) {
+              if ((_step20 = _iterator20.n()).done) {
                 _context0.n = 11;
                 break;
               }
-              font = _step23.value;
+              font = _step20.value;
               rawName = font && (font.family || font.fullName || font.postscriptName);
               name = rawName ? String(rawName).trim() : '';
               if (name) {
@@ -11034,10 +10797,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 12:
               _context0.p = 12;
               _t9 = _context0.v;
-              _iterator23.e(_t9);
+              _iterator20.e(_t9);
             case 13:
               _context0.p = 13;
-              _iterator23.f();
+              _iterator20.f();
               return _context0.f(13);
             case 14:
               if (added.length > 0) {
@@ -11116,19 +10879,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       var scale = numericSize / baseFontSize;
-      var _iterator20 = _createForOfIteratorHelper(uiScaleProperties),
-        _step20;
+      var _iterator17 = _createForOfIteratorHelper(uiScaleProperties),
+        _step17;
       try {
-        for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-          var _prop = _step20.value;
+        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+          var _prop = _step17.value;
           var baseValue = baseUIScaleValues[_prop];
           if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
           document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
         }
       } catch (err) {
-        _iterator20.e(err);
+        _iterator17.e(err);
       } finally {
-        _iterator20.f();
+        _iterator17.f();
       }
       document.documentElement.style.setProperty('--ui-scale', String(scale));
     }
@@ -11480,11 +11243,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var overviewCandidates = getOverviewTitleCandidates();
       var lowerText = textValue.toLowerCase();
-      var _iterator21 = _createForOfIteratorHelper(overviewCandidates),
-        _step21;
+      var _iterator18 = _createForOfIteratorHelper(overviewCandidates),
+        _step18;
       try {
-        for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-          var label = _step21.value;
+        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+          var label = _step18.value;
           var normalizedLabel = label.trim();
           if (!normalizedLabel) continue;
           var lowerLabel = normalizedLabel.toLowerCase();
@@ -11500,9 +11263,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       } catch (err) {
-        _iterator21.e(err);
+        _iterator18.e(err);
       } finally {
-        _iterator21.f();
+        _iterator18.f();
       }
       if (overviewCandidates.some(function (label) {
         return lowerText === label.toLowerCase();
@@ -11964,7 +11727,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (gearListOutput) {
         if (safeGearHtml) {
           gearListOutput.innerHTML = safeGearHtml;
+          if (typeof ensureGearListCustomControls === 'function') {
+            ensureGearListCustomControls(gearListOutput);
+          }
           gearListOutput.classList.remove('hidden');
+          if (typeof enhanceGearListItems === 'function') {
+            enhanceGearListItems(gearListOutput);
+          }
           applyFilterSelectionsToGearList();
           renderFilterDetails();
           var findDevice = function findDevice(name) {
@@ -11985,8 +11754,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   categoryPath: path
                 };
               }
-              for (var _i0 = 0, _Object$entries6 = Object.entries(node); _i0 < _Object$entries6.length; _i0++) {
-                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i0], 2),
+              for (var _i9 = 0, _Object$entries6 = Object.entries(node); _i9 < _Object$entries6.length; _i9++) {
+                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i9], 2),
                   key = _Object$entries6$_i[0],
                   _value2 = _Object$entries6$_i[1];
                 if (!isPlainObjectValue(_value2)) continue;
@@ -12009,12 +11778,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               categoryPath: []
             };
           };
-          var buildGearItemHelp = function buildGearItemHelp(_ref27) {
-            var name = _ref27.name,
-              countText = _ref27.countText,
-              deviceInfo = _ref27.deviceInfo,
-              libraryCategory = _ref27.libraryCategory,
-              tableCategory = _ref27.tableCategory;
+          var buildGearItemHelp = function buildGearItemHelp(_ref25) {
+            var name = _ref25.name,
+              countText = _ref25.countText,
+              deviceInfo = _ref25.deviceInfo,
+              libraryCategory = _ref25.libraryCategory,
+              tableCategory = _ref25.tableCategory;
             var parts = [];
             var label = "".concat(countText || '').concat(name).trim();
             if (label) parts.push(label);
@@ -12186,10 +11955,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function sanitizeProjectInfo(info) {
       if (!info || _typeof(info) !== 'object') return null;
       var result = {};
-      Object.entries(info).forEach(function (_ref28) {
-        var _ref29 = _slicedToArray(_ref28, 2),
-          key = _ref29[0],
-          value = _ref29[1];
+      Object.entries(info).forEach(function (_ref26) {
+        var _ref27 = _slicedToArray(_ref26, 2),
+          key = _ref27[0],
+          value = _ref27[1];
         var sanitized = sanitizeProjectInfoValue(value);
         if (sanitized !== undefined) {
           result[key] = sanitized;
@@ -13335,25 +13104,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setFizConnectors([]);
     }
     function getAllRecordingMedia() {
-      var selectedCameraName =
-        cameraSelect && typeof cameraSelect.value === 'string'
-          ? cameraSelect.value.trim()
-          : '';
+      var _devices;
+      var selectedCameraName = cameraSelect && typeof cameraSelect.value === 'string' ? cameraSelect.value.trim() : '';
       var normalizedCameraName = selectedCameraName === 'None' ? '' : selectedCameraName;
-      var selectedCamera =
-        normalizedCameraName && devices && devices.cameras
-          ? devices.cameras[normalizedCameraName]
-          : null;
-
-      var hasSpecificMedia = Array.isArray(selectedCamera && selectedCamera.recordingMedia)
-        && selectedCamera.recordingMedia.length > 0;
-
-      var sourceCameras = hasSpecificMedia
-        ? [selectedCamera]
-        : Object.values(devices && devices.cameras || {});
-
+      var selectedCamera = normalizedCameraName && devices && devices.cameras ? devices.cameras[normalizedCameraName] : null;
+      var hasSpecificMedia = Array.isArray(selectedCamera === null || selectedCamera === void 0 ? void 0 : selectedCamera.recordingMedia) && selectedCamera.recordingMedia.length > 0;
+      var sourceCameras = hasSpecificMedia ? [selectedCamera] : Object.values(((_devices = devices) === null || _devices === void 0 ? void 0 : _devices.cameras) || {});
       var media = new Set();
-
       sourceCameras.forEach(function (cam) {
         if (!cam || !Array.isArray(cam.recordingMedia)) {
           return;
@@ -13366,7 +13123,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         });
       });
-
       return Array.from(media).sort(localeSort);
     }
     var recordingMediaOptions = getAllRecordingMedia();
@@ -13474,11 +13230,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref30 = item || {},
-            _ref30$type = _ref30.type,
-            type = _ref30$type === void 0 ? '' : _ref30$type,
-            _ref30$notes = _ref30.notes,
-            notes = _ref30$notes === void 0 ? '' : _ref30$notes;
+          var _ref28 = item || {},
+            _ref28$type = _ref28.type,
+            type = _ref28$type === void 0 ? '' : _ref28$type,
+            _ref28$notes = _ref28.notes,
+            notes = _ref28$notes === void 0 ? '' : _ref28$notes;
           cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
         });
       } else {
@@ -13700,13 +13456,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref31 = item || {},
-            _ref31$type = _ref31.type,
-            type = _ref31$type === void 0 ? '' : _ref31$type,
-            _ref31$mount = _ref31.mount,
-            mount = _ref31$mount === void 0 ? 'native' : _ref31$mount,
-            _ref31$notes = _ref31.notes,
-            notes = _ref31$notes === void 0 ? '' : _ref31$notes;
+          var _ref29 = item || {},
+            _ref29$type = _ref29.type,
+            type = _ref29$type === void 0 ? '' : _ref29$type,
+            _ref29$mount = _ref29.mount,
+            mount = _ref29$mount === void 0 ? 'native' : _ref29$mount,
+            _ref29$notes = _ref29.notes,
+            notes = _ref29$notes === void 0 ? '' : _ref29$notes;
           batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
         });
       } else {
@@ -13844,15 +13600,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref32 = item || {},
-            _ref32$type = _ref32.type,
-            type = _ref32$type === void 0 ? '' : _ref32$type,
-            _ref32$resolution = _ref32.resolution,
-            resolution = _ref32$resolution === void 0 ? '' : _ref32$resolution,
-            _ref32$connector = _ref32.connector,
-            connector = _ref32$connector === void 0 ? '' : _ref32$connector,
-            _ref32$notes = _ref32.notes,
-            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
+          var _ref30 = item || {},
+            _ref30$type = _ref30.type,
+            type = _ref30$type === void 0 ? '' : _ref30$type,
+            _ref30$resolution = _ref30.resolution,
+            resolution = _ref30$resolution === void 0 ? '' : _ref30$resolution,
+            _ref30$connector = _ref30.connector,
+            connector = _ref30$connector === void 0 ? '' : _ref30$connector,
+            _ref30$notes = _ref30.notes,
+            notes = _ref30$notes === void 0 ? '' : _ref30$notes;
           viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
         });
       } else {
@@ -13970,11 +13726,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref33 = item || {},
-            _ref33$type = _ref33.type,
-            type = _ref33$type === void 0 ? '' : _ref33$type,
-            _ref33$mount = _ref33.mount,
-            mount = _ref33$mount === void 0 ? 'native' : _ref33$mount;
+          var _ref31 = item || {},
+            _ref31$type = _ref31.type,
+            type = _ref31$type === void 0 ? '' : _ref31$type,
+            _ref31$mount = _ref31.mount,
+            mount = _ref31$mount === void 0 ? 'native' : _ref31$mount;
           lensMountContainer.appendChild(createLensMountRow(type, mount));
         });
       } else {
@@ -14193,17 +13949,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref34 = item || {},
-            _ref34$type = _ref34.type,
-            type = _ref34$type === void 0 ? '' : _ref34$type,
-            _ref34$voltage = _ref34.voltage,
-            voltage = _ref34$voltage === void 0 ? '' : _ref34$voltage,
-            _ref34$current = _ref34.current,
-            current = _ref34$current === void 0 ? '' : _ref34$current,
-            _ref34$wattage = _ref34.wattage,
-            wattage = _ref34$wattage === void 0 ? '' : _ref34$wattage,
-            _ref34$notes = _ref34.notes,
-            notes = _ref34$notes === void 0 ? '' : _ref34$notes;
+          var _ref32 = item || {},
+            _ref32$type = _ref32.type,
+            type = _ref32$type === void 0 ? '' : _ref32$type,
+            _ref32$voltage = _ref32.voltage,
+            voltage = _ref32$voltage === void 0 ? '' : _ref32$voltage,
+            _ref32$current = _ref32.current,
+            current = _ref32$current === void 0 ? '' : _ref32$current,
+            _ref32$wattage = _ref32.wattage,
+            wattage = _ref32$wattage === void 0 ? '' : _ref32$wattage,
+            _ref32$notes = _ref32.notes,
+            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
           powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
         });
       } else {
@@ -14319,11 +14075,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref35 = item || {},
-            _ref35$type = _ref35.type,
-            type = _ref35$type === void 0 ? '' : _ref35$type,
-            _ref35$notes = _ref35.notes,
-            notes = _ref35$notes === void 0 ? '' : _ref35$notes;
+          var _ref33 = item || {},
+            _ref33$type = _ref33.type,
+            type = _ref33$type === void 0 ? '' : _ref33$type,
+            _ref33$notes = _ref33.notes,
+            notes = _ref33$notes === void 0 ? '' : _ref33$notes;
           timecodeContainer.appendChild(createTimecodeRow(type, notes));
         });
       } else {
@@ -14618,22 +14374,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       initFavoritableSelect(selectElem);
     }
     function populateMonitorSelect() {
-      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref36) {
-        var _ref37 = _slicedToArray(_ref36, 2),
-          data = _ref37[1];
+      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref34) {
+        var _ref35 = _slicedToArray(_ref34, 2),
+          data = _ref35[1];
         return !(data.wirelessRX && !data.wirelessTx);
       }));
       populateSelect(monitorSelect, filtered, true);
     }
     function getCompatibleCagesForCamera(cameraName) {
-      var _devices;
-      var allCages = ((_devices = devices) === null || _devices === void 0 || (_devices = _devices.accessories) === null || _devices === void 0 ? void 0 : _devices.cages) || {};
+      var _devices2;
+      var allCages = ((_devices2 = devices) === null || _devices2 === void 0 || (_devices2 = _devices2.accessories) === null || _devices2 === void 0 ? void 0 : _devices2.cages) || {};
       if (!cameraName || cameraName === 'None') {
         return allCages;
       }
-      return Object.fromEntries(Object.entries(allCages).filter(function (_ref38) {
-        var _ref39 = _slicedToArray(_ref38, 2),
-          cage = _ref39[1];
+      return Object.fromEntries(Object.entries(allCages).filter(function (_ref36) {
+        var _ref37 = _slicedToArray(_ref36, 2),
+          cage = _ref37[1];
         if (!cage || _typeof(cage) !== 'object') {
           return true;
         }
@@ -14803,9 +14559,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref40) {
-        var list = _ref40.list,
-          filterInput = _ref40.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref38) {
+        var list = _ref38.list,
+          filterInput = _ref38.filterInput;
         if (!list) return;
         var value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
@@ -15013,7 +14769,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     function renderFeedbackTable(currentKey) {
-      var _devices2, _cameraSelect, _devices3, _monitorSelect, _devices4, _videoSelect, _devices7, _distanceSelect, _devices8, _monitorSelect2, _texts$currentLang74, _texts$en171;
+      var _devices3, _cameraSelect, _devices4, _monitorSelect, _devices5, _videoSelect, _devices8, _distanceSelect, _devices9, _monitorSelect2, _texts$currentLang74, _texts$en171;
       var container = document.getElementById('feedbackTableContainer');
       var table = document.getElementById('userFeedbackTable');
       var feedbackData = loadFeedbackSafe();
@@ -15116,21 +14872,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (/h264|h\.264|avc|xavc|avchd|mpeg-4/.test(c)) return 1.5;
         return 1;
       };
-      var camPower = ((_devices2 = devices) === null || _devices2 === void 0 || (_devices2 = _devices2.cameras) === null || _devices2 === void 0 || (_devices2 = _devices2[(_cameraSelect = cameraSelect) === null || _cameraSelect === void 0 ? void 0 : _cameraSelect.value]) === null || _devices2 === void 0 ? void 0 : _devices2.powerDrawWatts) || 0;
-      var monitorPower = ((_devices3 = devices) === null || _devices3 === void 0 || (_devices3 = _devices3.monitors) === null || _devices3 === void 0 || (_devices3 = _devices3[(_monitorSelect = monitorSelect) === null || _monitorSelect === void 0 ? void 0 : _monitorSelect.value]) === null || _devices3 === void 0 ? void 0 : _devices3.powerDrawWatts) || 0;
-      var videoPower = ((_devices4 = devices) === null || _devices4 === void 0 || (_devices4 = _devices4.video) === null || _devices4 === void 0 || (_devices4 = _devices4[(_videoSelect = videoSelect) === null || _videoSelect === void 0 ? void 0 : _videoSelect.value]) === null || _devices4 === void 0 ? void 0 : _devices4.powerDrawWatts) || 0;
+      var camPower = ((_devices3 = devices) === null || _devices3 === void 0 || (_devices3 = _devices3.cameras) === null || _devices3 === void 0 || (_devices3 = _devices3[(_cameraSelect = cameraSelect) === null || _cameraSelect === void 0 ? void 0 : _cameraSelect.value]) === null || _devices3 === void 0 ? void 0 : _devices3.powerDrawWatts) || 0;
+      var monitorPower = ((_devices4 = devices) === null || _devices4 === void 0 || (_devices4 = _devices4.monitors) === null || _devices4 === void 0 || (_devices4 = _devices4[(_monitorSelect = monitorSelect) === null || _monitorSelect === void 0 ? void 0 : _monitorSelect.value]) === null || _devices4 === void 0 ? void 0 : _devices4.powerDrawWatts) || 0;
+      var videoPower = ((_devices5 = devices) === null || _devices5 === void 0 || (_devices5 = _devices5.video) === null || _devices5 === void 0 || (_devices5 = _devices5[(_videoSelect = videoSelect) === null || _videoSelect === void 0 ? void 0 : _videoSelect.value]) === null || _devices5 === void 0 ? void 0 : _devices5.powerDrawWatts) || 0;
       var motorPower = motorSelects.reduce(function (sum, sel) {
-        var _devices5;
-        return sum + (((_devices5 = devices) === null || _devices5 === void 0 || (_devices5 = _devices5.fiz) === null || _devices5 === void 0 || (_devices5 = _devices5.motors) === null || _devices5 === void 0 || (_devices5 = _devices5[sel.value]) === null || _devices5 === void 0 ? void 0 : _devices5.powerDrawWatts) || 0);
+        var _devices6;
+        return sum + (((_devices6 = devices) === null || _devices6 === void 0 || (_devices6 = _devices6.fiz) === null || _devices6 === void 0 || (_devices6 = _devices6.motors) === null || _devices6 === void 0 || (_devices6 = _devices6[sel.value]) === null || _devices6 === void 0 ? void 0 : _devices6.powerDrawWatts) || 0);
       }, 0);
       var controllerPower = controllerSelects.reduce(function (sum, sel) {
-        var _devices6;
-        return sum + (((_devices6 = devices) === null || _devices6 === void 0 || (_devices6 = _devices6.fiz) === null || _devices6 === void 0 || (_devices6 = _devices6.controllers) === null || _devices6 === void 0 || (_devices6 = _devices6[sel.value]) === null || _devices6 === void 0 ? void 0 : _devices6.powerDrawWatts) || 0);
+        var _devices7;
+        return sum + (((_devices7 = devices) === null || _devices7 === void 0 || (_devices7 = _devices7.fiz) === null || _devices7 === void 0 || (_devices7 = _devices7.controllers) === null || _devices7 === void 0 || (_devices7 = _devices7[sel.value]) === null || _devices7 === void 0 ? void 0 : _devices7.powerDrawWatts) || 0);
       }, 0);
-      var distancePower = ((_devices7 = devices) === null || _devices7 === void 0 || (_devices7 = _devices7.fiz) === null || _devices7 === void 0 || (_devices7 = _devices7.distance) === null || _devices7 === void 0 || (_devices7 = _devices7[(_distanceSelect = distanceSelect) === null || _distanceSelect === void 0 ? void 0 : _distanceSelect.value]) === null || _devices7 === void 0 ? void 0 : _devices7.powerDrawWatts) || 0;
+      var distancePower = ((_devices8 = devices) === null || _devices8 === void 0 || (_devices8 = _devices8.fiz) === null || _devices8 === void 0 || (_devices8 = _devices8.distance) === null || _devices8 === void 0 || (_devices8 = _devices8[(_distanceSelect = distanceSelect) === null || _distanceSelect === void 0 ? void 0 : _distanceSelect.value]) === null || _devices8 === void 0 ? void 0 : _devices8.powerDrawWatts) || 0;
       var otherPower = videoPower + motorPower + controllerPower + distancePower;
       var totalPower = camPower + monitorPower + otherPower;
-      var specBrightness = (_devices8 = devices) === null || _devices8 === void 0 || (_devices8 = _devices8.monitors) === null || _devices8 === void 0 || (_devices8 = _devices8[(_monitorSelect2 = monitorSelect) === null || _monitorSelect2 === void 0 ? void 0 : _monitorSelect2.value]) === null || _devices8 === void 0 ? void 0 : _devices8.brightnessNits;
+      var specBrightness = (_devices9 = devices) === null || _devices9 === void 0 || (_devices9 = _devices9.monitors) === null || _devices9 === void 0 || (_devices9 = _devices9[(_monitorSelect2 = monitorSelect) === null || _monitorSelect2 === void 0 ? void 0 : _monitorSelect2.value]) === null || _devices9 === void 0 ? void 0 : _devices9.brightnessNits;
       var weightedSum = 0;
       var weightTotal = 0;
       var count = 0;
@@ -15470,8 +15226,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
       if (categoryKey === "accessories.cables") {
-        for (var _i1 = 0, _Object$entries7 = Object.entries(categoryDevices); _i1 < _Object$entries7.length; _i1++) {
-          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i1], 2),
+        for (var _i0 = 0, _Object$entries7 = Object.entries(categoryDevices); _i0 < _Object$entries7.length; _i0++) {
+          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i0], 2),
             subcat = _Object$entries7$_i[0],
             devs = _Object$entries7$_i[1];
           for (var name in devs) {
@@ -15487,9 +15243,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref41, categoryKey) {
-        var list = _ref41.list,
-          filterInput = _ref41.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref39, categoryKey) {
+        var list = _ref39.list,
+          filterInput = _ref39.filterInput;
         if (!list) return;
         renderDeviceList(categoryKey, list);
         var filterValue = filterInput ? filterInput.value : '';
@@ -15843,10 +15599,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }], ['storeLoadedSetupState', function () {
       return storeLoadedSetupState;
     }]];
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref42) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        exportName = _ref43[0],
-        getter = _ref43[1];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref40) {
+      var _ref41 = _slicedToArray(_ref40, 2),
+        exportName = _ref41[0],
+        getter = _ref41[1];
       try {
         var _value3 = getter();
         if (typeof _value3 !== 'undefined') {
@@ -15944,10 +15700,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
         cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
-      Object.entries(MODULE_EXPORTS).forEach(function (_ref44) {
-        var _ref45 = _slicedToArray(_ref44, 2),
-          moduleName = _ref45[0],
-          exportNames = _ref45[1];
+      Object.entries(MODULE_EXPORTS).forEach(function (_ref42) {
+        var _ref43 = _slicedToArray(_ref42, 2),
+          moduleName = _ref43[0],
+          exportNames = _ref43[1];
         var moduleRef = scope[moduleName];
         if (!moduleRef || typeof moduleRef.install !== 'function') {
           return;
@@ -15989,10 +15745,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref46) {
-      var _ref47 = _slicedToArray(_ref46, 2),
-        name = _ref47[0],
-        value = _ref47[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref44) {
+      var _ref45 = _slicedToArray(_ref44, 2),
+        name = _ref45[0],
+        value = _ref45[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }

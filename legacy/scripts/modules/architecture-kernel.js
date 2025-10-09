@@ -22,6 +22,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  function resolveScopeUtils(scope) {
+    var primaryScope = scope || LOCAL_SCOPE;
+    if (typeof require === 'function') {
+      try {
+        var required = require('./helpers/scope-utils.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [];
+    function pushCandidate(candidate) {
+      if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(candidate) === -1) {
+        candidates.push(candidate);
+      }
+    }
+    pushCandidate(primaryScope);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      try {
+        var utils = candidate && candidate.cineScopeUtils;
+        if (utils && _typeof(utils) === 'object') {
+          return utils;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+    return null;
+  }
+  var SCOPE_UTILS = resolveScopeUtils(LOCAL_SCOPE);
+  var detectGlobalScopeHelper = SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function' ? function detectWithUtils() {
+    try {
+      return SCOPE_UTILS.detectGlobalScope();
+    } catch (error) {
+      void error;
+    }
+    return fallbackDetectGlobalScope();
+  } : fallbackDetectGlobalScope;
+  var tryRequireHelper = SCOPE_UTILS && typeof SCOPE_UTILS.tryRequire === 'function' ? SCOPE_UTILS.tryRequire : fallbackTryRequire;
+  var collectCandidateScopesHelper = SCOPE_UTILS && typeof SCOPE_UTILS.collectCandidateScopes === 'function' ? function collectCandidateScopesWithUtils(primary, extras, detect) {
+    var detectFn = typeof detect === 'function' ? detect : detectGlobalScopeHelper;
+    return SCOPE_UTILS.collectCandidateScopes(primary, extras, detectFn);
+  } : fallbackCollectCandidateScopes;
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -34,25 +87,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function resolveArchitectureCore(scope) {
-    if (typeof require === 'function') {
-      try {
-        var required = require('./architecture-core.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
+    var required = tryRequireHelper('./architecture-core.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
     }
-    var candidates = [];
-    var primary = scope || LOCAL_SCOPE;
-    if (primary && _typeof(primary) === 'object') {
-      candidates.push(primary);
-    }
-    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
-    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
-    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
-    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    var candidates = collectCandidateScopesHelper(scope || LOCAL_SCOPE, null, detectGlobalScopeHelper);
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
       if (candidate && _typeof(candidate.cineModuleArchitectureCore) === 'object') {
@@ -63,7 +102,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function resolveArchitecture(scope) {
     var targetScope = scope || LOCAL_SCOPE;
-    var required = fallbackTryRequire('./architecture.js');
+    var required = tryRequireHelper('./architecture.js');
     if (required && _typeof(required) === 'object') {
       return required;
     }
@@ -74,7 +113,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function resolveArchitectureHelpers(scope) {
     var targetScope = scope || LOCAL_SCOPE;
-    var required = fallbackTryRequire('./architecture-helpers.js');
+    var required = tryRequireHelper('./architecture-helpers.js');
     if (required && _typeof(required) === 'object') {
       return required;
     }
@@ -352,11 +391,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function fallbackResolveModuleRegistry(scope) {
     var targetScope = scope || LOCAL_SCOPE;
-    var required = fallbackTryRequire('./registry.js');
+    var required = tryRequireHelper('./registry.js');
     if (required && _typeof(required) === 'object') {
       return required;
     }
-    var scopes = fallbackCollectCandidateScopes(targetScope);
+    var scopes = collectCandidateScopesHelper(targetScope);
     for (var index = 0; index < scopes.length; index += 1) {
       var candidate = scopes[index];
       if (candidate && _typeof(candidate.cineModules) === 'object') {
@@ -393,7 +432,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function fallbackResolveFromScopes(propertyName, options) {
     var settings = options || {};
     var predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
-    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : fallbackCollectCandidateScopes(settings.primaryScope || LOCAL_SCOPE);
+    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : collectCandidateScopes(settings.primaryScope || LOCAL_SCOPE);
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {

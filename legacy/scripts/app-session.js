@@ -3990,6 +3990,8 @@ var rememberSettingsPinkModeBaseline = function rememberSettingsPinkModeBaseline
 var revertSettingsPinkModeIfNeeded = function revertSettingsPinkModeIfNeeded() {};
 var rememberSettingsTemperatureUnitBaseline = function rememberSettingsTemperatureUnitBaseline() {};
 var revertSettingsTemperatureUnitIfNeeded = function revertSettingsTemperatureUnitIfNeeded() {};
+var rememberSettingsFocusScaleBaseline = function rememberSettingsFocusScaleBaseline() {};
+var revertSettingsFocusScaleIfNeeded = function revertSettingsFocusScaleIfNeeded() {};
 var applyShowAutoBackupsPreference = function applyShowAutoBackupsPreference() {};
 var rememberSettingsShowAutoBackupsBaseline = function rememberSettingsShowAutoBackupsBaseline() {};
 var revertSettingsShowAutoBackupsIfNeeded = function revertSettingsShowAutoBackupsIfNeeded() {};
@@ -4023,7 +4025,8 @@ var appearanceContext = {
     reduceMotion: typeof settingsReduceMotion !== 'undefined' ? settingsReduceMotion : null,
     relaxedSpacing: typeof settingsRelaxedSpacing !== 'undefined' ? settingsRelaxedSpacing : null,
     showAutoBackups: typeof settingsShowAutoBackups !== 'undefined' ? settingsShowAutoBackups : null,
-    temperatureUnit: typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : null
+    temperatureUnit: typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : null,
+    focusScale: typeof settingsFocusScale !== 'undefined' ? settingsFocusScale : null
   },
   accent: {
     accentColorInput: typeof accentColorInput !== 'undefined' ? accentColorInput : null,
@@ -4135,6 +4138,18 @@ var appearanceContext = {
       temperatureUnit = value;
     },
     applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    getFocusScale: function getFocusScale() {
+      var globalScale = typeof focusScalePreference === 'string' ? focusScalePreference : sessionFocusScale;
+      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(globalScale) : globalScale;
+      return sessionFocusScale;
+    },
+    setFocusScale: function setFocusScale(value) {
+      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
+    },
+    applyFocusScalePreference: typeof applyFocusScalePreference === 'function' ? function (value, opts) {
+      applyFocusScalePreference(value, opts);
+      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(value) : value;
+    } : null,
     getShowAutoBackups: function getShowAutoBackups() {
       return showAutoBackups;
     },
@@ -4188,6 +4203,8 @@ if (appearanceModule) {
   revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
   rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
   revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  rememberSettingsFocusScaleBaseline = appearanceModule.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
+  revertSettingsFocusScaleIfNeeded = appearanceModule.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
   applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
   rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
   revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
@@ -4205,6 +4222,7 @@ if (appearanceModule) {
   console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
 }
 var darkModeEnabled = false;
+var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
 try {
   var stored = localStorage.getItem("darkMode");
   if (stored !== null) {
@@ -4248,6 +4266,7 @@ try {
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
+rememberSettingsFocusScaleBaseline();
 rememberSettingsShowAutoBackupsBaseline();
 rememberSettingsMountVoltagesBaseline();
 if (pinkModeToggle) {
@@ -4276,6 +4295,19 @@ if (settingsTemperatureUnit) {
       });
     }
   });
+}
+if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+  settingsFocusScale.addEventListener('change', function () {
+    if (typeof applyFocusScalePreference === 'function') {
+      applyFocusScalePreference(settingsFocusScale.value, {
+        persist: false
+      });
+      sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
+    }
+  });
+}
+if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+  settingsFocusScale.value = sessionFocusScale;
 }
 var mountVoltageInputNodes = Array.from(typeof document !== 'undefined' ? document.querySelectorAll('.mount-voltage-input') : []);
 mountVoltageInputNodes.forEach(function (input) {
@@ -4336,6 +4368,7 @@ if (settingsButton && settingsDialog) {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsFocusScaleBaseline();
     rememberSettingsShowAutoBackupsBaseline();
     rememberSettingsMountVoltagesBaseline();
     var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
@@ -4436,6 +4469,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -4531,6 +4566,13 @@ if (settingsButton && settingsDialog) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
+      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+        if (typeof applyFocusScalePreference === 'function') {
+          applyFocusScalePreference(settingsFocusScale.value);
+        }
+        rememberSettingsFocusScaleBaseline();
+        sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(settingsFocusScale.value) : settingsFocusScale.value;
+      }
       applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
         persist: true,
         triggerUpdate: true
@@ -4579,6 +4621,7 @@ if (settingsButton && settingsDialog) {
       collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
+      rememberSettingsFocusScaleBaseline();
       rememberSettingsShowAutoBackupsBaseline();
       rememberSettingsMountVoltagesBaseline();
       closeDialog(settingsDialog);
@@ -4591,6 +4634,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
@@ -4610,6 +4655,8 @@ if (settingsButton && settingsDialog) {
     rememberSettingsPinkModeBaseline();
     revertSettingsTemperatureUnitIfNeeded();
     rememberSettingsTemperatureUnitBaseline();
+    revertSettingsFocusScaleIfNeeded();
+    rememberSettingsFocusScaleBaseline();
     revertSettingsShowAutoBackupsIfNeeded();
     rememberSettingsShowAutoBackupsBaseline();
     revertSettingsMountVoltagesIfNeeded();
@@ -11707,6 +11754,8 @@ if (helpButton && helpDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsFocusScaleIfNeeded();
+      rememberSettingsFocusScaleBaseline();
       invokeSessionRevertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
@@ -12089,6 +12138,112 @@ function populateEnvironmentDropdowns() {
 }
 function populateLensDropdown() {
   if (!lensSelect) return;
+  var resolveFocusScaleMode = function resolveFocusScaleMode() {
+    var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+    var scopePreference = scope && typeof scope.focusScalePreference === 'string' ? scope.focusScalePreference : null;
+    var fallbackPreference = typeof sessionFocusScale !== 'undefined' && sessionFocusScale ? sessionFocusScale : typeof focusScalePreference === 'string' ? focusScalePreference : null;
+    var rawPreference = scopePreference || fallbackPreference || 'metric';
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        return normalizeFocusScale(rawPreference);
+      } catch (normalizeError) {
+        void normalizeError;
+      }
+    }
+    var normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+    return normalized === 'imperial' ? 'imperial' : 'metric';
+  };
+  var focusScaleMode = resolveFocusScaleMode();
+  var useImperialFocusScale = focusScaleMode === 'imperial';
+  var _resolveCompatibility5 = resolveCompatibilityTexts(),
+    focusScaleLang = _resolveCompatibility5.lang;
+  var formatLensNumber = function formatLensNumber(value) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    var maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
+    var minimumFractionDigits = typeof options.minimumFractionDigits === 'number' ? options.minimumFractionDigits : Math.min(0, maximumFractionDigits);
+    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+      try {
+        return new Intl.NumberFormat(focusScaleLang, {
+          maximumFractionDigits: maximumFractionDigits,
+          minimumFractionDigits: minimumFractionDigits
+        }).format(numeric);
+      } catch (formatError) {
+        void formatError;
+      }
+    }
+    var digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+    try {
+      return numeric.toFixed(digits);
+    } catch (toFixedError) {
+      void toFixedError;
+    }
+    return String(numeric);
+  };
+  var formatLensWeight = function formatLensWeight(value) {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      var pounds = numeric / 453.59237;
+      var digits = pounds >= 10 ? 1 : 2;
+      var _formatted = formatLensNumber(pounds, {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: 0
+      });
+      return _formatted ? "".concat(_formatted, " lb") : '';
+    }
+    var formatted = formatLensNumber(numeric, {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " g") : '';
+  };
+  var formatLensDiameter = function formatLensDiameter(value) {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      var inches = numeric / 25.4;
+      var digits = inches >= 10 ? 1 : 2;
+      var _formatted2 = formatLensNumber(inches, {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: 0
+      });
+      return _formatted2 ? "".concat(_formatted2, " in") : '';
+    }
+    var formatted = formatLensNumber(numeric, {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0
+    });
+    return formatted ? "".concat(formatted, " mm") : '';
+  };
+  var formatLensMinFocus = function formatLensMinFocus(value) {
+    var numeric = typeof value === 'string' ? Number(value) : value;
+    if (!Number.isFinite(numeric)) {
+      return '';
+    }
+    if (useImperialFocusScale) {
+      var feet = numeric * 3.280839895;
+      var _digits = feet < 10 ? 2 : 1;
+      var _formatted3 = formatLensNumber(feet, {
+        maximumFractionDigits: _digits,
+        minimumFractionDigits: _digits
+      });
+      return _formatted3 ? "".concat(_formatted3, " ft") : '';
+    }
+    var digits = numeric < 1 ? 2 : 1;
+    var formatted = formatLensNumber(numeric, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits
+    });
+    return formatted ? "".concat(formatted, " m") : '';
+  };
   var lensData = (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null) || devices && devices.accessories && devices.accessories.lenses || null;
   if (!lensData || Object.keys(lensData).length === 0) {
     return;
@@ -12112,14 +12267,23 @@ function populateLensDropdown() {
     opt.value = name;
     var lens = lensData[name] || {};
     var attrs = [];
-    if (lens.weight_g) attrs.push("".concat(lens.weight_g, "g"));
+    var formattedWeight = formatLensWeight(lens.weight_g);
+    if (formattedWeight) attrs.push(formattedWeight);
     if (lens.clampOn) {
-      if (lens.frontDiameterMm) attrs.push("".concat(lens.frontDiameterMm, "mm clamp-on"));else attrs.push('clamp-on');
+      if (lens.frontDiameterMm) {
+        var formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
+        attrs.push(formattedDiameter ? "".concat(formattedDiameter, " clamp-on") : 'clamp-on');
+      } else attrs.push('clamp-on');
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
     var minFocus = (_ref23 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref23 !== void 0 ? _ref23 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
-    if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
+    if (Number.isFinite(minFocus) && minFocus > 0) {
+      var formattedMinFocus = formatLensMinFocus(minFocus);
+      if (formattedMinFocus) {
+        attrs.push("".concat(formattedMinFocus, " min focus"));
+      }
+    }
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     if (previousSelection.has(name)) {
       opt.selected = true;
@@ -12724,14 +12888,33 @@ function syncGearListFilterValue(storageId, value, isSelected) {
     storageSelect.dispatchEvent(new Event('change'));
   }
 }
-function renderFilterDetails() {
+function renderFilterDetails(providedTokens) {
   var select = resolveFilterSelectElement();
   if (!select) return;
   var selected = Array.from(select.selectedOptions).map(function (o) {
     return o.value;
   }).filter(Boolean);
-  var existingSelections = collectFilterSelections();
-  var existingTokens = existingSelections ? parseFilterTokens(existingSelections) : currentProjectInfo && currentProjectInfo.filter ? parseFilterTokens(currentProjectInfo.filter) : [];
+  var existingTokens;
+  if (Array.isArray(providedTokens)) {
+    existingTokens = providedTokens.filter(function (token) {
+      return token && token.type;
+    }).map(function (token) {
+      return {
+        type: token.type,
+        size: token.size,
+        values: token.values === undefined ? undefined : Array.isArray(token.values) ? token.values.slice() : token.values
+      };
+    });
+  } else {
+    var existingSelections = collectFilterSelections();
+    if (existingSelections) {
+      existingTokens = parseFilterTokens(existingSelections);
+    } else if (currentProjectInfo && currentProjectInfo.filter) {
+      existingTokens = parseFilterTokens(currentProjectInfo.filter);
+    } else {
+      existingTokens = [];
+    }
+  }
   var existingMap = new Map(existingTokens.map(function (token) {
     return [token.type, token];
   }));

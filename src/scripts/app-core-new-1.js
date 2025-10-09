@@ -12615,21 +12615,21 @@ var returnContainer = document.getElementById("returnContainer");
 const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
 const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
-let contactsDialog = null;
-let contactsForm = null;
-let contactsDialogHeading = null;
-let contactsDialogDescription = null;
-let contactsAddButton = null;
-let contactsAddButtonLabel = null;
-let contactsImportButton = null;
-let contactsImportButtonLabel = null;
-let contactsImportInput = null;
-let contactsImportHint = null;
-let contactsList = null;
-let contactsEmptyState = null;
-let contactsCloseButton = null;
-let contactsAnnouncement = null;
-let openContactsBtn = null;
+var contactsDialog = null;
+var contactsForm = null;
+var contactsDialogHeading = null;
+var contactsDialogDescription = null;
+var contactsAddButton = null;
+var contactsAddButtonLabel = null;
+var contactsImportButton = null;
+var contactsImportButtonLabel = null;
+var contactsImportInput = null;
+var contactsImportHint = null;
+var contactsList = null;
+var contactsEmptyState = null;
+var contactsCloseButton = null;
+var contactsAnnouncement = null;
+var openContactsBtn = null;
 
 function resolveContactsDomRefs() {
   if (typeof document === 'undefined') return;
@@ -14483,8 +14483,8 @@ function getProjectFormText(key, defaultValue = '') {
 
 const CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
-let contactsCache = [];
-let contactsInitialized = false;
+var contactsCache = [];
+var contactsInitialized = false;
 
 function getContactsText(key, defaultValue = '') {
   const fallbackContacts = texts?.en?.contacts || {};

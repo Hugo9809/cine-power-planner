@@ -4,6 +4,7 @@ var _excluded = ["portType", "type"],
   _excluded4 = ["type"];
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
+function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
@@ -26,6 +27,7 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var CORE_PART1_RUNTIME_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+var DEFAULT_LANGUAGE = 'en';
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -114,261 +116,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var CORE_TEMPERATURE_QUEUE_KEY = "__cinePendingTemperatureNote";
   var CORE_TEMPERATURE_RENDER_NAME = "renderTemperatureNote";
-  var ICON_FONT_KEYS = Object.freeze({
-    ESSENTIAL: 'essential',
-    FILM: 'film',
-    GADGET: 'gadget',
-    UICONS: 'uicons',
-    TEXT: 'text'
-  });
-  var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
-  function iconGlyph(char) {
-    var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
-    var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
-    return Object.freeze({
-      char: char,
-      font: normalizedFont
-    });
-  }
-  function resolveIconGlyph(glyph) {
-    if (!glyph) {
-      return {
-        char: '',
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (glyph.markup) {
-      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      return {
-        markup: glyph.markup,
-        className: glyph.className || '',
-        font: ICON_FONT_KEYS.UICONS,
-        size: size
-      };
-    }
-    if (typeof glyph === 'string') {
-      return {
-        char: glyph,
-        font: ICON_FONT_KEYS.UICONS,
-        className: '',
-        size: undefined
-      };
-    }
-    if (_typeof(glyph) === 'object') {
-      var char = typeof glyph.char === 'string' ? glyph.char : '';
-      var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
-      var className = typeof glyph.className === 'string' ? glyph.className : '';
-      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
-      if (glyph.markup) {
-        return {
-          markup: glyph.markup,
-          className: className,
-          font: fontKey,
-          size: _size
-        };
-      }
-      return {
-        char: char,
-        font: fontKey,
-        className: className,
-        size: _size
-      };
-    }
-    return {
-      char: '',
-      font: ICON_FONT_KEYS.UICONS,
-      className: '',
-      size: undefined
-    };
-  }
-  function applyIconGlyph(element, glyph) {
-    if (!element) return;
-    var resolved = resolveIconGlyph(glyph);
-    if (resolved.markup) {
-      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
-      element.setAttribute('aria-hidden', 'true');
-      if (resolved.className) {
-        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
-          return element.classList.add(cls);
-        });
-      }
-      element.removeAttribute('data-icon-font');
-      return;
-    }
-    var char = resolved.char || '';
-    element.textContent = char;
-    if (char) {
-      element.setAttribute('data-icon-font', resolved.font);
-    } else {
-      element.removeAttribute('data-icon-font');
-    }
-  }
-  function formatSvgCoordinate(value) {
-    if (!Number.isFinite(value)) return '0';
-    var rounded = Math.round(value * 100) / 100;
-    if (Number.isInteger(rounded)) return String(rounded);
-    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
-  }
-  function positionSvgMarkup(markup, centerX, centerY) {
-    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
-    if (typeof markup !== 'string') {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var trimmed = markup.trim();
-    if (!trimmed) {
-      return {
-        markup: '',
-        x: '0',
-        y: '0'
-      };
-    }
-    var half = size / 2;
-    var x = formatSvgCoordinate(centerX);
-    var y = formatSvgCoordinate(centerY);
-    var width = formatSvgCoordinate(size);
-    var height = formatSvgCoordinate(size);
-    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
-      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
-      var additions = [];
-      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
-      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
-      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
-      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
-      additions.push("x=\"".concat(formatSvgCoordinate(half * -1), "\""));
-      additions.push("y=\"".concat(formatSvgCoordinate(half * -1), "\""));
-      attrText = [attrText].concat(_toConsumableArray(additions)).filter(Boolean).join(' ').trim();
-      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
-    });
-    return {
-      markup: cleaned,
-      x: x,
-      y: y
-    };
-  }
-  function glyphText(glyph) {
-    var resolved = resolveIconGlyph(glyph);
-    return resolved.char || '';
-  }
-  var PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
-  var RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
-  var ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
-  var REQUIRED_SCENARIOS_ICON = iconGlyph('\uF4D4', ICON_FONT_KEYS.UICONS);
-  var MONITORING_SUPPORT_ICON = iconGlyph('\uEFFC', ICON_FONT_KEYS.UICONS);
-  var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
-  var ICON_GLYPHS = Object.freeze({
-    batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
-    batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
-    bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
-    plug: iconGlyph('\uEE75', ICON_FONT_KEYS.UICONS),
-    sliders: iconGlyph('\uF143', ICON_FONT_KEYS.ESSENTIAL),
-    screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
-    brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
-    wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
-    gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-    controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
-    distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
-    sensor: iconGlyph('\uEC2B', ICON_FONT_KEYS.UICONS),
-    viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
-    camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
-    trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
-    reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
-    load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
-    installApp: iconGlyph('\uE9D4', ICON_FONT_KEYS.UICONS),
-    add: Object.freeze({
-      char: '+',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    minus: Object.freeze({
-      char: '\u2212',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    arrowLeft: Object.freeze({
-      char: '\u2190',
-      font: ICON_FONT_KEYS.TEXT,
-      className: 'icon-text'
-    }),
-    check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
-    fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
-    fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
-    save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
-    share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
-    paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
-    magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
-    codec: iconGlyph('\uE4CD', ICON_FONT_KEYS.UICONS),
-    timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
-    audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
-    audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
-    note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-    overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
-    gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
-    feedback: iconGlyph('\uE791', ICON_FONT_KEYS.UICONS),
-    resetView: iconGlyph('\uEB6D', ICON_FONT_KEYS.UICONS),
-    pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
-    sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
-    moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
-    circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
-    settingsGeneral: iconGlyph('\uE5A3', ICON_FONT_KEYS.UICONS),
-    settingsAutoGear: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
-    settingsAccessibility: iconGlyph('\uF392', ICON_FONT_KEYS.UICONS),
-    settingsBackup: iconGlyph('\uE5BD', ICON_FONT_KEYS.UICONS),
-    settingsData: iconGlyph('\uE5C7', ICON_FONT_KEYS.UICONS),
-    settingsAbout: iconGlyph('\uEA4F', ICON_FONT_KEYS.UICONS),
-    star: Object.freeze({
-      markup: STAR_ICON_SVG,
-      className: 'icon-svg favorite-star-icon'
-    }),
-    warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL)
-  });
-  function iconMarkup(glyph) {
-    var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    if (!glyph) return '';
-    var opts = {};
-    var resolvedClassName = 'info-icon';
-    if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
-      resolvedClassName = classNameOrOptions || '';
-      if (options && _typeof(options) === 'object') {
-        opts = options;
-      }
-    } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
-      opts = classNameOrOptions;
-      resolvedClassName = classNameOrOptions.className || 'info-icon';
-    }
-    if (typeof opts.className === 'string') {
-      resolvedClassName = opts.className;
-    }
-    var styleParts = [];
-    if (typeof opts.size === 'string' && opts.size.trim()) {
-      styleParts.push("--icon-size: ".concat(opts.size.trim()));
-    }
-    if (typeof opts.scale === 'string' && opts.scale.trim()) {
-      styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
-    }
-    if (typeof opts.style === 'string' && opts.style.trim()) {
-      styleParts.push(opts.style.trim());
-    }
-    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
-    var resolved = resolveIconGlyph(glyph);
-    var classes = ['icon-glyph'];
-    if (resolvedClassName) classes.unshift(resolvedClassName);
-    if (resolved.markup) {
-      if (resolved.className) classes.push(resolved.className);
-      var markup = ensureSvgHasAriaHidden(resolved.markup);
-      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
-    }
-    var char = resolved.char || '';
-    if (!char) return '';
-    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
-  }
   function getCoreGlobalObject() {
     if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === "object") {
       return CORE_GLOBAL_SCOPE;
@@ -430,6 +177,80 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       void finalReadError;
     }
     return value;
+  }
+  function getEscapeHtmlFunction() {
+    try {
+      return typeof escapeHtml === 'function' ? escapeHtml : null;
+    } catch (maybeReferenceError) {
+      if (maybeReferenceError && maybeReferenceError.name === 'ReferenceError') {
+        return null;
+      }
+      throw maybeReferenceError;
+    }
+  }
+  function escapeButtonLabelSafely(text) {
+    if (typeof text !== 'string' || text === '') {
+      return '';
+    }
+    var escapeFn = getEscapeHtmlFunction();
+    if (escapeFn) {
+      try {
+        return escapeFn(text);
+      } catch (escapeError) {
+        void escapeError;
+      }
+    }
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function getIconMarkupFunction() {
+    try {
+      if (typeof iconMarkup === 'function') {
+        return iconMarkup;
+      }
+    } catch (maybeReferenceError) {
+      if (!(maybeReferenceError && maybeReferenceError.name === 'ReferenceError')) {
+        throw maybeReferenceError;
+      }
+    }
+    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.iconMarkup === 'function') {
+      return CORE_GLOBAL_SCOPE.iconMarkup;
+    }
+    return null;
+  }
+  function resolveButtonIconMarkup(glyph) {
+    if (!glyph) {
+      return '';
+    }
+    var iconFactory = getIconMarkupFunction();
+    if (!iconFactory) {
+      return '';
+    }
+    try {
+      return iconFactory(glyph, 'btn-icon');
+    } catch (iconError) {
+      void iconError;
+    }
+    return '';
+  }
+  var setButtonLabelWithIcon = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon === 'function' ? CORE_GLOBAL_SCOPE.setButtonLabelWithIcon : function setButtonLabelWithIcon(button, label, glyph) {
+    if (!button) {
+      return;
+    }
+    var resolvedGlyph = glyph;
+    if (resolvedGlyph === undefined && typeof ICON_GLYPHS !== 'undefined' && ICON_GLYPHS && ICON_GLYPHS.save) {
+      resolvedGlyph = ICON_GLYPHS.save;
+    }
+    var iconHtml = resolveButtonIconMarkup(resolvedGlyph);
+    var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+    button.innerHTML = "".concat(iconHtml).concat(safeLabel);
+  };
+  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.setButtonLabelWithIcon !== 'function') {
+    try {
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    } catch (setButtonAssignError) {
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+      void setButtonAssignError;
+    }
   }
   var gridSnap = ensureCoreGlobalValue('gridSnap', function () {
     return false;
@@ -1799,6 +1620,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return existing;
   }
   var TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
+  var FOCUS_SCALE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_focusScale';
+  function resolveFocusScaleStorageKey() {
+    var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : undefined;
+    var fallback = FOCUS_SCALE_STORAGE_KEY_FALLBACK;
+    var existing = scope && typeof scope.FOCUS_SCALE_STORAGE_KEY === 'string' ? scope.FOCUS_SCALE_STORAGE_KEY : fallback;
+    if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY !== 'string') {
+      try {
+        scope.FOCUS_SCALE_STORAGE_KEY = existing;
+      } catch (error) {
+        void error;
+      }
+    }
+    if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY_NAME !== 'string') {
+      try {
+        scope.FOCUS_SCALE_STORAGE_KEY_NAME = existing;
+      } catch (error) {
+        void error;
+      }
+    }
+    return existing;
+  }
+  var FOCUS_SCALE_STORAGE_KEY = resolveFocusScaleStorageKey();
   var TEMPERATURE_UNITS = {
     celsius: 'celsius',
     fahrenheit: 'fahrenheit'
@@ -1824,6 +1667,37 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     factor: 0.5,
     color: '#0275d8'
   }];
+  var FOCUS_SCALE_VALUES = Object.freeze({
+    metric: 'metric',
+    imperial: 'imperial'
+  });
+  function normalizeFocusScale(value) {
+    var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+    if (normalized === FOCUS_SCALE_VALUES.imperial) {
+      return FOCUS_SCALE_VALUES.imperial;
+    }
+    return FOCUS_SCALE_VALUES.metric;
+  }
+  function getFocusScalePreference() {
+    return focusScalePreference;
+  }
+  function getFocusScaleLabelForLang() {
+    var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+    var scale = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScalePreference;
+    var normalized = normalizeFocusScale(scale);
+    var langTexts = getLanguageTexts(lang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var key = normalized === FOCUS_SCALE_VALUES.imperial ? 'focusScaleImperial' : 'focusScaleMetric';
+    var valueFromLang = langTexts && typeof langTexts[key] === 'string' ? langTexts[key].trim() : '';
+    if (valueFromLang) {
+      return valueFromLang;
+    }
+    var valueFromFallback = fallbackTexts && typeof fallbackTexts[key] === 'string' ? fallbackTexts[key].trim() : '';
+    if (valueFromFallback) {
+      return valueFromFallback;
+    }
+    return normalized === FOCUS_SCALE_VALUES.imperial ? 'Imperial' : 'Metric';
+  }
   function resolveLanguageCode(lang) {
     if (typeof lang === 'string' && lang.trim()) {
       return lang.trim();
@@ -1833,9 +1707,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return 'en';
   }
+  function getAllTranslations() {
+    if (typeof texts !== 'undefined' && texts && (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object') {
+      return texts;
+    }
+    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE.texts) === 'object' && CORE_GLOBAL_SCOPE.texts) {
+      return CORE_GLOBAL_SCOPE.texts;
+    }
+    if (typeof window !== 'undefined' && _typeof(window.texts) === 'object' && window.texts) {
+      return window.texts;
+    }
+    return {};
+  }
   function getLanguageTexts(lang) {
     var resolved = resolveLanguageCode(lang);
-    var allTexts = typeof texts !== 'undefined' && texts || {};
+    var allTexts = getAllTranslations();
     if (allTexts && _typeof(allTexts[resolved]) === 'object') {
       return allTexts[resolved] || {};
     }
@@ -1843,6 +1729,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return allTexts.en || {};
     }
     return {};
+  }
+  function resolveTextEntry(langTexts, fallbackTexts, key) {
+    var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+    if (langTexts && typeof langTexts[key] === 'string' && langTexts[key]) {
+      return langTexts[key];
+    }
+    if (fallbackTexts && typeof fallbackTexts[key] === 'string' && fallbackTexts[key]) {
+      return fallbackTexts[key];
+    }
+    return defaultValue;
   }
   function formatNumberForLang(lang, value, options) {
     var resolved = resolveLanguageCode(lang);
@@ -2108,6 +2004,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       renderTemperatureNote(lastRuntimeHours);
     }
   }
+  function applyFocusScalePreference(scale) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var normalized = normalizeFocusScale(scale);
+    var _ref5 = options || {},
+      _ref5$persist = _ref5.persist,
+      persist = _ref5$persist === void 0 ? true : _ref5$persist,
+      _ref5$forceUpdate = _ref5.forceUpdate,
+      forceUpdate = _ref5$forceUpdate === void 0 ? false : _ref5$forceUpdate,
+      _ref5$reRender = _ref5.reRender,
+      reRender = _ref5$reRender === void 0 ? true : _ref5$reRender;
+    if (!forceUpdate && focusScalePreference === normalized) {
+      return;
+    }
+    focusScalePreference = normalized;
+    updateGlobalFocusScalePreference(focusScalePreference);
+    if (persist && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Could not save focus scale preference', error);
+        }
+      }
+    }
+    if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+      settingsFocusScale.value = focusScalePreference;
+    }
+    if (reRender && typeof refreshGearListIfVisible === 'function') {
+      try {
+        refreshGearListIfVisible();
+      } catch (refreshError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to refresh gear list after focus scale preference change', refreshError);
+        }
+      }
+    }
+  }
   var collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: 'base'
@@ -2139,6 +2072,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       defer: true
     });
   }
+  function updateGlobalFocusScalePreference(value) {
+    if (!DEVICE_GLOBAL_SCOPE) {
+      return;
+    }
+    try {
+      DEVICE_GLOBAL_SCOPE.focusScalePreference = value;
+    } catch (assignError) {
+      try {
+        Object.defineProperty(DEVICE_GLOBAL_SCOPE, 'focusScalePreference', {
+          configurable: true,
+          writable: true,
+          value: value
+        });
+      } catch (defineError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to expose focus scale preference globally.', defineError);
+        }
+      }
+    }
+  }
   function initializeDeviceDatabase() {
     if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && _typeof(DEVICE_GLOBAL_SCOPE.devices) === 'object') {
       return DEVICE_GLOBAL_SCOPE.devices;
@@ -2164,6 +2117,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var FEEDBACK_TEMPERATURE_MIN = -20;
   var FEEDBACK_TEMPERATURE_MAX = 50;
   var temperatureUnit = TEMPERATURE_UNITS.celsius;
+  var focusScalePreference = FOCUS_SCALE_VALUES.metric;
   var autoGearBackupDateFormatter = typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function' ? new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short'
@@ -2192,10 +2146,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (storedTemperatureUnit) {
         temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
       }
+      var storedFocusScale = localStorage.getItem(FOCUS_SCALE_STORAGE_KEY);
+      if (storedFocusScale) {
+        focusScalePreference = normalizeFocusScale(storedFocusScale);
+      } else {
+        try {
+          localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
+        } catch (focusScaleStoreError) {
+          console.warn('Could not persist default focus scale preference', focusScaleStoreError);
+        }
+      }
     }
   } catch (error) {
-    console.warn('Could not load temperature unit preference', error);
+    console.warn('Could not load temperature or focus scale preference', error);
   }
+  updateGlobalFocusScalePreference(focusScalePreference);
   var SUPPORTED_MOUNT_VOLTAGE_TYPES = function resolveSupportedMounts() {
     if (CORE_GLOBAL_SCOPE && Array.isArray(CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES) && CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0) {
       return CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES;
@@ -2490,11 +2455,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstants(MOUNT_VOLTAGE_RUNTIME_EXPORTS);
   function applyMountVoltagePreferences(preferences) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref5 = options || {},
-      _ref5$persist = _ref5.persist,
-      persist = _ref5$persist === void 0 ? true : _ref5$persist,
-      _ref5$triggerUpdate = _ref5.triggerUpdate,
-      triggerUpdate = _ref5$triggerUpdate === void 0 ? true : _ref5$triggerUpdate;
+    var _ref6 = options || {},
+      _ref6$persist = _ref6.persist,
+      persist = _ref6$persist === void 0 ? true : _ref6$persist,
+      _ref6$triggerUpdate = _ref6.triggerUpdate,
+      triggerUpdate = _ref6$triggerUpdate === void 0 ? true : _ref6$triggerUpdate;
     mountVoltagePreferences = normalizeMountVoltageSource(preferences);
     if (persist) {
       persistMountVoltagePreferences(mountVoltagePreferences);
@@ -2536,8 +2501,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function getTemplateString(lang, key, fallback) {
-    var localeTexts = texts && texts[lang] ? texts[lang] : null;
-    var defaultTexts = texts && texts.en ? texts.en : null;
+    var localeTexts = getLanguageTexts(lang);
+    var defaultTexts = getLanguageTexts(DEFAULT_LANGUAGE);
     if (localeTexts && typeof localeTexts[key] === 'string') {
       return localeTexts[key];
     }
@@ -2579,44 +2544,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function updateMountVoltageSettingLabels() {
     var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-    var localeTexts = texts && texts[lang] ? texts[lang] : texts.en;
-    if (!localeTexts) return;
+    var localeTexts = getLanguageTexts(lang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    if (!localeTexts && !fallbackTexts) return;
     if (mountVoltageHeadingElem) {
-      var _texts$en, _texts$en2;
-      mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.mountVoltageSettingsHeading) || 'Battery mount voltages';
-      var helpText = localeTexts.mountVoltageSettingsHelp || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.mountVoltageSettingsHelp) || '';
+      mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading || fallbackTexts.mountVoltageSettingsHeading || 'Battery mount voltages';
+      var helpText = localeTexts.mountVoltageSettingsHelp || fallbackTexts.mountVoltageSettingsHelp || '';
       if (helpText) {
         mountVoltageHeadingElem.setAttribute('data-help', helpText);
       }
     }
     if (mountVoltageDescriptionElem) {
-      var _texts$en3;
-      mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.mountVoltageDescription) || '';
+      mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription || fallbackTexts.mountVoltageDescription || '';
     }
     if (mountVoltageNoteElem) {
-      var _texts$en4;
-      mountVoltageNoteElem.textContent = localeTexts.mountVoltageNote || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.mountVoltageNote) || '';
+      var _texts$en;
+      mountVoltageNoteElem.textContent = localeTexts.mountVoltageNote || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.mountVoltageNote) || '';
     }
     if (mountVoltageResetButton) {
-      var _texts$en5, _texts$en6;
-      mountVoltageResetButton.textContent = localeTexts.mountVoltageReset || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.mountVoltageReset) || 'Restore defaults';
-      var resetHelp = localeTexts.mountVoltageResetHelp || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.mountVoltageResetHelp) || '';
+      var _texts$en2, _texts$en3;
+      mountVoltageResetButton.textContent = localeTexts.mountVoltageReset || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.mountVoltageReset) || 'Restore defaults';
+      var resetHelp = localeTexts.mountVoltageResetHelp || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.mountVoltageResetHelp) || '';
       if (resetHelp) {
         mountVoltageResetButton.setAttribute('data-help', resetHelp);
       }
     }
     if (mountVoltageTitleElems) {
       if (mountVoltageTitleElems.V) {
-        var _texts$en7;
-        mountVoltageTitleElems.V.textContent = localeTexts.mountVoltageCardLabelV || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.mountVoltageCardLabelV) || 'V-Mount';
+        var _texts$en4;
+        mountVoltageTitleElems.V.textContent = localeTexts.mountVoltageCardLabelV || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.mountVoltageCardLabelV) || 'V-Mount';
       }
       if (mountVoltageTitleElems.Gold) {
-        var _texts$en8;
-        mountVoltageTitleElems.Gold.textContent = localeTexts.mountVoltageCardLabelGold || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.mountVoltageCardLabelGold) || 'Gold Mount';
+        var _texts$en5;
+        mountVoltageTitleElems.Gold.textContent = localeTexts.mountVoltageCardLabelGold || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.mountVoltageCardLabelGold) || 'Gold Mount';
       }
       if (mountVoltageTitleElems.B) {
-        var _texts$en9;
-        mountVoltageTitleElems.B.textContent = localeTexts.mountVoltageCardLabelB || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.mountVoltageCardLabelB) || 'B-Mount';
+        var _texts$en6;
+        mountVoltageTitleElems.B.textContent = localeTexts.mountVoltageCardLabelB || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.mountVoltageCardLabelB) || 'B-Mount';
       }
     }
     if (mountVoltageInputs) {
@@ -2624,9 +2588,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var fields = mountVoltageInputs[type];
         if (!fields) return;
         if (fields.highLabel) {
-          var _texts$en0, _texts$en1;
-          fields.highLabel.textContent = localeTexts.mountVoltageHighLabel || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.mountVoltageHighLabel) || 'High-voltage output';
-          var highHelp = localeTexts.mountVoltageHighHelp || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.mountVoltageHighHelp) || '';
+          var _texts$en7, _texts$en8;
+          fields.highLabel.textContent = localeTexts.mountVoltageHighLabel || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.mountVoltageHighLabel) || 'High-voltage output';
+          var highHelp = localeTexts.mountVoltageHighHelp || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.mountVoltageHighHelp) || '';
           if (highHelp) {
             var _fields$high;
             fields.highLabel.setAttribute('data-help', highHelp);
@@ -2634,9 +2598,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         }
         if (fields.lowLabel) {
-          var _texts$en10, _texts$en11;
-          fields.lowLabel.textContent = localeTexts.mountVoltageLowLabel || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.mountVoltageLowLabel) || 'Low-voltage output';
-          var lowHelp = localeTexts.mountVoltageLowHelp || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.mountVoltageLowHelp) || '';
+          var _texts$en9, _texts$en0;
+          fields.lowLabel.textContent = localeTexts.mountVoltageLowLabel || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.mountVoltageLowLabel) || 'Low-voltage output';
+          var lowHelp = localeTexts.mountVoltageLowHelp || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.mountVoltageLowHelp) || '';
           if (lowHelp) {
             var _fields$low;
             fields.lowLabel.setAttribute('data-help', lowHelp);
@@ -2712,7 +2676,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function _loadDeviceSchemaFromCacheStorage() {
     _loadDeviceSchemaFromCacheStorage = _asyncToGenerator(_regenerator().m(function _callee() {
-      var candidates, _iterator14, _step14, url, response, _t, _t2;
+      var candidates, _iterator15, _step15, url, response, _t, _t2;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
@@ -2733,15 +2697,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
                 console.warn('Failed to resolve schema.json cache URL', error);
               }
             }
-            _iterator14 = _createForOfIteratorHelper(candidates);
+            _iterator15 = _createForOfIteratorHelper(candidates);
             _context.p = 2;
-            _iterator14.s();
+            _iterator15.s();
           case 3:
-            if ((_step14 = _iterator14.n()).done) {
+            if ((_step15 = _iterator15.n()).done) {
               _context.n = 10;
               break;
             }
-            url = _step14.value;
+            url = _step15.value;
             _context.p = 4;
             _context.n = 5;
             return caches.match(url, {
@@ -2773,10 +2737,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           case 11:
             _context.p = 11;
             _t2 = _context.v;
-            _iterator14.e(_t2);
+            _iterator15.e(_t2);
           case 12:
             _context.p = 12;
-            _iterator14.f();
+            _iterator15.f();
             return _context.f(12);
           case 13:
             return _context.a(2, null);
@@ -2792,7 +2756,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } else if (!deviceSchema) {
       deviceSchema = cachedDeviceSchema || {};
     }
-    populateCategoryOptions();
+    schedulePopulateCategoryOptions();
+  }
+  function schedulePopulateCategoryOptions() {
+    var triggerPopulate = function triggerPopulate() {
+      try {
+        populateCategoryOptions();
+      } catch (error) {
+        console.error('populateCategoryOptions failed during scheduled execution', error);
+      }
+    };
+    if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+      window.setTimeout(triggerPopulate, 0);
+    } else if (typeof setTimeout === 'function') {
+      setTimeout(triggerPopulate, 0);
+    } else {
+      triggerPopulate();
+    }
   }
   var cachedDeviceSchema = loadCachedDeviceSchema();
   var deviceSchema;
@@ -2851,7 +2831,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   };
   var AUTO_GEAR_CUSTOM_CATEGORY = '';
   var GEAR_LIST_CATEGORIES = ['Camera', 'Camera Support', 'Media', 'Lens', 'Lens Support', 'Matte box + filter', 'LDS (FIZ)', 'Camera Batteries', 'Monitoring Batteries', 'Chargers', 'Monitoring', 'Monitoring support', 'Rigging', 'Power', 'Grip', 'Carts and Transportation', 'Miscellaneous', 'Consumables'];
-  var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader'];
+  var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'fizHandUnit'];
   var AUTO_GEAR_SELECTOR_TYPE_MAP = AUTO_GEAR_SELECTOR_TYPES.reduce(function (map, type) {
     map[type.toLowerCase()] = type;
     return map;
@@ -2865,6 +2845,104 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     tripodTypes: 'tripodTypes',
     tripodSpreader: 'tripodSpreader'
   };
+  var AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUP_DATA = Object.freeze([{
+    key: 'tilta-nucleus-m',
+    label: 'Tilta Nucleus ecosystem (M / M II)',
+    motors: Object.freeze(['Tilta Nucleus M', 'Tilta Nucleus M II']),
+    options: Object.freeze(['Tilta Nucleus-M FIZ Hand Unit', 'Tilta Nucleus-M II FIZ Hand Unit', 'Tilta Nucleus Nano II Hand Controller']),
+    defaultOption: 'Tilta Nucleus-M FIZ Hand Unit'
+  }, {
+    key: 'tilta-nucleus-nano',
+    label: 'Tilta Nucleus Nano ecosystem',
+    motors: Object.freeze(['Tilta Nucleus Nano (Original)', 'Tilta Nucleus Nano II']),
+    options: Object.freeze(['Tilta Nucleus Nano Hand Wheel Controller', 'Tilta Nucleus Nano II Hand Controller']),
+    defaultOption: 'Tilta Nucleus Nano Hand Wheel Controller'
+  }, {
+    key: 'arri-lbus',
+    label: 'ARRI / cmotion LBUS ecosystem',
+    motors: Object.freeze(['Arri Cforce Mini', 'Arri Cforce Plus', 'Arri CLM-3', 'Arri CLM-4 (K2.72114.0)', 'Arri CLM-5 (K2.0006361)', 'Arri cforce mini RF (KK.0040345)', 'Cmotion cPRO']),
+    options: Object.freeze(['Arri Hi-5', 'Arri WCU-4', 'Arri SXU-1', 'cmotion cPRO hand unit']),
+    defaultOption: 'Arri Hi-5'
+  }, {
+    key: 'teradek-rt',
+    label: 'Teradek RT ecosystem',
+    motors: Object.freeze(['Teradek RT Motion FIZ (MOTR.S)']),
+    options: Object.freeze(['Teradek RT CTRL.3']),
+    defaultOption: 'Teradek RT CTRL.3'
+  }, {
+    key: 'preston',
+    label: 'Preston ecosystem',
+    motors: Object.freeze(['Preston DM1X', 'Preston DM2', 'Preston DM2X', 'Preston DM-A', 'Preston DM-C']),
+    options: Object.freeze(['Preston Hand Unit 4 (HU4)']),
+    defaultOption: 'Preston Hand Unit 4 (HU4)'
+  }, {
+    key: 'chrosziel',
+    label: 'Chrosziel MagNum ecosystem',
+    motors: Object.freeze(['Chrosziel CDM-100 Digital', 'Chrosziel CDM-M (Universal Zoom Servo Drive)']),
+    options: Object.freeze(['Chrosziel MagNum Hand Unit (MN-100R)']),
+    defaultOption: 'Chrosziel MagNum Hand Unit (MN-100R)'
+  }, {
+    key: 'dji-focus',
+    label: 'DJI Focus ecosystem',
+    motors: Object.freeze(['DJI Focus (Original)']),
+    options: Object.freeze(['DJI Focus Hand Unit']),
+    defaultOption: 'DJI Focus Hand Unit'
+  }, {
+    key: 'dji-focus-pro',
+    label: 'DJI Focus Pro ecosystem',
+    motors: Object.freeze(['DJI RS Focus (2022)', 'DJI Focus Pro Motor']),
+    options: Object.freeze(['DJI RS Focus Wheel (2022)', 'DJI Focus Pro Hand Unit']),
+    defaultOption: 'DJI Focus Pro Hand Unit'
+  }, {
+    key: 'smallrig-magicfiz',
+    label: 'SmallRig MagicFIZ ecosystem',
+    motors: Object.freeze(['SmallRig Wireless Follow Focus']),
+    options: Object.freeze(['SmallRig MagicFIZ Wireless Handgrip']),
+    defaultOption: 'SmallRig MagicFIZ Wireless Handgrip'
+  }, {
+    key: 'redrock-microremote',
+    label: 'Redrock microRemote ecosystem',
+    motors: Object.freeze(['Redrock MicroRemote Torque']),
+    options: Object.freeze(['Redrock microRemote Hand Controller']),
+    defaultOption: 'Redrock microRemote Hand Controller'
+  }]);
+  var AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = function () {
+    var groups = Object.create(null);
+    AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUP_DATA.forEach(function (entry) {
+      if (!entry || !entry.key || !Array.isArray(entry.options) || !entry.options.length) {
+        return;
+      }
+      var groupKey = entry.key;
+      var uniqueOptions = Array.from(new Set(entry.options.filter(Boolean)));
+      if (!uniqueOptions.length) return;
+      groups[groupKey] = Object.freeze({
+        key: groupKey,
+        label: entry.label || '',
+        motors: entry.motors || [],
+        options: Object.freeze(uniqueOptions),
+        defaultOption: uniqueOptions.includes(entry.defaultOption) ? entry.defaultOption : uniqueOptions[0]
+      });
+    });
+    return Object.freeze(groups);
+  }();
+  var AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = function () {
+    var map = Object.create(null);
+    Object.values(AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS).forEach(function (group) {
+      if (!group || !Array.isArray(group.motors)) return;
+      group.motors.forEach(function (name) {
+        var normalized = normalizeAutoGearTriggerValue(name);
+        if (!normalized || Object.prototype.hasOwnProperty.call(map, normalized)) {
+          return;
+        }
+        map[normalized] = group.key;
+      });
+    });
+    return Object.freeze(map);
+  }();
+  if (typeof globalThis !== 'undefined') {
+    globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS = AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+    globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+  }
   function generateAutoGearId(prefix) {
     var base = prefix || 'rule';
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -2906,9 +2984,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }).filter(Boolean);
   }
   function normalizeAutoGearText(value) {
-    var _ref6 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref6$collapseWhitesp = _ref6.collapseWhitespace,
-      collapseWhitespace = _ref6$collapseWhitesp === void 0 ? true : _ref6$collapseWhitesp;
+    var _ref7 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref7$collapseWhitesp = _ref7.collapseWhitespace,
+      collapseWhitespace = _ref7$collapseWhitesp === void 0 ? true : _ref7$collapseWhitesp;
     if (typeof value === 'number' && Number.isFinite(value)) {
       return String(value);
     }
@@ -2923,10 +3001,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate)) return 'none';
     return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
   }
-  function normalizeAutoGearSelectorDefault(type, value) {
+  function normalizeAutoGearSelectorDefault(type, value, context) {
     var text = normalizeAutoGearText(value);
     if (!text) return '';
-    var options = getAutoGearSelectorOptions(type);
+    var options = getAutoGearSelectorOptions(type, context ? {
+      selectorContext: context
+    } : null);
     if (!options.length) return text;
     var match = options.find(function (option) {
       return option.toLowerCase() === text.toLowerCase();
@@ -2975,7 +3055,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     return results;
   }
-  function getAutoGearSelectorOptions(type) {
+  function getAutoGearSelectorOptions(type, itemOrContext) {
     var normalizedType = normalizeAutoGearSelectorType(type);
     var catalog = resolveDevicesSnapshot();
     if (!catalog || _typeof(catalog) !== 'object') {
@@ -2995,6 +3075,45 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return name && name !== 'None';
       }).sort(localeSort);
     }
+    if (normalizedType === 'fizHandUnit') {
+      var groups = _typeof(AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS) === 'object' ? AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS : typeof globalThis !== 'undefined' && _typeof(globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS) === 'object' ? globalThis.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS : Object.create(null);
+      var motorMap = _typeof(AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP) === 'object' ? AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP : typeof globalThis !== 'undefined' && _typeof(globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP) === 'object' ? globalThis.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP : Object.create(null);
+      var contextValue = '';
+      if (itemOrContext && _typeof(itemOrContext) === 'object') {
+        var context = itemOrContext.selectorContext || itemOrContext.context;
+        if (typeof context === 'string') {
+          contextValue = context.trim();
+        }
+      } else if (typeof itemOrContext === 'string') {
+        contextValue = itemOrContext.trim();
+      }
+      var group = null;
+      if (contextValue) {
+        group = groups[contextValue] || null;
+        if (!group) {
+          var normalizedContext = normalizeAutoGearTriggerValue(contextValue);
+          if (normalizedContext) {
+            if (groups[normalizedContext]) {
+              group = groups[normalizedContext];
+            } else if (motorMap[normalizedContext] && groups[motorMap[normalizedContext]]) {
+              group = groups[motorMap[normalizedContext]];
+            }
+          }
+        }
+      }
+      if (group && Array.isArray(group.options)) {
+        return group.options.slice();
+      }
+      var fallback = [];
+      Object.values(groups).forEach(function (entry) {
+        if (!entry || !Array.isArray(entry.options)) return;
+        entry.options.forEach(function (option) {
+          if (!option || fallback.includes(option)) return;
+          fallback.push(option);
+        });
+      });
+      return fallback;
+    }
     if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
       return collectTripodPreferenceOptions(normalizedType).map(function (option) {
         return option.value;
@@ -3003,49 +3122,46 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return [];
   }
   function getAutoGearSelectorLabel(type) {
-    var _texts$en18;
     var normalizedType = normalizeAutoGearSelectorType(type);
-    var langTexts = texts[currentLang] || texts.en || {};
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
     if (normalizedType === 'monitor') {
-      var _texts$en12;
-      return langTexts.autoGearSelectorMonitorOption || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.autoGearSelectorMonitorOption) || 'Monitor selector';
+      return langTexts.autoGearSelectorMonitorOption || fallbackTexts.autoGearSelectorMonitorOption || 'Monitor selector';
     }
     if (normalizedType === 'directorMonitor') {
-      var _texts$en13;
-      return langTexts.autoGearSelectorDirectorOption || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.autoGearSelectorDirectorOption) || 'Director monitor selector';
+      return langTexts.autoGearSelectorDirectorOption || fallbackTexts.autoGearSelectorDirectorOption || 'Director monitor selector';
     }
     if (normalizedType === 'tripodHeadBrand') {
-      var _texts$en14;
-      return langTexts.autoGearSelectorTripodHeadOption || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+      return langTexts.autoGearSelectorTripodHeadOption || fallbackTexts.autoGearSelectorTripodHeadOption || 'Tripod head selector';
     }
     if (normalizedType === 'tripodBowl') {
-      var _texts$en15;
-      return langTexts.autoGearSelectorTripodBowlOption || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+      return langTexts.autoGearSelectorTripodBowlOption || fallbackTexts.autoGearSelectorTripodBowlOption || 'Tripod bowl selector';
     }
     if (normalizedType === 'tripodTypes') {
-      var _texts$en16;
-      return langTexts.autoGearSelectorTripodTypesOption || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+      return langTexts.autoGearSelectorTripodTypesOption || fallbackTexts.autoGearSelectorTripodTypesOption || 'Tripod type selector';
     }
     if (normalizedType === 'tripodSpreader') {
-      var _texts$en17;
-      return langTexts.autoGearSelectorTripodSpreaderOption || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+      return langTexts.autoGearSelectorTripodSpreaderOption || fallbackTexts.autoGearSelectorTripodSpreaderOption || 'Tripod spreader selector';
     }
-    return langTexts.autoGearSelectorNoneOption || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.autoGearSelectorNoneOption) || 'No selector';
+    if (normalizedType === 'fizHandUnit') {
+      return langTexts.autoGearSelectorFizHandUnitOption || fallbackTexts.autoGearSelectorFizHandUnitOption || 'FIZ hand unit selector';
+    }
+    return langTexts.autoGearSelectorNoneOption || fallbackTexts.autoGearSelectorNoneOption || 'No selector';
   }
   function getAutoGearSelectorScrollHint() {
-    var _texts$en19;
-    var langTexts = texts[currentLang] || texts.en || {};
-    return langTexts.autoGearSelectorScrollHint || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.autoGearSelectorScrollHint) || 'Scroll to see more devices.';
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    return langTexts.autoGearSelectorScrollHint || fallbackTexts.autoGearSelectorScrollHint || 'Scroll to see more devices.';
   }
   function getAutoGearSelectorDefaultPlaceholder() {
-    var _texts$en20;
-    var langTexts = texts[currentLang] || texts.en || {};
-    return langTexts.autoGearSelectorDefaultPlaceholder || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.autoGearSelectorDefaultPlaceholder) || 'Choose a default device';
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    return langTexts.autoGearSelectorDefaultPlaceholder || fallbackTexts.autoGearSelectorDefaultPlaceholder || 'Choose a default device';
   }
   function getAutoGearMonitorDefaultPlaceholder() {
-    var _texts$en21;
-    var langTexts = texts[currentLang] || texts.en || {};
-    return langTexts.autoGearMonitorDefaultPlaceholder || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.autoGearMonitorDefaultPlaceholder) || 'Use recommended automatically';
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    return langTexts.autoGearMonitorDefaultPlaceholder || fallbackTexts.autoGearMonitorDefaultPlaceholder || 'Use recommended automatically';
   }
   function formatAutoGearSelectorValue(type, value) {
     var normalizedValue = typeof value === 'string' ? value.trim() : '';
@@ -3060,7 +3176,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return match.label;
       }
     }
-    if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor')) {
+    if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor' || normalizedType === 'fizHandUnit')) {
       return addArriKNumber(normalizedValue);
     }
     return normalizedValue;
@@ -3229,7 +3345,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
     var screenSize = normalizeAutoGearText(entry.screenSize);
     var selectorType = normalizeAutoGearSelectorType(entry.selectorType);
-    var selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault);
+    var selectorContext = typeof entry.selectorContext === 'string' ? entry.selectorContext.trim() : '';
+    var selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault, selectorContext);
     var selectorEnabled = !!entry.selectorEnabled;
     if (selectorType === 'none') {
       selectorEnabled = false;
@@ -3246,6 +3363,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       selectorType: selectorType,
       selectorDefault: selectorDefault,
       selectorEnabled: selectorEnabled,
+      selectorContext: selectorContext,
       notes: notes,
       contextNotes: contexts
     };
@@ -3407,10 +3525,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       } : null;
     }
     if (_typeof(setting) === 'object') {
-      var _ref7, _ref8, _ref9, _setting$mode, _ref0, _ref1, _ref10, _ref11, _setting$value;
-      var modeSource = (_ref7 = (_ref8 = (_ref9 = (_setting$mode = setting.mode) !== null && _setting$mode !== void 0 ? _setting$mode : setting.type) !== null && _ref9 !== void 0 ? _ref9 : setting.comparison) !== null && _ref8 !== void 0 ? _ref8 : setting.condition) !== null && _ref7 !== void 0 ? _ref7 : setting.kind;
+      var _ref8, _ref9, _ref0, _setting$mode, _ref1, _ref10, _ref11, _ref12, _setting$value;
+      var modeSource = (_ref8 = (_ref9 = (_ref0 = (_setting$mode = setting.mode) !== null && _setting$mode !== void 0 ? _setting$mode : setting.type) !== null && _ref0 !== void 0 ? _ref0 : setting.comparison) !== null && _ref9 !== void 0 ? _ref9 : setting.condition) !== null && _ref8 !== void 0 ? _ref8 : setting.kind;
       var mode = normalizeAutoGearShootingDayMode(modeSource);
-      var valueSource = (_ref0 = (_ref1 = (_ref10 = (_ref11 = (_setting$value = setting.value) !== null && _setting$value !== void 0 ? _setting$value : setting.count) !== null && _ref11 !== void 0 ? _ref11 : setting.days) !== null && _ref10 !== void 0 ? _ref10 : setting.minimum) !== null && _ref1 !== void 0 ? _ref1 : setting.maximum) !== null && _ref0 !== void 0 ? _ref0 : setting.frequency;
+      var valueSource = (_ref1 = (_ref10 = (_ref11 = (_ref12 = (_setting$value = setting.value) !== null && _setting$value !== void 0 ? _setting$value : setting.count) !== null && _ref12 !== void 0 ? _ref12 : setting.days) !== null && _ref11 !== void 0 ? _ref11 : setting.minimum) !== null && _ref10 !== void 0 ? _ref10 : setting.maximum) !== null && _ref1 !== void 0 ? _ref1 : setting.frequency;
       var value = normalizeAutoGearShootingDayValue(valueSource);
       if (Number.isFinite(value) && value > 0) {
         return {
@@ -4338,15 +4456,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var autoGearSummaryLast = null;
   var autoGearScenarioFilter = 'all';
   function updateAutoGearItemButtonState(type) {
-    var _texts$en22, _texts$en23;
     var normalizedType = type === 'remove' ? 'remove' : 'add';
     var button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
     if (!button) return;
-    var langTexts = texts[currentLang] || texts.en || {};
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
     var isEditing = (autoGearEditorActiveItem === null || autoGearEditorActiveItem === void 0 ? void 0 : autoGearEditorActiveItem.listType) === normalizedType;
     var defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
-    var defaultLabel = langTexts[defaultKey] || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22[defaultKey]) || button.textContent || '';
-    var updateLabel = langTexts.autoGearUpdateItemButton || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.autoGearUpdateItemButton) || defaultLabel;
+    var defaultLabel = langTexts[defaultKey] || fallbackTexts[defaultKey] || button.textContent || '';
+    var updateLabel = langTexts.autoGearUpdateItemButton || fallbackTexts.autoGearUpdateItemButton || defaultLabel;
     var label = isEditing ? updateLabel : defaultLabel;
     var glyph = isEditing ? ICON_GLYPHS.save : normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add;
     setButtonLabelWithIcon(button, label, glyph);
@@ -4423,11 +4541,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return _objectSpread({}, autoGearMonitorDefaults);
   }
   function setAutoGearMonitorDefaults(defaults) {
-    var _ref12 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      _ref12$skipRender = _ref12.skipRender,
-      skipRender = _ref12$skipRender === void 0 ? false : _ref12$skipRender,
-      _ref12$skipRefresh = _ref12.skipRefresh,
-      skipRefresh = _ref12$skipRefresh === void 0 ? false : _ref12$skipRefresh;
+    var _ref13 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref13$skipRender = _ref13.skipRender,
+      skipRender = _ref13$skipRender === void 0 ? false : _ref13$skipRender,
+      _ref13$skipRefresh = _ref13.skipRefresh,
+      skipRefresh = _ref13$skipRefresh === void 0 ? false : _ref13$skipRefresh;
     var normalized = normalizeAutoGearMonitorDefaults(defaults);
     var changed = false;
     Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(function (key) {
@@ -4732,10 +4850,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (seen.has(obj)) return;
         seen.add(obj);
       }
-      Object.entries(obj).forEach(function (_ref13) {
-        var _ref14 = _slicedToArray(_ref13, 2),
-          key = _ref14[0],
-          value = _ref14[1];
+      Object.entries(obj).forEach(function (_ref14) {
+        var _ref15 = _slicedToArray(_ref14, 2),
+          key = _ref15[0],
+          value = _ref15[1];
         if (!value || _typeof(value) !== 'object' || Array.isArray(value)) return;
         addName(key);
         _visit(value);
@@ -5149,6 +5267,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       } else if (action === 'open-help') {
         var _document$getElementB2;
         (_document$getElementB2 = document.getElementById('helpButton')) === null || _document$getElementB2 === void 0 || _document$getElementB2.click();
+      } else if (action === 'open-own-gear') {
+        if (typeof openOwnGearDialog === 'function') {
+          openOwnGearDialog();
+        }
+      } else if (action === 'open-contacts') {
+        initializeContactsModule();
+        openDialog(contactsDialog);
       }
     };
     menu.querySelectorAll('[data-sidebar-action]').forEach(function (button) {
@@ -5178,6 +5303,983 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     mql.addEventListener('change', relocate);
     relocate();
   }
+  var ownGearItems = [];
+  var ownGearEditingId = null;
+  var ownGearDialog = null;
+  var ownGearForm = null;
+  var ownGearListElem = null;
+  var ownGearEmptyState = null;
+  var ownGearListSummary = null;
+  var ownGearNameInput = null;
+  var ownGearQuantityInput = null;
+  var ownGearNotesInput = null;
+  var ownGearSaveButton = null;
+  var ownGearResetButton = null;
+  var ownGearCloseButton = null;
+  var ownGearSuggestionsList = null;
+  var ownGearAddHelp = null;
+  var OWN_GEAR_SOURCE_CATALOG = 'catalog';
+  var OWN_GEAR_SOURCE_CUSTOM = 'custom';
+  var ownGearSuggestionCache = {
+    lang: null,
+    list: [],
+    lookup: new Set()
+  };
+  function generateOwnGearId() {
+    if (typeof crypto !== 'undefined' && crypto && typeof crypto.randomUUID === 'function') {
+      try {
+        return crypto.randomUUID();
+      } catch (error) {
+        void error;
+      }
+    }
+    var timePart = Date.now().toString(36);
+    var randomPart = Math.floor(Math.random() * 1e8).toString(36);
+    return "own-".concat(timePart, "-").concat(randomPart);
+  }
+  function normalizeOwnGearRecord(entry) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return null;
+    }
+    var rawName = typeof entry.name === 'string' ? entry.name.trim() : '';
+    if (!rawName) {
+      return null;
+    }
+    var normalized = {
+      id: typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : generateOwnGearId(),
+      name: rawName
+    };
+    if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+      normalized.quantity = entry.quantity.trim();
+    } else if (typeof entry.quantity === 'number' && Number.isFinite(entry.quantity)) {
+      normalized.quantity = String(entry.quantity);
+    }
+    if (typeof entry.notes === 'string' && entry.notes.trim()) {
+      normalized.notes = entry.notes.trim();
+    }
+    if (typeof entry.source === 'string' && entry.source.trim()) {
+      normalized.source = entry.source.trim();
+    }
+    return normalized;
+  }
+  function loadStoredOwnGearItems() {
+    if (typeof loadOwnGear !== 'function') {
+      return [];
+    }
+    try {
+      var stored = loadOwnGear();
+      if (!Array.isArray(stored)) {
+        return [];
+      }
+      var seenIds = new Set();
+      return stored.map(normalizeOwnGearRecord).filter(function (item) {
+        if (!item) return false;
+        if (seenIds.has(item.id)) {
+          return false;
+        }
+        seenIds.add(item.id);
+        return true;
+      });
+    } catch (error) {
+      console.warn('Failed to load own gear items from storage', error);
+      return [];
+    }
+  }
+  function persistOwnGearItems() {
+    if (typeof saveOwnGear !== 'function') {
+      return;
+    }
+    try {
+      var payload = ownGearItems.map(function (item) {
+        var entry = {
+          id: item.id,
+          name: item.name
+        };
+        if (item.quantity) {
+          entry.quantity = item.quantity;
+        }
+        if (item.notes) {
+          entry.notes = item.notes;
+        }
+        if (item.source) {
+          entry.source = item.source;
+        }
+        return entry;
+      });
+      saveOwnGear(payload);
+    } catch (error) {
+      console.warn('Failed to save own gear items', error);
+    }
+  }
+  function invalidateOwnGearSuggestionCache() {
+    ownGearSuggestionCache = {
+      lang: null,
+      list: [],
+      lookup: new Set()
+    };
+  }
+  function collectOwnGearSuggestionInfo() {
+    var lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE;
+    if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
+      return ownGearSuggestionCache;
+    }
+    var uniqueNames = new Map();
+    var addName = function addName(name) {
+      if (typeof name !== 'string') {
+        return;
+      }
+      var trimmed = name.trim();
+      if (!trimmed) {
+        return;
+      }
+      var key = trimmed.toLowerCase();
+      if (uniqueNames.has(key)) {
+        return;
+      }
+      uniqueNames.set(key, trimmed);
+    };
+    var _traverseDevices = function traverseDevices(value, seen) {
+      if (!value) return;
+      if (typeof value === 'string') {
+        addName(value);
+        return;
+      }
+      if (_typeof(value) !== 'object') {
+        return;
+      }
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+      if (typeof value.name === 'string') {
+        addName(value.name);
+      }
+      if (typeof value.label === 'string') {
+        addName(value.label);
+      }
+      if (typeof value.brand === 'string' && typeof value.model === 'string') {
+        addName("".concat(value.brand, " ").concat(value.model));
+      }
+      if (Array.isArray(value)) {
+        value.forEach(function (entry) {
+          return _traverseDevices(entry, seen);
+        });
+        return;
+      }
+      Object.keys(value).forEach(function (key) {
+        if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
+          return;
+        }
+        _traverseDevices(value[key], seen);
+      });
+    };
+    try {
+      if (_typeof(devices) === 'object' && devices) {
+        _traverseDevices(devices, new WeakSet());
+      }
+    } catch (error) {
+      console.warn('Unable to collect device catalog names for own gear suggestions', error);
+    }
+    try {
+      var langItems = gearItemTranslations && _typeof(gearItemTranslations) === 'object' ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE] || null : null;
+      if (langItems && _typeof(langItems) === 'object') {
+        Object.keys(langItems).forEach(function (key) {
+          addName(key);
+          var translated = langItems[key];
+          if (typeof translated === 'string') {
+            addName(translated);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Unable to include custom gear translations in suggestions', error);
+    }
+    ownGearItems.forEach(function (item) {
+      if (item && typeof item.name === 'string') {
+        addName(item.name);
+      }
+    });
+    var collator = typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(lang || DEFAULT_LANGUAGE, {
+      sensitivity: 'base'
+    }) : null;
+    var list = Array.from(uniqueNames.values()).sort(function (a, b) {
+      if (collator) {
+        try {
+          return collator.compare(a, b);
+        } catch (error) {
+          void error;
+        }
+      }
+      return a.localeCompare(b);
+    });
+    var lookup = new Set(uniqueNames.keys());
+    ownGearSuggestionCache = {
+      lang: lang,
+      list: list,
+      lookup: lookup
+    };
+    return ownGearSuggestionCache;
+  }
+  function refreshOwnGearSuggestions() {
+    if (!ownGearSuggestionsList) {
+      return;
+    }
+    var _collectOwnGearSugges = collectOwnGearSuggestionInfo(),
+      list = _collectOwnGearSugges.list;
+    ownGearSuggestionsList.innerHTML = '';
+    var fragment = document.createDocumentFragment();
+    list.forEach(function (name) {
+      var option = document.createElement('option');
+      option.value = name;
+      fragment.appendChild(option);
+    });
+    ownGearSuggestionsList.appendChild(fragment);
+  }
+  function formatOwnGearQuantityText(quantity) {
+    if (typeof quantity !== 'string') {
+      return '';
+    }
+    var trimmed = quantity.trim();
+    if (!trimmed) {
+      return '';
+    }
+    var numeric = Number(trimmed.replace(',', '.'));
+    if (!Number.isNaN(numeric) && Number.isFinite(numeric)) {
+      var fixed = Math.round(numeric * 1000) / 1000;
+      return String(fixed).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+    }
+    return trimmed;
+  }
+  function formatOwnGearCountText(count, langTexts) {
+    var fallbackTexts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : getLanguageTexts(DEFAULT_LANGUAGE);
+    var templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
+    var template = langTexts && langTexts[templateKey] || fallbackTexts && fallbackTexts[templateKey] || '';
+    if (!template) {
+      return count > 0 ? String(count) : '';
+    }
+    if (template.includes('%s')) {
+      return formatWithPlaceholdersSafe(template, String(count));
+    }
+    return "".concat(template, " ").concat(count).trim();
+  }
+  function updateOwnGearSummary() {
+    if (!ownGearListSummary) {
+      return;
+    }
+    var langTexts = getLanguageTexts(currentLang);
+    var summary = formatOwnGearCountText(ownGearItems.length, langTexts);
+    if (summary) {
+      ownGearListSummary.textContent = summary;
+      ownGearListSummary.removeAttribute('hidden');
+    } else {
+      ownGearListSummary.textContent = '';
+      ownGearListSummary.setAttribute('hidden', '');
+    }
+  }
+  function createOwnGearActionButton(label, icon, onClick) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = options.className || 'own-gear-item-action';
+    var iconHtml = typeof iconMarkup === 'function' && icon ? iconMarkup(icon, 'btn-icon') : '';
+    button.innerHTML = "".concat(iconHtml).concat(escapeHtml(label));
+    button.setAttribute('aria-label', options.ariaLabel || label);
+    button.addEventListener('click', onClick);
+    return button;
+  }
+  var ICON_FONT_KEYS = Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text'
+  });
+  var VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
+  function iconGlyph(char) {
+    var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ICON_FONT_KEYS.UICONS;
+    var normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+    return Object.freeze({
+      char: char,
+      font: normalizedFont
+    });
+  }
+  function resolveIconGlyph(glyph) {
+    if (!glyph) {
+      return {
+        char: '',
+        font: ICON_FONT_KEYS.UICONS,
+        className: '',
+        size: undefined
+      };
+    }
+    if (glyph.markup) {
+      var size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      return {
+        markup: glyph.markup,
+        className: glyph.className || '',
+        font: ICON_FONT_KEYS.UICONS,
+        size: size
+      };
+    }
+    if (typeof glyph === 'string') {
+      return {
+        char: glyph,
+        font: ICON_FONT_KEYS.UICONS,
+        className: '',
+        size: undefined
+      };
+    }
+    if (_typeof(glyph) === 'object') {
+      var char = typeof glyph.char === 'string' ? glyph.char : '';
+      var fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font) ? glyph.font : ICON_FONT_KEYS.UICONS;
+      var className = typeof glyph.className === 'string' ? glyph.className : '';
+      var _size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+      if (glyph.markup) {
+        return {
+          markup: glyph.markup,
+          className: className,
+          font: fontKey,
+          size: _size
+        };
+      }
+      return {
+        char: char,
+        font: fontKey,
+        className: className,
+        size: _size
+      };
+    }
+    return {
+      char: '',
+      font: ICON_FONT_KEYS.UICONS,
+      className: '',
+      size: undefined
+    };
+  }
+  function applyIconGlyph(element, glyph) {
+    if (!element) return;
+    var resolved = resolveIconGlyph(glyph);
+    if (resolved.markup) {
+      element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+      element.setAttribute('aria-hidden', 'true');
+      if (resolved.className) {
+        resolved.className.split(/\s+/).filter(Boolean).forEach(function (cls) {
+          return element.classList.add(cls);
+        });
+      }
+      element.removeAttribute('data-icon-font');
+      return;
+    }
+    var char = resolved.char || '';
+    element.textContent = char;
+    if (char) {
+      element.setAttribute('data-icon-font', resolved.font);
+    } else {
+      element.removeAttribute('data-icon-font');
+    }
+  }
+  function formatSvgCoordinate(value) {
+    if (!Number.isFinite(value)) return '0';
+    var rounded = Math.round(value * 100) / 100;
+    if (Number.isInteger(rounded)) return String(rounded);
+    return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  }
+  function positionSvgMarkup(markup, centerX, centerY) {
+    var size = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 24;
+    if (typeof markup !== 'string') {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var trimmed = markup.trim();
+    if (!trimmed) {
+      return {
+        markup: '',
+        x: '0',
+        y: '0'
+      };
+    }
+    var half = size / 2;
+    var x = formatSvgCoordinate(centerX);
+    var y = formatSvgCoordinate(centerY);
+    var width = formatSvgCoordinate(size);
+    var height = formatSvgCoordinate(size);
+    var cleaned = trimmed.replace(/<svg\b([^>]*)>/i, function (match) {
+      var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var attrText = attrs.replace(/\s+x\s*=\s*"[^"]*"/gi, '').replace(/\s+y\s*=\s*"[^"]*"/gi, '').trim();
+      var additions = [];
+      var hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+      var hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+      if (!hasWidth) additions.push("width=\"".concat(width, "\""));
+      if (!hasHeight) additions.push("height=\"".concat(height, "\""));
+      additions.push("x=\"-".concat(formatSvgCoordinate(half), "\""));
+      additions.push("y=\"-".concat(formatSvgCoordinate(half), "\""));
+      attrText = [attrText].concat(additions).filter(Boolean).join(' ').trim();
+      return attrText ? "<svg ".concat(attrText, ">") : '<svg>';
+    });
+    return {
+      markup: cleaned,
+      x: x,
+      y: y
+    };
+  }
+  function glyphText(glyph) {
+    var resolved = resolveIconGlyph(glyph);
+    return resolved.char || '';
+  }
+  var PRODUCTION_COMPANY_ICON = iconGlyph("\\uE2D5", ICON_FONT_KEYS.UICONS);
+  var RENTAL_HOUSE_ICON = iconGlyph("\\uEA09", ICON_FONT_KEYS.UICONS);
+  var ASPECT_RATIO_ICON = iconGlyph("\\uE86E", ICON_FONT_KEYS.UICONS);
+  var REQUIRED_SCENARIOS_ICON = iconGlyph("\\uF4D4", ICON_FONT_KEYS.UICONS);
+  var MONITORING_SUPPORT_ICON = iconGlyph("\\uEFFC", ICON_FONT_KEYS.UICONS);
+  var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
+  var ICON_GLYPHS = Object.freeze({
+    batteryBolt: iconGlyph("\\uE1A6", ICON_FONT_KEYS.UICONS),
+    batteryFull: iconGlyph("\\uE1A9", ICON_FONT_KEYS.UICONS),
+    bolt: iconGlyph("\\uF1F8", ICON_FONT_KEYS.ESSENTIAL),
+    plug: iconGlyph("\\uEE75", ICON_FONT_KEYS.UICONS),
+    sliders: iconGlyph("\\uF143", ICON_FONT_KEYS.ESSENTIAL),
+    screen: iconGlyph("\\uF11D", ICON_FONT_KEYS.GADGET),
+    brightness: iconGlyph("\\uE2B3", ICON_FONT_KEYS.UICONS),
+    wifi: iconGlyph("\\uF4AC", ICON_FONT_KEYS.UICONS),
+    gears: iconGlyph("\\uE8AF", ICON_FONT_KEYS.UICONS),
+    controller: iconGlyph("\\uF117", ICON_FONT_KEYS.GADGET),
+    distance: iconGlyph("\\uEFB9", ICON_FONT_KEYS.UICONS),
+    sensor: iconGlyph("\\uEC2B", ICON_FONT_KEYS.UICONS),
+    viewfinder: iconGlyph("\\uF114", ICON_FONT_KEYS.FILM),
+    camera: iconGlyph("\\uE333", ICON_FONT_KEYS.UICONS),
+    trash: iconGlyph("\\uF254", ICON_FONT_KEYS.ESSENTIAL),
+    reload: iconGlyph("\\uF202", ICON_FONT_KEYS.ESSENTIAL),
+    load: iconGlyph("\\uE0E0", ICON_FONT_KEYS.UICONS),
+    installApp: iconGlyph("\\uE9D4", ICON_FONT_KEYS.UICONS),
+    add: Object.freeze({
+      char: '+',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    minus: Object.freeze({
+      char: '−',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    arrowLeft: Object.freeze({
+      char: '←',
+      font: ICON_FONT_KEYS.TEXT,
+      className: 'icon-text'
+    }),
+    check: iconGlyph("\\uE3D8", ICON_FONT_KEYS.UICONS),
+    fileExport: iconGlyph("\\uE7AB", ICON_FONT_KEYS.UICONS),
+    fileImport: iconGlyph("\\uE7C7", ICON_FONT_KEYS.UICONS),
+    save: iconGlyph("\\uF207", ICON_FONT_KEYS.ESSENTIAL),
+    share: iconGlyph("\\uF219", ICON_FONT_KEYS.ESSENTIAL),
+    paperPlane: iconGlyph("\\uED67", ICON_FONT_KEYS.UICONS),
+    magnet: iconGlyph("\\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
+    codec: iconGlyph("\\uE4CD", ICON_FONT_KEYS.UICONS),
+    timecode: iconGlyph("\\uF10E", ICON_FONT_KEYS.FILM),
+    audioIn: iconGlyph("\\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
+    audioOut: iconGlyph("\\uF22F", ICON_FONT_KEYS.ESSENTIAL),
+    note: iconGlyph("\\uF13E", ICON_FONT_KEYS.ESSENTIAL),
+    overview: iconGlyph("\\uF1F5", ICON_FONT_KEYS.UICONS),
+    gearList: iconGlyph("\\uE467", ICON_FONT_KEYS.UICONS),
+    feedback: iconGlyph("\\uE791", ICON_FONT_KEYS.UICONS),
+    resetView: iconGlyph("\\uEB6D", ICON_FONT_KEYS.UICONS),
+    pin: iconGlyph("\\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
+    sun: iconGlyph("\\uF1FE", ICON_FONT_KEYS.UICONS),
+    moon: iconGlyph("\\uEC7E", ICON_FONT_KEYS.UICONS),
+    circleX: iconGlyph("\\uF131", ICON_FONT_KEYS.ESSENTIAL),
+    settingsGeneral: iconGlyph("\\uE5A3", ICON_FONT_KEYS.UICONS),
+    settingsAutoGear: iconGlyph("\\uE8AF", ICON_FONT_KEYS.UICONS),
+    settingsAccessibility: iconGlyph("\\uF392", ICON_FONT_KEYS.UICONS),
+    settingsBackup: iconGlyph("\\uE5BD", ICON_FONT_KEYS.UICONS),
+    settingsData: iconGlyph("\\uE5C7", ICON_FONT_KEYS.UICONS),
+    settingsAbout: iconGlyph("\\uEA4F", ICON_FONT_KEYS.UICONS),
+    star: Object.freeze({
+      markup: STAR_ICON_SVG,
+      className: 'icon-svg favorite-star-icon'
+    }),
+    warning: iconGlyph("\\uF26F", ICON_FONT_KEYS.ESSENTIAL)
+  });
+  function iconMarkup(glyph) {
+    var classNameOrOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'info-icon';
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    if (!glyph) return '';
+    var opts = {};
+    var resolvedClassName = 'info-icon';
+    if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
+      resolvedClassName = classNameOrOptions || '';
+      if (options && _typeof(options) === 'object') {
+        opts = options;
+      }
+    } else if (classNameOrOptions && _typeof(classNameOrOptions) === 'object') {
+      opts = classNameOrOptions;
+      resolvedClassName = classNameOrOptions.className || 'info-icon';
+    }
+    if (typeof opts.className === 'string') {
+      resolvedClassName = opts.className;
+    }
+    var styleParts = [];
+    if (typeof opts.size === 'string' && opts.size.trim()) {
+      styleParts.push("--icon-size: ".concat(opts.size.trim()));
+    }
+    if (typeof opts.scale === 'string' && opts.scale.trim()) {
+      styleParts.push("--icon-scale: ".concat(opts.scale.trim()));
+    }
+    if (typeof opts.style === 'string' && opts.style.trim()) {
+      styleParts.push(opts.style.trim());
+    }
+    var styleAttr = styleParts.length ? " style=\"".concat(styleParts.join(';'), "\"") : '';
+    var resolved = resolveIconGlyph(glyph);
+    var classes = ['icon-glyph'];
+    if (resolvedClassName) classes.unshift(resolvedClassName);
+    if (resolved.markup) {
+      if (resolved.className) classes.push(resolved.className);
+      var markup = ensureSvgHasAriaHidden(resolved.markup);
+      return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " aria-hidden=\"true\">").concat(markup, "</span>");
+    }
+    var char = resolved.char || '';
+    if (!char) return '';
+    return "<span class=\"".concat(classes.join(' '), "\"").concat(styleAttr, " data-icon-font=\"").concat(resolved.font, "\" aria-hidden=\"true\">").concat(char, "</span>");
+  }
+  function renderOwnGearList() {
+    if (!ownGearListElem) {
+      return;
+    }
+    ownGearListElem.innerHTML = '';
+    var langTexts = getLanguageTexts(currentLang);
+    if (!ownGearItems.length) {
+      if (ownGearEmptyState) {
+        ownGearEmptyState.removeAttribute('hidden');
+      }
+      updateOwnGearSummary();
+      return;
+    }
+    if (ownGearEmptyState) {
+      ownGearEmptyState.setAttribute('hidden', '');
+    }
+    var fragment = document.createDocumentFragment();
+    ownGearItems.forEach(function (item) {
+      if (!item || typeof item.id !== 'string') {
+        return;
+      }
+      var listItem = document.createElement('li');
+      listItem.className = 'own-gear-item';
+      listItem.dataset.ownGearId = item.id;
+      var body = document.createElement('div');
+      body.className = 'own-gear-item-body';
+      var title = document.createElement('p');
+      title.className = 'own-gear-item-title';
+      var quantityText = formatOwnGearQuantityText(item.quantity || '');
+      title.textContent = quantityText ? "".concat(quantityText, " \xD7 ").concat(item.name) : item.name;
+      body.appendChild(title);
+      if (item.notes) {
+        var note = document.createElement('p');
+        note.className = 'own-gear-item-note';
+        note.textContent = item.notes;
+        body.appendChild(note);
+      }
+      listItem.appendChild(body);
+      var actions = document.createElement('div');
+      actions.className = 'own-gear-item-actions';
+      var editLabel = langTexts.ownGearEditButton || 'Edit';
+      var editAria = langTexts.ownGearEditButtonAria ? formatWithPlaceholdersSafe(langTexts.ownGearEditButtonAria, item.name) : editLabel;
+      var editButton = createOwnGearActionButton(editLabel, ICON_GLYPHS.sliders, function () {
+        startEditingOwnGearItem(item.id);
+      }, {
+        ariaLabel: editAria
+      });
+      actions.appendChild(editButton);
+      var deleteLabel = langTexts.ownGearDeleteButton || 'Remove';
+      var deleteAria = langTexts.ownGearDeleteButtonAria ? formatWithPlaceholdersSafe(langTexts.ownGearDeleteButtonAria, item.name) : deleteLabel;
+      var deleteButton = createOwnGearActionButton(deleteLabel, ICON_GLYPHS.trash, function () {
+        removeOwnGearItem(item.id);
+      }, {
+        ariaLabel: deleteAria,
+        className: 'own-gear-item-action own-gear-item-action-danger'
+      });
+      actions.appendChild(deleteButton);
+      listItem.appendChild(actions);
+      fragment.appendChild(listItem);
+    });
+    ownGearListElem.appendChild(fragment);
+    updateOwnGearSummary();
+  }
+  function resetOwnGearForm() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (ownGearNameInput) {
+      ownGearNameInput.value = '';
+      ownGearNameInput.setCustomValidity('');
+    }
+    if (ownGearQuantityInput) {
+      ownGearQuantityInput.value = '';
+      ownGearQuantityInput.setCustomValidity('');
+    }
+    if (ownGearNotesInput) {
+      ownGearNotesInput.value = '';
+    }
+    ownGearEditingId = null;
+    updateOwnGearSaveButtonState();
+    if (options.focusName && ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
+      ownGearNameInput.focus();
+    }
+  }
+  function updateOwnGearSaveButtonState() {
+    if (!ownGearSaveButton) {
+      return;
+    }
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    if (ownGearEditingId) {
+      var label = langTexts.ownGearUpdateButton || fallbackTexts.ownGearUpdateButton || 'Update item';
+      setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
+    } else {
+      var _label = langTexts.ownGearSaveButton || fallbackTexts.ownGearSaveButton || 'Save item';
+      setButtonLabelWithIcon(ownGearSaveButton, _label, ICON_GLYPHS.add);
+    }
+  }
+  function normalizeOwnGearQuantityInput(raw) {
+    if (typeof raw !== 'string') {
+      return {
+        value: '',
+        valid: true
+      };
+    }
+    var trimmed = raw.trim();
+    if (!trimmed) {
+      return {
+        value: '',
+        valid: true
+      };
+    }
+    var normalized = trimmed.replace(',', '.');
+    var parsed = Number(normalized);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      return {
+        value: '',
+        valid: false
+      };
+    }
+    var formatted = formatOwnGearQuantityText(String(parsed));
+    return {
+      value: formatted,
+      valid: true
+    };
+  }
+  function handleOwnGearSubmit(event) {
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    if (!ownGearNameInput) {
+      return;
+    }
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var rawName = ownGearNameInput.value || '';
+    var trimmedName = rawName.trim();
+    if (!trimmedName) {
+      var message = langTexts.ownGearNameRequired || fallbackTexts.ownGearNameRequired || 'Enter an item name to continue.';
+      ownGearNameInput.setCustomValidity(message);
+      ownGearNameInput.reportValidity();
+      return;
+    }
+    ownGearNameInput.setCustomValidity('');
+    var quantityResult = normalizeOwnGearQuantityInput(ownGearQuantityInput ? ownGearQuantityInput.value : '');
+    if (!quantityResult.valid) {
+      if (ownGearQuantityInput) {
+        var _message = langTexts.ownGearQuantityInvalid || fallbackTexts.ownGearQuantityInvalid || 'Enter a non-negative quantity.';
+        ownGearQuantityInput.setCustomValidity(_message);
+        ownGearQuantityInput.reportValidity();
+      }
+      return;
+    }
+    if (ownGearQuantityInput) {
+      ownGearQuantityInput.setCustomValidity('');
+      ownGearQuantityInput.value = quantityResult.value;
+    }
+    var notes = ownGearNotesInput ? ownGearNotesInput.value.trim() : '';
+    var _collectOwnGearSugges2 = collectOwnGearSuggestionInfo(),
+      lookup = _collectOwnGearSugges2.lookup;
+    var fromCatalog = lookup.has(trimmedName.toLowerCase());
+    var source = fromCatalog ? OWN_GEAR_SOURCE_CATALOG : OWN_GEAR_SOURCE_CUSTOM;
+    if (ownGearEditingId) {
+      var index = ownGearItems.findIndex(function (item) {
+        return item && item.id === ownGearEditingId;
+      });
+      if (index !== -1) {
+        var updated = _objectSpread(_objectSpread({}, ownGearItems[index]), {}, {
+          name: trimmedName,
+          source: source
+        });
+        if (quantityResult.value) {
+          updated.quantity = quantityResult.value;
+        } else {
+          delete updated.quantity;
+        }
+        if (notes) {
+          updated.notes = notes;
+        } else {
+          delete updated.notes;
+        }
+        ownGearItems[index] = updated;
+      }
+    } else {
+      var entry = {
+        id: generateOwnGearId(),
+        name: trimmedName,
+        source: source
+      };
+      if (quantityResult.value) {
+        entry.quantity = quantityResult.value;
+      }
+      if (notes) {
+        entry.notes = notes;
+      }
+      ownGearItems.push(entry);
+    }
+    persistOwnGearItems();
+    invalidateOwnGearSuggestionCache();
+    renderOwnGearList();
+    refreshOwnGearSuggestions();
+    resetOwnGearForm({
+      focusName: true
+    });
+  }
+  function startEditingOwnGearItem(id) {
+    var item = ownGearItems.find(function (entry) {
+      return entry && entry.id === id;
+    });
+    if (!item) {
+      return;
+    }
+    ownGearEditingId = id;
+    if (ownGearNameInput) {
+      ownGearNameInput.value = item.name;
+      ownGearNameInput.setCustomValidity('');
+    }
+    if (ownGearQuantityInput) {
+      ownGearQuantityInput.value = item.quantity || '';
+      ownGearQuantityInput.setCustomValidity('');
+    }
+    if (ownGearNotesInput) {
+      ownGearNotesInput.value = item.notes || '';
+    }
+    updateOwnGearSaveButtonState();
+    if (ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
+      ownGearNameInput.focus();
+    }
+  }
+  function removeOwnGearItem(id) {
+    var index = ownGearItems.findIndex(function (entry) {
+      return entry && entry.id === id;
+    });
+    if (index === -1) {
+      return;
+    }
+    var item = ownGearItems[index];
+    var langTexts = getLanguageTexts(currentLang);
+    var confirmTemplate = langTexts.ownGearDeleteConfirm || 'Remove “%s” from your gear list?';
+    var confirmMessage = confirmTemplate;
+    if (confirmTemplate.includes('%s')) {
+      confirmMessage = formatWithPlaceholdersSafe(confirmTemplate, item.name);
+    }
+    var confirmed = true;
+    if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      confirmed = window.confirm(confirmMessage);
+    }
+    if (!confirmed) {
+      return;
+    }
+    ownGearItems.splice(index, 1);
+    if (ownGearEditingId === id) {
+      resetOwnGearForm();
+    }
+    persistOwnGearItems();
+    invalidateOwnGearSuggestionCache();
+    renderOwnGearList();
+    refreshOwnGearSuggestions();
+  }
+  function openOwnGearDialog() {
+    if (!ownGearDialog) {
+      return;
+    }
+    resetOwnGearForm();
+    refreshOwnGearSuggestions();
+    openDialog(ownGearDialog);
+    if (ownGearNameInput && typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(function () {
+        if (typeof ownGearNameInput.focus === 'function') {
+          ownGearNameInput.focus();
+        }
+      });
+    }
+  }
+  function applyOwnGearLocalization(lang) {
+    var langTexts = getLanguageTexts(lang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    if (ownGearDialog) {
+      var title = document.getElementById('ownGearDialogHeading');
+      if (title) {
+        title.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
+      }
+      var description = document.getElementById('ownGearDialogDescription');
+      if (description) {
+        var text = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
+        description.textContent = text;
+        if (text) {
+          description.setAttribute('data-help', text);
+        } else {
+          description.removeAttribute('data-help');
+        }
+      }
+    }
+    var addHeading = document.getElementById('ownGearAddHeading');
+    if (addHeading) {
+      addHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
+    }
+    if (ownGearAddHelp) {
+      var helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHelp', '');
+      ownGearAddHelp.textContent = helpText;
+      if (helpText) {
+        ownGearAddHelp.removeAttribute('hidden');
+        ownGearAddHelp.setAttribute('data-help', helpText);
+      } else {
+        ownGearAddHelp.setAttribute('hidden', '');
+        ownGearAddHelp.removeAttribute('data-help');
+      }
+    }
+    var nameLabel = document.getElementById('ownGearNameLabel');
+    if (nameLabel) {
+      nameLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
+    }
+    if (ownGearNameInput) {
+      var placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
+      if (placeholder) {
+        ownGearNameInput.setAttribute('placeholder', placeholder);
+      } else {
+        ownGearNameInput.removeAttribute('placeholder');
+      }
+      var _helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameHelp', '');
+      if (_helpText) {
+        ownGearNameInput.setAttribute('data-help', _helpText);
+      } else {
+        ownGearNameInput.removeAttribute('data-help');
+      }
+    }
+    var quantityLabel = document.getElementById('ownGearQuantityLabel');
+    if (quantityLabel) {
+      quantityLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
+    }
+    if (ownGearQuantityInput) {
+      var _placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
+      if (_placeholder) {
+        ownGearQuantityInput.setAttribute('placeholder', _placeholder);
+      } else {
+        ownGearQuantityInput.removeAttribute('placeholder');
+      }
+      var _helpText2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
+      if (_helpText2) {
+        ownGearQuantityInput.setAttribute('data-help', _helpText2);
+      } else {
+        ownGearQuantityInput.removeAttribute('data-help');
+      }
+    }
+    var notesLabel = document.getElementById('ownGearNotesLabel');
+    if (notesLabel) {
+      notesLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
+    }
+    if (ownGearNotesInput) {
+      var _placeholder2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
+      if (_placeholder2) {
+        ownGearNotesInput.setAttribute('placeholder', _placeholder2);
+      } else {
+        ownGearNotesInput.removeAttribute('placeholder');
+      }
+      var _helpText3 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
+      if (_helpText3) {
+        ownGearNotesInput.setAttribute('data-help', _helpText3);
+      } else {
+        ownGearNotesInput.removeAttribute('data-help');
+      }
+    }
+    if (ownGearResetButton) {
+      var label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
+      setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
+    }
+    if (ownGearCloseButton) {
+      var _label2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
+      setButtonLabelWithIcon(ownGearCloseButton, _label2, ICON_GLYPHS.circleX);
+    }
+    var listHeading = document.getElementById('ownGearListHeading');
+    if (listHeading) {
+      listHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
+    }
+    if (ownGearEmptyState) {
+      ownGearEmptyState.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
+    }
+    updateOwnGearSaveButtonState();
+    renderOwnGearList();
+    refreshOwnGearSuggestions();
+  }
+  function initializeOwnGearManager() {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    ownGearDialog = document.getElementById('ownGearDialog');
+    if (!ownGearDialog) {
+      return;
+    }
+    ownGearForm = document.getElementById('ownGearForm');
+    ownGearListElem = document.getElementById('ownGearList');
+    ownGearEmptyState = document.getElementById('ownGearEmptyState');
+    ownGearListSummary = document.getElementById('ownGearListSummary');
+    ownGearNameInput = document.getElementById('ownGearName');
+    ownGearQuantityInput = document.getElementById('ownGearQuantity');
+    ownGearNotesInput = document.getElementById('ownGearNotes');
+    ownGearSaveButton = document.getElementById('ownGearSaveButton');
+    ownGearResetButton = document.getElementById('ownGearResetButton');
+    ownGearCloseButton = document.getElementById('ownGearCloseButton');
+    ownGearSuggestionsList = document.getElementById('ownGearSuggestions');
+    ownGearAddHelp = document.getElementById('ownGearAddHelp');
+    ownGearItems = loadStoredOwnGearItems();
+    applyOwnGearLocalization(currentLang);
+    if (ownGearForm) {
+      ownGearForm.addEventListener('submit', handleOwnGearSubmit);
+    }
+    if (ownGearResetButton) {
+      ownGearResetButton.addEventListener('click', function () {
+        resetOwnGearForm({
+          focusName: true
+        });
+      });
+    }
+    if (ownGearCloseButton) {
+      ownGearCloseButton.addEventListener('click', function () {
+        closeDialog(ownGearDialog);
+        resetOwnGearForm();
+      });
+    }
+    if (ownGearDialog && typeof ownGearDialog.addEventListener === 'function') {
+      ownGearDialog.addEventListener('cancel', function (event) {
+        if (event && typeof event.preventDefault === 'function') {
+          event.preventDefault();
+        }
+        closeDialog(ownGearDialog);
+        resetOwnGearForm();
+      });
+      ownGearDialog.addEventListener('close', function () {
+        resetOwnGearForm();
+      });
+    }
+    try {
+      exposeCoreRuntimeConstant('openOwnGearDialog', openOwnGearDialog);
+    } catch (error) {
+      void error;
+      if (typeof globalThis !== 'undefined') {
+        globalThis.openOwnGearDialog = openOwnGearDialog;
+      }
+    }
+  }
   function initializeLayoutControls() {
     setupSideMenu();
     setupResponsiveControls();
@@ -5185,14 +6287,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     var runLayoutInitialization = function runLayoutInitialization() {
       initializeLayoutControls();
+      initializeOwnGearManager();
+      initializeContactsModule();
     };
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', runLayoutInitialization, {
-        once: true
-      });
-    } else {
-      runLayoutInitialization();
-    }
+    var scheduleLayoutInitialization = function scheduleLayoutInitialization() {
+      var invoke = function invoke() {
+        if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+          window.setTimeout(runLayoutInitialization, 0);
+        } else {
+          runLayoutInitialization();
+        }
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', invoke, {
+          once: true
+        });
+      } else {
+        invoke();
+      }
+    };
+    scheduleLayoutInitialization();
   }
   var escapeDiv;
   function escapeHtml(str) {
@@ -5412,8 +6526,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     value: 'DisplayPort'
   }];
   var normalizeVideoType = memoizeNormalization(function (_, key) {
-    var match = VIDEO_TYPE_PATTERNS.find(function (_ref15) {
-      var needles = _ref15.needles;
+    var match = VIDEO_TYPE_PATTERNS.find(function (_ref16) {
+      var needles = _ref16.needles;
       return needles.every(function (n) {
         return key.includes(n);
       });
@@ -5608,9 +6722,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).flatMap(function (vo) {
-        var _ref16 = vo || {},
-          count = _ref16.count,
-          rest = _objectWithoutProperties(_ref16, _excluded2);
+        var _ref17 = vo || {},
+          count = _ref17.count,
+          rest = _objectWithoutProperties(_ref17, _excluded2);
         var norm = normalizeVideoType(rest.type);
         if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
         var parsedCount = parseInt(count, 10);
@@ -5629,9 +6743,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).map(function (fc) {
-        var _ref17 = fc || {},
-          type = _ref17.type,
-          rest = _objectWithoutProperties(_ref17, _excluded3);
+        var _ref18 = fc || {},
+          type = _ref18.type,
+          rest = _objectWithoutProperties(_ref18, _excluded3);
         return _objectSpread(_objectSpread({}, rest), {}, {
           type: normalizeFizConnectorType(type)
         });
@@ -5642,9 +6756,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         connector: '',
         notes: ''
       }).map(function (vf) {
-        var _ref18 = vf || {},
-          type = _ref18.type,
-          rest = _objectWithoutProperties(_ref18, _excluded4);
+        var _ref19 = vf || {},
+          type = _ref19.type,
+          rest = _objectWithoutProperties(_ref19, _excluded4);
         return _objectSpread(_objectSpread({}, rest), {}, {
           type: normalizeViewfinderType(type)
         });
@@ -5653,11 +6767,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         type: '',
         notes: ''
       }).map(function (m) {
-        var _ref19 = m || {},
-          _ref19$type = _ref19.type,
-          type = _ref19$type === void 0 ? '' : _ref19$type,
-          _ref19$notes = _ref19.notes,
-          notes = _ref19$notes === void 0 ? '' : _ref19$notes;
+        var _ref20 = m || {},
+          _ref20$type = _ref20.type,
+          type = _ref20$type === void 0 ? '' : _ref20$type,
+          _ref20$notes = _ref20.notes,
+          notes = _ref20$notes === void 0 ? '' : _ref20$notes;
         var match = type.match(/^(.*?)(?:\((.*)\))?$/);
         if (match) {
           type = match[1].trim();
@@ -6183,11 +7297,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function updateBatteryLabel() {
     var label = document.getElementById('batteryLabel');
     if (!label) return;
-    label.setAttribute('data-help', texts[currentLang].batterySelectHelp);
-    if (getSelectedPlate() === 'B-Mount') {
-      label.textContent = texts[currentLang].batteryBMountLabel || 'B-Mount Battery:';
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+    var helpText = resolveTextEntry(langTexts, fallbackTexts, 'batterySelectHelp', '');
+    if (helpText) {
+      label.setAttribute('data-help', helpText);
     } else {
-      label.textContent = texts[currentLang].batteryLabel;
+      label.removeAttribute('data-help');
+    }
+    if (getSelectedPlate() === 'B-Mount') {
+      label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
+    } else {
+      label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
     }
   }
   function updateBatteryOptions() {
@@ -6210,48 +7331,48 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } else {
       var bats = devices.batteries;
       if (!supportsB) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref20) {
-          var _ref21 = _slicedToArray(_ref20, 2),
-            b = _ref21[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref21) {
+          var _ref22 = _slicedToArray(_ref21, 2),
+            b = _ref22[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref22) {
-          var _ref23 = _slicedToArray(_ref22, 2),
-            b = _ref23[1];
+        bats = Object.fromEntries(Object.entries(bats).filter(function (_ref23) {
+          var _ref24 = _slicedToArray(_ref23, 2),
+            b = _ref24[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
       populateSelect(batterySelect, bats, true);
       swaps = devices.batteryHotswaps || {};
       if (!supportsB) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref24) {
-          var _ref25 = _slicedToArray(_ref24, 2),
-            b = _ref25[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref25) {
+          var _ref26 = _slicedToArray(_ref25, 2),
+            b = _ref26[1];
           return b.mount_type !== 'B-Mount';
         }));
       }
       if (!supportsGold) {
-        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref26) {
-          var _ref27 = _slicedToArray(_ref26, 2),
-            b = _ref27[1];
+        swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref27) {
+          var _ref28 = _slicedToArray(_ref27, 2),
+            b = _ref28[1];
           return b.mount_type !== 'Gold-Mount';
         }));
       }
     }
     if (!/FXLion Nano/i.test(current)) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref28) {
-        var _ref29 = _slicedToArray(_ref28, 1),
-          name = _ref29[0];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref29) {
+        var _ref30 = _slicedToArray(_ref29, 1),
+          name = _ref30[0];
         return name !== 'FX-Lion NANO Dual V-Mount Hot-Swap Plate';
       }));
     }
     var totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
     if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
-      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref30) {
-        var _ref31 = _slicedToArray(_ref30, 2),
-          info = _ref31[1];
+      swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref31) {
+        var _ref32 = _slicedToArray(_ref31, 2),
+          info = _ref32[1];
         return typeof info.pinA !== 'number' || info.pinA >= totalCurrentLow;
       }));
     }
@@ -6401,6 +7522,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var cameraBrand = detectBrand(cameraSelect.value);
     var compatElem = document.getElementById('compatWarning');
     if (!compatElem) return;
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
     var incompatible = false;
     var arr = Array.from(brands);
     if (cameraBrand === 'dji' && arr.some(function (b) {
@@ -6422,7 +7545,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (incompatible) {
-      setStatusMessage(compatElem, texts[currentLang].incompatibleFIZWarning);
+      var warning = resolveTextEntry(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
+      setStatusMessage(compatElem, warning);
       setStatusLevel(compatElem, 'danger');
     } else {
       setStatusMessage(compatElem, '');
@@ -6456,7 +7580,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return /cforce.*rf/i.test(n);
     });
     if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
-      setStatusMessage(compatElem, texts[currentLang].amiraCforceRemoteWarning);
+      var langTexts = getLanguageTexts(currentLang);
+      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var warning = resolveTextEntry(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
+      setStatusMessage(compatElem, warning);
       setStatusLevel(compatElem, 'danger');
       return;
     }
@@ -6482,7 +7609,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return m && m.internalController === false;
     });
     if (needController && !hasController) {
-      setStatusMessage(compatElem, texts[currentLang].missingFIZControllerWarning);
+      var _langTexts = getLanguageTexts(currentLang);
+      var _fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var _warning = resolveTextEntry(_langTexts, _fallbackTexts, 'missingFIZControllerWarning', '');
+      setStatusMessage(compatElem, _warning);
       setStatusLevel(compatElem, 'danger');
     }
   }
@@ -6544,23 +7674,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return clmRegex.test(m);
     });
     if (hasCLM && !usesUMC4) {
-      msg = texts[currentLang].arriCLMNoUMC4Warning;
+      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
     } else if (usesUMC4 && motors.some(function (m) {
       return !clmRegex.test(m);
     })) {
-      msg = texts[currentLang].arriUMC4Warning;
+      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
     } else if ((usesRIA1 || usesRF) && motors.some(function (m) {
       return clmRegex.test(m);
     })) {
-      msg = texts[currentLang].arriRIA1Warning;
+      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
     } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF || builtInController)) {
-      msg = texts[currentLang].distanceControllerWarning;
+      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
     } else if (onlyMasterGrip && !usesRF) {
-      msg = texts[currentLang].masterGripWirelessWarning;
+      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
     }
     if (msg) {
       setStatusMessage(compatElem, msg);
-      if (msg === texts[currentLang].arriUMC4Warning) {
+      var langTexts = getLanguageTexts(currentLang);
+      var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
+      var umcWarning = resolveTextEntry(langTexts, fallbackTexts, 'arriUMC4Warning', '');
+      if (msg === umcWarning && umcWarning) {
         setStatusLevel(compatElem, 'warning');
       } else {
         setStatusLevel(compatElem, 'danger');
@@ -6581,7 +7714,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   } else {
     gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
   }
-  var DEFAULT_LANGUAGE = "en";
   var SUPPORTED_LANGUAGES = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === "object" && texts !== null ? Object.keys(texts) : [DEFAULT_LANGUAGE];
   function resolveLanguagePreference(candidate) {
     if (!candidate) {
@@ -6982,7 +8114,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     console.warn("Could not load language from localStorage", e);
   }
   function setLanguage(lang) {
-    var _texts$en48, _texts$en49, _texts$en50, _texts$en51, _texts$en52, _texts$en53, _texts$en54, _texts$en55, _texts$en56, _texts$en57, _texts$en58, _texts$en59, _texts$en60, _texts$en61, _texts$en62, _texts$en63, _texts$en64, _texts$en65, _texts$en66, _texts$en67, _texts$en167, _texts$en168, _texts$lang, _texts$en169, _texts$lang2, _texts$en170, _texts$lang3, _texts$en171, _texts$en227;
+    var _texts$en33, _texts$en34, _texts$en35, _texts$en36, _texts$en37, _texts$en38, _texts$en39, _texts$en40, _texts$en41, _texts$en42, _texts$en43, _texts$en44, _texts$en45, _texts$en46, _texts$en47, _texts$en48, _texts$en49, _texts$en50, _texts$en51, _texts$en52, _texts$en152, _texts$en153, _texts$lang, _texts$en154, _texts$lang2, _texts$en155, _texts$lang3, _texts$en156, _texts$en212;
     var requested = typeof lang === "string" ? lang : "";
     var resolved = resolveLanguagePreference(requested);
     var normalizedLang = resolved.language;
@@ -7030,11 +8162,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       element.textContent = text;
     };
     var createHelpLink = function createHelpLink(href, text) {
-      var _ref32 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-        target = _ref32.target,
-        highlight = _ref32.highlight,
-        _ref32$isButton = _ref32.isButton,
-        isButton = _ref32$isButton === void 0 ? true : _ref32$isButton;
+      var _ref33 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+        target = _ref33.target,
+        highlight = _ref33.highlight,
+        _ref33$isButton = _ref33.isButton,
+        isButton = _ref33$isButton === void 0 ? true : _ref33$isButton;
       if (!doc) {
         return null;
       }
@@ -7247,6 +8379,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         link.removeAttribute("data-help");
       }
     });
+    applyOwnGearLocalization(lang);
     var savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
     savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
     savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
@@ -7286,35 +8419,35 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
     shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
     if (shareDialogHeadingElem) {
-      var _texts$en24;
-      var heading = texts[lang].shareDialogTitle || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.shareDialogTitle) || shareDialogHeadingElem.textContent;
+      var _texts$en1;
+      var heading = texts[lang].shareDialogTitle || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.shareDialogTitle) || shareDialogHeadingElem.textContent;
       shareDialogHeadingElem.textContent = heading;
     }
     if (shareFilenameLabelElem) {
-      var _texts$en25;
-      var filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.shareFilenameLabel) || shareFilenameLabelElem.textContent;
+      var _texts$en10;
+      var filenameLabel = texts[lang].shareFilenameLabel || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.shareFilenameLabel) || shareFilenameLabelElem.textContent;
       shareFilenameLabelElem.textContent = filenameLabel;
     }
     if (shareConfirmBtn) {
-      var _texts$en26;
-      var confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.shareDialogConfirm) || shareConfirmBtn.textContent;
+      var _texts$en11;
+      var confirmLabel = texts[lang].shareDialogConfirm || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.shareDialogConfirm) || shareConfirmBtn.textContent;
       setButtonLabelWithIcon(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
       shareConfirmBtn.setAttribute('title', confirmLabel);
       shareConfirmBtn.setAttribute('aria-label', confirmLabel);
       shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
     }
     if (shareCancelBtn) {
-      var _texts$en27;
-      var cancelLabel = texts[lang].shareDialogCancel || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.shareDialogCancel) || shareCancelBtn.textContent;
+      var _texts$en12;
+      var cancelLabel = texts[lang].shareDialogCancel || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.shareDialogCancel) || shareCancelBtn.textContent;
       setButtonLabelWithIcon(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
       shareCancelBtn.setAttribute('title', cancelLabel);
       shareCancelBtn.setAttribute('aria-label', cancelLabel);
     }
     if (shareIncludeAutoGearText) {
-      var _texts$en28, _texts$en29;
-      var label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
+      var _texts$en13, _texts$en14;
+      var label = texts[lang].shareIncludeAutoGearLabel || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.shareIncludeAutoGearLabel) || shareIncludeAutoGearText.textContent;
       shareIncludeAutoGearText.textContent = label;
-      var help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.shareIncludeAutoGearHelp) || label;
+      var help = texts[lang].shareIncludeAutoGearHelp || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.shareIncludeAutoGearHelp) || label;
       if (shareIncludeAutoGearLabelElem) {
         shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
       }
@@ -7324,31 +8457,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
     if (sharedImportDialogHeading) {
-      var _texts$en30;
-      var title = texts[lang].sharedImportDialogTitle || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
+      var _texts$en15;
+      var title = texts[lang].sharedImportDialogTitle || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.sharedImportDialogTitle) || sharedImportDialogHeading.textContent;
       sharedImportDialogHeading.textContent = title;
     }
     if (sharedImportDialogMessage) {
-      var _texts$en31;
-      var message = texts[lang].sharedImportDialogMessage || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
+      var _texts$en16;
+      var message = texts[lang].sharedImportDialogMessage || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.sharedImportDialogMessage) || sharedImportDialogMessage.textContent;
       sharedImportDialogMessage.textContent = message;
       sharedImportDialogMessage.setAttribute('data-help', message);
     }
     if (sharedImportConfirmBtn) {
-      var _texts$en32;
-      var _label = texts[lang].sharedImportDialogConfirm || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
-      setButtonLabelWithIcon(sharedImportConfirmBtn, _label, ICON_GLYPHS.check);
-      sharedImportConfirmBtn.setAttribute('data-help', _label);
+      var _texts$en17;
+      var _label3 = texts[lang].sharedImportDialogConfirm || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.sharedImportDialogConfirm) || sharedImportConfirmBtn.textContent;
+      setButtonLabelWithIcon(sharedImportConfirmBtn, _label3, ICON_GLYPHS.check);
+      sharedImportConfirmBtn.setAttribute('data-help', _label3);
     }
     if (sharedImportCancelBtn) {
-      var _texts$en33;
-      var _label2 = texts[lang].sharedImportDialogCancel || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
-      setButtonLabelWithIcon(sharedImportCancelBtn, _label2, ICON_GLYPHS.circleX);
-      sharedImportCancelBtn.setAttribute('data-help', _label2);
+      var _texts$en18;
+      var _label4 = texts[lang].sharedImportDialogCancel || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.sharedImportDialogCancel) || sharedImportCancelBtn.textContent;
+      setButtonLabelWithIcon(sharedImportCancelBtn, _label4, ICON_GLYPHS.circleX);
+      sharedImportCancelBtn.setAttribute('data-help', _label4);
     }
     if (sharedImportLegend) {
-      var _texts$en34;
-      var legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
+      var _texts$en19;
+      var legend = texts[lang].sharedImportAutoGearLabel || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.sharedImportAutoGearLabel) || sharedImportLegend.textContent;
       sharedImportLegend.textContent = legend;
       sharedImportLegendText = legend;
       if (sharedImportOptions) {
@@ -7360,31 +8493,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
     }
     if (sharedImportModeNoneOption) {
-      var _texts$en35, _texts$en36;
-      var _label3 = texts[lang].sharedImportAutoGearNone || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
-      sharedImportModeNoneOption.textContent = _label3;
-      var _help = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.sharedImportAutoGearNoneHelp) || _label3;
+      var _texts$en20, _texts$en21;
+      var _label5 = texts[lang].sharedImportAutoGearNone || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.sharedImportAutoGearNone) || sharedImportModeNoneOption.textContent;
+      sharedImportModeNoneOption.textContent = _label5;
+      var _help = texts[lang].sharedImportAutoGearNoneHelp || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.sharedImportAutoGearNoneHelp) || _label5;
       sharedImportModeNoneOption.setAttribute('data-help', _help);
       sharedImportModeNoneOption.setAttribute('title', _help);
-      sharedImportModeNoneOption.setAttribute('aria-label', _label3);
+      sharedImportModeNoneOption.setAttribute('aria-label', _label5);
     }
     if (sharedImportModeProjectOption) {
-      var _texts$en37, _texts$en38;
-      var _label4 = texts[lang].sharedImportAutoGearProject || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
-      sharedImportModeProjectOption.textContent = _label4;
-      var _help2 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.sharedImportAutoGearProjectHelp) || _label4;
+      var _texts$en22, _texts$en23;
+      var _label6 = texts[lang].sharedImportAutoGearProject || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.sharedImportAutoGearProject) || sharedImportModeProjectOption.textContent;
+      sharedImportModeProjectOption.textContent = _label6;
+      var _help2 = texts[lang].sharedImportAutoGearProjectHelp || ((_texts$en23 = texts.en) === null || _texts$en23 === void 0 ? void 0 : _texts$en23.sharedImportAutoGearProjectHelp) || _label6;
       sharedImportModeProjectOption.setAttribute('data-help', _help2);
       sharedImportModeProjectOption.setAttribute('title', _help2);
-      sharedImportModeProjectOption.setAttribute('aria-label', _label4);
+      sharedImportModeProjectOption.setAttribute('aria-label', _label6);
     }
     if (sharedImportModeGlobalOption) {
-      var _texts$en39, _texts$en40;
-      var _label5 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
-      sharedImportModeGlobalOption.textContent = _label5;
-      var _help3 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.sharedImportAutoGearGlobalHelp) || _label5;
+      var _texts$en24, _texts$en25;
+      var _label7 = texts[lang].sharedImportAutoGearGlobal || ((_texts$en24 = texts.en) === null || _texts$en24 === void 0 ? void 0 : _texts$en24.sharedImportAutoGearGlobal) || sharedImportModeGlobalOption.textContent;
+      sharedImportModeGlobalOption.textContent = _label7;
+      var _help3 = texts[lang].sharedImportAutoGearGlobalHelp || ((_texts$en25 = texts.en) === null || _texts$en25 === void 0 ? void 0 : _texts$en25.sharedImportAutoGearGlobalHelp) || _label7;
       sharedImportModeGlobalOption.setAttribute('data-help', _help3);
       sharedImportModeGlobalOption.setAttribute('title', _help3);
-      sharedImportModeGlobalOption.setAttribute('aria-label', _label5);
+      sharedImportModeGlobalOption.setAttribute('aria-label', _label7);
     }
     applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
     applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
@@ -7559,15 +8692,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
       var fb = renderFeedbackTable(getCurrentSetupKey());
       if (batteryLifeLabelElem) {
-        var _label6 = texts[lang].batteryLifeLabel;
+        var _label8 = texts[lang].batteryLifeLabel;
         if (fb) {
           var userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
-          var idx = _label6.indexOf(')');
+          var idx = _label8.indexOf(')');
           if (idx !== -1) {
-            _label6 = "".concat(_label6.slice(0, idx), ", ").concat(userNote).concat(_label6.slice(idx));
+            _label8 = "".concat(_label8.slice(0, idx), ", ").concat(userNote).concat(_label8.slice(idx));
           }
         }
-        batteryLifeLabelElem.textContent = _label6;
+        batteryLifeLabelElem.textContent = _label8;
         batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
       }
       if (runtimeAverageNoteElem) {
@@ -7715,8 +8848,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       settingsTitleElem.setAttribute("data-help", texts[lang].settingsHeadingHelp || texts[lang].settingsHeading);
     }
     if (settingsTablist) {
-      var _texts$en41;
-      var sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
+      var _texts$en26;
+      var sectionsLabel = texts[lang].settingsSectionsLabel || ((_texts$en26 = texts.en) === null || _texts$en26 === void 0 ? void 0 : _texts$en26.settingsSectionsLabel) || settingsTablist.getAttribute('aria-label') || texts[lang].settingsHeading || 'Settings sections';
       settingsTablist.setAttribute('aria-label', sectionsLabel);
     }
     var getSettingsTabLabelText = function getSettingsTabLabelText(button) {
@@ -7790,40 +8923,40 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     };
     if (settingsTabGeneral) {
-      var _texts$en42, _texts$en43;
-      var generalLabel = texts[lang].settingsTabGeneral || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
-      var generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
+      var _texts$en27, _texts$en28;
+      var generalLabel = texts[lang].settingsTabGeneral || ((_texts$en27 = texts.en) === null || _texts$en27 === void 0 ? void 0 : _texts$en27.settingsTabGeneral) || getSettingsTabLabelText(settingsTabGeneral) || 'General';
+      var generalHelp = texts[lang].settingsTabGeneralHelp || ((_texts$en28 = texts.en) === null || _texts$en28 === void 0 ? void 0 : _texts$en28.settingsTabGeneralHelp) || texts[lang].settingsHeadingHelp || generalLabel;
       applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
       if (generalSettingsHeading) {
         generalSettingsHeading.textContent = generalLabel;
         generalSettingsHeading.setAttribute('data-help', generalHelp);
       }
       if (generalLanguageHeading) {
-        var _texts$en44;
-        var sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
+        var _texts$en29;
+        var sectionHeading = texts[lang].generalSectionLanguageHeading || ((_texts$en29 = texts.en) === null || _texts$en29 === void 0 ? void 0 : _texts$en29.generalSectionLanguageHeading) || generalLanguageHeading.textContent;
         generalLanguageHeading.textContent = sectionHeading;
       }
       if (generalAppearanceHeading) {
-        var _texts$en45;
-        var _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
+        var _texts$en30;
+        var _sectionHeading = texts[lang].generalSectionAppearanceHeading || ((_texts$en30 = texts.en) === null || _texts$en30 === void 0 ? void 0 : _texts$en30.generalSectionAppearanceHeading) || generalAppearanceHeading.textContent;
         generalAppearanceHeading.textContent = _sectionHeading;
       }
       if (generalTypographyHeading) {
-        var _texts$en46;
-        var _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
+        var _texts$en31;
+        var _sectionHeading2 = texts[lang].generalSectionTypographyHeading || ((_texts$en31 = texts.en) === null || _texts$en31 === void 0 ? void 0 : _texts$en31.generalSectionTypographyHeading) || generalTypographyHeading.textContent;
         generalTypographyHeading.textContent = _sectionHeading2;
       }
       if (generalBrandingHeading) {
-        var _texts$en47;
-        var _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
+        var _texts$en32;
+        var _sectionHeading3 = texts[lang].generalSectionBrandingHeading || ((_texts$en32 = texts.en) === null || _texts$en32 === void 0 ? void 0 : _texts$en32.generalSectionBrandingHeading) || generalBrandingHeading.textContent;
         generalBrandingHeading.textContent = _sectionHeading3;
       }
     }
-    applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.autoGearHeadingHelp));
-    applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.accessibilityHeadingHelp));
-    applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.backupHeadingHelp));
-    applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.settingsTabData) || texts[lang].dataHeading || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.dataHeadingHelp));
-    applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.aboutHeadingHelp));
+    applySettingsTabLabel(settingsTabAutoGear, texts[lang].settingsTabAutoGear || ((_texts$en33 = texts.en) === null || _texts$en33 === void 0 ? void 0 : _texts$en33.settingsTabAutoGear) || texts[lang].autoGearHeading || ((_texts$en34 = texts.en) === null || _texts$en34 === void 0 ? void 0 : _texts$en34.autoGearHeading), texts[lang].settingsTabAutoGearHelp || ((_texts$en35 = texts.en) === null || _texts$en35 === void 0 ? void 0 : _texts$en35.settingsTabAutoGearHelp) || texts[lang].autoGearHeadingHelp || ((_texts$en36 = texts.en) === null || _texts$en36 === void 0 ? void 0 : _texts$en36.autoGearHeadingHelp));
+    applySettingsTabLabel(settingsTabAccessibility, texts[lang].settingsTabAccessibility || ((_texts$en37 = texts.en) === null || _texts$en37 === void 0 ? void 0 : _texts$en37.settingsTabAccessibility) || texts[lang].accessibilityHeading || ((_texts$en38 = texts.en) === null || _texts$en38 === void 0 ? void 0 : _texts$en38.accessibilityHeading), texts[lang].settingsTabAccessibilityHelp || ((_texts$en39 = texts.en) === null || _texts$en39 === void 0 ? void 0 : _texts$en39.settingsTabAccessibilityHelp) || texts[lang].accessibilityHeadingHelp || ((_texts$en40 = texts.en) === null || _texts$en40 === void 0 ? void 0 : _texts$en40.accessibilityHeadingHelp));
+    applySettingsTabLabel(settingsTabBackup, texts[lang].settingsTabBackup || ((_texts$en41 = texts.en) === null || _texts$en41 === void 0 ? void 0 : _texts$en41.settingsTabBackup) || texts[lang].backupHeading || ((_texts$en42 = texts.en) === null || _texts$en42 === void 0 ? void 0 : _texts$en42.backupHeading), texts[lang].settingsTabBackupHelp || ((_texts$en43 = texts.en) === null || _texts$en43 === void 0 ? void 0 : _texts$en43.settingsTabBackupHelp) || texts[lang].backupHeadingHelp || ((_texts$en44 = texts.en) === null || _texts$en44 === void 0 ? void 0 : _texts$en44.backupHeadingHelp));
+    applySettingsTabLabel(settingsTabData, texts[lang].settingsTabData || ((_texts$en45 = texts.en) === null || _texts$en45 === void 0 ? void 0 : _texts$en45.settingsTabData) || texts[lang].dataHeading || ((_texts$en46 = texts.en) === null || _texts$en46 === void 0 ? void 0 : _texts$en46.dataHeading), texts[lang].settingsTabDataHelp || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.settingsTabDataHelp) || texts[lang].dataHeadingHelp || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.dataHeadingHelp));
+    applySettingsTabLabel(settingsTabAbout, texts[lang].settingsTabAbout || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.settingsTabAbout) || texts[lang].aboutHeading || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.aboutHeading), texts[lang].settingsTabAboutHelp || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.settingsTabAboutHelp) || texts[lang].aboutHeadingHelp || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.aboutHeadingHelp));
     var settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
     if (settingsLanguageLabel) {
       settingsLanguageLabel.textContent = texts[lang].languageSetting;
@@ -7886,6 +9019,22 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
         });
         settingsTemperatureUnit.value = temperatureUnit;
+      }
+    }
+    var settingsFocusScaleLabel = document.getElementById('settingsFocusScaleLabel');
+    if (settingsFocusScaleLabel) {
+      settingsFocusScaleLabel.textContent = texts[lang].focusScaleSetting;
+      var focusScaleHelp = texts[lang].focusScaleSettingHelp || texts[lang].focusScaleSetting;
+      settingsFocusScaleLabel.setAttribute('data-help', focusScaleHelp);
+      if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
+        settingsFocusScale.setAttribute('data-help', focusScaleHelp);
+        settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
+        Array.from(settingsFocusScale.options || []).forEach(function (option) {
+          if (!option) return;
+          var normalized = normalizeFocusScale(option.value);
+          option.textContent = getFocusScaleLabelForLang(lang, normalized);
+        });
+        settingsFocusScale.value = focusScalePreference;
       }
     }
     var fontSizeLabel = document.getElementById("settingsFontSizeLabel");
@@ -7952,30 +9101,30 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearHeadingElem) {
-      var _texts$en68, _texts$en69;
-      autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.autoGearHeading) || 'Automatic Gear Rules';
-      var headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.autoGearHeadingHelp);
+      var _texts$en53, _texts$en54;
+      autoGearHeadingElem.textContent = texts[lang].autoGearHeading || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.autoGearHeading) || 'Automatic Gear Rules';
+      var headingHelp = texts[lang].autoGearHeadingHelp || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.autoGearHeadingHelp);
       if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
     }
     if (autoGearDescriptionElem) {
-      var _texts$en70;
-      autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearDescription) || '';
+      var _texts$en55;
+      autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.autoGearDescription) || '';
     }
     if (autoGearMonitorDefaultsHeading) {
-      var _texts$en71;
-      var _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
+      var _texts$en56;
+      var _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
       autoGearMonitorDefaultsHeading.textContent = _heading;
     }
     if (autoGearMonitorDefaultsDescription) {
-      var _texts$en72;
-      var description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
+      var _texts$en57;
+      var description = texts[lang].autoGearMonitorDefaultsDescription || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.autoGearMonitorDefaultsDescription) || autoGearMonitorDefaultsDescription.textContent;
       autoGearMonitorDefaultsDescription.textContent = description;
     }
     autoGearMonitorDefaultControls.forEach(function (control) {
-      var _texts$en73, _control$label, _control$label2;
+      var _texts$en58, _control$label, _control$label2;
       if (!control) return;
       var labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
-      var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
+      var labelText = labelKey ? texts[lang][labelKey] || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58[labelKey]) || ((_control$label = control.label) === null || _control$label === void 0 ? void 0 : _control$label.textContent) : (_control$label2 = control.label) === null || _control$label2 === void 0 ? void 0 : _control$label2.textContent;
       if (control.label && labelText) {
         control.label.textContent = labelText;
         control.label.setAttribute('data-help', labelText);
@@ -7992,138 +9141,138 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       defer: true
     });
     if (autoGearPresetDescription) {
-      var _texts$en74;
-      autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.autoGearPresetDescription) || '';
+      var _texts$en59;
+      autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.autoGearPresetDescription) || '';
     }
     if (autoGearPresetLabel) {
-      var _texts$en75, _texts$en76;
-      var _label7 = texts[lang].autoGearPresetLabel || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.autoGearPresetLabel) || autoGearPresetLabel.textContent;
-      var _help4 = texts[lang].autoGearPresetDescription || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.autoGearPresetDescription) || _label7;
-      autoGearPresetLabel.textContent = _label7;
+      var _texts$en60, _texts$en61;
+      var _label9 = texts[lang].autoGearPresetLabel || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearPresetLabel) || autoGearPresetLabel.textContent;
+      var _help4 = texts[lang].autoGearPresetDescription || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.autoGearPresetDescription) || _label9;
+      autoGearPresetLabel.textContent = _label9;
       autoGearPresetLabel.setAttribute('data-help', _help4);
       if (autoGearPresetSelect) {
-        autoGearPresetSelect.setAttribute('aria-label', _label7);
+        autoGearPresetSelect.setAttribute('aria-label', _label9);
         autoGearPresetSelect.setAttribute('data-help', _help4);
       }
     }
     if (autoGearSavePresetButton) {
-      var _texts$en77;
-      var _label8 = texts[lang].autoGearSavePresetButton || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
-      setButtonLabelWithIcon(autoGearSavePresetButton, _label8, ICON_GLYPHS.save);
-      autoGearSavePresetButton.setAttribute('data-help', _label8);
-      autoGearSavePresetButton.setAttribute('aria-label', _label8);
+      var _texts$en62;
+      var _label0 = texts[lang].autoGearSavePresetButton || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.autoGearSavePresetButton) || autoGearSavePresetButton.textContent;
+      setButtonLabelWithIcon(autoGearSavePresetButton, _label0, ICON_GLYPHS.save);
+      autoGearSavePresetButton.setAttribute('data-help', _label0);
+      autoGearSavePresetButton.setAttribute('aria-label', _label0);
     }
     if (autoGearDeletePresetButton) {
-      var _texts$en78;
-      var _label9 = texts[lang].autoGearDeletePresetButton || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
-      setButtonLabelWithIcon(autoGearDeletePresetButton, _label9, ICON_GLYPHS.trash);
-      autoGearDeletePresetButton.setAttribute('data-help', _label9);
-      autoGearDeletePresetButton.setAttribute('aria-label', _label9);
+      var _texts$en63;
+      var _label1 = texts[lang].autoGearDeletePresetButton || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.autoGearDeletePresetButton) || autoGearDeletePresetButton.textContent;
+      setButtonLabelWithIcon(autoGearDeletePresetButton, _label1, ICON_GLYPHS.trash);
+      autoGearDeletePresetButton.setAttribute('data-help', _label1);
+      autoGearDeletePresetButton.setAttribute('aria-label', _label1);
     }
     if (autoGearAddRuleBtn) {
-      var _texts$en79, _texts$en80;
-      var _label0 = texts[lang].autoGearAddRule || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearAddRule) || autoGearAddRuleBtn.textContent;
-      setButtonLabelWithIcon(autoGearAddRuleBtn, _label0, ICON_GLYPHS.add);
-      var _help5 = texts[lang].autoGearHeadingHelp || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearHeadingHelp) || _label0;
+      var _texts$en64, _texts$en65;
+      var _label10 = texts[lang].autoGearAddRule || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.autoGearAddRule) || autoGearAddRuleBtn.textContent;
+      setButtonLabelWithIcon(autoGearAddRuleBtn, _label10, ICON_GLYPHS.add);
+      var _help5 = texts[lang].autoGearHeadingHelp || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.autoGearHeadingHelp) || _label10;
       autoGearAddRuleBtn.setAttribute('data-help', _help5);
     }
     if (autoGearResetFactoryButton) {
-      var _texts$en81, _texts$en82;
-      var _label1 = texts[lang].autoGearResetFactoryButton || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
-      var _help6 = texts[lang].autoGearResetFactoryHelp || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearResetFactoryHelp) || _label1;
-      setButtonLabelWithIcon(autoGearResetFactoryButton, _label1, ICON_GLYPHS.reload);
+      var _texts$en66, _texts$en67;
+      var _label11 = texts[lang].autoGearResetFactoryButton || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.autoGearResetFactoryButton) || autoGearResetFactoryButton.textContent;
+      var _help6 = texts[lang].autoGearResetFactoryHelp || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.autoGearResetFactoryHelp) || _label11;
+      setButtonLabelWithIcon(autoGearResetFactoryButton, _label11, ICON_GLYPHS.reload);
       autoGearResetFactoryButton.setAttribute('data-help', _help6);
       autoGearResetFactoryButton.setAttribute('title', _help6);
-      autoGearResetFactoryButton.setAttribute('aria-label', _label1);
+      autoGearResetFactoryButton.setAttribute('aria-label', _label11);
     }
     if (autoGearExportButton) {
-      var _texts$en83, _texts$en84;
-      var _label10 = texts[lang].autoGearExportButton || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearExportButton) || autoGearExportButton.textContent;
-      var _help7 = texts[lang].autoGearExportHelp || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearExportHelp) || _label10;
-      setButtonLabelWithIcon(autoGearExportButton, _label10, ICON_GLYPHS.fileExport);
+      var _texts$en68, _texts$en69;
+      var _label12 = texts[lang].autoGearExportButton || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.autoGearExportButton) || autoGearExportButton.textContent;
+      var _help7 = texts[lang].autoGearExportHelp || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.autoGearExportHelp) || _label12;
+      setButtonLabelWithIcon(autoGearExportButton, _label12, ICON_GLYPHS.fileExport);
       autoGearExportButton.setAttribute('data-help', _help7);
       autoGearExportButton.setAttribute('title', _help7);
-      autoGearExportButton.setAttribute('aria-label', _label10);
+      autoGearExportButton.setAttribute('aria-label', _label12);
     }
     if (autoGearImportButton) {
-      var _texts$en85, _texts$en86;
-      var _label11 = texts[lang].autoGearImportButton || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.autoGearImportButton) || autoGearImportButton.textContent;
-      var _help8 = texts[lang].autoGearImportHelp || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearImportHelp) || _label11;
-      setButtonLabelWithIcon(autoGearImportButton, _label11, ICON_GLYPHS.fileImport);
+      var _texts$en70, _texts$en71;
+      var _label13 = texts[lang].autoGearImportButton || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearImportButton) || autoGearImportButton.textContent;
+      var _help8 = texts[lang].autoGearImportHelp || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.autoGearImportHelp) || _label13;
+      setButtonLabelWithIcon(autoGearImportButton, _label13, ICON_GLYPHS.fileImport);
       autoGearImportButton.setAttribute('data-help', _help8);
       autoGearImportButton.setAttribute('title', _help8);
-      autoGearImportButton.setAttribute('aria-label', _label11);
+      autoGearImportButton.setAttribute('aria-label', _label13);
     }
     if (autoGearSearchLabel) {
-      var _texts$en87, _texts$en88;
-      var _label12 = texts[lang].autoGearSearchLabel || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearSearchLabel) || autoGearSearchLabel.textContent;
-      var _help9 = texts[lang].autoGearSearchHelp || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearSearchHelp) || _label12;
-      autoGearSearchLabel.textContent = _label12;
+      var _texts$en72, _texts$en73;
+      var _label14 = texts[lang].autoGearSearchLabel || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearSearchLabel) || autoGearSearchLabel.textContent;
+      var _help9 = texts[lang].autoGearSearchHelp || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.autoGearSearchHelp) || _label14;
+      autoGearSearchLabel.textContent = _label14;
       autoGearSearchLabel.setAttribute('data-help', _help9);
       if (autoGearSearchInput) {
-        var _texts$en89;
-        var placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
+        var _texts$en74;
+        var placeholder = texts[lang].autoGearSearchPlaceholder || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.autoGearSearchPlaceholder) || autoGearSearchInput.getAttribute('placeholder') || '';
         autoGearSearchInput.setAttribute('placeholder', placeholder);
-        autoGearSearchInput.setAttribute('aria-label', _label12);
+        autoGearSearchInput.setAttribute('aria-label', _label14);
         autoGearSearchInput.setAttribute('data-help', _help9);
       }
     }
     if (autoGearFilterScenarioLabel) {
-      var _texts$en90, _texts$en91;
-      var _label13 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
-      var _help0 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearFilterScenarioHelp) || _label13;
-      autoGearFilterScenarioLabel.textContent = _label13;
+      var _texts$en75, _texts$en76;
+      var _label15 = texts[lang].autoGearFilterScenarioLabel || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.autoGearFilterScenarioLabel) || autoGearFilterScenarioLabel.textContent;
+      var _help0 = texts[lang].autoGearFilterScenarioHelp || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.autoGearFilterScenarioHelp) || _label15;
+      autoGearFilterScenarioLabel.textContent = _label15;
       autoGearFilterScenarioLabel.setAttribute('data-help', _help0);
       if (autoGearFilterScenarioSelect) {
-        autoGearFilterScenarioSelect.setAttribute('aria-label', _label13);
+        autoGearFilterScenarioSelect.setAttribute('aria-label', _label15);
         autoGearFilterScenarioSelect.setAttribute('data-help', _help0);
       }
     }
     if (autoGearFilterClearButton) {
-      var _texts$en92;
-      var _label14 = texts[lang].autoGearFilterClear || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearFilterClear) || autoGearFilterClearButton.textContent;
-      setButtonLabelWithIcon(autoGearFilterClearButton, _label14, ICON_GLYPHS.circleX);
-      autoGearFilterClearButton.setAttribute('data-help', _label14);
-      autoGearFilterClearButton.setAttribute('aria-label', _label14);
+      var _texts$en77;
+      var _label16 = texts[lang].autoGearFilterClear || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearFilterClear) || autoGearFilterClearButton.textContent;
+      setButtonLabelWithIcon(autoGearFilterClearButton, _label16, ICON_GLYPHS.circleX);
+      autoGearFilterClearButton.setAttribute('data-help', _label16);
+      autoGearFilterClearButton.setAttribute('aria-label', _label16);
     }
     refreshAutoGearScenarioFilterOptions(getAutoGearRules());
     if (autoGearBackupsHeading) {
-      var _texts$en93;
-      autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
+      var _texts$en78;
+      autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearBackupsHeading) || autoGearBackupsHeading.textContent;
     }
     if (autoGearBackupsDescription) {
-      var _texts$en94;
-      var _description = texts[lang].autoGearBackupsDescription || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearBackupsDescription) || '';
+      var _texts$en79;
+      var _description = texts[lang].autoGearBackupsDescription || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearBackupsDescription) || '';
       autoGearBackupsDescription.textContent = _description;
       if (_description) {
         autoGearBackupsDescription.setAttribute('data-help', _description);
       }
     }
     if (autoGearShowBackupsLabel) {
-      var _texts$en95, _texts$en96;
-      var _label15 = texts[lang].autoGearShowBackupsLabel || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
-      var _help1 = texts[lang].autoGearShowBackupsHelp || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearShowBackupsHelp) || _label15;
-      autoGearShowBackupsLabel.textContent = _label15;
+      var _texts$en80, _texts$en81;
+      var _label17 = texts[lang].autoGearShowBackupsLabel || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearShowBackupsLabel) || autoGearShowBackupsLabel.textContent;
+      var _help1 = texts[lang].autoGearShowBackupsHelp || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearShowBackupsHelp) || _label17;
+      autoGearShowBackupsLabel.textContent = _label17;
       autoGearShowBackupsLabel.setAttribute('data-help', _help1);
       if (autoGearShowBackupsCheckbox) {
-        autoGearShowBackupsCheckbox.setAttribute('aria-label', _label15);
+        autoGearShowBackupsCheckbox.setAttribute('aria-label', _label17);
         autoGearShowBackupsCheckbox.setAttribute('data-help', _help1);
       }
     }
     if (autoGearBackupsHiddenNotice) {
-      var _texts$en97;
-      var hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
+      var _texts$en82;
+      var hiddenText = texts[lang].autoGearBackupsHidden || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearBackupsHidden) || autoGearBackupsHiddenNotice.textContent;
       autoGearBackupsHiddenNotice.textContent = hiddenText;
     }
     if (autoGearBackupRetentionLabel) {
-      var _texts$en98, _texts$en99;
-      var _label16 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
-      var _help10 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearBackupRetentionHelp) || _label16;
-      autoGearBackupRetentionLabel.textContent = _label16;
+      var _texts$en83, _texts$en84;
+      var _label18 = texts[lang].autoGearBackupRetentionLabel || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearBackupRetentionLabel) || autoGearBackupRetentionLabel.textContent;
+      var _help10 = texts[lang].autoGearBackupRetentionHelp || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearBackupRetentionHelp) || _label18;
+      autoGearBackupRetentionLabel.textContent = _label18;
       autoGearBackupRetentionLabel.setAttribute('data-help', _help10);
       if (autoGearBackupRetentionInput) {
-        autoGearBackupRetentionInput.setAttribute('aria-label', _label16);
-        autoGearBackupRetentionInput.setAttribute('title', _label16);
+        autoGearBackupRetentionInput.setAttribute('aria-label', _label18);
+        autoGearBackupRetentionInput.setAttribute('title', _label18);
       }
     }
     if (autoGearBackupRetentionSummary) {
@@ -8132,24 +9281,24 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (autoGearBackupSelectLabel) {
-      var _texts$en100;
-      var _label17 = texts[lang].autoGearBackupSelectLabel || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
-      autoGearBackupSelectLabel.textContent = _label17;
+      var _texts$en85;
+      var _label19 = texts[lang].autoGearBackupSelectLabel || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.autoGearBackupSelectLabel) || autoGearBackupSelectLabel.textContent;
+      autoGearBackupSelectLabel.textContent = _label19;
       if (autoGearBackupSelect) {
-        autoGearBackupSelect.setAttribute('aria-label', _label17);
-        autoGearBackupSelect.setAttribute('title', _label17);
+        autoGearBackupSelect.setAttribute('aria-label', _label19);
+        autoGearBackupSelect.setAttribute('title', _label19);
       }
     }
     if (autoGearBackupRestoreButton) {
-      var _texts$en101;
-      var _label18 = texts[lang].autoGearBackupRestore || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
-      setButtonLabelWithIcon(autoGearBackupRestoreButton, _label18, ICON_GLYPHS.fileImport);
-      autoGearBackupRestoreButton.setAttribute('aria-label', _label18);
-      autoGearBackupRestoreButton.setAttribute('title', _label18);
+      var _texts$en86;
+      var _label20 = texts[lang].autoGearBackupRestore || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearBackupRestore) || autoGearBackupRestoreButton.textContent;
+      setButtonLabelWithIcon(autoGearBackupRestoreButton, _label20, ICON_GLYPHS.fileImport);
+      autoGearBackupRestoreButton.setAttribute('aria-label', _label20);
+      autoGearBackupRestoreButton.setAttribute('title', _label20);
     }
     if (autoGearBackupEmptyMessage) {
-      var _texts$en102;
-      var emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
+      var _texts$en87;
+      var emptyText = texts[lang].autoGearBackupEmpty || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearBackupEmpty) || autoGearBackupEmptyMessage.textContent;
       autoGearBackupEmptyMessage.textContent = emptyText;
     }
     if (autoGearBackupSelect) {
@@ -8158,39 +9307,39 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     if (autoGearRuleNameLabel) {
-      var _texts$en103, _texts$en104;
-      var _label19 = texts[lang].autoGearRuleNameLabel || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
-      autoGearRuleNameLabel.textContent = _label19;
-      var _help11 = texts[lang].autoGearRuleNameHelp || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearRuleNameHelp) || _label19;
+      var _texts$en88, _texts$en89;
+      var _label21 = texts[lang].autoGearRuleNameLabel || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearRuleNameLabel) || autoGearRuleNameLabel.textContent;
+      autoGearRuleNameLabel.textContent = _label21;
+      var _help11 = texts[lang].autoGearRuleNameHelp || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearRuleNameHelp) || _label21;
       autoGearRuleNameLabel.setAttribute('data-help', _help11);
       if (autoGearRuleNameInput) {
         autoGearRuleNameInput.setAttribute('data-help', _help11);
-        autoGearRuleNameInput.setAttribute('aria-label', _label19);
+        autoGearRuleNameInput.setAttribute('aria-label', _label21);
       }
     }
     if (autoGearConditionSelectLabel) {
-      var _texts$en105, _texts$en106;
-      var _label20 = texts[lang].autoGearConditionSelectLabel || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
-      var _help12 = texts[lang].autoGearConditionSelectHelp || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearConditionSelectHelp) || _label20;
-      autoGearConditionSelectLabel.textContent = _label20;
+      var _texts$en90, _texts$en91;
+      var _label22 = texts[lang].autoGearConditionSelectLabel || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearConditionSelectLabel) || autoGearConditionSelectLabel.textContent || 'Add a condition';
+      var _help12 = texts[lang].autoGearConditionSelectHelp || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearConditionSelectHelp) || _label22;
+      autoGearConditionSelectLabel.textContent = _label22;
       autoGearConditionSelectLabel.setAttribute('data-help', _help12);
       if (autoGearConditionSelect) {
-        autoGearConditionSelect.setAttribute('aria-label', _label20);
+        autoGearConditionSelect.setAttribute('aria-label', _label22);
         autoGearConditionSelect.setAttribute('data-help', _help12);
       }
     }
     if (autoGearConditionAddButton) {
-      var _texts$en107;
-      var _label21 = texts[lang].autoGearAddCondition || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
-      setButtonLabelWithIcon(autoGearConditionAddButton, _label21, ICON_GLYPHS.add);
-      autoGearConditionAddButton.setAttribute('aria-label', _label21);
-      autoGearConditionAddButton.setAttribute('data-help', _label21);
+      var _texts$en92;
+      var _label23 = texts[lang].autoGearAddCondition || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearAddCondition) || autoGearConditionAddButton.textContent || 'Add condition';
+      setButtonLabelWithIcon(autoGearConditionAddButton, _label23, ICON_GLYPHS.add);
+      autoGearConditionAddButton.setAttribute('aria-label', _label23);
+      autoGearConditionAddButton.setAttribute('data-help', _label23);
     }
     if (autoGearAlwaysLabel) {
-      var _texts$en108, _texts$en109;
-      var _label22 = texts[lang].autoGearAlwaysLabel || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
-      var _help13 = texts[lang].autoGearAlwaysHelp || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearAlwaysHelp) || _label22;
-      autoGearAlwaysLabel.textContent = _label22;
+      var _texts$en93, _texts$en94;
+      var _label24 = texts[lang].autoGearAlwaysLabel || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearAlwaysLabel) || autoGearAlwaysLabel.textContent || 'Always include';
+      var _help13 = texts[lang].autoGearAlwaysHelp || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearAlwaysHelp) || _label24;
+      autoGearAlwaysLabel.textContent = _label24;
       autoGearAlwaysLabel.setAttribute('data-help', _help13);
       if (autoGearAlwaysHelp) {
         autoGearAlwaysHelp.textContent = _help13;
@@ -8201,19 +9350,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     refreshAutoGearConditionPicker();
     updateAutoGearConditionAddButtonState();
     if (autoGearScenariosLabel) {
-      var _texts$en110, _texts$en111;
-      var _label23 = texts[lang].autoGearScenariosLabel || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
-      autoGearScenariosLabel.textContent = _label23;
-      var _help14 = texts[lang].autoGearScenariosHelp || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearScenariosHelp) || _label23;
+      var _texts$en95, _texts$en96;
+      var _label25 = texts[lang].autoGearScenariosLabel || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearScenariosLabel) || autoGearScenariosLabel.textContent;
+      autoGearScenariosLabel.textContent = _label25;
+      var _help14 = texts[lang].autoGearScenariosHelp || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearScenariosHelp) || _label25;
       autoGearScenariosLabel.setAttribute('data-help', _help14);
       if (autoGearScenariosSelect) {
         autoGearScenariosSelect.setAttribute('data-help', _help14);
-        autoGearScenariosSelect.setAttribute('aria-label', _label23);
+        autoGearScenariosSelect.setAttribute('aria-label', _label25);
       }
       if (autoGearScenarioModeLabel) {
-        var _texts$en112, _texts$en113;
-        var modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
-        var modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearScenarioModeHelp) || modeLabel;
+        var _texts$en97, _texts$en98;
+        var modeLabel = texts[lang].autoGearScenarioModeLabel || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearScenarioModeLabel) || autoGearScenarioModeLabel.textContent || 'Scenario matching';
+        var modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearScenarioModeHelp) || modeLabel;
         autoGearScenarioModeLabel.textContent = modeLabel;
         autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
         if (autoGearScenarioModeSelectElement) {
@@ -8222,9 +9371,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
       if (autoGearScenarioBaseLabel) {
-        var _texts$en114, _texts$en115;
-        var baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
-        var baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearScenarioBaseHelp) || baseLabel;
+        var _texts$en99, _texts$en100;
+        var baseLabel = texts[lang].autoGearScenarioBaseLabel || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearScenarioBaseLabel) || autoGearScenarioBaseLabel.textContent || 'Base scenario';
+        var baseHelp = texts[lang].autoGearScenarioBaseHelp || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearScenarioBaseHelp) || baseLabel;
         autoGearScenarioBaseLabel.textContent = baseLabel;
         autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
         if (autoGearScenarioBaseSelect) {
@@ -8233,9 +9382,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
       if (autoGearScenarioFactorLabel) {
-        var _texts$en116, _texts$en117;
-        var factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
-        var factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearScenarioFactorHelp) || factorLabel;
+        var _texts$en101, _texts$en102;
+        var factorLabel = texts[lang].autoGearScenarioFactorLabel || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearScenarioFactorLabel) || autoGearScenarioFactorLabel.textContent || 'Multiplier factor';
+        var factorHelp = texts[lang].autoGearScenarioFactorHelp || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearScenarioFactorHelp) || factorLabel;
         autoGearScenarioFactorLabel.textContent = factorLabel;
         autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
         if (autoGearScenarioFactorInput) {
@@ -8245,18 +9394,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearShootingDaysLabel) {
-      var _texts$en118, _texts$en119, _texts$en120, _texts$en121, _texts$en122, _texts$en123;
-      var _label24 = texts[lang].autoGearShootingDaysLabel || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
-      var _help15 = texts[lang].autoGearShootingDaysHelp || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearShootingDaysHelp) || _label24;
-      var minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearShootingDaysModeMinimum) || 'Minimum';
-      var maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearShootingDaysModeMaximum) || 'Maximum';
-      var everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearShootingDaysModeEvery) || 'Every';
-      var valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearShootingDaysValueLabel) || 'Shooting days value';
-      autoGearShootingDaysLabel.textContent = _label24;
+      var _texts$en103, _texts$en104, _texts$en105, _texts$en106, _texts$en107, _texts$en108;
+      var _label26 = texts[lang].autoGearShootingDaysLabel || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearShootingDaysLabel) || autoGearShootingDaysLabel.textContent || 'Shooting days condition';
+      var _help15 = texts[lang].autoGearShootingDaysHelp || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearShootingDaysHelp) || _label26;
+      var minimumLabel = texts[lang].autoGearShootingDaysModeMinimum || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearShootingDaysModeMinimum) || 'Minimum';
+      var maximumLabel = texts[lang].autoGearShootingDaysModeMaximum || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearShootingDaysModeMaximum) || 'Maximum';
+      var everyLabel = texts[lang].autoGearShootingDaysModeEvery || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearShootingDaysModeEvery) || 'Every';
+      var valueLabel = texts[lang].autoGearShootingDaysValueLabel || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearShootingDaysValueLabel) || 'Shooting days value';
+      autoGearShootingDaysLabel.textContent = _label26;
       autoGearShootingDaysLabel.setAttribute('data-help', _help15);
       if (autoGearShootingDaysMode) {
         autoGearShootingDaysMode.setAttribute('data-help', _help15);
-        autoGearShootingDaysMode.setAttribute('aria-label', _label24);
+        autoGearShootingDaysMode.setAttribute('aria-label', _label26);
         Array.from(autoGearShootingDaysMode.options || []).forEach(function (option) {
           if (!option || typeof option.value !== 'string') return;
           if (option.value === 'minimum') {
@@ -8274,7 +9423,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       if (autoGearShootingDaysInput) {
         autoGearShootingDaysInput.setAttribute('data-help', _help15);
-        autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label24);
+        autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || _label26);
       }
       if (autoGearShootingDaysHelp) {
         autoGearShootingDaysHelp.textContent = _help15;
@@ -8282,90 +9431,90 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearMatteboxLabel) {
-      var _texts$en124, _texts$en125;
-      var _label25 = texts[lang].autoGearMatteboxLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
-      autoGearMatteboxLabel.textContent = _label25;
-      var _help16 = texts[lang].autoGearMatteboxHelp || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearMatteboxHelp) || _label25;
+      var _texts$en109, _texts$en110;
+      var _label27 = texts[lang].autoGearMatteboxLabel || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
+      autoGearMatteboxLabel.textContent = _label27;
+      var _help16 = texts[lang].autoGearMatteboxHelp || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearMatteboxHelp) || _label27;
       autoGearMatteboxLabel.setAttribute('data-help', _help16);
       if (autoGearMatteboxSelect) {
         autoGearMatteboxSelect.setAttribute('data-help', _help16);
-        autoGearMatteboxSelect.setAttribute('aria-label', _label25);
+        autoGearMatteboxSelect.setAttribute('aria-label', _label27);
       }
     }
     if (autoGearCameraHandleLabel) {
-      var _texts$en126, _texts$en127;
-      var _label26 = texts[lang].autoGearCameraHandleLabel || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
-      autoGearCameraHandleLabel.textContent = _label26;
-      var _help17 = texts[lang].autoGearCameraHandleHelp || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearCameraHandleHelp) || _label26;
+      var _texts$en111, _texts$en112;
+      var _label28 = texts[lang].autoGearCameraHandleLabel || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
+      autoGearCameraHandleLabel.textContent = _label28;
+      var _help17 = texts[lang].autoGearCameraHandleHelp || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearCameraHandleHelp) || _label28;
       autoGearCameraHandleLabel.setAttribute('data-help', _help17);
       if (autoGearCameraHandleSelect) {
         autoGearCameraHandleSelect.setAttribute('data-help', _help17);
-        autoGearCameraHandleSelect.setAttribute('aria-label', _label26);
+        autoGearCameraHandleSelect.setAttribute('aria-label', _label28);
       }
     }
     if (autoGearViewfinderExtensionLabel) {
-      var _texts$en128, _texts$en129;
-      var _label27 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
-      autoGearViewfinderExtensionLabel.textContent = _label27;
-      var _help18 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearViewfinderExtensionHelp) || _label27;
+      var _texts$en113, _texts$en114;
+      var _label29 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
+      autoGearViewfinderExtensionLabel.textContent = _label29;
+      var _help18 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearViewfinderExtensionHelp) || _label29;
       autoGearViewfinderExtensionLabel.setAttribute('data-help', _help18);
       if (autoGearViewfinderExtensionSelect) {
         autoGearViewfinderExtensionSelect.setAttribute('data-help', _help18);
-        autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label27);
+        autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label29);
       }
     }
     if (autoGearDeliveryResolutionLabel) {
-      var _texts$en130, _texts$en131;
-      var _label28 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
-      autoGearDeliveryResolutionLabel.textContent = _label28;
-      var _help19 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearDeliveryResolutionHelp) || _label28;
+      var _texts$en115, _texts$en116;
+      var _label30 = texts[lang].autoGearDeliveryResolutionLabel || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearDeliveryResolutionLabel) || autoGearDeliveryResolutionLabel.textContent;
+      autoGearDeliveryResolutionLabel.textContent = _label30;
+      var _help19 = texts[lang].autoGearDeliveryResolutionHelp || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearDeliveryResolutionHelp) || _label30;
       autoGearDeliveryResolutionLabel.setAttribute('data-help', _help19);
       if (autoGearDeliveryResolutionSelect) {
         autoGearDeliveryResolutionSelect.setAttribute('data-help', _help19);
-        autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label28);
+        autoGearDeliveryResolutionSelect.setAttribute('aria-label', _label30);
       }
     }
     if (autoGearVideoDistributionLabel) {
-      var _texts$en132, _texts$en133;
-      var _label29 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
-      autoGearVideoDistributionLabel.textContent = _label29;
-      var _help20 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearVideoDistributionHelp) || _label29;
+      var _texts$en117, _texts$en118;
+      var _label31 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
+      autoGearVideoDistributionLabel.textContent = _label31;
+      var _help20 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearVideoDistributionHelp) || _label31;
       autoGearVideoDistributionLabel.setAttribute('data-help', _help20);
       if (autoGearVideoDistributionSelect) {
         autoGearVideoDistributionSelect.setAttribute('data-help', _help20);
-        autoGearVideoDistributionSelect.setAttribute('aria-label', _label29);
+        autoGearVideoDistributionSelect.setAttribute('aria-label', _label31);
       }
     }
     if (autoGearCameraLabel) {
-      var _texts$en134, _texts$en135;
-      var _label30 = texts[lang].autoGearCameraLabel || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearCameraLabel) || autoGearCameraLabel.textContent;
-      autoGearCameraLabel.textContent = _label30;
-      var _help21 = texts[lang].autoGearCameraHelp || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearCameraHelp) || _label30;
+      var _texts$en119, _texts$en120;
+      var _label32 = texts[lang].autoGearCameraLabel || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearCameraLabel) || autoGearCameraLabel.textContent;
+      autoGearCameraLabel.textContent = _label32;
+      var _help21 = texts[lang].autoGearCameraHelp || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearCameraHelp) || _label32;
       autoGearCameraLabel.setAttribute('data-help', _help21);
       if (autoGearCameraSelect) {
         autoGearCameraSelect.setAttribute('data-help', _help21);
-        autoGearCameraSelect.setAttribute('aria-label', _label30);
+        autoGearCameraSelect.setAttribute('aria-label', _label32);
       }
     }
     if (autoGearCameraWeightLabel) {
-      var _texts$en136, _texts$en137;
-      var _label31 = texts[lang].autoGearCameraWeightLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
-      var _help22 = texts[lang].autoGearCameraWeightHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearCameraWeightHelp) || _label31;
-      autoGearCameraWeightLabel.textContent = _label31;
+      var _texts$en121, _texts$en122;
+      var _label33 = texts[lang].autoGearCameraWeightLabel || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
+      var _help22 = texts[lang].autoGearCameraWeightHelp || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearCameraWeightHelp) || _label33;
+      autoGearCameraWeightLabel.textContent = _label33;
       autoGearCameraWeightLabel.setAttribute('data-help', _help22);
     }
     if (autoGearCameraWeightOperatorLabel) {
-      var _texts$en138;
-      var _label32 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
-      autoGearCameraWeightOperatorLabel.textContent = _label32;
-      autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label32);
+      var _texts$en123;
+      var _label34 = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
+      autoGearCameraWeightOperatorLabel.textContent = _label34;
+      autoGearCameraWeightOperatorLabel.setAttribute('data-help', _label34);
       if (autoGearCameraWeightOperator) {
-        var _texts$en139, _texts$en140, _texts$en141;
-        autoGearCameraWeightOperator.setAttribute('data-help', _label32);
-        autoGearCameraWeightOperator.setAttribute('aria-label', _label32);
-        var greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearCameraWeightOperatorGreater) || 'Heavier than';
-        var lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearCameraWeightOperatorLess) || 'Lighter than';
-        var equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearCameraWeightOperatorEqual) || 'Exactly';
+        var _texts$en124, _texts$en125, _texts$en126;
+        autoGearCameraWeightOperator.setAttribute('data-help', _label34);
+        autoGearCameraWeightOperator.setAttribute('aria-label', _label34);
+        var greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearCameraWeightOperatorGreater) || 'Heavier than';
+        var lessLabel = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearCameraWeightOperatorLess) || 'Lighter than';
+        var equalLabel = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearCameraWeightOperatorEqual) || 'Exactly';
         Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
           if (!option) return;
           if (option.value === 'greater') {
@@ -8379,156 +9528,156 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearCameraWeightValueLabel) {
-      var _texts$en142, _texts$en143;
-      var _label33 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
-      var _help23 = texts[lang].autoGearCameraWeightHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearCameraWeightHelp) || _label33;
-      autoGearCameraWeightValueLabel.textContent = _label33;
+      var _texts$en127, _texts$en128;
+      var _label35 = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
+      var _help23 = texts[lang].autoGearCameraWeightHelp || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearCameraWeightHelp) || _label35;
+      autoGearCameraWeightValueLabel.textContent = _label35;
       autoGearCameraWeightValueLabel.setAttribute('data-help', _help23);
       if (autoGearCameraWeightValueInput) {
         autoGearCameraWeightValueInput.setAttribute('data-help', _help23);
-        autoGearCameraWeightValueInput.setAttribute('aria-label', _label33);
+        autoGearCameraWeightValueInput.setAttribute('aria-label', _label35);
       }
     }
     if (autoGearCameraWeightHelp) {
-      var _texts$en144;
-      var _help24 = texts[lang].autoGearCameraWeightHelp || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
+      var _texts$en129;
+      var _help24 = texts[lang].autoGearCameraWeightHelp || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
       autoGearCameraWeightHelp.textContent = _help24;
       if (_help24) {
         autoGearCameraWeightHelp.setAttribute('data-help', _help24);
       }
     }
     if (autoGearMonitorLabel) {
-      var _texts$en145, _texts$en146;
-      var _label34 = texts[lang].autoGearMonitorLabel || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
-      autoGearMonitorLabel.textContent = _label34;
-      var _help25 = texts[lang].autoGearMonitorHelp || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearMonitorHelp) || _label34;
+      var _texts$en130, _texts$en131;
+      var _label36 = texts[lang].autoGearMonitorLabel || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
+      autoGearMonitorLabel.textContent = _label36;
+      var _help25 = texts[lang].autoGearMonitorHelp || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearMonitorHelp) || _label36;
       autoGearMonitorLabel.setAttribute('data-help', _help25);
       if (autoGearMonitorSelect) {
         autoGearMonitorSelect.setAttribute('data-help', _help25);
-        autoGearMonitorSelect.setAttribute('aria-label', _label34);
+        autoGearMonitorSelect.setAttribute('aria-label', _label36);
       }
     }
     if (autoGearTripodHeadBrandLabel) {
-      var _texts$en147, _texts$en148;
-      var _label35 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
-      autoGearTripodHeadBrandLabel.textContent = _label35;
-      var _help26 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearTripodHeadBrandHelp) || _label35;
+      var _texts$en132, _texts$en133;
+      var _label37 = texts[lang].autoGearTripodHeadBrandLabel || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearTripodHeadBrandLabel) || autoGearTripodHeadBrandLabel.textContent;
+      autoGearTripodHeadBrandLabel.textContent = _label37;
+      var _help26 = texts[lang].autoGearTripodHeadBrandHelp || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearTripodHeadBrandHelp) || _label37;
       autoGearTripodHeadBrandLabel.setAttribute('data-help', _help26);
       if (autoGearTripodHeadBrandSelect) {
         autoGearTripodHeadBrandSelect.setAttribute('data-help', _help26);
-        autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label35);
+        autoGearTripodHeadBrandSelect.setAttribute('aria-label', _label37);
       }
     }
     if (autoGearTripodBowlLabel) {
-      var _texts$en149, _texts$en150;
-      var _label36 = texts[lang].autoGearTripodBowlLabel || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
-      autoGearTripodBowlLabel.textContent = _label36;
-      var _help27 = texts[lang].autoGearTripodBowlHelp || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearTripodBowlHelp) || _label36;
+      var _texts$en134, _texts$en135;
+      var _label38 = texts[lang].autoGearTripodBowlLabel || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearTripodBowlLabel) || autoGearTripodBowlLabel.textContent;
+      autoGearTripodBowlLabel.textContent = _label38;
+      var _help27 = texts[lang].autoGearTripodBowlHelp || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearTripodBowlHelp) || _label38;
       autoGearTripodBowlLabel.setAttribute('data-help', _help27);
       if (autoGearTripodBowlSelect) {
         autoGearTripodBowlSelect.setAttribute('data-help', _help27);
-        autoGearTripodBowlSelect.setAttribute('aria-label', _label36);
+        autoGearTripodBowlSelect.setAttribute('aria-label', _label38);
       }
     }
     if (autoGearTripodTypesLabel) {
-      var _texts$en151, _texts$en152;
-      var _label37 = texts[lang].autoGearTripodTypesLabel || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
-      autoGearTripodTypesLabel.textContent = _label37;
-      var _help28 = texts[lang].autoGearTripodTypesHelp || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearTripodTypesHelp) || _label37;
+      var _texts$en136, _texts$en137;
+      var _label39 = texts[lang].autoGearTripodTypesLabel || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.autoGearTripodTypesLabel) || autoGearTripodTypesLabel.textContent;
+      autoGearTripodTypesLabel.textContent = _label39;
+      var _help28 = texts[lang].autoGearTripodTypesHelp || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.autoGearTripodTypesHelp) || _label39;
       autoGearTripodTypesLabel.setAttribute('data-help', _help28);
       if (autoGearTripodTypesSelect) {
         autoGearTripodTypesSelect.setAttribute('data-help', _help28);
-        autoGearTripodTypesSelect.setAttribute('aria-label', _label37);
+        autoGearTripodTypesSelect.setAttribute('aria-label', _label39);
       }
     }
     if (autoGearTripodSpreaderLabel) {
-      var _texts$en153, _texts$en154;
-      var _label38 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
-      autoGearTripodSpreaderLabel.textContent = _label38;
-      var _help29 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearTripodSpreaderHelp) || _label38;
+      var _texts$en138, _texts$en139;
+      var _label40 = texts[lang].autoGearTripodSpreaderLabel || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.autoGearTripodSpreaderLabel) || autoGearTripodSpreaderLabel.textContent;
+      autoGearTripodSpreaderLabel.textContent = _label40;
+      var _help29 = texts[lang].autoGearTripodSpreaderHelp || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.autoGearTripodSpreaderHelp) || _label40;
       autoGearTripodSpreaderLabel.setAttribute('data-help', _help29);
       if (autoGearTripodSpreaderSelect) {
         autoGearTripodSpreaderSelect.setAttribute('data-help', _help29);
-        autoGearTripodSpreaderSelect.setAttribute('aria-label', _label38);
+        autoGearTripodSpreaderSelect.setAttribute('aria-label', _label40);
       }
     }
     if (autoGearCrewPresentLabel) {
-      var _texts$en155, _texts$en156;
-      var _label39 = texts[lang].autoGearCrewPresentLabel || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
-      autoGearCrewPresentLabel.textContent = _label39;
-      var _help30 = texts[lang].autoGearCrewPresentHelp || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearCrewPresentHelp) || _label39;
+      var _texts$en140, _texts$en141;
+      var _label41 = texts[lang].autoGearCrewPresentLabel || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.autoGearCrewPresentLabel) || autoGearCrewPresentLabel.textContent;
+      autoGearCrewPresentLabel.textContent = _label41;
+      var _help30 = texts[lang].autoGearCrewPresentHelp || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.autoGearCrewPresentHelp) || _label41;
       autoGearCrewPresentLabel.setAttribute('data-help', _help30);
       if (autoGearCrewPresentSelect) {
         autoGearCrewPresentSelect.setAttribute('data-help', _help30);
-        autoGearCrewPresentSelect.setAttribute('aria-label', _label39);
+        autoGearCrewPresentSelect.setAttribute('aria-label', _label41);
       }
     }
     if (autoGearCrewAbsentLabel) {
-      var _texts$en157, _texts$en158;
-      var _label40 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
-      autoGearCrewAbsentLabel.textContent = _label40;
-      var _help31 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearCrewAbsentHelp) || _label40;
+      var _texts$en142, _texts$en143;
+      var _label42 = texts[lang].autoGearCrewAbsentLabel || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearCrewAbsentLabel) || autoGearCrewAbsentLabel.textContent;
+      autoGearCrewAbsentLabel.textContent = _label42;
+      var _help31 = texts[lang].autoGearCrewAbsentHelp || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearCrewAbsentHelp) || _label42;
       autoGearCrewAbsentLabel.setAttribute('data-help', _help31);
       if (autoGearCrewAbsentSelect) {
         autoGearCrewAbsentSelect.setAttribute('data-help', _help31);
-        autoGearCrewAbsentSelect.setAttribute('aria-label', _label40);
+        autoGearCrewAbsentSelect.setAttribute('aria-label', _label42);
       }
     }
     if (autoGearWirelessLabel) {
-      var _texts$en159, _texts$en160;
-      var _label41 = texts[lang].autoGearWirelessLabel || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
-      autoGearWirelessLabel.textContent = _label41;
-      var _help32 = texts[lang].autoGearWirelessHelp || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearWirelessHelp) || _label41;
+      var _texts$en144, _texts$en145;
+      var _label43 = texts[lang].autoGearWirelessLabel || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearWirelessLabel) || autoGearWirelessLabel.textContent;
+      autoGearWirelessLabel.textContent = _label43;
+      var _help32 = texts[lang].autoGearWirelessHelp || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.autoGearWirelessHelp) || _label43;
       autoGearWirelessLabel.setAttribute('data-help', _help32);
       if (autoGearWirelessSelect) {
         autoGearWirelessSelect.setAttribute('data-help', _help32);
-        autoGearWirelessSelect.setAttribute('aria-label', _label41);
+        autoGearWirelessSelect.setAttribute('aria-label', _label43);
       }
     }
     if (autoGearMotorsLabel) {
-      var _texts$en161, _texts$en162;
-      var _label42 = texts[lang].autoGearMotorsLabel || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
-      autoGearMotorsLabel.textContent = _label42;
-      var _help33 = texts[lang].autoGearMotorsHelp || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearMotorsHelp) || _label42;
+      var _texts$en146, _texts$en147;
+      var _label44 = texts[lang].autoGearMotorsLabel || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.autoGearMotorsLabel) || autoGearMotorsLabel.textContent;
+      autoGearMotorsLabel.textContent = _label44;
+      var _help33 = texts[lang].autoGearMotorsHelp || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.autoGearMotorsHelp) || _label44;
       autoGearMotorsLabel.setAttribute('data-help', _help33);
       if (autoGearMotorsSelect) {
         autoGearMotorsSelect.setAttribute('data-help', _help33);
-        autoGearMotorsSelect.setAttribute('aria-label', _label42);
+        autoGearMotorsSelect.setAttribute('aria-label', _label44);
       }
     }
     if (autoGearControllersLabel) {
-      var _texts$en163, _texts$en164;
-      var _label43 = texts[lang].autoGearControllersLabel || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearControllersLabel) || autoGearControllersLabel.textContent;
-      autoGearControllersLabel.textContent = _label43;
-      var _help34 = texts[lang].autoGearControllersHelp || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearControllersHelp) || _label43;
+      var _texts$en148, _texts$en149;
+      var _label45 = texts[lang].autoGearControllersLabel || ((_texts$en148 = texts.en) === null || _texts$en148 === void 0 ? void 0 : _texts$en148.autoGearControllersLabel) || autoGearControllersLabel.textContent;
+      autoGearControllersLabel.textContent = _label45;
+      var _help34 = texts[lang].autoGearControllersHelp || ((_texts$en149 = texts.en) === null || _texts$en149 === void 0 ? void 0 : _texts$en149.autoGearControllersHelp) || _label45;
       autoGearControllersLabel.setAttribute('data-help', _help34);
       if (autoGearControllersSelect) {
         autoGearControllersSelect.setAttribute('data-help', _help34);
-        autoGearControllersSelect.setAttribute('aria-label', _label43);
+        autoGearControllersSelect.setAttribute('aria-label', _label45);
       }
     }
     if (autoGearDistanceLabel) {
-      var _texts$en165, _texts$en166;
-      var _label44 = texts[lang].autoGearDistanceLabel || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
-      autoGearDistanceLabel.textContent = _label44;
-      var _help35 = texts[lang].autoGearDistanceHelp || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearDistanceHelp) || _label44;
+      var _texts$en150, _texts$en151;
+      var _label46 = texts[lang].autoGearDistanceLabel || ((_texts$en150 = texts.en) === null || _texts$en150 === void 0 ? void 0 : _texts$en150.autoGearDistanceLabel) || autoGearDistanceLabel.textContent;
+      autoGearDistanceLabel.textContent = _label46;
+      var _help35 = texts[lang].autoGearDistanceHelp || ((_texts$en151 = texts.en) === null || _texts$en151 === void 0 ? void 0 : _texts$en151.autoGearDistanceHelp) || _label46;
       autoGearDistanceLabel.setAttribute('data-help', _help35);
       if (autoGearDistanceSelect) {
         autoGearDistanceSelect.setAttribute('data-help', _help35);
-        autoGearDistanceSelect.setAttribute('aria-label', _label44);
+        autoGearDistanceSelect.setAttribute('aria-label', _label46);
       }
     }
-    var logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearConditionLogicLabel) || 'Match behavior';
-    var logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearConditionLogicHelp) || logicLabelText;
+    var logicLabelText = texts[lang].autoGearConditionLogicLabel || ((_texts$en152 = texts.en) === null || _texts$en152 === void 0 ? void 0 : _texts$en152.autoGearConditionLogicLabel) || 'Match behavior';
+    var logicHelpText = texts[lang].autoGearConditionLogicHelp || ((_texts$en153 = texts.en) === null || _texts$en153 === void 0 ? void 0 : _texts$en153.autoGearConditionLogicHelp) || logicLabelText;
     var logicOptionTexts = {
-      all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearConditionLogicAll) || 'Require every selected value',
-      any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearConditionLogicAny) || 'Match any selected value',
-      multiplier: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicMultiplier) || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
+      all: ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.autoGearConditionLogicAll) || ((_texts$en154 = texts.en) === null || _texts$en154 === void 0 ? void 0 : _texts$en154.autoGearConditionLogicAll) || 'Require every selected value',
+      any: ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.autoGearConditionLogicAny) || ((_texts$en155 = texts.en) === null || _texts$en155 === void 0 ? void 0 : _texts$en155.autoGearConditionLogicAny) || 'Match any selected value',
+      multiplier: ((_texts$lang3 = texts[lang]) === null || _texts$lang3 === void 0 ? void 0 : _texts$lang3.autoGearConditionLogicMultiplier) || ((_texts$en156 = texts.en) === null || _texts$en156 === void 0 ? void 0 : _texts$en156.autoGearConditionLogicMultiplier) || 'Multiply by matched values'
     };
-    Object.entries(autoGearConditionLogicSelects).forEach(function (_ref33) {
-      var _ref34 = _slicedToArray(_ref33, 2),
-        key = _ref34[0],
-        select = _ref34[1];
+    Object.entries(autoGearConditionLogicSelects).forEach(function (_ref34) {
+      var _ref35 = _slicedToArray(_ref34, 2),
+        key = _ref35[0],
+        select = _ref35[1];
       var label = autoGearConditionLogicLabels[key];
       if (label) {
         label.textContent = logicLabelText;
@@ -8546,18 +9695,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     });
     if (autoGearAddItemsHeading) {
-      var _texts$en172;
-      autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
+      var _texts$en157;
+      autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en157 = texts.en) === null || _texts$en157 === void 0 ? void 0 : _texts$en157.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
     }
     if (autoGearAddItemLabel) {
-      var _texts$en173, _texts$en174;
-      var _label45 = texts[lang].autoGearAddItemLabel || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
-      var hint = texts[lang].autoGearAddMultipleHint || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearAddMultipleHint) || '';
-      var helpText = hint ? "".concat(_label45, " \u2013 ").concat(hint) : _label45;
-      autoGearAddItemLabel.textContent = _label45;
+      var _texts$en158, _texts$en159;
+      var _label47 = texts[lang].autoGearAddItemLabel || ((_texts$en158 = texts.en) === null || _texts$en158 === void 0 ? void 0 : _texts$en158.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
+      var hint = texts[lang].autoGearAddMultipleHint || ((_texts$en159 = texts.en) === null || _texts$en159 === void 0 ? void 0 : _texts$en159.autoGearAddMultipleHint) || '';
+      var helpText = hint ? "".concat(_label47, " \u2013 ").concat(hint) : _label47;
+      autoGearAddItemLabel.textContent = _label47;
       autoGearAddItemLabel.setAttribute('data-help', helpText);
       if (autoGearAddNameInput) {
-        autoGearAddNameInput.setAttribute('aria-label', _label45);
+        autoGearAddNameInput.setAttribute('aria-label', _label47);
         autoGearAddNameInput.setAttribute('data-help', helpText);
         if (hint) {
           autoGearAddNameInput.setAttribute('placeholder', hint);
@@ -8567,43 +9716,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearAddCategoryLabel) {
-      var _texts$en175;
-      var _label46 = texts[lang].autoGearAddCategoryLabel || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
-      autoGearAddCategoryLabel.textContent = _label46;
+      var _texts$en160;
+      var _label48 = texts[lang].autoGearAddCategoryLabel || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
+      autoGearAddCategoryLabel.textContent = _label48;
       if (autoGearAddCategorySelect) {
-        autoGearAddCategorySelect.setAttribute('aria-label', _label46);
+        autoGearAddCategorySelect.setAttribute('aria-label', _label48);
       }
     }
     if (autoGearAddQuantityLabel) {
-      var _texts$en176;
-      var _label47 = texts[lang].autoGearAddQuantityLabel || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
-      autoGearAddQuantityLabel.textContent = _label47;
+      var _texts$en161;
+      var _label49 = texts[lang].autoGearAddQuantityLabel || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
+      autoGearAddQuantityLabel.textContent = _label49;
       if (autoGearAddQuantityInput) {
-        autoGearAddQuantityInput.setAttribute('aria-label', _label47);
+        autoGearAddQuantityInput.setAttribute('aria-label', _label49);
       }
     }
     if (autoGearAddScreenSizeLabel) {
-      var _texts$en177;
-      var _label48 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
-      autoGearAddScreenSizeLabel.textContent = _label48;
+      var _texts$en162;
+      var _label50 = texts[lang].autoGearAddScreenSizeLabel || ((_texts$en162 = texts.en) === null || _texts$en162 === void 0 ? void 0 : _texts$en162.autoGearAddScreenSizeLabel) || autoGearAddScreenSizeLabel.textContent;
+      autoGearAddScreenSizeLabel.textContent = _label50;
       if (autoGearAddScreenSizeInput) {
-        autoGearAddScreenSizeInput.setAttribute('aria-label', _label48);
+        autoGearAddScreenSizeInput.setAttribute('aria-label', _label50);
       }
     }
     if (autoGearAddSelectorTypeLabel) {
-      var _texts$en178;
-      var _label49 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
-      autoGearAddSelectorTypeLabel.textContent = _label49;
+      var _texts$en163;
+      var _label51 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en163 = texts.en) === null || _texts$en163 === void 0 ? void 0 : _texts$en163.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
+      autoGearAddSelectorTypeLabel.textContent = _label51;
       if (autoGearAddSelectorTypeSelect) {
-        var _texts$en179, _texts$en180, _texts$en181, _texts$en182, _texts$en183, _texts$en184, _texts$en185;
-        autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label49);
-        var noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearSelectorNoneOption) || 'No selector';
-        var monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearSelectorMonitorOption) || 'Monitor selector';
-        var directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearSelectorDirectorOption) || 'Director monitor selector';
-        var tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-        var _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-        var _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-        var _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+        var _texts$en164, _texts$en165, _texts$en166, _texts$en167, _texts$en168, _texts$en169, _texts$en170;
+        autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label51);
+        var noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en164 = texts.en) === null || _texts$en164 === void 0 ? void 0 : _texts$en164.autoGearSelectorNoneOption) || 'No selector';
+        var monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en165 = texts.en) === null || _texts$en165 === void 0 ? void 0 : _texts$en165.autoGearSelectorMonitorOption) || 'Monitor selector';
+        var directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en166 = texts.en) === null || _texts$en166 === void 0 ? void 0 : _texts$en166.autoGearSelectorDirectorOption) || 'Director monitor selector';
+        var tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en167 = texts.en) === null || _texts$en167 === void 0 ? void 0 : _texts$en167.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+        var _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en168 = texts.en) === null || _texts$en168 === void 0 ? void 0 : _texts$en168.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+        var _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+        var _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en170 = texts.en) === null || _texts$en170 === void 0 ? void 0 : _texts$en170.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
         var selectorLabels = new Map([['none', noneLabel], ['monitor', monitorLabel], ['directorMonitor', directorLabel], ['tripodHeadBrand', tripodHeadLabel], ['tripodBowl', _tripodBowlLabel], ['tripodTypes', _tripodTypesLabel], ['tripodSpreader', _tripodSpreaderLabel]]);
         Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
           var text = selectorLabels.get(opt.value);
@@ -8612,19 +9761,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearAddSelectorDefaultLabel) {
-      var _texts$en186;
-      var _label50 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
-      autoGearAddSelectorDefaultLabel.textContent = _label50;
+      var _texts$en171;
+      var _label52 = texts[lang].autoGearAddSelectorDefaultLabel || ((_texts$en171 = texts.en) === null || _texts$en171 === void 0 ? void 0 : _texts$en171.autoGearAddSelectorDefaultLabel) || autoGearAddSelectorDefaultLabel.textContent;
+      autoGearAddSelectorDefaultLabel.textContent = _label52;
       if (autoGearAddSelectorDefaultInput) {
-        autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label50);
+        autoGearAddSelectorDefaultInput.setAttribute('aria-label', _label52);
       }
     }
     if (autoGearAddNotesLabel) {
-      var _texts$en187;
-      var _label51 = texts[lang].autoGearAddNotesLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
-      autoGearAddNotesLabel.textContent = _label51;
+      var _texts$en172;
+      var _label53 = texts[lang].autoGearAddNotesLabel || ((_texts$en172 = texts.en) === null || _texts$en172 === void 0 ? void 0 : _texts$en172.autoGearAddNotesLabel) || autoGearAddNotesLabel.textContent;
+      autoGearAddNotesLabel.textContent = _label53;
       if (autoGearAddNotesInput) {
-        autoGearAddNotesInput.setAttribute('aria-label', _label51);
+        autoGearAddNotesInput.setAttribute('aria-label', _label53);
       }
     }
     if (autoGearAddItemButton) {
@@ -8633,19 +9782,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearRemoveItemsHeading) {
-      var _texts$en188;
-      autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
+      var _texts$en173;
+      autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en173 = texts.en) === null || _texts$en173 === void 0 ? void 0 : _texts$en173.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
     }
     if (autoGearRemoveItemLabel) {
-      var _texts$en189, _texts$en190;
-      var _label52 = texts[lang].autoGearRemoveItemLabel || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
-      var _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearRemoveMultipleHint) || '';
-      var _helpText = _hint ? "".concat(_label52, " \u2013 ").concat(_hint) : _label52;
-      autoGearRemoveItemLabel.textContent = _label52;
-      autoGearRemoveItemLabel.setAttribute('data-help', _helpText);
+      var _texts$en174, _texts$en175;
+      var _label54 = texts[lang].autoGearRemoveItemLabel || ((_texts$en174 = texts.en) === null || _texts$en174 === void 0 ? void 0 : _texts$en174.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
+      var _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.autoGearRemoveMultipleHint) || '';
+      var _helpText4 = _hint ? "".concat(_label54, " \u2013 ").concat(_hint) : _label54;
+      autoGearRemoveItemLabel.textContent = _label54;
+      autoGearRemoveItemLabel.setAttribute('data-help', _helpText4);
       if (autoGearRemoveNameInput) {
-        autoGearRemoveNameInput.setAttribute('aria-label', _label52);
-        autoGearRemoveNameInput.setAttribute('data-help', _helpText);
+        autoGearRemoveNameInput.setAttribute('aria-label', _label54);
+        autoGearRemoveNameInput.setAttribute('data-help', _helpText4);
         if (_hint) {
           autoGearRemoveNameInput.setAttribute('placeholder', _hint);
         } else {
@@ -8654,43 +9803,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearRemoveCategoryLabel) {
-      var _texts$en191;
-      var _label53 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
-      autoGearRemoveCategoryLabel.textContent = _label53;
+      var _texts$en176;
+      var _label55 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
+      autoGearRemoveCategoryLabel.textContent = _label55;
       if (autoGearRemoveCategorySelect) {
-        autoGearRemoveCategorySelect.setAttribute('aria-label', _label53);
+        autoGearRemoveCategorySelect.setAttribute('aria-label', _label55);
       }
     }
     if (autoGearRemoveQuantityLabel) {
-      var _texts$en192;
-      var _label54 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
-      autoGearRemoveQuantityLabel.textContent = _label54;
+      var _texts$en177;
+      var _label56 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en177 = texts.en) === null || _texts$en177 === void 0 ? void 0 : _texts$en177.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
+      autoGearRemoveQuantityLabel.textContent = _label56;
       if (autoGearRemoveQuantityInput) {
-        autoGearRemoveQuantityInput.setAttribute('aria-label', _label54);
+        autoGearRemoveQuantityInput.setAttribute('aria-label', _label56);
       }
     }
     if (autoGearRemoveScreenSizeLabel) {
-      var _texts$en193;
-      var _label55 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
-      autoGearRemoveScreenSizeLabel.textContent = _label55;
+      var _texts$en178;
+      var _label57 = texts[lang].autoGearRemoveScreenSizeLabel || ((_texts$en178 = texts.en) === null || _texts$en178 === void 0 ? void 0 : _texts$en178.autoGearRemoveScreenSizeLabel) || autoGearRemoveScreenSizeLabel.textContent;
+      autoGearRemoveScreenSizeLabel.textContent = _label57;
       if (autoGearRemoveScreenSizeInput) {
-        autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label55);
+        autoGearRemoveScreenSizeInput.setAttribute('aria-label', _label57);
       }
     }
     if (autoGearRemoveSelectorTypeLabel) {
-      var _texts$en194;
-      var _label56 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
-      autoGearRemoveSelectorTypeLabel.textContent = _label56;
+      var _texts$en179;
+      var _label58 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en179 = texts.en) === null || _texts$en179 === void 0 ? void 0 : _texts$en179.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
+      autoGearRemoveSelectorTypeLabel.textContent = _label58;
       if (autoGearRemoveSelectorTypeSelect) {
-        var _texts$en195, _texts$en196, _texts$en197, _texts$en198, _texts$en199, _texts$en200, _texts$en201;
-        autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label56);
-        var _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.autoGearSelectorNoneOption) || 'No selector';
-        var _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.autoGearSelectorMonitorOption) || 'Monitor selector';
-        var _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.autoGearSelectorDirectorOption) || 'Director monitor selector';
-        var _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
-        var _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
-        var _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
-        var _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+        var _texts$en180, _texts$en181, _texts$en182, _texts$en183, _texts$en184, _texts$en185, _texts$en186;
+        autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label58);
+        var _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en180 = texts.en) === null || _texts$en180 === void 0 ? void 0 : _texts$en180.autoGearSelectorNoneOption) || 'No selector';
+        var _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en181 = texts.en) === null || _texts$en181 === void 0 ? void 0 : _texts$en181.autoGearSelectorMonitorOption) || 'Monitor selector';
+        var _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en182 = texts.en) === null || _texts$en182 === void 0 ? void 0 : _texts$en182.autoGearSelectorDirectorOption) || 'Director monitor selector';
+        var _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en183 = texts.en) === null || _texts$en183 === void 0 ? void 0 : _texts$en183.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+        var _tripodBowlLabel2 = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en184 = texts.en) === null || _texts$en184 === void 0 ? void 0 : _texts$en184.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+        var _tripodTypesLabel2 = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en185 = texts.en) === null || _texts$en185 === void 0 ? void 0 : _texts$en185.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+        var _tripodSpreaderLabel2 = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en186 = texts.en) === null || _texts$en186 === void 0 ? void 0 : _texts$en186.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
         var _selectorLabels = new Map([['none', _noneLabel], ['monitor', _monitorLabel], ['directorMonitor', _directorLabel], ['tripodHeadBrand', _tripodHeadLabel], ['tripodBowl', _tripodBowlLabel2], ['tripodTypes', _tripodTypesLabel2], ['tripodSpreader', _tripodSpreaderLabel2]]);
         Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
           var text = _selectorLabels.get(opt.value);
@@ -8699,29 +9848,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearRemoveSelectorDefaultLabel) {
-      var _texts$en202;
-      var _label57 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
-      autoGearRemoveSelectorDefaultLabel.textContent = _label57;
+      var _texts$en187;
+      var _label59 = texts[lang].autoGearRemoveSelectorDefaultLabel || ((_texts$en187 = texts.en) === null || _texts$en187 === void 0 ? void 0 : _texts$en187.autoGearRemoveSelectorDefaultLabel) || autoGearRemoveSelectorDefaultLabel.textContent;
+      autoGearRemoveSelectorDefaultLabel.textContent = _label59;
       if (autoGearRemoveSelectorDefaultInput) {
-        autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label57);
+        autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', _label59);
       }
     }
     if (autoGearRemoveNotesLabel) {
-      var _texts$en203;
-      var _label58 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
-      autoGearRemoveNotesLabel.textContent = _label58;
+      var _texts$en188;
+      var _label60 = texts[lang].autoGearRemoveNotesLabel || ((_texts$en188 = texts.en) === null || _texts$en188 === void 0 ? void 0 : _texts$en188.autoGearRemoveNotesLabel) || autoGearRemoveNotesLabel.textContent;
+      autoGearRemoveNotesLabel.textContent = _label60;
       if (autoGearRemoveNotesInput) {
-        autoGearRemoveNotesInput.setAttribute('aria-label', _label58);
+        autoGearRemoveNotesInput.setAttribute('aria-label', _label60);
       }
     }
     if (autoGearDraftImpactHeading) {
-      var _texts$en204;
-      var _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
+      var _texts$en189;
+      var _heading2 = texts[lang].autoGearDraftImpactHeading || ((_texts$en189 = texts.en) === null || _texts$en189 === void 0 ? void 0 : _texts$en189.autoGearDraftImpactHeading) || autoGearDraftImpactHeading.textContent;
       autoGearDraftImpactHeading.textContent = _heading2;
     }
     if (autoGearDraftImpactDescription) {
-      var _texts$en205;
-      var _description2 = texts[lang].autoGearDraftImpactDescription || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
+      var _texts$en190;
+      var _description2 = texts[lang].autoGearDraftImpactDescription || ((_texts$en190 = texts.en) === null || _texts$en190 === void 0 ? void 0 : _texts$en190.autoGearDraftImpactDescription) || autoGearDraftImpactDescription.textContent;
       autoGearDraftImpactDescription.textContent = _description2;
       if (autoGearDraftImpactHeading) {
         autoGearDraftImpactHeading.setAttribute('data-help', _description2);
@@ -8731,8 +9880,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearDraftWarningHeading) {
-      var _texts$en206;
-      var _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
+      var _texts$en191;
+      var _heading3 = texts[lang].autoGearDraftWarningHeading || ((_texts$en191 = texts.en) === null || _texts$en191 === void 0 ? void 0 : _texts$en191.autoGearDraftWarningHeading) || autoGearDraftWarningHeading.textContent;
       autoGearDraftWarningHeading.textContent = _heading3;
     }
     if (autoGearRemoveItemButton) {
@@ -8741,16 +9890,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (autoGearSaveRuleButton) {
-      var _texts$en207;
-      var _label59 = texts[lang].autoGearSaveRule || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
-      setButtonLabelWithIcon(autoGearSaveRuleButton, _label59);
-      autoGearSaveRuleButton.setAttribute('data-help', _label59);
+      var _texts$en192;
+      var _label61 = texts[lang].autoGearSaveRule || ((_texts$en192 = texts.en) === null || _texts$en192 === void 0 ? void 0 : _texts$en192.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
+      setButtonLabelWithIcon(autoGearSaveRuleButton, _label61);
+      autoGearSaveRuleButton.setAttribute('data-help', _label61);
     }
     if (autoGearCancelEditButton) {
-      var _texts$en208;
-      var _label60 = texts[lang].autoGearCancelEdit || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
-      setButtonLabelWithIcon(autoGearCancelEditButton, _label60, ICON_GLYPHS.circleX);
-      autoGearCancelEditButton.setAttribute('data-help', _label60);
+      var _texts$en193;
+      var _label62 = texts[lang].autoGearCancelEdit || ((_texts$en193 = texts.en) === null || _texts$en193 === void 0 ? void 0 : _texts$en193.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
+      setButtonLabelWithIcon(autoGearCancelEditButton, _label62, ICON_GLYPHS.circleX);
+      autoGearCancelEditButton.setAttribute('data-help', _label62);
     }
     if (autoGearAddCategorySelect) {
       populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
@@ -8852,29 +10001,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
     }
     if (storagePersistenceHeading) {
-      var _texts$en209, _texts$en210;
-      var _headingText = texts[lang].storagePersistenceHeading || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.storagePersistenceHeading) || storagePersistenceHeading.textContent;
+      var _texts$en194, _texts$en195;
+      var _headingText = texts[lang].storagePersistenceHeading || ((_texts$en194 = texts.en) === null || _texts$en194 === void 0 ? void 0 : _texts$en194.storagePersistenceHeading) || storagePersistenceHeading.textContent;
       storagePersistenceHeading.textContent = _headingText;
-      var _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.storagePersistenceHeadingHelp) || _headingText;
+      var _headingHelp = texts[lang].storagePersistenceHeadingHelp || ((_texts$en195 = texts.en) === null || _texts$en195 === void 0 ? void 0 : _texts$en195.storagePersistenceHeadingHelp) || _headingText;
       storagePersistenceHeading.setAttribute('data-help', _headingHelp);
     }
     if (storagePersistenceIntro) {
-      var _texts$en211;
-      storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.storagePersistenceIntro) || storagePersistenceIntro.textContent;
+      var _texts$en196;
+      storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro || ((_texts$en196 = texts.en) === null || _texts$en196 === void 0 ? void 0 : _texts$en196.storagePersistenceIntro) || storagePersistenceIntro.textContent;
     }
     if (storagePersistenceRequestButton) {
-      var _texts$en212, _texts$en213;
-      var requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
+      var _texts$en197, _texts$en198;
+      var requestLabel = texts[lang].storagePersistenceRequest || ((_texts$en197 = texts.en) === null || _texts$en197 === void 0 ? void 0 : _texts$en197.storagePersistenceRequest) || storagePersistenceRequestButton.textContent;
       setButtonLabelWithIcon(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
       storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
-      var requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.storagePersistenceRequestHelp) || requestLabel;
+      var requestHelp = texts[lang].storagePersistenceRequestHelp || ((_texts$en198 = texts.en) === null || _texts$en198 === void 0 ? void 0 : _texts$en198.storagePersistenceRequestHelp) || requestLabel;
       storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
       storagePersistenceRequestButton.setAttribute('title', requestHelp);
       storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
     }
     if (storagePersistenceStatus) {
-      var _texts$en214;
-      var idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
+      var _texts$en199;
+      var idleText = texts[lang].storagePersistenceStatusIdle || ((_texts$en199 = texts.en) === null || _texts$en199 === void 0 ? void 0 : _texts$en199.storagePersistenceStatusIdle) || storagePersistenceStatus.textContent;
       storagePersistenceStatus.textContent = idleText;
       storagePersistenceStatus.setAttribute('data-help', idleText);
     }
@@ -8882,52 +10031,52 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       defer: true
     });
     if (storageActionsHeading) {
-      var _texts$en215, _texts$en216;
-      var _headingText2 = texts[lang].storageActionsHeading || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.storageActionsHeading) || storageActionsHeading.textContent;
+      var _texts$en200, _texts$en201;
+      var _headingText2 = texts[lang].storageActionsHeading || ((_texts$en200 = texts.en) === null || _texts$en200 === void 0 ? void 0 : _texts$en200.storageActionsHeading) || storageActionsHeading.textContent;
       storageActionsHeading.textContent = _headingText2;
-      var _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.storageActionsHeadingHelp) || _headingText2;
+      var _headingHelp2 = texts[lang].storageActionsHeadingHelp || ((_texts$en201 = texts.en) === null || _texts$en201 === void 0 ? void 0 : _texts$en201.storageActionsHeadingHelp) || _headingText2;
       storageActionsHeading.setAttribute('data-help', _headingHelp2);
     }
     if (storageActionsIntro) {
-      var _texts$en217;
-      storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.storageActionsIntro) || storageActionsIntro.textContent;
+      var _texts$en202;
+      storageActionsIntro.textContent = texts[lang].storageActionsIntro || ((_texts$en202 = texts.en) === null || _texts$en202 === void 0 ? void 0 : _texts$en202.storageActionsIntro) || storageActionsIntro.textContent;
     }
     if (storageBackupNowButton) {
-      var _texts$en218, _texts$en219;
-      var backupLabel = texts[lang].storageBackupNow || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.storageBackupNow) || storageBackupNowButton.textContent;
+      var _texts$en203, _texts$en204;
+      var backupLabel = texts[lang].storageBackupNow || ((_texts$en203 = texts.en) === null || _texts$en203 === void 0 ? void 0 : _texts$en203.storageBackupNow) || storageBackupNowButton.textContent;
       setButtonLabelWithIcon(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
-      var backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.storageBackupNowHelp) || backupLabel;
+      var backupHelp = texts[lang].storageBackupNowHelp || ((_texts$en204 = texts.en) === null || _texts$en204 === void 0 ? void 0 : _texts$en204.storageBackupNowHelp) || backupLabel;
       storageBackupNowButton.setAttribute('data-help', backupHelp);
       storageBackupNowButton.setAttribute('title', backupHelp);
     }
     if (storageOpenBackupTabButton) {
-      var _texts$en220, _texts$en221;
-      var openLabel = texts[lang].storageOpenBackupTab || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
+      var _texts$en205, _texts$en206;
+      var openLabel = texts[lang].storageOpenBackupTab || ((_texts$en205 = texts.en) === null || _texts$en205 === void 0 ? void 0 : _texts$en205.storageOpenBackupTab) || storageOpenBackupTabButton.textContent;
       setButtonLabelWithIcon(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
-      var openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.storageOpenBackupTabHelp) || openLabel;
+      var openHelp = texts[lang].storageOpenBackupTabHelp || ((_texts$en206 = texts.en) === null || _texts$en206 === void 0 ? void 0 : _texts$en206.storageOpenBackupTabHelp) || openLabel;
       storageOpenBackupTabButton.setAttribute('data-help', openHelp);
       storageOpenBackupTabButton.setAttribute('title', openHelp);
     }
     if (storageStatusHeading) {
-      var _texts$en222, _texts$en223;
-      var statusHeading = texts[lang].storageStatusHeading || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.storageStatusHeading) || storageStatusHeading.textContent;
+      var _texts$en207, _texts$en208;
+      var statusHeading = texts[lang].storageStatusHeading || ((_texts$en207 = texts.en) === null || _texts$en207 === void 0 ? void 0 : _texts$en207.storageStatusHeading) || storageStatusHeading.textContent;
       storageStatusHeading.textContent = statusHeading;
-      var statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.storageStatusHeadingHelp) || statusHeading;
+      var statusHelp = texts[lang].storageStatusHeadingHelp || ((_texts$en208 = texts.en) === null || _texts$en208 === void 0 ? void 0 : _texts$en208.storageStatusHeadingHelp) || statusHeading;
       storageStatusHeading.setAttribute('data-help', statusHelp);
     }
     if (storageStatusLastProjectLabel) {
-      var _texts$en224;
-      storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
+      var _texts$en209;
+      storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.storageStatusLastProjectLabel) || storageStatusLastProjectLabel.textContent;
     }
     if (storageStatusLastAutoBackupLabel) {
-      var _texts$en225;
-      storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
+      var _texts$en210;
+      storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.storageStatusLastAutoBackupLabel) || storageStatusLastAutoBackupLabel.textContent;
     }
     if (storageStatusLastFullBackupLabel) {
-      var _texts$en226;
-      storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
+      var _texts$en211;
+      storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel || ((_texts$en211 = texts.en) === null || _texts$en211 === void 0 ? void 0 : _texts$en211.storageStatusLastFullBackupLabel) || storageStatusLastFullBackupLabel.textContent;
     }
-    var statusDefaultText = texts[lang].storageStatusNever || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
+    var statusDefaultText = texts[lang].storageStatusNever || ((_texts$en212 = texts.en) === null || _texts$en212 === void 0 ? void 0 : _texts$en212.storageStatusNever) || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
     if (storageStatusLastProjectValue) {
       storageStatusLastProjectValue.textContent = statusDefaultText;
     }
@@ -8937,9 +10086,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (storageStatusLastFullBackupValue) {
       storageStatusLastFullBackupValue.textContent = statusDefaultText;
     }
+    if (storageStatusReminder) {
+      storageStatusReminder.textContent = '';
+      storageStatusReminder.setAttribute('hidden', '');
+      storageStatusReminder.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
+      storageStatusReminder.removeAttribute('data-help');
+    }
     if (loggingSection) {
-      var _texts$en228;
-      var sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.loggingHeadingHelp) || '';
+      var _texts$en213;
+      var sectionHelp = texts[lang].loggingSectionHelp || texts[lang].loggingHeadingHelp || ((_texts$en213 = texts.en) === null || _texts$en213 === void 0 ? void 0 : _texts$en213.loggingHeadingHelp) || '';
       if (sectionHelp) {
         loggingSection.setAttribute('data-help', sectionHelp);
       } else {
@@ -8947,29 +10102,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (loggingHeading) {
-      var _texts$en229, _texts$en230;
-      var _headingText3 = texts[lang].loggingHeading || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
+      var _texts$en214, _texts$en215;
+      var _headingText3 = texts[lang].loggingHeading || ((_texts$en214 = texts.en) === null || _texts$en214 === void 0 ? void 0 : _texts$en214.loggingHeading) || loggingHeading.textContent || 'Diagnostics log';
       loggingHeading.textContent = _headingText3;
-      var _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.loggingHeadingHelp) || _headingText3;
+      var _headingHelp3 = texts[lang].loggingHeadingHelp || ((_texts$en215 = texts.en) === null || _texts$en215 === void 0 ? void 0 : _texts$en215.loggingHeadingHelp) || _headingText3;
       loggingHeading.setAttribute('data-help', _headingHelp3);
     }
     if (loggingIntro) {
-      var _texts$en231;
-      loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.loggingIntro) || loggingIntro.textContent;
+      var _texts$en216;
+      loggingIntro.textContent = texts[lang].loggingIntro || ((_texts$en216 = texts.en) === null || _texts$en216 === void 0 ? void 0 : _texts$en216.loggingIntro) || loggingIntro.textContent;
     }
     if (loggingLevelFilterLabel) {
-      var _texts$en232;
-      var _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
+      var _texts$en217;
+      var _filterLabel = texts[lang].loggingLevelFilterLabel || ((_texts$en217 = texts.en) === null || _texts$en217 === void 0 ? void 0 : _texts$en217.loggingLevelFilterLabel) || loggingLevelFilterLabel.textContent;
       loggingLevelFilterLabel.textContent = _filterLabel;
       loggingLevelFilterLabel.setAttribute('data-help', _filterLabel);
     }
     if (loggingLevelFilter) {
-      var _texts$en233, _texts$en234, _texts$en235, _texts$en236, _texts$en237;
+      var _texts$en218, _texts$en219, _texts$en220, _texts$en221, _texts$en222;
       var optionTexts = {
-        all: texts[lang].loggingLevelFilterAll || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.loggingLevelFilterAll) || 'All levels',
-        info: texts[lang].loggingLevelFilterInfo || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.loggingLevelFilterInfo) || 'Info and above',
-        warn: texts[lang].loggingLevelFilterWarn || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.loggingLevelFilterWarn) || 'Warnings and errors',
-        error: texts[lang].loggingLevelFilterError || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.loggingLevelFilterError) || 'Errors only'
+        all: texts[lang].loggingLevelFilterAll || ((_texts$en218 = texts.en) === null || _texts$en218 === void 0 ? void 0 : _texts$en218.loggingLevelFilterAll) || 'All levels',
+        info: texts[lang].loggingLevelFilterInfo || ((_texts$en219 = texts.en) === null || _texts$en219 === void 0 ? void 0 : _texts$en219.loggingLevelFilterInfo) || 'Info and above',
+        warn: texts[lang].loggingLevelFilterWarn || ((_texts$en220 = texts.en) === null || _texts$en220 === void 0 ? void 0 : _texts$en220.loggingLevelFilterWarn) || 'Warnings and errors',
+        error: texts[lang].loggingLevelFilterError || ((_texts$en221 = texts.en) === null || _texts$en221 === void 0 ? void 0 : _texts$en221.loggingLevelFilterError) || 'Errors only'
       };
       Array.from(loggingLevelFilter.options || []).forEach(function (option) {
         if (!option || typeof option.value !== 'string') return;
@@ -8978,7 +10133,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           option.textContent = optionTexts[key];
         }
       });
-      var filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.loggingLevelFilterHelp) || '';
+      var filterHelp = texts[lang].loggingLevelFilterHelp || ((_texts$en222 = texts.en) === null || _texts$en222 === void 0 ? void 0 : _texts$en222.loggingLevelFilterHelp) || '';
       if (filterHelp) {
         loggingLevelFilter.setAttribute('data-help', filterHelp);
       } else {
@@ -8986,17 +10141,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (loggingNamespaceFilterLabel) {
-      var _texts$en238;
-      var namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
+      var _texts$en223;
+      var namespaceLabel = texts[lang].loggingNamespaceFilterLabel || ((_texts$en223 = texts.en) === null || _texts$en223 === void 0 ? void 0 : _texts$en223.loggingNamespaceFilterLabel) || loggingNamespaceFilterLabel.textContent;
       loggingNamespaceFilterLabel.textContent = namespaceLabel;
     }
     if (loggingNamespaceFilter) {
-      var _texts$en239, _texts$en240;
-      var _placeholder = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.loggingNamespaceFilterPlaceholder) || '';
-      if (_placeholder) {
-        loggingNamespaceFilter.setAttribute('placeholder', _placeholder);
+      var _texts$en224, _texts$en225;
+      var _placeholder3 = texts[lang].loggingNamespaceFilterPlaceholder || ((_texts$en224 = texts.en) === null || _texts$en224 === void 0 ? void 0 : _texts$en224.loggingNamespaceFilterPlaceholder) || '';
+      if (_placeholder3) {
+        loggingNamespaceFilter.setAttribute('placeholder', _placeholder3);
       }
-      var namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.loggingNamespaceFilterHelp) || _placeholder;
+      var namespaceHelp = texts[lang].loggingNamespaceFilterHelp || ((_texts$en225 = texts.en) === null || _texts$en225 === void 0 ? void 0 : _texts$en225.loggingNamespaceFilterHelp) || _placeholder3;
       if (namespaceHelp) {
         loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
         if (loggingNamespaceFilterLabel) {
@@ -9013,87 +10168,87 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (loggingHistoryLimitLabel) {
-      var _texts$en241;
-      var historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
+      var _texts$en226;
+      var historyLabel = texts[lang].loggingHistoryLimitLabel || ((_texts$en226 = texts.en) === null || _texts$en226 === void 0 ? void 0 : _texts$en226.loggingHistoryLimitLabel) || loggingHistoryLimitLabel.textContent;
       loggingHistoryLimitLabel.textContent = historyLabel;
     }
     if (loggingHistoryLimitHelp) {
-      var _texts$en242;
-      var historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
+      var _texts$en227;
+      var historyHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en227 = texts.en) === null || _texts$en227 === void 0 ? void 0 : _texts$en227.loggingHistoryLimitHelp) || loggingHistoryLimitHelp.textContent;
       loggingHistoryLimitHelp.textContent = historyHelp;
     }
     if (loggingHistoryLimit) {
-      var _texts$en243, _texts$en244;
-      var limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.loggingHistoryLimitHelp) || '';
+      var _texts$en228, _texts$en229;
+      var limitHelp = texts[lang].loggingHistoryLimitHelp || ((_texts$en228 = texts.en) === null || _texts$en228 === void 0 ? void 0 : _texts$en228.loggingHistoryLimitHelp) || '';
       if (limitHelp) {
         loggingHistoryLimit.setAttribute('data-help', limitHelp);
       } else {
         loggingHistoryLimit.removeAttribute('data-help');
       }
-      var limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.loggingHistoryLimitAria) || '';
+      var limitAria = texts[lang].loggingHistoryLimitAria || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.loggingHistoryLimitAria) || '';
       if (limitAria) {
         loggingHistoryLimit.setAttribute('aria-label', limitAria);
       }
     }
     if (loggingConsoleOutputLabel) {
-      var _texts$en245;
-      var consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
+      var _texts$en230;
+      var consoleLabel = texts[lang].loggingConsoleOutputLabel || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.loggingConsoleOutputLabel) || loggingConsoleOutputLabel.textContent;
       loggingConsoleOutputLabel.textContent = consoleLabel;
     }
     if (loggingConsoleOutputHelp) {
-      var _texts$en246;
-      var consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
+      var _texts$en231;
+      var consoleHelp = texts[lang].loggingConsoleOutputHelp || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231.loggingConsoleOutputHelp) || loggingConsoleOutputHelp.textContent;
       loggingConsoleOutputHelp.textContent = consoleHelp;
     }
     if (loggingCaptureConsoleLabel) {
-      var _texts$en247;
-      var consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
+      var _texts$en232;
+      var consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232.loggingCaptureConsoleLabel) || loggingCaptureConsoleLabel.textContent;
       loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
     }
     if (loggingCaptureConsoleHelp) {
-      var _texts$en248;
-      var consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
+      var _texts$en233;
+      var consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.loggingCaptureConsoleHelp) || loggingCaptureConsoleHelp.textContent;
       loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
     }
     if (loggingCaptureErrorsLabel) {
-      var _texts$en249;
-      var captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
+      var _texts$en234;
+      var captureLabel = texts[lang].loggingCaptureErrorsLabel || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.loggingCaptureErrorsLabel) || loggingCaptureErrorsLabel.textContent;
       loggingCaptureErrorsLabel.textContent = captureLabel;
     }
     if (loggingCaptureErrorsHelp) {
-      var _texts$en250;
-      var captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
+      var _texts$en235;
+      var captureHelp = texts[lang].loggingCaptureErrorsHelp || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.loggingCaptureErrorsHelp) || loggingCaptureErrorsHelp.textContent;
       loggingCaptureErrorsHelp.textContent = captureHelp;
     }
     if (loggingPersistSessionLabel) {
-      var _texts$en251;
-      var persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
+      var _texts$en236;
+      var persistLabel = texts[lang].loggingPersistSessionLabel || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.loggingPersistSessionLabel) || loggingPersistSessionLabel.textContent;
       loggingPersistSessionLabel.textContent = persistLabel;
     }
     if (loggingPersistSessionHelp) {
-      var _texts$en252;
-      var persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
+      var _texts$en237;
+      var persistHelp = texts[lang].loggingPersistSessionHelp || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.loggingPersistSessionHelp) || loggingPersistSessionHelp.textContent;
       loggingPersistSessionHelp.textContent = persistHelp;
     }
     if (loggingStatus) {
-      var _texts$en253;
-      var statusText = texts[lang].loggingStatusIdle || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.loggingStatusIdle) || '';
+      var _texts$en238;
+      var statusText = texts[lang].loggingStatusIdle || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.loggingStatusIdle) || '';
       loggingStatus.textContent = statusText;
       if (statusText) {
         loggingStatus.setAttribute('data-help', statusText);
       }
     }
     if (loggingEmpty) {
-      var _texts$en254;
-      var _emptyText = texts[lang].loggingEmptyState || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.loggingEmptyState) || loggingEmpty.textContent;
+      var _texts$en239;
+      var _emptyText = texts[lang].loggingEmptyState || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.loggingEmptyState) || loggingEmpty.textContent;
       loggingEmpty.textContent = _emptyText;
       if (_emptyText) {
         loggingEmpty.setAttribute('data-help', _emptyText);
       }
     }
     if (loggingUnavailable) {
-      var _texts$en255;
-      loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.loggingUnavailable) || loggingUnavailable.textContent;
+      var _texts$en240;
+      loggingUnavailable.textContent = texts[lang].loggingUnavailable || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.loggingUnavailable) || loggingUnavailable.textContent;
     }
     var showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
     if (showAutoBackupsLabel) {
@@ -9139,8 +10294,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
     }
     if (backupDiffNotesEl) {
-      var _placeholder2 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
-      backupDiffNotesEl.placeholder = _placeholder2;
+      var _placeholder4 = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
+      backupDiffNotesEl.placeholder = _placeholder4;
     }
     if (backupDiffExportButtonEl) {
       var exportLabel = texts[lang].versionCompareExport || 'Export log';
@@ -9209,16 +10364,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
     }
     if (restoreRehearsalRuleHeading) {
-      var _texts$en256;
-      restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
+      var _texts$en241;
+      restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.restoreRehearsalRuleHeading) || restoreRehearsalRuleHeading.textContent;
     }
     if (restoreRehearsalRuleIntro) {
-      var _texts$en257;
-      restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
+      var _texts$en242;
+      restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.restoreRehearsalRuleIntro) || restoreRehearsalRuleIntro.textContent;
     }
     if (restoreRehearsalRuleEmpty) {
-      var _texts$en258;
-      restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
+      var _texts$en243;
+      restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.restoreRehearsalRuleEmpty) || restoreRehearsalRuleEmpty.textContent;
     }
     if (restoreRehearsalTableCaption) {
       restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
@@ -9243,18 +10398,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
     }
     if (restoreRehearsalProceedButton) {
-      var _texts$en259, _texts$en260;
-      var proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.restoreRehearsalProceed) || 'Continue rehearsal restore';
-      var proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.restoreRehearsalProceedHelp) || proceedLabel;
+      var _texts$en244, _texts$en245;
+      var proceedLabel = texts[lang].restoreRehearsalProceed || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.restoreRehearsalProceed) || 'Continue rehearsal restore';
+      var proceedHelp = texts[lang].restoreRehearsalProceedHelp || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.restoreRehearsalProceedHelp) || proceedLabel;
       setButtonLabelWithIcon(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
       restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
       restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
       restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
     }
     if (restoreRehearsalAbortButton) {
-      var _texts$en261, _texts$en262;
-      var abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.restoreRehearsalAbort) || 'Abort rehearsal';
-      var abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.restoreRehearsalAbortHelp) || abortLabel;
+      var _texts$en246, _texts$en247;
+      var abortLabel = texts[lang].restoreRehearsalAbort || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.restoreRehearsalAbort) || 'Abort rehearsal';
+      var abortHelp = texts[lang].restoreRehearsalAbortHelp || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.restoreRehearsalAbortHelp) || abortLabel;
       setButtonLabelWithIcon(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
       restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
       restoreRehearsalAbortButton.setAttribute('title', abortHelp);
@@ -9283,17 +10438,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       supportLink.setAttribute("title", supportHelp);
     }
     if (settingsSave) {
-      var _texts$en263;
-      var _label61 = texts[lang].saveSettings || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.saveSettings) || settingsSave.textContent;
-      setButtonLabelWithIcon(settingsSave, _label61);
-      var saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label61;
+      var _texts$en248;
+      var _label63 = texts[lang].saveSettings || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.saveSettings) || settingsSave.textContent;
+      setButtonLabelWithIcon(settingsSave, _label63);
+      var saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label63;
       settingsSave.setAttribute("data-help", saveHelp);
       settingsSave.setAttribute("title", saveHelp);
       settingsSave.setAttribute("aria-label", saveHelp);
     }
     if (settingsCancel) {
-      var _texts$en264;
-      var _cancelLabel = texts[lang].cancelSettings || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.cancelSettings) || settingsCancel.textContent;
+      var _texts$en249;
+      var _cancelLabel = texts[lang].cancelSettings || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.cancelSettings) || settingsCancel.textContent;
       setButtonLabelWithIcon(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
       var cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
       settingsCancel.setAttribute("data-help", cancelHelp);
@@ -9302,9 +10457,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var menuToggle = document.getElementById("menuToggle");
     if (menuToggle) {
-      var _texts$en265, _texts$en266;
-      var menuLabel = texts[lang].menuToggleLabel || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
-      var _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
+      var _texts$en250, _texts$en251;
+      var menuLabel = texts[lang].menuToggleLabel || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
+      var _closeLabel2 = texts[lang].sideMenuClose || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.sideMenuClose) || menuToggle.dataset.closeLabel || "Close menu";
       var closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel2;
       menuToggle.setAttribute("title", menuLabel);
       menuToggle.setAttribute("aria-label", menuLabel);
@@ -9326,8 +10481,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var sideMenuTitle = document.getElementById("sideMenuTitle");
     if (sideMenuTitle) {
-      var _texts$en267;
-      var titleLabel = texts[lang].sideMenuTitle || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.sideMenuTitle) || sideMenuTitle.textContent;
+      var _texts$en252;
+      var titleLabel = texts[lang].sideMenuTitle || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.sideMenuTitle) || sideMenuTitle.textContent;
       sideMenuTitle.textContent = titleLabel;
       var titleHelp = texts[lang].sideMenuTitleHelp || texts[lang].sideMenuHelp || titleLabel;
       sideMenuTitle.setAttribute("data-help", titleHelp);
@@ -9335,8 +10490,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var closeMenuButton = document.getElementById("closeMenuButton");
     var closeMenuLabel = document.getElementById("closeMenuLabel");
     if (closeMenuButton) {
-      var _texts$en268;
-      var _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
+      var _texts$en253;
+      var _closeLabel3 = texts[lang].sideMenuClose || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.sideMenuClose) || closeMenuButton.getAttribute("aria-label") || "Close menu";
       var _closeHelp = texts[lang].sideMenuCloseHelp || _closeLabel3;
       closeMenuButton.setAttribute("aria-label", _closeLabel3);
       closeMenuButton.setAttribute("title", _closeHelp);
@@ -9404,16 +10559,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (helpNoResultsSuggestionsIntro) {
         applyTextContent(helpNoResultsSuggestionsIntro, "helpNoResultsSuggestionsIntro", "Try these steps to get back on track while keeping your data safe:");
       }
-    var quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
-    if (quickStartHeading) {
-      var fallback = quickStartHeading.textContent || "Quick start checklist";
-      applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
-    }
-    var onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
-    if (onboardingCopyElement) {
-      var fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
-      applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
-    }
+      var quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
+      if (quickStartHeading) {
+        var fallback = quickStartHeading.textContent || "Quick start checklist";
+        applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
+      }
+      var onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
+      if (onboardingCopyElement) {
+        var fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
+        applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
+      }
       var dataSafetyHeading = doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
       if (dataSafetyHeading) {
         var _fallback = dataSafetyHeading.textContent || "Protect your work";
@@ -9433,14 +10588,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           target: "#settingsButton"
         });
       }, function () {
-        return createHelpLink("#backupHeading", resolveLocaleString("backupHeading") || "Backup & Restore", {
-          target: "#backupHeading",
+        return createHelpLink("#dataHeading", resolveLocaleString("dataHeading") || "Data & Storage", {
+          target: "#dataHeading",
           highlight: "#settingsDialog"
         });
       }, function () {
-        return createHelpLink("#backupSettings", resolveLocaleString("backupSettings") || "Backup", {
-          target: "#backupSettings",
-          highlight: "#settingsDialog"
+        return createHelpLink("#storageBackupNow", resolveLocaleString("storageBackupNow") || "Download full backup", {
+          target: "#storageBackupNow",
+          highlight: "#storageActions"
+        });
+      }, function () {
+        return createHelpLink("#storageActionsHeading", resolveLocaleString("storageActionsHeading") || "Quick safeguards", {
+          target: "#storageActionsHeading",
+          highlight: "#storageActions",
+          isButton: false
         });
       }]);
       applySuggestionTemplate(helpDataAuditStep2, "helpDataAuditStep2", [function () {
@@ -9561,16 +10722,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var fallbackProjectForm = texts.en && texts.en.projectForm ? texts.en.projectForm : {};
     var projectFormTexts = texts[lang].projectForm || fallbackProjectForm;
     if (projectFormTexts) {
+      var _texts$en254, _texts$lang4;
+      resolveContactsDomRefs();
       var setLabelText = function setLabelText(element, key) {
         if (!element) return;
         var value = projectFormTexts[key] || fallbackProjectForm[key];
         if (value) element.textContent = value;
       };
-    setLabelText(projectDialogHeading, 'heading');
-    setLabelText(projectNameLabel, 'projectName');
-    setLabelText(productionCompanyLabel, 'productionCompany');
-    setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
-    setLabelText(rentalHouseLabel, 'rentalHouse');
+      setLabelText(projectDialogHeading, 'heading');
+      setLabelText(projectNameLabel, 'projectName');
+      setLabelText(productionCompanyLabel, 'productionCompany');
+      setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
+      setLabelText(rentalHouseLabel, 'rentalHouse');
       setLabelText(crewHeadingElem, 'crewHeading');
       if (crewLabelElem) {
         var crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
@@ -9580,6 +10743,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       setLabelText(prepLabelElem, 'prepLabel');
       setLabelText(shootLabelElem, 'shootLabel');
+      setLabelText(returnLabelElem, 'returnLabel');
       setLabelText(deliveryResolutionLabel, 'deliveryResolution');
       setLabelText(recordingResolutionLabel, 'recordingResolution');
       setLabelText(sensorModeLabel, 'sensorMode');
@@ -9644,6 +10808,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
       };
       var crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
+      var fallbackContacts = ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.contacts) || {};
+      var contactsTexts = ((_texts$lang4 = texts[lang]) === null || _texts$lang4 === void 0 ? void 0 : _texts$lang4.contacts) || fallbackContacts;
+      if (contactsDialogHeading && contactsTexts.heading) {
+        contactsDialogHeading.textContent = contactsTexts.heading;
+      }
+      if (contactsDialogDescription && contactsTexts.description) {
+        contactsDialogDescription.textContent = contactsTexts.description;
+      }
+      if (contactsAddButtonLabel && contactsTexts.addContactButton) {
+        contactsAddButtonLabel.textContent = contactsTexts.addContactButton;
+      }
+      if (contactsAddButton && contactsTexts.addContactButton) {
+        contactsAddButton.setAttribute('aria-label', contactsTexts.addContactButton);
+        contactsAddButton.setAttribute('data-help', contactsTexts.addContactButton);
+      }
+      if (contactsImportButtonLabel && contactsTexts.importButton) {
+        contactsImportButtonLabel.textContent = contactsTexts.importButton;
+      }
+      if (contactsImportButton && contactsTexts.importButton) {
+        contactsImportButton.setAttribute('aria-label', contactsTexts.importButton);
+        contactsImportButton.setAttribute('data-help', contactsTexts.importButton);
+      }
+      if (contactsImportHint && contactsTexts.importHint) {
+        contactsImportHint.textContent = contactsTexts.importHint;
+      }
+      if (contactsEmptyState && contactsTexts.emptyState) {
+        contactsEmptyState.textContent = contactsTexts.emptyState;
+      }
+      if (contactsCloseButton && contactsTexts.close) {
+        contactsCloseButton.textContent = contactsTexts.close;
+      }
+      renderContactsList();
       document.querySelectorAll('#crewContainer .person-row').forEach(function (row) {
         var roleSelect = row.querySelector('select');
         if (roleSelect) {
@@ -9660,6 +10856,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
         var emailInput = row.querySelector('.person-email');
         if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+        var contactSelect = row.querySelector('.person-contact-select');
+        if (contactSelect) {
+          setContactSelectOptions(contactSelect, contactSelect.value);
+        }
+        var saveButton = row.querySelector('.person-save-contact');
+        if (saveButton) {
+          setButtonLabelWithIcon(saveButton, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+        }
+        var manageButton = row.querySelector('.person-manage-contacts');
+        if (manageButton) {
+          setButtonLabelWithIcon(manageButton, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+        }
+        updateRowLinkedBadge(row);
       });
       var stripTrailingPunctuation = function stripTrailingPunctuation(value) {
         return typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value;
@@ -9667,31 +10876,38 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
       if (addPersonBtn) {
         var crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
-        var _label62 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
-        setButtonLabelWithIcon(addPersonBtn, _label62, ICON_GLYPHS.add);
-        addPersonBtn.setAttribute('aria-label', _label62);
-        addPersonBtn.setAttribute('data-help', _label62);
+        var _label64 = "".concat(addEntryLabel, " ").concat(crewLabel).trim();
+        setButtonLabelWithIcon(addPersonBtn, _label64, ICON_GLYPHS.add);
+        addPersonBtn.setAttribute('aria-label', _label64);
+        addPersonBtn.setAttribute('data-help', _label64);
       }
       if (addPrepBtn) {
         var prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
-        var _label63 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
-        setButtonLabelWithIcon(addPrepBtn, _label63, ICON_GLYPHS.add);
-        addPrepBtn.setAttribute('aria-label', _label63);
-        addPrepBtn.setAttribute('data-help', _label63);
+        var _label65 = "".concat(addEntryLabel, " ").concat(prepLabel).trim();
+        setButtonLabelWithIcon(addPrepBtn, _label65, ICON_GLYPHS.add);
+        addPrepBtn.setAttribute('aria-label', _label65);
+        addPrepBtn.setAttribute('data-help', _label65);
       }
       if (addShootBtn) {
         var shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
-        var _label64 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
-        setButtonLabelWithIcon(addShootBtn, _label64, ICON_GLYPHS.add);
-        addShootBtn.setAttribute('aria-label', _label64);
-        addShootBtn.setAttribute('data-help', _label64);
+        var _label66 = "".concat(addEntryLabel, " ").concat(shootLabel).trim();
+        setButtonLabelWithIcon(addShootBtn, _label66, ICON_GLYPHS.add);
+        addShootBtn.setAttribute('aria-label', _label66);
+        addShootBtn.setAttribute('data-help', _label66);
+      }
+      if (addReturnBtn) {
+        var returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
+        var _label67 = "".concat(addEntryLabel, " ").concat(returnLabel).trim();
+        setButtonLabelWithIcon(addReturnBtn, _label67, ICON_GLYPHS.add);
+        addReturnBtn.setAttribute('aria-label', _label67);
+        addReturnBtn.setAttribute('data-help', _label67);
       }
       if (addStorageNeedBtn) {
         var storageLabelText = stripTrailingPunctuation(projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs');
-        var _label65 = "".concat(addEntryLabel, " ").concat(storageLabelText).trim();
-        setButtonLabelWithIcon(addStorageNeedBtn, _label65, ICON_GLYPHS.add);
-        addStorageNeedBtn.setAttribute('aria-label', _label65);
-        addStorageNeedBtn.setAttribute('data-help', _label65);
+        var _label68 = "".concat(addEntryLabel, " ").concat(storageLabelText).trim();
+        setButtonLabelWithIcon(addStorageNeedBtn, _label68, ICON_GLYPHS.add);
+        addStorageNeedBtn.setAttribute('aria-label', _label68);
+        addStorageNeedBtn.setAttribute('data-help', _label68);
       }
     }
     if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
@@ -9742,16 +10958,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
   var viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
   var viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
-var projectDialogHeading = document.getElementById("projectDialogHeading");
-var projectDialogCloseBtn = document.getElementById("projectDialogClose");
-var projectNameLabel = document.getElementById("projectNameLabel");
-var productionCompanyLabel = document.getElementById("productionCompanyLabel");
-var productionCompanyAddressLabel = document.getElementById("productionCompanyAddressLabel");
-var rentalHouseLabel = document.getElementById("rentalHouseLabel");
+  var projectDialogHeading = document.getElementById("projectDialogHeading");
+  var projectDialogCloseBtn = document.getElementById("projectDialogClose");
+  var projectNameLabel = document.getElementById("projectNameLabel");
+  var productionCompanyLabel = document.getElementById("productionCompanyLabel");
+  var productionCompanyAddressLabel = document.getElementById("productionCompanyAddressLabel");
+  var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var crewHeadingElem = document.getElementById("crewHeading");
   var crewLabelElem = document.getElementById("crewLabel");
   var prepLabelElem = document.getElementById("prepLabel");
   var shootLabelElem = document.getElementById("shootLabel");
+  var returnLabelElem = document.getElementById("returnLabel");
   var deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
   var deliveryResolutionSelect = document.getElementById("deliveryResolution");
   var recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
@@ -9792,10 +11009,45 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var addPrepBtn = document.getElementById("addPrepBtn");
   var shootContainer = document.getElementById("shootContainer");
   var addShootBtn = document.getElementById("addShootBtn");
+  var returnContainer = document.getElementById("returnContainer");
+  var addReturnBtn = document.getElementById("addReturnBtn");
   var storageNeedsContainer = document.getElementById("storageNeedsContainer");
   var addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
+  var contactsDialog = null;
+  var contactsForm = null;
+  var contactsDialogHeading = null;
+  var contactsDialogDescription = null;
+  var contactsAddButton = null;
+  var contactsAddButtonLabel = null;
+  var contactsImportButton = null;
+  var contactsImportButtonLabel = null;
+  var contactsImportInput = null;
+  var contactsImportHint = null;
+  var contactsList = null;
+  var contactsEmptyState = null;
+  var contactsCloseButton = null;
+  var contactsAnnouncement = null;
+  var openContactsBtn = null;
+  function resolveContactsDomRefs() {
+    if (typeof document === 'undefined') return;
+    contactsDialog = contactsDialog || document.getElementById('contactsDialog');
+    contactsForm = contactsForm || document.getElementById('contactsForm');
+    contactsDialogHeading = contactsDialogHeading || document.getElementById('contactsDialogHeading');
+    contactsDialogDescription = contactsDialogDescription || document.getElementById('contactsDialogDescription');
+    contactsAddButton = contactsAddButton || document.getElementById('contactsAddButton');
+    contactsAddButtonLabel = contactsAddButtonLabel || document.getElementById('contactsAddButtonLabel');
+    contactsImportButton = contactsImportButton || document.getElementById('contactsImportButton');
+    contactsImportButtonLabel = contactsImportButtonLabel || document.getElementById('contactsImportButtonLabel');
+    contactsImportInput = contactsImportInput || document.getElementById('contactsImportInput');
+    contactsImportHint = contactsImportHint || document.getElementById('contactsImportHint');
+    contactsList = contactsList || document.getElementById('contactsList');
+    contactsEmptyState = contactsEmptyState || document.getElementById('contactsEmptyState');
+    contactsCloseButton = contactsCloseButton || document.getElementById('contactsCloseButton');
+    contactsAnnouncement = contactsAnnouncement || document.getElementById('contactsAnnouncement');
+    openContactsBtn = openContactsBtn || document.getElementById('openContactsBtn');
+  }
   var monitoringConfigurationUserChanged = false;
-    var crewRoles = ['Producer', 'Production Manager', 'Director', 'Assistant Director', 'Production Assistant', 'DoP', 'Camera Operator', 'B-Camera Operator', 'Steadicam Operator', 'Drone Operator', '1st AC', '2nd AC', 'DIT', 'Video Operator', 'Key Gaffer', 'Gaffer', 'Best Boy Electric', 'Electrician', 'Rigging Gaffer', 'Key Grip', 'Best Boy Grip', 'Grip', 'Dolly Grip', 'Rigging Grip'];
+  var crewRoles = ['Producer', 'Production Manager', 'Director', 'Assistant Director', 'Production Assistant', 'DoP', 'Camera Operator', 'B-Camera Operator', 'Steadicam Operator', 'Drone Operator', '1st AC', '2nd AC', 'DIT', 'Video Operator', 'Key Gaffer', 'Gaffer', 'Best Boy Electric', 'Electrician', 'Rigging Gaffer', 'Key Grip', 'Best Boy Grip', 'Grip', 'Dolly Grip', 'Rigging Grip'];
   var HORSE_ICON_SVG = "\n  <svg viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z\"\n      fill=\"#805333\"\n    />\n    <path\n      d=\"m30.18 42.82c1.073 2.7 2.6 9.993 3.357 13.8a2 2 0 0 1-1.964 2.38h-28.573a2 2 0 0 1-2-2v-18c0-2.55 10.03-22.11 23.99-23.87Z\"\n      fill=\"#a56a43\"\n    />\n    <path\n      d=\"m55.67 48.46-6.34 2.97a6 6 0 0 1-7.98-2.88l-.25-.54-.76-1.6a4.956 4.956 0 0 0-4.68-2.87c-.22.01-.44.02-.66.02a16.019 16.019 0 0 1-8.28-29.66c-1.81-2.97-3.45-8.03 2.03-12.49a2.1 2.1 0 0 1 2.5 0c4.23 3.45 4.21 7.25 3.16 10.17a16 16 0 0 1 15.91 11.36l5.31 11.31 2.92 6.22a6.008 6.008 0 0 1-2.88 7.99Z\"\n      fill=\"#cb8252\"\n    />\n    <circle cx=\"42\" cy=\"26\" r=\"3\" fill=\"#2c2f38\" />\n    <circle cx=\"54\" cy=\"43\" r=\"1\" fill=\"#805333\" />\n    <path\n      d=\"m58.55 40.47-2.92-6.22-14.53 13.76.25.54a6 6 0 0 0 7.98 2.88l6.34-2.97a6.008 6.008 0 0 0 2.88-7.99Zm-4.55 3.53a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z\"\n      fill=\"#cf976a\"\n    />\n    <circle cx=\"41\" cy=\"25\" r=\"1.25\" fill=\"#ecf0f1\" />\n  </svg>\n".trim();
   var PINK_MODE_ICON_FILES = Object.freeze(['src/illustrations/unicorns/unicorn.svg', 'src/illustrations/unicorns/unicorn-2.svg', 'src/illustrations/unicorns/celebrate.svg', 'src/illustrations/unicorns/sunglasses.svg', 'src/illustrations/unicorns/toy.svg']);
   function createPinkModeIconImageMarkup(path) {
@@ -9888,89 +11140,84 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var pinkModeBodyReadyQueue = [];
   var pinkModeBodyReadyScheduled = false;
   var pinkModeBodyReadyTimerId = null;
-
   function flushPinkModeBodyReadyQueue() {
     if (!pinkModeBodyReadyQueue.length) {
       return;
     }
-
     var callbacks = pinkModeBodyReadyQueue.splice(0, pinkModeBodyReadyQueue.length);
-    for (var index = 0; index < callbacks.length; index += 1) {
-      var callback = callbacks[index];
-      if (typeof callback !== 'function') {
-        continue;
+    var _iterator3 = _createForOfIteratorHelper(callbacks),
+      _step3;
+    try {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var callback = _step3.value;
+        if (typeof callback !== 'function') {
+          continue;
+        }
+        try {
+          callback();
+        } catch (error) {
+          console.warn('Could not run deferred pink mode callback', error);
+        }
       }
-      try {
-        callback();
-      } catch (error) {
-        console.warn('Could not run deferred pink mode callback', error);
-      }
+    } catch (err) {
+      _iterator3.e(err);
+    } finally {
+      _iterator3.f();
     }
   }
-
   function schedulePinkModeBodyReadyCheck() {
     if (pinkModeBodyReadyTimerId) {
       return;
     }
-
     pinkModeBodyReadyTimerId = setTimeout(function () {
       pinkModeBodyReadyTimerId = null;
-
       if (typeof document === 'undefined' || !document) {
         pinkModeBodyReadyScheduled = false;
         pinkModeBodyReadyQueue.length = 0;
         return;
       }
-
       if (document.body) {
         pinkModeBodyReadyScheduled = false;
         flushPinkModeBodyReadyQueue();
         return;
       }
-
       if (document.readyState === 'loading') {
-        var resume = function resume() {
-          document.removeEventListener('DOMContentLoaded', resume);
+        var _resume = function resume() {
+          document.removeEventListener('DOMContentLoaded', _resume);
           schedulePinkModeBodyReadyCheck();
         };
-
         try {
-          document.addEventListener('DOMContentLoaded', resume, { once: true });
+          document.addEventListener('DOMContentLoaded', _resume, {
+            once: true
+          });
         } catch (listenerError) {
           void listenerError;
-          document.addEventListener('DOMContentLoaded', resume);
+          document.addEventListener('DOMContentLoaded', _resume);
         }
         return;
       }
-
       schedulePinkModeBodyReadyCheck();
     }, 16);
   }
-
   function whenPinkModeBodyReady(callback) {
     if (typeof callback !== 'function' || typeof document === 'undefined') {
       return false;
     }
-
     if (document.body) {
       callback();
       return true;
     }
-
-    if (pinkModeBodyReadyQueue.indexOf(callback) === -1) {
+    if (!pinkModeBodyReadyQueue.includes(callback)) {
       pinkModeBodyReadyQueue.push(callback);
     }
-
     if (!pinkModeBodyReadyScheduled) {
       pinkModeBodyReadyScheduled = true;
       schedulePinkModeBodyReadyCheck();
     } else if (!pinkModeBodyReadyTimerId) {
       schedulePinkModeBodyReadyCheck();
     }
-
     return true;
   }
-
   var pinkModeAnimatedIconPressListenerCleanup = null;
   var pinkModeAnimatedIconLastTouchTime = 0;
   var pinkModeReduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -10167,11 +11414,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return Object.freeze([]);
     }
     var regions = [];
-    var _iterator3 = _createForOfIteratorHelper(elements),
-      _step3;
+    var _iterator4 = _createForOfIteratorHelper(elements),
+      _step4;
     try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var element = _step3.value;
+      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+        var element = _step4.value;
         if (!element) {
           continue;
         }
@@ -10207,9 +11454,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         });
       }
     } catch (err) {
-      _iterator3.e(err);
+      _iterator4.e(err);
     } finally {
-      _iterator3.f();
+      _iterator4.f();
     }
     return Object.freeze(regions);
   }
@@ -10218,11 +11465,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return Object.freeze([]);
     }
     var regions = [];
-    var _iterator4 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-      _step4;
+    var _iterator5 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+      _step5;
     try {
-      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-        var instance = _step4.value;
+      for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+        var instance = _step5.value;
         if (!instance || !instance.container) {
           continue;
         }
@@ -10262,9 +11509,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         });
       }
     } catch (err) {
-      _iterator4.e(err);
+      _iterator5.e(err);
     } finally {
-      _iterator4.f();
+      _iterator5.f();
     }
     return Object.freeze(regions);
   }
@@ -10449,11 +11696,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       bottom: baseY + size / 2
     };
     if (Array.isArray(avoidRegions) && avoidRegions.length) {
-      var _iterator5 = _createForOfIteratorHelper(avoidRegions),
-        _step5;
+      var _iterator6 = _createForOfIteratorHelper(avoidRegions),
+        _step6;
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var region = _step5.value;
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var region = _step6.value;
           if (!region) {
             continue;
           }
@@ -10463,16 +11710,16 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
           }
         }
       } catch (err) {
-        _iterator5.e(err);
+        _iterator6.e(err);
       } finally {
-        _iterator5.f();
+        _iterator6.f();
       }
     }
-    var _iterator6 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
-      _step6;
+    var _iterator7 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
+      _step7;
     try {
-      for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-        var point = _step6.value;
+      for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+        var point = _step7.value;
         var sampleX = baseX + point.x * size;
         var sampleY = baseY + point.y * size;
         if (viewportWidth !== null && (sampleX < 0 || sampleX > viewportWidth)) {
@@ -10482,11 +11729,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
           continue;
         }
         var elementsAtPoint = typeof document.elementsFromPoint === 'function' ? document.elementsFromPoint(sampleX, sampleY) : [document.elementFromPoint(sampleX, sampleY)].filter(Boolean);
-        var _iterator7 = _createForOfIteratorHelper(elementsAtPoint),
-          _step7;
+        var _iterator8 = _createForOfIteratorHelper(elementsAtPoint),
+          _step8;
         try {
-          for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-            var element = _step7.value;
+          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+            var element = _step8.value;
             if (!element) {
               continue;
             }
@@ -10501,33 +11748,33 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
             }
           }
         } catch (err) {
-          _iterator7.e(err);
+          _iterator8.e(err);
         } finally {
-          _iterator7.f();
+          _iterator8.f();
         }
       }
     } catch (err) {
-      _iterator6.e(err);
+      _iterator7.e(err);
     } finally {
-      _iterator6.f();
+      _iterator7.f();
     }
     return true;
   }
-  function findPinkModeAnimationPlacement(_ref35) {
-    var layer = _ref35.layer,
-      hostRect = _ref35.hostRect,
-      hostTop = _ref35.hostTop,
-      visibleTop = _ref35.visibleTop,
-      visibleBottom = _ref35.visibleBottom,
-      horizontalPadding = _ref35.horizontalPadding,
-      verticalPadding = _ref35.verticalPadding,
-      hostWidth = _ref35.hostWidth,
-      size = _ref35.size,
-      avoidRegions = _ref35.avoidRegions,
-      _ref35$leftMarginExte = _ref35.leftMarginExtension,
-      leftMarginExtension = _ref35$leftMarginExte === void 0 ? 0 : _ref35$leftMarginExte,
-      _ref35$rightMarginExt = _ref35.rightMarginExtension,
-      rightMarginExtension = _ref35$rightMarginExt === void 0 ? 0 : _ref35$rightMarginExt;
+  function findPinkModeAnimationPlacement(_ref36) {
+    var layer = _ref36.layer,
+      hostRect = _ref36.hostRect,
+      hostTop = _ref36.hostTop,
+      visibleTop = _ref36.visibleTop,
+      visibleBottom = _ref36.visibleBottom,
+      horizontalPadding = _ref36.horizontalPadding,
+      verticalPadding = _ref36.verticalPadding,
+      hostWidth = _ref36.hostWidth,
+      size = _ref36.size,
+      avoidRegions = _ref36.avoidRegions,
+      _ref36$leftMarginExte = _ref36.leftMarginExtension,
+      leftMarginExtension = _ref36$leftMarginExte === void 0 ? 0 : _ref36$leftMarginExte,
+      _ref36$rightMarginExt = _ref36.rightMarginExtension,
+      rightMarginExtension = _ref36$rightMarginExt === void 0 ? 0 : _ref36$rightMarginExt;
     var minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
     var maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
     var marginLeft = Math.max(0, leftMarginExtension);
@@ -10620,11 +11867,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return false;
     }
     var activeTemplateNames = new Set();
-    var _iterator8 = _createForOfIteratorHelper(pinkModeIconRainInstances),
-      _step8;
+    var _iterator9 = _createForOfIteratorHelper(pinkModeIconRainInstances),
+      _step9;
     try {
-      for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-        var _instance = _step8.value;
+      for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+        var _instance = _step9.value;
         if (!_instance) continue;
         var templateName = _instance.templateName;
         if (typeof templateName === 'string' && templateName) {
@@ -10632,15 +11879,15 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         }
       }
     } catch (err) {
-      _iterator8.e(err);
+      _iterator9.e(err);
     } finally {
-      _iterator8.f();
+      _iterator9.f();
     }
-    var _iterator9 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-      _step9;
+    var _iterator0 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+      _step0;
     try {
-      for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-        var _instance2 = _step9.value;
+      for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+        var _instance2 = _step0.value;
         if (!_instance2) continue;
         var _templateName = _instance2.templateName;
         if (typeof _templateName === 'string' && _templateName) {
@@ -10648,9 +11895,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         }
       }
     } catch (err) {
-      _iterator9.e(err);
+      _iterator0.e(err);
     } finally {
-      _iterator9.f();
+      _iterator0.f();
     }
     var availableTemplates = sanitizedTemplates.filter(function (template) {
       if (!template || typeof template.name !== 'string') {
@@ -10819,11 +12066,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return false;
     }
     var activeTemplateNames = new Set();
-    var _iterator0 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-      _step0;
+    var _iterator1 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+      _step1;
     try {
-      for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-        var _instance3 = _step0.value;
+      for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+        var _instance3 = _step1.value;
         if (!_instance3) {
           continue;
         }
@@ -10833,9 +12080,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         }
       }
     } catch (err) {
-      _iterator0.e(err);
+      _iterator1.e(err);
     } finally {
-      _iterator0.f();
+      _iterator1.f();
     }
     var availableTemplates = sanitizedTemplates.filter(function (template) {
       if (!template || typeof template.name !== 'string') {
@@ -11124,6 +12371,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     rentalHouse: RENTAL_HOUSE_ICON,
     crew: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
     prepDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
+    returnDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
     shootingDays: iconGlyph("\uE311", ICON_FONT_KEYS.UICONS),
     deliveryResolution: iconGlyph("\uEF69", ICON_FONT_KEYS.UICONS),
     recordingResolution: ICON_GLYPHS.camera,
@@ -11181,12 +12429,27 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       container.appendChild(box);
     });
   }
-  function setButtonLabelWithIcon(button, label) {
+  try {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.updateSelectIconBoxes !== 'function') {
+      globalThis.updateSelectIconBoxes = updateSelectIconBoxes;
+    }
+  } catch (assignSelectIconError) {
+    console.warn('Failed to expose updateSelectIconBoxes globally', assignSelectIconError);
+  }
+  setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label) {
     var glyph = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ICON_GLYPHS.save;
     if (!button) return;
-    var safeLabel = typeof label === 'string' ? escapeHtml(label) : '';
-    var iconHtml = iconMarkup(glyph, 'btn-icon');
+    var safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+    var iconHtml = resolveButtonIconMarkup(glyph);
     button.innerHTML = "".concat(iconHtml).concat(safeLabel);
+  };
+  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    try {
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+    } catch (setButtonLabelAssignError) {
+      CORE_GLOBAL_SCOPE.setButtonLabelWithIcon = setButtonLabelWithIcon;
+      void setButtonLabelAssignError;
+    }
   }
   function getLocalizedPathText(path) {
     var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -11216,22 +12479,22 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   function configureIconOnlyButton(button, glyph) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!button) return;
-    var _ref36 = options || {},
-      _ref36$contextPaths = _ref36.contextPaths,
-      contextPaths = _ref36$contextPaths === void 0 ? [] : _ref36$contextPaths,
-      _ref36$fallbackContex = _ref36.fallbackContext,
-      fallbackContext = _ref36$fallbackContex === void 0 ? '' : _ref36$fallbackContex,
-      _ref36$actionKey = _ref36.actionKey,
-      actionKey = _ref36$actionKey === void 0 ? 'addEntry' : _ref36$actionKey;
+    var _ref37 = options || {},
+      _ref37$contextPaths = _ref37.contextPaths,
+      contextPaths = _ref37$contextPaths === void 0 ? [] : _ref37$contextPaths,
+      _ref37$fallbackContex = _ref37.fallbackContext,
+      fallbackContext = _ref37$fallbackContex === void 0 ? '' : _ref37$fallbackContex,
+      _ref37$actionKey = _ref37.actionKey,
+      actionKey = _ref37$actionKey === void 0 ? 'addEntry' : _ref37$actionKey;
     setButtonLabelWithIcon(button, '', glyph || ICON_GLYPHS.add);
     var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
     var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
     var contextLabel = '';
-    var _iterator1 = _createForOfIteratorHelper(paths),
-      _step1;
+    var _iterator10 = _createForOfIteratorHelper(paths),
+      _step10;
     try {
-      for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-        var path = _step1.value;
+      for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+        var path = _step10.value;
         if (!path) continue;
         var resolved = getLocalizedPathText(path, '');
         if (resolved) {
@@ -11240,9 +12503,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         }
       }
     } catch (err) {
-      _iterator1.e(err);
+      _iterator10.e(err);
     } finally {
-      _iterator1.f();
+      _iterator10.f();
     }
     if (!contextLabel && typeof fallbackContext === 'string') {
       contextLabel = fallbackContext;
@@ -11281,6 +12544,18 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     label.textContent = typeof text === 'string' ? text : '';
     return label;
   }
+  try {
+    if (typeof globalThis !== 'undefined') {
+      if (typeof globalThis.ensureElementId !== 'function') {
+        globalThis.ensureElementId = ensureElementId;
+      }
+      if (typeof globalThis.createHiddenLabel !== 'function') {
+        globalThis.createHiddenLabel = createHiddenLabel;
+      }
+    }
+  } catch (globalAssignError) {
+    console.warn('Failed to expose accessibility helpers globally', globalAssignError);
+  }
   function getProjectFormText(key) {
     var _texts3, _texts4;
     var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -11291,55 +12566,991 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     var fallback = fallbackProjectForm && typeof fallbackProjectForm[key] === 'string' ? fallbackProjectForm[key].trim() : '';
     return fallback || defaultValue;
   }
+  var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
+  var CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
+  var contactsCache = [];
+  var contactsInitialized = false;
+  function getContactsText(key) {
+    var _texts5, _texts6;
+    var defaultValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var fallbackContacts = ((_texts5 = texts) === null || _texts5 === void 0 || (_texts5 = _texts5.en) === null || _texts5 === void 0 ? void 0 : _texts5.contacts) || {};
+    var contactsTexts = ((_texts6 = texts) === null || _texts6 === void 0 || (_texts6 = _texts6[currentLang]) === null || _texts6 === void 0 ? void 0 : _texts6.contacts) || fallbackContacts;
+    var localized = contactsTexts && typeof contactsTexts[key] === 'string' ? contactsTexts[key].trim() : '';
+    if (localized) return localized;
+    var fallback = fallbackContacts && typeof fallbackContacts[key] === 'string' ? fallbackContacts[key].trim() : '';
+    return fallback || defaultValue;
+  }
+  function generateContactId() {
+    return "contact-".concat(Date.now().toString(36), "-").concat(Math.random().toString(36).slice(2, 8));
+  }
+  function sanitizeContactValue(value) {
+    if (typeof value !== 'string') return '';
+    return value.trim();
+  }
+  function normalizeContactEntry(entry) {
+    if (!entry || _typeof(entry) !== 'object') return null;
+    var id = sanitizeContactValue(entry.id) || generateContactId();
+    var name = sanitizeContactValue(entry.name);
+    var role = sanitizeContactValue(entry.role);
+    var phone = sanitizeContactValue(entry.phone);
+    var email = sanitizeContactValue(entry.email);
+    var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
+    var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
+    var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+    var normalized = {
+      id: id,
+      name: name,
+      role: role,
+      phone: phone,
+      email: email,
+      createdAt: createdAt,
+      updatedAt: updatedAt
+    };
+    if (avatar) normalized.avatar = avatar;
+    return normalized;
+  }
+  function sortContacts(list) {
+    return (Array.isArray(list) ? list.filter(Boolean) : []).map(normalizeContactEntry).filter(Boolean).sort(function (a, b) {
+      var nameA = ((a === null || a === void 0 ? void 0 : a.name) || '').toLowerCase();
+      var nameB = ((b === null || b === void 0 ? void 0 : b.name) || '').toLowerCase();
+      if (nameA && nameB && nameA !== nameB) {
+        return nameA.localeCompare(nameB);
+      }
+      if (nameA && !nameB) return -1;
+      if (!nameA && nameB) return 1;
+      return ((a === null || a === void 0 ? void 0 : a.createdAt) || 0) - ((b === null || b === void 0 ? void 0 : b.createdAt) || 0);
+    });
+  }
+  function loadStoredContacts() {
+    if (typeof localStorage === 'undefined') return [];
+    try {
+      var raw = localStorage.getItem(CONTACTS_STORAGE_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return sortContacts(parsed);
+    } catch (error) {
+      console.warn('Failed to load contacts from storage', error);
+      return [];
+    }
+  }
+  function saveContactsToStorage(contacts) {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts));
+    } catch (error) {
+      console.warn('Failed to save contacts to storage', error);
+    }
+  }
+  function getContactById(id) {
+    if (!id) return null;
+    return contactsCache.find(function (contact) {
+      return contact.id === id;
+    }) || null;
+  }
+  function getContactDisplayLabel(contact) {
+    var _texts7, _texts8;
+    if (!contact) return '';
+    var roleLabels = ((_texts7 = texts) === null || _texts7 === void 0 || (_texts7 = _texts7[currentLang]) === null || _texts7 === void 0 ? void 0 : _texts7.crewRoles) || ((_texts8 = texts) === null || _texts8 === void 0 || (_texts8 = _texts8.en) === null || _texts8 === void 0 ? void 0 : _texts8.crewRoles) || {};
+    var base = contact.name || contact.email || contact.phone || contact.role || contact.id;
+    var roleLabel = contact.role ? roleLabels[contact.role] || contact.role : '';
+    if (base && roleLabel && roleLabel !== base) {
+      return "".concat(base, " \u2014 ").concat(roleLabel);
+    }
+    return base || roleLabel || contact.id;
+  }
+  function setContactSelectOptions(select, selectedId) {
+    if (!select) return;
+    var currentValue = typeof selectedId === 'string' ? selectedId : select.value;
+    while (select.firstChild) {
+      select.removeChild(select.firstChild);
+    }
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = getContactsText('selectPlaceholder', 'Select contact');
+    select.appendChild(placeholder);
+    contactsCache.forEach(function (contact) {
+      var option = document.createElement('option');
+      option.value = contact.id;
+      option.textContent = getContactDisplayLabel(contact);
+      if (contact.id === currentValue) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+    if (currentValue && !contactsCache.some(function (contact) {
+      return contact.id === currentValue;
+    })) {
+      var fallback = document.createElement('option');
+      fallback.value = currentValue;
+      fallback.textContent = getContactsText('missingContactFallback', 'Saved contact');
+      fallback.selected = true;
+      select.appendChild(fallback);
+    }
+  }
+  function updateContactPickers() {
+    if (!crewContainer) return;
+    var selects = crewContainer.querySelectorAll('.person-contact-select');
+    selects.forEach(function (select) {
+      return setContactSelectOptions(select);
+    });
+  }
+  function getAvatarInitial(value) {
+    if (typeof value === 'string') {
+      var trimmed = value.trim();
+      if (trimmed) return trimmed.charAt(0).toUpperCase();
+    }
+    return '•';
+  }
+  function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
+    if (!container) return;
+    var visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
+    if (!visual) return;
+    while (visual.firstChild) {
+      visual.removeChild(visual.firstChild);
+    }
+    if (avatarValue) {
+      var img = document.createElement('img');
+      img.src = avatarValue;
+      img.alt = '';
+      visual.appendChild(img);
+    } else {
+      var span = document.createElement('span');
+      span.className = initialClass;
+      span.textContent = getAvatarInitial(fallbackName);
+      visual.appendChild(span);
+    }
+  }
+  function setRowAvatar(row, avatarValue) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (!row) return;
+    var dataInput = row.querySelector('.person-avatar-data');
+    if (dataInput) {
+      dataInput.value = avatarValue || '';
+    }
+    var nameInput = row.querySelector('.person-name');
+    var fallbackName = options && Object.prototype.hasOwnProperty.call(options, 'name') ? options.name : nameInput === null || nameInput === void 0 ? void 0 : nameInput.value;
+    var avatarContainer = row.querySelector('.person-avatar');
+    updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
+  }
+  function refreshRowAvatarInitial(row) {
+    if (!row) return;
+    var dataInput = row.querySelector('.person-avatar-data');
+    if (dataInput && dataInput.value) return;
+    var nameInput = row.querySelector('.person-name');
+    var avatarContainer = row.querySelector('.person-avatar');
+    updateAvatarVisual(avatarContainer, '', nameInput ? nameInput.value : '', 'person-avatar-initial');
+  }
+  function detachCrewRowContact(row) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (!row) return;
+    var _ref38 = options || {},
+      _ref38$preserveSelect = _ref38.preserveSelect,
+      preserveSelect = _ref38$preserveSelect === void 0 ? false : _ref38$preserveSelect;
+    delete row.dataset.contactId;
+    if (!preserveSelect) {
+      var contactSelect = row.querySelector('.person-contact-select');
+      if (contactSelect) contactSelect.value = '';
+    }
+    updateRowLinkedBadge(row);
+  }
+  function updateRowLinkedBadge(row) {
+    if (!row) return;
+    var badge = row.querySelector('.person-linked-badge');
+    if (!badge) return;
+    var contactId = row.dataset.contactId;
+    if (!contactId) {
+      badge.hidden = true;
+      return;
+    }
+    var contact = getContactById(contactId);
+    var baseLabel = getContactsText('linkedBadge', 'Linked to contact');
+    if (contact && contact.name) {
+      badge.textContent = "".concat(baseLabel, ": ").concat(contact.name);
+    } else {
+      badge.textContent = baseLabel;
+    }
+    badge.hidden = false;
+  }
+  function handleCrewRowManualChange(row) {
+    if (!row || row.dataset.syncingContact === '1') return;
+    var wasLinked = Boolean(row.dataset.contactId);
+    if (wasLinked) {
+      detachCrewRowContact(row);
+      announceContactsMessage(getContactsText('contactDetached', 'Crew row disconnected from saved contact.'));
+    }
+    refreshRowAvatarInitial(row);
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+    scheduleProjectAutoSave(true);
+  }
+  function readAvatarFile(file, onSuccess, onError) {
+    if (!file) return;
+    if (file.size > CONTACT_AVATAR_MAX_BYTES) {
+      if (typeof onError === 'function') onError('tooLarge');
+      return;
+    }
+    var reader = new FileReader();
+    reader.addEventListener('load', function () {
+      var result = typeof reader.result === 'string' ? reader.result : '';
+      if (result && typeof onSuccess === 'function') {
+        onSuccess(result);
+      }
+    });
+    reader.addEventListener('error', function () {
+      if (typeof onError === 'function') onError('readError');
+    });
+    try {
+      reader.readAsDataURL(file);
+    } catch (error) {
+      if (typeof onError === 'function') onError('readError');
+    }
+  }
+  function handleAvatarFileSelection(row, file) {
+    readAvatarFile(file, function (dataUrl) {
+      setRowAvatar(row, dataUrl);
+      if (row.dataset.contactId) {
+        detachCrewRowContact(row);
+      }
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
+      scheduleProjectAutoSave(true);
+    }, function (reason) {
+      if (reason === 'tooLarge') {
+        announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+      } else {
+        announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+      }
+    });
+  }
+  function announceContactsMessage(message) {
+    resolveContactsDomRefs();
+    if (!contactsAnnouncement) return;
+    contactsAnnouncement.textContent = message || '';
+  }
+  function applyContactToCrewRow(row, contact) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (!row || !contact) return;
+    var _ref39 = options || {},
+      _ref39$skipDirty = _ref39.skipDirty,
+      skipDirty = _ref39$skipDirty === void 0 ? false : _ref39$skipDirty,
+      _ref39$skipAnnounceme = _ref39.skipAnnouncement,
+      skipAnnouncement = _ref39$skipAnnounceme === void 0 ? false : _ref39$skipAnnounceme;
+    row.dataset.syncingContact = '1';
+    try {
+      var roleSel = row.querySelector('select[name="crewRole"]');
+      if (roleSel) {
+        if (contact.role && !Array.from(roleSel.options).some(function (opt) {
+          return opt.value === contact.role;
+        })) {
+          var _texts9, _texts0;
+          var opt = document.createElement('option');
+          opt.value = contact.role;
+          var roleLabels = ((_texts9 = texts) === null || _texts9 === void 0 || (_texts9 = _texts9[currentLang]) === null || _texts9 === void 0 ? void 0 : _texts9.crewRoles) || ((_texts0 = texts) === null || _texts0 === void 0 || (_texts0 = _texts0.en) === null || _texts0 === void 0 ? void 0 : _texts0.crewRoles) || {};
+          opt.textContent = roleLabels[contact.role] || contact.role;
+          roleSel.appendChild(opt);
+        }
+        if (contact.role) {
+          roleSel.value = contact.role;
+        }
+      }
+      var nameInput = row.querySelector('.person-name');
+      if (nameInput) nameInput.value = contact.name || '';
+      var phoneInput = row.querySelector('.person-phone');
+      if (phoneInput) phoneInput.value = contact.phone || '';
+      var emailInput = row.querySelector('.person-email');
+      if (emailInput) emailInput.value = contact.email || '';
+      setRowAvatar(row, contact.avatar || '', {
+        name: contact.name
+      });
+      row.dataset.contactId = contact.id;
+      var contactSelect = row.querySelector('.person-contact-select');
+      if (contactSelect) {
+        setContactSelectOptions(contactSelect, contact.id);
+      }
+    } finally {
+      delete row.dataset.syncingContact;
+    }
+    updateRowLinkedBadge(row);
+    if (!skipDirty && typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+    if (!skipDirty) {
+      scheduleProjectAutoSave(true);
+    }
+    if (!skipAnnouncement) {
+      announceContactsMessage(getContactsText('contactApplied', 'Crew row updated from contact.'));
+    }
+  }
+  function updateCrewRowsForContact(contact) {
+    if (!crewContainer || !contact) return;
+    var rows = crewContainer.querySelectorAll('.person-row');
+    rows.forEach(function (row) {
+      if (row.dataset.contactId === contact.id) {
+        applyContactToCrewRow(row, contact, {
+          skipAnnouncement: true
+        });
+      }
+    });
+  }
+  function getCrewRowSnapshot(row) {
+    if (!row) return null;
+    var roleSel = row.querySelector('select[name="crewRole"]');
+    var nameInput = row.querySelector('.person-name');
+    var phoneInput = row.querySelector('.person-phone');
+    var emailInput = row.querySelector('.person-email');
+    var avatarInput = row.querySelector('.person-avatar-data');
+    return {
+      role: sanitizeContactValue((roleSel === null || roleSel === void 0 ? void 0 : roleSel.value) || ''),
+      name: sanitizeContactValue((nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) || ''),
+      phone: sanitizeContactValue((phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) || ''),
+      email: sanitizeContactValue((emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) || ''),
+      avatar: sanitizeContactValue((avatarInput === null || avatarInput === void 0 ? void 0 : avatarInput.value) || ''),
+      contactId: sanitizeContactValue(row.dataset.contactId || '')
+    };
+  }
+  function deleteContact(contactId) {
+    if (!contactId) return;
+    var index = contactsCache.findIndex(function (contact) {
+      return contact.id === contactId;
+    });
+    if (index === -1) return;
+    contactsCache.splice(index, 1);
+    contactsCache = sortContacts(contactsCache);
+    saveContactsToStorage(contactsCache);
+    renderContactsList();
+    updateContactPickers();
+    if (crewContainer) {
+      var rows = crewContainer.querySelectorAll('.person-row');
+      rows.forEach(function (row) {
+        if (row.dataset.contactId === contactId) {
+          detachCrewRowContact(row);
+        }
+      });
+    }
+    announceContactsMessage(getContactsText('contactDeleted', 'Contact removed. Project rows keep their details.'));
+  }
+  function saveCrewRowAsContact(row) {
+    var snapshot = getCrewRowSnapshot(row);
+    if (!snapshot) return;
+    if (!snapshot.name && !snapshot.email && !snapshot.phone) {
+      announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email or phone number before saving this contact.'));
+      return;
+    }
+    var now = Date.now();
+    if (snapshot.contactId) {
+      var existing = getContactById(snapshot.contactId);
+      if (existing) {
+        existing.name = snapshot.name || existing.name;
+        existing.role = snapshot.role || existing.role;
+        existing.phone = snapshot.phone || existing.phone;
+        existing.email = snapshot.email || existing.email;
+        if (snapshot.avatar) {
+          existing.avatar = snapshot.avatar;
+        } else if (!existing.avatar) {
+          delete existing.avatar;
+        }
+        existing.updatedAt = now;
+        contactsCache = sortContacts(contactsCache);
+        saveContactsToStorage(contactsCache);
+        renderContactsList({
+          focusContactId: existing.id
+        });
+        updateContactPickers();
+        updateCrewRowsForContact(existing);
+        announceContactsMessage(getContactsText('contactUpdated', 'Contact updated.'));
+        return;
+      }
+    }
+    var newContact = normalizeContactEntry({
+      id: snapshot.contactId || generateContactId(),
+      name: snapshot.name,
+      role: snapshot.role,
+      phone: snapshot.phone,
+      email: snapshot.email,
+      avatar: snapshot.avatar,
+      createdAt: now,
+      updatedAt: now
+    });
+    contactsCache.push(newContact);
+    contactsCache = sortContacts(contactsCache);
+    saveContactsToStorage(contactsCache);
+    renderContactsList({
+      focusContactId: newContact.id
+    });
+    updateContactPickers();
+    applyContactToCrewRow(row, newContact, {
+      skipAnnouncement: true
+    });
+    announceContactsMessage(getContactsText('contactSaved', 'Contact saved for future projects.'));
+  }
+  function parseVCard(text) {
+    if (typeof text !== 'string') return [];
+    var normalized = text.replace(/\r\n?/g, '\n');
+    var folded = [];
+    normalized.split('\n').forEach(function (line) {
+      if (/^[ \t]/.test(line) && folded.length) {
+        folded[folded.length - 1] += line.replace(/^[ \t]/, '');
+      } else {
+        folded.push(line);
+      }
+    });
+    var contacts = [];
+    var current = null;
+    folded.forEach(function (line) {
+      var _keySegments$;
+      if (/^BEGIN:VCARD/i.test(line)) {
+        current = {
+          name: '',
+          role: '',
+          phone: '',
+          email: '',
+          avatar: ''
+        };
+        return;
+      }
+      if (/^END:VCARD/i.test(line)) {
+        if (current && (current.name || current.email || current.phone)) {
+          contacts.push(_objectSpread({}, current));
+        }
+        current = null;
+        return;
+      }
+      if (!current) return;
+      var _line$split = line.split(':'),
+        _line$split2 = _toArray(_line$split),
+        rawKey = _line$split2[0],
+        rawValueParts = _line$split2.slice(1);
+      if (!rawValueParts.length) return;
+      var keySegments = rawKey.split(';');
+      var baseKey = (_keySegments$ = keySegments[0]) === null || _keySegments$ === void 0 ? void 0 : _keySegments$.toUpperCase();
+      var value = rawValueParts.join(':').trim();
+      if (!baseKey) return;
+      if (baseKey === 'FN') {
+        current.name = sanitizeContactValue(value);
+        return;
+      }
+      if (baseKey === 'N' && !current.name) {
+        current.name = value.split(';').filter(Boolean).join(' ').trim();
+        return;
+      }
+      if (baseKey === 'TEL') {
+        if (!current.phone) current.phone = sanitizeContactValue(value);
+        return;
+      }
+      if (baseKey === 'EMAIL') {
+        if (!current.email) current.email = sanitizeContactValue(value);
+        return;
+      }
+      if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
+        current.role = sanitizeContactValue(value);
+        return;
+      }
+      if (baseKey === 'ORG' && !current.role) {
+        current.role = sanitizeContactValue(value);
+        return;
+      }
+      if (baseKey === 'PHOTO') {
+        var dataValue = value;
+        if (!dataValue) return;
+        if (/^data:/i.test(dataValue)) {
+          current.avatar = dataValue;
+          return;
+        }
+        var params = keySegments.slice(1);
+        var mime = 'image/jpeg';
+        params.forEach(function (param) {
+          var _param$split = param.split('='),
+            _param$split2 = _slicedToArray(_param$split, 2),
+            paramKey = _param$split2[0],
+            paramValue = _param$split2[1];
+          if (!paramValue) return;
+          var normalizedKey = paramKey.trim().toUpperCase();
+          var normalizedValue = paramValue.trim();
+          if (normalizedKey === 'MEDIATYPE') {
+            mime = normalizedValue;
+          } else if (normalizedKey === 'TYPE') {
+            var lowered = normalizedValue.toLowerCase();
+            if (lowered.includes('/')) {
+              mime = lowered;
+            } else {
+              mime = "image/".concat(lowered);
+            }
+          }
+        });
+        current.avatar = "data:".concat(mime, ";base64,").concat(dataValue);
+      }
+    });
+    return contacts.map(function (entry) {
+      return {
+        name: sanitizeContactValue(entry.name),
+        role: sanitizeContactValue(entry.role),
+        phone: sanitizeContactValue(entry.phone),
+        email: sanitizeContactValue(entry.email),
+        avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
+      };
+    }).filter(function (entry) {
+      return entry.name || entry.email || entry.phone;
+    });
+  }
+  function mergeImportedContacts(imported) {
+    if (!Array.isArray(imported) || !imported.length) {
+      announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
+      return {
+        added: 0,
+        updated: 0
+      };
+    }
+    var added = 0;
+    var updated = 0;
+    imported.forEach(function (entry) {
+      var candidate = {
+        name: sanitizeContactValue(entry.name || ''),
+        role: sanitizeContactValue(entry.role || ''),
+        phone: sanitizeContactValue(entry.phone || ''),
+        email: sanitizeContactValue(entry.email || ''),
+        avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
+      };
+      var existing = contactsCache.find(function (contact) {
+        if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
+        if (candidate.phone && contact.phone) {
+          var normalizedCandidate = candidate.phone.replace(/\D+/g, '');
+          var normalizedExisting = contact.phone.replace(/\D+/g, '');
+          if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
+        }
+        if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
+        return false;
+      });
+      if (existing) {
+        if (candidate.name) existing.name = candidate.name;
+        if (candidate.role) existing.role = candidate.role;
+        if (candidate.phone) existing.phone = candidate.phone;
+        if (candidate.email) existing.email = candidate.email;
+        if (candidate.avatar) existing.avatar = candidate.avatar;
+        existing.updatedAt = Date.now();
+        updated += 1;
+        updateCrewRowsForContact(existing);
+      } else {
+        var contact = normalizeContactEntry({
+          id: generateContactId(),
+          name: candidate.name,
+          role: candidate.role,
+          phone: candidate.phone,
+          email: candidate.email,
+          avatar: candidate.avatar,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        contactsCache.push(contact);
+        added += 1;
+      }
+    });
+    contactsCache = sortContacts(contactsCache);
+    saveContactsToStorage(contactsCache);
+    renderContactsList();
+    updateContactPickers();
+    if (added || updated) {
+      var template = getContactsText('importSummary', '{added} added, {updated} updated.');
+      announceContactsMessage(template.replace('{added}', added).replace('{updated}', updated));
+    } else {
+      announceContactsMessage(getContactsText('importNone', 'No new contacts found in the file.'));
+    }
+    return {
+      added: added,
+      updated: updated
+    };
+  }
+  function createContactCard(contact) {
+    var _texts1, _texts10;
+    var card = document.createElement('article');
+    card.className = 'contact-card';
+    card.setAttribute('role', 'listitem');
+    card.dataset.contactId = contact.id;
+    var header = document.createElement('div');
+    header.className = 'contact-card-header';
+    var avatarContainer = document.createElement('div');
+    avatarContainer.className = 'contact-card-avatar';
+    var avatarVisual = document.createElement('div');
+    avatarVisual.className = 'contact-card-avatar-visual';
+    avatarContainer.appendChild(avatarVisual);
+    updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+    var avatarButton = document.createElement('button');
+    avatarButton.type = 'button';
+    var avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+    avatarButton.setAttribute('aria-label', avatarLabel);
+    avatarButton.setAttribute('title', avatarLabel);
+    avatarContainer.appendChild(avatarButton);
+    var avatarInput = document.createElement('input');
+    avatarInput.type = 'file';
+    avatarInput.accept = 'image/*';
+    avatarInput.className = 'visually-hidden';
+    avatarInput.tabIndex = -1;
+    avatarContainer.appendChild(avatarInput);
+    header.appendChild(avatarContainer);
+    var title = document.createElement('strong');
+    title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
+    header.appendChild(title);
+    card.appendChild(header);
+    var fields = document.createElement('div');
+    fields.className = 'contact-card-fields';
+    var roleLabels = ((_texts1 = texts) === null || _texts1 === void 0 || (_texts1 = _texts1[currentLang]) === null || _texts1 === void 0 ? void 0 : _texts1.crewRoles) || ((_texts10 = texts) === null || _texts10 === void 0 || (_texts10 = _texts10.en) === null || _texts10 === void 0 ? void 0 : _texts10.crewRoles) || {};
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = contact.name || '';
+    var nameFieldId = ensureElementId(nameInput, "".concat(contact.id, "-name"));
+    var nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', nameFieldId);
+    nameLabel.textContent = getContactsText('nameLabel', 'Name');
+    var nameWrapper = document.createElement('div');
+    nameWrapper.className = 'contact-field';
+    nameWrapper.append(nameLabel, nameInput);
+    fields.appendChild(nameWrapper);
+    var roleSelect = document.createElement('select');
+    var roleFieldId = ensureElementId(roleSelect, "".concat(contact.id, "-role"));
+    var rolePlaceholder = document.createElement('option');
+    rolePlaceholder.value = '';
+    rolePlaceholder.textContent = getContactsText('rolePlaceholder', 'Select role');
+    roleSelect.appendChild(rolePlaceholder);
+    crewRoles.forEach(function (role) {
+      var option = document.createElement('option');
+      option.value = role;
+      option.textContent = roleLabels[role] || role;
+      roleSelect.appendChild(option);
+    });
+    if (contact.role && !crewRoles.includes(contact.role)) {
+      var extraOption = document.createElement('option');
+      extraOption.value = contact.role;
+      extraOption.textContent = roleLabels[contact.role] || contact.role;
+      roleSelect.appendChild(extraOption);
+    }
+    roleSelect.value = contact.role || '';
+    var roleLabelElem = document.createElement('label');
+    roleLabelElem.setAttribute('for', roleFieldId);
+    roleLabelElem.textContent = getContactsText('roleLabel', 'Crew role');
+    var roleWrapper = document.createElement('div');
+    roleWrapper.className = 'contact-field';
+    roleWrapper.append(roleLabelElem, roleSelect);
+    fields.appendChild(roleWrapper);
+    var phoneInput = document.createElement('input');
+    phoneInput.type = 'tel';
+    phoneInput.value = contact.phone || '';
+    var phoneFieldId = ensureElementId(phoneInput, "".concat(contact.id, "-phone"));
+    var phoneLabelElem = document.createElement('label');
+    phoneLabelElem.setAttribute('for', phoneFieldId);
+    phoneLabelElem.textContent = getContactsText('phoneLabel', 'Phone');
+    var phoneWrapper = document.createElement('div');
+    phoneWrapper.className = 'contact-field';
+    phoneWrapper.append(phoneLabelElem, phoneInput);
+    fields.appendChild(phoneWrapper);
+    var emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.value = contact.email || '';
+    var emailFieldId = ensureElementId(emailInput, "".concat(contact.id, "-email"));
+    var emailLabelElem = document.createElement('label');
+    emailLabelElem.setAttribute('for', emailFieldId);
+    emailLabelElem.textContent = getContactsText('emailLabel', 'Email');
+    var emailWrapper = document.createElement('div');
+    emailWrapper.className = 'contact-field';
+    emailWrapper.append(emailLabelElem, emailInput);
+    fields.appendChild(emailWrapper);
+    card.appendChild(fields);
+    var actions = document.createElement('div');
+    actions.className = 'contact-card-actions';
+    var useButton = document.createElement('button');
+    useButton.type = 'button';
+    setButtonLabelWithIcon(useButton, getContactsText('useInProject', 'Add to project crew'), ICON_GLYPHS.add);
+    useButton.addEventListener('click', function () {
+      createCrewRow(_objectSpread(_objectSpread({}, contact), {}, {
+        contactId: contact.id
+      }));
+      closeDialog(contactsDialog);
+      announceContactsMessage(getContactsText('contactAddedToProject', 'Contact added to the current project.'));
+    });
+    actions.appendChild(useButton);
+    var deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    setButtonLabelWithIcon(deleteButton, getContactsText('deleteContact', 'Delete contact'), ICON_GLYPHS.trash);
+    deleteButton.addEventListener('click', function () {
+      var confirmMessage = getContactsText('deleteConfirm', 'Remove this contact? Project rows will keep their details.');
+      if (typeof window !== 'undefined' && !window.confirm(confirmMessage)) return;
+      deleteContact(contact.id);
+    });
+    actions.appendChild(deleteButton);
+    card.appendChild(actions);
+    var persist = function persist() {
+      var resort = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      contact.updatedAt = Date.now();
+      saveContactsToStorage(contactsCache);
+      updateContactPickers();
+      updateCrewRowsForContact(contact);
+      if (resort) {
+        contactsCache = sortContacts(contactsCache);
+        renderContactsList({
+          focusContactId: contact.id
+        });
+      }
+    };
+    nameInput.addEventListener('input', function () {
+      contact.name = sanitizeContactValue(nameInput.value);
+      title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
+      updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+      persist();
+    });
+    nameInput.addEventListener('blur', function () {
+      return persist(true);
+    });
+    roleSelect.addEventListener('change', function () {
+      contact.role = sanitizeContactValue(roleSelect.value);
+      persist();
+    });
+    phoneInput.addEventListener('input', function () {
+      contact.phone = sanitizeContactValue(phoneInput.value);
+      persist();
+    });
+    emailInput.addEventListener('input', function () {
+      contact.email = sanitizeContactValue(emailInput.value);
+      persist();
+    });
+    avatarButton.addEventListener('click', function (event) {
+      if (event.shiftKey) {
+        contact.avatar = '';
+        updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
+        persist();
+        announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+        return;
+      }
+      avatarInput.click();
+    });
+    avatarInput.addEventListener('change', function () {
+      var _ref40 = avatarInput.files || [],
+        _ref41 = _slicedToArray(_ref40, 1),
+        file = _ref41[0];
+      if (!file) return;
+      readAvatarFile(file, function (dataUrl) {
+        contact.avatar = dataUrl;
+        updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
+        persist();
+        announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      }, function (reason) {
+        if (reason === 'tooLarge') {
+          announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+        } else {
+          announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+        }
+      });
+      avatarInput.value = '';
+    });
+    return {
+      card: card,
+      focusTarget: nameInput
+    };
+  }
+  function renderContactsList() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    resolveContactsDomRefs();
+    if (!contactsList) return;
+    var _ref42 = options || {},
+      _ref42$focusContactId = _ref42.focusContactId,
+      focusContactId = _ref42$focusContactId === void 0 ? null : _ref42$focusContactId;
+    while (contactsList.firstChild) {
+      contactsList.removeChild(contactsList.firstChild);
+    }
+    if (!contactsCache.length) {
+      if (contactsEmptyState) contactsEmptyState.hidden = false;
+      return;
+    }
+    if (contactsEmptyState) contactsEmptyState.hidden = true;
+    var focusTarget = null;
+    contactsCache.forEach(function (contact) {
+      var _createContactCard = createContactCard(contact),
+        card = _createContactCard.card,
+        target = _createContactCard.focusTarget;
+      contactsList.appendChild(card);
+      if (focusContactId && contact.id === focusContactId) {
+        focusTarget = target;
+      }
+    });
+    if (focusTarget) {
+      requestAnimationFrame(function () {
+        return focusTarget.focus();
+      });
+    }
+  }
+  function initializeContactsModule() {
+    var _contactsCloseButton, _contactsForm, _contactsDialog, _openContactsBtn;
+    resolveContactsDomRefs();
+    if (contactsInitialized) return;
+    contactsInitialized = true;
+    contactsCache = loadStoredContacts();
+    renderContactsList();
+    updateContactPickers();
+    if (contactsAddButton) {
+      contactsAddButton.addEventListener('click', function () {
+        var newContact = normalizeContactEntry({
+          id: generateContactId(),
+          name: '',
+          role: '',
+          phone: '',
+          email: '',
+          avatar: '',
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+        contactsCache.push(newContact);
+        renderContactsList({
+          focusContactId: newContact.id
+        });
+        saveContactsToStorage(contactsCache);
+        updateContactPickers();
+        announceContactsMessage(getContactsText('contactDraftCreated', 'New contact ready. Fill in the details.'));
+      });
+    }
+    if (contactsImportButton && contactsImportInput) {
+      contactsImportButton.addEventListener('click', function () {
+        return contactsImportInput.click();
+      });
+      contactsImportInput.addEventListener('change', function () {
+        var _ref43 = contactsImportInput.files || [],
+          _ref44 = _slicedToArray(_ref43, 1),
+          file = _ref44[0];
+        if (!file) return;
+        file.text().then(function (text) {
+          return mergeImportedContacts(parseVCard(text));
+        }).catch(function () {
+          announceContactsMessage(getContactsText('importError', 'Could not import the selected file.'));
+        }).finally(function () {
+          contactsImportInput.value = '';
+        });
+      });
+    }
+    (_contactsCloseButton = contactsCloseButton) === null || _contactsCloseButton === void 0 || _contactsCloseButton.addEventListener('click', function () {
+      return closeDialog(contactsDialog);
+    });
+    (_contactsForm = contactsForm) === null || _contactsForm === void 0 || _contactsForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      closeDialog(contactsDialog);
+    });
+    (_contactsDialog = contactsDialog) === null || _contactsDialog === void 0 || _contactsDialog.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      closeDialog(contactsDialog);
+    });
+    (_openContactsBtn = openContactsBtn) === null || _openContactsBtn === void 0 || _openContactsBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      openDialog(contactsDialog);
+    });
+  }
   function createCrewRow() {
-    var _texts$en270, _texts$currentLang2, _texts$currentLang3, _texts$en271, _texts$currentLang4, _texts$en272;
+    var _texts$en255, _texts$currentLang, _texts$currentLang2, _texts$en256, _texts$currentLang3, _texts$en257, _texts$currentLang4, _texts$en258;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!crewContainer) return;
     var row = document.createElement('div');
     row.className = 'person-row';
-    var roleSel = document.createElement('select');
-    roleSel.name = 'crewRole';
-    crewRoles.forEach(function (r) {
-      var _texts$currentLang, _texts$en269;
-      var opt = document.createElement('option');
-      opt.value = r;
-      var roleLabels = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.crewRoles) || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.crewRoles) || {};
-      opt.textContent = roleLabels[r] || r;
-      roleSel.appendChild(opt);
-    });
-    if (data.role) roleSel.value = data.role;
-    var nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.name = 'crewName';
-    var fallbackProjectForm = ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.projectForm) || {};
-    var projectFormTexts = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.projectForm) || fallbackProjectForm;
-    nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
-    nameInput.className = 'person-name';
-    nameInput.value = data.name || '';
-    var phoneInput = document.createElement('input');
-    phoneInput.type = 'tel';
-    phoneInput.name = 'crewPhone';
-    phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
-    phoneInput.className = 'person-phone';
-    phoneInput.value = data.phone || '';
-    var emailInput = document.createElement('input');
-    emailInput.type = 'email';
-    emailInput.name = 'crewEmail';
-    emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
-    emailInput.className = 'person-email';
-    emailInput.value = data.email || '';
+    var fallbackProjectForm = ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.projectForm) || {};
+    var projectFormTexts = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.projectForm) || fallbackProjectForm;
+    var roleLabels = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.crewRoles) || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.crewRoles) || {};
     var crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
     var crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
     var crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
     var crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+    var crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
+    var avatarChangeLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+    var avatarDataInput = document.createElement('input');
+    avatarDataInput.type = 'hidden';
+    avatarDataInput.className = 'person-avatar-data';
+    avatarDataInput.value = typeof data.avatar === 'string' ? data.avatar : '';
+    row.appendChild(avatarDataInput);
+    var avatarContainer = document.createElement('div');
+    avatarContainer.className = 'person-avatar';
+    var avatarVisual = document.createElement('div');
+    avatarVisual.className = 'person-avatar-visual';
+    avatarContainer.appendChild(avatarVisual);
+    var avatarButton = document.createElement('button');
+    avatarButton.type = 'button';
+    avatarButton.setAttribute('aria-label', avatarChangeLabel);
+    avatarButton.setAttribute('title', avatarChangeLabel);
+    avatarButton.setAttribute('data-help', avatarChangeLabel);
+    avatarContainer.appendChild(avatarButton);
+    var avatarFileInput = document.createElement('input');
+    avatarFileInput.type = 'file';
+    avatarFileInput.accept = 'image/*';
+    avatarFileInput.className = 'visually-hidden';
+    avatarFileInput.tabIndex = -1;
+    avatarContainer.appendChild(avatarFileInput);
+    var roleSel = document.createElement('select');
+    roleSel.name = 'crewRole';
+    roleSel.className = 'person-role-select';
+    crewRoles.forEach(function (r) {
+      var opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = roleLabels[r] || r;
+      roleSel.appendChild(opt);
+    });
+    if (data.role && !crewRoles.includes(data.role)) {
+      var opt = document.createElement('option');
+      opt.value = data.role;
+      opt.textContent = roleLabels[data.role] || data.role;
+      roleSel.appendChild(opt);
+    }
+    if (data.role) roleSel.value = data.role;
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.name = 'crewName';
+    nameInput.className = 'person-name';
+    nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
+    nameInput.value = data.name || '';
+    var phoneInput = document.createElement('input');
+    phoneInput.type = 'tel';
+    phoneInput.name = 'crewPhone';
+    phoneInput.className = 'person-phone';
+    phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
+    phoneInput.value = data.phone || '';
+    var emailInput = document.createElement('input');
+    emailInput.type = 'email';
+    emailInput.name = 'crewEmail';
+    emailInput.className = 'person-email';
+    emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
+    emailInput.value = data.email || '';
+    var contactSelect = document.createElement('select');
+    contactSelect.className = 'person-contact-select';
+    setContactSelectOptions(contactSelect, data.contactId);
     var roleLabel = createHiddenLabel(ensureElementId(roleSel, crewRoleLabelText), crewRoleLabelText);
     var nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
     var phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
     var emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+    var contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
+    var fieldsWrapper = document.createElement('div');
+    fieldsWrapper.className = 'person-fields';
+    fieldsWrapper.append(roleSel, nameInput, phoneInput, emailInput, contactSelect);
+    var actions = document.createElement('div');
+    actions.className = 'person-actions';
+    var linkedBadge = document.createElement('span');
+    linkedBadge.className = 'person-linked-badge';
+    linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
+    linkedBadge.hidden = true;
+    actions.appendChild(linkedBadge);
+    var saveContactBtn = document.createElement('button');
+    saveContactBtn.type = 'button';
+    saveContactBtn.className = 'person-save-contact';
+    setButtonLabelWithIcon(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
+    saveContactBtn.addEventListener('click', function () {
+      return saveCrewRowAsContact(row);
+    });
+    actions.appendChild(saveContactBtn);
+    var manageContactsBtn = document.createElement('button');
+    manageContactsBtn.type = 'button';
+    manageContactsBtn.className = 'person-manage-contacts';
+    setButtonLabelWithIcon(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
+    manageContactsBtn.addEventListener('click', function () {
+      return openDialog(contactsDialog);
+    });
+    actions.appendChild(manageContactsBtn);
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 || (_texts$currentLang3 = _texts$currentLang3.projectForm) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.removeEntry) || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 || (_texts$en271 = _texts$en271.projectForm) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.removeEntry) || 'Remove';
-    var crewHeading = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewHeading) || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 || (_texts$en272 = _texts$en272.projectForm) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.crewHeading) || 'Crew';
+    removeBtn.className = 'person-remove-btn';
+    var removeBase = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 || (_texts$currentLang3 = _texts$currentLang3.projectForm) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.removeEntry) || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 || (_texts$en257 = _texts$en257.projectForm) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.removeEntry) || 'Remove';
+    var crewHeading = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 || (_texts$currentLang4 = _texts$currentLang4.projectForm) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewHeading) || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 || (_texts$en258 = _texts$en258.projectForm) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.crewHeading) || 'Crew';
     var removeCrewLabel = "".concat(removeBase, " ").concat(crewHeading).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeCrewLabel);
@@ -11352,14 +13563,77 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       }
       scheduleProjectAutoSave(true);
     });
-    row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
+    actions.appendChild(removeBtn);
+    [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(function (label) {
+      return row.appendChild(label);
+    });
+    row.appendChild(avatarContainer);
+    row.appendChild(fieldsWrapper);
+    row.appendChild(actions);
+    if (data.contactId) {
+      row.dataset.contactId = data.contactId;
+    }
+    setRowAvatar(row, avatarDataInput.value, {
+      name: data.name
+    });
+    updateRowLinkedBadge(row);
+    avatarButton.addEventListener('click', function (event) {
+      if (event.shiftKey) {
+        setRowAvatar(row, '');
+        handleCrewRowManualChange(row);
+        announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+        return;
+      }
+      avatarFileInput.click();
+    });
+    avatarFileInput.addEventListener('change', function () {
+      var _ref45 = avatarFileInput.files || [],
+        _ref46 = _slicedToArray(_ref45, 1),
+        file = _ref46[0];
+      if (file) {
+        handleAvatarFileSelection(row, file);
+      }
+      avatarFileInput.value = '';
+    });
+    roleSel.addEventListener('change', function () {
+      return handleCrewRowManualChange(row);
+    });
+    nameInput.addEventListener('input', function () {
+      refreshRowAvatarInitial(row);
+      handleCrewRowManualChange(row);
+    });
+    phoneInput.addEventListener('input', function () {
+      return handleCrewRowManualChange(row);
+    });
+    emailInput.addEventListener('input', function () {
+      return handleCrewRowManualChange(row);
+    });
+    contactSelect.addEventListener('change', function () {
+      var selectedId = contactSelect.value;
+      if (!selectedId) {
+        detachCrewRowContact(row, {
+          preserveSelect: true
+        });
+        handleCrewRowManualChange(row);
+        return;
+      }
+      var contact = getContactById(selectedId);
+      if (contact) {
+        applyContactToCrewRow(row, contact);
+      } else {
+        announceContactsMessage(getContactsText('contactMissingDetails', 'Saved contact not available.'));
+        detachCrewRowContact(row, {
+          preserveSelect: true
+        });
+      }
+    });
     crewContainer.appendChild(row);
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
   }
   function createPrepRow() {
-    var _texts$currentLang5, _texts$en273, _texts$currentLang6, _texts$en274;
+    var _texts$currentLang5, _texts$en259, _texts$currentLang6, _texts$en260;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!prepContainer) return;
     var row = document.createElement('div');
@@ -11380,8 +13654,8 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     end.setAttribute('aria-labelledby', 'prepLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.removeEntry) || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 || (_texts$en273 = _texts$en273.projectForm) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.removeEntry) || 'Remove';
-    var prepLabelText = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.prepLabel) || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 || (_texts$en274 = _texts$en274.projectForm) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.prepLabel) || 'Prep';
+    var removeBase = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 || (_texts$currentLang5 = _texts$currentLang5.projectForm) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.removeEntry) || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 || (_texts$en259 = _texts$en259.projectForm) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.removeEntry) || 'Remove';
+    var prepLabelText = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 || (_texts$currentLang6 = _texts$currentLang6.projectForm) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.prepLabel) || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 || (_texts$en260 = _texts$en260.projectForm) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.prepLabel) || 'Prep';
     var removePrepLabel = "".concat(removeBase, " ").concat(prepLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removePrepLabel);
@@ -11401,7 +13675,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }
   }
   function createShootRow() {
-    var _texts$currentLang7, _texts$en275, _texts$currentLang8, _texts$en276;
+    var _texts$currentLang7, _texts$en261, _texts$currentLang8, _texts$en262;
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!shootContainer) return;
     var row = document.createElement('div');
@@ -11422,8 +13696,8 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     end.setAttribute('aria-labelledby', 'shootLabel');
     var removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    var removeBase = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.removeEntry) || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 || (_texts$en275 = _texts$en275.projectForm) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.removeEntry) || 'Remove';
-    var shootLabelText = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.shootLabel) || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 || (_texts$en276 = _texts$en276.projectForm) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.shootLabel) || 'Shoot';
+    var removeBase = ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 || (_texts$currentLang7 = _texts$currentLang7.projectForm) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.removeEntry) || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 || (_texts$en261 = _texts$en261.projectForm) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.removeEntry) || 'Remove';
+    var shootLabelText = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 || (_texts$currentLang8 = _texts$currentLang8.projectForm) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.shootLabel) || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 || (_texts$en262 = _texts$en262.projectForm) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.shootLabel) || 'Shoot';
     var removeShootLabel = "".concat(removeBase, " ").concat(shootLabelText).trim();
     removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
     removeBtn.setAttribute('aria-label', removeShootLabel);
@@ -11438,6 +13712,48 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     });
     row.append(start, span, end, removeBtn);
     shootContainer.appendChild(row);
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+  }
+  function createReturnRow() {
+    var _texts$currentLang9, _texts$en263, _texts$currentLang0, _texts$en264;
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (!returnContainer) return;
+    var row = document.createElement('div');
+    row.className = 'period-row';
+    var start = document.createElement('input');
+    start.type = 'date';
+    start.name = 'returnStart';
+    start.className = 'return-start';
+    start.value = data.start || '';
+    start.setAttribute('aria-labelledby', 'returnLabel');
+    var span = document.createElement('span');
+    span.textContent = 'to';
+    var end = document.createElement('input');
+    end.type = 'date';
+    end.name = 'returnEnd';
+    end.className = 'return-end';
+    end.value = data.end || '';
+    end.setAttribute('aria-labelledby', 'returnLabel');
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    var removeBase = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 || (_texts$currentLang9 = _texts$currentLang9.projectForm) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.removeEntry) || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 || (_texts$en263 = _texts$en263.projectForm) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.removeEntry) || 'Remove';
+    var returnLabelText = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 || (_texts$currentLang0 = _texts$currentLang0.projectForm) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.returnLabel) || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 || (_texts$en264 = _texts$en264.projectForm) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.returnLabel) || 'Return Day';
+    var removeReturnLabel = "".concat(removeBase, " ").concat(returnLabelText).trim();
+    removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+    removeBtn.setAttribute('aria-label', removeReturnLabel);
+    removeBtn.setAttribute('title', removeReturnLabel);
+    removeBtn.setAttribute('data-help', removeReturnLabel);
+    removeBtn.addEventListener('click', function () {
+      row.remove();
+      if (typeof markProjectFormDataDirty === 'function') {
+        markProjectFormDataDirty();
+      }
+      scheduleProjectAutoSave(true);
+    });
+    row.append(start, span, end, removeBtn);
+    returnContainer.appendChild(row);
     if (typeof markProjectFormDataDirty === 'function') {
       markProjectFormDataDirty();
     }
@@ -11475,34 +13791,62 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     return entries;
   }
   function getAvailableStorageMediaTypes() {
-    var _devices6;
+    var _devices6, _devices7;
     var cameraDb = ((_devices6 = devices) === null || _devices6 === void 0 ? void 0 : _devices6.cameras) || {};
-    var types = new Set();
-    var selectedName = typeof (cameraSelect === null || cameraSelect === void 0 ? void 0 : cameraSelect.value) === 'string' ? cameraSelect.value : '';
-    if (selectedName && cameraDb[selectedName]) {
-      (cameraDb[selectedName].recordingMedia || []).forEach(function (media) {
+    var mediaDb = ((_devices7 = devices) === null || _devices7 === void 0 || (_devices7 = _devices7.gearList) === null || _devices7 === void 0 ? void 0 : _devices7.media) || {};
+    var typeOrder = [];
+    var normalizedTypes = new Set();
+    var addType = function addType(value) {
+      if (!value || typeof value !== 'string') return;
+      var trimmed = value.trim();
+      if (!trimmed) return;
+      var normalized = trimmed.toLowerCase();
+      if (normalizedTypes.has(normalized)) return;
+      normalizedTypes.add(normalized);
+      typeOrder.push(trimmed);
+    };
+    var addCameraTypes = function addCameraTypes(cam) {
+      if (!cam) return;
+      (cam.recordingMedia || []).forEach(function (media) {
         if (media && media.type) {
-          types.add(media.type);
+          addType(media.type);
         }
       });
+    };
+    var selectedName = typeof (cameraSelect === null || cameraSelect === void 0 ? void 0 : cameraSelect.value) === 'string' ? cameraSelect.value : '';
+    if (selectedName && cameraDb[selectedName]) {
+      addCameraTypes(cameraDb[selectedName]);
     }
-    if (!types.size) {
-      Object.values(cameraDb).forEach(function (cam) {
-        ((cam === null || cam === void 0 ? void 0 : cam.recordingMedia) || []).forEach(function (media) {
-          if (media && media.type) {
-            types.add(media.type);
-          }
-        });
-      });
-    }
-    return Array.from(types).sort(localeSort);
+    Object.entries(cameraDb).forEach(function (_ref47) {
+      var _ref48 = _slicedToArray(_ref47, 2),
+        name = _ref48[0],
+        cam = _ref48[1];
+      if (name === selectedName) return;
+      addCameraTypes(cam);
+    });
+    Object.values(mediaDb).forEach(function (info) {
+      var interfaceStr = typeof (info === null || info === void 0 ? void 0 : info.interface) === 'string' ? info.interface.trim() : '';
+      if (interfaceStr) {
+        addType(interfaceStr);
+        var canonical = interfaceStr.replace(/\s*\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+        if (canonical && canonical !== interfaceStr) {
+          addType(canonical);
+        }
+      }
+      var variantHint = typeof (info === null || info === void 0 ? void 0 : info.model) === 'string' ? info.model : '';
+      var match = variantHint.match(/(CFexpress Type [AB](?: \(v\d(?:\.\d)?\))?|CFast 2\.0|microSDXC UHS-I|SDXC UHS-II|SDXC UHS-I|XQD|RED MINI-MAG|Codex Compact Drive)/i);
+      if (match) {
+        addType(match[0].replace(/\s+/g, ' ').trim());
+      }
+    });
+    return typeOrder.sort(localeSort);
   }
   function getStorageVariantOptions(type) {
-    var _devices7;
+    var _devices8;
     var variants = [];
     if (!type) return variants;
     var normalizedType = type.toLowerCase();
-    var mediaDb = ((_devices7 = devices) === null || _devices7 === void 0 || (_devices7 = _devices7.gearList) === null || _devices7 === void 0 ? void 0 : _devices7.media) || {};
+    var mediaDb = ((_devices8 = devices) === null || _devices8 === void 0 || (_devices8 = _devices8.gearList) === null || _devices8 === void 0 ? void 0 : _devices8.media) || {};
     var seen = new Set();
     var addVariant = function addVariant(value, label) {
       if (!value || seen.has(value)) return;
@@ -11512,10 +13856,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
       seen.add(value);
     };
-    Object.entries(mediaDb).forEach(function (_ref37) {
-      var _ref38 = _slicedToArray(_ref37, 2),
-        name = _ref38[0],
-        info = _ref38[1];
+    Object.entries(mediaDb).forEach(function (_ref49) {
+      var _ref50 = _slicedToArray(_ref49, 2),
+        name = _ref50[0],
+        info = _ref50[1];
       if (!name) return;
       var fields = [name, info === null || info === void 0 ? void 0 : info.model, info === null || info === void 0 ? void 0 : info.interface];
       var matches = fields.some(function (field) {
@@ -11637,7 +13981,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       quantityInput.value = quantityValue;
     }
     var quantityLabelText = getProjectFormText('storageQuantityLabel', 'Quantity');
-    var quantityLabel = createHiddenLabel(ensureElementId(quantityInput, quantityLabelText), quantityLabelText);
+    var quantityId = ensureElementId(quantityInput, quantityLabelText);
+    var quantityLabel = document.createElement('label');
+    quantityLabel.className = 'form-row-label storage-quantity-label';
+    quantityLabel.setAttribute('for', quantityId);
+    quantityLabel.textContent = quantityLabelText;
     quantityLabel.dataset.storageLabelKey = 'storageQuantityLabel';
     quantityInput.addEventListener('input', function () {
       return scheduleProjectAutoSave(true);
@@ -11753,6 +14101,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return createShootRow();
     });
   }
+  if (addReturnBtn) {
+    addReturnBtn.addEventListener('click', function () {
+      return createReturnRow();
+    });
+  }
   if (addStorageNeedBtn) {
     addStorageNeedBtn.addEventListener('click', function () {
       createStorageRequirementRow();
@@ -11846,38 +14199,38 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     });
   }
   function showPowerWarningDialog(context) {
-    var _texts$en277, _texts$en278, _texts$en279;
+    var _texts$en265, _texts$en266, _texts$en267;
     if (!powerWarningDialog) return;
-    var _ref39 = context || {},
-      batteryName = _ref39.batteryName,
-      current = _ref39.current,
-      hasPinLimit = _ref39.hasPinLimit,
-      pinLimit = _ref39.pinLimit,
-      hasDtapRating = _ref39.hasDtapRating,
-      dtapLimit = _ref39.dtapLimit,
-      dtapAllowed = _ref39.dtapAllowed;
+    var _ref51 = context || {},
+      batteryName = _ref51.batteryName,
+      current = _ref51.current,
+      hasPinLimit = _ref51.hasPinLimit,
+      pinLimit = _ref51.pinLimit,
+      hasDtapRating = _ref51.hasDtapRating,
+      dtapLimit = _ref51.dtapLimit,
+      dtapAllowed = _ref51.dtapAllowed;
     var safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect === null || batterySelect === void 0 ? void 0 : batterySelect.value) || '';
     var formattedCurrent = formatCurrentValue(Number(current) || 0);
     var langTexts = texts[currentLang] || texts.en || {};
-    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.powerWarningMessage) || '';
+    var messageTemplate = langTexts.powerWarningMessage || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.powerWarningMessage) || '';
     var message = messageTemplate ? messageTemplate.replace(/\{battery\}/g, safeBatteryName).replace(/\{current\}/g, formattedCurrent) : "".concat(safeBatteryName, " exceeds every available output (").concat(formattedCurrent, "A).");
     if (powerWarningMessageElem) {
       powerWarningMessageElem.textContent = message;
     }
-    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
+    var pinsDetail = hasPinLimit ? (langTexts.powerWarningPinsDetail || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.powerWarningPinsDetail) || 'Pins limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0)) : langTexts.powerWarningPinsUnavailable || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.powerWarningPinsUnavailable) || 'Pins limit unavailable.';
     if (powerWarningPinsDetailElem) {
       powerWarningPinsDetailElem.textContent = pinsDetail;
     }
     var dtapDetail = '';
     if (hasDtapRating && dtapAllowed) {
-      var _texts$en280;
-      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
+      var _texts$en268;
+      dtapDetail = (langTexts.powerWarningDtapDetail || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.powerWarningDtapDetail) || 'D-Tap limit: {max}A').replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
     } else if (hasDtapRating && !dtapAllowed) {
-      var _texts$en281;
-      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
+      var _texts$en269;
+      dtapDetail = langTexts.powerWarningDtapBlocked || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.powerWarningDtapBlocked) || 'D-Tap cannot be used with the current configuration.';
     } else {
-      var _texts$en282;
-      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
+      var _texts$en270;
+      dtapDetail = langTexts.powerWarningDtapUnavailable || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.powerWarningDtapUnavailable) || 'No D-Tap output is available.';
     }
     if (powerWarningDtapDetailElem) {
       powerWarningDtapDetailElem.textContent = dtapDetail;
@@ -12154,21 +14507,21 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     return '';
   }
   function getSharedImportPresetLabel(sharedData) {
-    var _texts$en283, _texts$en284;
+    var _texts$en271, _texts$en272;
     var langTexts = texts[currentLang] || texts.en || {};
-    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     var projectName = getSharedImportProjectName(sharedData);
     if (!projectName) {
       return fallback;
     }
-    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.sharedImportAutoGearPresetName) || '%s';
+    var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.sharedImportAutoGearPresetName) || '%s';
     if (template.includes('%s')) {
       return formatWithPlaceholdersSafe(template, projectName);
     }
     return "".concat(template, " ").concat(projectName).trim();
   }
   function ensureSharedAutoGearPreset(rules, sharedData) {
-    var _texts$currentLang9, _texts$en285;
+    var _texts$currentLang1, _texts$en273;
     var normalizedRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
     if (!normalizedRules.length) return null;
     var label = getSharedImportPresetLabel(sharedData);
@@ -12176,7 +14529,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     var preset = autoGearPresets.find(function (entry) {
       return entry.fingerprint === fingerprint;
     }) || null;
-    var fallback = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.sharedImportAutoGearPresetFallback) || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+    var fallback = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.sharedImportAutoGearPresetFallback) || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
     if (preset) {
       if (label && preset.label !== label && preset.label === fallback) {
         preset = _objectSpread(_objectSpread({}, preset), {}, {
@@ -12594,13 +14947,13 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   }
   var deviceManagerPreferredOrder = ["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.cardReaders", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"];
   function normalizeCategoryKey(key) {
-    var _devices8, _devices9, _devices0;
+    var _devices9, _devices0, _devices1;
     if (!key) return null;
     if (key === "accessories" || key === "fiz" || key === "filterOptions") return null;
     if (key.startsWith("accessories.cables.")) return "accessories.cables";
-    if (key === "videoAssist" && (_devices8 = devices) !== null && _devices8 !== void 0 && (_devices8 = _devices8.accessories) !== null && _devices8 !== void 0 && _devices8.videoAssist) return "accessories.videoAssist";
-    if (key === "media" && (_devices9 = devices) !== null && _devices9 !== void 0 && (_devices9 = _devices9.accessories) !== null && _devices9 !== void 0 && _devices9.media) return "accessories.media";
-    if (key === "cardReaders" && (_devices0 = devices) !== null && _devices0 !== void 0 && (_devices0 = _devices0.accessories) !== null && _devices0 !== void 0 && _devices0.cardReaders) return "accessories.cardReaders";
+    if (key === "videoAssist" && (_devices9 = devices) !== null && _devices9 !== void 0 && (_devices9 = _devices9.accessories) !== null && _devices9 !== void 0 && _devices9.videoAssist) return "accessories.videoAssist";
+    if (key === "media" && (_devices0 = devices) !== null && _devices0 !== void 0 && (_devices0 = _devices0.accessories) !== null && _devices0 !== void 0 && _devices0.media) return "accessories.media";
+    if (key === "cardReaders" && (_devices1 = devices) !== null && _devices1 !== void 0 && (_devices1 = _devices1.accessories) !== null && _devices1 !== void 0 && _devices1.cardReaders) return "accessories.cardReaders";
     return key;
   }
   function getCategoryLabel(categoryKey) {
@@ -12640,10 +14993,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       if (Array.isArray(node.attributes)) {
         addCategory(path.join('.'));
       }
-      Object.entries(node).forEach(function (_ref40) {
-        var _ref41 = _slicedToArray(_ref40, 2),
-          childKey = _ref41[0],
-          value = _ref41[1];
+      Object.entries(node).forEach(function (_ref52) {
+        var _ref53 = _slicedToArray(_ref52, 2),
+          childKey = _ref53[0],
+          value = _ref53[1];
         if (childKey === 'attributes') return;
         if (value && _typeof(value) === 'object') {
           _traverseSchema(value, path.concat(childKey));
@@ -12655,16 +15008,16 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }
     var addFromData = function addFromData(data) {
       if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-      Object.entries(data).forEach(function (_ref42) {
-        var _ref43 = _slicedToArray(_ref42, 2),
-          key = _ref43[0],
-          value = _ref43[1];
+      Object.entries(data).forEach(function (_ref54) {
+        var _ref55 = _slicedToArray(_ref54, 2),
+          key = _ref55[0],
+          value = _ref55[1];
         if (key === 'accessories') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref44) {
-              var _ref45 = _slicedToArray(_ref44, 2),
-                subKey = _ref45[0],
-                subValue = _ref45[1];
+            Object.entries(value).forEach(function (_ref56) {
+              var _ref57 = _slicedToArray(_ref56, 2),
+                subKey = _ref57[0],
+                subValue = _ref57[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("accessories.".concat(subKey));
               }
@@ -12672,10 +15025,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
           }
         } else if (key === 'fiz') {
           if (value && _typeof(value) === 'object') {
-            Object.entries(value).forEach(function (_ref46) {
-              var _ref47 = _slicedToArray(_ref46, 2),
-                subKey = _ref47[0],
-                subValue = _ref47[1];
+            Object.entries(value).forEach(function (_ref58) {
+              var _ref59 = _slicedToArray(_ref58, 2),
+                subKey = _ref59[0],
+                subValue = _ref59[1];
               if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
                 addCategory("fiz.".concat(subKey));
               }
@@ -12973,9 +15326,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   }
   populateCategoryOptions();
   function getCategoryContainer(categoryKey, subcategory) {
-    var _ref48 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref48$create = _ref48.create,
-      create = _ref48$create === void 0 ? false : _ref48$create;
+    var _ref60 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      _ref60$create = _ref60.create,
+      create = _ref60$create === void 0 ? false : _ref60$create;
     if (!categoryKey) {
       return null;
     }
@@ -13212,6 +15565,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         type: 'list',
         placeholder: 'ProRes 422 HQ'
       },
+      frameRates: {
+        type: 'list',
+        placeholder: '4K 120 fps'
+      },
       resolutions: {
         type: 'list',
         placeholder: '4.5K Open Gate'
@@ -13367,10 +15724,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     if (inputType === 'boolean') {
       var _row = document.createElement('div');
       _row.className = 'form-row schema-form-row';
-      var _label66 = document.createElement('label');
-      _label66.setAttribute('for', attrId);
-      _label66.textContent = labelText;
-      _row.appendChild(_label66);
+      var _label69 = document.createElement('label');
+      _label69.setAttribute('for', attrId);
+      _label69.textContent = labelText;
+      _row.appendChild(_label69);
       var _controlContainer = document.createElement('div');
       _controlContainer.className = 'schema-control schema-control--checkbox';
       var _inlineWrap = document.createElement('div');
@@ -13447,18 +15804,18 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     if (!deviceSchema) return [];
     var parts = category.split('.');
     var node = deviceSchema;
-    var _iterator10 = _createForOfIteratorHelper(parts),
-      _step10;
+    var _iterator11 = _createForOfIteratorHelper(parts),
+      _step11;
     try {
-      for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-        var p = _step10.value;
+      for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+        var p = _step11.value;
         node = node && node[p];
         if (!node) return [];
       }
     } catch (err) {
-      _iterator10.e(err);
+      _iterator11.e(err);
     } finally {
-      _iterator10.f();
+      _iterator11.f();
     }
     return Array.isArray(node.attributes) ? node.attributes : [];
   }
@@ -13470,19 +15827,19 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     var skip = function skip(attr) {
       return !attr || exclude.includes(attr) || seen.has(attr);
     };
-    var _iterator11 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
-      _step11;
+    var _iterator12 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
+      _step12;
     try {
-      for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-        var attr = _step11.value;
+      for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+        var attr = _step12.value;
         if (skip(attr)) continue;
         seen.add(attr);
         attrs.push(attr);
       }
     } catch (err) {
-      _iterator11.e(err);
+      _iterator12.e(err);
     } finally {
-      _iterator11.f();
+      _iterator12.f();
     }
     if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
       for (var _i15 = 0, _Object$keys3 = Object.keys(data); _i15 < _Object$keys3.length; _i15++) {
@@ -13521,18 +15878,18 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }
     var list = document.createElement('div');
     list.className = 'schema-attribute-list';
-    var _iterator12 = _createForOfIteratorHelper(attrs),
-      _step12;
+    var _iterator13 = _createForOfIteratorHelper(attrs),
+      _step13;
     try {
-      for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-        var attr = _step12.value;
+      for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+        var attr = _step13.value;
         var _value6 = data && data[attr] !== undefined ? data[attr] : undefined;
         list.appendChild(createSchemaField(category, attr, _value6));
       }
     } catch (err) {
-      _iterator12.e(err);
+      _iterator13.e(err);
     } finally {
-      _iterator12.f();
+      _iterator13.f();
     }
     dynamicFieldsDiv.appendChild(list);
   }
@@ -13588,11 +15945,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       return !exclude.includes(attr);
     });
     var result = {};
-    var _iterator13 = _createForOfIteratorHelper(filteredAttrs),
-      _step13;
+    var _iterator14 = _createForOfIteratorHelper(filteredAttrs),
+      _step14;
     try {
-      for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-        var attr = _step13.value;
+      for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+        var attr = _step14.value;
         var el = document.getElementById("attr-".concat(attr));
         if (!el) {
           continue;
@@ -13634,9 +15991,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
         }
       }
     } catch (err) {
-      _iterator13.e(err);
+      _iterator14.e(err);
     } finally {
-      _iterator13.f();
+      _iterator14.f();
     }
     markCollectedDynamicAttributes(result, filteredAttrs);
     return result;
@@ -14410,11 +16767,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var settingsTabData = document.getElementById('settingsTab-data');
   var settingsTabAbout = document.getElementById('settingsTab-about');
   var settingsTabIconAssignments = [[settingsTabGeneral, ICON_GLYPHS.settingsGeneral], [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear], [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility], [settingsTabBackup, ICON_GLYPHS.settingsBackup], [settingsTabData, ICON_GLYPHS.settingsData], [settingsTabAbout, ICON_GLYPHS.settingsAbout]];
-  settingsTabIconAssignments.forEach(function (_ref49) {
+  settingsTabIconAssignments.forEach(function (_ref61) {
     var _button$querySelector4;
-    var _ref50 = _slicedToArray(_ref49, 2),
-      button = _ref50[0],
-      glyph = _ref50[1];
+    var _ref62 = _slicedToArray(_ref61, 2),
+      button = _ref62[0],
+      glyph = _ref62[1];
     if (!button || !glyph) return;
     var iconElement = (_button$querySelector4 = button.querySelector) === null || _button$querySelector4 === void 0 ? void 0 : _button$querySelector4.call(button, '.settings-tab-icon');
     if (!iconElement) return;
@@ -14432,6 +16789,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var accentColorInput = document.getElementById("accentColorInput");
   var accentColorResetButton = document.getElementById("accentColorReset");
   var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+  var settingsFocusScale = document.getElementById('settingsFocusScale');
   var settingsFontSize = document.getElementById("settingsFontSize");
   var settingsFontFamily = document.getElementById("settingsFontFamily");
   var localFontsButton = document.getElementById("localFontsButton");
@@ -14461,9 +16819,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   function activateSettingsTab(tabId) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!settingsTabButtons.length) return;
-    var _ref51 = options || {},
-      _ref51$focusTab = _ref51.focusTab,
-      focusTab = _ref51$focusTab === void 0 ? false : _ref51$focusTab;
+    var _ref63 = options || {},
+      _ref63$focusTab = _ref63.focusTab,
+      focusTab = _ref63$focusTab === void 0 ? false : _ref63$focusTab;
     var target = settingsTabButtons.find(function (button) {
       return button.id === tabId;
     });
@@ -14652,10 +17010,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     return autoGearActiveConditions.has(key);
   }
   function refreshAutoGearConditionPicker() {
-    var _texts$currentLang0, _texts$en286;
+    var _texts$currentLang10, _texts$en274;
     if (!autoGearConditionSelect) return;
     var previousValue = autoGearConditionSelect.value || '';
-    var placeholderLabel = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.autoGearConditionPlaceholder) || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.autoGearConditionPlaceholder) || 'Choose a condition';
+    var placeholderLabel = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearConditionPlaceholder) || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.autoGearConditionPlaceholder) || 'Choose a condition';
     autoGearConditionSelect.innerHTML = '';
     var placeholder = document.createElement('option');
     placeholder.value = '';
@@ -14718,9 +17076,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }
     var section = config.section,
       select = config.select;
-    var _ref52 = options || {},
-      _ref52$flash = _ref52.flash,
-      flash = _ref52$flash === void 0 ? false : _ref52$flash;
+    var _ref64 = options || {},
+      _ref64$flash = _ref64.flash,
+      flash = _ref64$flash === void 0 ? false : _ref64$flash;
     if (section.hidden) {
       section.hidden = false;
       section.setAttribute('aria-hidden', 'false');
@@ -14743,11 +17101,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }
   }
   function notifyAutoGearConditionRepeat(key) {
-    var _texts$currentLang1, _texts$en287;
+    var _texts$currentLang11, _texts$en275;
     if (typeof showNotification !== 'function') {
       return;
     }
-    var template = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.autoGearConditionRepeatHint) || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.autoGearConditionRepeatHint) || '';
+    var template = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionRepeatHint) || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.autoGearConditionRepeatHint) || '';
     if (!template) return;
     var label = getAutoGearConditionLabel(key);
     var message;
@@ -14782,9 +17140,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     focusAutoGearConditionPicker();
   }
   function configureAutoGearConditionButtons() {
-    var _texts$currentLang10, _texts$en288, _texts$currentLang11, _texts$en289;
-    var addLabel = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearConditionAddShortcut) || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.autoGearConditionAddShortcut) || 'Add another condition';
-    var removeLabel = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearConditionRemove) || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.autoGearConditionRemove) || 'Remove this condition';
+    var _texts$currentLang12, _texts$en276, _texts$currentLang13, _texts$en277;
+    var addLabel = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearConditionAddShortcut) || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.autoGearConditionAddShortcut) || 'Add another condition';
+    var removeLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearConditionRemove) || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.autoGearConditionRemove) || 'Remove this condition';
     AUTO_GEAR_CONDITION_KEYS.forEach(function (key) {
       var config = getAutoGearConditionConfig(key);
       if (!config) return;
@@ -14968,9 +17326,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   }
   function clearAllAutoGearConditions() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref53 = options || {},
-      _ref53$preserveDraft = _ref53.preserveDraft,
-      preserveDraft = _ref53$preserveDraft === void 0 ? false : _ref53$preserveDraft;
+    var _ref65 = options || {},
+      _ref65$preserveDraft = _ref65.preserveDraft,
+      preserveDraft = _ref65$preserveDraft === void 0 ? false : _ref65$preserveDraft;
     Array.from(autoGearActiveConditions).forEach(function (key) {
       removeAutoGearCondition(key, {
         preserveDraft: preserveDraft,
@@ -15146,10 +17504,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
     autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
   }
-  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref54) {
-    var _ref55 = _slicedToArray(_ref54, 2),
-      key = _ref55[0],
-      select = _ref55[1];
+  Object.entries(autoGearConditionLogicSelects).forEach(function (_ref66) {
+    var _ref67 = _slicedToArray(_ref66, 2),
+      key = _ref67[0],
+      select = _ref67[1];
     if (!select) return;
     var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
     var handleLogicChange = function handleLogicChange() {
@@ -15369,6 +17727,7 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
   var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
   var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
+  var storageStatusReminder = document.getElementById('storageStatusReminder');
   var loggingSection = document.getElementById('loggingSection');
   var loggingHeading = document.getElementById('loggingHeading');
   var loggingIntro = document.getElementById('loggingIntro');
@@ -15408,12 +17767,12 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     });
   }
   function computeAutoGearMultiSelectSize(optionCount) {
-    var _ref56 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-      fallback = _ref56.fallback,
-      _ref56$minRows = _ref56.minRows,
-      minRows = _ref56$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref56$minRows,
-      _ref56$maxRows = _ref56.maxRows,
-      maxRows = _ref56$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref56$maxRows;
+    var _ref68 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      fallback = _ref68.fallback,
+      _ref68$minRows = _ref68.minRows,
+      minRows = _ref68$minRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MIN_ROWS : _ref68$minRows,
+      _ref68$maxRows = _ref68.maxRows,
+      maxRows = _ref68$maxRows === void 0 ? AUTO_GEAR_MULTI_SELECT_MAX_ROWS : _ref68$maxRows;
     var effectiveFallback = Number.isFinite(fallback) && fallback >= minRows ? fallback : minRows;
     if (!Number.isFinite(optionCount) || optionCount <= 0) {
       return effectiveFallback;
@@ -15483,9 +17842,9 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       haystack.push(rule.label);
     }
     if (rule && rule.always) {
-      var _texts$currentLang12, _texts$en290;
+      var _texts$currentLang14, _texts$en278;
       haystack.push('always');
-      var alwaysText = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearAlwaysMeta) || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.autoGearAlwaysMeta) || 'Always active';
+      var alwaysText = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearAlwaysMeta) || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278.autoGearAlwaysMeta) || 'Always active';
       if (alwaysText) {
         haystack.push(alwaysText);
       }
@@ -15506,11 +17865,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     pushValues(rule === null || rule === void 0 ? void 0 : rule.distance);
     var shootingCondition = normalizeAutoGearShootingDaysCondition(rule === null || rule === void 0 ? void 0 : rule.shootingDays);
     if (shootingCondition) {
-      var _texts$currentLang13, _texts$en291, _texts$currentLang14, _texts$en292, _texts$currentLang15, _texts$en293, _texts$currentLang16, _texts$en294;
-      var shootingLabel = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearShootingDaysLabel) || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.autoGearShootingDaysLabel) || 'Shooting days condition';
-      var minimumLabel = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearShootingDaysModeMinimum) || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.autoGearShootingDaysModeMinimum) || 'Minimum';
-      var maximumLabel = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearShootingDaysModeMaximum) || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.autoGearShootingDaysModeMaximum) || 'Maximum';
-      var everyLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysModeEvery) || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.autoGearShootingDaysModeEvery) || 'Every';
+      var _texts$currentLang15, _texts$en279, _texts$currentLang16, _texts$en280, _texts$currentLang17, _texts$en281, _texts$currentLang18, _texts$en282;
+      var shootingLabel = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearShootingDaysLabel) || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.autoGearShootingDaysLabel) || 'Shooting days condition';
+      var minimumLabel = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearShootingDaysModeMinimum) || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280.autoGearShootingDaysModeMinimum) || 'Minimum';
+      var maximumLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearShootingDaysModeMaximum) || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.autoGearShootingDaysModeMaximum) || 'Maximum';
+      var everyLabel = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearShootingDaysModeEvery) || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.autoGearShootingDaysModeEvery) || 'Every';
       if (shootingLabel) {
         haystack.push(shootingLabel);
       }
@@ -15646,18 +18005,18 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!options.size) {
-      getAutoGearScenarioFallbackOptions().forEach(function (_ref57) {
-        var value = _ref57.value,
-          label = _ref57.label;
+      getAutoGearScenarioFallbackOptions().forEach(function (_ref69) {
+        var value = _ref69.value,
+          label = _ref69.label;
         if (!options.has(value)) {
           options.set(value, label);
         }
       });
     }
-    return Array.from(options.entries()).map(function (_ref58) {
-      var _ref59 = _slicedToArray(_ref58, 2),
-        value = _ref59[0],
-        label = _ref59[1];
+    return Array.from(options.entries()).map(function (_ref70) {
+      var _ref71 = _slicedToArray(_ref70, 2),
+        value = _ref71[0],
+        label = _ref71[1];
       return {
         value: value,
         label: label
@@ -15667,18 +18026,18 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     });
   }
   function refreshAutoGearScenarioFilterOptions(rules) {
-    var _texts$currentLang17, _texts$en295;
+    var _texts$currentLang19, _texts$en283;
     if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
     var options = collectAutoGearScenarioFilterOptions(rules);
-    var anyLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearFilterScenarioAny) || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.autoGearFilterScenarioAny) || 'All scenarios';
+    var anyLabel = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearFilterScenarioAny) || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.autoGearFilterScenarioAny) || 'All scenarios';
     autoGearFilterScenarioSelect.innerHTML = '';
     var anyOption = document.createElement('option');
     anyOption.value = 'all';
     anyOption.textContent = anyLabel;
     autoGearFilterScenarioSelect.appendChild(anyOption);
-    options.forEach(function (_ref60) {
-      var value = _ref60.value,
-        label = _ref60.label;
+    options.forEach(function (_ref72) {
+      var value = _ref72.value,
+        label = _ref72.label;
       var option = document.createElement('option');
       option.value = value;
       option.textContent = label;
@@ -15877,10 +18236,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang18, _texts$en296;
+      var _texts$currentLang20, _texts$en284;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearScenarioPlaceholder) || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.autoGearScenarioPlaceholder) || 'Select scenarios';
+      placeholder.textContent = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearScenarioPlaceholder) || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.autoGearScenarioPlaceholder) || 'Select scenarios';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearScenariosSelect.appendChild(placeholder);
@@ -15922,11 +18281,11 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     var uniqueValues = Array.from(new Set(values));
     var desiredMode = autoGearEditorDraft ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic) : normalizeAutoGearScenarioLogic((_autoGearScenarioMode = autoGearScenarioModeSelectElement) === null || _autoGearScenarioMode === void 0 ? void 0 : _autoGearScenarioMode.value);
     if (autoGearScenarioModeSelectElement) {
-      var _texts$currentLang19, _texts$en297, _texts$currentLang20, _texts$en298, _texts$currentLang21, _texts$en299;
+      var _texts$currentLang21, _texts$en285, _texts$currentLang22, _texts$en286, _texts$currentLang23, _texts$en287;
       var modeLabels = {
-        all: ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearScenarioModeAll) || ((_texts$en297 = texts.en) === null || _texts$en297 === void 0 ? void 0 : _texts$en297.autoGearScenarioModeAll) || 'Require every selected scenario',
-        any: ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearScenarioModeAny) || ((_texts$en298 = texts.en) === null || _texts$en298 === void 0 ? void 0 : _texts$en298.autoGearScenarioModeAny) || 'Match any selected scenario',
-        multiplier: ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioModeMultiplier) || ((_texts$en299 = texts.en) === null || _texts$en299 === void 0 ? void 0 : _texts$en299.autoGearScenarioModeMultiplier) || 'Multiply when combined'
+        all: ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioModeAll) || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.autoGearScenarioModeAll) || 'Require every selected scenario',
+        any: ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearScenarioModeAny) || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.autoGearScenarioModeAny) || 'Match any selected scenario',
+        multiplier: ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearScenarioModeMultiplier) || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.autoGearScenarioModeMultiplier) || 'Multiply when combined'
       };
       Array.from(autoGearScenarioModeSelectElement.options || []).forEach(function (option) {
         if (!option) return;
@@ -15981,10 +18340,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     var previousValue = autoGearScenarioBaseSelect.value || '';
     autoGearScenarioBaseSelect.innerHTML = '';
     if (forceDisable || !uniqueValues.length) {
-      var _texts$currentLang22, _texts$en300;
+      var _texts$currentLang24, _texts$en288;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearScenarioBasePlaceholder) || ((_texts$en300 = texts.en) === null || _texts$en300 === void 0 ? void 0 : _texts$en300.autoGearScenarioBasePlaceholder) || 'Select a base scenario';
+      placeholder.textContent = ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearScenarioBasePlaceholder) || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.autoGearScenarioBasePlaceholder) || 'Select a base scenario';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearScenarioBaseSelect.appendChild(placeholder);
@@ -16049,10 +18408,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang23, _texts$en301;
+      var _texts$currentLang25, _texts$en289;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearMatteboxPlaceholder) || ((_texts$en301 = texts.en) === null || _texts$en301 === void 0 ? void 0 : _texts$en301.autoGearMatteboxPlaceholder) || 'Select mattebox options';
+      placeholder.textContent = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearMatteboxPlaceholder) || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.autoGearMatteboxPlaceholder) || 'Select mattebox options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearMatteboxSelect.appendChild(placeholder);
@@ -16103,10 +18462,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang24, _texts$en302;
+      var _texts$currentLang26, _texts$en290;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearCameraHandlePlaceholder) || ((_texts$en302 = texts.en) === null || _texts$en302 === void 0 ? void 0 : _texts$en302.autoGearCameraHandlePlaceholder) || 'Select camera handles';
+      placeholder.textContent = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearCameraHandlePlaceholder) || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.autoGearCameraHandlePlaceholder) || 'Select camera handles';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearCameraHandleSelect.appendChild(placeholder);
@@ -16138,15 +18497,15 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   }
   function getViewfinderFallbackLabel(value) {
     if (value === '__none__') {
-      var _texts$currentLang25, _texts$en303;
-      return ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.viewfinderExtensionNone) || ((_texts$en303 = texts.en) === null || _texts$en303 === void 0 ? void 0 : _texts$en303.viewfinderExtensionNone) || 'No';
+      var _texts$currentLang27, _texts$en291;
+      return ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.viewfinderExtensionNone) || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.viewfinderExtensionNone) || 'No';
     }
     return value;
   }
   function getVideoDistributionFallbackLabel(value) {
     if (value === '__none__') {
-      var _texts$currentLang26, _texts$en304;
-      return ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearVideoDistributionNone) || ((_texts$en304 = texts.en) === null || _texts$en304 === void 0 ? void 0 : _texts$en304.autoGearVideoDistributionNone) || 'No video distribution selected';
+      var _texts$currentLang28, _texts$en292;
+      return ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.autoGearVideoDistributionNone) || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.autoGearVideoDistributionNone) || 'No video distribution selected';
     }
     return value;
   }
@@ -16184,10 +18543,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang27, _texts$en305;
+      var _texts$currentLang29, _texts$en293;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearViewfinderExtensionPlaceholder) || ((_texts$en305 = texts.en) === null || _texts$en305 === void 0 ? void 0 : _texts$en305.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
+      placeholder.textContent = ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearViewfinderExtensionPlaceholder) || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearViewfinderExtensionSelect.appendChild(placeholder);
@@ -16243,10 +18602,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       if (!seen.has(value)) addOption(value, value);
     });
     if (!autoGearDeliveryResolutionSelect.options.length) {
-      var _texts$currentLang28, _texts$en306;
+      var _texts$currentLang30, _texts$en294;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.autoGearDeliveryResolutionPlaceholder) || ((_texts$en306 = texts.en) === null || _texts$en306 === void 0 ? void 0 : _texts$en306.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
+      placeholder.textContent = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearDeliveryResolutionPlaceholder) || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.autoGearDeliveryResolutionPlaceholder) || 'Select delivery resolutions';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearDeliveryResolutionSelect.appendChild(placeholder);
@@ -16298,10 +18657,10 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
       });
     }
     if (!hasOptions) {
-      var _texts$currentLang29, _texts$en307;
+      var _texts$currentLang31, _texts$en295;
       var placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearVideoDistributionPlaceholder) || ((_texts$en307 = texts.en) === null || _texts$en307 === void 0 ? void 0 : _texts$en307.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
+      placeholder.textContent = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearVideoDistributionPlaceholder) || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
       placeholder.disabled = true;
       placeholder.selected = true;
       autoGearVideoDistributionSelect.appendChild(placeholder);
@@ -16335,15 +18694,15 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     }).filter(Boolean)));
   }
   function getCrewRoleEntries() {
-    var _texts$en308;
+    var _texts$en296;
     var langTexts = texts[currentLang] || texts.en || {};
-    var crewRoleMap = langTexts.crewRoles || ((_texts$en308 = texts.en) === null || _texts$en308 === void 0 ? void 0 : _texts$en308.crewRoles) || {};
+    var crewRoleMap = langTexts.crewRoles || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.crewRoles) || {};
     var seen = new Set();
     var entries = [];
-    Object.entries(crewRoleMap).forEach(function (_ref61) {
-      var _ref62 = _slicedToArray(_ref61, 2),
-        value = _ref62[0],
-        label = _ref62[1];
+    Object.entries(crewRoleMap).forEach(function (_ref73) {
+      var _ref74 = _slicedToArray(_ref73, 2),
+        value = _ref74[0],
+        label = _ref74[1];
       if (typeof value !== 'string') return;
       var trimmedValue = value.trim();
       if (!trimmedValue) return;
@@ -16380,6 +18739,8 @@ var rentalHouseLabel = document.getElementById("rentalHouseLabel");
     TEMPERATURE_STORAGE_KEY: TEMPERATURE_STORAGE_KEY,
     TEMPERATURE_UNITS: TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
+    FOCUS_SCALE_STORAGE_KEY: FOCUS_SCALE_STORAGE_KEY,
+    FOCUS_SCALE_VALUES: FOCUS_SCALE_VALUES,
     FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
     FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
   };

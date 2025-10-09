@@ -91,6 +91,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     handlers: {},
     feedbackFieldCache: [],
     feedbackFieldCacheDoc: null,
+    collatorCache: Object.create(null),
+    fallbackCollator: null,
     dependencies: {
       mailTarget: 'info@lucazanner.de',
       document: null,
@@ -460,6 +462,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function getLocaleAwareCollator(collatorCandidate, lang) {
+    if (collatorCandidate && typeof collatorCandidate.compare === 'function') {
+      return collatorCandidate;
+    }
+    var cache = runtimeFeedbackState.collatorCache;
+    if (!cache || _typeof(cache) !== 'object') {
+      cache = Object.create(null);
+      runtimeFeedbackState.collatorCache = cache;
+    }
+    var normalizedLang = typeof lang === 'string' ? lang.trim() : '';
+    var localeKey = normalizedLang || 'default';
+    var cached = cache[localeKey];
+    if (cached && typeof cached.compare === 'function') {
+      return cached;
+    }
+    var resolvedCollator = null;
+    if (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function') {
+      var localeCandidates = localeKey === 'default' ? [undefined] : [normalizedLang, undefined];
+      for (var index = 0; index < localeCandidates.length; index += 1) {
+        var localeCandidate = localeCandidates[index];
+        if (typeof localeCandidate === 'string' && !localeCandidate) {
+          continue;
+        }
+        try {
+          resolvedCollator = new Intl.Collator(localeCandidate, {
+            numeric: true,
+            sensitivity: 'base'
+          });
+          break;
+        } catch (error) {
+          void error;
+          resolvedCollator = null;
+        }
+      }
+    }
+    if (!resolvedCollator) {
+      var fallback = runtimeFeedbackState.fallbackCollator;
+      if (!fallback || typeof fallback.compare !== 'function') {
+        fallback = {
+          compare: function fallbackCompare(a, b) {
+            return String(a).localeCompare(String(b));
+          }
+        };
+        runtimeFeedbackState.fallbackCollator = fallback;
+      }
+      resolvedCollator = fallback;
+    }
+    cache[localeKey] = resolvedCollator;
+    return resolvedCollator;
+  }
   function toArray(value) {
     if (!value) {
       return [];
@@ -573,6 +625,100 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return '';
     }
     return runtimeHours >= 10 ? runtimeHours.toFixed(1) : runtimeHours.toFixed(2);
+  }
+  function formatCurrentForSummary(current) {
+    if (!Number.isFinite(current)) {
+      return '0.00';
+    }
+    return current.toFixed(2);
+  }
+  function resolvePinsStatusText(resolveText, options) {
+    var current = Number.isFinite(options.current) ? options.current : 0;
+    var limit = Number.isFinite(options.limit) ? options.limit : null;
+    if (current <= 0) {
+      return resolveText('resultsPlainSummaryPinsZero');
+    }
+    if (!Number.isFinite(limit) || limit <= 0) {
+      var unknownTemplate = resolveText('resultsPlainSummaryPinsUnknown');
+      return replaceSummaryTokens(unknownTemplate, {
+        current: formatCurrentForSummary(current)
+      });
+    }
+    var tokens = {
+      current: formatCurrentForSummary(current),
+      max: String(limit)
+    };
+    if (current > limit) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsExceeded'), tokens);
+    }
+    if (current >= limit * 0.8) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsNear'), tokens);
+    }
+    return replaceSummaryTokens(resolveText('resultsPlainSummaryPinsOk'), tokens);
+  }
+  function resolveDtapStatusText(resolveText, options) {
+    var current = Number.isFinite(options.current) ? options.current : 0;
+    var limit = Number.isFinite(options.limit) ? options.limit : null;
+    var hasRating = options.hasRating;
+    var allowed = options.allowed;
+    var bMountCam = options.bMountCam;
+    if (!allowed) {
+      if (bMountCam) {
+        return resolveText('resultsPlainSummaryDtapUnavailableBMount');
+      }
+      if (!hasRating) {
+        var missingTemplate = resolveText('resultsPlainSummaryDtapUnknown');
+        return replaceSummaryTokens(missingTemplate, {
+          current: formatCurrentForSummary(current)
+        });
+      }
+      return resolveText('resultsPlainSummaryDtapUnavailable');
+    }
+    if (current <= 0) {
+      return resolveText('resultsPlainSummaryDtapZero');
+    }
+    if (!Number.isFinite(limit) || limit <= 0) {
+      var unknownTemplate = resolveText('resultsPlainSummaryDtapUnknown');
+      return replaceSummaryTokens(unknownTemplate, {
+        current: formatCurrentForSummary(current)
+      });
+    }
+    var tokens = {
+      current: formatCurrentForSummary(current),
+      max: String(limit)
+    };
+    if (current > limit) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapExceeded'), tokens);
+    }
+    if (current >= limit * 0.8) {
+      return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapNear'), tokens);
+    }
+    return replaceSummaryTokens(resolveText('resultsPlainSummaryDtapOk'), tokens);
+  }
+  function buildPowerOutputSummaryText(resolveText, options) {
+    if (typeof resolveText !== 'function') {
+      return '';
+    }
+    var opts = options || {};
+    var parts = [];
+    var pinsText = resolvePinsStatusText(resolveText, {
+      current: opts.current,
+      limit: opts.pinLimit
+    });
+    if (pinsText) {
+      parts.push(pinsText);
+    }
+    var dtapText = resolveDtapStatusText(resolveText, {
+      current: opts.current,
+      limit: opts.dtapLimit,
+      hasRating: opts.hasDtapRating,
+      allowed: opts.dtapAllowed,
+      bMountCam: opts.bMountCam
+    });
+    if (dtapText) {
+      parts.push(dtapText);
+    }
+    return parts.join(' ');
   }
   function buildPlainSummaryText(summaryOptions) {
     var opts = summaryOptions || {};
@@ -1024,6 +1170,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!collator && GLOBAL_SCOPE && GLOBAL_SCOPE.collator) {
       collator = GLOBAL_SCOPE.collator;
     }
+    if (collator && deps && _typeof(deps) === 'object') {
+      deps.collator = collator;
+    }
     var langTexts = texts && _typeof(texts) === 'object' && texts[currentLang] && _typeof(texts[currentLang]) === 'object' ? texts[currentLang] : null;
     var fallbackTexts = texts && _typeof(texts) === 'object' && texts.en && _typeof(texts.en) === 'object' ? texts.en : null;
     if (!langTexts) {
@@ -1052,6 +1201,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var controllerSelects = resolveSelectCollection(opts, 'controllerSelects', ['controller1Select', 'controller2Select', 'controller3Select', 'controller4Select'], 'controllerSelects');
     var resultsPlainSummaryTarget = resolveElementFromOptions(opts, 'resultsPlainSummaryElem', 'resultsPlainSummary', 'resultsPlainSummaryElem');
     var resultsPlainSummaryTextTarget = resolveElementFromOptions(opts, 'resultsPlainSummaryTextElem', 'resultsPlainSummaryText', 'resultsPlainSummaryTextElem');
+    var resultsPlainSummaryNoteTarget = resolveElementFromOptions(opts, 'resultsPlainSummaryNoteElem', 'resultsPlainSummaryNote', 'resultsPlainSummaryNoteElem');
     var totalPowerTarget = resolveElementFromOptions(opts, 'totalPowerElem', 'totalPower', 'totalPowerElem');
     var breakdownListTarget = resolveElementFromOptions(opts, 'breakdownListElem', 'breakdownList', 'breakdownListElem');
     var totalCurrent144Target = resolveElementFromOptions(opts, 'totalCurrent144Elem', 'totalCurrent144', 'totalCurrent144Elem');
@@ -1076,6 +1226,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.elements.controllerSelects = controllerSelects;
     runtimeFeedbackState.elements.resultsPlainSummaryElem = resultsPlainSummaryTarget;
     runtimeFeedbackState.elements.resultsPlainSummaryTextElem = resultsPlainSummaryTextTarget;
+    runtimeFeedbackState.elements.resultsPlainSummaryNoteElem = resultsPlainSummaryNoteTarget;
     runtimeFeedbackState.elements.totalPowerElem = totalPowerTarget;
     runtimeFeedbackState.elements.breakdownListElem = breakdownListTarget;
     runtimeFeedbackState.elements.totalCurrent144Elem = totalCurrent144Target;
@@ -1602,6 +1753,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         setStatusMessageFn(dtapWarnTarget, '');
         setStatusLevelFn(dtapWarnTarget, null);
       }
+      var outputsSummaryText = buildPowerOutputSummaryText(resolveText, {
+        current: totalCurrentLow,
+        pinLimit: maxPinA,
+        dtapLimit: maxDtapA,
+        hasDtapRating: hasDtapRating,
+        dtapAllowed: dtapAllowed,
+        bMountCam: bMountCam
+      });
+      if (resultsPlainSummaryNoteTarget) {
+        try {
+          resultsPlainSummaryNoteTarget.textContent = outputsSummaryText;
+        } catch (error) {
+          void error;
+        }
+      }
     }
     if (batteryComparisonSection && batteryComparisonSection.style) {
       batteryComparisonSection.style.display = totalWatt > 0 ? 'block' : 'none';
@@ -1642,14 +1808,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var pinsCandidates = [];
       var dtapCandidates = [];
-      var nameCollator = collator && typeof collator.compare === 'function' ? collator : typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(undefined, {
-        numeric: true,
-        sensitivity: 'base'
-      }) : {
-        compare: function compareStrings(a, b) {
-          return String(a).localeCompare(String(b));
-        }
-      };
+      var nameCollator = getLocaleAwareCollator(collator, currentLang);
       for (var batteryName in batteryDevices) {
         if (!Object.prototype.hasOwnProperty.call(batteryDevices, batteryName)) {
           continue;

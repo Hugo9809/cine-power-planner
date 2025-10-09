@@ -1,9 +1,13 @@
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -334,6 +338,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       selectorType: typeof item.selectorType === 'string' ? item.selectorType : 'none',
       selectorDefault: typeof item.selectorDefault === 'string' ? item.selectorDefault : '',
       selectorEnabled: !!item.selectorEnabled,
+      selectorContext: typeof item.selectorContext === 'string' ? item.selectorContext : '',
       notes: typeof item.notes === 'string' ? item.notes : '',
       contextNotes: Array.isArray(item.contextNotes) ? item.contextNotes.filter(Boolean) : []
     };
@@ -977,6 +982,176 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       remove: []
     }];
   }
+  function resolveHandUnitCompatibilityMaps() {
+    var groups = null;
+    var motorMap = null;
+    try {
+      if (typeof AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS !== 'undefined' && AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS && (typeof AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS === "undefined" ? "undefined" : _typeof(AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS)) === 'object') {
+        groups = AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+      }
+    } catch (error) {
+      void error;
+    }
+    if (!groups && GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS) === 'object') {
+      groups = GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_COMPATIBILITY_GROUPS;
+    }
+    try {
+      if (typeof AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP !== 'undefined' && AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP && (typeof AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP === "undefined" ? "undefined" : _typeof(AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP)) === 'object') {
+        motorMap = AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+      }
+    } catch (error) {
+      void error;
+    }
+    if (!motorMap && GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP) === 'object') {
+      motorMap = GLOBAL_SCOPE.AUTO_GEAR_HAND_UNIT_MOTOR_TO_GROUP;
+    }
+    return {
+      groups: groups && _typeof(groups) === 'object' ? groups : null,
+      motorMap: motorMap && _typeof(motorMap) === 'object' ? motorMap : null
+    };
+  }
+  function getHandUnitGroupForMotor(motorName) {
+    if (!motorName) return null;
+    var maps = resolveHandUnitCompatibilityMaps();
+    if (!maps.groups) return null;
+    var normalized = normalizeAutoGearTriggerValue(motorName);
+    if (!normalized) return null;
+    var key = null;
+    if (maps.motorMap && Object.prototype.hasOwnProperty.call(maps.motorMap, normalized)) {
+      key = maps.motorMap[normalized];
+    } else if (Object.prototype.hasOwnProperty.call(maps.groups, normalized)) {
+      key = normalized;
+    }
+    if (!key || !maps.groups[key]) {
+      return null;
+    }
+    var group = maps.groups[key];
+    if (!group || !Array.isArray(group.options) || !group.options.length) {
+      return null;
+    }
+    return {
+      key: key,
+      group: group
+    };
+  }
+  function collectAllWirelessTransmitterNames() {
+    var names = [];
+    if (!devices || (typeof devices === "undefined" ? "undefined" : _typeof(devices)) !== 'object') {
+      return names;
+    }
+    var videoDb = devices.video && _typeof(devices.video) === 'object' ? devices.video : null;
+    if (!videoDb) {
+      return names;
+    }
+    Object.keys(videoDb).forEach(function (name) {
+      if (!name || name === 'None') return;
+      if (!names.includes(name)) {
+        names.push(name);
+      }
+    });
+    return names;
+  }
+  function buildMotorHandUnitAutoGearRules(baseInfo) {
+    var maps = resolveHandUnitCompatibilityMaps();
+    if (!maps.groups) {
+      return [];
+    }
+    var setupValues = typeof captureSetupSelectValues === 'function' ? captureSetupSelectValues() : null;
+    var rawMotors = [];
+    if (setupValues && Array.isArray(setupValues.motors)) {
+      rawMotors.push.apply(rawMotors, _toConsumableArray(setupValues.motors));
+    }
+    if (baseInfo && Array.isArray(baseInfo.motorSelections)) {
+      rawMotors.push.apply(rawMotors, _toConsumableArray(baseInfo.motorSelections));
+    }
+    if (baseInfo && Array.isArray(baseInfo.motors)) {
+      rawMotors.push.apply(rawMotors, _toConsumableArray(baseInfo.motors));
+    }
+    var motorEntries = rawMotors.map(function (name) {
+      return typeof name === 'string' ? name.trim() : '';
+    }).filter(function (name) {
+      return name && name !== 'None';
+    }).map(function (name) {
+      return {
+        name: name,
+        normalized: normalizeAutoGearTriggerValue(name)
+      };
+    }).filter(function (entry) {
+      return entry.normalized;
+    });
+    if (!motorEntries.length) {
+      return [];
+    }
+    var wirelessSelection = '';
+    if (setupValues && typeof setupValues.video === 'string') {
+      wirelessSelection = setupValues.video.trim();
+    }
+    if (!wirelessSelection && baseInfo && typeof baseInfo.wirelessSelection === 'string') {
+      wirelessSelection = baseInfo.wirelessSelection.trim();
+    }
+    if (!wirelessSelection || wirelessSelection === 'None') {
+      return [];
+    }
+    var additions = [];
+    var handledGroups = new Set();
+    motorEntries.forEach(function (entry) {
+      var resolved = getHandUnitGroupForMotor(entry.normalized);
+      if (!resolved || handledGroups.has(resolved.key)) {
+        return;
+      }
+      handledGroups.add(resolved.key);
+      var group = resolved.group;
+      var options = Array.isArray(group.options) ? group.options.filter(Boolean) : [];
+      if (!options.length) {
+        return;
+      }
+      var defaultOption = typeof group.defaultOption === 'string' && group.defaultOption ? group.defaultOption : options[0];
+      var contextNotes = [];
+      if (group.label) {
+        contextNotes.push(group.label);
+      }
+      if (Array.isArray(group.motors) && group.motors.length) {
+        contextNotes.push("Compatible motors: ".concat(group.motors.join(', ')));
+      }
+      additions.push({
+        id: generateAutoGearId('item'),
+        name: defaultOption,
+        category: 'LDS (FIZ)',
+        quantity: 1,
+        screenSize: '',
+        selectorType: 'fizHandUnit',
+        selectorDefault: defaultOption,
+        selectorEnabled: true,
+        selectorContext: resolved.key,
+        notes: '',
+        contextNotes: contextNotes
+      });
+    });
+    if (!additions.length) {
+      return [];
+    }
+    var wirelessTargets = collectAllWirelessTransmitterNames();
+    if (!wirelessTargets.length) {
+      wirelessTargets.push(wirelessSelection);
+    }
+    return [{
+      id: generateAutoGearId('rule'),
+      label: 'FIZ hand units',
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [],
+      camera: [],
+      monitor: [],
+      wireless: wirelessTargets,
+      motors: [AUTO_GEAR_ANY_MOTOR_TOKEN],
+      controllers: [],
+      distance: [],
+      add: additions,
+      remove: []
+    }];
+  }
   function buildAutoGearAnyMotorRule() {
     if (typeof captureSetupSelectValues !== 'function') return null;
     var setupValues = captureSetupSelectValues();
@@ -1363,6 +1538,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
       appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
       appendUniqueRules(buildArriViewfinderBracketRules(baseInfo));
+      appendUniqueRules(buildMotorHandUnitAutoGearRules(baseInfo));
     }
     var anyMotorRule = buildAutoGearAnyMotorRule();
     if (anyMotorRule) {
