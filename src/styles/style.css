@@ -8269,10 +8269,10 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.1rem;
-  min-width: 2.1rem;
-  height: 2.1rem;
-  padding: 0.35rem;
+  width: 1.85rem;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  padding: 0.25rem;
   border-radius: calc(var(--border-radius) * 0.9);
   border: 1px solid color-mix(in srgb, var(--accent-color) 32%, transparent);
   background: color-mix(in srgb, var(--panel-bg) 90%, transparent);
@@ -8294,7 +8294,7 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
 }
 
 #gearListOutput .gear-item-edit-btn .btn-icon {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 html.dark-mode #gearListOutput .gear-item-edit-btn,
