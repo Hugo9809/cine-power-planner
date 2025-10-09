@@ -5052,6 +5052,7 @@ function getGearItemEditTexts() {
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
+    rentalNote: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
@@ -5078,8 +5079,14 @@ function applyGearItemEditDialogTexts(context) {
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
   }
+  const rentalTexts = getGearListRentalToggleTexts();
+  const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
+  const rentalNote = textsForDialog.rentalNote || rentalTexts.noteLabel || '';
   if (context.rentalLabel) {
-    context.rentalLabel.textContent = textsForDialog.rentalLabel;
+    context.rentalLabel.textContent = rentalNote || baseToggleLabel;
+  }
+  if (context.rentalCheckbox) {
+    context.rentalCheckbox.setAttribute('aria-label', textsForDialog.rentalLabel);
   }
   if (context.resetButton) {
     const resetLabel = textsForDialog.resetLabel;
@@ -5092,9 +5099,6 @@ function applyGearItemEditDialogTexts(context) {
       context.resetButton.textContent = resetLabel;
     }
   }
-  const rentalTexts = getGearListRentalToggleTexts();
-  const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
-  const rentalNote = rentalTexts.noteLabel || '';
   if (context.rentalToggleButton) {
     context.rentalToggleButton.setAttribute('aria-label', baseToggleLabel);
     context.rentalToggleButton.title = baseToggleLabel;
