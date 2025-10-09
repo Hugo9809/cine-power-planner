@@ -12463,6 +12463,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (safeGearHtml) {
           gearListOutput.innerHTML = safeGearHtml;
           gearListOutput.classList.remove('hidden');
+          if (typeof enhanceGearListItems === 'function') {
+            enhanceGearListItems(gearListOutput);
+          }
           applyFilterSelectionsToGearList();
           renderFilterDetails();
           const findDevice = name => {

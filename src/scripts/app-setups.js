@@ -3206,18 +3206,6 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
         notesSpan.textContent = `${delimiter}${normalizedItem.notes}`;
         span.appendChild(notesSpan);
     }
-    if (rentalTexts) {
-        const toggleHtml = buildRentalToggleMarkup(name, rentalTexts);
-        if (toggleHtml && typeof toggleHtml === 'string' && typeof document !== 'undefined') {
-            const template = document.createElement('template');
-            template.innerHTML = toggleHtml.trim();
-            const toggleButton = template.content.firstElementChild;
-            if (toggleButton) {
-                span.appendChild(document.createTextNode(' '));
-                span.appendChild(toggleButton);
-            }
-        }
-    }
     setRentalExclusionState(span, wasRentalExcluded);
     applyAutoGearRuleColors(span, rule);
     refreshAutoGearRuleBadge(span);
@@ -4306,13 +4294,11 @@ function ensureCustomCategorySuggestionList(categoryKey, categoryLabel) {
 
 function attachCustomItemSuggestions(entry, categoryKey, categoryLabel) {
   if (!entry) return;
-  const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
-  if (!nameInput) return;
   const datalistId = ensureCustomCategorySuggestionList(categoryKey, categoryLabel);
   if (datalistId) {
-    nameInput.setAttribute('list', datalistId);
+    entry.setAttribute('data-gear-suggestions', datalistId);
   } else {
-    nameInput.removeAttribute('list');
+    entry.removeAttribute('data-gear-suggestions');
   }
 }
 
@@ -4320,10 +4306,12 @@ function updateCustomItemPreview(entry) {
   if (!entry) return;
   const preview = entry.querySelector('.gear-custom-item-preview');
   if (!preview) return;
-  const quantityInput = entry.querySelector('[data-gear-custom-input="quantity"]');
-  const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
-  const quantity = quantityInput ? String(quantityInput.value ?? '').trim() : '';
-  const name = nameInput ? String(nameInput.value ?? '').trim() : '';
+  const quantity = (entry.getAttribute('data-gear-quantity') || '').trim();
+  const nameAttr = entry.getAttribute('data-gear-label')
+    || entry.getAttribute('data-gear-name')
+    || '';
+  const name = String(nameAttr || '').trim();
+  const attributes = (entry.getAttribute('data-gear-attributes') || '').trim();
   const fallback = resolveGearListCustomText('gearListCustomItemPreviewFallback', 'Custom item');
   let display = '';
   if (quantity && name) {
@@ -4335,7 +4323,605 @@ function updateCustomItemPreview(entry) {
   } else {
     display = fallback;
   }
+  if (attributes) {
+    display += ` (${attributes})`;
+  }
   preview.textContent = display;
+}
+
+function updateGearItemNoteElement(entry, value) {
+  if (!entry) return;
+  const noteEl = entry.querySelector('.gear-item-note');
+  if (!noteEl) return;
+  const raw = typeof value === 'string' ? value : String(value ?? '');
+  const trimmed = raw.trim();
+  if (trimmed) {
+    noteEl.textContent = trimmed;
+    noteEl.hidden = false;
+  } else {
+    noteEl.textContent = '';
+    noteEl.hidden = true;
+  }
+}
+
+function ensureGearItemNoteSpan(element) {
+  if (!element) return null;
+  let noteSpan = element.querySelector('.gear-item-note');
+  if (noteSpan) {
+    return noteSpan;
+  }
+  const doc = (element.ownerDocument || (typeof document !== 'undefined' ? document : null));
+  if (!doc) {
+    return null;
+  }
+  noteSpan = doc.createElement('span');
+  noteSpan.className = 'gear-item-note';
+  noteSpan.hidden = true;
+  const summary = element.classList && element.classList.contains('gear-custom-item')
+    ? element.querySelector('.gear-custom-item-summary')
+    : null;
+  if (summary) {
+    summary.appendChild(noteSpan);
+  } else {
+    const reference = element.querySelector('.gear-custom-item-actions')
+      || element.querySelector('.gear-custom-remove-btn')
+      || element.querySelector('.gear-item-edit-btn');
+    if (reference) {
+      element.insertBefore(noteSpan, reference);
+    } else {
+      element.appendChild(noteSpan);
+    }
+  }
+  return noteSpan;
+}
+
+function ensureGearItemTextContainer(element) {
+  if (!element) return null;
+  let textContainer = element.querySelector('.gear-item-text');
+  if (textContainer) {
+    return textContainer;
+  }
+  const doc = (element.ownerDocument || (typeof document !== 'undefined' ? document : null));
+  if (!doc) {
+    return null;
+  }
+  textContainer = doc.createElement('span');
+  textContainer.className = 'gear-item-text';
+  const movableNodes = [];
+  element.childNodes.forEach(node => {
+    if (!node) return;
+    if (node.nodeType === 1) {
+      const classList = node.classList;
+      if (classList && (
+        classList.contains('gear-item-note')
+        || classList.contains('gear-item-edit-btn')
+        || classList.contains('gear-custom-item-actions')
+        || classList.contains('gear-custom-remove-btn')
+      )) {
+        return;
+      }
+    }
+    movableNodes.push(node);
+  });
+  const reference = element.querySelector('.gear-item-note')
+    || element.querySelector('.gear-custom-item-actions')
+    || element.querySelector('.gear-custom-remove-btn')
+    || element.querySelector('.gear-item-edit-btn');
+  movableNodes.forEach(node => {
+    textContainer.appendChild(node);
+  });
+  if (reference) {
+    element.insertBefore(textContainer, reference);
+  } else {
+    element.appendChild(textContainer);
+  }
+  return textContainer;
+}
+
+function parseGearItemDisplayParts(text) {
+  const normalized = typeof text === 'string' ? text.trim() : '';
+  if (!normalized) {
+    return { quantity: '', name: '', attributes: '' };
+  }
+  let remainder = normalized;
+  let quantity = '';
+  const quantityMatch = remainder.match(/^(\d+)\s*x\s*(.*)$/i);
+  if (quantityMatch) {
+    quantity = quantityMatch[1] || '';
+    remainder = quantityMatch[2] || '';
+  }
+  const attributeMatch = remainder.match(/^(.*?)(?:\s*\(([^()]+)\))?$/);
+  const name = attributeMatch ? (attributeMatch[1] || '').trim() : remainder.trim();
+  const attributes = attributeMatch && attributeMatch[2] ? attributeMatch[2].trim() : '';
+  return {
+    quantity,
+    name,
+    attributes,
+  };
+}
+
+function getGearItemData(element) {
+  if (!element) {
+    return {
+      quantity: '',
+      name: '',
+      attributes: '',
+      note: '',
+      rentalExcluded: false,
+    };
+  }
+  const quantityAttr = element.getAttribute('data-gear-quantity') || '';
+  const nameAttr = element.getAttribute('data-gear-label')
+    || element.getAttribute('data-gear-name')
+    || '';
+  const attributesAttr = element.getAttribute('data-gear-attributes') || '';
+  const noteAttr = element.getAttribute('data-gear-note') || '';
+  const textContainer = element.querySelector('.gear-item-text');
+  const rawText = textContainer ? textContainer.textContent : element.textContent || '';
+  const parsed = parseGearItemDisplayParts(rawText);
+  const quantity = quantityAttr.trim() || parsed.quantity || '';
+  const name = nameAttr.trim() || parsed.name || '';
+  const attributes = attributesAttr.trim() || parsed.attributes || '';
+  const note = noteAttr.trim();
+  const rentalExcluded = element.getAttribute('data-rental-excluded') === 'true'
+    || element.classList.contains('gear-item-rental-excluded');
+  return {
+    quantity,
+    name,
+    attributes,
+    note,
+    rentalExcluded,
+  };
+}
+
+function applyGearItemData(element, data = {}, options = {}) {
+  if (!element) return;
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  const isCustomItem = element.classList && element.classList.contains('gear-custom-item');
+  const textContainer = isCustomItem
+    ? element.querySelector('.gear-item-text')
+    : ensureGearItemTextContainer(element);
+  ensureGearItemNoteSpan(element);
+  if (!textContainer && !isCustomItem) return;
+  const trimmedQuantity = typeof data.quantity === 'string'
+    ? data.quantity.trim()
+    : String(data.quantity ?? '').trim();
+  const trimmedName = typeof data.name === 'string'
+    ? data.name.trim()
+    : String(data.name ?? '').trim();
+  const trimmedAttributes = typeof data.attributes === 'string'
+    ? data.attributes.trim()
+    : String(data.attributes ?? '').trim();
+  const trimmedNote = typeof data.note === 'string'
+    ? data.note.trim()
+    : String(data.note ?? '').trim();
+  if (!isCustomItem && textContainer) {
+    const controls = Array.from(textContainer.querySelectorAll('select, input, textarea'));
+    controls.forEach(control => {
+      if (control && control.parentElement === textContainer) {
+        textContainer.removeChild(control);
+      }
+    });
+    while (textContainer.firstChild) {
+      textContainer.removeChild(textContainer.firstChild);
+    }
+    const needsSpaceAfterQuantity = Boolean(trimmedQuantity) && (trimmedName || controls.length || trimmedAttributes);
+    if (trimmedQuantity) {
+      textContainer.appendChild(doc.createTextNode(`${trimmedQuantity}x${needsSpaceAfterQuantity ? ' ' : ''}`));
+    }
+    if (trimmedName) {
+      textContainer.appendChild(doc.createTextNode(trimmedName));
+      if (controls.length || trimmedAttributes) {
+        textContainer.appendChild(doc.createTextNode(' '));
+      }
+    }
+    if (!trimmedName && controls.length && trimmedQuantity) {
+      textContainer.appendChild(doc.createTextNode(''));
+    }
+    controls.forEach((control, index) => {
+      textContainer.appendChild(control);
+      if (index < controls.length - 1) {
+        textContainer.appendChild(doc.createTextNode(' '));
+      } else if (trimmedAttributes) {
+        textContainer.appendChild(doc.createTextNode(' '));
+      }
+    });
+    if (trimmedAttributes) {
+      textContainer.appendChild(doc.createTextNode(`(${trimmedAttributes})`));
+    }
+  }
+  if (trimmedQuantity) {
+    element.setAttribute('data-gear-quantity', trimmedQuantity);
+  } else {
+    element.removeAttribute('data-gear-quantity');
+  }
+  if (trimmedName) {
+    element.setAttribute('data-gear-label', trimmedName);
+  } else {
+    element.removeAttribute('data-gear-label');
+  }
+  if (trimmedAttributes) {
+    element.setAttribute('data-gear-attributes', trimmedAttributes);
+  } else {
+    element.removeAttribute('data-gear-attributes');
+  }
+  if (trimmedNote) {
+    element.setAttribute('data-gear-note', trimmedNote);
+  } else {
+    element.removeAttribute('data-gear-note');
+  }
+  if (!element.getAttribute('data-gear-original-name')) {
+    const originalName = element.getAttribute('data-gear-name');
+    if (originalName) {
+      element.setAttribute('data-gear-original-name', originalName);
+    }
+  }
+  const combinedName = trimmedAttributes
+    ? `${trimmedName || ''} (${trimmedAttributes})`.trim()
+    : trimmedName;
+  if (combinedName) {
+    element.setAttribute('data-gear-name', combinedName);
+  } else if (trimmedQuantity) {
+    element.setAttribute('data-gear-name', `${trimmedQuantity}x`);
+  }
+  updateGearItemNoteElement(element, trimmedNote);
+  if (isCustomItem && !options.skipPreview) {
+    updateCustomItemPreview(element);
+  }
+  if (typeof data.rentalExcluded === 'boolean') {
+    setRentalExclusionState(element, data.rentalExcluded);
+  }
+}
+
+function migrateLegacyCustomItemEntry(entry) {
+  if (!entry || !entry.classList || !entry.classList.contains('gear-custom-item')) {
+    return entry;
+  }
+  const hasLegacyInputs = entry.querySelector('[data-gear-custom-input]');
+  if (!hasLegacyInputs) {
+    return entry;
+  }
+  const container = entry.parentElement;
+  if (!container) {
+    return entry;
+  }
+  const categoryKey = entry.getAttribute('data-gear-custom-entry') || '';
+  const categoryLabel = container.getAttribute('data-gear-custom-category') || '';
+  const quantityInput = entry.querySelector('[data-gear-custom-input="quantity"]');
+  const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+  const quantity = quantityInput ? String(quantityInput.value ?? '') : '';
+  const name = nameInput ? String(nameInput.value ?? '') : '';
+  const attributes = entry.getAttribute('data-gear-attributes') || '';
+  const note = entry.getAttribute('data-gear-note') || '';
+  const rentalExcluded = entry.getAttribute('data-rental-excluded') === 'true';
+  const newEntry = buildCustomItemEntryElement(categoryKey, categoryLabel, {
+    quantity,
+    name,
+    attributes,
+    note,
+  });
+  if (!newEntry) {
+    return entry;
+  }
+  container.insertBefore(newEntry, entry.nextSibling);
+  entry.remove();
+  setRentalExclusionState(newEntry, rentalExcluded);
+  attachCustomItemSuggestions(newEntry, categoryKey, categoryLabel);
+  return newEntry;
+}
+
+function ensureGearItemEditButton(element) {
+  if (!element) return null;
+  if (element.querySelector('.gear-item-edit-btn')) {
+    return element.querySelector('.gear-item-edit-btn');
+  }
+  const doc = (element.ownerDocument || (typeof document !== 'undefined' ? document : null));
+  if (!doc) return null;
+  const button = doc.createElement('button');
+  button.type = 'button';
+  button.className = 'gear-item-edit-btn';
+  button.setAttribute('data-gear-edit', '');
+  const editTexts = getGearItemEditTexts();
+  if (editTexts.editButtonLabel) {
+    button.setAttribute('aria-label', editTexts.editButtonLabel);
+    button.setAttribute('title', editTexts.editButtonLabel);
+  }
+  if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object') {
+    button.innerHTML = iconMarkup(ICON_GLYPHS.note, { className: 'btn-icon' });
+  }
+  const noteSpan = element.querySelector('.gear-item-note');
+  if (noteSpan) {
+    element.insertBefore(button, noteSpan.nextSibling);
+  } else {
+    element.appendChild(button);
+  }
+  return button;
+}
+
+function enhanceGearItemElement(element) {
+  if (!element) return;
+  if (element.classList && element.classList.contains('gear-custom-item')) {
+    element = migrateLegacyCustomItemEntry(element);
+  }
+  const isCustom = element.classList && element.classList.contains('gear-custom-item');
+  ensureGearItemNoteSpan(element);
+  if (!isCustom) {
+    ensureGearItemTextContainer(element);
+    ensureGearItemEditButton(element);
+  }
+  const data = getGearItemData(element);
+  applyGearItemData(element, data, { skipPreview: !isCustom });
+}
+
+function enhanceGearListItems(container) {
+  const scope = container || gearListOutput;
+  if (!scope || typeof scope.querySelectorAll !== 'function') {
+    return;
+  }
+  const items = scope.querySelectorAll('.gear-item, .gear-custom-item');
+  items.forEach(element => {
+    enhanceGearItemElement(element);
+  });
+}
+
+function buildGearItemEditContext() {
+  return {
+    dialog: resolveElementById('gearItemEditDialog', 'gearItemEditDialog'),
+    form: resolveElementById('gearItemEditForm', 'gearItemEditForm'),
+    title: resolveElementById('gearItemEditTitle', 'gearItemEditTitle'),
+    quantityInput: resolveElementById('gearItemEditQuantity', 'gearItemEditQuantity'),
+    quantityLabel: resolveElementById('gearItemEditQuantityLabel', 'gearItemEditQuantityLabel'),
+    nameInput: resolveElementById('gearItemEditName', 'gearItemEditName'),
+    nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
+    attributesInput: resolveElementById('gearItemEditAttributes', 'gearItemEditAttributes'),
+    attributesLabel: resolveElementById('gearItemEditAttributesLabel', 'gearItemEditAttributesLabel'),
+    noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
+    noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
+    rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
+    rentalLabel: resolveElementById('gearItemEditRentalLabel', 'gearItemEditRentalLabel'),
+    cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
+    saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
+  };
+}
+
+let cachedGearItemEditContext = null;
+
+function getGearItemEditContext(scope) {
+  if (scope && typeof scope === 'object' && scope.context && typeof scope.context === 'object') {
+    return scope.context;
+  }
+  if (!cachedGearItemEditContext) {
+    cachedGearItemEditContext = buildGearItemEditContext();
+  }
+  return cachedGearItemEditContext;
+}
+
+function getGearItemEditTexts() {
+  const langTexts = (typeof texts === 'object' && texts) ? (texts[currentLang] || texts.en || {}) : {};
+  const fallbackTexts = texts && texts.en ? texts.en : {};
+  return {
+    dialogTitle: langTexts.gearListEditDialogTitle || fallbackTexts.gearListEditDialogTitle || 'Edit gear item',
+    quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
+    nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
+    attributesLabel: langTexts.gearListEditAttributesLabel || fallbackTexts.gearListEditAttributesLabel || 'Attributes',
+    noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
+    rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
+    saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
+    cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
+    editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
+  };
+}
+
+function applyGearItemEditDialogTexts(context) {
+  if (!context) return;
+  const textsForDialog = getGearItemEditTexts();
+  if (context.title) {
+    context.title.textContent = textsForDialog.dialogTitle;
+  }
+  if (context.quantityLabel) {
+    context.quantityLabel.textContent = textsForDialog.quantityLabel;
+  }
+  if (context.nameLabel) {
+    context.nameLabel.textContent = textsForDialog.nameLabel;
+  }
+  if (context.attributesLabel) {
+    context.attributesLabel.textContent = textsForDialog.attributesLabel;
+  }
+  if (context.noteLabel) {
+    context.noteLabel.textContent = textsForDialog.noteLabel;
+  }
+  if (context.rentalLabel) {
+    context.rentalLabel.textContent = textsForDialog.rentalLabel;
+  }
+  if (context.cancelButton) {
+    context.cancelButton.textContent = textsForDialog.cancelLabel;
+    context.cancelButton.setAttribute('aria-label', textsForDialog.cancelLabel);
+  }
+  if (context.saveButton) {
+    context.saveButton.textContent = textsForDialog.saveLabel;
+  }
+}
+
+let gearItemEditDialogBound = false;
+let activeGearItemEditTarget = null;
+
+function handleGearItemEditFormSubmit(event) {
+  event.preventDefault();
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog) {
+    return;
+  }
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  const targetOptions = activeGearItemEditTarget && activeGearItemEditTarget.options;
+  const allowRentalToggle = !targetOptions || targetOptions.allowRentalToggle !== false;
+  if (!targetEntry || !targetEntry.isConnected) {
+    context.dialog.close('cancel');
+    activeGearItemEditTarget = null;
+    return;
+  }
+  const data = {
+    quantity: context.quantityInput ? context.quantityInput.value : '',
+    name: context.nameInput ? context.nameInput.value : '',
+    attributes: context.attributesInput ? context.attributesInput.value : '',
+    note: context.noteInput ? context.noteInput.value : '',
+    rentalExcluded: allowRentalToggle && context.rentalCheckbox
+      ? context.rentalCheckbox.checked
+      : targetEntry.getAttribute('data-rental-excluded') === 'true',
+  };
+  applyGearItemData(targetEntry, data);
+  if (targetEntry.classList && targetEntry.classList.contains('gear-custom-item')) {
+    persistCustomItemsChange();
+  } else {
+    if (typeof saveCurrentGearList === 'function') {
+      saveCurrentGearList();
+    }
+    if (typeof saveCurrentSession === 'function') {
+      saveCurrentSession();
+    }
+    if (typeof checkSetupChanged === 'function') {
+      checkSetupChanged();
+    }
+  }
+  context.dialog.close('save');
+}
+
+function handleGearItemEditDialogCancel(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  const context = getGearItemEditContext();
+  if (context && context.dialog) {
+    context.dialog.close('cancel');
+  }
+}
+
+function handleGearItemEditDialogClose() {
+  const context = getGearItemEditContext();
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  const returnValue = context && context.dialog ? context.dialog.returnValue : '';
+  if (context && context.form) {
+    try {
+      context.form.reset();
+    } catch (error) {
+      void error;
+    }
+  }
+  if (context && context.nameInput) {
+    context.nameInput.removeAttribute('list');
+  }
+  activeGearItemEditTarget = null;
+  if (targetEntry && targetEntry.isConnected) {
+    const editBtn = targetEntry.querySelector('[data-gear-edit]');
+    if (editBtn && typeof editBtn.focus === 'function') {
+      try {
+        editBtn.focus({ preventScroll: true });
+      } catch (error) {
+        void error;
+      }
+    }
+  }
+}
+
+function bindGearItemEditDialog(context) {
+  if (gearItemEditDialogBound) {
+    return;
+  }
+  if (!context || !context.dialog) {
+    return;
+  }
+  applyGearItemEditDialogTexts(context);
+  if (context.form) {
+    context.form.addEventListener('submit', handleGearItemEditFormSubmit);
+  }
+  if (context.cancelButton) {
+    context.cancelButton.addEventListener('click', handleGearItemEditDialogCancel);
+  }
+  context.dialog.addEventListener('cancel', handleGearItemEditDialogCancel);
+  context.dialog.addEventListener('close', handleGearItemEditDialogClose);
+  gearItemEditDialogBound = true;
+}
+
+function openGearItemEditor(element, options = {}) {
+  if (!element) return false;
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog) {
+    return false;
+  }
+  bindGearItemEditDialog(context);
+  enhanceGearItemElement(element);
+  if (element.classList && element.classList.contains('gear-custom-item')) {
+    const container = element.closest('.gear-custom-items[data-gear-custom-list]');
+    if (container) {
+      const categoryKey = container.getAttribute('data-gear-custom-list') || '';
+      const categoryLabel = container.getAttribute('data-gear-custom-category') || '';
+      attachCustomItemSuggestions(element, categoryKey, categoryLabel);
+    }
+  }
+  const data = getGearItemData(element);
+  applyGearItemEditDialogTexts(context);
+  const allowRentalToggle = options && options.allowRentalToggle === false ? false : true;
+  if (context.quantityInput) {
+    context.quantityInput.value = data.quantity || '';
+  }
+  if (context.nameInput) {
+    context.nameInput.value = data.name || '';
+    const suggestionsId = element.getAttribute('data-gear-suggestions') || '';
+    if (suggestionsId) {
+      context.nameInput.setAttribute('list', suggestionsId);
+    } else {
+      context.nameInput.removeAttribute('list');
+    }
+  }
+  if (context.attributesInput) {
+    context.attributesInput.value = data.attributes || '';
+  }
+  if (context.noteInput) {
+    context.noteInput.value = data.note || '';
+  }
+  if (context.rentalCheckbox) {
+    context.rentalCheckbox.checked = Boolean(data.rentalExcluded);
+    context.rentalCheckbox.disabled = !allowRentalToggle;
+  }
+  if (context.rentalContainer) {
+    context.rentalContainer.hidden = !allowRentalToggle;
+  }
+  const textsForDialog = getGearItemEditTexts();
+  if (context.title) {
+    const previewText = element.querySelector('.gear-item-text')
+      ? element.querySelector('.gear-item-text').textContent.trim()
+      : (data.name || '');
+    context.title.textContent = previewText
+      ? `${textsForDialog.dialogTitle} — ${previewText}`
+      : textsForDialog.dialogTitle;
+  }
+  activeGearItemEditTarget = { element, options: options || {} };
+  try {
+    if (typeof context.dialog.showModal === 'function') {
+      context.dialog.showModal();
+    } else {
+      context.dialog.hidden = false;
+    }
+  } catch (error) {
+    console.warn('Failed to open gear item edit dialog', error);
+    activeGearItemEditTarget = null;
+    return false;
+  }
+  if (options.focusField === 'name' && context.nameInput) {
+    try {
+      context.nameInput.focus({ preventScroll: true });
+    } catch (error) {
+      void error;
+    }
+  } else if (context.quantityInput) {
+    try {
+      context.quantityInput.focus({ preventScroll: true });
+    } catch (error) {
+      void error;
+    }
+  }
+  return true;
 }
 
 function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
@@ -4344,65 +4930,69 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   const template = doc.createElement('template');
   const rawQuantity = data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '1';
   const rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
+  const rawAttributes = data && Object.prototype.hasOwnProperty.call(data, 'attributes') ? data.attributes : '';
+  const rawNote = data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '';
   const quantityValue = typeof rawQuantity === 'string' ? rawQuantity : String(rawQuantity ?? '');
   const nameValue = typeof rawName === 'string' ? rawName : String(rawName ?? '');
-  const quantityLabel = resolveGearListCustomText('gearListCustomItemQuantityLabel', 'Quantity');
-  const quantityAria = resolveGearListCustomText('gearListCustomItemQuantityAria', 'Quantity for custom item in {category}', { category: categoryLabel });
-  const nameLabel = resolveGearListCustomText('gearListCustomItemNameLabel', 'Item name');
-  const nameAria = resolveGearListCustomText('gearListCustomItemNameAria', 'Item name for custom item in {category}', { category: categoryLabel });
-  const placeholder = resolveGearListCustomText('gearListCustomItemNamePlaceholder', 'Custom item');
+  const attributesValue = typeof rawAttributes === 'string' ? rawAttributes : String(rawAttributes ?? '');
+  const noteValue = typeof rawNote === 'string' ? rawNote : String(rawNote ?? '');
   const removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
   const removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', { category: categoryLabel });
+  const editLabel = resolveGearListCustomText('gearListEditCustomItem', 'Edit custom item');
   const minusIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
     ? iconMarkup(ICON_GLYPHS.minus, { className: 'btn-icon' })
     : '';
-  const rentalTexts = getGearListRentalToggleTexts();
-  const noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim()
-    ? ` data-rental-note="${escapeHtml(rentalTexts.noteLabel)}"`
+  const editIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
+    ? iconMarkup(ICON_GLYPHS.note, { className: 'btn-icon' })
     : '';
-  const toggleHtml = buildRentalToggleMarkup(categoryLabel || categoryKey || 'custom', rentalTexts);
+  const rentalTexts = getGearListRentalToggleTexts();
+  const noteLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel : '';
   template.innerHTML = `
-    <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}"${noteAttr}>
-      <span class="gear-custom-item-preview" aria-hidden="true"></span>
-      ${toggleHtml}
-      <label class="gear-custom-field gear-custom-field--quantity">
-        <span class="visually-hidden">${escapeHtml(quantityLabel)} (${escapeHtml(categoryLabel)})</span>
-        <input
-          type="number"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          min="0"
-          step="1"
-          data-gear-custom-input="quantity"
-          value="${escapeHtml(quantityValue)}"
-          aria-label="${escapeHtml(quantityAria)}"
-        />
-      </label>
-      <label class="gear-custom-field gear-custom-field--name">
-        <span class="visually-hidden">${escapeHtml(nameLabel)} (${escapeHtml(categoryLabel)})</span>
-        <input
-          type="text"
-          data-gear-custom-input="name"
-          value="${escapeHtml(nameValue)}"
-          placeholder="${escapeHtml(placeholder)}"
-          aria-label="${escapeHtml(nameAria)}"
-        />
-      </label>
-      <button
-        type="button"
-        class="gear-custom-remove-btn"
-        data-gear-custom-remove="${escapeHtml(categoryKey)}"
-        data-gear-custom-category="${escapeHtml(categoryLabel)}"
-        aria-label="${escapeHtml(removeAria)}"
-      >
-        ${minusIcon}<span>${escapeHtml(removeLabel)}</span>
-      </button>
+    <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}">
+      <div class="gear-custom-item-summary">
+        <span class="gear-custom-item-preview" aria-hidden="true"></span>
+        <span class="gear-item-note" hidden></span>
+      </div>
+      <div class="gear-custom-item-actions">
+        <button
+          type="button"
+          class="gear-item-edit-btn"
+          data-gear-edit
+          aria-label="${escapeHtml(editLabel)}"
+        >
+          ${editIcon}
+        </button>
+        <button
+          type="button"
+          class="gear-custom-remove-btn"
+          data-gear-custom-remove="${escapeHtml(categoryKey)}"
+          data-gear-custom-category="${escapeHtml(categoryLabel)}"
+          aria-label="${escapeHtml(removeAria)}"
+        >
+          ${minusIcon}<span>${escapeHtml(removeLabel)}</span>
+        </button>
+      </div>
     </div>
   `.trim();
   const element = template.content.firstElementChild;
-  if (element) {
-    updateCustomItemPreview(element);
+  if (!element) return null;
+  if (noteLabel) {
+    element.setAttribute('data-rental-note', noteLabel);
   }
+  element.setAttribute('data-gear-quantity', quantityValue);
+  element.setAttribute('data-gear-label', nameValue);
+  if (attributesValue) {
+    element.setAttribute('data-gear-attributes', attributesValue);
+  } else {
+    element.removeAttribute('data-gear-attributes');
+  }
+  if (noteValue) {
+    element.setAttribute('data-gear-note', noteValue);
+  } else {
+    element.removeAttribute('data-gear-note');
+  }
+  updateCustomItemPreview(element);
+  updateGearItemNoteElement(element, noteValue);
   return element;
 }
 
@@ -4431,10 +5021,19 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   );
   setRentalExclusionState(entry, wantsExcluded);
   if (!options.skipFocus) {
-    const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
-    if (nameInput) {
-      nameInput.focus();
+    const editBtn = entry.querySelector('[data-gear-edit]');
+    if (editBtn) {
+      editBtn.focus();
     }
+  }
+  if (!options.skipEditDialog && typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      try {
+        openGearItemEditor(entry, { focusField: 'name', allowRentalToggle: true });
+      } catch (error) {
+        console.warn('Failed to open gear item editor for new custom item', error);
+      }
+    });
   }
   if (!options.skipPersist) {
     persistCustomItemsChange();
@@ -4476,12 +5075,16 @@ function readCustomItemsState() {
     if (!key) return;
     const entries = [];
     container.querySelectorAll('.gear-custom-item').forEach(item => {
-      const quantityInput = item.querySelector('[data-gear-custom-input="quantity"]');
-      const nameInput = item.querySelector('[data-gear-custom-input="name"]');
-      const quantity = quantityInput ? String(quantityInput.value ?? '') : '';
-      const name = nameInput ? String(nameInput.value ?? '') : '';
+      const quantity = String(item.getAttribute('data-gear-quantity') || '');
+      const name = String(
+        item.getAttribute('data-gear-label')
+        || item.getAttribute('data-gear-name')
+        || ''
+      );
+      const attributes = String(item.getAttribute('data-gear-attributes') || '');
+      const note = String(item.getAttribute('data-gear-note') || '');
       const rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
-      entries.push({ quantity, name, rentalExcluded });
+      entries.push({ quantity, name, attributes, note, rentalExcluded });
     });
     if (entries.length) {
       state[key] = entries;
@@ -4510,9 +5113,9 @@ function applyCustomItemsState(state) {
     if (Array.isArray(entries)) {
       entries.forEach(entry => {
         if (entry && typeof entry === 'object') {
-          addCustomItemEntry(key, categoryLabel, entry, { skipFocus: true, skipPersist: true });
+          addCustomItemEntry(key, categoryLabel, entry, { skipFocus: true, skipPersist: true, skipEditDialog: true });
         } else {
-          addCustomItemEntry(key, categoryLabel, { quantity: '', name: '' }, { skipFocus: true, skipPersist: true });
+          addCustomItemEntry(key, categoryLabel, { quantity: '', name: '' }, { skipFocus: true, skipPersist: true, skipEditDialog: true });
         }
       });
     }
@@ -4964,8 +5567,12 @@ function gearListGenerateHtmlImpl(info = {}) {
                 const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
                 const displayName = `${translatedBase}${ctxStr}`;
                 const dataName = `${base}${ctxStr}`;
-                const toggleHtml = buildRentalToggleMarkup(dataName, rentalTexts);
-                return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${noteAttr}>${total}x ${escapeHtml(displayName)} ${toggleHtml}</span>`;
+                const quantityAttr = ` data-gear-quantity="${escapeHtml(String(total))}"`;
+                const labelAttr = ` data-gear-label="${escapeHtml(translatedBase)}"`;
+                const attributesAttr = ctxParts.length ? ` data-gear-attributes="${escapeHtml(ctxParts.join(', '))}"` : '';
+                const safeDataName = escapeHtml(dataName);
+                const textContent = `${total}x ${displayName}`;
+                return `<span class="gear-item" data-gear-name="${safeDataName}"${quantityAttr}${labelAttr}${attributesAttr}${noteAttr}><span class="gear-item-text">${escapeHtml(textContent)}</span><span class="gear-item-note" hidden></span></span>`;
             })
             .join('<br>');
     };
@@ -5511,9 +6118,12 @@ function gearListGenerateHtmlImpl(info = {}) {
         const optionsHtml = buildBatteryOptions(selectedValue);
         const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="handheld" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
         const dataName = `Monitoring Battery ${contextLabel}`;
-        const toggleHtml = buildRentalToggleMarkup(dataName, rentalToggleTexts);
+        const quantityAttr = ' data-gear-quantity="3"';
+        const labelAttr = ' data-gear-label="Monitoring Battery"';
+        const attributesAttr = contextLabel ? ` data-gear-attributes="${escapeHtml(contextLabel)}"` : '';
+        const textHtml = `3x ${selectHtml} (${escapeHtml(contextLabel)})`;
         monitoringBatteryItems.push(
-            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${rentalNoteAttr}>3x ${selectHtml} (${escapeHtml(contextLabel)}) ${toggleHtml}</span>`
+            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${quantityAttr}${labelAttr}${attributesAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`
         );
     });
     const bebob290 = Object.keys(batteryDatabase).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
@@ -5530,9 +6140,12 @@ function gearListGenerateHtmlImpl(info = {}) {
         const optionsHtml = buildBatteryOptions(selectedValue);
         const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="large" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
         const dataName = `Monitoring Battery ${contextLabel}`;
-        const toggleHtml = buildRentalToggleMarkup(dataName, rentalToggleTexts);
+        const quantityAttr = ' data-gear-quantity="2"';
+        const labelAttr = ' data-gear-label="Monitoring Battery"';
+        const attributesAttr = contextLabel ? ` data-gear-attributes="${escapeHtml(contextLabel)}"` : '';
+        const textHtml = `2x ${selectHtml} (${escapeHtml(contextLabel)})`;
         monitoringBatteryItems.push(
-            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${rentalNoteAttr}>2x ${selectHtml} (${escapeHtml(contextLabel)}) ${toggleHtml}</span>`
+            `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}"${quantityAttr}${labelAttr}${attributesAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`
         );
     });
     addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('<br>') : '');
@@ -5810,8 +6423,10 @@ function gearListGenerateHtmlImpl(info = {}) {
         const widthOpts = gaffWidths
             .map(val => `<option value="${val}"${val === width ? ' selected' : ''}>${val}</option>`)
             .join('');
-        const toggleHtml = buildRentalToggleMarkup('Pro Gaff Tape', rentalToggleTexts);
-        return `<span class="gear-item" data-gear-name="Pro Gaff Tape"${rentalNoteAttr}>${proGaffCount}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select> ${toggleHtml}</span>`;
+        const quantityAttr = ` data-gear-quantity="${escapeHtml(String(proGaffCount))}"`;
+        const labelAttr = ' data-gear-label="Pro Gaff Tape"';
+        const textHtml = `${escapeHtml(String(proGaffCount))}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select>`;
+        return `<span class="gear-item" data-gear-name="Pro Gaff Tape"${quantityAttr}${labelAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`;
     }).join('<br>');
     let eyeLeatherHtml = '';
     if (eyeLeatherCount) {
@@ -5830,8 +6445,10 @@ function gearListGenerateHtmlImpl(info = {}) {
             ['black', 'Black']
         ];
         const options = colors.map(([val, label]) => `<option value="${val}"${val === eyeLeatherColor ? ' selected' : ''}>${label}</option>`).join('');
-        const toggleHtml = buildRentalToggleMarkup('Bluestar eye leather made of microfiber oval, large', rentalToggleTexts);
-        eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large"${rentalNoteAttr}>${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select> ${toggleHtml}</span>`;
+        const quantityAttr = ` data-gear-quantity="${escapeHtml(String(eyeLeatherCount))}"`;
+        const labelAttr = ' data-gear-label="Bluestar eye leather made of microfiber oval, large"';
+        const textHtml = `${escapeHtml(String(eyeLeatherCount))}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select>`;
+        eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large"${quantityAttr}${labelAttr}${rentalNoteAttr}><span class="gear-item-text">${textHtml}</span><span class="gear-item-note" hidden></span></span>`;
     }
     addRow('Miscellaneous', formatItems(miscItems));
     addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
@@ -6204,6 +6821,8 @@ function convertCustomItemsForStaticOutput(root) {
 
     root.querySelectorAll('.gear-custom-add-btn').forEach(btn => btn.remove());
     root.querySelectorAll('.gear-rental-toggle').forEach(btn => btn.remove());
+    root.querySelectorAll('.gear-item-edit-btn').forEach(btn => btn.remove());
+    root.querySelectorAll('.gear-custom-item-actions').forEach(actions => actions.remove());
 }
 
 function cloneProjectInfoForStorage(info) {
@@ -7223,6 +7842,15 @@ function ensureGearListActions() {
 
     if (!gearListOutput._customClickListenerBound) {
         gearListOutput.addEventListener('click', e => {
+            const editBtn = e.target && e.target.closest('[data-gear-edit]');
+            if (editBtn) {
+                e.preventDefault();
+                const targetItem = editBtn.closest('.gear-item, .gear-custom-item');
+                if (targetItem) {
+                    openGearItemEditor(targetItem, { allowRentalToggle: true });
+                }
+                return;
+            }
             const toggleBtn = e.target && e.target.closest('.gear-rental-toggle');
             if (toggleBtn) {
                 e.preventDefault();
@@ -7407,6 +8035,7 @@ function refreshGearListIfVisible() {
     } else {
         const { gearHtml } = gearListGetSafeHtmlSectionsImpl(html);
         gearListOutput.innerHTML = gearHtml;
+        enhanceGearListItems(gearListOutput);
     }
     ensureGearListActions();
     bindGearListCageListener();
