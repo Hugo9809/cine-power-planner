@@ -2207,6 +2207,7 @@ function collectProjectFormData() {
 
     const info = {
         productionCompany: getValue('productionCompany'),
+        productionCompanyAddress: getValue('productionCompanyAddress'),
         rentalHouse: getValue('rentalHouse'),
         ...(people.length ? { people } : {}),
         prepDays,
@@ -2352,6 +2353,7 @@ function populateProjectForm(info = {}) {
     }
 
     setVal('productionCompany', info.productionCompany);
+    setVal('productionCompanyAddress', info.productionCompanyAddress);
     setVal('rentalHouse', info.rentalHouse);
     if (crewContainer) {
         crewContainer.innerHTML = '';

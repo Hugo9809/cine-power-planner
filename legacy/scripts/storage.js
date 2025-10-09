@@ -6414,9 +6414,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     });
   }
-  var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew']);
+var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
   var LEGACY_PROJECT_FIELD_LABELS = {
-    productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
+  productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
+  productionCompanyAddress: [
+    'Production Company Address',
+    'Adresse der Produktionsfirma',
+    'Adresse de la société de production',
+    'Dirección de la productora',
+    'Indirizzo della casa di produzione'
+  ],
     rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: ['Prep Days', 'Prep-Tage', 'Jours de préparation', 'Días de preparación', 'Giorni di preparazione'],

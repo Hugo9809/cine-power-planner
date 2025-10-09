@@ -8024,7 +8024,7 @@ function renameSetup(oldName, newName) {
 }
 
 // --- Project Storage ---
-var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew']);
+var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
 
 var LEGACY_PROJECT_FIELD_LABELS = {
   productionCompany: [
@@ -8033,6 +8033,13 @@ var LEGACY_PROJECT_FIELD_LABELS = {
     'Société de production',
     'Productora',
     'Casa di produzione',
+  ],
+  productionCompanyAddress: [
+    'Production Company Address',
+    'Adresse der Produktionsfirma',
+    'Adresse de la société de production',
+    'Dirección de la productora',
+    'Indirizzo della casa di produzione',
   ],
   rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
   crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],

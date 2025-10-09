@@ -222,12 +222,16 @@ describe('restoreSessionState', () => {
           <span class="req-label">Production Company</span>
           <span class="req-value">Acme Studios</span>
         </div>
+        <div class="requirement-box" data-field="productionCompanyAddress">
+          <span class="req-label">Production Company Address</span>
+          <span class="req-value">200 Backlot Ave</span>
+        </div>
       </div>
       <h3>Gear List</h3>
       <table class="gear-table"><tr><td>Saved Item</td></tr></table>
     `;
 
-    const projectInfo = { productionCompany: 'Acme Studios' };
+    const projectInfo = { productionCompany: 'Acme Studios', productionCompanyAddress: '200 Backlot Ave' };
     const saveProjectMock = jest.fn();
     const saveSessionStateMock = jest.fn();
     const loadProjectMock = jest.fn(() => ({ gearList: savedGearHtml, projectInfo }));

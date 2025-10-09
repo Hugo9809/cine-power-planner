@@ -11127,6 +11127,7 @@ function setLanguage(lang) {
     setLabelText(projectDialogHeading, 'heading');
     setLabelText(projectNameLabel, 'projectName');
     setLabelText(productionCompanyLabel, 'productionCompany');
+    setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
     setLabelText(rentalHouseLabel, 'rentalHouse');
     setLabelText(crewHeadingElem, 'crewHeading');
     if (crewLabelElem) {
@@ -11335,6 +11336,7 @@ const projectDialogHeading = document.getElementById("projectDialogHeading");
 var projectDialogCloseBtn = document.getElementById("projectDialogClose");
 const projectNameLabel = document.getElementById("projectNameLabel");
 const productionCompanyLabel = document.getElementById("productionCompanyLabel");
+const productionCompanyAddressLabel = document.getElementById("productionCompanyAddressLabel");
 const rentalHouseLabel = document.getElementById("rentalHouseLabel");
 const crewHeadingElem = document.getElementById("crewHeading");
 const crewLabelElem = document.getElementById("crewLabel");
@@ -13239,6 +13241,7 @@ var PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
 var projectFieldIcons = {
   productionCompany: PRODUCTION_COMPANY_ICON,
+  productionCompanyAddress: ICON_GLYPHS.pin,
   rentalHouse: RENTAL_HOUSE_ICON,
   crew: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),

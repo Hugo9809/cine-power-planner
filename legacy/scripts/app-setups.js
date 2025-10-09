@@ -1996,6 +1996,7 @@ function collectProjectFormData() {
   var proGaffWidth2 = getGearValue('gearListProGaffWidth2');
   var info = _objectSpread(_objectSpread({
     productionCompany: getValue('productionCompany'),
+    productionCompanyAddress: getValue('productionCompanyAddress'),
     rentalHouse: getValue('rentalHouse')
   }, people.length ? {
     people: people
@@ -2125,6 +2126,7 @@ function populateProjectForm() {
     populateFrameRateDropdown(info.recordingFrameRate);
   }
   setVal('productionCompany', info.productionCompany);
+  setVal('productionCompanyAddress', info.productionCompanyAddress);
   setVal('rentalHouse', info.rentalHouse);
   if (crewContainer) {
     crewContainer.innerHTML = '';

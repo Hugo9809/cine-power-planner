@@ -4694,7 +4694,7 @@
               <li>Monitoring preferences contribute default screens for each role (Director, DoP, Focus Puller, Client), matching video transmitters and pre‑bundled cable sets.</li>
               <li>The <strong>Project Requirements</strong> form acts as a template for the list. Each field adds context and gear:
                 <ul>
-                  <li><strong>Project Name</strong>, <strong>Production Company</strong>, <strong>Rental House</strong>, <strong>DoP</strong>, <strong>Prep</strong>, <strong>Shooting</strong> and <strong>Return Days</strong> populate the printed header and can trigger weather gear with outdoor scenarios.</li>
+                  <li><strong>Project Name</strong>, <strong>Production Company</strong>, <strong>Production Company Address</strong>, <strong>Rental House</strong>, <strong>DoP</strong>, <strong>Prep</strong>, <strong>Shooting</strong> and <strong>Return Days</strong> populate the printed header and can trigger weather gear with outdoor scenarios.</li>
                   <li><strong>Crew</strong> entries keep names, roles and email addresses attached so contact lists and call sheets stay current.</li>
                   <li><strong>Delivery Resolution</strong>, <strong>Recording Resolution</strong>, <strong>Sensor Mode</strong>, <strong>Aspect Ratio</strong>, <strong>Codec</strong> and <strong>Base Frame Rate</strong> lock in capture specs so printed summaries and exports show the intended format.</li>
                   <li><strong>Required Scenarios</strong> toggle accessory packs as described above.</li>
@@ -6172,6 +6172,15 @@
             <div class="form-row">
               <label for="productionCompany" id="productionCompanyLabel">Production Company:</label>
               <input type="text" id="productionCompany" name="productionCompany" />
+            </div>
+            <div class="form-row">
+              <label for="productionCompanyAddress" id="productionCompanyAddressLabel">Production Company Address:</label>
+              <textarea
+                id="productionCompanyAddress"
+                name="productionCompanyAddress"
+                rows="3"
+                autocomplete="off"
+              ></textarea>
             </div>
             <div class="form-row">
               <label for="rentalHouse" id="rentalHouseLabel">Rental House:</label>
