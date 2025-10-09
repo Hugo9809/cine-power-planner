@@ -4717,20 +4717,18 @@ function ensureGearListCustomControls(container) {
     addButton.setAttribute('data-gear-custom-add', categoryKey);
     addButton.setAttribute('data-gear-custom-category', categoryLabel);
     addButton.setAttribute('aria-label', addAria);
-    if (!addButton.querySelector('.btn-icon')) {
-      var addIconHtml = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.add, {
+    addButton.setAttribute('title', addLabel);
+    var hasIconRegistry = 'object' === (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) && ICON_GLYPHS;
+    var addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
+    if ('function' == typeof setButtonLabelWithIcon && hasIconRegistry && addGlyph) {
+      setButtonLabelWithIcon(addButton, '', addGlyph);
+    } else if ('function' == typeof iconMarkup && addGlyph) {
+      addButton.innerHTML = iconMarkup(addGlyph, {
         className: 'btn-icon'
-      }) : '';
-      if (addIconHtml) {
-        addButton.insertAdjacentHTML('afterbegin', addIconHtml);
-      }
+      });
+    } else {
+      addButton.textContent = '+';
     }
-    var textSpan = addButton.querySelector('span');
-    if (!textSpan) {
-      textSpan = doc.createElement('span');
-      addButton.appendChild(textSpan);
-    }
-    textSpan.textContent = addLabel;
   });
 }
 function buildGearItemEditContext() {
@@ -6021,10 +6019,12 @@ function gearListGenerateHtmlImpl() {
     var addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', {
       category: categoryLabel
     });
-    var addIcon = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.add, {
+    var glyph = 'object' === (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) && ICON_GLYPHS ? ICON_GLYPHS.add || ICON_GLYPHS.plus : null;
+    var addIcon = 'function' == typeof iconMarkup && glyph ? iconMarkup(glyph, {
       className: 'btn-icon'
     }) : '';
-    var addButtonHtml = "<button type=\"button\" class=\"gear-custom-add-btn\" data-gear-custom-add=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-label=\"").concat(escapeHtml(addAria), "\">").concat(addIcon, "<span>").concat(escapeHtml(addLabel), "</span></button>");
+    var buttonContent = addIcon || escapeHtml('+');
+    var addButtonHtml = "<button type=\"button\" class=\"gear-custom-add-btn\" data-gear-custom-add=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-label=\"").concat(escapeHtml(addAria), "\" title=\"").concat(escapeHtml(addLabel), "\">").concat(buttonContent, "</button>");
     var standardItemsHtml = items ? "<div class=\"gear-standard-items\">".concat(items, "</div>") : '';
     var customSectionHtml = "<div class=\"gear-custom-section\" data-gear-custom-key=\"".concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\"><div class=\"gear-custom-items\" data-gear-custom-list=\"").concat(escapeHtml(categoryKey), "\" data-gear-custom-category=\"").concat(safeLabel, "\" aria-live=\"polite\"></div></div>");
     var rowContent = "".concat(standardItemsHtml).concat(customSectionHtml);

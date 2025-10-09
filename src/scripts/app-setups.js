@@ -4986,22 +4986,17 @@ function ensureGearListCustomControls(container) {
     addButton.setAttribute('data-gear-custom-add', categoryKey);
     addButton.setAttribute('data-gear-custom-category', categoryLabel);
     addButton.setAttribute('aria-label', addAria);
+    addButton.setAttribute('title', addLabel);
 
-    if (!addButton.querySelector('.btn-icon')) {
-      const addIconHtml = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
-        ? iconMarkup(ICON_GLYPHS.add, { className: 'btn-icon' })
-        : '';
-      if (addIconHtml) {
-        addButton.insertAdjacentHTML('afterbegin', addIconHtml);
-      }
+    const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
+    const addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
+    if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
+      setButtonLabelWithIcon(addButton, '', addGlyph);
+    } else if (typeof iconMarkup === 'function' && addGlyph) {
+      addButton.innerHTML = iconMarkup(addGlyph, { className: 'btn-icon' });
+    } else {
+      addButton.textContent = '+';
     }
-
-    let textSpan = addButton.querySelector('span');
-    if (!textSpan) {
-      textSpan = doc.createElement('span');
-      addButton.appendChild(textSpan);
-    }
-    textSpan.textContent = addLabel;
   });
 }
 
@@ -6225,10 +6220,12 @@ function gearListGenerateHtmlImpl(info = {}) {
         const safeLabel = escapeHtml(categoryLabel);
         const addLabel = resolveGearListCustomText('gearListAddCustomItem', 'Add custom item');
         const addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', { category: categoryLabel });
-        const addIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
-            ? iconMarkup(ICON_GLYPHS.add, { className: 'btn-icon' })
+        const glyph = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS ? (ICON_GLYPHS.add || ICON_GLYPHS.plus) : null;
+        const addIcon = (typeof iconMarkup === 'function' && glyph)
+            ? iconMarkup(glyph, { className: 'btn-icon' })
             : '';
-        const addButtonHtml = `<button type="button" class="gear-custom-add-btn" data-gear-custom-add="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-label="${escapeHtml(addAria)}">${addIcon}<span>${escapeHtml(addLabel)}</span></button>`;
+        const buttonContent = addIcon || escapeHtml('+');
+        const addButtonHtml = `<button type="button" class="gear-custom-add-btn" data-gear-custom-add="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-label="${escapeHtml(addAria)}" title="${escapeHtml(addLabel)}">${buttonContent}</button>`;
         const standardItemsHtml = items ? `<div class="gear-standard-items">${items}</div>` : '';
         const customSectionHtml = `<div class="gear-custom-section" data-gear-custom-key="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}"><div class="gear-custom-items" data-gear-custom-list="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-live="polite"></div></div>`;
         const rowContent = `${standardItemsHtml}${customSectionHtml}`;
