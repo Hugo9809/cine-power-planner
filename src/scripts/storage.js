@@ -7749,8 +7749,18 @@ function saveSessionState(state, options = {}) {
 
   ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
   const normalizedState = normalizeLegacyLongGopStructure(state);
-  const { disableCompression = false } = options || {};
-  const saveOptions = disableCompression ? { disableCompression: true } : undefined;
+  const normalizedOptions = isPlainObject(options) ? options : {};
+  if (normalizedOptions.disableCompression === false) {
+    console.warn(
+      'saveSessionState compression override ignored. Session storage compression is disabled to protect user data.',
+    );
+  }
+
+  const saveOptions = {
+    ...normalizedOptions,
+    disableCompression: true,
+    forceCompressionOnQuota: false,
+  };
   saveJSONToStorage(
     safeStorage,
     SESSION_STATE_KEY,
