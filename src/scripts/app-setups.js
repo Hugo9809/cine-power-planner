@@ -4720,7 +4720,6 @@ function buildGearItemEditContext() {
     rentalDescription: resolveElementById('gearItemEditRentalDescription', 'gearItemEditRentalDescription'),
     cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
-    backButton: resolveElementById('gearItemEditBack', 'gearItemEditBack'),
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     resetDefaults: null,
     currentAttributes: '',
@@ -4751,7 +4750,6 @@ function getGearItemEditTexts() {
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
-    backLabel: langTexts.gearListEditBack || fallbackTexts.gearListEditBack || 'Back',
     resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name',
   };
 }
@@ -4777,17 +4775,6 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.rentalLabel) {
     context.rentalLabel.textContent = textsForDialog.rentalLabel;
-  }
-  if (context.backButton) {
-    const backLabel = textsForDialog.backLabel;
-    context.backButton.setAttribute('aria-label', backLabel);
-    context.backButton.title = backLabel;
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-      const backGlyph = ICON_GLYPHS.arrowLeft || ICON_GLYPHS.minus || ICON_GLYPHS.circleX;
-      setButtonLabelWithIcon(context.backButton, backLabel, backGlyph);
-    } else {
-      context.backButton.textContent = backLabel;
-    }
   }
   if (context.resetButton) {
     const resetLabel = textsForDialog.resetLabel;
@@ -5139,9 +5126,6 @@ function bindGearItemEditDialog(context) {
   }
   if (context.cancelButton) {
     context.cancelButton.addEventListener('click', handleGearItemEditDialogCancel);
-  }
-  if (context.backButton) {
-    context.backButton.addEventListener('click', handleGearItemEditDialogCancel);
   }
   if (context.resetButton) {
     context.resetButton.addEventListener('click', handleGearItemEditResetClick);
