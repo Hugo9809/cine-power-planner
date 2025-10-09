@@ -1527,9 +1527,12 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   flex-direction: column;
   gap: clamp(0.85rem, 2.2vw, 1.25rem);
   width: min(90vw, 520px);
+  max-height: min(640px, calc(100vh - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px))));
   padding: clamp(1.25rem, 3vw, 1.75rem);
   border-color: var(--panel-border);
   box-shadow: var(--panel-shadow);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .gear-item-edit-header {
