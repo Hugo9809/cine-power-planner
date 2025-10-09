@@ -3916,6 +3916,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.28,
           "weight_g": 2300,
           "notes": "Single-coated Vista One edition; 300° focus rotation and large-format coverage"
@@ -3930,6 +3931,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.35,
           "weight_g": 2200,
           "notes": "Large-format Vista One prime with character single coating and matching 114 mm fronts"
@@ -3944,6 +3946,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.38,
           "weight_g": 2100,
           "notes": "Covers VistaVision sensors; single-coated for flare control and gentle halation"
@@ -3958,6 +3961,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 46.7,
           "minFocusMeters": 0.45,
           "weight_g": 2100,
           "notes": "Vista One 50 mm maintains T1.5 speed with unified gear positions"
@@ -4101,10 +4105,11 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.4,
           "minFocusMeters": 0.85,
           "weight_g": 2900,
           "lengthMm": 254.9,
-          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
+          "notes": "T2.95 from 17–91 mm, ramping to T3.9 by 120 mm; 11-blade iris and servo unit included. Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area (≈31.4 mm image circle)."
         },
         "Canon CN-E Flex Zoom 14-35mm T1.7": {
           "brand": "Canon",
@@ -4271,7 +4276,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.3
         },
         "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
           "brand": "Angénieux",
@@ -4767,6 +4773,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.5,
           "minFocusMeters": 0.6,
           "lengthMm": 228,
           "notes": "Lightweight zoom covering Super 35; constant T2.8 with LDS metadata support."
@@ -4781,6 +4788,7 @@ const gear = {
           "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical",
+          "imageCircleMm": 31.5,
           "minFocusMeters": 0.6,
           "lengthMm": 228,
           "notes": "Matches the 15.5-45mm Alura in size and balance; Super 35 coverage with constant T2.8."
@@ -6157,7 +6165,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 60mm T2.5": {
           "brand": "Cooke",
@@ -6200,7 +6209,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 300mm T3.3": {
           "brand": "Cooke",
@@ -6243,7 +6253,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 27mm T1.4": {
           "brand": "Cooke",
@@ -6270,7 +6281,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 40mm T1.4": {
           "brand": "Cooke",
@@ -6281,7 +6293,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 50mm T1.4": {
           "brand": "Cooke",
@@ -6292,7 +6305,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 65mm T1.4": {
           "brand": "Cooke",
@@ -6319,7 +6333,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke S8/i FF 100mm T1.4": {
           "brand": "Cooke",
@@ -6330,7 +6345,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.31
         },
         "Cooke Varotal/i FF 19-40mm T2.9": {
           "brand": "Cooke",
@@ -6469,7 +6485,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFilm Vespid 50mm T2.1": {
           "brand": "DZOFilm",
@@ -6480,7 +6497,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFilm Vespid 75mm T2.1": {
           "brand": "DZOFilm",
@@ -6491,7 +6509,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "Meike FF Prime 24mm T2.1": {
           "brand": "Meike",
@@ -6502,7 +6521,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 45
         },
         "Meike FF Prime 35mm T2.1": {
           "brand": "Meike",
@@ -6513,7 +6533,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 45
         },
         "Cooke S4/i 12mm T2.0": {
           "brand": "Cooke",
@@ -7032,7 +7053,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.2
         },
         "Laowa Ranger 75-180mm T2.9": {
           "brand": "Laowa",
@@ -7043,7 +7065,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 43.2
         },
         "Sigma Cine FF High Speed Prime 14mm T2": {
           "brand": "Sigma",
@@ -7955,7 +7978,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 24mm T1.4": {
           "brand": "NiSi",
@@ -7965,7 +7989,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 35mm T1.4": {
           "brand": "NiSi",
@@ -7975,7 +8000,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 50mm T1.4": {
           "brand": "NiSi",
@@ -7985,7 +8011,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "NiSi AUREUS Prime 85mm T1.4": {
           "brand": "NiSi",
@@ -7995,7 +8022,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "IRIX Cine 150mm T3.0 Macro 1:1": {
           "brand": "IRIX",
@@ -8021,7 +8049,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "SIRUI Vision Prime 1 35mm T1.4": {
           "brand": "SIRUI",
@@ -8031,7 +8060,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "SIRUI Vision Prime 1 50mm T1.4": {
           "brand": "SIRUI",
@@ -8041,7 +8071,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46
         },
         "DJI DL-S 16mm F2.8 ASPH ND": {
           "brand": "DJI",
@@ -8116,7 +8147,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.7
         },
         "DZOFILM Pictor 12-25mm T2.8": {
           "brand": "DZOFILM",
@@ -8238,7 +8270,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 16mm T2.8": {
           "brand": "DZOFILM",
@@ -8248,7 +8281,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 21mm T2.1": {
           "brand": "DZOFILM",
@@ -8258,7 +8292,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 25mm T2.1": {
           "brand": "DZOFILM",
@@ -8268,7 +8303,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 35mm T2.1": {
           "brand": "DZOFILM",
@@ -8278,7 +8314,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 40mm T2.1": {
           "brand": "DZOFILM",
@@ -8288,7 +8325,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 50mm T2.1": {
           "brand": "DZOFILM",
@@ -8298,7 +8336,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 75mm T2.1": {
           "brand": "DZOFILM",
@@ -8308,7 +8347,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 90mm T2.8 Macro": {
           "brand": "DZOFILM",
@@ -8318,7 +8358,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 100mm T2.1": {
           "brand": "DZOFILM",
@@ -8328,7 +8369,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime 125mm T2.1": {
           "brand": "DZOFILM",
@@ -8338,7 +8380,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 16mm T2.8": {
           "brand": "DZOFILM",
@@ -8348,7 +8391,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 25mm T2.1": {
           "brand": "DZOFILM",
@@ -8358,7 +8402,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 35mm T2.1": {
           "brand": "DZOFILM",
@@ -8368,7 +8413,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 50mm T2.1": {
           "brand": "DZOFILM",
@@ -8378,7 +8424,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 75mm T2.1": {
           "brand": "DZOFILM",
@@ -8388,7 +8435,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 100mm T2.1": {
           "brand": "DZOFILM",
@@ -8398,7 +8446,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Retro 125mm T2.1": {
           "brand": "DZOFILM",
@@ -8408,7 +8457,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 35mm T2.1": {
           "brand": "DZOFILM",
@@ -8418,7 +8468,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 50mm T2.1": {
           "brand": "DZOFILM",
@@ -8428,7 +8479,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Cyber 75mm T2.1": {
           "brand": "DZOFILM",
@@ -8438,7 +8490,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 18mm T1.9": {
           "brand": "DZOFILM",
@@ -8449,7 +8502,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 24mm T1.9": {
           "brand": "DZOFILM",
@@ -8460,7 +8514,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 35mm T1.9": {
           "brand": "DZOFILM",
@@ -8471,7 +8526,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 50mm T1.9": {
           "brand": "DZOFILM",
@@ -8482,7 +8538,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 85mm T1.9": {
           "brand": "DZOFILM",
@@ -8493,7 +8550,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Vespid Prime II 105mm T1.9": {
           "brand": "DZOFILM",
@@ -8504,7 +8562,8 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 46.5
         },
         "DZOFILM Gnosis 24mm T2.8 Macro": {
           "brand": "DZOFILM",
@@ -8517,6 +8576,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical",
           "minFocusMeters": 0.18,
+          "imageCircleMm": 46.5,
           "notes": "1:1 macro prime with swappable PL/EF mounts and 300° focus rotation."
         },
         "DZOFILM Gnosis 32mm T2.8 Macro": {
@@ -8530,6 +8590,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical",
           "minFocusMeters": 0.23,
+          "imageCircleMm": 46.5,
           "notes": "Macro-capable VistaVision prime sharing the Gnosis support foot and unified gear positions."
         },
         "DZOFILM Gnosis 65mm T2.8 Macro": {
@@ -8543,6 +8604,7 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical",
           "minFocusMeters": 0.37,
+          "imageCircleMm": 46.5,
           "notes": "Longer Gnosis macro prime covering FF/VV with native support foot for studio rods."
         },
         "Laowa Proteus 2x 35mm T2": {
