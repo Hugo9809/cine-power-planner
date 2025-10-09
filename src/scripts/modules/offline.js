@@ -633,6 +633,89 @@
     return fallbackSafeWarn;
   })();
 
+  const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+
+  function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
+    if (!promise || typeof promise.then !== 'function') {
+      return Promise.resolve({ timedOut: false, result: promise });
+    }
+
+    const ms = typeof timeoutMs === 'number' && timeoutMs >= 0 ? timeoutMs : null;
+    const schedule = typeof setTimeout === 'function' ? setTimeout : null;
+    const cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
+
+    if (ms === null || !schedule) {
+      return promise.then(result => ({ timedOut: false, result }));
+    }
+
+    let finished = false;
+    let timerId = null;
+
+    return new Promise((resolve, reject) => {
+      promise.then(
+        value => {
+          if (finished) {
+            return value;
+          }
+
+          finished = true;
+          if (timerId != null && cancel) {
+            try {
+              cancel(timerId);
+            } catch (cancelError) {
+              void cancelError;
+            }
+          }
+
+          resolve({ timedOut: false, result: value });
+          return value;
+        },
+        error => {
+          if (finished) {
+            if (typeof onLateRejection === 'function') {
+              try {
+                onLateRejection(error);
+              } catch (lateError) {
+                void lateError;
+              }
+            }
+            return null;
+          }
+
+          finished = true;
+          if (timerId != null && cancel) {
+            try {
+              cancel(timerId);
+            } catch (cancelError) {
+              void cancelError;
+            }
+          }
+
+          reject(error);
+          return null;
+        },
+      );
+
+      timerId = schedule(() => {
+        if (finished) {
+          return;
+        }
+
+        finished = true;
+
+        if (typeof onTimeout === 'function') {
+          try {
+            onTimeout();
+          } catch (timeoutError) {
+            void timeoutError;
+          }
+        }
+
+        resolve({ timedOut: true, result: undefined });
+      }, ms);
+    });
+  }
+
   function fallbackExposeGlobal(name, value) {
     if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
       return false;
@@ -1725,7 +1808,22 @@
     let serviceWorkersUnregistered = false;
 
     try {
-      serviceWorkersUnregistered = await serviceWorkerCleanupPromise;
+      const serviceWorkerAwaitResult = await awaitPromiseWithSoftTimeout(
+        serviceWorkerCleanupPromise,
+        FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+        () => {
+          safeWarn('Service worker cleanup timed out before reload, continuing anyway.', {
+            timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+          });
+        },
+        (lateError) => {
+          safeWarn('Service worker cleanup failed after reload triggered', lateError);
+        },
+      );
+
+      if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
+        serviceWorkersUnregistered = !!serviceWorkerAwaitResult.result;
+      }
     } catch (error) {
       safeWarn('Service worker cleanup promise rejected', error);
       serviceWorkersUnregistered = false;

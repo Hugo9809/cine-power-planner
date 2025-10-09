@@ -1596,7 +1596,7 @@ function summarizeProjectInfoStats(projectInfo) {
         hasDetails = true;
       }
     }
-    if (key === 'prepDays' || key === 'shootingDays') {
+    if (key === 'prepDays' || key === 'shootingDays' || key === 'returnDays') {
       var scheduleCount = countScheduleEntries(value);
       if (scheduleCount > 0) {
         schedule += scheduleCount;
@@ -3630,7 +3630,9 @@ function applySharedSetup(shared) {
         if (!hasAutoRules) {
           delete payload.autoGearRules;
         }
-        saveProject(storageKey, payload);
+        saveProject(storageKey, payload, {
+          skipOverwriteBackup: true
+        });
       }
     }
   } catch (e) {
@@ -6511,6 +6513,15 @@ var backupFallbackLoaders = [{
     return typeof loadAutoGearPresets === 'function' ? loadAutoGearPresets() : undefined;
   }
 }, {
+  key: 'autoGearMonitorDefaults',
+  loaderName: 'loadAutoGearMonitorDefaults',
+  isValid: function isValid(value) {
+    return isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadAutoGearMonitorDefaults === 'function' ? loadAutoGearMonitorDefaults() : undefined;
+  }
+}, {
   key: 'autoGearSeeded',
   loaderName: 'loadAutoGearSeedFlag',
   isValid: function isValid(value) {
@@ -8389,6 +8400,23 @@ if (factoryResetButton) {
       }
       clearAllData();
       try {
+        if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+          var eventName = 'cameraPowerPlannerFactoryReset';
+          var eventInstance = null;
+          if (typeof window.CustomEvent === 'function') {
+            eventInstance = new window.CustomEvent(eventName);
+          } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+            eventInstance = document.createEvent('Event');
+            eventInstance.initEvent(eventName, false, false);
+          }
+          if (eventInstance) {
+            window.dispatchEvent(eventInstance);
+          }
+        }
+      } catch (factoryResetEventError) {
+        console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+      }
+      try {
         resetPlannerStateAfterFactoryReset();
       } catch (resetError) {
         console.warn('Failed to reset planner state after factory reset', resetError);
@@ -8621,6 +8649,40 @@ function clearUiCacheEntriesFallback() {
     });
   });
 }
+var CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
+function resolveCineCacheNameForReload() {
+  var scopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var _index10 = 0; _index10 < scopes.length; _index10 += 1) {
+    var _scope2 = scopes[_index10];
+    if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
+      continue;
+    }
+    try {
+      var name = _scope2.CINE_CACHE_NAME;
+      if (typeof name === 'string' && name) {
+        return name;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  return '';
+}
+function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+  if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
+    return true;
+  }
+  var lowerKey = key.toLowerCase();
+  for (var _index11 = 0; _index11 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index11 += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index11])) {
+      return true;
+    }
+  }
+  return false;
+}
 function readLocationHrefSafe(locationLike) {
   if (!locationLike || _typeof(locationLike) !== 'object') {
     return '';
@@ -8747,10 +8809,10 @@ function buildForceReloadHref(locationLike, paramName) {
   }
   if (typeof URL === 'function') {
     var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
-    for (var _index10 = 0; _index10 < urlCandidates.length; _index10 += 1) {
-      var candidate = urlCandidates[_index10];
+    for (var _index12 = 0; _index12 < urlCandidates.length; _index12 += 1) {
+      var candidate = urlCandidates[_index12];
       try {
-        var url = _index10 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index12 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -8780,8 +8842,8 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var _index11 = 0; _index11 < baseCandidates.length; _index11 += 1) {
-      var _candidate = baseCandidates[_index11];
+    for (var _index13 = 0; _index13 < baseCandidates.length; _index13 += 1) {
+      var _candidate = baseCandidates[_index13];
       try {
         var absolute = new URL(href + hash, _candidate).toString();
         return {
@@ -8994,12 +9056,10 @@ function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn,
   scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
   return false;
 }
-
 function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref) {
   if (!win || !locationLike || typeof nextHref !== 'string' || !nextHref) {
     return false;
   }
-
   var historyLike = null;
   try {
     historyLike = win.history || null;
@@ -9007,54 +9067,44 @@ function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref
     console.warn('Forced reload history access failed', error);
     historyLike = null;
   }
-
   if (!historyLike || typeof historyLike.replaceState !== 'function') {
     return false;
   }
-
   var beforeRaw = readLocationHrefSafe(locationLike);
   var before = normaliseForceReloadHref(beforeRaw, baseHref);
   var expected = normaliseForceReloadHref(nextHref, baseHref);
-
   var replaceUrl = nextHref;
   try {
     var reference = beforeRaw || baseHref || undefined;
     var parsed = typeof URL === 'function' ? new URL(nextHref, reference) : null;
     if (parsed) {
-      replaceUrl = "".concat(parsed.pathname || '', parsed.search || '', parsed.hash || '') || parsed.toString();
+      replaceUrl = "".concat(parsed.pathname || '').concat(parsed.search || '').concat(parsed.hash || '') || parsed.toString();
     }
   } catch (error) {
     console.warn('Forced reload history fallback URL parse failed', error);
     replaceUrl = nextHref;
   }
-
   var stateSnapshot = null;
   var hasStateSnapshot = false;
-
   try {
     stateSnapshot = historyLike.state;
     hasStateSnapshot = true;
   } catch (stateError) {
     console.warn('Forced reload history state snapshot failed', stateError);
   }
-
   try {
     historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
   } catch (replaceError) {
     console.warn('Forced reload history replaceState failed', replaceError);
     return false;
   }
-
   var afterRaw = readLocationHrefSafe(locationLike);
   var after = normaliseForceReloadHref(afterRaw, baseHref);
-
   var updated = expected && (after === expected || after === "".concat(expected, "#")) || before !== after && after && (!expected || after === expected);
-
   if (!updated) {
     scheduleForceReloadNavigationWarning(locationLike, baseHref, 'history.replaceState', before, expected, after);
     return false;
   }
-
   if (typeof locationLike.reload === 'function') {
     try {
       locationLike.reload();
@@ -9063,7 +9113,6 @@ function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref
       console.warn('Forced reload via history replaceState reload failed', reloadError);
     }
   }
-
   return true;
 }
 function scheduleForceReloadFallbacks(win, locationLike) {
@@ -9092,8 +9141,7 @@ function scheduleForceReloadFallbacks(win, locationLike) {
   var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
   var fallbackHref = nextHref || baseHref || originalHref || '';
   var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  var fallbackToken =
-    typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
+  var fallbackToken = typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
   var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(fallbackToken) : '';
   var steps = [];
   var nextDelay = 120;
@@ -9174,9 +9222,9 @@ function prepareForceReloadContext(win) {
   var hasAssign = typeof location.assign === 'function';
   var hasReload = typeof location.reload === 'function';
   var forceReloadUrl = buildForceReloadHref(location, 'forceReload');
-  var originalHref = forceReloadUrl.originalHref;
-  var nextHref = forceReloadUrl.nextHref;
-  var timestamp = forceReloadUrl.timestamp;
+  var originalHref = forceReloadUrl.originalHref,
+    nextHref = forceReloadUrl.nextHref,
+    timestamp = forceReloadUrl.timestamp;
   var baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
   return {
     win: win,
@@ -9329,54 +9377,134 @@ function createReloadFallback(win) {
     }
   };
 }
+var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
+  if (!promise || typeof promise.then !== 'function') {
+    return Promise.resolve({
+      timedOut: false,
+      result: promise
+    });
+  }
+  var ms = typeof timeoutMs === 'number' && timeoutMs >= 0 ? timeoutMs : null;
+  var schedule = typeof setTimeout === 'function' ? setTimeout : null;
+  var cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
+  if (ms === null || !schedule) {
+    return promise.then(function (result) {
+      return {
+        timedOut: false,
+        result: result
+      };
+    });
+  }
+  var finished = false;
+  var timerId = null;
+  return new Promise(function (resolve, reject) {
+    promise.then(function (value) {
+      if (finished) {
+        return value;
+      }
+      finished = true;
+      if (timerId != null && cancel) {
+        try {
+          cancel(timerId);
+        } catch (cancelError) {
+          void cancelError;
+        }
+      }
+      resolve({
+        timedOut: false,
+        result: value
+      });
+      return value;
+    }, function (error) {
+      if (finished) {
+        if (typeof onLateRejection === 'function') {
+          try {
+            onLateRejection(error);
+          } catch (lateError) {
+            void lateError;
+          }
+        }
+        return null;
+      }
+      finished = true;
+      if (timerId != null && cancel) {
+        try {
+          cancel(timerId);
+        } catch (cancelError) {
+          void cancelError;
+        }
+      }
+      reject(error);
+      return null;
+    });
+    timerId = schedule(function () {
+      if (finished) {
+        return;
+      }
+      finished = true;
+      if (typeof onTimeout === 'function') {
+        try {
+          onTimeout();
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+      resolve({
+        timedOut: true,
+        result: undefined
+      });
+    }, ms);
+  });
+}
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
-  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee3() {
-    var reloadFallback, offlineModule, beforeReloadHref, result, reloadHandled, navigationObserved, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, win, _t4, _t5, _t6, _t7;
-    return _regenerator().w(function (_context3) {
-      while (1) switch (_context3.p = _context3.n) {
+  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee5() {
+    var reloadFallback, offlineModule, beforeReloadHref, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t8, _t9, _t0;
+    return _regenerator().w(function (_context5) {
+      while (1) switch (_context5.p = _context5.n) {
         case 0:
           reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context3.n = 6;
+            _context5.n = 6;
             break;
           }
-          _context3.p = 1;
-          _context3.n = 2;
+          _context5.p = 1;
+          _context5.n = 2;
           return offlineModule.reloadApp({
             window: window,
             navigator: typeof navigator !== 'undefined' ? navigator : undefined,
             caches: typeof caches !== 'undefined' ? caches : undefined
           });
         case 2:
-          result = _context3.v;
+          result = _context5.v;
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
-            _context3.n = 4;
+            _context5.n = 4;
             break;
           }
-          _context3.n = 3;
+          _context5.n = 3;
           return waitForReloadNavigation(beforeReloadHref).catch(function () {
             return false;
           });
         case 3:
-          navigationObserved = _context3.v;
+          navigationObserved = _context5.v;
           if (!navigationObserved) {
-            _context3.n = 4;
+            _context5.n = 4;
             break;
           }
-          return _context3.a(2);
+          return _context5.a(2);
         case 4:
-          _context3.n = 6;
+          _context5.n = 6;
           break;
         case 5:
-          _context3.p = 5;
-          _t4 = _context3.v;
-          console.warn('Offline module reload failed, falling back to manual refresh', _t4);
+          _context5.p = 5;
+          _t8 = _context5.v;
+          console.warn('Offline module reload failed, falling back to manual refresh', _t8);
         case 6:
           uiCacheCleared = false;
           try {
@@ -9395,111 +9523,173 @@ function _clearCachesAndReload() {
               console.warn('Fallback UI cache clear failed', fallbackError);
             }
           }
-          _context3.p = 7;
-          if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-            _context3.n = 19;
-            break;
+          serviceWorkerCleanupPromise = Promise.resolve(false);
+          cacheCleanupPromise = Promise.resolve(false);
+          if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
+            _navigator = navigator, serviceWorker = _navigator.serviceWorker;
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee3() {
+              var registrations, regs, reg, readyReg, _t4, _t5, _t6;
+              return _regenerator().w(function (_context3) {
+                while (1) switch (_context3.p = _context3.n) {
+                  case 0:
+                    _context3.p = 0;
+                    registrations = [];
+                    _context3.p = 1;
+                    if (!(typeof serviceWorker.getRegistrations === 'function')) {
+                      _context3.n = 3;
+                      break;
+                    }
+                    _context3.n = 2;
+                    return serviceWorker.getRegistrations();
+                  case 2:
+                    regs = _context3.v;
+                    if (Array.isArray(regs)) {
+                      regs.forEach(function (reg) {
+                        if (reg) {
+                          registrations.push(reg);
+                        }
+                      });
+                    }
+                    _context3.n = 9;
+                    break;
+                  case 3:
+                    if (!(typeof serviceWorker.getRegistration === 'function')) {
+                      _context3.n = 5;
+                      break;
+                    }
+                    _context3.n = 4;
+                    return serviceWorker.getRegistration();
+                  case 4:
+                    reg = _context3.v;
+                    if (reg) {
+                      registrations.push(reg);
+                    }
+                    _context3.n = 9;
+                    break;
+                  case 5:
+                    if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
+                      _context3.n = 9;
+                      break;
+                    }
+                    _context3.p = 6;
+                    _context3.n = 7;
+                    return serviceWorker.ready;
+                  case 7:
+                    readyReg = _context3.v;
+                    if (readyReg) {
+                      registrations.push(readyReg);
+                    }
+                    _context3.n = 9;
+                    break;
+                  case 8:
+                    _context3.p = 8;
+                    _t4 = _context3.v;
+                    console.warn('Failed to await active service worker', _t4);
+                  case 9:
+                    _context3.n = 11;
+                    break;
+                  case 10:
+                    _context3.p = 10;
+                    _t5 = _context3.v;
+                    console.warn('Failed to query service worker registrations', _t5);
+                  case 11:
+                    if (registrations.length) {
+                      _context3.n = 12;
+                      break;
+                    }
+                    return _context3.a(2, false);
+                  case 12:
+                    _context3.n = 13;
+                    return Promise.all(registrations.map(function (reg) {
+                      if (!reg || typeof reg.unregister !== 'function') {
+                        return Promise.resolve(false);
+                      }
+                      return reg.unregister().catch(function (unregisterError) {
+                        console.warn('Service worker unregister failed', unregisterError);
+                        return false;
+                      });
+                    }));
+                  case 13:
+                    return _context3.a(2, true);
+                  case 14:
+                    _context3.p = 14;
+                    _t6 = _context3.v;
+                    console.warn('Service worker cleanup failed', _t6);
+                    return _context3.a(2, false);
+                }
+              }, _callee3, null, [[6, 8], [1, 10], [0, 14]]);
+            }))();
           }
-          registrations = [];
-          _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-          _context3.p = 8;
-          if (!(typeof serviceWorker.getRegistrations === 'function')) {
-            _context3.n = 10;
-            break;
+          if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
+              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t7;
+              return _regenerator().w(function (_context4) {
+                while (1) switch (_context4.p = _context4.n) {
+                  case 0:
+                    _context4.p = 0;
+                    _context4.n = 1;
+                    return caches.keys();
+                  case 1:
+                    keys = _context4.v;
+                    if (!(!Array.isArray(keys) || !keys.length)) {
+                      _context4.n = 2;
+                      break;
+                    }
+                    return _context4.a(2, false);
+                  case 2:
+                    explicitName = resolveCineCacheNameForReload();
+                    lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
+                    relevantKeys = keys.filter(function (key) {
+                      return isRelevantCacheKeyForReload(key, explicitName, lowerExplicit);
+                    });
+                    if (relevantKeys.length) {
+                      _context4.n = 3;
+                      break;
+                    }
+                    return _context4.a(2, false);
+                  case 3:
+                    removedAny = false;
+                    _context4.n = 4;
+                    return Promise.all(relevantKeys.map(function (key) {
+                      if (!key || typeof caches.delete !== 'function') {
+                        return Promise.resolve(false);
+                      }
+                      return caches.delete(key).then(function (result) {
+                        removedAny = removedAny || !!result;
+                        return result;
+                      }).catch(function (cacheError) {
+                        console.warn('Failed to delete cache', key, cacheError);
+                        return false;
+                      });
+                    }));
+                  case 4:
+                    return _context4.a(2, removedAny);
+                  case 5:
+                    _context4.p = 5;
+                    _t7 = _context4.v;
+                    console.warn('Cache clear failed', _t7);
+                    return _context4.a(2, false);
+                }
+              }, _callee4, null, [[0, 5]]);
+            }))();
           }
-          _context3.n = 9;
-          return serviceWorker.getRegistrations();
+          _context5.p = 7;
+          _context5.n = 8;
+          return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
+            console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
+              timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
+            });
+          }, function (lateError) {
+            console.warn('Service worker cleanup failed after reload triggered', lateError);
+          });
+        case 8:
+          _context5.n = 10;
+          break;
         case 9:
-          regs = _context3.v;
-          if (Array.isArray(regs)) {
-            regs.forEach(function (reg) {
-              return registrations.push(reg);
-            });
-          }
-          _context3.n = 16;
-          break;
+          _context5.p = 9;
+          _t9 = _context5.v;
+          console.warn('Service worker cleanup failed', _t9);
         case 10:
-          if (!(typeof serviceWorker.getRegistration === 'function')) {
-            _context3.n = 12;
-            break;
-          }
-          _context3.n = 11;
-          return serviceWorker.getRegistration();
-        case 11:
-          reg = _context3.v;
-          if (reg) {
-            registrations.push(reg);
-          }
-          _context3.n = 16;
-          break;
-        case 12:
-          if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-            _context3.n = 16;
-            break;
-          }
-          _context3.p = 13;
-          _context3.n = 14;
-          return serviceWorker.ready;
-        case 14:
-          readyReg = _context3.v;
-          if (readyReg) {
-            registrations.push(readyReg);
-          }
-          _context3.n = 16;
-          break;
-        case 15:
-          _context3.p = 15;
-          _t5 = _context3.v;
-          console.warn('Failed to await active service worker', _t5);
-        case 16:
-          _context3.n = 18;
-          break;
-        case 17:
-          _context3.p = 17;
-          _t6 = _context3.v;
-          console.warn('Failed to query service worker registrations', _t6);
-        case 18:
-          if (!registrations.length) {
-            _context3.n = 19;
-            break;
-          }
-          _context3.n = 19;
-          return Promise.all(registrations.map(function (reg) {
-            if (!reg || typeof reg.unregister !== 'function') {
-              return Promise.resolve();
-            }
-            return reg.unregister().catch(function (unregisterError) {
-              console.warn('Service worker unregister failed', unregisterError);
-            });
-          }));
-        case 19:
-          if (!(typeof caches !== 'undefined' && caches && typeof caches.keys === 'function')) {
-            _context3.n = 21;
-            break;
-          }
-          _context3.n = 20;
-          return caches.keys();
-        case 20:
-          keys = _context3.v;
-          _context3.n = 21;
-          return Promise.all(keys.map(function (key) {
-            if (!key || typeof caches.delete !== 'function') {
-              return Promise.resolve(false);
-            }
-            return caches.delete(key).catch(function (cacheError) {
-              console.warn('Failed to delete cache', key, cacheError);
-              return false;
-            });
-          }));
-        case 21:
-          _context3.n = 23;
-          break;
-        case 22:
-          _context3.p = 22;
-          _t7 = _context3.v;
-          console.warn('Cache clear failed', _t7);
-        case 23:
-          _context3.p = 23;
           try {
             if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
               reloadFallback.triggerNow();
@@ -9515,11 +9705,20 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          return _context3.f(23);
-        case 24:
-          return _context3.a(2);
+          _context5.p = 11;
+          _context5.n = 12;
+          return cacheCleanupPromise;
+        case 12:
+          _context5.n = 14;
+          break;
+        case 13:
+          _context5.p = 13;
+          _t0 = _context5.v;
+          console.warn('Cache clear failed', _t0);
+        case 14:
+          return _context5.a(2);
       }
-    }, _callee3, null, [[13, 15], [8, 17], [7, 22, 23, 24], [1, 5]]);
+    }, _callee5, null, [[11, 13], [7, 9], [1, 5]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -11592,16 +11791,16 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index12 = 0; _index12 < scopes.length; _index12 += 1) {
-    var _scope2 = scopes[_index12];
-    if (!_scope2 || _typeof(_scope2) !== 'object') {
+  for (var _index14 = 0; _index14 < scopes.length; _index14 += 1) {
+    var _scope3 = scopes[_index14];
+    if (!_scope3 || _typeof(_scope3) !== 'object') {
       continue;
     }
     try {
-      _scope2.getRequiredScenarioOptionEntries = getter;
+      _scope3.getRequiredScenarioOptionEntries = getter;
     } catch (assignError) {
       try {
-        Object.defineProperty(_scope2, 'getRequiredScenarioOptionEntries', {
+        Object.defineProperty(_scope3, 'getRequiredScenarioOptionEntries', {
           configurable: true,
           writable: true,
           value: getter
@@ -11906,9 +12105,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index13 = 0; _index13 < lensNames.length; _index13 += 1) {
+  for (var _index15 = 0; _index15 < lensNames.length; _index15 += 1) {
     var _ref23, _lens$minFocusMeters;
-    var name = lensNames[_index13];
+    var name = lensNames[_index15];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -11975,8 +12174,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index14 = 0; _index14 < devices.filterOptions.length; _index14 += 1) {
-      var value = devices.filterOptions[_index14];
+    for (var _index16 = 0; _index16 < devices.filterOptions.length; _index16 += 1) {
+      var value = devices.filterOptions[_index16];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -12071,8 +12270,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index15 = 0; _index15 < opts.length; _index15 += 1) {
-    var value = opts[_index15];
+  for (var _index17 = 0; _index17 < opts.length; _index17 += 1) {
+    var value = opts[_index17];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -12089,7 +12288,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index16];
+    var value = opts[_index18];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -12110,7 +12309,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index16 = 0; _index16 < opts.length; _index16 += 1) {
+  for (var _index18 = 0; _index18 < opts.length; _index18 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -12598,14 +12797,27 @@ function handleFilterDetailChange() {
 function collectFilterSelections() {
   var select = resolveFilterSelectElement();
   if (!select) return '';
-  var selected = Array.from(select.selectedOptions).map(function (o) {
-    return o.value;
-  });
-  var existing = currentProjectInfo && currentProjectInfo.filter ? parseFilterTokens(currentProjectInfo.filter) : [];
-  var existingMap = Object.fromEntries(existing.map(function (t) {
-    return [t.type, t];
+  var selected = Array.from(select.selectedOptions).map(function (option) {
+    return typeof option.value === 'string' ? option.value.trim() : '';
+  }).filter(Boolean);
+  var existingSelectionString = currentProjectInfo && typeof currentProjectInfo.filter === 'string' ? currentProjectInfo.filter : '';
+  var existingTokens = existingSelectionString ? parseFilterTokens(existingSelectionString) : [];
+  var existingMap = Object.fromEntries(existingTokens.map(function (token) {
+    return [token.type, token];
   }));
-  var tokens = selected.map(function (type) {
+  var existingStringMap = {};
+  if (existingSelectionString) {
+    existingSelectionString.split(',').forEach(function (tokenStr) {
+      var _trimmed$split$;
+      var trimmed = typeof tokenStr === 'string' ? tokenStr.trim() : '';
+      if (!trimmed) return;
+      var type = (_trimmed$split$ = trimmed.split(':')[0]) === null || _trimmed$split$ === void 0 ? void 0 : _trimmed$split$.trim();
+      if (type) {
+        existingStringMap[type] = trimmed;
+      }
+    });
+  }
+  var selectedTokens = selected.map(function (type) {
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
     var prev = existingMap[type] || {};
@@ -12627,7 +12839,26 @@ function collectFilterSelections() {
     }
     return "".concat(type, ":").concat(size).concat(valueSegment);
   });
-  return tokens.join(',');
+  var availableTypes = new Set(Array.from(select.options).map(function (option) {
+    return typeof option.value === 'string' ? option.value.trim() : '';
+  }).filter(Boolean));
+  var selectedTypes = new Set(selected);
+  existingTokens.forEach(function (token) {
+    if (!token || !token.type) return;
+    if (selectedTypes.has(token.type)) return;
+    if (availableTypes.has(token.type)) return;
+    var preserved = existingStringMap[token.type] || function () {
+      var size = token.size || SESSION_DEFAULT_FILTER_SIZE;
+      var values = Array.isArray(token.values) ? token.values.filter(Boolean) : [];
+      var segment = '';
+      if (filterTypeNeedsValueSelect(token.type)) {
+        segment = values.length ? ":".concat(values.join('|')) : ':!';
+      }
+      return "".concat(token.type, ":").concat(size).concat(segment);
+    }();
+    selectedTokens.push(preserved);
+  });
+  return selectedTokens.join(',');
 }
 function parseFilterTokens(str) {
   if (!str) return [];
@@ -12794,8 +13025,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index17 = 0; _index17 < items.length; _index17 += 1) {
-      var _items$_index = items[_index17],
+    for (var _index19 = 0; _index19 < items.length; _index19 += 1) {
+      var _items$_index = items[_index19],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {

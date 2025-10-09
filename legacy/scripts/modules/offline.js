@@ -1,7 +1,3 @@
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -30,7 +26,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var FALLBACK_SCOPE = detectGlobalScope();
-  function loadModuleEnvironment(scope) {
+  function resolveModuleLinker(scope) {
+    if (typeof require === 'function') {
+      try {
+        return require('./helpers/module-linker.js');
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [scope];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      try {
+        var linker = candidate && candidate.cineModuleLinker;
+        if (linker && _typeof(linker) === 'object') {
+          return linker;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return null;
+  }
+  function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
         return require('./environment.js');
@@ -51,7 +73,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  function loadEnvironmentBridge(scope) {
+  function fallbackLoadEnvironmentBridge(scope) {
     if (typeof require === 'function') {
       try {
         return require('./environment-bridge.js');
@@ -72,10 +94,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var MODULE_ENV = loadModuleEnvironment(FALLBACK_SCOPE);
-  var ENV_BRIDGE = loadEnvironmentBridge(FALLBACK_SCOPE);
-  var GLOBAL_SCOPE = (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function' ? ENV_BRIDGE.getGlobalScope() : null) || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function' ? MODULE_ENV.getGlobalScope() : null) || FALLBACK_SCOPE;
-  var MODULE_GLOBALS = function resolveModuleGlobals() {
+  var MODULE_LINKER = resolveModuleLinker(FALLBACK_SCOPE);
+  var MODULE_ENV = MODULE_LINKER && typeof MODULE_LINKER.getModuleEnvironment === 'function' ? MODULE_LINKER.getModuleEnvironment() : fallbackLoadModuleEnvironment(FALLBACK_SCOPE);
+  var ENV_BRIDGE = MODULE_LINKER && typeof MODULE_LINKER.getEnvironmentBridge === 'function' ? MODULE_LINKER.getEnvironmentBridge() : fallbackLoadEnvironmentBridge(FALLBACK_SCOPE);
+  var GLOBAL_SCOPE = (MODULE_LINKER && typeof MODULE_LINKER.getGlobalScope === 'function' ? MODULE_LINKER.getGlobalScope() : null) || (ENV_BRIDGE && typeof ENV_BRIDGE.getGlobalScope === 'function' ? ENV_BRIDGE.getGlobalScope() : null) || (MODULE_ENV && typeof MODULE_ENV.getGlobalScope === 'function' ? MODULE_ENV.getGlobalScope() : null) || FALLBACK_SCOPE;
+  function fallbackResolveModuleGlobals() {
     if (typeof require === 'function') {
       try {
         var required = require('./globals.js');
@@ -98,8 +121,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return null;
-  }();
+  }
+  var MODULE_GLOBALS = (MODULE_LINKER && typeof MODULE_LINKER.getModuleGlobals === 'function' ? MODULE_LINKER.getModuleGlobals() : null) || fallbackResolveModuleGlobals();
   function informModuleGlobals(name, api) {
+    if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
+      MODULE_LINKER.recordModule(name, api);
+    }
     if (!MODULE_GLOBALS || typeof MODULE_GLOBALS.recordModule !== 'function') {
       return;
     }
@@ -121,6 +148,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   var tryRequire = function resolveTryRequire() {
+    if (MODULE_LINKER && typeof MODULE_LINKER.tryRequire === 'function') {
+      return MODULE_LINKER.tryRequire;
+    }
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.tryRequire === 'function') {
       return MODULE_GLOBALS.tryRequire;
     }
@@ -136,9 +166,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return fallbackTryRequire;
   }();
   function resolveModuleRegistry(scope) {
+    var targetScope = scope || GLOBAL_SCOPE;
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      var linked = MODULE_LINKER.getModuleRegistry(targetScope);
+      if (linked) {
+        return linked;
+      }
+    }
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
-        var resolved = MODULE_GLOBALS.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        var resolved = MODULE_GLOBALS.resolveModuleRegistry(targetScope);
         if (resolved) {
           return resolved;
         }
@@ -148,7 +185,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
       try {
-        var bridged = ENV_BRIDGE.getModuleRegistry(scope || GLOBAL_SCOPE);
+        var bridged = ENV_BRIDGE.getModuleRegistry(targetScope);
         if (bridged) {
           return bridged;
         }
@@ -158,7 +195,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (MODULE_ENV && typeof MODULE_ENV.resolveModuleRegistry === 'function') {
       try {
-        return MODULE_ENV.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        var provided = MODULE_ENV.resolveModuleRegistry(targetScope);
+        if (provided) {
+          return provided;
+        }
       } catch (error) {
         void error;
       }
@@ -167,7 +207,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (required && _typeof(required) === 'object') {
       return required;
     }
-    var scopes = [scope || GLOBAL_SCOPE];
+    var scopes = [targetScope];
     if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
     if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
     if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
@@ -181,6 +221,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var MODULE_REGISTRY = function () {
+    if (MODULE_LINKER && typeof MODULE_LINKER.getModuleRegistry === 'function') {
+      var linkedRegistry = MODULE_LINKER.getModuleRegistry(GLOBAL_SCOPE);
+      if (linkedRegistry) {
+        return linkedRegistry;
+      }
+    }
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getModuleRegistry === 'function') {
       try {
         var shared = MODULE_GLOBALS.getModuleRegistry(GLOBAL_SCOPE);
@@ -211,7 +257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-    return resolveModuleRegistry();
+    return resolveModuleRegistry(GLOBAL_SCOPE);
   }();
   var PENDING_QUEUE_KEY = function resolvePendingKey() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getPendingQueueKey === 'function') {
@@ -484,6 +530,86 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackSafeWarn;
   }();
+  var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+  function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
+    if (!promise || typeof promise.then !== 'function') {
+      return Promise.resolve({
+        timedOut: false,
+        result: promise
+      });
+    }
+    var ms = typeof timeoutMs === 'number' && timeoutMs >= 0 ? timeoutMs : null;
+    var schedule = typeof setTimeout === 'function' ? setTimeout : null;
+    var cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
+    if (ms === null || !schedule) {
+      return promise.then(function (result) {
+        return {
+          timedOut: false,
+          result: result
+        };
+      });
+    }
+    var finished = false;
+    var timerId = null;
+    return new Promise(function (resolve, reject) {
+      promise.then(function (value) {
+        if (finished) {
+          return value;
+        }
+        finished = true;
+        if (timerId != null && cancel) {
+          try {
+            cancel(timerId);
+          } catch (cancelError) {
+            void cancelError;
+          }
+        }
+        resolve({
+          timedOut: false,
+          result: value
+        });
+        return value;
+      }, function (error) {
+        if (finished) {
+          if (typeof onLateRejection === 'function') {
+            try {
+              onLateRejection(error);
+            } catch (lateError) {
+              void lateError;
+            }
+          }
+          return null;
+        }
+        finished = true;
+        if (timerId != null && cancel) {
+          try {
+            cancel(timerId);
+          } catch (cancelError) {
+            void cancelError;
+          }
+        }
+        reject(error);
+        return null;
+      });
+      timerId = schedule(function () {
+        if (finished) {
+          return;
+        }
+        finished = true;
+        if (typeof onTimeout === 'function') {
+          try {
+            onTimeout();
+          } catch (timeoutError) {
+            void timeoutError;
+          }
+        }
+        resolve({
+          timedOut: true,
+          result: undefined
+        });
+      }, ms);
+    });
+  }
   function fallbackExposeGlobal(name, value) {
     if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
       return false;
@@ -845,12 +971,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
+  var APP_CACHE_IDENTIFIERS = ['cine-power-planner', 'cinepowerplanner'];
+  function resolveExposedCacheName() {
+    var exposedName = resolveGlobal('CINE_CACHE_NAME');
+    if (typeof exposedName === 'string' && exposedName) {
+      return exposedName;
+    }
+    return null;
+  }
+  function isRelevantCacheKey(key, explicitName, lowerExplicit) {
+    if (typeof key !== 'string' || !key) {
+      return false;
+    }
+    if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
+      return true;
+    }
+    var lowerKey = key.toLowerCase();
+    for (var index = 0; index < APP_CACHE_IDENTIFIERS.length; index += 1) {
+      if (lowerKey.includes(APP_CACHE_IDENTIFIERS[index])) {
+        return true;
+      }
+    }
+    return false;
+  }
   function clearCacheStorage(_x2) {
     return _clearCacheStorage.apply(this, arguments);
   }
   function _clearCacheStorage() {
     _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee2(cachesOverride) {
-      var cachesInstance, keys, _t3;
+      var cachesInstance, exposedName, lowerExplicit, keys, relevantKeys, removedAny, _t3;
       return _regenerator().w(function (_context2) {
         while (1) switch (_context2.p = _context2.n) {
           case 0:
@@ -861,23 +1010,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return _context2.a(2, false);
           case 1:
-            _context2.p = 1;
-            _context2.n = 2;
+            exposedName = resolveExposedCacheName();
+            lowerExplicit = exposedName ? exposedName.toLowerCase() : null;
+            _context2.p = 2;
+            _context2.n = 3;
             return cachesInstance.keys();
-          case 2:
+          case 3:
             keys = _context2.v;
             if (!(!Array.isArray(keys) || !keys.length)) {
-              _context2.n = 3;
+              _context2.n = 4;
               break;
             }
             return _context2.a(2, false);
-          case 3:
-            _context2.n = 4;
-            return Promise.all(keys.map(function (key) {
+          case 4:
+            relevantKeys = keys.filter(function (key) {
+              return isRelevantCacheKey(key, exposedName, lowerExplicit);
+            });
+            if (relevantKeys.length) {
+              _context2.n = 5;
+              break;
+            }
+            return _context2.a(2, false);
+          case 5:
+            removedAny = false;
+            _context2.n = 6;
+            return Promise.all(relevantKeys.map(function (key) {
               if (!key || typeof cachesInstance.delete !== 'function') {
                 return Promise.resolve(false);
               }
-              return cachesInstance.delete(key).catch(function (error) {
+              return cachesInstance.delete(key).then(function (result) {
+                removedAny = removedAny || !!result;
+                return result;
+              }).catch(function (error) {
                 safeWarn('Failed to delete cache', {
                   key: key,
                   error: error
@@ -885,15 +1049,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 return false;
               });
             }));
-          case 4:
-            return _context2.a(2, true);
-          case 5:
-            _context2.p = 5;
+          case 6:
+            return _context2.a(2, removedAny);
+          case 7:
+            _context2.p = 7;
             _t3 = _context2.v;
             safeWarn('Cache clear failed', _t3);
             return _context2.a(2, false);
         }
-      }, _callee2, null, [[1, 5]]);
+      }, _callee2, null, [[2, 7]]);
     }));
     return _clearCacheStorage.apply(this, arguments);
   }
@@ -1171,12 +1335,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
     return false;
   }
-
   function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref) {
     if (!win || !locationLike || typeof nextHref !== 'string' || !nextHref) {
       return false;
     }
-
     var historyLike = null;
     try {
       historyLike = win.history || null;
@@ -1184,54 +1346,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       safeWarn('Forced reload history access failed', error);
       historyLike = null;
     }
-
     if (!historyLike || typeof historyLike.replaceState !== 'function') {
       return false;
     }
-
     var beforeRaw = readLocationHrefSafe(locationLike);
     var before = normaliseHrefForComparison(beforeRaw, baseHref);
     var expected = normaliseHrefForComparison(nextHref, baseHref);
-
     var replaceUrl = nextHref;
     try {
       var reference = beforeRaw || baseHref || undefined;
       var parsed = typeof URL === 'function' ? new URL(nextHref, reference) : null;
       if (parsed) {
-        replaceUrl = "".concat(parsed.pathname || '', parsed.search || '', parsed.hash || '') || parsed.toString();
+        replaceUrl = "".concat(parsed.pathname || '').concat(parsed.search || '').concat(parsed.hash || '') || parsed.toString();
       }
     } catch (error) {
       safeWarn('Forced reload history fallback URL parse failed', error);
       replaceUrl = nextHref;
     }
-
     var stateSnapshot = null;
     var hasStateSnapshot = false;
-
     try {
       stateSnapshot = historyLike.state;
       hasStateSnapshot = true;
     } catch (stateError) {
       safeWarn('Forced reload history state snapshot failed', stateError);
     }
-
     try {
       historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
     } catch (replaceError) {
       safeWarn('Forced reload history replaceState failed', replaceError);
       return false;
     }
-
     var afterRaw = readLocationHrefSafe(locationLike);
     var after = normaliseHrefForComparison(afterRaw, baseHref);
-
     var updated = expected && (after === expected || after === "".concat(expected, "#")) || before !== after && after && (!expected || after === expected);
-
     if (!updated) {
       scheduleForceReloadNavigationWarning(locationLike, baseHref, 'history.replaceState', before, expected, after);
       return false;
     }
-
     if (typeof locationLike.reload === 'function') {
       try {
         locationLike.reload();
@@ -1240,7 +1392,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('Forced reload via history replaceState reload failed', reloadError);
       }
     }
-
     return true;
   }
   function scheduleForceReloadFallbacks(win, locationLike) {
@@ -1269,8 +1420,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
     var fallbackHref = nextHref || baseHref || originalHref || '';
     var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-    var fallbackToken =
-      typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
+    var fallbackToken = typeof options.timestamp === 'string' && options.timestamp ? options.timestamp : Date.now().toString(36);
     var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(fallbackToken) : '';
     var steps = [];
     var nextDelay = 120;
@@ -1403,16 +1553,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var options,
         uiCacheCleared,
         clearUiCacheStorageEntriesFn,
-        _yield$Promise$all,
-        _yield$Promise$all2,
+        serviceWorkerCleanupPromise,
+        cacheCleanupPromise,
         serviceWorkersUnregistered,
-        cachesCleared,
+        serviceWorkerAwaitResult,
         reloadTriggered,
         reloadFn,
         win,
-        _args5 = arguments;
+        cachesCleared,
+        _args5 = arguments,
+        _t6,
+        _t7;
       return _regenerator().w(function (_context5) {
-        while (1) switch (_context5.n) {
+        while (1) switch (_context5.p = _context5.n) {
           case 0:
             options = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : {};
             uiCacheCleared = false;
@@ -1432,8 +1585,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
-            _context5.n = 1;
-            return Promise.all([_asyncToGenerator(_regenerator().m(function _callee3() {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee3() {
               var _t4;
               return _regenerator().w(function (_context3) {
                 while (1) switch (_context3.p = _context3.n) {
@@ -1450,7 +1602,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     return _context3.a(2, false);
                 }
               }, _callee3, null, [[0, 2]]);
-            }))(), _asyncToGenerator(_regenerator().m(function _callee4() {
+            }))();
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
               var _t5;
               return _regenerator().w(function (_context4) {
                 while (1) switch (_context4.p = _context4.n) {
@@ -1467,12 +1620,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     return _context4.a(2, false);
                 }
               }, _callee4, null, [[0, 2]]);
-            }))()]);
-          case 1:
-            _yield$Promise$all = _context5.v;
-            _yield$Promise$all2 = _slicedToArray(_yield$Promise$all, 2);
-            serviceWorkersUnregistered = _yield$Promise$all2[0];
-            cachesCleared = _yield$Promise$all2[1];
+            }))();
+            serviceWorkersUnregistered = false;
+            _context5.p = 1;
+            _context5.n = 2;
+            return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
+              safeWarn('Service worker cleanup timed out before reload, continuing anyway.', {
+                timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
+              });
+            }, function (lateError) {
+              safeWarn('Service worker cleanup failed after reload triggered', lateError);
+            });
+          case 2:
+            serviceWorkerAwaitResult = _context5.v;
+            if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
+              serviceWorkersUnregistered = !!serviceWorkerAwaitResult.result;
+            }
+            _context5.n = 4;
+            break;
+          case 3:
+            _context5.p = 3;
+            _t6 = _context5.v;
+            safeWarn('Service worker cleanup promise rejected', _t6);
+            serviceWorkersUnregistered = false;
+          case 4:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
             try {
@@ -1492,6 +1663,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }
             }
+            cachesCleared = false;
+            _context5.p = 5;
+            _context5.n = 6;
+            return cacheCleanupPromise;
+          case 6:
+            cachesCleared = _context5.v;
+            _context5.n = 8;
+            break;
+          case 7:
+            _context5.p = 7;
+            _t7 = _context5.v;
+            safeWarn('Cache cleanup promise rejected', _t7);
+            cachesCleared = false;
+          case 8:
             return _context5.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
@@ -1500,7 +1685,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               navigationTriggered: reloadTriggered
             });
         }
-      }, _callee5);
+      }, _callee5, null, [[5, 7], [1, 3]]);
     }));
     return _reloadApp.apply(this, arguments);
   }

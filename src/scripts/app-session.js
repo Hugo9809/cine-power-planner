@@ -10578,6 +10578,89 @@ function createReloadFallback(win, delayMs = 4500) {
   };
 }
 
+const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+
+function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
+  if (!promise || typeof promise.then !== 'function') {
+    return Promise.resolve({ timedOut: false, result: promise });
+  }
+
+  const ms = typeof timeoutMs === 'number' && timeoutMs >= 0 ? timeoutMs : null;
+  const schedule = typeof setTimeout === 'function' ? setTimeout : null;
+  const cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
+
+  if (ms === null || !schedule) {
+    return promise.then(result => ({ timedOut: false, result }));
+  }
+
+  let finished = false;
+  let timerId = null;
+
+  return new Promise((resolve, reject) => {
+    promise.then(
+      value => {
+        if (finished) {
+          return value;
+        }
+
+        finished = true;
+        if (timerId != null && cancel) {
+          try {
+            cancel(timerId);
+          } catch (cancelError) {
+            void cancelError;
+          }
+        }
+
+        resolve({ timedOut: false, result: value });
+        return value;
+      },
+      error => {
+        if (finished) {
+          if (typeof onLateRejection === 'function') {
+            try {
+              onLateRejection(error);
+            } catch (lateError) {
+              void lateError;
+            }
+          }
+          return null;
+        }
+
+        finished = true;
+        if (timerId != null && cancel) {
+          try {
+            cancel(timerId);
+          } catch (cancelError) {
+            void cancelError;
+          }
+        }
+
+        reject(error);
+        return null;
+      },
+    );
+
+    timerId = schedule(() => {
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+
+      if (typeof onTimeout === 'function') {
+        try {
+          onTimeout();
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+
+      resolve({ timedOut: true, result: undefined });
+    }, ms);
+  });
+}
+
 async function clearCachesAndReload() {
   const reloadFallback =
     typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
@@ -10741,7 +10824,18 @@ async function clearCachesAndReload() {
   }
 
   try {
-    await serviceWorkerCleanupPromise;
+    await awaitPromiseWithSoftTimeout(
+      serviceWorkerCleanupPromise,
+      FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+      () => {
+        console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
+          timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
+        });
+      },
+      (lateError) => {
+        console.warn('Service worker cleanup failed after reload triggered', lateError);
+      },
+    );
   } catch (cleanupError) {
     console.warn('Service worker cleanup failed', cleanupError);
   }

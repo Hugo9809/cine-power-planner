@@ -16,8 +16,11 @@ update the repository or hand off a project at the end of the day.
    and typography files are cached before you go into the field.
 3. **Approve updates intentionally.** If the **Update ready** toast appears,
    finish your current edits, export a backup, then press **Force reload**.
-   Confirm the reported version in **Settings → About** matches your deployment
-   log.
+   The reload button now stops waiting after roughly 700 ms if service worker
+   cleanup lingers so the page navigates immediately; the console will still log
+   any delayed unregister attempts so you can verify cleanup completed once the
+   page returns. Confirm the reported version in **Settings → About** matches
+   your deployment log.
 
 ## 2. Data integrity rehearsal
 
@@ -103,7 +106,9 @@ update the repository or hand off a project at the end of the day.
    least two encrypted destinations per your organization’s retention policy.
 6. **Reset caches on purpose.** Once archives are secure, trigger **Force reload**
    and reopen the help dialog and legal pages to prime caches for the next
-   session before disconnecting again.
+   session before disconnecting again. Remember the button resumes navigation
+   quickly now; keep an eye on the console for any late cache removals after the
+   reload completes.
 
 ## 5. Incident response quick actions
 
