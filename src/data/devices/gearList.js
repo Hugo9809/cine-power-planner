@@ -4825,9 +4825,11 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2000,
-          "lengthMm": 130
+          "lengthMm": 130,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 10mm T2.1": {
           "brand": "ARRI/ZEISS",
@@ -4839,9 +4841,11 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.35,
           "weight_g": 2900,
-          "lengthMm": 172
+          "lengthMm": 172,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 12mm T2.0": {
           "brand": "ARRI/ZEISS",
@@ -4853,9 +4857,11 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 0.3,
           "weight_g": 2000,
-          "lengthMm": 140
+          "lengthMm": 140,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 14mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -5036,9 +5042,11 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 31.14,
           "minFocusMeters": 1.5,
           "weight_g": 1600,
-          "lengthMm": 119
+          "lengthMm": 119,
+          "notes": "Manufacturer lists ≥31.14 mm image circle coverage for Super 35 sensors."
         },
         "ARRI/ZEISS Ultra Prime 180mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -5231,7 +5239,9 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 1,
           "weight_g": 2900,
-          "lengthMm": 205
+          "imageCircleMm": 31.14,
+          "lengthMm": 205,
+          "notes": "ZEISS lists ≥31.14 mm image circle; optimized for Super 35 coverage."
         },
         "ZEISS Master Prime 135mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -6955,9 +6965,10 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
+          "imageCircleMm": 55,
           "minFocusMeters": 0.38,
           "weight_g": 1630,
-          "notes": "Front Ø110 mm; longer prime"
+          "notes": "Front Ø110 mm; longer prime; manufacturer rates 55 mm image circle at infinity and 62 mm at close focus."
         },
         "Cooke Speed Panchro 18mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
@@ -8863,7 +8874,8 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "minFocusMeters": 0.28,
-          "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs."
+          "imageCircleMm": 43.3,
+          "notes": "Servo cine zoom with detachable handgrip, metadata output, and support foot for lightweight rigs; manufacturer lists ≈43.3 mm image circle."
         },
         "Canon Flex Zoom 20-50mm T2.4": {
           "brand": "Canon",
