@@ -5884,6 +5884,10 @@ function setupSideMenu() {
       document.getElementById('settingsButton')?.click();
     } else if (action === 'open-help') {
       document.getElementById('helpButton')?.click();
+    } else if (action === 'open-own-gear') {
+      if (typeof openOwnGearDialog === 'function') {
+        openOwnGearDialog();
+      }
     }
   };
 
@@ -5926,6 +5930,749 @@ function setupResponsiveControls() {
   relocate();
 }
 
+let ownGearItems = [];
+let ownGearEditingId = null;
+let ownGearDialog = null;
+let ownGearForm = null;
+let ownGearListElem = null;
+let ownGearEmptyState = null;
+let ownGearListSummary = null;
+let ownGearNameInput = null;
+let ownGearQuantityInput = null;
+let ownGearNotesInput = null;
+let ownGearSaveButton = null;
+let ownGearResetButton = null;
+let ownGearCloseButton = null;
+let ownGearSuggestionsList = null;
+let ownGearAddHelp = null;
+
+const OWN_GEAR_SOURCE_CATALOG = 'catalog';
+const OWN_GEAR_SOURCE_CUSTOM = 'custom';
+
+let ownGearSuggestionCache = {
+  lang: null,
+  list: [],
+  lookup: new Set(),
+};
+
+function generateOwnGearId() {
+  if (
+    typeof crypto !== 'undefined' &&
+    crypto &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    try {
+      return crypto.randomUUID();
+    } catch (error) {
+      void error;
+    }
+  }
+  const timePart = Date.now().toString(36);
+  const randomPart = Math.floor(Math.random() * 1e8).toString(36);
+  return `own-${timePart}-${randomPart}`;
+}
+
+function normalizeOwnGearRecord(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+  const rawName = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!rawName) {
+    return null;
+  }
+  const normalized = {
+    id: typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : generateOwnGearId(),
+    name: rawName,
+  };
+  if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+    normalized.quantity = entry.quantity.trim();
+  } else if (typeof entry.quantity === 'number' && Number.isFinite(entry.quantity)) {
+    normalized.quantity = String(entry.quantity);
+  }
+  if (typeof entry.notes === 'string' && entry.notes.trim()) {
+    normalized.notes = entry.notes.trim();
+  }
+  if (typeof entry.source === 'string' && entry.source.trim()) {
+    normalized.source = entry.source.trim();
+  }
+  return normalized;
+}
+
+function loadStoredOwnGearItems() {
+  if (typeof loadOwnGear !== 'function') {
+    return [];
+  }
+  try {
+    const stored = loadOwnGear();
+    if (!Array.isArray(stored)) {
+      return [];
+    }
+    const seenIds = new Set();
+    return stored
+      .map(normalizeOwnGearRecord)
+      .filter((item) => {
+        if (!item) return false;
+        if (seenIds.has(item.id)) {
+          return false;
+        }
+        seenIds.add(item.id);
+        return true;
+      });
+  } catch (error) {
+    console.warn('Failed to load own gear items from storage', error);
+    return [];
+  }
+}
+
+function persistOwnGearItems() {
+  if (typeof saveOwnGear !== 'function') {
+    return;
+  }
+  try {
+    const payload = ownGearItems.map((item) => {
+      const entry = {
+        id: item.id,
+        name: item.name,
+      };
+      if (item.quantity) {
+        entry.quantity = item.quantity;
+      }
+      if (item.notes) {
+        entry.notes = item.notes;
+      }
+      if (item.source) {
+        entry.source = item.source;
+      }
+      return entry;
+    });
+    saveOwnGear(payload);
+  } catch (error) {
+    console.warn('Failed to save own gear items', error);
+  }
+}
+
+function invalidateOwnGearSuggestionCache() {
+  ownGearSuggestionCache = {
+    lang: null,
+    list: [],
+    lookup: new Set(),
+  };
+}
+
+function collectOwnGearSuggestionInfo() {
+  const lang = typeof currentLang === 'string' ? currentLang : DEFAULT_LANGUAGE;
+  if (ownGearSuggestionCache.lang === lang && ownGearSuggestionCache.list.length) {
+    return ownGearSuggestionCache;
+  }
+
+  const uniqueNames = new Map();
+  const addName = (name) => {
+    if (typeof name !== 'string') {
+      return;
+    }
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return;
+    }
+    const key = trimmed.toLowerCase();
+    if (uniqueNames.has(key)) {
+      return;
+    }
+    uniqueNames.set(key, trimmed);
+  };
+
+  const traverseDevices = (value, seen) => {
+    if (!value) return;
+    if (typeof value === 'string') {
+      addName(value);
+      return;
+    }
+    if (typeof value !== 'object') {
+      return;
+    }
+    if (seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+    if (typeof value.name === 'string') {
+      addName(value.name);
+    }
+    if (typeof value.label === 'string') {
+      addName(value.label);
+    }
+    if (typeof value.brand === 'string' && typeof value.model === 'string') {
+      addName(`${value.brand} ${value.model}`);
+    }
+    if (Array.isArray(value)) {
+      value.forEach((entry) => traverseDevices(entry, seen));
+      return;
+    }
+    Object.keys(value).forEach((key) => {
+      if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
+        return;
+      }
+      traverseDevices(value[key], seen);
+    });
+  };
+
+  try {
+    if (typeof devices === 'object' && devices) {
+      traverseDevices(devices, new WeakSet());
+    }
+  } catch (error) {
+    console.warn('Unable to collect device catalog names for own gear suggestions', error);
+  }
+
+  try {
+    const langItems = gearItemTranslations && typeof gearItemTranslations === 'object'
+      ? gearItemTranslations[lang] || gearItemTranslations[DEFAULT_LANGUAGE] || null
+      : null;
+    if (langItems && typeof langItems === 'object') {
+      Object.keys(langItems).forEach((key) => {
+        addName(key);
+        const translated = langItems[key];
+        if (typeof translated === 'string') {
+          addName(translated);
+        }
+      });
+    }
+  } catch (error) {
+    console.warn('Unable to include custom gear translations in suggestions', error);
+  }
+
+  ownGearItems.forEach((item) => {
+    if (item && typeof item.name === 'string') {
+      addName(item.name);
+    }
+  });
+
+  const collator = (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function')
+    ? new Intl.Collator(lang || DEFAULT_LANGUAGE, { sensitivity: 'base' })
+    : null;
+  const list = Array.from(uniqueNames.values()).sort((a, b) => {
+    if (collator) {
+      try {
+        return collator.compare(a, b);
+      } catch (error) {
+        void error;
+      }
+    }
+    return a.localeCompare(b);
+  });
+  const lookup = new Set(uniqueNames.keys());
+  ownGearSuggestionCache = { lang, list, lookup };
+  return ownGearSuggestionCache;
+}
+
+function refreshOwnGearSuggestions() {
+  if (!ownGearSuggestionsList) {
+    return;
+  }
+  const { list } = collectOwnGearSuggestionInfo();
+  ownGearSuggestionsList.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  list.forEach((name) => {
+    const option = document.createElement('option');
+    option.value = name;
+    fragment.appendChild(option);
+  });
+  ownGearSuggestionsList.appendChild(fragment);
+}
+
+function formatOwnGearQuantityText(quantity) {
+  if (typeof quantity !== 'string') {
+    return '';
+  }
+  const trimmed = quantity.trim();
+  if (!trimmed) {
+    return '';
+  }
+  const numeric = Number(trimmed.replace(',', '.'));
+  if (!Number.isNaN(numeric) && Number.isFinite(numeric)) {
+    const fixed = Math.round(numeric * 1000) / 1000;
+    return String(fixed).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+  }
+  return trimmed;
+}
+
+function formatOwnGearCountText(count, langTexts) {
+  const templateKey = count === 1 ? 'ownGearListSummaryOne' : 'ownGearListSummaryOther';
+  const template = langTexts[templateKey] || texts[DEFAULT_LANGUAGE]?.[templateKey] || '';
+  if (!template) {
+    return count > 0 ? String(count) : '';
+  }
+  if (template.includes('%s')) {
+    return formatWithPlaceholdersSafe(template, String(count));
+  }
+  return `${template} ${count}`.trim();
+}
+
+function updateOwnGearSummary() {
+  if (!ownGearListSummary) {
+    return;
+  }
+  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const summary = formatOwnGearCountText(ownGearItems.length, langTexts);
+  if (summary) {
+    ownGearListSummary.textContent = summary;
+    ownGearListSummary.removeAttribute('hidden');
+  } else {
+    ownGearListSummary.textContent = '';
+    ownGearListSummary.setAttribute('hidden', '');
+  }
+}
+
+function createOwnGearActionButton(label, icon, onClick, options = {}) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = options.className || 'own-gear-item-action';
+  const iconHtml = typeof iconMarkup === 'function' && icon ? iconMarkup(icon, 'btn-icon') : '';
+  button.innerHTML = `${iconHtml}${escapeHtml(label)}`;
+  button.setAttribute('aria-label', options.ariaLabel || label);
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+function renderOwnGearList() {
+  if (!ownGearListElem) {
+    return;
+  }
+  ownGearListElem.innerHTML = '';
+  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  if (!ownGearItems.length) {
+    if (ownGearEmptyState) {
+      ownGearEmptyState.removeAttribute('hidden');
+    }
+    updateOwnGearSummary();
+    return;
+  }
+  if (ownGearEmptyState) {
+    ownGearEmptyState.setAttribute('hidden', '');
+  }
+  const fragment = document.createDocumentFragment();
+  ownGearItems.forEach((item) => {
+    if (!item || typeof item.id !== 'string') {
+      return;
+    }
+    const listItem = document.createElement('li');
+    listItem.className = 'own-gear-item';
+    listItem.dataset.ownGearId = item.id;
+
+    const body = document.createElement('div');
+    body.className = 'own-gear-item-body';
+
+    const title = document.createElement('p');
+    title.className = 'own-gear-item-title';
+    const quantityText = formatOwnGearQuantityText(item.quantity || '');
+    title.textContent = quantityText ? `${quantityText} × ${item.name}` : item.name;
+    body.appendChild(title);
+
+    if (item.notes) {
+      const note = document.createElement('p');
+      note.className = 'own-gear-item-note';
+      note.textContent = item.notes;
+      body.appendChild(note);
+    }
+
+    listItem.appendChild(body);
+
+    const actions = document.createElement('div');
+    actions.className = 'own-gear-item-actions';
+
+    const editLabel = langTexts.ownGearEditButton || 'Edit';
+    const editAria = langTexts.ownGearEditButtonAria
+      ? formatWithPlaceholdersSafe(langTexts.ownGearEditButtonAria, item.name)
+      : editLabel;
+    const editButton = createOwnGearActionButton(
+      editLabel,
+      ICON_GLYPHS.sliders,
+      () => {
+        startEditingOwnGearItem(item.id);
+      },
+      { ariaLabel: editAria }
+    );
+    actions.appendChild(editButton);
+
+    const deleteLabel = langTexts.ownGearDeleteButton || 'Remove';
+    const deleteAria = langTexts.ownGearDeleteButtonAria
+      ? formatWithPlaceholdersSafe(langTexts.ownGearDeleteButtonAria, item.name)
+      : deleteLabel;
+    const deleteButton = createOwnGearActionButton(
+      deleteLabel,
+      ICON_GLYPHS.trash,
+      () => {
+        removeOwnGearItem(item.id);
+      },
+      { ariaLabel: deleteAria, className: 'own-gear-item-action own-gear-item-action-danger' }
+    );
+    actions.appendChild(deleteButton);
+
+    listItem.appendChild(actions);
+    fragment.appendChild(listItem);
+  });
+  ownGearListElem.appendChild(fragment);
+  updateOwnGearSummary();
+}
+
+function resetOwnGearForm(options = {}) {
+  if (ownGearNameInput) {
+    ownGearNameInput.value = '';
+    ownGearNameInput.setCustomValidity('');
+  }
+  if (ownGearQuantityInput) {
+    ownGearQuantityInput.value = '';
+    ownGearQuantityInput.setCustomValidity('');
+  }
+  if (ownGearNotesInput) {
+    ownGearNotesInput.value = '';
+  }
+  ownGearEditingId = null;
+  updateOwnGearSaveButtonState();
+  if (options.focusName && ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
+    ownGearNameInput.focus();
+  }
+}
+
+function updateOwnGearSaveButtonState() {
+  if (!ownGearSaveButton) {
+    return;
+  }
+  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  if (ownGearEditingId) {
+    const label = langTexts.ownGearUpdateButton || 'Update item';
+    setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.save);
+  } else {
+    const label = langTexts.ownGearSaveButton || 'Save item';
+    setButtonLabelWithIcon(ownGearSaveButton, label, ICON_GLYPHS.add);
+  }
+}
+
+function normalizeOwnGearQuantityInput(raw) {
+  if (typeof raw !== 'string') {
+    return { value: '', valid: true };
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return { value: '', valid: true };
+  }
+  const normalized = trimmed.replace(',', '.');
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return { value: '', valid: false };
+  }
+  const formatted = formatOwnGearQuantityText(String(parsed));
+  return { value: formatted, valid: true };
+}
+
+function handleOwnGearSubmit(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  if (!ownGearNameInput) {
+    return;
+  }
+  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const rawName = ownGearNameInput.value || '';
+  const trimmedName = rawName.trim();
+  if (!trimmedName) {
+    const message = langTexts.ownGearNameRequired || 'Enter an item name to continue.';
+    ownGearNameInput.setCustomValidity(message);
+    ownGearNameInput.reportValidity();
+    return;
+  }
+  ownGearNameInput.setCustomValidity('');
+
+  const quantityResult = normalizeOwnGearQuantityInput(ownGearQuantityInput ? ownGearQuantityInput.value : '');
+  if (!quantityResult.valid) {
+    if (ownGearQuantityInput) {
+      const message = langTexts.ownGearQuantityInvalid || 'Enter a non-negative quantity.';
+      ownGearQuantityInput.setCustomValidity(message);
+      ownGearQuantityInput.reportValidity();
+    }
+    return;
+  }
+  if (ownGearQuantityInput) {
+    ownGearQuantityInput.setCustomValidity('');
+    ownGearQuantityInput.value = quantityResult.value;
+  }
+  const notes = ownGearNotesInput ? ownGearNotesInput.value.trim() : '';
+
+  const { lookup } = collectOwnGearSuggestionInfo();
+  const fromCatalog = lookup.has(trimmedName.toLowerCase());
+  const source = fromCatalog ? OWN_GEAR_SOURCE_CATALOG : OWN_GEAR_SOURCE_CUSTOM;
+
+  if (ownGearEditingId) {
+    const index = ownGearItems.findIndex((item) => item && item.id === ownGearEditingId);
+    if (index !== -1) {
+      const updated = {
+        ...ownGearItems[index],
+        name: trimmedName,
+        source,
+      };
+      if (quantityResult.value) {
+        updated.quantity = quantityResult.value;
+      } else {
+        delete updated.quantity;
+      }
+      if (notes) {
+        updated.notes = notes;
+      } else {
+        delete updated.notes;
+      }
+      ownGearItems[index] = updated;
+    }
+  } else {
+    const entry = {
+      id: generateOwnGearId(),
+      name: trimmedName,
+      source,
+    };
+    if (quantityResult.value) {
+      entry.quantity = quantityResult.value;
+    }
+    if (notes) {
+      entry.notes = notes;
+    }
+    ownGearItems.push(entry);
+  }
+
+  persistOwnGearItems();
+  invalidateOwnGearSuggestionCache();
+  renderOwnGearList();
+  refreshOwnGearSuggestions();
+  resetOwnGearForm({ focusName: true });
+}
+
+function startEditingOwnGearItem(id) {
+  const item = ownGearItems.find((entry) => entry && entry.id === id);
+  if (!item) {
+    return;
+  }
+  ownGearEditingId = id;
+  if (ownGearNameInput) {
+    ownGearNameInput.value = item.name;
+    ownGearNameInput.setCustomValidity('');
+  }
+  if (ownGearQuantityInput) {
+    ownGearQuantityInput.value = item.quantity || '';
+    ownGearQuantityInput.setCustomValidity('');
+  }
+  if (ownGearNotesInput) {
+    ownGearNotesInput.value = item.notes || '';
+  }
+  updateOwnGearSaveButtonState();
+  if (ownGearNameInput && typeof ownGearNameInput.focus === 'function') {
+    ownGearNameInput.focus();
+  }
+}
+
+function removeOwnGearItem(id) {
+  const index = ownGearItems.findIndex((entry) => entry && entry.id === id);
+  if (index === -1) {
+    return;
+  }
+  const item = ownGearItems[index];
+  const langTexts = texts[currentLang] || texts[DEFAULT_LANGUAGE] || {};
+  const confirmTemplate = langTexts.ownGearDeleteConfirm || 'Remove “%s” from your gear list?';
+  let confirmMessage = confirmTemplate;
+  if (confirmTemplate.includes('%s')) {
+    confirmMessage = formatWithPlaceholdersSafe(confirmTemplate, item.name);
+  }
+  let confirmed = true;
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    confirmed = window.confirm(confirmMessage);
+  }
+  if (!confirmed) {
+    return;
+  }
+  ownGearItems.splice(index, 1);
+  if (ownGearEditingId === id) {
+    resetOwnGearForm();
+  }
+  persistOwnGearItems();
+  invalidateOwnGearSuggestionCache();
+  renderOwnGearList();
+  refreshOwnGearSuggestions();
+}
+
+function openOwnGearDialog() {
+  if (!ownGearDialog) {
+    return;
+  }
+  resetOwnGearForm();
+  refreshOwnGearSuggestions();
+  openDialog(ownGearDialog);
+  if (ownGearNameInput && typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      if (typeof ownGearNameInput.focus === 'function') {
+        ownGearNameInput.focus();
+      }
+    });
+  }
+}
+
+function applyOwnGearLocalization(lang) {
+  const langTexts = texts[lang] || texts[DEFAULT_LANGUAGE] || {};
+  if (ownGearDialog) {
+    const title = document.getElementById('ownGearDialogHeading');
+    if (title) {
+      title.textContent = langTexts.ownGearDialogTitle || 'Own gear';
+    }
+    const description = document.getElementById('ownGearDialogDescription');
+    if (description) {
+      const text = langTexts.ownGearDialogDescription || '';
+      description.textContent = text;
+      if (text) {
+        description.setAttribute('data-help', text);
+      } else {
+        description.removeAttribute('data-help');
+      }
+    }
+  }
+  const addHeading = document.getElementById('ownGearAddHeading');
+  if (addHeading) {
+    addHeading.textContent = langTexts.ownGearAddHeading || 'Add gear';
+  }
+  if (ownGearAddHelp) {
+    const helpText = langTexts.ownGearAddHelp || '';
+    ownGearAddHelp.textContent = helpText;
+    if (helpText) {
+      ownGearAddHelp.removeAttribute('hidden');
+      ownGearAddHelp.setAttribute('data-help', helpText);
+    } else {
+      ownGearAddHelp.setAttribute('hidden', '');
+      ownGearAddHelp.removeAttribute('data-help');
+    }
+  }
+  const nameLabel = document.getElementById('ownGearNameLabel');
+  if (nameLabel) {
+    nameLabel.textContent = langTexts.ownGearNameLabel || 'Item';
+  }
+  if (ownGearNameInput) {
+    if (langTexts.ownGearNamePlaceholder) {
+      ownGearNameInput.setAttribute('placeholder', langTexts.ownGearNamePlaceholder);
+    } else {
+      ownGearNameInput.removeAttribute('placeholder');
+    }
+    if (langTexts.ownGearNameHelp) {
+      ownGearNameInput.setAttribute('data-help', langTexts.ownGearNameHelp);
+    } else {
+      ownGearNameInput.removeAttribute('data-help');
+    }
+  }
+  const quantityLabel = document.getElementById('ownGearQuantityLabel');
+  if (quantityLabel) {
+    quantityLabel.textContent = langTexts.ownGearQuantityLabel || 'Quantity';
+  }
+  if (ownGearQuantityInput) {
+    if (langTexts.ownGearQuantityPlaceholder) {
+      ownGearQuantityInput.setAttribute('placeholder', langTexts.ownGearQuantityPlaceholder);
+    } else {
+      ownGearQuantityInput.removeAttribute('placeholder');
+    }
+    if (langTexts.ownGearQuantityHelp) {
+      ownGearQuantityInput.setAttribute('data-help', langTexts.ownGearQuantityHelp);
+    } else {
+      ownGearQuantityInput.removeAttribute('data-help');
+    }
+  }
+  const notesLabel = document.getElementById('ownGearNotesLabel');
+  if (notesLabel) {
+    notesLabel.textContent = langTexts.ownGearNotesLabel || 'Notes';
+  }
+  if (ownGearNotesInput) {
+    if (langTexts.ownGearNotesPlaceholder) {
+      ownGearNotesInput.setAttribute('placeholder', langTexts.ownGearNotesPlaceholder);
+    } else {
+      ownGearNotesInput.removeAttribute('placeholder');
+    }
+    if (langTexts.ownGearNotesHelp) {
+      ownGearNotesInput.setAttribute('data-help', langTexts.ownGearNotesHelp);
+    } else {
+      ownGearNotesInput.removeAttribute('data-help');
+    }
+  }
+  if (ownGearResetButton) {
+    const label = langTexts.ownGearResetButton || 'Reset';
+    setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
+  }
+  if (ownGearCloseButton) {
+    const label = langTexts.ownGearCloseButton || 'Close';
+    setButtonLabelWithIcon(ownGearCloseButton, label, ICON_GLYPHS.circleX);
+  }
+  const listHeading = document.getElementById('ownGearListHeading');
+  if (listHeading) {
+    listHeading.textContent = langTexts.ownGearListHeading || 'Your gear';
+  }
+  if (ownGearEmptyState) {
+    ownGearEmptyState.textContent = langTexts.ownGearListEmpty || 'No gear saved yet.';
+  }
+  updateOwnGearSaveButtonState();
+  renderOwnGearList();
+  refreshOwnGearSuggestions();
+}
+
+function initializeOwnGearManager() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  ownGearDialog = document.getElementById('ownGearDialog');
+  if (!ownGearDialog) {
+    return;
+  }
+  ownGearForm = document.getElementById('ownGearForm');
+  ownGearListElem = document.getElementById('ownGearList');
+  ownGearEmptyState = document.getElementById('ownGearEmptyState');
+  ownGearListSummary = document.getElementById('ownGearListSummary');
+  ownGearNameInput = document.getElementById('ownGearName');
+  ownGearQuantityInput = document.getElementById('ownGearQuantity');
+  ownGearNotesInput = document.getElementById('ownGearNotes');
+  ownGearSaveButton = document.getElementById('ownGearSaveButton');
+  ownGearResetButton = document.getElementById('ownGearResetButton');
+  ownGearCloseButton = document.getElementById('ownGearCloseButton');
+  ownGearSuggestionsList = document.getElementById('ownGearSuggestions');
+  ownGearAddHelp = document.getElementById('ownGearAddHelp');
+
+  ownGearItems = loadStoredOwnGearItems();
+  applyOwnGearLocalization(currentLang);
+
+  if (ownGearForm) {
+    ownGearForm.addEventListener('submit', handleOwnGearSubmit);
+  }
+  if (ownGearResetButton) {
+    ownGearResetButton.addEventListener('click', () => {
+      resetOwnGearForm({ focusName: true });
+    });
+  }
+  if (ownGearCloseButton) {
+    ownGearCloseButton.addEventListener('click', () => {
+      closeDialog(ownGearDialog);
+      resetOwnGearForm();
+    });
+  }
+  if (ownGearDialog && typeof ownGearDialog.addEventListener === 'function') {
+    ownGearDialog.addEventListener('cancel', (event) => {
+      if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+      }
+      closeDialog(ownGearDialog);
+      resetOwnGearForm();
+    });
+    ownGearDialog.addEventListener('close', () => {
+      resetOwnGearForm();
+    });
+  }
+
+  try {
+    exposeCoreRuntimeConstant('openOwnGearDialog', openOwnGearDialog);
+  } catch (error) {
+    void error;
+    if (typeof globalThis !== 'undefined') {
+      globalThis.openOwnGearDialog = openOwnGearDialog;
+    }
+  }
+}
+
 function initializeLayoutControls() {
   setupSideMenu();
   setupResponsiveControls();
@@ -5934,6 +6681,7 @@ function initializeLayoutControls() {
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   const runLayoutInitialization = () => {
     initializeLayoutControls();
+    initializeOwnGearManager();
   };
 
   if (document.readyState === 'loading') {
@@ -8168,6 +8916,7 @@ function setLanguage(lang) {
       link.removeAttribute("data-help");
     }
   });
+  applyOwnGearLocalization(lang);
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
   savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;

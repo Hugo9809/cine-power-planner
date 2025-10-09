@@ -251,6 +251,7 @@ var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -2474,6 +2475,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
+  OWN_GEAR_STORAGE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
   FOCUS_SCALE_STORAGE_KEY_NAME,
 ]);
@@ -2493,6 +2495,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: FEEDBACK_STORAGE_KEY }),
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: OWN_GEAR_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
   () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
   () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
@@ -6165,6 +6168,7 @@ function migrateLegacyStorageKeys() {
     { legacy: `${legacyPrefix}project`, modern: PROJECT_STORAGE_KEY },
     { legacy: `${legacyPrefix}projects`, modern: PROJECT_STORAGE_KEY },
     { legacy: `${legacyPrefix}favorites`, modern: FAVORITES_STORAGE_KEY },
+    { legacy: `${legacyPrefix}ownGear`, modern: OWN_GEAR_STORAGE_KEY },
     { legacy: `${legacyPrefix}schemaCache`, modern: DEVICE_SCHEMA_CACHE_KEY },
     { legacy: `${legacyPrefix}autoGearRules`, modern: AUTO_GEAR_RULES_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearBackups`, modern: AUTO_GEAR_BACKUPS_STORAGE_KEY },
@@ -10308,6 +10312,74 @@ function saveFavorites(favs) {
   );
 }
 
+function normalizeOwnGearItem(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const id = typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : null;
+  const name = typeof entry.name === 'string' && entry.name.trim() ? entry.name.trim() : '';
+  if (!id || !name) {
+    return null;
+  }
+
+  const normalized = { id, name };
+  if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+    normalized.quantity = entry.quantity.trim();
+  } else if (typeof entry.quantity === 'number' && Number.isFinite(entry.quantity)) {
+    normalized.quantity = String(entry.quantity);
+  }
+  if (typeof entry.notes === 'string' && entry.notes.trim()) {
+    normalized.notes = entry.notes.trim();
+  }
+  if (typeof entry.source === 'string' && entry.source.trim()) {
+    normalized.source = entry.source.trim();
+  }
+  return normalized;
+}
+
+function loadOwnGear() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    OWN_GEAR_STORAGE_KEY,
+    'Error loading own gear from localStorage:',
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  return parsed.map(normalizeOwnGearItem).filter(Boolean);
+}
+
+function saveOwnGear(items) {
+  const safeStorage = getSafeLocalStorage();
+  if (items === null || items === undefined) {
+    deleteFromStorage(
+      safeStorage,
+      OWN_GEAR_STORAGE_KEY,
+      'Error deleting own gear from localStorage:',
+    );
+    return;
+  }
+
+  if (!Array.isArray(items)) {
+    console.warn('Ignoring invalid own gear payload. Expected an array.');
+    return;
+  }
+
+  const normalized = items.map(normalizeOwnGearItem).filter(Boolean);
+  ensurePreWriteMigrationBackup(safeStorage, OWN_GEAR_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    OWN_GEAR_STORAGE_KEY,
+    normalized,
+    'Error saving own gear to localStorage:',
+  );
+}
+
 // --- User Feedback Storage ---
 function loadFeedback() {
   applyLegacyStorageMigrations();
@@ -11432,6 +11504,7 @@ function clearAllData() {
       feedback: loadFeedback(),
       project: loadProject(),
       favorites: loadFavorites(),
+      ownGear: loadOwnGear(),
       autoGearRules: loadAutoGearRules(),
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
@@ -12000,6 +12073,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
   assignJSONValue(PROJECT_STORAGE_KEY, 'project');
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -12167,6 +12241,14 @@ function importAllData(allData, options = {}) {
   }
   if (hasOwn('favorites')) {
     saveFavorites(allData.favorites);
+  }
+  if (hasOwn('ownGear')) {
+    const entries = normalizeImportedArray(
+      allData.ownGear,
+      ['items', 'entries', 'list', 'values', 'data'],
+      (entry) => entry && typeof entry === 'object',
+    );
+    saveOwnGear(entries);
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
@@ -12385,6 +12467,8 @@ var STORAGE_API = {
   saveSessionState,
   loadFavorites,
   saveFavorites,
+  loadOwnGear,
+  saveOwnGear,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

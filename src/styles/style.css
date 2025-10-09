@@ -1062,6 +1062,231 @@ main.legal-content {
   box-shadow: var(--panel-shadow);
 }
 
+.own-gear-dialog .own-gear-surface {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 2.2vw, 1.4rem);
+  width: min(92vw, 640px);
+  padding: clamp(1.25rem, 3vw, 1.85rem);
+  border-color: var(--panel-border);
+  box-shadow: var(--panel-shadow);
+}
+
+.own-gear-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.own-gear-description {
+  margin: 0;
+  color: var(--muted-text-color);
+}
+
+.own-gear-add {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  padding: clamp(0.95rem, 2.5vw, 1.25rem);
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, var(--accent-color) 30%);
+  background: color-mix(in srgb, var(--surface-color) 94%, var(--accent-color) 6%);
+}
+
+.own-gear-add-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.own-gear-help {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: 0.95em;
+}
+
+.own-gear-fields {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.own-gear-name input,
+.own-gear-quantity input,
+.own-gear-notes textarea {
+  width: 100%;
+}
+
+.own-gear-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.own-gear-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.own-gear-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.own-gear-list-summary {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: 0.95em;
+}
+
+.own-gear-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.own-gear-empty {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-style: italic;
+}
+
+.own-gear-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: clamp(0.85rem, 2.3vw, 1.15rem);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--surface-color) 96%, var(--accent-color) 4%);
+}
+
+.own-gear-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.own-gear-item-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.own-gear-item-note {
+  margin: 0;
+  color: var(--muted-text-color);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.own-gear-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-end;
+}
+
+.own-gear-item-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  background: none;
+  color: var(--link-color);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.own-gear-item-action .btn-icon {
+  font-size: 1rem;
+}
+
+.own-gear-item-action:hover,
+.own-gear-item-action:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--panel-border) 60%);
+  outline: none;
+}
+
+.own-gear-item-action:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 50%, transparent);
+}
+
+.own-gear-item-action[disabled],
+.own-gear-item-action[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.own-gear-item-action-danger {
+  color: var(--danger-color);
+}
+
+.own-gear-item-action-danger:hover,
+.own-gear-item-action-danger:focus-visible {
+  background: color-mix(in srgb, var(--danger-color) 20%, transparent);
+  border-color: color-mix(in srgb, var(--danger-color) 40%, var(--panel-border) 60%);
+}
+
+.own-gear-footer {
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .own-gear-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .own-gear-item {
+    flex-direction: column;
+  }
+
+  .own-gear-item-actions {
+    flex-direction: row;
+    align-self: flex-end;
+  }
+}
+
+html.dark-mode .own-gear-add,
+body.dark-mode .own-gear-add,
+.dark-mode .own-gear-add {
+  background: color-mix(in srgb, var(--surface-color) 88%, var(--accent-color) 12%);
+  border-color: color-mix(in srgb, var(--panel-border) 55%, var(--accent-color) 45%);
+}
+
+html.dark-mode .own-gear-item,
+body.dark-mode .own-gear-item,
+.dark-mode .own-gear-item {
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--accent-color) 10%);
+  border-color: color-mix(in srgb, var(--panel-border) 60%, var(--accent-color) 40%);
+}
+
+.pink-mode .own-gear-item-action-danger,
+body.pink-mode .own-gear-item-action-danger {
+  color: color-mix(in srgb, var(--danger-color) 80%, var(--accent-color) 20%);
+}
+
+.pink-mode .own-gear-item-action-danger:hover,
+.pink-mode .own-gear-item-action-danger:focus-visible,
+body.pink-mode .own-gear-item-action-danger:hover,
+body.pink-mode .own-gear-item-action-danger:focus-visible {
+  background: color-mix(in srgb, var(--danger-color) 20%, var(--accent-color) 10%);
+  border-color: color-mix(in srgb, var(--danger-color) 45%, var(--panel-border) 55%);
+}
+
 .gear-item-edit-dialog .gear-item-edit-form {
   display: flex;
   flex-direction: column;
