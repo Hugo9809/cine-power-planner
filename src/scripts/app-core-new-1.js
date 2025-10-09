@@ -11580,6 +11580,7 @@ var ICON_GLYPHS = Object.freeze({
   installApp: iconGlyph('\uE9D4', ICON_FONT_KEYS.UICONS),
   add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
   minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
+  arrowLeft: Object.freeze({ char: '←', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
   check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
   fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
