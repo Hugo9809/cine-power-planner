@@ -91,6 +91,11 @@ var CORE_PART1_RUNTIME_SCOPE =
           ? global
           : null;
 
+// Language fallback used across the runtime must be defined before any
+// localisation helpers execute so the browser never trips over temporal
+// dead zones when the scripts load out of order.
+const DEFAULT_LANGUAGE = 'en';
+
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -8397,9 +8402,6 @@ if (typeof texts === 'undefined') {
 } else {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
-
-
-const DEFAULT_LANGUAGE = "en";
 const SUPPORTED_LANGUAGES =
   typeof texts === "object" && texts !== null
     ? Object.keys(texts)
