@@ -27,7 +27,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 
 ### Funktionssäulen
 
-- **Mit Vertrauen planen.** Berechne Stromaufnahme bei 14,4 V/12 V (und 33,6 V/21,6 V für B‑Mount), vergleiche kompatible Akkus und visualisiere Laufzeiteffekte über ein gewichtetetes Feedback-Dashboard.
+- **Mit Vertrauen planen.** Berechne Stromaufnahme bei 14,4 V/12 V (und 33,6 V/21,6 V für B‑Mount), vergleiche kompatible Akkus und visualisiere Laufzeiteffekte über ein gewichtetes Feedback-Dashboard.
 - **Produktionsbereit bleiben.** Projekte erfassen Geräte, Anforderungen, Szenarien, Crewdetails und Gerätelisten; Auto-Backups, Bundles und gesteuerte Aktualisierungen halten Daten aktuell, ohne Stabilität zu opfern.
 - **Arbeiten wie gewohnt.** Spracherkennung, Dark-, Pink- und High-Contrast-Themes, Typografie-Regler, Custom-Logo und Hover-Hilfe machen die Oberfläche on set und in der Vorbereitung zugänglich. Die Hover-Hilfe ergänzt nun automatisch kontextbezogene Beschreibungen für jede Schaltfläche, jedes Feld und jedes Menü, sodass sich jedes Bedienelement auch offline selbst erklärt.
 
@@ -347,7 +347,7 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 
 ## Runtime-Intelligenz
 
-Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetetes Modell:
+Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetes Modell:
 
 - Temperaturfaktoren: ×1 bei 25 °C, ×1,25 bei 0 °C, ×1,6 bei −10 °C, ×2 bei −20 °C.
 - Auflösung: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1, darunter proportional.
