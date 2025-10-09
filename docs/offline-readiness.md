@@ -88,7 +88,10 @@ connectivity:
 
 1. **Update deliberately.** While online, press **Force reload**, reopen `index.html` and
    confirm **Settings → About** lists the expected version. Prime caches by opening the
-   help dialog, legal pages and the device catalog.
+   help dialog, legal pages and the device catalog. The reload button now gives up waiting
+   on service worker cleanup after about 700 ms so the page refreshes promptly; review the
+   console afterward to ensure background cache removals and unregister calls still
+   succeeded.
 2. **Review current data.** Load active projects plus their latest `auto-backup-…`
    entries. Confirm gear lists, runtime dashboards, favorites and automatic gear rules all
    match the production log. In **Settings → Automatic Gear Rules** reveal the automatic
