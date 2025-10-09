@@ -122,11 +122,13 @@ describe('full user experience speed test', () => {
 
     const setupNameInput = document.getElementById('setupName');
     const productionCompanyInput = document.getElementById('productionCompany');
+    const productionCompanyAddressInput = document.getElementById('productionCompanyAddress');
     const gearListOutput = document.getElementById('gearListOutput');
     const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
 
     expect(setupNameInput).not.toBeNull();
     expect(productionCompanyInput).not.toBeNull();
+    expect(productionCompanyAddressInput).not.toBeNull();
     expect(gearListOutput).not.toBeNull();
     expect(projectRequirementsOutput).not.toBeNull();
 
@@ -138,6 +140,8 @@ describe('full user experience speed test', () => {
     measure('set production company', () => {
       productionCompanyInput.value = 'Velocity Media';
       productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyAddressInput.value = '500 Cinema Rd, Motion City';
+      productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
     const cameraLabel = measure('select camera', () => pickFirstRealOption(document.getElementById('cameraSelect')));
@@ -223,6 +227,7 @@ describe('full user experience speed test', () => {
     expect(storedProject).toBeTruthy();
     expect(storedProject.projectInfo).toBeDefined();
     expect(storedProject.projectInfo.productionCompany).toBe('Velocity Media');
+    expect(storedProject.projectInfo.productionCompanyAddress).toBe('500 Cinema Rd, Motion City');
     expect(storedProject.gearListAndProjectRequirementsGenerated).toBe(true);
 
     measure('trigger auto backup', () => {

@@ -86,6 +86,7 @@ describe('project requirements persistence to project storage', () => {
     };
 
     setInputValue('#productionCompany', 'Test Co');
+    setInputValue('#productionCompanyAddress', '123 Production Way, Stage City');
     setInputValue('#rentalHouse', 'Rental Works');
 
     document.getElementById('addPersonBtn').click();
@@ -188,6 +189,7 @@ describe('project requirements persistence to project storage', () => {
 
     expect(projectEntry.projectInfo).toMatchObject({
       productionCompany: 'Test Co',
+      productionCompanyAddress: '123 Production Way, Stage City',
       rentalHouse: 'Rental Works',
       projectName: 'Requirements Capture',
       deliveryResolution: '4K',

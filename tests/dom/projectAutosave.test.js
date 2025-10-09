@@ -31,8 +31,11 @@ describe('project autosave', () => {
 
     const projectForm = document.getElementById('projectForm');
     const productionCompanyInput = projectForm.querySelector('#productionCompany');
+    const productionCompanyAddressInput = projectForm.querySelector('#productionCompanyAddress');
     productionCompanyInput.value = 'Lightspeed Films';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyAddressInput.value = '111 Light St, Backlot';
+    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     jest.advanceTimersByTime(500);
 
@@ -41,6 +44,7 @@ describe('project autosave', () => {
     const stored = JSON.parse(storedRaw);
     expect(stored['Autosave Demo']).toBeDefined();
     expect(stored['Autosave Demo'].projectInfo.productionCompany).toBe('Lightspeed Films');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyAddress).toBe('111 Light St, Backlot');
 
     env.cleanup();
   });
@@ -102,8 +106,11 @@ describe('project autosave', () => {
 
     const projectForm = document.getElementById('projectForm');
     const productionCompanyInput = projectForm.querySelector('#productionCompany');
+    const productionCompanyAddressInput = projectForm.querySelector('#productionCompanyAddress');
     productionCompanyInput.value = 'ACME Studios';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyAddressInput.value = '500 Stage Dr, Lot A';
+    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     setupSelect.value = 'Project Two';
     setupSelect.dispatchEvent(new Event('change'));
@@ -113,6 +120,7 @@ describe('project autosave', () => {
     const stored = JSON.parse(storedRaw);
     expect(stored['Project One']).toBeDefined();
     expect(stored['Project One'].projectInfo.productionCompany).toBe('ACME Studios');
+    expect(stored['Project One'].projectInfo.productionCompanyAddress).toBe('500 Stage Dr, Lot A');
 
     env.cleanup();
   });
@@ -121,22 +129,22 @@ describe('project autosave', () => {
     const storedProjects = {
       'Project 1': {
         gearList: '<div>Project 1 Gear</div>',
-        projectInfo: { productionCompany: 'Requirements 1' }
+        projectInfo: { productionCompany: 'Requirements 1', productionCompanyAddress: 'Address 1' }
       },
       'Project 2': {
         gearList: '<div>Project 2 Gear</div>',
-        projectInfo: { productionCompany: 'Requirements 2' }
+        projectInfo: { productionCompany: 'Requirements 2', productionCompanyAddress: 'Address 2' }
       }
     };
 
     let setupsState = {
       'Project 1': {
         gearList: '<div>Project 1 Gear</div>',
-        projectInfo: { productionCompany: 'Requirements 1' }
+        projectInfo: { productionCompany: 'Requirements 1', productionCompanyAddress: 'Address 1' }
       },
       'Project 2': {
         gearList: '<div>Project 2 Gear</div>',
-        projectInfo: { productionCompany: 'Requirements 2' }
+        projectInfo: { productionCompany: 'Requirements 2', productionCompanyAddress: 'Address 2' }
       }
     };
 
@@ -170,14 +178,22 @@ describe('project autosave', () => {
 
     const projects = typeof window.loadProject === 'function' ? window.loadProject() : {};
     const projectTwoCompany = projects['Project 2']?.projectInfo?.productionCompany;
+    const projectTwoAddress = projects['Project 2']?.projectInfo?.productionCompanyAddress;
     expect(projectTwoCompany).toBe('Requirements 2');
+    expect(projectTwoAddress).toBe('Address 2');
     const projectOneCompany = projects['Project 1']?.projectInfo?.productionCompany || '';
+    const projectOneAddress = projects['Project 1']?.projectInfo?.productionCompanyAddress || '';
     expect(projectOneCompany).not.toBe('Requirements 2');
+    expect(projectOneAddress).not.toBe('Address 2');
 
     const setupTwoCompany = setupsState['Project 2']?.projectInfo?.productionCompany;
+    const setupTwoAddress = setupsState['Project 2']?.projectInfo?.productionCompanyAddress;
     expect(setupTwoCompany).toBe('Requirements 2');
+    expect(setupTwoAddress).toBe('Address 2');
     const setupOneCompany = setupsState['Project 1']?.projectInfo?.productionCompany || '';
+    const setupOneAddress = setupsState['Project 1']?.projectInfo?.productionCompanyAddress || '';
     expect(setupOneCompany).not.toBe('Requirements 2');
+    expect(setupOneAddress).not.toBe('Address 2');
 
     env.cleanup();
   });
@@ -256,6 +272,10 @@ describe('project autosave', () => {
       '      <span class="req-label">Production Company</span>',
       '      <span class="req-value">Safe Films</span>',
       '    </div>',
+      '    <div class="requirement-box" data-field="productionCompanyAddress">',
+      '      <span class="req-label">Production Company Address</span>',
+      '      <span class="req-value">200 Safe St, Lot B</span>',
+      '    </div>',
       '  </div>',
       '</section>'
     ].join('');
@@ -263,7 +283,7 @@ describe('project autosave', () => {
     let setupsState = {
       'Project One': {
         gearList: requirementHtml,
-        projectInfo: { productionCompany: 'Safe Films' }
+        projectInfo: { productionCompany: 'Safe Films', productionCompanyAddress: '200 Safe St, Lot B' }
       }
     };
 
@@ -281,7 +301,7 @@ describe('project autosave', () => {
     if (typeof window.saveProject === 'function') {
       window.saveProject('Project One', {
         gearList: requirementHtml,
-        projectInfo: { productionCompany: 'Safe Films' }
+        projectInfo: { productionCompany: 'Safe Films', productionCompanyAddress: '200 Safe St, Lot B' }
       });
     }
 
@@ -292,7 +312,9 @@ describe('project autosave', () => {
     setupSelect.dispatchEvent(new Event('change'));
 
     const companyField = document.getElementById('productionCompany');
+    const companyAddressField = document.getElementById('productionCompanyAddress');
     expect(companyField.value).toBe('Safe Films');
+    expect(companyAddressField.value).toBe('200 Safe St, Lot B');
 
     setupSelect.value = '';
     setupSelect.dispatchEvent(new Event('change'));
@@ -303,6 +325,7 @@ describe('project autosave', () => {
     expect(stored['Project One']).toBeDefined();
     expect(stored['Project One'].projectInfo).toBeDefined();
     expect(stored['Project One'].projectInfo.productionCompany).toBe('Safe Films');
+    expect(stored['Project One'].projectInfo.productionCompanyAddress).toBe('200 Safe St, Lot B');
 
     env.cleanup();
   });

@@ -107,12 +107,14 @@ describe('full user journey regression', () => {
     const setupNameInput = document.getElementById('setupName');
     const setupSelect = document.getElementById('setupSelect');
     const productionCompanyInput = document.getElementById('productionCompany');
+    const productionCompanyAddressInput = document.getElementById('productionCompanyAddress');
     const gearListOutput = document.getElementById('gearListOutput');
     const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
 
     expect(setupNameInput).not.toBeNull();
     expect(setupSelect).not.toBeNull();
     expect(productionCompanyInput).not.toBeNull();
+    expect(productionCompanyAddressInput).not.toBeNull();
     expect(gearListOutput).not.toBeNull();
     expect(projectRequirementsOutput).not.toBeNull();
 
@@ -121,6 +123,8 @@ describe('full user journey regression', () => {
 
     productionCompanyInput.value = 'Alpha Films';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyAddressInput.value = '123 Alpha Ave, Stage City';
+    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     const selectAndCaptureLabel = (select) => {
       expect(select).not.toBeNull();
@@ -168,11 +172,13 @@ describe('full user journey regression', () => {
     expect(gearListOutput.textContent).toContain(cameraLabel);
     expect(projectRequirementsOutput.classList.contains('hidden')).toBe(false);
     expect(projectRequirementsOutput.textContent).toContain('Alpha Films');
+    expect(projectRequirementsOutput.textContent).toContain('123 Alpha Ave, Stage City');
 
     const projectsAfterAlpha = JSON.parse(localStorage.getItem('cameraPowerPlanner_project'));
     expect(projectsAfterAlpha).toBeTruthy();
     expect(projectsAfterAlpha['Project Alpha']).toBeDefined();
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
+    expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompanyAddress).toBe('123 Alpha Ave, Stage City');
     expect(projectsAfterAlpha['Project Alpha'].gearList).toBeUndefined();
     expect(projectsAfterAlpha['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
 
@@ -180,6 +186,8 @@ describe('full user journey regression', () => {
     setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
     productionCompanyInput.value = 'Beta Productions';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyAddressInput.value = '400 Beta Blvd, Film Town';
+    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
     setupSelect.value = '';
     setupSelect.dispatchEvent(new Event('change'));
 
@@ -194,11 +202,13 @@ describe('full user journey regression', () => {
     const projectsAfterBeta = JSON.parse(localStorage.getItem('cameraPowerPlanner_project'));
     expect(projectsAfterBeta['Project Beta']).toBeDefined();
     expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompany).toBe('Beta Productions');
+    expect(projectsAfterBeta['Project Beta'].projectInfo.productionCompanyAddress).toBe('400 Beta Blvd, Film Town');
 
     const storedBetaProject = storageApi.loadProject('Project Beta');
     expect(storedBetaProject).toBeTruthy();
     utils.populateProjectForm(storedBetaProject.projectInfo);
     expect(productionCompanyInput.value).toBe('Beta Productions');
+    expect(productionCompanyAddressInput.value).toBe('400 Beta Blvd, Film Town');
 
     const projectKeys = Object.keys(storageApi.loadProject());
     expect(projectKeys).toEqual(expect.arrayContaining(['Project Alpha', 'Project Beta']));
@@ -206,11 +216,13 @@ describe('full user journey regression', () => {
     const restoredAlphaProject = storageApi.loadProject('Project Alpha');
     expect(restoredAlphaProject).toBeTruthy();
     expect(restoredAlphaProject.projectInfo.productionCompany).toBe('Alpha Films');
+    expect(restoredAlphaProject.projectInfo.productionCompanyAddress).toBe('123 Alpha Ave, Stage City');
     const regeneratedAlpha = utils.generateGearListHtml(restoredAlphaProject.projectInfo || {});
     utils.displayGearAndRequirements(regeneratedAlpha);
     utils.populateProjectForm(restoredAlphaProject.projectInfo);
 
     expect(productionCompanyInput.value).toBe('Alpha Films');
+    expect(productionCompanyAddressInput.value).toBe('123 Alpha Ave, Stage City');
     expect(projectRequirementsOutput.textContent).toContain('Alpha Films');
     expect(gearListOutput.textContent).toContain(cameraLabel);
 
@@ -236,6 +248,7 @@ describe('full user journey regression', () => {
     expect(autoBackupProject.gearListAndProjectRequirementsGenerated).toBe(true);
     expect(autoBackupProject.projectInfo).toBeTruthy();
     expect(autoBackupProject.projectInfo.productionCompany).toBe('Alpha Films');
+    expect(autoBackupProject.projectInfo.productionCompanyAddress).toBe('123 Alpha Ave, Stage City');
 
     const backupFileName = utils.createSettingsBackup(false, new Date('2024-05-01T12:34:56Z'));
     expect(typeof backupFileName).toBe('string');
@@ -276,6 +289,7 @@ describe('full user journey regression', () => {
     const exported = global.exportAllData();
     expect(exported).toBeTruthy();
     expect(exported.project['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
+    expect(exported.project['Project Alpha'].projectInfo.productionCompanyAddress).toBe('123 Alpha Ave, Stage City');
     expect(exported.project['Project Alpha'].gearList).toBeUndefined();
     expect(exported.project['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
     expect(exported.autoGearRules.some(rule => rule.label === 'Always add spare monitor')).toBe(true);
@@ -291,7 +305,9 @@ describe('full user journey regression', () => {
 
     const restoredProjects = storageApi.loadProject();
     expect(restoredProjects['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
+    expect(restoredProjects['Project Alpha'].projectInfo.productionCompanyAddress).toBe('123 Alpha Ave, Stage City');
     expect(restoredProjects['Project Beta'].projectInfo.productionCompany).toBe('Beta Productions');
+    expect(restoredProjects['Project Beta'].projectInfo.productionCompanyAddress).toBe('400 Beta Blvd, Film Town');
     const setupKeys = Object.keys(storageApi.loadSetups());
     expect(setupKeys).toEqual(expect.arrayContaining([autoBackupName]));
 

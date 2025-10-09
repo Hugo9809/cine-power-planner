@@ -1212,6 +1212,10 @@ describe('project storage', () => {
       '    <span class="req-label">Production Company</span>',
       '    <span class="req-value">Test Studios &amp; Co.</span>',
       '  </div>',
+      '  <div class="requirement-box" data-field="productionCompanyAddress">',
+      '    <span class="req-label">Production Company Address</span>',
+      '    <span class="req-value">123 Backlot Rd, Studio City</span>',
+      '  </div>',
       '  <div class="requirement-box" data-field="prepDays">',
       '    <span class="req-label">Prep Days</span>',
       '    <span class="req-value">2024-01-01 to 2024-01-02<br>2024-01-05 to 2024-01-06</span>',
@@ -1231,6 +1235,7 @@ describe('project storage', () => {
     expect(project.projectInfo).toEqual({
       projectName: 'Legacy Project',
       productionCompany: 'Test Studios & Co.',
+      productionCompanyAddress: '123 Backlot Rd, Studio City',
       prepDays: '2024-01-01 to 2024-01-02\n2024-01-05 to 2024-01-06',
       requiredScenarios: 'Rain Machine, Gimbal',
     });
@@ -1244,6 +1249,10 @@ describe('project storage', () => {
       '    <span class="req-label">Produktionsfirma</span>',
       '    <span class="req-value">Filmhaus GmbH</span>',
       '  </div>',
+      '  <div class="requirement-box">',
+      '    <span class="req-label">Adresse der Produktionsfirma</span>',
+      '    <span class="req-value">Westend 21, Berlin</span>',
+      '  </div>',
       '</div>',
     ].join('');
 
@@ -1254,6 +1263,7 @@ describe('project storage', () => {
     expect(project.projectInfo).toEqual({
       projectName: 'Projekt Archiv',
       productionCompany: 'Filmhaus GmbH',
+      productionCompanyAddress: 'Westend 21, Berlin',
     });
   });
 

@@ -9311,10 +9311,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var value = projectFormTexts[key] || fallbackProjectForm[key];
         if (value) element.textContent = value;
       };
-      setLabelText(projectDialogHeading, 'heading');
-      setLabelText(projectNameLabel, 'projectName');
-      setLabelText(productionCompanyLabel, 'productionCompany');
-      setLabelText(rentalHouseLabel, 'rentalHouse');
+    setLabelText(projectDialogHeading, 'heading');
+    setLabelText(projectNameLabel, 'projectName');
+    setLabelText(productionCompanyLabel, 'productionCompany');
+    setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
+    setLabelText(rentalHouseLabel, 'rentalHouse');
       setLabelText(crewHeadingElem, 'crewHeading');
       if (crewLabelElem) {
         var crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
@@ -9486,11 +9487,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
   var viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
   var viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
-  var projectDialogHeading = document.getElementById("projectDialogHeading");
-  var projectDialogCloseBtn = document.getElementById("projectDialogClose");
-  var projectNameLabel = document.getElementById("projectNameLabel");
-  var productionCompanyLabel = document.getElementById("productionCompanyLabel");
-  var rentalHouseLabel = document.getElementById("rentalHouseLabel");
+var projectDialogHeading = document.getElementById("projectDialogHeading");
+var projectDialogCloseBtn = document.getElementById("projectDialogClose");
+var projectNameLabel = document.getElementById("projectNameLabel");
+var productionCompanyLabel = document.getElementById("productionCompanyLabel");
+var productionCompanyAddressLabel = document.getElementById("productionCompanyAddressLabel");
+var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var crewHeadingElem = document.getElementById("crewHeading");
   var crewLabelElem = document.getElementById("crewLabel");
   var prepLabelElem = document.getElementById("prepLabel");
@@ -11113,6 +11115,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
   var projectFieldIcons = {
     productionCompany: PRODUCTION_COMPANY_ICON,
+    productionCompanyAddress: ICON_GLYPHS.pin,
     rentalHouse: RENTAL_HOUSE_ICON,
     crew: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
     prepDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
