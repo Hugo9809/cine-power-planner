@@ -63,6 +63,8 @@ const texts = {
     projectRequirementsNavHelp: "Jump to the Project Requirements output once generated.",
     gearListNav: "Gear List",
     gearListNavHelp: "View the generated gear list with all items and categories.",
+    ownGearNav: "Own Gear",
+    ownGearNavHelp: "Track personal gear you already have on hand and reuse it across projects.",
     overviewExportTitleSuffix: "Gear List and Project Requirements",
     openSettingsNav: "Settings",
     openSettingsNavHelp:
@@ -1476,6 +1478,37 @@ const texts = {
       "Remove the saved gear list from this project and hide the table.",
     confirmDeleteGearList: "Delete gear list?",
     confirmDeleteGearListAgain: "This will permanently delete the gear list. Are you sure?",
+    ownGearDialogTitle: "Own gear",
+    ownGearDialogDescription:
+      "Capture the equipment you personally own so you can plan around what's already in your kit.",
+    ownGearAddHeading: "Add gear",
+    ownGearAddHelp:
+      "Start typing to search our catalog for suggestions or describe custom items you own. Entries save immediately.",
+    ownGearNameLabel: "Item",
+    ownGearNamePlaceholder: "Lens, monitor, adapter…",
+    ownGearNameHelp: "Required. Use the exact model name so suggestions and exports stay clear.",
+    ownGearQuantityLabel: "Quantity",
+    ownGearQuantityPlaceholder: "1",
+    ownGearQuantityHelp: "Enter how many of this item you own. Leave blank when it varies.",
+    ownGearNotesLabel: "Notes",
+    ownGearNotesPlaceholder: "Condition, accessories, case number…",
+    ownGearNotesHelp: "Optional notes about accessories, serial numbers or case locations.",
+    ownGearSaveButton: "Save item",
+    ownGearUpdateButton: "Update item",
+    ownGearResetButton: "Reset form",
+    ownGearCloseButton: "Close",
+    ownGearListHeading: "Your gear",
+    ownGearListEmpty: "No gear saved yet. Add the equipment you own to reuse it across projects.",
+    ownGearListSummaryOne: "%s item tracked",
+    ownGearListSummaryOther: "%s items tracked",
+    ownGearEditButton: "Edit",
+    ownGearEditButtonAria: "Edit “%s”",
+    ownGearDeleteButton: "Remove",
+    ownGearDeleteButtonAria: "Remove “%s” from your gear list",
+    ownGearDeleteConfirm:
+      "Remove “%s” from your own gear list? This only removes it from your inventory.",
+    ownGearQuantityInvalid: "Enter a non-negative quantity or leave the field blank.",
+    ownGearNameRequired: "Enter the item name to save it.",
     alertSelectSetupForOverview: "Please select a saved project to generate an overview.",
     overviewTitle: "Project Overview",
     backToAppBtn: "Back to App",
@@ -1766,6 +1799,8 @@ const texts = {
     gearListNav: "Lista attrezzatura",
     gearListNavHelp:
       "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
+    ownGearNav: "Attrezzatura personale",
+    ownGearNavHelp: "Registra l'attrezzatura che possiedi già e riutilizzala nei progetti.",
     overviewExportTitleSuffix: "Lista attrezzatura e requisiti di progetto",
     openSettingsNav: "Impostazioni",
     openSettingsNavHelp:
@@ -2356,6 +2391,39 @@ const texts = {
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
     confirmDeleteGearListAgain: "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
+    ownGearDialogTitle: "Attrezzatura personale",
+    ownGearDialogDescription:
+      "Registra l'attrezzatura che possiedi per pianificare in base a ciò che è già nel tuo kit.",
+    ownGearAddHeading: "Aggiungi attrezzatura",
+    ownGearAddHelp:
+      "Inizia a digitare per cercare suggerimenti nel catalogo o descrivere elementi personalizzati che possiedi. Le voci vengono salvate subito.",
+    ownGearNameLabel: "Elemento",
+    ownGearNamePlaceholder: "Obiettivo, monitor, adattatore…",
+    ownGearNameHelp: "Obbligatorio. Usa il nome modello esatto per mantenere chiari suggerimenti ed esportazioni.",
+    ownGearQuantityLabel: "Quantità",
+    ownGearQuantityPlaceholder: "1",
+    ownGearQuantityHelp: "Indica quante unità possiedi. Lascia vuoto se varia.",
+    ownGearNotesLabel: "Note",
+    ownGearNotesPlaceholder: "Condizione, accessori, numero della valigia…",
+    ownGearNotesHelp: "Facoltativo: annota accessori, numeri di serie o posizione nella valigia.",
+    ownGearSaveButton: "Salva elemento",
+    ownGearUpdateButton: "Aggiorna elemento",
+    ownGearResetButton: "Reimposta modulo",
+    ownGearCloseButton: "Chiudi",
+    ownGearListHeading: "La tua attrezzatura",
+    ownGearListEmpty:
+      "Nessuna attrezzatura salvata. Aggiungi ciò che possiedi per riutilizzarlo nei progetti.",
+    ownGearListSummaryOne: "%s elemento registrato",
+    ownGearListSummaryOther: "%s elementi registrati",
+    ownGearEditButton: "Modifica",
+    ownGearEditButtonAria: "Modifica “%s”",
+    ownGearDeleteButton: "Rimuovi",
+    ownGearDeleteButtonAria: "Rimuovi “%s” dall'elenco personale",
+    ownGearDeleteConfirm:
+      "Rimuovere “%s” dall'elenco dell'attrezzatura personale? Verrà rimosso solo dal tuo inventario.",
+    ownGearQuantityInvalid:
+      "Inserisci una quantità maggiore o uguale a zero oppure lascia il campo vuoto.",
+    ownGearNameRequired: "Inserisci il nome dell'elemento per salvarlo.",
     alertSelectSetupForOverview: "Selezionare una configurazione salvata per generare una panoramica.",
     overviewTitle: "Panoramica di configurazione",
     backToAppBtn: "Torna all'app",
@@ -3456,6 +3524,8 @@ const texts = {
     gearListNav: "Lista de equipo",
     gearListNavHelp:
       "Ver la lista de equipo generada con todos los artículos y categorías.",
+    ownGearNav: "Equipo propio",
+    ownGearNavHelp: "Registra el equipo que ya tienes disponible y reutilízalo en tus proyectos.",
     overviewExportTitleSuffix: "Lista de equipo y requisitos del proyecto",
     openSettingsNav: "Ajustes",
     openSettingsNavHelp:
@@ -4059,6 +4129,41 @@ const texts = {
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
     confirmDeleteGearListAgain: "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
+    ownGearDialogTitle: "Equipo propio",
+    ownGearDialogDescription:
+      "Registra el equipo que posees para planificar en torno a lo que ya está en tu kit.",
+    ownGearAddHeading: "Añadir equipo",
+    ownGearAddHelp:
+      "Empieza a escribir para buscar sugerencias en nuestro catálogo o describe los elementos personalizados que tienes. Las entradas se guardan al instante.",
+    ownGearNameLabel: "Elemento",
+    ownGearNamePlaceholder: "Objetivo, monitor, adaptador…",
+    ownGearNameHelp:
+      "Obligatorio. Usa el nombre exacto del modelo para que las sugerencias y exportaciones sean claras.",
+    ownGearQuantityLabel: "Cantidad",
+    ownGearQuantityPlaceholder: "1",
+    ownGearQuantityHelp: "Indica cuántas unidades tienes. Déjalo en blanco si varía.",
+    ownGearNotesLabel: "Notas",
+    ownGearNotesPlaceholder: "Estado, accesorios, número de maleta…",
+    ownGearNotesHelp:
+      "Notas opcionales sobre accesorios, números de serie o ubicación en la maleta.",
+    ownGearSaveButton: "Guardar elemento",
+    ownGearUpdateButton: "Actualizar elemento",
+    ownGearResetButton: "Restablecer formulario",
+    ownGearCloseButton: "Cerrar",
+    ownGearListHeading: "Tu equipo",
+    ownGearListEmpty:
+      "Todavía no hay equipo guardado. Añade lo que ya tienes para reutilizarlo en tus proyectos.",
+    ownGearListSummaryOne: "%s elemento registrado",
+    ownGearListSummaryOther: "%s elementos registrados",
+    ownGearEditButton: "Editar",
+    ownGearEditButtonAria: "Editar “%s”",
+    ownGearDeleteButton: "Eliminar",
+    ownGearDeleteButtonAria: "Eliminar “%s” de tu lista de equipo",
+    ownGearDeleteConfirm:
+      "¿Eliminar “%s” de tu lista de equipo propio? Solo se quitará de tu inventario.",
+    ownGearQuantityInvalid:
+      "Introduce una cantidad mayor o igual que cero o deja el campo en blanco.",
+    ownGearNameRequired: "Introduce el nombre del elemento para guardarlo.",
     alertSelectSetupForOverview: "Selecciona una configuración para generar un resumen.",
     overviewTitle: "Resumen de Configuración",
     backToAppBtn: "Volver a la app",
@@ -5160,6 +5265,9 @@ const texts = {
     gearListNav: "Liste du matériel",
     gearListNavHelp:
       "Voir la liste du matériel générée avec tous les éléments et catégories.",
+    ownGearNav: "Matériel personnel",
+    ownGearNavHelp:
+      "Consignez le matériel que vous avez déjà sous la main et réutilisez-le dans vos projets.",
     overviewExportTitleSuffix: "Liste du matériel et exigences du projet",
     openSettingsNav: "Paramètres",
     openSettingsNavHelp:
@@ -5763,6 +5871,41 @@ const texts = {
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
     confirmDeleteGearListAgain: "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
+    ownGearDialogTitle: "Matériel personnel",
+    ownGearDialogDescription:
+      "Enregistrez le matériel que vous possédez pour planifier à partir de ce qui est déjà dans votre kit.",
+    ownGearAddHeading: "Ajouter du matériel",
+    ownGearAddHelp:
+      "Commencez à taper pour rechercher des suggestions dans notre catalogue ou décrire les éléments personnalisés que vous possédez. Les entrées sont enregistrées immédiatement.",
+    ownGearNameLabel: "Élément",
+    ownGearNamePlaceholder: "Objectif, moniteur, adaptateur…",
+    ownGearNameHelp:
+      "Obligatoire. Utilisez le nom exact du modèle afin que les suggestions et exports restent clairs.",
+    ownGearQuantityLabel: "Quantité",
+    ownGearQuantityPlaceholder: "1",
+    ownGearQuantityHelp: "Indiquez combien d’exemplaires vous possédez. Laissez vide si cela varie.",
+    ownGearNotesLabel: "Notes",
+    ownGearNotesPlaceholder: "État, accessoires, numéro de valise…",
+    ownGearNotesHelp:
+      "Notes facultatives sur les accessoires, numéros de série ou emplacements de valises.",
+    ownGearSaveButton: "Enregistrer l’élément",
+    ownGearUpdateButton: "Mettre à jour l’élément",
+    ownGearResetButton: "Réinitialiser le formulaire",
+    ownGearCloseButton: "Fermer",
+    ownGearListHeading: "Votre matériel",
+    ownGearListEmpty:
+      "Aucun matériel enregistré pour le moment. Ajoutez ce que vous possédez pour le réutiliser dans vos projets.",
+    ownGearListSummaryOne: "%s élément suivi",
+    ownGearListSummaryOther: "%s éléments suivis",
+    ownGearEditButton: "Modifier",
+    ownGearEditButtonAria: "Modifier « %s »",
+    ownGearDeleteButton: "Supprimer",
+    ownGearDeleteButtonAria: "Supprimer « %s » de votre liste de matériel",
+    ownGearDeleteConfirm:
+      "Supprimer « %s » de votre liste de matériel personnel ? Cela le retire uniquement de votre inventaire.",
+    ownGearQuantityInvalid:
+      "Indiquez une quantité supérieure ou égale à zéro ou laissez le champ vide.",
+    ownGearNameRequired: "Saisissez le nom de l’élément pour l’enregistrer.",
     alertSelectSetupForOverview: "Sélectionnez une configuration pour générer un résumé.",
     overviewTitle: "Aperçu de Configuration",
     backToAppBtn: "Retour à l'application",
@@ -6875,6 +7018,9 @@ const texts = {
     gearListNav: "Gear-Liste",
     gearListNavHelp:
       "Die erzeugte Gear-Liste mit allen Geräten und Kategorien ansehen.",
+    ownGearNav: "Eigenes Equipment",
+    ownGearNavHelp:
+      "Halte fest, welches Equipment du bereits besitzt, und nutze es projektübergreifend.",
     overviewExportTitleSuffix: "Gear-Liste und Projektanforderungen",
     openSettingsNav: "Einstellungen",
     openSettingsNavHelp:
@@ -7479,6 +7625,41 @@ const texts = {
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",
     confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
+    ownGearDialogTitle: "Eigenes Equipment",
+    ownGearDialogDescription:
+      "Halte fest, welches Equipment du besitzt, um mit dem zu planen, was bereits in deinem Kit steckt.",
+    ownGearAddHeading: "Equipment hinzufügen",
+    ownGearAddHelp:
+      "Beginne zu tippen, um Vorschläge aus unserem Katalog zu erhalten oder beschreibe eigene Artikel. Einträge werden sofort gespeichert.",
+    ownGearNameLabel: "Artikel",
+    ownGearNamePlaceholder: "Objektiv, Monitor, Adapter…",
+    ownGearNameHelp:
+      "Pflichtfeld. Verwende den exakten Modellnamen, damit Vorschläge und Exporte eindeutig bleiben.",
+    ownGearQuantityLabel: "Menge",
+    ownGearQuantityPlaceholder: "1",
+    ownGearQuantityHelp: "Gib an, wie viele Exemplare du besitzt. Lass das Feld leer, wenn es variiert.",
+    ownGearNotesLabel: "Notizen",
+    ownGearNotesPlaceholder: "Zustand, Zubehör, Kistennummer…",
+    ownGearNotesHelp:
+      "Optionale Notizen zu Zubehör, Seriennummern oder Lagerort.",
+    ownGearSaveButton: "Artikel speichern",
+    ownGearUpdateButton: "Artikel aktualisieren",
+    ownGearResetButton: "Formular zurücksetzen",
+    ownGearCloseButton: "Schließen",
+    ownGearListHeading: "Dein Equipment",
+    ownGearListEmpty:
+      "Noch kein Equipment gespeichert. Füge hinzu, was du bereits besitzt, um es in Projekten wiederzuverwenden.",
+    ownGearListSummaryOne: "%s Artikel erfasst",
+    ownGearListSummaryOther: "%s Artikel erfasst",
+    ownGearEditButton: "Bearbeiten",
+    ownGearEditButtonAria: "„%s“ bearbeiten",
+    ownGearDeleteButton: "Entfernen",
+    ownGearDeleteButtonAria: "„%s“ aus deiner Equipment-Liste entfernen",
+    ownGearDeleteConfirm:
+      "„%s“ aus deiner Liste für eigenes Equipment entfernen? Dadurch wird es nur aus deinem Inventar gelöscht.",
+    ownGearQuantityInvalid:
+      "Gib eine Zahl größer oder gleich Null ein oder lass das Feld leer.",
+    ownGearNameRequired: "Gib den Artikelnamen ein, um ihn zu speichern.",
     alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Projekt, um eine Übersicht zu erstellen.",
     overviewTitle: "Projektübersicht",
     backToAppBtn: "Zurück zur App",

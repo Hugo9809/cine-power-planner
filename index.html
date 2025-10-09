@@ -196,6 +196,19 @@
       <li><a href="#batteryComparison" data-nav-key="batteryComparisonHeading">Battery Comparison</a></li>
       <li><a href="#projectRequirementsOutput" data-nav-key="projectRequirementsNav">Project Requirements</a></li>
       <li><a href="#gearListOutput" data-nav-key="gearListNav">Gear List</a></li>
+      <li>
+        <button
+          type="button"
+          data-nav-key="ownGearNav"
+          data-sidebar-action="open-own-gear"
+          data-feature-search="true"
+          data-feature-search-keywords="owned gear personal kit inventory"
+          aria-haspopup="dialog"
+          aria-controls="ownGearDialog"
+        >
+          Own Gear
+        </button>
+      </li>
       <li><a href="#device-manager" data-nav-key="deviceManagerHeading">Device Library</a></li>
       <li class="sidebar-divider" role="separator" aria-hidden="true"></li>
       <li>
@@ -6024,6 +6037,72 @@
       </p>
       <div class="dialog-actions">
         <button type="button" id="powerWarningCloseBtn" class="primary">Understood</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog
+    id="ownGearDialog"
+    class="app-modal own-gear-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ownGearDialogHeading"
+    aria-describedby="ownGearDialogDescription"
+  >
+    <form id="ownGearForm" method="dialog" class="modal-surface own-gear-surface">
+      <header class="own-gear-header">
+        <h3 id="ownGearDialogHeading">Own gear</h3>
+        <p id="ownGearDialogDescription" class="own-gear-description"></p>
+      </header>
+      <section class="own-gear-add" aria-labelledby="ownGearAddHeading">
+        <div class="own-gear-add-header">
+          <h4 id="ownGearAddHeading">Add gear</h4>
+          <p id="ownGearAddHelp" class="own-gear-help"></p>
+        </div>
+        <div class="own-gear-fields">
+          <div class="form-row own-gear-name">
+            <label id="ownGearNameLabel" for="ownGearName">Item</label>
+            <input
+              id="ownGearName"
+              name="ownGearName"
+              type="text"
+              autocomplete="off"
+              list="ownGearSuggestions"
+              data-skip-native-picker="true"
+            />
+            <datalist id="ownGearSuggestions"></datalist>
+          </div>
+          <div class="form-row own-gear-quantity">
+            <label id="ownGearQuantityLabel" for="ownGearQuantity">Quantity</label>
+            <input
+              id="ownGearQuantity"
+              name="ownGearQuantity"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              step="0.1"
+            />
+          </div>
+        </div>
+        <div class="form-row own-gear-notes">
+          <label id="ownGearNotesLabel" for="ownGearNotes">Notes</label>
+          <textarea id="ownGearNotes" name="ownGearNotes" rows="2" autocomplete="off"></textarea>
+        </div>
+        <div class="own-gear-form-actions">
+          <button type="button" id="ownGearResetButton">Reset</button>
+          <button type="submit" id="ownGearSaveButton" class="primary">Save item</button>
+        </div>
+      </section>
+      <section class="own-gear-list-section" aria-labelledby="ownGearListHeading">
+        <div class="own-gear-list-header">
+          <h4 id="ownGearListHeading">Your gear</h4>
+          <p id="ownGearListSummary" class="own-gear-list-summary"></p>
+        </div>
+        <ul id="ownGearList" class="own-gear-list" aria-live="polite"></ul>
+        <p id="ownGearEmptyState" class="own-gear-empty">No gear saved yet.</p>
+      </section>
+      <div class="dialog-actions own-gear-footer">
+        <button type="button" id="ownGearCloseButton">Close</button>
       </div>
     </form>
   </dialog>
