@@ -4708,8 +4708,6 @@ function buildGearItemEditContext() {
     quantityLabel: resolveElementById('gearItemEditQuantityLabel', 'gearItemEditQuantityLabel'),
     nameInput: resolveElementById('gearItemEditName', 'gearItemEditName'),
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
-    attributesInput: resolveElementById('gearItemEditAttributes', 'gearItemEditAttributes'),
-    attributesLabel: resolveElementById('gearItemEditAttributesLabel', 'gearItemEditAttributesLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
@@ -4726,6 +4724,7 @@ function buildGearItemEditContext() {
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     resetButtonText: resolveElementById('gearItemEditResetText', 'gearItemEditResetText'),
     resetDefaults: null,
+    currentAttributes: '',
   };
 }
 
@@ -4748,14 +4747,13 @@ function getGearItemEditTexts() {
     dialogTitle: langTexts.gearListEditDialogTitle || fallbackTexts.gearListEditDialogTitle || 'Edit gear item',
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
-    attributesLabel: langTexts.gearListEditAttributesLabel || fallbackTexts.gearListEditAttributesLabel || 'Attributes',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
     backLabel: langTexts.gearListEditBack || fallbackTexts.gearListEditBack || 'Back',
-    resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name & attributes',
+    resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name',
   };
 }
 
@@ -4774,9 +4772,6 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.nameLabel) {
     context.nameLabel.textContent = textsForDialog.nameLabel;
-  }
-  if (context.attributesLabel) {
-    context.attributesLabel.textContent = textsForDialog.attributesLabel;
   }
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
@@ -4839,7 +4834,9 @@ function computeGearItemEditPreviewText(context) {
   if (!context) return '';
   const quantity = context.quantityInput ? context.quantityInput.value.trim() : '';
   const name = context.nameInput ? context.nameInput.value.trim() : '';
-  const attributes = context.attributesInput ? context.attributesInput.value.trim() : '';
+  const attributes = context.attributesInput
+    ? context.attributesInput.value.trim()
+    : (typeof context.currentAttributes === 'string' ? context.currentAttributes.trim() : '');
   const segments = [];
   if (quantity) {
     segments.push(`${quantity}x`);
@@ -4871,12 +4868,17 @@ function updateGearItemEditResetState(context) {
   const defaults = context.resetDefaults || { name: '', attributes: '' };
   const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   const hasStoredOriginal = Boolean(targetEntry && targetEntry.hasAttribute('data-gear-original-name'));
-  const hasDefaults = hasStoredOriginal || Boolean((defaults.name && defaults.name.trim())
-    || (defaults.attributes && defaults.attributes.trim()));
-  const currentName = context.nameInput ? context.nameInput.value.trim() : '';
-  const currentAttributes = context.attributesInput ? context.attributesInput.value.trim() : '';
   const defaultName = typeof defaults.name === 'string' ? defaults.name.trim() : '';
   const defaultAttributes = typeof defaults.attributes === 'string' ? defaults.attributes.trim() : '';
+  const currentName = context.nameInput ? context.nameInput.value.trim() : '';
+  const currentAttributes = context.attributesInput
+    ? context.attributesInput.value.trim()
+    : (typeof context.currentAttributes === 'string' ? context.currentAttributes.trim() : '');
+  const hasDefaults = hasStoredOriginal || Boolean(
+    defaultName
+    || defaultAttributes
+    || currentAttributes
+  );
   const matchesDefaults = currentName === defaultName && currentAttributes === defaultAttributes;
   const shouldDisable = !hasDefaults || matchesDefaults;
   context.resetButton.disabled = shouldDisable;
@@ -4973,6 +4975,8 @@ function handleGearItemEditResetClick(event) {
   }
   if (context.attributesInput) {
     context.attributesInput.value = defaults.attributes || '';
+  } else {
+    context.currentAttributes = typeof defaults.attributes === 'string' ? defaults.attributes : '';
   }
   handleGearItemEditFieldInput();
   if (context.nameInput && typeof context.nameInput.focus === 'function') {
@@ -5020,13 +5024,16 @@ function handleGearItemEditFormSubmit(event) {
   const data = {
     quantity: context.quantityInput ? context.quantityInput.value : '',
     name: context.nameInput ? context.nameInput.value : '',
-    attributes: context.attributesInput ? context.attributesInput.value : '',
+    attributes: context.attributesInput
+      ? context.attributesInput.value
+      : (typeof context.currentAttributes === 'string' ? context.currentAttributes : ''),
     note: context.noteInput ? context.noteInput.value : '',
     rentalExcluded: allowRentalToggle && context.rentalCheckbox
       ? context.rentalCheckbox.checked
       : targetEntry.getAttribute('data-rental-excluded') === 'true',
   };
   applyGearItemData(targetEntry, data);
+  context.currentAttributes = typeof data.attributes === 'string' ? data.attributes : '';
   if (targetEntry.classList && targetEntry.classList.contains('gear-custom-item')) {
     persistCustomItemsChange();
   } else {
@@ -5077,6 +5084,7 @@ function handleGearItemEditDialogClose() {
   }
   if (context) {
     context.resetDefaults = null;
+    context.currentAttributes = '';
     if (context.resetButton) {
       context.resetButton.disabled = false;
       context.resetButton.setAttribute('aria-disabled', 'false');
@@ -5123,7 +5131,7 @@ function bindGearItemEditDialog(context) {
     context.dialog.addEventListener('mousedown', handleGearItemEditDialogBackdropPointerDown);
     context.dialog.addEventListener('touchstart', handleGearItemEditDialogBackdropPointerDown);
   }
-  const previewInputs = [context.quantityInput, context.nameInput, context.attributesInput];
+  const previewInputs = [context.quantityInput, context.nameInput];
   previewInputs.forEach(input => {
     if (!input) return;
     input.addEventListener('input', handleGearItemEditFieldInput);
@@ -5157,6 +5165,9 @@ function openGearItemEditor(element, options = {}) {
   const data = getGearItemData(element);
   activeGearItemEditTarget = { element, options: options || {} };
   context.resetDefaults = getGearItemResetDefaults(element);
+  context.currentAttributes = typeof data.attributes === 'string'
+    ? data.attributes
+    : String(data.attributes ?? '');
   if (context.resetButton) {
     context.resetButton.disabled = false;
     context.resetButton.setAttribute('aria-disabled', 'false');
@@ -5174,9 +5185,6 @@ function openGearItemEditor(element, options = {}) {
     } else {
       context.nameInput.removeAttribute('list');
     }
-  }
-  if (context.attributesInput) {
-    context.attributesInput.value = data.attributes || '';
   }
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
