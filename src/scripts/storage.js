@@ -8516,17 +8516,52 @@ function cloneProjectGearSelectors(selectors) {
   if (!isPlainObject(selectors)) {
     return null;
   }
+
+  const cloneSelectorValue = (value) => {
+    if (Array.isArray(value)) {
+      const result = value
+        .map((item) => cloneSelectorValue(item))
+        .filter((item) => item !== undefined);
+      return result;
+    }
+    if (isPlainObject(value)) {
+      const nested = {};
+      Object.entries(value).forEach(([key, nestedValue]) => {
+        if (typeof key !== 'string' || !key) {
+          return;
+        }
+        const clonedNestedValue = cloneSelectorValue(nestedValue);
+        if (clonedNestedValue !== undefined) {
+          nested[key] = clonedNestedValue;
+        }
+      });
+      return nested;
+    }
+    if (value === undefined || value === null) {
+      return '';
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+    try {
+      return String(value);
+    } catch (stringifyError) {
+      void stringifyError;
+    }
+    return '';
+  };
+
   const clone = {};
   Object.entries(selectors).forEach(([id, value]) => {
     if (typeof id !== 'string' || !id) {
       return;
     }
-    if (Array.isArray(value)) {
-      clone[id] = value.map((item) => (typeof item === 'string' ? item : String(item ?? '')));
-    } else if (value === undefined || value === null) {
-      clone[id] = '';
-    } else {
-      clone[id] = typeof value === 'string' ? value : String(value);
+    const clonedValue = cloneSelectorValue(value);
+    if (clonedValue !== undefined) {
+      clone[id] = clonedValue;
     }
   });
   return Object.keys(clone).length ? clone : null;
