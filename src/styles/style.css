@@ -1156,13 +1156,13 @@ main.legal-content {
 .gear-item-edit-fields {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.8rem, 2vw, 1.1rem);
+  gap: clamp(0.7rem, 1.8vw, 1rem);
 }
 
 .gear-item-edit-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: clamp(0.6rem, 1.8vw, 0.85rem) clamp(0.75rem, 2vw, 1.1rem);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.75rem, 1.8vw, 1rem);
 }
 
 .gear-item-edit-form .form-row {
