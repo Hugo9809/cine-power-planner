@@ -12462,6 +12462,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (gearListOutput) {
         if (safeGearHtml) {
           gearListOutput.innerHTML = safeGearHtml;
+          if (typeof ensureGearListCustomControls === 'function') {
+            ensureGearListCustomControls(gearListOutput);
+          }
           gearListOutput.classList.remove('hidden');
           if (typeof enhanceGearListItems === 'function') {
             enhanceGearListItems(gearListOutput);
