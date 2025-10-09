@@ -166,6 +166,11 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Auto-Backups bei Bedarf einblenden.** Über **Einstellungen → Backup & Wiederherstellung → Auto-Backups anzeigen** lassen sich die Zeitstempel im Selector sichtbar machen.
 - **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
 - **Projektwechsel ist verlustfrei.** Auswahl im Menü lädt sofort, Scrollposition und unsaved Inputs werden übernommen.
+- **Crew-Kontakte bleiben verfügbar.** Über den Seitenleistenpunkt **Kontakte** pflegst du eine Besetzungsliste mit Rollen,
+  E-Mails, Telefonnummern und Profilfotos, die sich in jedes Projekt übernehmen lässt. Die Kontakte liegen im selben
+  localStorage-Snapshot wie deine Projekte, werden in manuelle Backups eingeschlossen und lassen sich bei Bedarf offline aus
+  `.vcf`- (vCard-) Dateien zusammenführen. Speichere Crew-Zeilen zurück in die Liste, damit zukünftige Projekte ohne Nachtippen
+  auf dem aktuellen Stand bleiben.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
 - **Löschen mit Bestätigung.** Papierkorb-Symbol fragt nach, bevor Einträge entfernt werden.
 
 ## Teilen & Importe
@@ -184,7 +189,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 ## Projekt- & Backup-Dateiformate
 
 - **`project-name.json` (Projekt-Bundle).** Enthält ein Projekt, Favoriten und referenzierte Custom-Geräte. `.cpproject` wird gleich behandelt.
-- **`planner-backup.json` (Vollbackup).** **Einstellungen → Backup & Wiederherstellung → Backup** speichert alle Projekte, Auto-Backups, Favoriten, Laufzeitfeedback, Regeln, UI-Präferenzen, Fonts und Branding.
+- **`planner-backup.json` (Vollbackup).** **Einstellungen → Backup & Wiederherstellung → Backup** speichert alle Projekte,
+  Auto-Backups, Favoriten, Laufzeitfeedback, Regeln, Kontaktlisten, UI-Präferenzen, Fonts und Branding.
 - **`auto-gear-rules-*.json` (Regel-Exports).** Zeitgestempelte Sicherungen der Automations-Setups inklusive Metadaten zur Offline-Validierung.
 
 ## Interface-Rundgang

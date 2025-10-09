@@ -199,6 +199,18 @@
       <li>
         <button
           type="button"
+          id="openContactsBtn"
+          data-nav-key="contactsNav"
+          data-sidebar-action="open-contacts"
+          aria-haspopup="dialog"
+          aria-controls="contactsDialog"
+        >
+          Contacts
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
           data-nav-key="ownGearNav"
           data-sidebar-action="open-own-gear"
           data-feature-search="true"
@@ -6596,6 +6608,44 @@
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel
         </button>
         <button type="submit" id="projectSubmit">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="contactsDialog" class="app-modal" aria-labelledby="contactsDialogHeading">
+    <form id="contactsForm" method="dialog" class="modal-surface modal-surface-scrollable contacts-dialog">
+      <div class="contacts-dialog-header">
+        <h2 id="contactsDialogHeading">Contacts</h2>
+        <p id="contactsDialogDescription">Save crew members once and reuse them for every project.</p>
+        <div class="contacts-toolbar" role="group" aria-label="Contacts tools">
+          <button type="button" id="contactsAddButton">
+            <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE02E;</span>
+            <span id="contactsAddButtonLabel">Add contact</span>
+          </button>
+          <div class="contacts-import">
+            <input
+              type="file"
+              id="contactsImportInput"
+              accept=".vcf,.vcard,text/vcard"
+              class="visually-hidden"
+              tabindex="-1"
+              aria-hidden="true"
+            />
+            <button type="button" id="contactsImportButton">
+              <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>
+              <span id="contactsImportButtonLabel">Import vCard</span>
+            </button>
+          </div>
+        </div>
+        <p id="contactsImportHint" class="contacts-import-hint">Import .vcf files to add contacts instantly.</p>
+      </div>
+      <div class="contacts-dialog-body">
+        <p id="contactsEmptyState" class="contacts-empty-state">No contacts saved yet. Add your crew to reuse them later.</p>
+        <div id="contactsList" class="contacts-list" role="list"></div>
+      </div>
+      <p id="contactsAnnouncement" class="visually-hidden" role="status" aria-live="polite"></p>
+      <div class="dialog-actions">
+        <button type="button" id="contactsCloseButton">Close</button>
       </div>
     </form>
   </dialog>
