@@ -2426,7 +2426,7 @@ function populateProjectForm(info = {}) {
     setEasyrigValue(info.easyrig || '');
     const filterTokens = parseFilterTokens(info.filter);
     setMulti('filter', filterTokens.map(t => t.type));
-    renderFilterDetails();
+    renderFilterDetails(filterTokens);
     filterTokens.forEach(({ type, size, values }) => {
         const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
         if (sizeSel) sizeSel.value = size;
