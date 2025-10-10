@@ -1155,6 +1155,9 @@
     saveState({ version: STORAGE_VERSION });
     storedState = loadStoredState();
     applyHelpButtonLabel();
+    if (!active && shouldAutoStart()) {
+      scheduleAutoStart();
+    }
   }
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
