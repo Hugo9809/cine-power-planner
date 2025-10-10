@@ -31,11 +31,26 @@ describe('project autosave', () => {
 
     const projectForm = document.getElementById('projectForm');
     const productionCompanyInput = projectForm.querySelector('#productionCompany');
-    const productionCompanyAddressInput = projectForm.querySelector('#productionCompanyAddress');
+    const productionCompanyStreetInput = projectForm.querySelector('#productionCompanyStreet');
+    const productionCompanyStreet2Input = projectForm.querySelector('#productionCompanyStreet2');
+    const productionCompanyCityInput = projectForm.querySelector('#productionCompanyCity');
+    const productionCompanyRegionInput = projectForm.querySelector('#productionCompanyRegion');
+    const productionCompanyPostalCodeInput = projectForm.querySelector('#productionCompanyPostalCode');
+    const productionCompanyCountryInput = projectForm.querySelector('#productionCompanyCountry');
     productionCompanyInput.value = 'Lightspeed Films';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
-    productionCompanyAddressInput.value = '111 Light St, Backlot';
-    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyStreetInput.value = '111 Light St';
+    productionCompanyStreetInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyStreet2Input.value = 'Stage B';
+    productionCompanyStreet2Input.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyCityInput.value = 'Backlot';
+    productionCompanyCityInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyRegionInput.value = 'CA';
+    productionCompanyRegionInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyPostalCodeInput.value = '90210';
+    productionCompanyPostalCodeInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyCountryInput.value = 'USA';
+    productionCompanyCountryInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     jest.advanceTimersByTime(500);
 
@@ -44,7 +59,13 @@ describe('project autosave', () => {
     const stored = JSON.parse(storedRaw);
     expect(stored['Autosave Demo']).toBeDefined();
     expect(stored['Autosave Demo'].projectInfo.productionCompany).toBe('Lightspeed Films');
-    expect(stored['Autosave Demo'].projectInfo.productionCompanyAddress).toBe('111 Light St, Backlot');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyAddress).toBe('111 Light St\nStage B\nBacklot, CA, 90210\nUSA');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyStreet).toBe('111 Light St');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyStreet2).toBe('Stage B');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyCity).toBe('Backlot');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyRegion).toBe('CA');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyPostalCode).toBe('90210');
+    expect(stored['Autosave Demo'].projectInfo.productionCompanyCountry).toBe('USA');
 
     env.cleanup();
   });
@@ -106,11 +127,26 @@ describe('project autosave', () => {
 
     const projectForm = document.getElementById('projectForm');
     const productionCompanyInput = projectForm.querySelector('#productionCompany');
-    const productionCompanyAddressInput = projectForm.querySelector('#productionCompanyAddress');
+    const productionCompanyStreetInput = projectForm.querySelector('#productionCompanyStreet');
+    const productionCompanyStreet2Input = projectForm.querySelector('#productionCompanyStreet2');
+    const productionCompanyCityInput = projectForm.querySelector('#productionCompanyCity');
+    const productionCompanyRegionInput = projectForm.querySelector('#productionCompanyRegion');
+    const productionCompanyPostalCodeInput = projectForm.querySelector('#productionCompanyPostalCode');
+    const productionCompanyCountryInput = projectForm.querySelector('#productionCompanyCountry');
     productionCompanyInput.value = 'ACME Studios';
     productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
-    productionCompanyAddressInput.value = '500 Stage Dr, Lot A';
-    productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyStreetInput.value = '500 Stage Dr';
+    productionCompanyStreetInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyStreet2Input.value = 'Lot A';
+    productionCompanyStreet2Input.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyCityInput.value = 'Los Angeles';
+    productionCompanyCityInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyRegionInput.value = 'CA';
+    productionCompanyRegionInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyPostalCodeInput.value = '90036';
+    productionCompanyPostalCodeInput.dispatchEvent(new Event('input', { bubbles: true }));
+    productionCompanyCountryInput.value = 'USA';
+    productionCompanyCountryInput.dispatchEvent(new Event('input', { bubbles: true }));
 
     setupSelect.value = 'Project Two';
     setupSelect.dispatchEvent(new Event('change'));
@@ -120,7 +156,13 @@ describe('project autosave', () => {
     const stored = JSON.parse(storedRaw);
     expect(stored['Project One']).toBeDefined();
     expect(stored['Project One'].projectInfo.productionCompany).toBe('ACME Studios');
-    expect(stored['Project One'].projectInfo.productionCompanyAddress).toBe('500 Stage Dr, Lot A');
+    expect(stored['Project One'].projectInfo.productionCompanyAddress).toBe('500 Stage Dr\nLot A\nLos Angeles, CA, 90036\nUSA');
+    expect(stored['Project One'].projectInfo.productionCompanyStreet).toBe('500 Stage Dr');
+    expect(stored['Project One'].projectInfo.productionCompanyStreet2).toBe('Lot A');
+    expect(stored['Project One'].projectInfo.productionCompanyCity).toBe('Los Angeles');
+    expect(stored['Project One'].projectInfo.productionCompanyRegion).toBe('CA');
+    expect(stored['Project One'].projectInfo.productionCompanyPostalCode).toBe('90036');
+    expect(stored['Project One'].projectInfo.productionCompanyCountry).toBe('USA');
 
     env.cleanup();
   });
@@ -312,9 +354,19 @@ describe('project autosave', () => {
     setupSelect.dispatchEvent(new Event('change'));
 
     const companyField = document.getElementById('productionCompany');
-    const companyAddressField = document.getElementById('productionCompanyAddress');
+    const companyStreetField = document.getElementById('productionCompanyStreet');
+    const companyStreet2Field = document.getElementById('productionCompanyStreet2');
+    const companyCityField = document.getElementById('productionCompanyCity');
+    const companyRegionField = document.getElementById('productionCompanyRegion');
+    const companyPostalField = document.getElementById('productionCompanyPostalCode');
+    const companyCountryField = document.getElementById('productionCompanyCountry');
     expect(companyField.value).toBe('Safe Films');
-    expect(companyAddressField.value).toBe('200 Safe St, Lot B');
+    expect(companyStreetField.value).toBe('200 Safe St, Lot B');
+    expect(companyStreet2Field.value).toBe('');
+    expect(companyCityField.value).toBe('');
+    expect(companyRegionField.value).toBe('');
+    expect(companyPostalField.value).toBe('');
+    expect(companyCountryField.value).toBe('');
 
     setupSelect.value = '';
     setupSelect.dispatchEvent(new Event('change'));

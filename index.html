@@ -6256,14 +6256,70 @@
               <label for="productionCompany" id="productionCompanyLabel">Production Company:</label>
               <input type="text" id="productionCompany" name="productionCompany" />
             </div>
-            <div class="form-row">
-              <label for="productionCompanyAddress" id="productionCompanyAddressLabel">Production Company Address:</label>
-              <textarea
-                id="productionCompanyAddress"
-                name="productionCompanyAddress"
-                rows="3"
-                autocomplete="off"
-              ></textarea>
+            <div class="form-row address-form-row">
+              <div class="form-row-label" id="productionCompanyAddressLabel">Production Company Address (optional):</div>
+              <div
+                class="address-field-grid"
+                id="productionCompanyAddressFields"
+                role="group"
+                aria-labelledby="productionCompanyAddressLabel"
+              >
+                <div class="address-field address-field--full">
+                  <label for="productionCompanyStreet" id="productionCompanyStreetLabel">Street address</label>
+                  <input
+                    type="text"
+                    id="productionCompanyStreet"
+                    name="productionCompanyStreet"
+                    autocomplete="address-line1"
+                  />
+                </div>
+                <div class="address-field address-field--full">
+                  <label for="productionCompanyStreet2" id="productionCompanyStreet2Label">Address line 2 (optional)</label>
+                  <input
+                    type="text"
+                    id="productionCompanyStreet2"
+                    name="productionCompanyStreet2"
+                    autocomplete="address-line2"
+                  />
+                </div>
+                <div class="address-field">
+                  <label for="productionCompanyCity" id="productionCompanyCityLabel">City</label>
+                  <input
+                    type="text"
+                    id="productionCompanyCity"
+                    name="productionCompanyCity"
+                    autocomplete="address-level2"
+                  />
+                </div>
+                <div class="address-field">
+                  <label for="productionCompanyRegion" id="productionCompanyRegionLabel">State / Province / Region</label>
+                  <input
+                    type="text"
+                    id="productionCompanyRegion"
+                    name="productionCompanyRegion"
+                    autocomplete="address-level1"
+                  />
+                </div>
+                <div class="address-field">
+                  <label for="productionCompanyPostalCode" id="productionCompanyPostalCodeLabel">Postal code</label>
+                  <input
+                    type="text"
+                    id="productionCompanyPostalCode"
+                    name="productionCompanyPostalCode"
+                    inputmode="text"
+                    autocomplete="postal-code"
+                  />
+                </div>
+                <div class="address-field">
+                  <label for="productionCompanyCountry" id="productionCompanyCountryLabel">Country</label>
+                  <input
+                    type="text"
+                    id="productionCompanyCountry"
+                    name="productionCompanyCountry"
+                    autocomplete="country-name"
+                  />
+                </div>
+              </div>
             </div>
             <div class="form-row">
               <label for="rentalHouse" id="rentalHouseLabel">Rental House:</label>

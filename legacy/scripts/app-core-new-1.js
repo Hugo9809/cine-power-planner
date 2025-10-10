@@ -10787,10 +10787,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var value = projectFormTexts[key] || fallbackProjectForm[key];
         if (value) element.textContent = value;
       };
+      var setPlaceholder = function setPlaceholder(element, key) {
+        if (!element) return;
+        var value = projectFormTexts[key] || fallbackProjectForm[key];
+        if (value) element.setAttribute('placeholder', value);
+      };
       setLabelText(projectDialogHeading, 'heading');
       setLabelText(projectNameLabel, 'projectName');
       setLabelText(productionCompanyLabel, 'productionCompany');
       setLabelText(productionCompanyAddressLabel, 'productionCompanyAddress');
+      setLabelText(productionCompanyStreetLabel, 'productionCompanyStreet');
+      setLabelText(productionCompanyStreet2Label, 'productionCompanyStreet2');
+      setLabelText(productionCompanyCityLabel, 'productionCompanyCity');
+      setLabelText(productionCompanyRegionLabel, 'productionCompanyRegion');
+      setLabelText(productionCompanyPostalCodeLabel, 'productionCompanyPostalCode');
+      setLabelText(productionCompanyCountryLabel, 'productionCompanyCountry');
+      setPlaceholder(productionCompanyStreetInput, 'productionCompanyStreetPlaceholder');
+      setPlaceholder(productionCompanyStreet2Input, 'productionCompanyStreet2Placeholder');
+      setPlaceholder(productionCompanyCityInput, 'productionCompanyCityPlaceholder');
+      setPlaceholder(productionCompanyRegionInput, 'productionCompanyRegionPlaceholder');
+      setPlaceholder(productionCompanyPostalCodeInput, 'productionCompanyPostalCodePlaceholder');
+      setPlaceholder(productionCompanyCountryInput, 'productionCompanyCountryPlaceholder');
       setLabelText(rentalHouseLabel, 'rentalHouse');
       setLabelText(crewHeadingElem, 'crewHeading');
       if (crewLabelElem) {
@@ -11021,6 +11038,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var projectNameLabel = document.getElementById("projectNameLabel");
   var productionCompanyLabel = document.getElementById("productionCompanyLabel");
   var productionCompanyAddressLabel = document.getElementById("productionCompanyAddressLabel");
+  var productionCompanyStreetLabel = document.getElementById("productionCompanyStreetLabel");
+  var productionCompanyStreet2Label = document.getElementById("productionCompanyStreet2Label");
+  var productionCompanyCityLabel = document.getElementById("productionCompanyCityLabel");
+  var productionCompanyRegionLabel = document.getElementById("productionCompanyRegionLabel");
+  var productionCompanyPostalCodeLabel = document.getElementById("productionCompanyPostalCodeLabel");
+  var productionCompanyCountryLabel = document.getElementById("productionCompanyCountryLabel");
+  var productionCompanyStreetInput = document.getElementById("productionCompanyStreet");
+  var productionCompanyStreet2Input = document.getElementById("productionCompanyStreet2");
+  var productionCompanyCityInput = document.getElementById("productionCompanyCity");
+  var productionCompanyRegionInput = document.getElementById("productionCompanyRegion");
+  var productionCompanyPostalCodeInput = document.getElementById("productionCompanyPostalCode");
+  var productionCompanyCountryInput = document.getElementById("productionCompanyCountry");
   var rentalHouseLabel = document.getElementById("rentalHouseLabel");
   var crewHeadingElem = document.getElementById("crewHeading");
   var crewLabelElem = document.getElementById("crewLabel");

@@ -86,7 +86,12 @@ describe('project requirements persistence to project storage', () => {
     };
 
     setInputValue('#productionCompany', 'Test Co');
-    setInputValue('#productionCompanyAddress', '123 Production Way, Stage City');
+    setInputValue('#productionCompanyStreet', '123 Production Way');
+    setInputValue('#productionCompanyStreet2', 'Building B');
+    setInputValue('#productionCompanyCity', 'Stage City');
+    setInputValue('#productionCompanyRegion', 'CA');
+    setInputValue('#productionCompanyPostalCode', '90001');
+    setInputValue('#productionCompanyCountry', 'United States');
     setInputValue('#rentalHouse', 'Rental Works');
 
     document.getElementById('addPersonBtn').click();
@@ -189,7 +194,13 @@ describe('project requirements persistence to project storage', () => {
 
     expect(projectEntry.projectInfo).toMatchObject({
       productionCompany: 'Test Co',
-      productionCompanyAddress: '123 Production Way, Stage City',
+      productionCompanyAddress: '123 Production Way\nBuilding B\nStage City, CA, 90001\nUnited States',
+      productionCompanyStreet: '123 Production Way',
+      productionCompanyStreet2: 'Building B',
+      productionCompanyCity: 'Stage City',
+      productionCompanyRegion: 'CA',
+      productionCompanyPostalCode: '90001',
+      productionCompanyCountry: 'United States',
       rentalHouse: 'Rental Works',
       projectName: 'Requirements Capture',
       deliveryResolution: '4K',
