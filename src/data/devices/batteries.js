@@ -124,7 +124,7 @@ const batteryData = {
     "pinA": 16,
     "dtapA": 10,
     "mount_type": "V-Mount",
-    "weight_g": 713
+    "weight_g": 1020
   },
   "Swit PB-M98S (Mini V-Mount) (V-Mount)": {
     "capacity": 98,
@@ -172,7 +172,8 @@ const batteryData = {
     "capacity": 160,
     "pinA": 10,
     "dtapA": 10.4,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1100
   },
   "Swit BIVO-200 (B-Mount)": {
     "capacity": 196,
@@ -355,7 +356,7 @@ const batteryData = {
     "pinA": 10,
     "dtapA": 10,
     "mount_type": "V-Mount",
-    "weight_g": 540
+    "weight_g": 520
   },
   "FXLion Nano THREE Wireless (V-Mount)": {
     "capacity": 150,
