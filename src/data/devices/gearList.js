@@ -2490,6 +2490,24 @@ const gear = {
         "capacityTb": 1,
         "interface": "PCIe (ProRes-only)"
       },
+      "Angelbird AV PRO CFexpress Type A 256GB (v4)": {
+        "brand": "Angelbird",
+        "model": "AV PRO CFexpress A 256GB (v4)",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress Type A (v4, PCIe 4.0)",
+        "notes": "Angelbird v4 Type A card delivering 1800 MB/s read and 1650 MB/s write"
+      },
+      "Angelbird AV PRO CFexpress Type A 512GB (v4)": {
+        "brand": "Angelbird",
+        "model": "AV PRO CFexpress A 512GB (v4)",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "CFexpress Type A (v4, PCIe 4.0)",
+        "notes": "Same high-performance v4 technology"
+      },
       "Angelbird AV PRO CFexpress Type A 1TB": {
         "brand": "Angelbird",
         "model": "AV PRO CFexpress A 1TB",
@@ -2497,7 +2515,8 @@ const gear = {
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
-        "interface": "CFexpress Type A (v4)"
+        "interface": "CFexpress Type A (v4)",
+        "notes": "High-capacity v4 Type A card"
       },
       "Angelbird AV PRO SE CFexpress Type A 160GB": {
         "brand": "Angelbird",
@@ -2616,6 +2635,33 @@ const gear = {
         "capacityTb": 0.512,
         "interface": "SDXC UHS-II (V90)"
       },
+      "Angelbird AV PRO SD V30 64GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V30 64GB",
+        "kNumber": null,
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-I (V30)",
+        "notes": "Angelbird’s V30 SD card uses a UHS-I bus and guarantees sustained write speeds around 50 MB/s"
+      },
+      "Angelbird AV PRO SD V30 128GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V30 128GB",
+        "kNumber": null,
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-I (V30)",
+        "notes": "Part of the same V30 line, supporting the same interface and performance"
+      },
+      "Angelbird AV PRO SD V30 256GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V30 256GB",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-I (V30)",
+        "notes": "Largest capacity in the V30 series with the same V30 rating"
+      },
       "Angelbird AV PRO SD V60 64GB (MK2)": {
         "brand": "Angelbird",
         "model": "AV PRO SD V60 (MK2) 64GB",
@@ -2688,21 +2734,122 @@ const gear = {
         "capacityTb": 0.512,
         "interface": "microSDXC UHS-I (V30, A2)"
       },
+      "OWC Atlas Pro CFexpress Type A 240GB (v4)": {
+        "brand": "OWC",
+        "model": "Atlas Pro CFexpress Type A 240GB (v4)",
+        "kNumber": null,
+        "capacityGb": 240,
+        "capacityTb": 0.24,
+        "interface": "CFexpress Type A (PCIe 4.0)",
+        "notes": "Atlas Pro Type A card with 1850 MB/s read, 1700 MB/s write, 400 MB/s sustained"
+      },
+      "OWC Atlas Pro CFexpress Type A 480GB (v4)": {
+        "brand": "OWC",
+        "model": "Atlas Pro CFexpress Type A 480GB (v4)",
+        "kNumber": null,
+        "capacityGb": 480,
+        "capacityTb": 0.48,
+        "interface": "CFexpress Type A (PCIe 4.0)",
+        "notes": "Same performance as 240GB version"
+      },
+      "OWC Atlas Pro CFexpress Type A 960GB (v4)": {
+        "brand": "OWC",
+        "model": "Atlas Pro CFexpress Type A 960GB (v4)",
+        "kNumber": null,
+        "capacityGb": 960,
+        "capacityTb": 0.96,
+        "interface": "CFexpress Type A (PCIe 4.0)",
+        "notes": "Same performance as other Atlas Pro Type A cards"
+      },
+      "OWC Atlas Pro CFexpress Type B 256GB (v4)": {
+        "brand": "OWC",
+        "model": "Atlas Pro CFexpress Type B 256GB (v4)",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress Type B (PCIe 4.0)",
+        "notes": "Atlas Pro Type B card with 3650 MB/s read, 3000 MB/s write, 800 MB/s sustained"
+      },
+      "OWC Atlas Pro CFexpress Type B 512GB (v4)": {
+        "brand": "OWC",
+        "model": "Atlas Pro CFexpress Type B 512GB (v4)",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "CFexpress Type B (PCIe 4.0)",
+        "notes": "Same performance as 256GB version"
+      },
       "OWC Atlas Ultra CFexpress Type B 1TB": {
         "brand": "OWC",
-        "model": "Atlas Ultra 1TB",
+        "model": "Atlas Ultra CFexpress Type B 1TB",
         "kNumber": "OWC CFXB1TBATLU",
         "capacityGb": 1024,
         "capacityTb": 1,
-        "interface": "CFexpress Type B (PCIe)"
+        "interface": "CFexpress Type B (v4, PCIe 4.0)",
+        "notes": "Atlas Ultra card with 3650 MB/s read, 3000 MB/s write, 1500 MB/s sustained"
       },
-      "ProGrade Digital CFexpress Type B 1TB Gold": {
+      "OWC Atlas Ultra CFexpress Type B 2TB": {
+        "brand": "OWC",
+        "model": "Atlas Ultra CFexpress Type B 2TB",
+        "kNumber": null,
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "CFexpress Type B (v4, PCIe 4.0)",
+        "notes": "Same performance as 1TB version"
+      },
+      "ProGrade CFexpress Type B Gold 512GB (v4)": {
         "brand": "ProGrade",
-        "model": "CFexpress Type B Gold 1TB",
-        "kNumber": "PGCFX128GBCE-GNAN (series uses capacity-specific SKUs)",
+        "model": "CFexpress Type B Gold 512GB (v4)",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Gold series card with 3400 MB/s read, 3000 MB/s write, 850 MB/s sustained"
+      },
+      "ProGrade CFexpress Type B Gold 1TB (v4)": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Gold 1TB (v4)",
+        "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
-        "interface": "CFexpress Type B (NVMe / PCIe)"
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Same speeds as 512GB but with 1500 MB/s sustained"
+      },
+      "ProGrade CFexpress Type B Gold 2TB (v4)": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Gold 2TB (v4)",
+        "kNumber": null,
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Same performance as 1TB version"
+      },
+      "ProGrade CFexpress Type B Iridium 400GB (v4)": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Iridium 400GB (v4)",
+        "kNumber": null,
+        "capacityGb": 400,
+        "capacityTb": 0.4,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Iridium card with 3550 MB/s read, 3000 MB/s write, 850 MB/s sustained and VPG-400"
+      },
+      "ProGrade CFexpress Type B Iridium 800GB (v4)": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Iridium 800GB (v4)",
+        "kNumber": null,
+        "capacityGb": 800,
+        "capacityTb": 0.8,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Same speeds but sustained 1500 MB/s"
+      },
+      "ProGrade CFexpress Type B Iridium 1.6TB (v4)": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Iridium 1.6TB (v4)",
+        "kNumber": null,
+        "capacityGb": 1600,
+        "capacityTb": 1.6,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Largest Iridium card with same speeds and sustained 1500 MB/s"
       },
       "Sony CEA-G Series CFexpress Type A 80GB": {
         "brand": "Sony",
@@ -2721,6 +2868,15 @@ const gear = {
         "capacityGb": 160,
         "capacityTb": 0.16,
         "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress Type A 240GB (4.0)": {
+        "brand": "Sony",
+        "model": "CEA-G Series CFexpress Type A 240GB (4.0)",
+        "kNumber": null,
+        "capacityGb": 240,
+        "capacityTb": 0.24,
+        "interface": "CFexpress Type A (PCIe 4.0)",
+        "notes": "CFexpress 4.0 Type A card rated for 1800 MB/s read and 1700 MB/s write"
       },
       "Sony CEA-G Series CFexpress Type A 320GB": {
         "brand": "Sony",
@@ -3331,6 +3487,42 @@ const gear = {
         "capacityTb": 0.512,
         "interface": "SDXC UHS-I"
       },
+      "Lexar Professional DIAMOND CFexpress Type B 128GB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional DIAMOND CFexpress Type B 128GB (v4)",
+        "kNumber": null,
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Lexar DIAMOND card with 3700 MB/s read, 3400 MB/s write and 3200 MB/s sustained"
+      },
+      "Lexar Professional DIAMOND CFexpress Type B 256GB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional DIAMOND CFexpress Type B 256GB (v4)",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Same performance as 128GB but bigger capacity"
+      },
+      "Lexar Professional DIAMOND CFexpress Type B 512GB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional DIAMOND CFexpress Type B 512GB (v4)",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "High-capacity DIAMOND with the same speeds"
+      },
+      "Lexar Professional DIAMOND CFexpress Type B 1TB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional DIAMOND CFexpress Type B 1TB (v4)",
+        "kNumber": null,
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress 4.0 Type B",
+        "notes": "Largest DIAMOND card with same speeds"
+      },
       "Lexar Professional CFexpress 4.0 Type B GOLD 512GB": {
         "brand": "Lexar",
         "model": "Professional CFexpress 4.0 Type B GOLD 512GB",
@@ -3338,7 +3530,8 @@ const gear = {
         "kNumber": null,
         "capacityGb": 512,
         "capacityTb": 0.512,
-        "interface": "CFexpress Type B (v4.0)"
+        "interface": "CFexpress Type B (v4.0)",
+        "notes": "Gold Type B card with 3600 MB/s read, 3300 MB/s write and 3000 MB/s sustained"
       },
       "Lexar Professional CFexpress 4.0 Type B GOLD 1TB": {
         "brand": "Lexar",
@@ -3347,7 +3540,8 @@ const gear = {
         "kNumber": null,
         "capacityGb": 1024,
         "capacityTb": 1,
-        "interface": "CFexpress Type B (v4.0)"
+        "interface": "CFexpress Type B (v4.0)",
+        "notes": "1 TB Gold Type B card"
       },
       "Lexar Professional CFexpress 4.0 Type B GOLD 2TB": {
         "brand": "Lexar",
@@ -3356,7 +3550,8 @@ const gear = {
         "kNumber": null,
         "capacityGb": 2048,
         "capacityTb": 2,
-        "interface": "CFexpress Type B (v4.0)"
+        "interface": "CFexpress Type B (v4.0)",
+        "notes": "2 TB Gold Type B card"
       },
       "Lexar Professional CFexpress 4.0 Type B GOLD 4TB": {
         "brand": "Lexar",
@@ -3365,7 +3560,8 @@ const gear = {
         "kNumber": null,
         "capacityGb": 4096,
         "capacityTb": 4,
-        "interface": "CFexpress Type B (v4.0)"
+        "interface": "CFexpress Type B (v4.0)",
+        "notes": "4 TB Gold Type B card"
       },
       "Lexar Professional CFexpress Type B GOLD 128GB": {
         "brand": "Lexar",
@@ -3411,6 +3607,24 @@ const gear = {
         "capacityGb": 320,
         "capacityTb": 0.32,
         "interface": "CFexpress Type A"
+      },
+      "Lexar Professional GOLD CFexpress Type A 640GB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional GOLD CFexpress Type A 640GB (v4)",
+        "kNumber": null,
+        "capacityGb": 640,
+        "capacityTb": 0.64,
+        "interface": "CFexpress 4.0 Type A",
+        "notes": "Gold Type A card with 1800 MB/s read, 1650 MB/s write, sustained 1400 MB/s"
+      },
+      "Lexar Professional GOLD CFexpress Type A 1TB (v4)": {
+        "brand": "Lexar",
+        "model": "Professional GOLD CFexpress Type A 1TB (v4)",
+        "kNumber": null,
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress 4.0 Type A",
+        "notes": "1 TB Gold Type A card with same speed specs"
       },
       "Lexar Professional 3500x CFast 2.0 64GB": {
         "brand": "Lexar",
@@ -3484,6 +3698,51 @@ const gear = {
         "capacityTb": 0.512,
         "interface": "SDHC/SDXC UHS-II (V90)"
       },
+      "Lexar Professional 1800x SDXC UHS-II 64GB": {
+        "brand": "Lexar",
+        "model": "Professional 1800x SDXC UHS-II 64GB",
+        "kNumber": null,
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-II (V60)",
+        "notes": "Read up to 280 MB/s, write up to 210 MB/s"
+      },
+      "Lexar Professional 1800x SDXC UHS-II 128GB": {
+        "brand": "Lexar",
+        "model": "Professional 1800x SDXC UHS-II 128GB",
+        "kNumber": null,
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-II (V60)",
+        "notes": "Same speed as the 64 GB version"
+      },
+      "Lexar Professional 1800x SDXC UHS-II 256GB": {
+        "brand": "Lexar",
+        "model": "Professional 1800x SDXC UHS-II 256GB",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-II (V60)",
+        "notes": "Read up to 280 MB/s, write up to 205 MB/s"
+      },
+      "Lexar Professional 1800x SDXC UHS-II 512GB": {
+        "brand": "Lexar",
+        "model": "Professional 1800x SDXC UHS-II 512GB",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "SDXC UHS-II (V60)",
+        "notes": "Same as 256GB version"
+      },
+      "Lexar Professional 1800x SDXC UHS-II 1TB": {
+        "brand": "Lexar",
+        "model": "Professional 1800x SDXC UHS-II 1TB",
+        "kNumber": null,
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "SDXC UHS-II (V60)",
+        "notes": "Largest card in the series"
+      },
       "Lexar Professional 1066x microSD SILVER 64GB": {
         "brand": "Lexar",
         "model": "Professional 1066x microSD SILVER 64GB",
@@ -3529,6 +3788,24 @@ const gear = {
         "capacityTb": 1,
         "interface": "microSDXC UHS-I"
       },
+      "Lexar Professional GOLD microSDXC UHS-II 128GB": {
+        "brand": "Lexar",
+        "model": "Professional GOLD microSDXC UHS-II 128GB",
+        "kNumber": null,
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-II (V60, A1)",
+        "notes": "Reads up to 280 MB/s, writes up to 100 MB/s"
+      },
+      "Lexar Professional GOLD microSDXC UHS-II 256GB": {
+        "brand": "Lexar",
+        "model": "Professional GOLD microSDXC UHS-II 256GB",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-II (V60, A1)",
+        "notes": "Reads up to 280 MB/s, writes up to 180 MB/s"
+      },
       "Lexar Professional 1066x SD SILVER 64GB": {
         "brand": "Lexar",
         "model": "Professional 1066x SD SILVER 64GB",
@@ -3573,6 +3850,78 @@ const gear = {
         "capacityGb": 1024,
         "capacityTb": 1,
         "interface": "SDXC UHS-I (V30)"
+      },
+      "Lexar Professional SILVER PLUS microSDXC UHS-I 64GB": {
+        "brand": "Lexar",
+        "model": "Professional SILVER PLUS microSDXC UHS-I 64GB",
+        "kNumber": null,
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "microSDXC UHS-I (V30, A2)",
+        "notes": "Read 205 MB/s, write 100 MB/s"
+      },
+      "Lexar Professional SILVER PLUS microSDXC UHS-I 128GB": {
+        "brand": "Lexar",
+        "model": "Professional SILVER PLUS microSDXC UHS-I 128GB",
+        "kNumber": null,
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I (V30, A2)",
+        "notes": "Read 205 MB/s, write 150 MB/s"
+      },
+      "Lexar Professional SILVER PLUS microSDXC UHS-I 256GB": {
+        "brand": "Lexar",
+        "model": "Professional SILVER PLUS microSDXC UHS-I 256GB",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I (V30, A2)",
+        "notes": "Same as 128GB version"
+      },
+      "Lexar Professional SILVER PLUS microSDXC UHS-I 512GB": {
+        "brand": "Lexar",
+        "model": "Professional SILVER PLUS microSDXC UHS-I 512GB",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "microSDXC UHS-I (V30, A2)",
+        "notes": "Same as 128GB version"
+      },
+      "Lexar Professional SILVER PLUS microSDXC UHS-I 1TB": {
+        "brand": "Lexar",
+        "model": "Professional SILVER PLUS microSDXC UHS-I 1TB",
+        "kNumber": null,
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSDXC UHS-I (V30, A2)",
+        "notes": "Largest capacity in the Silver Plus line"
+      },
+      "Lexar PLAY PRO microSD Express 256GB": {
+        "brand": "Lexar",
+        "model": "PLAY PRO microSD Express 256GB",
+        "kNumber": null,
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSD Express (PCIe/NVMe)",
+        "notes": "Next-gen microSD Express card with 900 MB/s read and 600 MB/s write"
+      },
+      "Lexar PLAY PRO microSD Express 512GB": {
+        "brand": "Lexar",
+        "model": "PLAY PRO microSD Express 512GB",
+        "kNumber": null,
+        "capacityGb": 512,
+        "capacityTb": 0.512,
+        "interface": "microSD Express (PCIe/NVMe)",
+        "notes": "Same performance as 256GB version"
+      },
+      "Lexar PLAY PRO microSD Express 1TB": {
+        "brand": "Lexar",
+        "model": "PLAY PRO microSD Express 1TB",
+        "kNumber": null,
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSD Express (PCIe/NVMe)",
+        "notes": "Largest capacity with same speeds"
       }
     },
     "cardReaders": {
@@ -3594,6 +3943,15 @@ const gear = {
         "busPowered": true,
         "notes": "Dual-slot reader with USB-C and USB-A cables included; supports simultaneous card access."
       },
+      "Angelbird CFexpress Type B Card Reader (USB 4.0)": {
+        "brand": "Angelbird",
+        "model": "CFexpress Type B Card Reader (USB 4.0)",
+        "supportedMedia": ["CFexpress Type B"],
+        "interface": "USB 4.0 Gen 3x2 (40 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Card reader with up to 40 Gb/s transfer rate and Solid Connect technology"
+      },
       "ARRI Codex Compact Drive Reader (USB-C)": {
         "brand": "ARRI",
         "model": "Codex Compact Drive Reader",
@@ -3612,6 +3970,42 @@ const gear = {
         "slots": 2,
         "busPowered": true,
         "notes": "Dual-slot reader with angled base for desk use; includes USB-C to USB-C and USB-C to USB-A cables."
+      },
+      "Lexar Workflow CFexpress Type B Reader (USB 4.0)": {
+        "brand": "Lexar",
+        "model": "Workflow CFexpress Type B Reader (USB 4.0)",
+        "supportedMedia": ["CFexpress 4.0 Type B"],
+        "interface": "USB 4.0 (40 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Reader for CFexpress Type B cards with up to 40 Gbps transfer"
+      },
+      "Lexar Workflow CFexpress Type A Reader (USB 4.0)": {
+        "brand": "Lexar",
+        "model": "Workflow CFexpress Type A Reader (USB 4.0)",
+        "supportedMedia": ["CFexpress 4.0 Type A"],
+        "interface": "USB 4.0 (40 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Reader for CFexpress Type A cards with up to 1800 MB/s transfer"
+      },
+      "Lexar microSD Express Card Reader": {
+        "brand": "Lexar",
+        "model": "microSD Express Card Reader",
+        "supportedMedia": ["microSD Express", "microSD UHS-I", "microSD UHS-II"],
+        "interface": "USB 3.2 Gen 2 (10 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Reader with internal fan and up to 900 MB/s transfer speed"
+      },
+      "Lexar Professional CFexpress Type B USB 3.2 Gen 2x2 Reader": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type B USB 3.2 Gen 2x2 Reader",
+        "supportedMedia": ["CFexpress Type B"],
+        "interface": "USB 3.2 Gen 2x2 (20 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Reader delivering up to 1900 MB/s"
       },
       "Lexar Professional XQD 2.0 USB 3.0 Reader": {
         "brand": "Lexar",
@@ -3676,6 +4070,15 @@ const gear = {
         "slots": 2,
         "busPowered": true,
         "notes": "Dual-slot reader supporting CFexpress Type A and SD cards; ships with USB-C and USB-A cables."
+      },
+      "Sony MRW-G3 CFexpress Type A Reader": {
+        "brand": "Sony",
+        "model": "MRW-G3",
+        "supportedMedia": ["CFexpress Type A", "SDXC UHS-II"],
+        "interface": "USB4 (40 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Supports CFexpress Type A 4.0 cards and SD cards"
       },
       "ProGrade Digital CFexpress Type B & SD Reader (Thunderbolt 4)": {
         "brand": "ProGrade",
@@ -3784,6 +4187,15 @@ const gear = {
         "slots": 6,
         "busPowered": false,
         "notes": "Modular desktop dock with swappable media modules; dual Thunderbolt 3 ports support daisy-chaining."
+      },
+      "OWC Atlas CFexpress Type B Card Reader": {
+        "brand": "OWC",
+        "model": "Atlas CFexpress Type B Card Reader",
+        "supportedMedia": ["CFexpress 4.0 Type B"],
+        "interface": "USB4 (40 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Card reader with up to 5000 MB/s transfer speed"
       },
       "OWC Atlas FXR CFexpress Type B Reader": {
         "brand": "OWC",
