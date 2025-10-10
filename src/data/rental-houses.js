@@ -277,7 +277,7 @@ const rentalHouses = Object.freeze([
     shortName: 'Arri',
     city: 'Uxbridge (London)',
     country: 'United Kingdom',
-    address: '3 Highbridge, Oxford Road, Uxbridge, Middlesex UB8 1LX',
+    address: '3 Highbridge, Oxford Road, Uxbridge, Middlesex UB8 1 LX',
     phone: '+44 1895 457 100',
     email: 'Londoncamera@arrirental.co.uk',
     website: 'https://www.arrirental.com/en/about/contact',

@@ -62,6 +62,7 @@ const chargerData = {
     chargeModes: ["Simultaneous"],
     perBayCurrentA: 6,
     chargingSpeedAmps: 6,
+    weight_g: 2430,
     notes: "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display"
   },
   "SWIT PC-U130S": {
