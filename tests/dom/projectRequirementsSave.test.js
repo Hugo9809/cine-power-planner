@@ -237,4 +237,30 @@ describe('project requirements persistence to project storage', () => {
     expect(projectEntry.projectInfo.prepDays).toEqual(['2024-05-01 to 2024-05-03']);
     expect(projectEntry.projectInfo.shootingDays).toEqual(['2024-06-10 to 2024-06-12']);
   });
+
+  test('clicking the project dialog backdrop submits and closes the form', () => {
+    const projectForm = document.getElementById('projectForm');
+    const projectDialog = document.getElementById('projectDialog');
+    expect(projectForm).not.toBeNull();
+    expect(projectDialog).not.toBeNull();
+
+    const submitSpy = jest.fn();
+    projectForm.addEventListener('submit', submitSpy);
+
+    const productionCompanyInput = projectForm.querySelector('#productionCompany');
+    expect(productionCompanyInput).not.toBeNull();
+    productionCompanyInput.value = 'Backdrop Save Co';
+    productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    projectDialog.setAttribute('open', '');
+
+    projectDialog.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(submitSpy).toHaveBeenCalledTimes(1);
+    const dialogStillOpen = (
+      (typeof projectDialog.open === 'boolean' && projectDialog.open)
+      || (typeof projectDialog.hasAttribute === 'function' && projectDialog.hasAttribute('open'))
+    );
+    expect(dialogStillOpen).toBe(false);
+  });
 });

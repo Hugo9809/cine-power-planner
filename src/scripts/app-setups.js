@@ -1359,6 +1359,41 @@ if (projectCancelBtnRef) {
     });
 }
 
+function submitProjectFormViaBackdrop() {
+    if (!projectForm || !projectDialog) {
+        return;
+    }
+
+    const propOpen = typeof projectDialog.open === 'boolean' ? projectDialog.open : null;
+    const attrOpen = typeof projectDialog.hasAttribute === 'function'
+        ? projectDialog.hasAttribute('open')
+        : false;
+    const isOpen = propOpen === null ? attrOpen : (propOpen || attrOpen);
+    if (!isOpen) {
+        return;
+    }
+
+    const submitButton = projectDialog.querySelector('[type="submit"]');
+
+    if (typeof projectForm.requestSubmit === 'function') {
+        try {
+            if (submitButton) {
+                projectForm.requestSubmit(submitButton);
+            } else {
+                projectForm.requestSubmit();
+            }
+            return;
+        } catch (requestError) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Project dialog backdrop submit failed to use requestSubmit', requestError);
+            }
+        }
+    }
+
+    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+    projectForm.dispatchEvent(submitEvent);
+}
+
 if (projectDialogCloseBtn) {
     projectDialogCloseBtn.addEventListener('click', () => {
         if (projectCancelBtnRef) {
@@ -1377,6 +1412,14 @@ if (projectDialog) {
         } else {
             restoreProjectDialogSnapshot();
             closeDialog(projectDialog);
+        }
+    });
+
+    projectDialog.addEventListener('click', event => {
+        if (event.target === projectDialog) {
+            event.preventDefault();
+            event.stopPropagation();
+            submitProjectFormViaBackdrop();
         }
     });
 }
