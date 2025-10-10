@@ -7454,6 +7454,7 @@ var ICON_GLYPHS = Object.freeze({
   note: iconGlyph('\\uF13E', ICON_FONT_KEYS.ESSENTIAL),
   overview: iconGlyph('\\uF1F5', ICON_FONT_KEYS.UICONS),
   gearList: iconGlyph('\\uE467', ICON_FONT_KEYS.UICONS),
+  contacts: iconGlyph('\\uF404', ICON_FONT_KEYS.UICONS),
   feedback: iconGlyph('\\uE791', ICON_FONT_KEYS.UICONS),
   resetView: iconGlyph('\\uEB6D', ICON_FONT_KEYS.UICONS),
   pin: iconGlyph('\\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
@@ -10240,7 +10241,21 @@ function setLanguage(lang) {
     }
     const label = texts[lang][navKey];
     if (label) {
-      link.textContent = label;
+      if (
+        navKey === 'contactsNav' &&
+        typeof setButtonLabelWithIcon === 'function' &&
+        link?.tagName === 'BUTTON'
+      ) {
+        setButtonLabelWithIcon(
+          link,
+          label,
+          (typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts)
+            ? ICON_GLYPHS.contacts
+            : iconGlyph('\\uF404', ICON_FONT_KEYS.UICONS)
+        );
+      } else {
+        link.textContent = label;
+      }
       link.setAttribute("aria-label", label);
     }
     const helpKey = `${navKey}Help`;
