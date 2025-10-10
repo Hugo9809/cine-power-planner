@@ -317,6 +317,53 @@
     );
   }
 
+  const DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
+  const SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
+  const MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
+  const MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
+  const MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
+  const MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+
+  function cleanMeasurementValue(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
+  }
+
+  function normalizeMeasurementUnits(str) {
+    if (typeof str !== 'string' || !str) {
+      return str;
+    }
+
+    let normalized = str
+      .replace(DOUBLE_PRIME_VARIANTS_PATTERN, '"')
+      .replace(SINGLE_PRIME_VARIANTS_PATTERN, "'");
+
+    normalized = normalized.replace(MEASUREMENT_FOOT_WORD_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} ft ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_FOOT_PRIME_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} ft ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_INCH_WORD_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} inch ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_INCH_PRIME_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} inch ` : value;
+    });
+
+    return normalized;
+  }
+
   function applySearchTokenSynonyms(tokens, addToken) {
     if (!tokens || typeof addToken !== 'function') {
       return;
@@ -451,6 +498,14 @@
 
     if (hasAny(['cm', 'centimeter', 'centimeters'])) {
       addAll(['cm', 'centimeter', 'centimeters']);
+    }
+
+    if (hasAny(['inch', 'inches'])) {
+      addAll(['inch', 'inches', 'in']);
+    }
+
+    if (hasAny(['ft', 'foot', 'feet'])) {
+      addAll(['ft', 'foot', 'feet']);
     }
 
     if (hasAny(['ev', 'exposurevalue'])) {
@@ -635,6 +690,7 @@
 
       normalized = normalizeUnicodeFractions(normalized);
       normalized = normalizeNumberWords(normalized);
+      normalized = normalizeMeasurementUnits(normalized);
       normalized = normalizeSpellingVariants(normalized);
       normalized = normaliseMarkVariants(normalized);
 
@@ -669,7 +725,9 @@
         .replace(/[×✕✖✗✘]/g, ' x by ');
 
       normalized = normalizeUnicodeFractions(normalized);
+      normalized = normalizeMeasurementUnits(normalized);
       const numberNormalized = normalizeNumberWords(normalized);
+      const measurementNormalized = normalizeMeasurementUnits(numberNormalized);
 
       const tokens = new Set();
       const initialWords = [];
@@ -738,8 +796,12 @@
         processParts(numberNormalized);
       }
 
-      const spellingNormalized = normalizeSpellingVariants(numberNormalized);
-      if (spellingNormalized !== numberNormalized) {
+      if (measurementNormalized !== numberNormalized) {
+        processParts(measurementNormalized);
+      }
+
+      const spellingNormalized = normalizeSpellingVariants(measurementNormalized);
+      if (spellingNormalized !== measurementNormalized) {
         processParts(spellingNormalized);
       }
 
@@ -990,6 +1052,7 @@
       normaliseMarkVariants,
       normalizeUnicodeFractions,
       normalizeNumberWords,
+      normalizeMeasurementUnits,
       normalizeSpellingVariants,
       applySearchTokenSynonyms,
     });
@@ -1002,6 +1065,7 @@
     normaliseMarkVariants,
     normalizeUnicodeFractions,
     normalizeNumberWords,
+    normalizeMeasurementUnits,
     normalizeSpellingVariants,
     applySearchTokenSynonyms,
   });
@@ -1033,6 +1097,7 @@
       normaliseMarkVariants,
       normalizeUnicodeFractions,
       normalizeNumberWords,
+      normalizeMeasurementUnits,
       normalizeSpellingVariants,
       applySearchTokenSynonyms,
     });

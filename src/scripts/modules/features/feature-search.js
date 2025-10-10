@@ -73,7 +73,53 @@
   const ELLIPSIS_PATTERN = /[\u2026]/g;
   const TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
   const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
+  const MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
+  const MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
+  const MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
+  const MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
+  const MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
+  const MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
   /* eslint-enable no-control-regex, no-misleading-character-class */
+
+  function cleanMeasurementValue(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
+  }
+
+  function normalizeMeasurementUnits(str) {
+    if (typeof str !== 'string' || !str) {
+      return str;
+    }
+
+    let normalized = str
+      .replace(MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN, '"')
+      .replace(MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN, "'");
+
+    normalized = normalized.replace(MEASUREMENT_FOOT_WORD_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} ft ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_FOOT_PRIME_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} ft ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_INCH_WORD_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} inch ` : value;
+    });
+
+    normalized = normalized.replace(MEASUREMENT_INCH_PRIME_PATTERN, (match, value) => {
+      void match;
+      const cleaned = cleanMeasurementValue(value);
+      return cleaned ? `${cleaned} inch ` : value;
+    });
+
+    return normalized;
+  }
 
   const LIGATURE_ENTRIES = [
     ['ß', 'ss'],
@@ -195,6 +241,9 @@
       }
     }
 
+    normalized = normalized.toLowerCase();
+    normalized = normalizeMeasurementUnits(normalized);
+
     normalized = normalized
       .replace(SPACE_VARIANTS_PATTERN, ' ')
       .replace(APOSTROPHE_VARIANTS_PATTERN, ' ')
@@ -211,7 +260,7 @@
       .replace(ELLIPSIS_PATTERN, ' ')
       .replace(GENERAL_PUNCTUATION_PATTERN, ' ');
 
-    normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
+    normalized = normalized.replace(COMBINING_MARKS_PATTERN, '');
 
     for (let ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
       const entry = LIGATURE_ENTRIES[ligatureIndex];
