@@ -12655,6 +12655,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
   var CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
+  var CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
+  var CONTACT_AVATAR_MAX_DIMENSION = 256;
+  var CONTACT_AVATAR_JPEG_QUALITY = 0.85;
+  var CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
   var contactsCache = [];
   var contactsInitialized = false;
   function getContactsText(key) {
@@ -12872,26 +12876,144 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     scheduleProjectAutoSave(true);
   }
+  function estimateDataUrlSize(dataUrl) {
+    if (typeof dataUrl !== 'string' || !dataUrl) return 0;
+    var marker = 'base64,';
+    var base64Index = dataUrl.indexOf(marker);
+    if (base64Index === -1) return dataUrl.length;
+    var base64 = dataUrl.slice(base64Index + marker.length).trim();
+    if (!base64) return 0;
+    var padding = 0;
+    if (base64.slice(-2) === '==') {
+      padding = 2;
+    } else if (base64.slice(-1) === '=') {
+      padding = 1;
+    }
+    return Math.max(0, Math.floor(base64.length / 4) * 3 - padding);
+  }
+
+  function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
+    if (!dataUrl || typeof document === 'undefined') {
+      if (typeof onError === 'function') onError();
+      return;
+    }
+    try {
+      var image = new Image();
+      var handleFailure = function handleFailure() {
+        image.onload = null;
+        image.onerror = null;
+        if (typeof onError === 'function') onError();
+      };
+      image.onload = function () {
+        image.onload = null;
+        image.onerror = null;
+        try {
+          var width = image.naturalWidth || image.width || 0;
+          var height = image.naturalHeight || image.height || 0;
+          if (!width || !height) {
+            handleFailure();
+            return;
+          }
+          var scale = Math.min(1, CONTACT_AVATAR_MAX_DIMENSION / Math.max(width, height));
+          var targetWidth = Math.max(1, Math.round(width * scale));
+          var targetHeight = Math.max(1, Math.round(height * scale));
+          var canvas = document.createElement('canvas');
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          var ctx = canvas.getContext('2d');
+          if (!ctx) {
+            handleFailure();
+            return;
+          }
+          ctx.clearRect(0, 0, targetWidth, targetHeight);
+          ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
+          var preferPng = typeof mimeType === 'string' && /image\/(png|gif|webp)/i.test(mimeType);
+          var exportOrder = preferPng ? ['image/png', 'image/jpeg'] : ['image/jpeg', 'image/png'];
+          var tryCandidate = function tryCandidate(candidate) {
+            var size = estimateDataUrlSize(candidate);
+            if (size && size <= CONTACT_AVATAR_MAX_BYTES) {
+              if (typeof onSuccess === 'function') onSuccess(candidate);
+              return true;
+            }
+            return false;
+          };
+          for (var index = 0; index < exportOrder.length; index += 1) {
+            var type = exportOrder[index];
+            if (type === 'image/jpeg') {
+              var quality = CONTACT_AVATAR_JPEG_QUALITY;
+              while (quality + 0.0001 >= CONTACT_AVATAR_JPEG_MIN_QUALITY) {
+                var bounded = Math.max(CONTACT_AVATAR_JPEG_MIN_QUALITY, Math.min(0.95, Number(quality.toFixed(2))));
+                var candidate = canvas.toDataURL('image/jpeg', bounded);
+                if (tryCandidate(candidate)) return;
+                if (bounded === CONTACT_AVATAR_JPEG_MIN_QUALITY) break;
+                quality -= 0.1;
+              }
+            } else {
+              var pngCandidate = canvas.toDataURL(type);
+              if (tryCandidate(pngCandidate)) return;
+            }
+          }
+          handleFailure();
+        } catch (canvasError) {
+          void canvasError;
+          handleFailure();
+        }
+      };
+      image.onerror = handleFailure;
+      image.decoding = 'async';
+      image.src = dataUrl;
+    } catch (error) {
+      void error;
+      if (typeof onError === 'function') onError();
+    }
+  }
+
   function readAvatarFile(file, onSuccess, onError) {
     if (!file) return;
-    if (file.size > CONTACT_AVATAR_MAX_BYTES) {
+    if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
       if (typeof onError === 'function') onError('tooLarge');
       return;
     }
     var reader = new FileReader();
+    var handleError = function handleError(reason) {
+      if (typeof onError === 'function') onError(reason);
+    };
+    reader.addEventListener('error', function () {
+      handleError('readError');
+    });
     reader.addEventListener('load', function () {
       var result = typeof reader.result === 'string' ? reader.result : '';
-      if (result && typeof onSuccess === 'function') {
-        onSuccess(result);
+      if (!result) {
+        handleError('readError');
+        return;
       }
-    });
-    reader.addEventListener('error', function () {
-      if (typeof onError === 'function') onError('readError');
+      var initialSize = estimateDataUrlSize(result);
+      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+        if (typeof onSuccess === 'function') onSuccess(result);
+        return;
+      }
+      optimiseAvatarDataUrl(result, typeof file.type === 'string' ? file.type : '', function (optimised) {
+        if (optimised && estimateDataUrlSize(optimised) <= CONTACT_AVATAR_MAX_BYTES) {
+          if (typeof onSuccess === 'function') onSuccess(optimised);
+          return;
+        }
+        if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+          if (typeof onSuccess === 'function') onSuccess(result);
+          return;
+        }
+        handleError('tooLarge');
+      }, function () {
+        if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+          if (typeof onSuccess === 'function') onSuccess(result);
+          return;
+        }
+        handleError('readError');
+      });
     });
     try {
       reader.readAsDataURL(file);
     } catch (error) {
-      if (typeof onError === 'function') onError('readError');
+      handleError('readError');
     }
   }
   function handleAvatarFileSelection(row, file) {

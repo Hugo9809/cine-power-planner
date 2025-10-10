@@ -14882,6 +14882,10 @@ const CONTACTS_STORAGE_KEY = (() => {
   return 'cameraPowerPlanner_contacts';
 })();
 const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
+const CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
+const CONTACT_AVATAR_MAX_DIMENSION = 256;
+const CONTACT_AVATAR_JPEG_QUALITY = 0.85;
+const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
@@ -15336,26 +15340,137 @@ function handleCrewRowManualChange(row) {
   scheduleProjectAutoSave(true);
 }
 
+function estimateDataUrlSize(dataUrl) {
+  if (typeof dataUrl !== 'string' || !dataUrl) return 0;
+  const marker = 'base64,';
+  const base64Index = dataUrl.indexOf(marker);
+  if (base64Index === -1) return dataUrl.length;
+  const base64 = dataUrl.slice(base64Index + marker.length).trim();
+  if (!base64) return 0;
+  const padding = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+  return Math.max(0, Math.floor(base64.length / 4) * 3 - padding);
+}
+
+function optimiseAvatarDataUrl(dataUrl, mimeType, onSuccess, onError) {
+  if (!dataUrl || typeof document === 'undefined') {
+    if (typeof onError === 'function') onError();
+    return;
+  }
+  try {
+    const image = new Image();
+    const handleFailure = () => {
+      image.onload = null;
+      image.onerror = null;
+      if (typeof onError === 'function') onError();
+    };
+    image.onload = () => {
+      image.onload = null;
+      image.onerror = null;
+      try {
+        const width = image.naturalWidth || image.width || 0;
+        const height = image.naturalHeight || image.height || 0;
+        if (!width || !height) {
+          handleFailure();
+          return;
+        }
+        const scale = Math.min(1, CONTACT_AVATAR_MAX_DIMENSION / Math.max(width, height));
+        const targetWidth = Math.max(1, Math.round(width * scale));
+        const targetHeight = Math.max(1, Math.round(height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          handleFailure();
+          return;
+        }
+        ctx.clearRect(0, 0, targetWidth, targetHeight);
+        ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
+        const preferPng = typeof mimeType === 'string' && /image\/(png|gif|webp)/i.test(mimeType);
+        const exportOrder = preferPng ? ['image/png', 'image/jpeg'] : ['image/jpeg', 'image/png'];
+        const tryCandidate = candidate => {
+          const size = estimateDataUrlSize(candidate);
+          if (size && size <= CONTACT_AVATAR_MAX_BYTES) {
+            if (typeof onSuccess === 'function') onSuccess(candidate);
+            return true;
+          }
+          return false;
+        };
+        for (let index = 0; index < exportOrder.length; index += 1) {
+          const type = exportOrder[index];
+          if (type === 'image/jpeg') {
+            let quality = CONTACT_AVATAR_JPEG_QUALITY;
+            while (quality + 0.0001 >= CONTACT_AVATAR_JPEG_MIN_QUALITY) {
+              const bounded = Math.max(CONTACT_AVATAR_JPEG_MIN_QUALITY, Math.min(0.95, Number(quality.toFixed(2))));
+              const candidate = canvas.toDataURL('image/jpeg', bounded);
+              if (tryCandidate(candidate)) return;
+              if (bounded === CONTACT_AVATAR_JPEG_MIN_QUALITY) break;
+              quality -= 0.1;
+            }
+          } else {
+            const candidate = canvas.toDataURL(type);
+            if (tryCandidate(candidate)) return;
+          }
+        }
+        handleFailure();
+      } catch (canvasError) {
+        void canvasError;
+        handleFailure();
+      }
+    };
+    image.onerror = handleFailure;
+    image.decoding = 'async';
+    image.src = dataUrl;
+  } catch (error) {
+    void error;
+    if (typeof onError === 'function') onError();
+  }
+}
+
 function readAvatarFile(file, onSuccess, onError) {
   if (!file) return;
-  if (file.size > CONTACT_AVATAR_MAX_BYTES) {
+  if (file.size > CONTACT_AVATAR_MAX_SOURCE_BYTES) {
     if (typeof onError === 'function') onError('tooLarge');
     return;
   }
   const reader = new FileReader();
+  const handleError = reason => {
+    if (typeof onError === 'function') onError(reason);
+  };
+  reader.addEventListener('error', () => handleError('readError'));
   reader.addEventListener('load', () => {
     const result = typeof reader.result === 'string' ? reader.result : '';
-    if (result && typeof onSuccess === 'function') {
-      onSuccess(result);
+    if (!result) {
+      handleError('readError');
+      return;
     }
-  });
-  reader.addEventListener('error', () => {
-    if (typeof onError === 'function') onError('readError');
+    const initialSize = estimateDataUrlSize(result);
+    if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+      if (typeof onSuccess === 'function') onSuccess(result);
+      return;
+    }
+    optimiseAvatarDataUrl(result, typeof file.type === 'string' ? file.type : '', optimised => {
+      if (optimised && estimateDataUrlSize(optimised) <= CONTACT_AVATAR_MAX_BYTES) {
+        if (typeof onSuccess === 'function') onSuccess(optimised);
+        return;
+      }
+      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+        if (typeof onSuccess === 'function') onSuccess(result);
+        return;
+      }
+      handleError('tooLarge');
+    }, () => {
+      if (initialSize && initialSize <= CONTACT_AVATAR_MAX_BYTES) {
+        if (typeof onSuccess === 'function') onSuccess(result);
+        return;
+      }
+      handleError('readError');
+    });
   });
   try {
     reader.readAsDataURL(file);
   } catch (error) {
-    if (typeof onError === 'function') onError('readError');
+    handleError('readError');
   }
 }
 
