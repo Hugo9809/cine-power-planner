@@ -42,7 +42,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   try {
     runtimeGuardModule =
       globalScope && globalScope.cineRuntimeGuard
-        || require('./modules/runtime-guard.js');
+        || (typeof require === 'function' && typeof module === 'object' && module && module.exports
+          ? require('./modules/runtime-guard.js')
+          : null);
   } catch (error) {
     runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;
   }
@@ -70,7 +72,12 @@ var runtimeGuardModule = null;
 
 if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
   runtimeGuardModule = GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard;
-} else if (typeof require === 'function') {
+} else if (
+  typeof require === 'function' &&
+  typeof module === 'object' &&
+  module &&
+  module.exports
+) {
   try {
     runtimeGuardModule = require('./modules/runtime-guard.js');
   } catch (error) {

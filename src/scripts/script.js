@@ -150,7 +150,12 @@ let runtimeGuardModule = null;
 
 if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
   runtimeGuardModule = GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard;
-} else if (typeof require === 'function') {
+} else if (
+  typeof require === 'function' &&
+  typeof module === 'object' &&
+  module &&
+  module.exports
+) {
   try {
     runtimeGuardModule = require('./modules/runtime-guard.js');
   } catch (error) {
