@@ -7170,8 +7170,32 @@ function gearListGenerateHtmlImpl(info = {}) {
     const cameraSupportText = formatItems(supportAccNoCages);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
-        const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(addArriKNumber(c))}</option>`).join('');
-        cageSelectHtml = `<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage">${options}</select></span>`;
+        const options = compatibleCages
+            .map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(addArriKNumber(c))}</option>`)
+            .join('');
+        const cageLabelTextRaw = typeof localGetLocalizedText === 'function'
+            ? localGetLocalizedText('category_cages')
+            : '';
+        const cageLabelText = cageLabelTextRaw && cageLabelTextRaw.trim()
+            ? cageLabelTextRaw.trim()
+            : 'Camera Cage';
+        const ariaLabelAttr = cageLabelText
+            ? ` aria-label="${escapeHtml(cageLabelText)}"`
+            : '';
+        const hiddenLabelHtml = cageLabelText
+            ? `<span class="visually-hidden">${escapeHtml(cageLabelText)}</span>`
+            : '';
+        const wrapperHtml = `<span class="cage-select-wrapper"><span>1x</span>${hiddenLabelHtml}<select id="gearListCage"${ariaLabelAttr}>${options}</select></span>`;
+        const attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
+        const dataName = attributesText
+            ? `${cageLabelText} (${attributesText})`
+            : cageLabelText;
+        cageSelectHtml = wrapGearItemHtml(wrapperHtml, {
+            name: dataName,
+            quantity: 1,
+            label: cageLabelText,
+            attributes: attributesText,
+        });
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     const storageGearListItems = Array.isArray(info.storageRequirements)
@@ -9631,6 +9655,46 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
     }
 }
 
+function resolveGearListCageLabel() {
+    const rawLabel = typeof localGetLocalizedText === 'function'
+        ? localGetLocalizedText('category_cages')
+        : '';
+    const trimmed = typeof rawLabel === 'string' ? rawLabel.trim() : '';
+    return trimmed || 'Camera Cage';
+}
+
+function syncGearListCageItem(select) {
+    if (!select) return;
+    const gearItem = select.closest('.gear-item');
+    if (!gearItem) return;
+    const option = select.options && select.selectedIndex >= 0
+        ? select.options[select.selectedIndex]
+        : null;
+    const optionText = option && typeof option.text === 'string'
+        ? option.text.trim()
+        : (option && option.textContent ? option.textContent.trim() : '');
+    const label = resolveGearListCageLabel();
+    const combinedName = optionText
+        ? `${label} (${optionText})`
+        : label;
+    gearItem.setAttribute('data-gear-quantity', '1');
+    if (label) {
+        gearItem.setAttribute('data-gear-label', label);
+    } else {
+        gearItem.removeAttribute('data-gear-label');
+    }
+    if (combinedName) {
+        gearItem.setAttribute('data-gear-name', combinedName);
+    } else {
+        gearItem.removeAttribute('data-gear-name');
+    }
+    if (optionText) {
+        gearItem.setAttribute('data-gear-attributes', optionText);
+    } else {
+        gearItem.removeAttribute('data-gear-attributes');
+    }
+}
+
 function bindGearListCageListener() {
     if (!gearListOutput) return;
     const sel = gearListOutput.querySelector('#gearListCage');
@@ -9640,8 +9704,10 @@ function bindGearListCageListener() {
                 cageSelect.value = e.target.value;
                 cageSelect.dispatchEvent(new Event('change'));
             }
+            syncGearListCageItem(sel);
             saveCurrentGearList();
         });
+        syncGearListCageItem(sel);
     }
 }
 
