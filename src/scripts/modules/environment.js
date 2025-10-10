@@ -331,6 +331,86 @@
     return false;
   }
 
+  function isConsoleCandidate(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    try {
+      let globalConsole = null;
+      try {
+        if (typeof console !== 'undefined' && console) {
+          globalConsole = console;
+        }
+      } catch (accessError) {
+        void accessError;
+      }
+
+      if (globalConsole) {
+        if (value === globalConsole) {
+          return true;
+        }
+        try {
+          if (
+            value.__cameraPowerPlannerOriginal
+            && value.__cameraPowerPlannerOriginal === globalConsole
+          ) {
+            return true;
+          }
+        } catch (proxyCheckError) {
+          void proxyCheckError;
+        }
+      }
+
+      try {
+        if (
+          typeof value.log === 'function'
+          && typeof value.warn === 'function'
+          && typeof value.error === 'function'
+        ) {
+          const ctorName = value.constructor && value.constructor.name;
+          if (ctorName && /Console/i.test(ctorName)) {
+            return true;
+          }
+          if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+            const tag = value[Symbol.toStringTag];
+            if (typeof tag === 'string' && /Console/i.test(tag)) {
+              return true;
+            }
+          }
+        }
+      } catch (inspectionError) {
+        void inspectionError;
+      }
+    } catch (error) {
+      void error;
+      return false;
+    }
+
+    return false;
+  }
+
+  function isNodeModuleCandidate(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    try {
+      if (typeof value.require === 'function' && typeof value.loaded === 'boolean') {
+        if (Array.isArray ? Array.isArray(value.children) : Object.prototype.toString.call(value.children) === '[object Array]') {
+          return true;
+        }
+        if (typeof value.paths !== 'undefined') {
+          return true;
+        }
+      }
+    } catch (inspectionError) {
+      void inspectionError;
+    }
+
+    return false;
+  }
+
   function isEthereumProviderCandidate(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
@@ -415,7 +495,12 @@
       return value;
     }
 
-    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
+    if (
+      shouldBypassDeepFreeze(value)
+      || isEthereumProviderCandidate(value)
+      || isConsoleCandidate(value)
+      || isNodeModuleCandidate(value)
+    ) {
       return value;
     }
 
@@ -455,7 +540,12 @@
         continue;
       }
 
-      if (shouldBypassDeepFreeze(child) || isEthereumProviderCandidate(child)) {
+      if (
+        shouldBypassDeepFreeze(child)
+        || isEthereumProviderCandidate(child)
+        || isConsoleCandidate(child)
+        || isNodeModuleCandidate(child)
+      ) {
         continue;
       }
 
@@ -475,7 +565,12 @@
       return value;
     }
 
-    if (shouldBypassDeepFreeze(value) || isEthereumProviderCandidate(value)) {
+    if (
+      shouldBypassDeepFreeze(value)
+      || isEthereumProviderCandidate(value)
+      || isConsoleCandidate(value)
+      || isNodeModuleCandidate(value)
+    ) {
       return value;
     }
 
