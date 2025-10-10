@@ -67,11 +67,16 @@ describe('onboarding tour manual start', () => {
         </section>
         <button id="openContactsBtn"></button>
         <div data-nav-key="ownGearNav"></div>
-        <section id="autoGearHeading"></section>
+        <dialog id="settingsDialog" hidden>
+          <section>
+            <h2 id="autoGearHeading"></h2>
+            <button id="storageBackupNow"></button>
+            <div id="backupSettings"></div>
+          </section>
+        </dialog>
         <button id="generateOverviewBtn"></button>
         <button id="shareSetupBtn"></button>
         <button id="applySharedLinkBtn"></button>
-        <div id="backupSettings"></div>
         <div id="offlineIndicator"></div>
         <button id="saveSetupBtn"></button>
       </div>
@@ -98,5 +103,84 @@ describe('onboarding tour manual start', () => {
     expect(overlay.classList.contains('active')).toBe(true);
     expect(overlay.getAttribute('aria-hidden')).toBe('false');
     expect(helpDialog.hidden).toBe(true);
+  });
+
+  test('clicking a completed step keeps the tutorial card visible', async () => {
+    loadModule();
+    const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+    expect(trigger).not.toBeNull();
+
+    trigger.click();
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+
+    const nextButton = overlay.querySelector('.onboarding-next-button');
+    expect(nextButton).not.toBeNull();
+
+    // Advance to the next step so that the first item becomes "completed"
+    nextButton.click();
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const stepButtons = overlay.querySelectorAll('.onboarding-step-button');
+    expect(stepButtons.length).toBeGreaterThan(1);
+
+    // Clicking a completed step should not remove the card from the overlay
+    stepButtons[0].click();
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    expect(overlay.classList.contains('active')).toBe(true);
+    const card = overlay.querySelector('.onboarding-card');
+    expect(card).not.toBeNull();
+    expect(card.getAttribute('aria-hidden')).not.toBe('true');
+  });
+
+  test('skips page scrolling for steps displayed inside the settings dialog', async () => {
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    const scrollCalls = [];
+    HTMLElement.prototype.scrollIntoView = function scrollIntoViewSpy(options) {
+      scrollCalls.push({
+        id: this.id || this.getAttribute('id') || '',
+        options,
+      });
+    };
+
+    try {
+      loadModule();
+      const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+      expect(trigger).not.toBeNull();
+
+      trigger.click();
+
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      const overlay = document.getElementById('onboardingTutorialOverlay');
+      expect(overlay).not.toBeNull();
+
+      const nextButton = overlay.querySelector('.onboarding-next-button');
+      expect(nextButton).not.toBeNull();
+
+      for (let index = 0; index < 8; index += 1) {
+        nextButton.click();
+        // Allow the tutorial to update the step and open settings when required
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise(resolve => setTimeout(resolve, 30));
+      }
+
+      const currentStepTitle = overlay.querySelector(
+        '.onboarding-step-item[data-status="current"] .onboarding-step-title',
+      );
+      expect(currentStepTitle).not.toBeNull();
+      expect(currentStepTitle.textContent).toBe('autoGear');
+
+      const autoGearScroll = scrollCalls.find(call => call.id === 'autoGearHeading');
+      expect(autoGearScroll).toBeUndefined();
+    } finally {
+      HTMLElement.prototype.scrollIntoView = originalScrollIntoView;
+    }
   });
 });

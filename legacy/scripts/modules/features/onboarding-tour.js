@@ -545,6 +545,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function isInsideOpenDialog(element) {
+    if (!element || typeof element.closest !== 'function') {
+      return false;
+    }
+    var dialog = element.closest('dialog');
+    if (!dialog) {
+      return false;
+    }
+    var canCheckAttributes = typeof dialog.hasAttribute === 'function';
+    if (canCheckAttributes && dialog.hasAttribute('hidden')) {
+      return false;
+    }
+    if (canCheckAttributes && dialog.hasAttribute('open')) {
+      return true;
+    }
+    if (typeof dialog.open === 'boolean') {
+      if (dialog.open) {
+        return true;
+      }
+      return canCheckAttributes ? !dialog.hasAttribute('hidden') : false;
+    }
+    return true;
+  }
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
@@ -858,7 +881,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (typeof step.focus === 'string' && step.focus) {
       var focusTarget = DOCUMENT.querySelector(step.focus);
-      if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
+      if (
+        focusTarget &&
+        typeof focusTarget.scrollIntoView === 'function' &&
+        !isInsideOpenDialog(focusTarget)
+      ) {
         try {
           focusTarget.scrollIntoView({
             behavior: 'smooth',
@@ -870,7 +897,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     } else if (step.highlight) {
       var highlightTarget = DOCUMENT.querySelector(step.highlight);
-      if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
+      if (
+        highlightTarget &&
+        typeof highlightTarget.scrollIntoView === 'function' &&
+        !isInsideOpenDialog(highlightTarget)
+      ) {
         try {
           highlightTarget.scrollIntoView({
             behavior: 'smooth',
