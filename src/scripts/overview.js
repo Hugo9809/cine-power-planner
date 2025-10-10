@@ -386,9 +386,9 @@ function logOverview(level, message, detail, meta) {
 
 let pendingPrintCleanup = null;
 
-const RENTAL_PRINT_STORAGE_KEY = 'cineRentalPrintSections';
+const PRINT_PREFERENCES_STORAGE_KEY = 'cineRentalPrintSections';
 
-function getRentalPrintSectionConfig() {
+function getPrintSectionConfig() {
     return [
         {
             id: 'project',
@@ -435,12 +435,12 @@ function getRentalPrintSectionConfig() {
     ];
 }
 
-function loadRentalPrintPreferences() {
+function loadPrintPreferences() {
     if (typeof localStorage === 'undefined') {
         return null;
     }
     try {
-        const raw = localStorage.getItem(RENTAL_PRINT_STORAGE_KEY);
+        const raw = localStorage.getItem(PRINT_PREFERENCES_STORAGE_KEY);
         if (!raw) {
             return null;
         }
@@ -448,7 +448,18 @@ function loadRentalPrintPreferences() {
         if (!parsed || typeof parsed !== 'object') {
             return null;
         }
-        return parsed;
+        if (parsed.sections || parsed.layout) {
+            return {
+                sections: typeof parsed.sections === 'object' && parsed.sections !== null
+                    ? { ...parsed.sections }
+                    : {},
+                layout: typeof parsed.layout === 'string' ? parsed.layout : 'standard',
+            };
+        }
+        return {
+            sections: { ...parsed },
+            layout: 'rental',
+        };
     } catch (error) {
         logOverview('warn', 'Unable to read rental print section preferences.', error, {
             action: 'rental-print-load-preferences',
@@ -457,13 +468,13 @@ function loadRentalPrintPreferences() {
     return null;
 }
 
-function saveRentalPrintPreferences(preferences) {
+function savePrintPreferences(preferences) {
     if (typeof localStorage === 'undefined') {
         return false;
     }
     try {
         const serialized = JSON.stringify(preferences || {});
-        localStorage.setItem(RENTAL_PRINT_STORAGE_KEY, serialized);
+        localStorage.setItem(PRINT_PREFERENCES_STORAGE_KEY, serialized);
         return true;
     } catch (error) {
         logOverview('warn', 'Unable to persist rental print section preferences.', error, {
@@ -489,67 +500,83 @@ function runPendingPrintCleanup(reason) {
     }
 }
 
-let rentalPrintDialogContext = null;
+let printOptionsDialogContext = null;
 
-function getRentalPrintDialogContext() {
-    if (rentalPrintDialogContext) {
-        return rentalPrintDialogContext;
+function getPrintOptionsDialogContext() {
+    if (printOptionsDialogContext) {
+        return printOptionsDialogContext;
     }
     if (typeof document === 'undefined') {
         return null;
     }
-    const dialog = document.getElementById('rentalPrintDialog');
+    const dialog = document.getElementById('printOptionsDialog');
     if (!dialog) {
         return null;
     }
-    const form = dialog.querySelector('#rentalPrintForm');
-    const sections = dialog.querySelector('#rentalPrintSections');
-    const selectAllBtn = dialog.querySelector('#rentalPrintSelectAllBtn');
-    const cancelBtn = dialog.querySelector('#rentalPrintCancelBtn');
-    const confirmBtn = dialog.querySelector('#rentalPrintConfirmBtn');
-    const title = dialog.querySelector('#rentalPrintDialogTitle');
-    const description = dialog.querySelector('#rentalPrintDialogDescription');
-    if (!form || !sections || !title || !description || !selectAllBtn || !cancelBtn || !confirmBtn) {
+    const form = dialog.querySelector('#printOptionsForm');
+    const sections = dialog.querySelector('#printOptionsSections');
+    const selectAllBtn = dialog.querySelector('#printOptionsSelectAllBtn');
+    const cancelBtn = dialog.querySelector('#printOptionsCancelBtn');
+    const exportBtn = dialog.querySelector('#printOptionsExportBtn');
+    const printBtn = dialog.querySelector('#printOptionsPrintBtn');
+    const title = dialog.querySelector('#printOptionsDialogTitle');
+    const description = dialog.querySelector('#printOptionsDialogDescription');
+    const layoutFieldset = dialog.querySelector('#printOptionsLayout');
+    const layoutLabel = dialog.querySelector('#printOptionsLayoutLabel');
+    const layoutChoices = dialog.querySelector('#printOptionsLayoutChoices');
+    if (!form || !sections || !title || !description || !selectAllBtn || !cancelBtn || !exportBtn || !printBtn) {
         return null;
     }
-    rentalPrintDialogContext = {
+    printOptionsDialogContext = {
         dialog,
         form,
         sections,
         selectAllBtn,
         cancelBtn,
-        confirmBtn,
+        exportBtn,
+        printBtn,
+        layoutFieldset,
+        layoutLabel,
+        layoutChoices,
         title,
         description,
     };
-    return rentalPrintDialogContext;
+    return printOptionsDialogContext;
 }
 
-function populateRentalPrintDialog(context, preferences, onConfirm) {
+function populatePrintOptionsDialog(context, preferences, onConfirm) {
     if (!context) {
         return;
     }
     const langTexts = (texts && texts[currentLang]) || texts?.en || {};
     const fallbackTexts = texts?.en || {};
-    const title = langTexts.rentalPrintDialogTitle || fallbackTexts.rentalPrintDialogTitle || 'Export rental PDF';
-    const description = langTexts.rentalPrintDialogDescription || fallbackTexts.rentalPrintDialogDescription || 'Choose which sections should appear in the rental PDF.';
+    const title = langTexts.rentalPrintDialogTitle || fallbackTexts.rentalPrintDialogTitle || 'Export PDF / Print';
+    const description = langTexts.rentalPrintDialogDescription || fallbackTexts.rentalPrintDialogDescription || 'Choose what to include before exporting or printing.';
     const sectionsLabel = langTexts.rentalPrintDialogSectionsLabel || fallbackTexts.rentalPrintDialogSectionsLabel || 'Sections to include';
-    const confirmLabel = langTexts.rentalPrintDialogConfirm || fallbackTexts.rentalPrintDialogConfirm || 'Export';
+    const exportLabel = langTexts.rentalPrintDialogConfirm || fallbackTexts.rentalPrintDialogConfirm || 'Export PDF';
     const cancelLabel = langTexts.rentalPrintDialogCancel || fallbackTexts.rentalPrintDialogCancel || 'Cancel';
     const selectAllLabel = langTexts.rentalPrintDialogSelectAll || fallbackTexts.rentalPrintDialogSelectAll || 'Select all';
+    const printLabel = langTexts.printBtn || fallbackTexts.printBtn || 'Print';
+    const layoutLabelText = langTexts.printOptionsLayoutLabel || fallbackTexts.printOptionsLayoutLabel || 'Layout';
+    const layoutStandardLabel = langTexts.printOptionsLayoutStandard || fallbackTexts.printOptionsLayoutStandard || 'Standard layout';
+    const layoutRentalLabel = langTexts.printOptionsLayoutRental || fallbackTexts.printOptionsLayoutRental || 'Rental-friendly layout';
 
     context.title.textContent = title;
     context.description.textContent = description;
     context.selectAllBtn.textContent = selectAllLabel;
     context.cancelBtn.textContent = cancelLabel;
-    context.confirmBtn.textContent = confirmLabel;
+    context.exportBtn.textContent = exportLabel;
+    context.printBtn.textContent = printLabel;
 
     context.sections.innerHTML = '';
     const legend = document.createElement('legend');
     legend.textContent = sectionsLabel;
     context.sections.appendChild(legend);
 
-    const sectionConfig = getRentalPrintSectionConfig();
+    const sectionConfig = getPrintSectionConfig();
+    const preferenceSections = preferences && typeof preferences.sections === 'object'
+        ? preferences.sections
+        : preferences;
     sectionConfig.forEach(section => {
         const label = langTexts[section.labelKey]
             || fallbackTexts[section.labelKey]
@@ -558,11 +585,11 @@ function populateRentalPrintDialog(context, preferences, onConfirm) {
         wrapper.className = 'print-options-section';
         const input = document.createElement('input');
         input.type = 'checkbox';
-        input.name = 'rental-section';
+        input.name = 'print-section';
         input.value = section.id;
-        input.id = `rentalPrintSection_${section.id}`;
-        const preferenceValue = preferences && Object.prototype.hasOwnProperty.call(preferences, section.id)
-            ? preferences[section.id]
+        input.id = `printSection_${section.id}`;
+        const preferenceValue = preferenceSections && Object.prototype.hasOwnProperty.call(preferenceSections, section.id)
+            ? preferenceSections[section.id]
             : section.defaultVisible;
         input.checked = preferenceValue !== false;
         const textSpan = document.createElement('span');
@@ -572,33 +599,99 @@ function populateRentalPrintDialog(context, preferences, onConfirm) {
         context.sections.appendChild(wrapper);
     });
 
-    context.form._rentalConfirmHandler = typeof onConfirm === 'function' ? onConfirm : null;
-
-    if (!context.form.dataset.rentalDialogBound) {
-        context.form.addEventListener('submit', event => {
-            event.preventDefault();
-            const selections = {};
-            context.form.querySelectorAll('input[name="rental-section"]').forEach(input => {
-                selections[input.value] = input.checked;
-            });
-            saveRentalPrintPreferences(selections);
-            closeDialog(context.dialog);
-            if (typeof context.form._rentalConfirmHandler === 'function') {
-                context.form._rentalConfirmHandler(selections);
-            }
-        });
-        context.cancelBtn.addEventListener('click', event => {
-            event.preventDefault();
-            closeDialog(context.dialog);
-        });
-        context.selectAllBtn.addEventListener('click', event => {
-            event.preventDefault();
-            context.form.querySelectorAll('input[name="rental-section"]').forEach(input => {
+    if (context.layoutFieldset && context.layoutLabel && context.layoutChoices) {
+        context.layoutLabel.textContent = layoutLabelText;
+        context.layoutChoices.innerHTML = '';
+        const currentLayout = preferences && typeof preferences.layout === 'string'
+            ? preferences.layout
+            : 'standard';
+        const layoutOptions = [
+            { value: 'standard', label: layoutStandardLabel },
+            { value: 'rental', label: layoutRentalLabel },
+        ];
+        layoutOptions.forEach(option => {
+            const wrapper = document.createElement('label');
+            wrapper.className = 'print-options-section';
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'print-layout';
+            input.value = option.value;
+            if (option.value === currentLayout) {
                 input.checked = true;
-            });
+            }
+            const textSpan = document.createElement('span');
+            textSpan.textContent = option.label;
+            wrapper.appendChild(input);
+            wrapper.appendChild(textSpan);
+            context.layoutChoices.appendChild(wrapper);
         });
-        context.form.dataset.rentalDialogBound = 'true';
+        context.layoutFieldset.hidden = false;
+    } else if (context.layoutFieldset) {
+        context.layoutFieldset.hidden = true;
     }
+
+    const normalizedPreferences = preferences && typeof preferences === 'object'
+        ? preferences
+        : {};
+    context.form._printConfirmHandler = typeof onConfirm === 'function' ? onConfirm : null;
+
+    if (typeof context.form._removeDialogListeners === 'function') {
+        context.form._removeDialogListeners();
+        context.form._removeDialogListeners = null;
+    }
+
+    const collectSelections = () => {
+        const selections = {};
+        context.form.querySelectorAll('input[name="print-section"]').forEach(input => {
+            selections[input.value] = input.checked;
+        });
+        const layoutInput = context.form.querySelector('input[name="print-layout"]:checked');
+        const layout = layoutInput ? layoutInput.value : normalizedPreferences.layout || 'standard';
+        return {
+            sections: selections,
+            layout,
+        };
+    };
+
+    const handleConfirm = (event, mode) => {
+        event.preventDefault();
+        const result = collectSelections();
+        savePrintPreferences(result);
+        closeDialog(context.dialog);
+        if (typeof context.form._printConfirmHandler === 'function') {
+            context.form._printConfirmHandler({
+                mode,
+                preferences: result,
+            });
+        }
+    };
+
+    const submitHandler = event => handleConfirm(event, 'export');
+    const printHandler = event => handleConfirm(event, 'print');
+    const cancelHandler = event => {
+        event.preventDefault();
+        closeDialog(context.dialog);
+    };
+    const selectAllHandler = event => {
+        event.preventDefault();
+        context.form.querySelectorAll('input[name="print-section"]').forEach(input => {
+            input.checked = true;
+        });
+    };
+
+    context.form.addEventListener('submit', submitHandler);
+    context.exportBtn.addEventListener('click', submitHandler);
+    context.printBtn.addEventListener('click', printHandler);
+    context.cancelBtn.addEventListener('click', cancelHandler);
+    context.selectAllBtn.addEventListener('click', selectAllHandler);
+
+    context.form._removeDialogListeners = () => {
+        context.form.removeEventListener('submit', submitHandler);
+        context.exportBtn.removeEventListener('click', submitHandler);
+        context.printBtn.removeEventListener('click', printHandler);
+        context.cancelBtn.removeEventListener('click', cancelHandler);
+        context.selectAllBtn.removeEventListener('click', selectAllHandler);
+    };
 }
 
 function createOverviewLoggerProxy(baseMeta) {
@@ -1322,7 +1415,7 @@ function generatePrintableOverview(config = {}) {
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
     const contentClass = customLogo ? 'logo-present' : '';
     const generatedOnDisplay = `${escapeHtmlSafe(generatedOnDisplayLabel)} ${escapeHtmlSafe(dateTimeString)}`;
-    const exportPdfLabel = t.exportPdfBtn || 'Export PDF';
+    const exportPdfLabel = t.exportPdfBtn || 'Export PDF / Print';
     const exportIconHtml = (() => {
         if (typeof iconMarkup === 'function' && ICON_GLYPHS && ICON_GLYPHS.fileExport) {
             try {
@@ -1336,35 +1429,11 @@ function generatePrintableOverview(config = {}) {
         }
         return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
     })();
-    const exportRentalPdfLabel = t.exportRentalPdfBtn || 'Export PDF for Rental House';
-    const rentalExportIconHtml = (() => {
-        if (typeof iconMarkup === 'function' && ICON_GLYPHS) {
-            const glyph = ICON_GLYPHS.home || ICON_GLYPHS.house || ICON_GLYPHS.fileExport || null;
-            if (glyph) {
-                try {
-                    return iconMarkup(glyph, 'btn-icon');
-                } catch (error) {
-                    const glyphName = glyph === ICON_GLYPHS.home
-                        ? 'home'
-                        : glyph === ICON_GLYPHS.house
-                            ? 'house'
-                            : 'fileExport';
-                    logOverview('warn', 'Unable to render rental export icon for overview dialog.', error, {
-                        action: 'render-icon',
-                        icon: glyphName,
-                    });
-                }
-            }
-        }
-        return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
-    })();
     const overviewHtml = `
         <div id="overviewDialogContent" class="${contentClass}">
             <div class="overview-actions">
                 <button id="closeOverviewBtn" class="back-btn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>${escapeHtmlSafe(t.backToAppBtn)}</button>
-                <button id="printOverviewBtn" class="print-btn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>${escapeHtmlSafe(t.printBtn)}</button>
-                <button id="exportPdfBtn" class="print-btn export-pdf-btn">${exportIconHtml}${escapeHtmlSafe(exportPdfLabel)}</button>
-                <button id="exportRentalPdfBtn" class="print-btn export-rental-btn" data-feature-search="true" data-feature-search-keywords="rental export pdf print" title="${escapeHtmlSafe(exportRentalPdfLabel)}">${rentalExportIconHtml}${escapeHtmlSafe(exportRentalPdfLabel)}</button>
+                <button id="openPrintOptionsBtn" class="print-btn export-pdf-btn" data-feature-search="true" data-feature-search-keywords="export pdf print rental" title="${escapeHtmlSafe(exportPdfLabel)}">${exportIconHtml}${escapeHtmlSafe(exportPdfLabel)}</button>
             </div>
             ${logoHtml}
             <h1>${t.overviewTitle}</h1>
@@ -1402,28 +1471,37 @@ function generatePrintableOverview(config = {}) {
     }
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
-    const triggerRentalPdfExport = (selections = {}) => {
+    const runConfiguredPrintWorkflow = (options = {}) => {
         if (!overviewDialog || !content) {
-            logOverview('warn', 'Overview dialog is unavailable for rental export.', undefined, {
-                action: 'rental-print',
+            logOverview('warn', 'Overview dialog is unavailable for exporting or printing.', undefined, {
+                action: 'print-workflow',
                 stage: 'dialog-missing',
             });
             return false;
         }
 
-        runPendingPrintCleanup('pre-rental-print');
+        runPendingPrintCleanup('pre-configured-print');
 
-        const normalizedSelections = (selections && typeof selections === 'object') ? selections : {};
+        const normalizedOptions = (options && typeof options === 'object') ? options : {};
+        const prefs = normalizedOptions.preferences && typeof normalizedOptions.preferences === 'object'
+            ? normalizedOptions.preferences
+            : normalizedOptions;
+        const sectionSelections = prefs.sections && typeof prefs.sections === 'object'
+            ? prefs.sections
+            : {};
+        const layoutPreference = typeof prefs.layout === 'string' ? prefs.layout : 'standard';
+        const mode = normalizedOptions.mode === 'print' ? 'print' : 'export';
+
         const cleanupTasks = [];
-        const sectionConfig = getRentalPrintSectionConfig();
+        const sectionConfig = getPrintSectionConfig();
 
         sectionConfig.forEach(section => {
             const target = content.querySelector(section.selector);
             if (!target) {
                 return;
             }
-            const shouldShow = Object.prototype.hasOwnProperty.call(normalizedSelections, section.id)
-                ? normalizedSelections[section.id] !== false
+            const shouldShow = Object.prototype.hasOwnProperty.call(sectionSelections, section.id)
+                ? sectionSelections[section.id] !== false
                 : section.defaultVisible;
             const hiddenClass = 'print-section-hidden';
             const wasHidden = target.classList.contains(hiddenClass);
@@ -1436,8 +1514,14 @@ function generatePrintableOverview(config = {}) {
             }
         });
 
-        content.classList.add('rental-print-mode');
-        cleanupTasks.push(() => content.classList.remove('rental-print-mode'));
+        const hadRentalMode = content.classList.contains('rental-print-mode');
+        if (layoutPreference === 'rental' && !hadRentalMode) {
+            content.classList.add('rental-print-mode');
+            cleanupTasks.push(() => content.classList.remove('rental-print-mode'));
+        } else if (layoutPreference !== 'rental' && hadRentalMode) {
+            content.classList.remove('rental-print-mode');
+            cleanupTasks.push(() => content.classList.add('rental-print-mode'));
+        }
 
         pendingPrintCleanup = () => {
             while (cleanupTasks.length) {
@@ -1445,22 +1529,33 @@ function generatePrintableOverview(config = {}) {
                 try {
                     task();
                 } catch (cleanupError) {
-                    logOverview('warn', 'Failed to restore rental print state.', cleanupError, {
-                        action: 'rental-print-cleanup',
+                    logOverview('warn', 'Failed to restore print state.', cleanupError, {
+                        action: 'print-cleanup',
                     });
                 }
             }
             pendingPrintCleanup = null;
         };
 
-        const success = triggerPrintWorkflow({ preferFallback: true, reason: 'rental-export' });
+        const reason = layoutPreference === 'rental' && mode !== 'print' ? 'rental-export' : mode;
+        const workflowOptions = { reason };
+        if (mode !== 'print') {
+            workflowOptions.preferFallback = true;
+        }
+
+        const success = triggerPrintWorkflow(workflowOptions);
         if (!success) {
-            logOverview('error', 'Unable to open the rental PDF export workflow. Please enable pop-ups and try again.', undefined, {
-                action: 'rental-print',
+            const failureMessage = mode === 'print'
+                ? 'Unable to open the print dialog. Please check your browser settings and try again.'
+                : 'Unable to start the PDF export workflow. Please enable pop-ups and try again.';
+            logOverview('error', failureMessage, undefined, {
+                action: 'print-workflow',
                 stage: 'trigger',
                 result: 'not-started',
+                mode,
+                layout: layoutPreference,
             });
-            runPendingPrintCleanup('rental-print-failed');
+            runPendingPrintCleanup('configured-print-failed');
             return false;
         }
 
@@ -1469,16 +1564,24 @@ function generatePrintableOverview(config = {}) {
         return true;
     };
 
-    const rentalBtn = overviewDialog.querySelector('#exportRentalPdfBtn');
-    if (rentalBtn) {
-        rentalBtn.addEventListener('click', () => {
-            const preferences = loadRentalPrintPreferences() || {};
-            const dialogContext = getRentalPrintDialogContext();
+    const openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
+    if (openOptionsBtn) {
+        openOptionsBtn.addEventListener('click', () => {
+            const storedPreferences = loadPrintPreferences() || { sections: {}, layout: 'standard' };
+            const dialogContext = getPrintOptionsDialogContext();
+            const onConfirm = (result) => {
+                const confirmedMode = result && result.mode === 'print' ? 'print' : 'export';
+                const confirmedPreferences = result && result.preferences ? result.preferences : storedPreferences;
+                runConfiguredPrintWorkflow({
+                    mode: confirmedMode,
+                    preferences: confirmedPreferences,
+                });
+            };
             if (dialogContext && dialogContext.dialog) {
-                populateRentalPrintDialog(dialogContext, preferences, triggerRentalPdfExport);
+                populatePrintOptionsDialog(dialogContext, storedPreferences, onConfirm);
                 openDialog(dialogContext.dialog);
             } else {
-                triggerRentalPdfExport(preferences);
+                onConfirm({ mode: 'export', preferences: storedPreferences });
             }
         });
     }
@@ -1769,49 +1872,6 @@ function generatePrintableOverview(config = {}) {
         return fallbackTriggerPrintWorkflow(printWorkflowContext, options);
     };
 
-    const exportBtn = overviewDialog.querySelector('#exportPdfBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', () => {
-            if (exportBtn.disabled) {
-                return;
-            }
-            exportBtn.disabled = true;
-            try {
-                const printStarted = triggerPrintWorkflow({ preferFallback: true, reason: 'export' });
-                if (!printStarted) {
-                    logOverview('error', 'Unable to start the PDF export print workflow. Please enable pop-ups and try again.', undefined, {
-                        action: 'print-workflow',
-                        stage: 'trigger',
-                        reason: 'export',
-                        result: 'not-started',
-                    });
-                }
-            } catch (error) {
-                logOverview('error', 'Failed to export overview PDF via print workflow.', error, {
-                    action: 'print-workflow',
-                    stage: 'trigger',
-                    reason: 'export',
-                });
-            } finally {
-                exportBtn.disabled = false;
-            }
-        });
-    }
-
-    const printBtn = overviewDialog.querySelector('#printOverviewBtn');
-    if (printBtn) {
-        printBtn.addEventListener('click', () => {
-            const success = triggerPrintWorkflow({ reason: 'print' });
-            if (!success) {
-                logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
-                    action: 'print-workflow',
-                    stage: 'trigger',
-                    reason: 'print',
-                    result: 'not-started',
-                });
-            }
-        });
-    }
     openDialog(overviewDialog);
 
     if (autoPrint) {
