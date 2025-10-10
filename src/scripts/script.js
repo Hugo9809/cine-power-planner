@@ -25,6 +25,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/experience.js',
     'modules/logging.js',
     'modules/features/help.js',
+    'modules/features/contacts.js',
+    'modules/features/own-gear.js',
     'modules/features/feature-search.js',
     'modules/features/auto-gear-rules.js',
     'modules/features/connection-diagram.js',
