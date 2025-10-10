@@ -4751,6 +4751,16 @@ function enhanceGearItemElement(element) {
     ensureGearItemEditButton(element);
   }
   var data = getGearItemData(element);
+
+  if (!data.quantity) {
+    var monitorBatteryControl = element.querySelector('select[data-monitor-battery-type]');
+    if (monitorBatteryControl) {
+      var fallbackQuantity = monitorBatteryControl.getAttribute('data-monitor-battery-type') === 'handheld'
+        ? '3'
+        : '2';
+      data.quantity = fallbackQuantity;
+    }
+  }
   applyGearItemData(element, data, {
     skipPreview: !isCustom
   });
