@@ -1506,6 +1506,20 @@
       isDialogOpen(helpDialog)
     ) {
       closeDialog(helpDialog);
+      if (typeof helpDialog.setAttribute === 'function') {
+        try {
+          helpDialog.setAttribute('hidden', '');
+        } catch (error) {
+          void error;
+        }
+      }
+      if (helpDialog && typeof helpDialog === 'object' && 'hidden' in helpDialog) {
+        try {
+          helpDialog.hidden = true;
+        } catch (error) {
+          void error;
+        }
+      }
       if (typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
         GLOBAL_SCOPE.requestAnimationFrame(() => {
           GLOBAL_SCOPE.requestAnimationFrame(startFromHelp);
