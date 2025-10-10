@@ -36,7 +36,7 @@
   --page-padding: var(--spacing-xxl);
   --main-top-padding-multiplier: 1.5;
   --gap-size: var(--spacing-lg);
-  --button-size: 32px;
+  --button-size: 30px;
   --select-height: var(--button-size);
   --button-icon-size: var(--icon-size-md);
   --button-line-height: 1.25;
