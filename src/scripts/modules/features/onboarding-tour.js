@@ -175,6 +175,84 @@
     'completion',
   ];
 
+  const DEFAULT_STEP_TEXTS = {
+    intro: {
+      title: 'Welcome to Cine Power Planner',
+      body:
+        'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.',
+    },
+    projectOverview: {
+      title: 'Create and save your project',
+      body:
+        'Start in Project Overview: enter a Project Name, pick -- New Project -- when you need a clean slate and press Save (or use Ctrl+S/⌘S) to capture snapshots as you experiment.',
+    },
+    deviceSelection: {
+      title: 'Select cameras and devices',
+      body:
+        'Open Configure Devices to choose cameras, monitors, power accessories and filters. Search boxes inside every dropdown help you find the right model quickly while offline.',
+    },
+    gearGeneration: {
+      title: 'Generate requirements and gear lists',
+      body:
+        'When the build looks right, select Generate Gear List and Project Requirements to capture crew roles, scenarios and automatically suggested items for the printable outputs.',
+    },
+    gearCustomization: {
+      title: 'Customise the gear list',
+      body:
+        'Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project.',
+    },
+    resultsReview: {
+      title: 'Verify power results',
+      body:
+        'Open Power Summary to confirm draw totals, battery coverage and runtime predictions. The quick summary, charts and printable report all reflect your latest offline saves.',
+    },
+    powerSummary: {
+      title: 'Review the Power Summary checkpoint',
+      body:
+        'Scan the Quick summary card to validate runtime estimates, battery counts and safety warnings at a glance. Confirming this checkpoint keeps charts, exports and offline reports aligned before you continue.',
+    },
+    contactsOwnGear: {
+      title: 'Reuse contacts and personal gear',
+      body:
+        'Use the sidebar buttons for Contacts and Own Gear to capture crew roles, phone/email details and the kit you already own. Both managers import vCards, save instantly to local storage, flow into backups and exports, and stay available offline for every project.',
+    },
+    autoGear: {
+      title: 'Refine automatic gear rules',
+      body:
+        'Open Settings → Automatic Gear Rules to set default monitors, create scenario-based additions and manage backups for the automation engine. Every change stays offline in your browser.',
+    },
+    overviewPrint: {
+      title: 'Generate overview & print',
+      body:
+        'Use Generate Overview to build the print-ready summary. From there you can review totals, print directly, or export a PDF for on-set binders and distribution.',
+    },
+    exportImport: {
+      title: 'Export and import safely',
+      body:
+        'Export Project downloads a JSON safety bundle for sharing or archiving. Use the Import Project field beside it to restore shared configurations without leaving the planner offline.',
+    },
+    quickSafeguards: {
+      title: 'Capture quick safeguards backup',
+      body:
+        'Open Settings → Data & Storage → Quick safeguards and press Download full backup before making major changes. The button stores a fresh planner-backup.json offline, logs the action in Latest activity and keeps a restore copy ready even if you stay on this tab.',
+    },
+    backupRestore: {
+      title: 'Back up and rehearse restores',
+      body:
+        'In Settings → Backup & Restore, capture full-app backups, compare auto-backups, rehearse restores and trigger factory resets after saving a safety copy.',
+    },
+    safetyNet: {
+      title: 'Confirm offline safety nets',
+      body:
+        'Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.',
+    },
+    completion: {
+      title: "You're ready to plan",
+      body:
+        'Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.',
+    },
+  };
+
   const STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
 
   function getTimestamp() {
@@ -346,9 +424,24 @@
     const steps = {};
     for (let index = 0; index < DEFAULT_STEP_KEYS.length; index += 1) {
       const key = DEFAULT_STEP_KEYS[index];
-      const localEntry = localized.steps && localized.steps[key];
+      const defaultEntry = DEFAULT_STEP_TEXTS[key] || { title: key, body: '' };
       const fallbackEntry = fallback.steps && fallback.steps[key];
-      steps[key] = localEntry || fallbackEntry || { title: key, body: '' };
+      const localEntry = localized.steps && localized.steps[key];
+
+      const resolvedTitle =
+        (localEntry && typeof localEntry.title === 'string' && localEntry.title) ||
+        (fallbackEntry && typeof fallbackEntry.title === 'string' && fallbackEntry.title) ||
+        (typeof defaultEntry.title === 'string' ? defaultEntry.title : key);
+
+      const resolvedBody =
+        (localEntry && typeof localEntry.body === 'string' && localEntry.body) ||
+        (fallbackEntry && typeof fallbackEntry.body === 'string' && fallbackEntry.body) ||
+        (typeof defaultEntry.body === 'string' ? defaultEntry.body : '');
+
+      steps[key] = {
+        title: resolvedTitle,
+        body: resolvedBody,
+      };
     }
     return {
       ...fallback,
