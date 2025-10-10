@@ -158,9 +158,11 @@ workflows:
 4. Disconnect from the network, reload the planner from disk and confirm the offline
    indicator, help topics and cached interface load exactly as documented.
 5. Finish with **Restore rehearsal** so the sandbox diff proves every project, device and
-   rule matches the export before you close the rehearsal without applying changes.【F:index.html†L3060-L3089】【F:src/scripts/translations.js†L1679-L1682】
-6. Log the outcome in your rotation or verification journal alongside the filenames you
-   audited so future crews inherit the evidence.
+   rule matches the export. Capture the console guard output by running
+   `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` before you close the
+   rehearsal so the verification log documents which safeguards were confirmed.【F:index.html†L3060-L3089】【F:src/scripts/translations.js†L1679-L1682】
+6. Log the outcome in your rotation or verification journal alongside the filenames and
+   console output you captured so future crews inherit the evidence.
 
 ## 4. Quick diagnostics when something feels off
 

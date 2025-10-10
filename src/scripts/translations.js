@@ -1788,9 +1788,9 @@ const texts = {
     helpDataAuditStep3:
       "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage. Test %3$s with one of the new exports to ensure share bundles restore without reconnecting.",
     helpDataAuditStep4:
-      "Run %1$s with your latest backup and verify every project, device, and rule before closing the rehearsal without publishing changes.",
+      "Run %1$s with your latest backup, verify every project, device, and rule, then record the runtime guard output from %2$s in your verification log before closing the rehearsal without publishing changes.",
     helpDataAuditNote:
-      "Log the results in your backup rotation checklist so you always know which copies were verified offline.",
+      "Log the results and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
     helpRestoreDrillNote:
       "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
     helpSearchClear: "Clear search",
@@ -3662,9 +3662,9 @@ const texts = {
     helpDataAuditStep3:
       "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale. Prova %3$s con uno dei nuovi export per assicurarti che i bundle condivisi si ripristinino senza riconnessione.",
     helpDataAuditStep4:
-      "Esegui %1$s con il backup più recente e verifica ogni progetto, dispositivo e regola prima di chiudere la prova senza pubblicare modifiche.",
+      "Esegui %1$s con il backup più recente, verifica ogni progetto, dispositivo e regola, quindi annota nel registro di verifica l'output della sentinella runtime da %2$s prima di chiudere la prova senza pubblicare modifiche.",
     helpDataAuditNote:
-      "Registra i risultati nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
+      "Registra i risultati e archivia l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
     helpRestoreDrillNote:
       "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
     helpSearchClear: "Cancella ricerca",
@@ -5550,9 +5550,9 @@ const texts = {
     helpDataAuditStep3:
       "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local. Prueba %3$s con una de las nuevas exportaciones para asegurarte de que los paquetes compartidos se restauran sin volver a conectarte.",
     helpDataAuditStep4:
-      "Ejecuta %1$s con tu copia de seguridad más reciente y verifica cada proyecto, dispositivo y regla antes de cerrar el ensayo sin aplicar cambios.",
+      "Ejecuta %1$s con tu copia de seguridad más reciente, verifica cada proyecto, dispositivo y regla, y luego registra en tu cuaderno de verificación la salida de la guarda runtime desde %2$s antes de cerrar el ensayo sin aplicar cambios.",
     helpDataAuditNote:
-      "Anota los resultados en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
+      "Anota los resultados y archiva la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
     helpRestoreDrillNote:
       "Anota nombres de archivo, marcas de tiempo y resultados de verificación en tu registro de rotación de copias de seguridad para que cada ensayo documente una copia recuperable.",
     helpSearchClear: "Borrar búsqueda",
@@ -7450,9 +7450,9 @@ const texts = {
     helpDataAuditStep3:
       "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide. Testez %3$s avec l’une des nouvelles exportations pour garantir que les paquets partagés se restaurent sans reconnexion.",
     helpDataAuditStep4:
-      "Exécutez %1$s avec votre dernière sauvegarde et vérifiez chaque projet, appareil et règle avant de fermer la répétition sans publier les modifications.",
+      "Exécutez %1$s avec votre dernière sauvegarde, vérifiez chaque projet, appareil et règle, puis consignez dans votre journal de vérification la sortie de la sentinelle runtime issue de %2$s avant de fermer la répétition sans publier les modifications.",
     helpDataAuditNote:
-      "Consignez les résultats dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
+      "Consignez les résultats et archivez la sortie de la sentinelle runtime dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
     helpRestoreDrillNote:
       "Consignez les noms de fichiers, horodatages et résultats de vérification dans votre registre de rotation des sauvegardes afin que chaque répétition documente une copie restaurable.",
     helpSearchClear: "Effacer la recherche",
@@ -9355,9 +9355,9 @@ const texts = {
     helpDataAuditStep3:
       "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden. Teste %3$s mit einem der neuen Exporte, um sicherzustellen, dass geteilte Bundles ohne erneute Verbindung wiederhergestellt werden.",
     helpDataAuditStep4:
-      "Starte %1$s mit deinem neuesten Backup und kontrolliere jedes Projekt, Gerät und jede Regel, bevor du die Probe ohne Änderungen schließt.",
+      "Starte %1$s mit deinem neuesten Backup, kontrolliere jedes Projekt, Gerät und jede Regel und protokolliere anschließend im Verifizierungslog die Ausgabe der Runtime-Wache aus %2$s, bevor du die Probe ohne Änderungen schließt.",
     helpDataAuditNote:
-      "Dokumentiere die Ergebnisse in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
+      "Dokumentiere die Ergebnisse und archiviere die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
     helpRestoreDrillNote:
       "Protokolliere Dateinamen, Zeitstempel und Prüfergebnisse in deinem Backup-Rotationsprotokoll, damit jede Übung eine wiederherstellbare Kopie dokumentiert.",
     helpSearchClear: "Suche löschen",
