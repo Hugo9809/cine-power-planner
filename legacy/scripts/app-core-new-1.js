@@ -12684,6 +12684,192 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var CONTACT_AVATAR_MAX_DIMENSION = 256;
   var CONTACT_AVATAR_JPEG_QUALITY = 0.85;
   var CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
+  var DEFAULT_AVATAR_POSITION = Object.freeze({ x: 50, y: 50 });
+  function createDefaultAvatarPosition() {
+    return { x: DEFAULT_AVATAR_POSITION.x, y: DEFAULT_AVATAR_POSITION.y };
+  }
+  function clampAvatarCoordinate(value) {
+    if (!Number.isFinite(value)) return null;
+    var bounded = Math.max(0, Math.min(100, Number(value)));
+    return Number(bounded.toFixed(2));
+  }
+  function normalizeAvatarPosition(input) {
+    if (input && _typeof(input) === 'object' && !Array.isArray(input)) {
+      var x = clampAvatarCoordinate(input.x);
+      var y = clampAvatarCoordinate(input.y);
+      if (x !== null && y !== null) {
+        return { x: x, y: y };
+      }
+    } else if (Array.isArray(input) && input.length >= 2) {
+      var _x = clampAvatarCoordinate(input[0]);
+      var _y = clampAvatarCoordinate(input[1]);
+      if (_x !== null && _y !== null) {
+        return { x: _x, y: _y };
+      }
+    } else if (typeof input === 'string' && input.trim()) {
+      var parts = input.split(/[\s,]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        var _x2 = clampAvatarCoordinate(Number(parts[0]));
+        var _y2 = clampAvatarCoordinate(Number(parts[1]));
+        if (_x2 !== null && _y2 !== null) {
+          return { x: _x2, y: _y2 };
+        }
+      }
+    }
+    return createDefaultAvatarPosition();
+  }
+  function cloneAvatarPosition(position) {
+    var normalized = normalizeAvatarPosition(position);
+    return { x: normalized.x, y: normalized.y };
+  }
+  function avatarPositionsEqual(a, b) {
+    if (!a || !b) return false;
+    var first = normalizeAvatarPosition(a);
+    var second = normalizeAvatarPosition(b);
+    return Math.abs(first.x - second.x) < 0.01 && Math.abs(first.y - second.y) < 0.01;
+  }
+  function serializeAvatarPosition(position) {
+    var normalized = normalizeAvatarPosition(position);
+    return "".concat(normalized.x, ",").concat(normalized.y);
+  }
+  function clearAvatarPosition(container) {
+    if (!container || !container.dataset) return;
+    delete container.dataset.avatarPosition;
+    delete container.dataset.avatarPositionX;
+    delete container.dataset.avatarPositionY;
+  }
+  function getContainerAvatarPosition(container) {
+    if (!container || !container.dataset) {
+      return createDefaultAvatarPosition();
+    }
+    var dataSet = container.dataset;
+    if (typeof dataSet.avatarPositionX !== 'undefined' && typeof dataSet.avatarPositionY !== 'undefined') {
+      var x = clampAvatarCoordinate(Number(dataSet.avatarPositionX));
+      var y = clampAvatarCoordinate(Number(dataSet.avatarPositionY));
+      if (x !== null && y !== null) {
+        return { x: x, y: y };
+      }
+    }
+    if (typeof dataSet.avatarPosition === 'string' && dataSet.avatarPosition) {
+      return normalizeAvatarPosition(dataSet.avatarPosition);
+    }
+    return createDefaultAvatarPosition();
+  }
+  function setAvatarImagePosition(container, position) {
+    if (!container) {
+      return createDefaultAvatarPosition();
+    }
+    var normalized = normalizeAvatarPosition(position);
+    if (container.dataset) {
+      container.dataset.avatarPosition = serializeAvatarPosition(normalized);
+      container.dataset.avatarPositionX = String(normalized.x);
+      container.dataset.avatarPositionY = String(normalized.y);
+    }
+    var visual = container.querySelector('.person-avatar-visual img, .contact-card-avatar-visual img');
+    if (visual) {
+      visual.style.objectPosition = "".concat(normalized.x, "% ").concat(normalized.y, "%");
+    }
+    return normalized;
+  }
+  function attachAvatarInteractions(container, options) {
+    if (!container || container.dataset.avatarInteractionsAttached === '1') {
+      return;
+    }
+    container.dataset.avatarInteractionsAttached = '1';
+    var opts = options || {};
+    var getPosition = typeof opts.getPosition === 'function' ? opts.getPosition : null;
+    var onCommit = typeof opts.onCommit === 'function' ? opts.onCommit : null;
+    var activePointerId = null;
+    var startCoords = null;
+    var startPosition = null;
+    var moved = false;
+    var lastPreview = null;
+    var skipClick = false;
+    var endInteraction = function endInteraction(event) {
+      if (activePointerId === null || event && event.pointerId !== activePointerId) {
+        return;
+      }
+      try {
+        container.releasePointerCapture(activePointerId);
+      } catch (error) {
+        void error;
+      }
+      activePointerId = null;
+      container.classList.remove('avatar-drag-active');
+      if (moved) {
+        skipClick = true;
+        setTimeout(function () {
+          skipClick = false;
+        }, 0);
+        if (onCommit) {
+          var finalPosition = lastPreview ? cloneAvatarPosition(lastPreview) : cloneAvatarPosition(startPosition);
+          onCommit(finalPosition);
+        }
+      }
+    };
+    container.addEventListener('pointerdown', function (event) {
+      var isPrimaryButton = typeof event.button !== 'number' || event.button === 0;
+      if (!isPrimaryButton) return;
+      if (event.target && typeof event.target.closest === 'function' && event.target.closest('.avatar-remove-button')) {
+        return;
+      }
+      var hasImage = Boolean(container.querySelector('img'));
+      if (!hasImage) {
+        return;
+      }
+      moved = false;
+      lastPreview = null;
+      activePointerId = event.pointerId;
+      startCoords = { x: event.clientX, y: event.clientY };
+      startPosition = getPosition ? normalizeAvatarPosition(getPosition()) : getContainerAvatarPosition(container);
+      container.classList.add('avatar-drag-active');
+      try {
+        container.setPointerCapture(event.pointerId);
+      } catch (error) {
+        void error;
+      }
+    });
+    container.addEventListener('pointermove', function (event) {
+      if (activePointerId === null || event.pointerId !== activePointerId) {
+        return;
+      }
+      var rect = container.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        return;
+      }
+      var deltaX = event.clientX - startCoords.x;
+      var deltaY = event.clientY - startCoords.y;
+      if (!moved && Math.abs(deltaX) < 2 && Math.abs(deltaY) < 2) {
+        return;
+      }
+      moved = true;
+      var rawX = clampAvatarCoordinate(startPosition.x - deltaX / rect.width * 100);
+      var rawY = clampAvatarCoordinate(startPosition.y - deltaY / rect.height * 100);
+      var next = {
+        x: rawX !== null ? rawX : startPosition.x,
+        y: rawY !== null ? rawY : startPosition.y
+      };
+      lastPreview = setAvatarImagePosition(container, next);
+      event.preventDefault();
+    });
+    var cancelInteraction = function cancelInteraction(event) {
+      if (activePointerId === null || event && event.pointerId !== activePointerId) {
+        return;
+      }
+      moved = false;
+      lastPreview = null;
+      endInteraction(event);
+    };
+    container.addEventListener('pointerup', endInteraction);
+    container.addEventListener('pointercancel', cancelInteraction);
+    container.addEventListener('lostpointercapture', cancelInteraction);
+    container.addEventListener('click', function (event) {
+      if (!skipClick) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      skipClick = false;
+    }, true);
+  }
   var contactsCache = [];
   var contactsInitialized = false;
   function getContactsText(key) {
@@ -12713,6 +12899,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
     var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
     var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
+    var avatarPosition = normalizeAvatarPosition(entry.avatarPosition);
     var normalized = {
       id: id,
       name: name,
@@ -12720,7 +12907,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       phone: phone,
       email: email,
       createdAt: createdAt,
-      updatedAt: updatedAt
+      updatedAt: updatedAt,
+      avatarPosition: avatarPosition
     };
     if (avatar) normalized.avatar = avatar;
     return normalized;
@@ -12814,27 +13002,57 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function getAvatarInitial(value) {
     if (typeof value === 'string') {
       var trimmed = value.trim();
-      if (trimmed) return trimmed.charAt(0).toUpperCase();
+      if (trimmed) {
+        var parts = trimmed.split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) {
+          var first = (parts[0] || '').charAt(0);
+          var last = (parts[parts.length - 1] || '').charAt(0);
+          var combined = "".concat(first || '').concat(last || '').toUpperCase().replace(/\s+/g, '');
+          if (combined) {
+            return combined;
+          }
+        }
+        var single = parts[0];
+        if (single) {
+          var initial = single.charAt(0).toUpperCase();
+          if (initial) {
+            return initial;
+          }
+        }
+      }
     }
     return '•';
   }
-  function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
+  function updateAvatarVisual(container, avatarValue, fallbackName, initialClass, options) {
     if (!container) return;
     var visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
     if (!visual) return;
     while (visual.firstChild) {
       visual.removeChild(visual.firstChild);
     }
+    var hasAvatar = Boolean(avatarValue);
+    var explicitPosition = options && Object.prototype.hasOwnProperty.call(options, 'position') ? options.position : undefined;
+    var targetPosition = hasAvatar ? normalizeAvatarPosition(explicitPosition || getContainerAvatarPosition(container)) : createDefaultAvatarPosition();
     if (avatarValue) {
       var img = document.createElement('img');
       img.src = avatarValue;
       img.alt = '';
+      img.draggable = false;
+      img.className = 'avatar-image';
       visual.appendChild(img);
+      setAvatarImagePosition(container, targetPosition);
     } else {
+      clearAvatarPosition(container);
       var span = document.createElement('span');
       span.className = initialClass;
       span.textContent = getAvatarInitial(fallbackName);
       visual.appendChild(span);
+    }
+    if (container.classList) {
+      container.classList.toggle('avatar-has-image', hasAvatar);
+      if (!hasAvatar) {
+        container.classList.remove('avatar-drag-active');
+      }
     }
   }
   function setRowAvatar(row, avatarValue) {
@@ -12847,7 +13065,39 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var nameInput = row.querySelector('.person-name');
     var fallbackName = options && Object.prototype.hasOwnProperty.call(options, 'name') ? options.name : nameInput === null || nameInput === void 0 ? void 0 : nameInput.value;
     var avatarContainer = row.querySelector('.person-avatar');
-    updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
+    var avatarPositionInput = row.querySelector('.person-avatar-position');
+    var nextPosition = createDefaultAvatarPosition();
+    if (avatarValue) {
+      if (options && Object.prototype.hasOwnProperty.call(options, 'position')) {
+        nextPosition = normalizeAvatarPosition(options.position);
+      } else if (avatarPositionInput && avatarPositionInput.value) {
+        nextPosition = normalizeAvatarPosition(avatarPositionInput.value);
+      } else {
+        nextPosition = getContainerAvatarPosition(avatarContainer);
+      }
+    }
+    updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial', { position: nextPosition });
+    if (avatarPositionInput) {
+      if (avatarValue) {
+        avatarPositionInput.value = serializeAvatarPosition(nextPosition);
+      } else {
+        avatarPositionInput.value = '';
+      }
+    }
+  }
+  function getContactsSnapshot() {
+    return contactsCache.map(function (contact) {
+      return {
+        id: contact.id,
+        name: contact.name || '',
+        role: contact.role || '',
+        phone: contact.phone || '',
+        email: contact.email || '',
+        avatar: contact.avatar || '',
+        avatarPosition: cloneAvatarPosition(contact.avatarPosition),
+        label: getContactDisplayLabel(contact)
+      };
+    });
   }
   function refreshRowAvatarInitial(row) {
     if (!row) return;
@@ -13043,7 +13293,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function handleAvatarFileSelection(row, file) {
     readAvatarFile(file, function (dataUrl) {
-      setRowAvatar(row, dataUrl);
+      setRowAvatar(row, dataUrl, { position: createDefaultAvatarPosition() });
       if (row.dataset.contactId) {
         detachCrewRowContact(row);
       }
@@ -13097,7 +13347,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var emailInput = row.querySelector('.person-email');
       if (emailInput) emailInput.value = contact.email || '';
       setRowAvatar(row, contact.avatar || '', {
-        name: contact.name
+        name: contact.name,
+        position: contact.avatarPosition
       });
       row.dataset.contactId = contact.id;
       var contactSelect = row.querySelector('.person-contact-select');
@@ -13136,12 +13387,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var phoneInput = row.querySelector('.person-phone');
     var emailInput = row.querySelector('.person-email');
     var avatarInput = row.querySelector('.person-avatar-data');
+    var avatarPositionInput = row.querySelector('.person-avatar-position');
+    var avatarPositionValue = sanitizeContactValue((avatarPositionInput === null || avatarPositionInput === void 0 ? void 0 : avatarPositionInput.value) || '');
+    var normalizedPosition = avatarPositionValue ? normalizeAvatarPosition(avatarPositionValue) : createDefaultAvatarPosition();
+    var avatarValue = sanitizeContactValue((avatarInput === null || avatarInput === void 0 ? void 0 : avatarInput.value) || '');
     return {
       role: sanitizeContactValue((roleSel === null || roleSel === void 0 ? void 0 : roleSel.value) || ''),
       name: sanitizeContactValue((nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) || ''),
       phone: sanitizeContactValue((phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) || ''),
       email: sanitizeContactValue((emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) || ''),
-      avatar: sanitizeContactValue((avatarInput === null || avatarInput === void 0 ? void 0 : avatarInput.value) || ''),
+      avatar: avatarValue,
+      avatarPosition: avatarValue ? normalizedPosition : createDefaultAvatarPosition(),
       contactId: sanitizeContactValue(row.dataset.contactId || '')
     };
   }
@@ -13181,11 +13437,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         existing.role = snapshot.role || existing.role;
         existing.phone = snapshot.phone || existing.phone;
         existing.email = snapshot.email || existing.email;
-        if (snapshot.avatar) {
-          existing.avatar = snapshot.avatar;
-        } else if (!existing.avatar) {
-          delete existing.avatar;
-        }
+      if (snapshot.avatar) {
+        existing.avatar = snapshot.avatar;
+        existing.avatarPosition = cloneAvatarPosition(snapshot.avatarPosition);
+      } else if (!existing.avatar) {
+        delete existing.avatar;
+        existing.avatarPosition = createDefaultAvatarPosition();
+      }
         existing.updatedAt = now;
         contactsCache = sortContacts(contactsCache);
         saveContactsToStorage(contactsCache);
@@ -13198,16 +13456,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return;
       }
     }
-    var newContact = normalizeContactEntry({
-      id: snapshot.contactId || generateContactId(),
-      name: snapshot.name,
-      role: snapshot.role,
-      phone: snapshot.phone,
-      email: snapshot.email,
-      avatar: snapshot.avatar,
-      createdAt: now,
-      updatedAt: now
-    });
+  var newContact = normalizeContactEntry({
+    id: snapshot.contactId || generateContactId(),
+    name: snapshot.name,
+    role: snapshot.role,
+    phone: snapshot.phone,
+    email: snapshot.email,
+    avatar: snapshot.avatar,
+    avatarPosition: snapshot.avatarPosition,
+    createdAt: now,
+    updatedAt: now
+  });
     contactsCache.push(newContact);
     contactsCache = sortContacts(contactsCache);
     saveContactsToStorage(contactsCache);
@@ -13340,13 +13599,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var added = 0;
     var updated = 0;
     imported.forEach(function (entry) {
-      var candidate = {
-        name: sanitizeContactValue(entry.name || ''),
-        role: sanitizeContactValue(entry.role || ''),
-        phone: sanitizeContactValue(entry.phone || ''),
-        email: sanitizeContactValue(entry.email || ''),
-        avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
-      };
+    var candidate = {
+      name: sanitizeContactValue(entry.name || ''),
+      role: sanitizeContactValue(entry.role || ''),
+      phone: sanitizeContactValue(entry.phone || ''),
+      email: sanitizeContactValue(entry.email || ''),
+      avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
+    };
+    var hasAvatarPosition = entry && Object.prototype.hasOwnProperty.call(entry, 'avatarPosition');
+    var candidateAvatarPosition = hasAvatarPosition ? normalizeAvatarPosition(entry.avatarPosition) : createDefaultAvatarPosition();
       var existing = contactsCache.find(function (contact) {
         if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
         if (candidate.phone && contact.phone) {
@@ -13362,21 +13623,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (candidate.role) existing.role = candidate.role;
         if (candidate.phone) existing.phone = candidate.phone;
         if (candidate.email) existing.email = candidate.email;
-        if (candidate.avatar) existing.avatar = candidate.avatar;
+      if (candidate.avatar) {
+        existing.avatar = candidate.avatar;
+        existing.avatarPosition = hasAvatarPosition ? candidateAvatarPosition : createDefaultAvatarPosition();
+      } else if (hasAvatarPosition) {
+        existing.avatarPosition = candidateAvatarPosition;
+      }
         existing.updatedAt = Date.now();
         updated += 1;
         updateCrewRowsForContact(existing);
       } else {
-        var contact = normalizeContactEntry({
-          id: generateContactId(),
-          name: candidate.name,
-          role: candidate.role,
-          phone: candidate.phone,
-          email: candidate.email,
-          avatar: candidate.avatar,
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        });
+      var contact = normalizeContactEntry({
+        id: generateContactId(),
+        name: candidate.name,
+        role: candidate.role,
+        phone: candidate.phone,
+        email: candidate.email,
+        avatar: candidate.avatar,
+        avatarPosition: hasAvatarPosition ? candidateAvatarPosition : undefined,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
         contactsCache.push(contact);
         added += 1;
       }
@@ -13409,12 +13676,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var avatarVisual = document.createElement('div');
     avatarVisual.className = 'contact-card-avatar-visual';
     avatarContainer.appendChild(avatarVisual);
-    updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+    contact.avatarPosition = normalizeAvatarPosition(contact.avatarPosition);
     var avatarButton = document.createElement('button');
     avatarButton.type = 'button';
-    var avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+    var avatarLabel = getContactsText('avatarChange', 'Change photo');
     avatarButton.setAttribute('aria-label', avatarLabel);
     avatarButton.setAttribute('title', avatarLabel);
+    avatarButton.dataset.hoverHint = getContactsText('avatarHoverHint', 'Drag to adjust • Click to change');
     avatarContainer.appendChild(avatarButton);
     var avatarInput = document.createElement('input');
     avatarInput.type = 'file';
@@ -13422,6 +13690,35 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarInput.className = 'visually-hidden';
     avatarInput.tabIndex = -1;
     avatarContainer.appendChild(avatarInput);
+    var avatarRemoveButton = document.createElement('button');
+    avatarRemoveButton.type = 'button';
+    avatarRemoveButton.className = 'avatar-remove-button contact-card-avatar-remove';
+    var avatarRemoveLabel = getContactsText('userProfileAvatarRemove', 'Remove photo');
+    avatarRemoveButton.setAttribute('aria-label', avatarRemoveLabel);
+    avatarRemoveButton.setAttribute('title', avatarRemoveLabel);
+    avatarRemoveButton.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+    avatarContainer.appendChild(avatarRemoveButton);
+    var refreshAvatar = function refreshAvatar() {
+      updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial', {
+        position: contact.avatarPosition
+      });
+      avatarRemoveButton.hidden = !contact.avatar;
+    };
+    attachAvatarInteractions(avatarContainer, {
+      getPosition: function getPosition() {
+        return contact.avatarPosition;
+      },
+      onCommit: function onCommit(position) {
+        if (!contact.avatar) return;
+        var normalized = normalizeAvatarPosition(position);
+        if (!avatarPositionsEqual(contact.avatarPosition, normalized)) {
+          contact.avatarPosition = normalized;
+          refreshAvatar();
+          persist();
+        }
+      }
+    });
+    refreshAvatar();
     header.appendChild(avatarContainer);
     var title = document.createElement('strong');
     title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
@@ -13529,7 +13826,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     nameInput.addEventListener('input', function () {
       contact.name = sanitizeContactValue(nameInput.value);
       title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
-      updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+      refreshAvatar();
       persist();
     });
     nameInput.addEventListener('blur', function () {
@@ -13547,14 +13844,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       contact.email = sanitizeContactValue(emailInput.value);
       persist();
     });
-    avatarButton.addEventListener('click', function (event) {
-      if (event.shiftKey) {
-        contact.avatar = '';
-        updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
-        persist();
-        announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
-        return;
-      }
+    avatarButton.addEventListener('click', function () {
       avatarInput.click();
     });
     avatarInput.addEventListener('change', function () {
@@ -13564,7 +13854,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (!file) return;
       readAvatarFile(file, function (dataUrl) {
         contact.avatar = dataUrl;
-        updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
+        contact.avatarPosition = createDefaultAvatarPosition();
+        refreshAvatar();
         persist();
         announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
       }, function (reason) {
@@ -13575,6 +13866,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       });
       avatarInput.value = '';
+    });
+    avatarRemoveButton.addEventListener('click', function () {
+      if (!contact.avatar) return;
+      contact.avatar = '';
+      contact.avatarPosition = createDefaultAvatarPosition();
+      refreshAvatar();
+      persist();
+      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
     });
     return {
       card: card,
@@ -13695,6 +13994,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarDataInput.className = 'person-avatar-data';
     avatarDataInput.value = typeof data.avatar === 'string' ? data.avatar : '';
     row.appendChild(avatarDataInput);
+    var avatarPositionInput = document.createElement('input');
+    avatarPositionInput.type = 'hidden';
+    avatarPositionInput.className = 'person-avatar-position';
+    var initialAvatarPosition = avatarDataInput.value ? normalizeAvatarPosition(data.avatarPosition) : createDefaultAvatarPosition();
+    avatarPositionInput.value = avatarDataInput.value ? serializeAvatarPosition(initialAvatarPosition) : '';
+    row.appendChild(avatarPositionInput);
     var avatarContainer = document.createElement('div');
     avatarContainer.className = 'person-avatar';
     var avatarVisual = document.createElement('div');
@@ -13705,6 +14010,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.setAttribute('aria-label', avatarChangeLabel);
     avatarButton.setAttribute('title', avatarChangeLabel);
     avatarButton.setAttribute('data-help', avatarChangeLabel);
+    avatarButton.dataset.hoverHint = getContactsText('avatarHoverHint', 'Drag to adjust • Click to change');
     avatarContainer.appendChild(avatarButton);
     var avatarFileInput = document.createElement('input');
     avatarFileInput.type = 'file';
@@ -13808,7 +14114,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       row.dataset.contactId = data.contactId;
     }
     setRowAvatar(row, avatarDataInput.value, {
-      name: data.name
+      name: data.name,
+      position: initialAvatarPosition
+    });
+    attachAvatarInteractions(avatarContainer, {
+      getPosition: function getPosition() {
+        if (!avatarDataInput.value) {
+          return createDefaultAvatarPosition();
+        }
+        if (avatarPositionInput.value) {
+          return normalizeAvatarPosition(avatarPositionInput.value);
+        }
+        return createDefaultAvatarPosition();
+      },
+      onCommit: function onCommit(position) {
+        if (!avatarDataInput.value) {
+          return;
+        }
+        var normalized = normalizeAvatarPosition(position);
+        avatarPositionInput.value = serializeAvatarPosition(normalized);
+        setAvatarImagePosition(avatarContainer, normalized);
+        handleCrewRowManualChange(row);
+      }
     });
     updateRowLinkedBadge(row);
     avatarButton.addEventListener('click', function (event) {
@@ -19051,6 +19378,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (typeof value === 'number') {
           pinkModeIconIndex = value;
         }
+      }
+    },
+    getContactsSnapshot: {
+      get: function get() {
+        return getContactsSnapshot;
       }
     }
   });
