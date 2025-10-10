@@ -4533,6 +4533,17 @@ function applyGearItemData(element) {
   var trimmedName = typeof data.name === 'string' ? data.name.trim() : String((_data$name = data.name) !== null && _data$name !== void 0 ? _data$name : '').trim();
   var trimmedAttributes = typeof data.attributes === 'string' ? data.attributes.trim() : String((_data$attributes = data.attributes) !== null && _data$attributes !== void 0 ? _data$attributes : '').trim();
   var trimmedNote = typeof data.note === 'string' ? data.note.trim() : String((_data$note = data.note) !== null && _data$note !== void 0 ? _data$note : '').trim();
+  if (!isCustomItem && !trimmedQuantity) {
+    var monitorBatteryControl = element.querySelector('select[data-monitor-battery-key]');
+    if (monitorBatteryControl) {
+      var batteryTypeAttr = monitorBatteryControl.getAttribute('data-monitor-battery-type') || (monitorBatteryControl.dataset ? monitorBatteryControl.dataset.monitorBatteryType : '');
+      if ('large' === batteryTypeAttr) {
+        trimmedQuantity = '2';
+      } else if (batteryTypeAttr) {
+        trimmedQuantity = '3';
+      }
+    }
+  }
   if (!isCustomItem && textContainer) {
     var controls = Array.from(textContainer.querySelectorAll('select, input, textarea'));
     controls.forEach(function (control) {
