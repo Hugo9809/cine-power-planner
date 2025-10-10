@@ -36,6 +36,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/help.js',
     'modules/ui.js',
     'modules/gear-list.js',
+    'modules/runtime-guard.js',
     'modules/results.js',
     'app-core-new-1.js',
     'app-core-new-2.js',
@@ -100,11 +101,28 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
+  ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
 
-  attemptRegistryBackfill(globalScope);
+  let runtimeGuardModule = null;
+  try {
+    runtimeGuardModule =
+      (globalScope && globalScope.cineRuntimeGuard)
+      || require('./modules/runtime-guard.js');
+  } catch (error) {
+    runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;
+  }
+
+  const runtimeGuard =
+    runtimeGuardModule && typeof runtimeGuardModule.resolveRuntimeGuard === 'function'
+      ? runtimeGuardModule.resolveRuntimeGuard(globalScope)
+      : runtimeGuardModule;
+
+  if (runtimeGuard && typeof runtimeGuard.bootstrap === 'function') {
+    runtimeGuard.bootstrap(globalScope, { throwOnFailure: true, warnOnFailure: true });
+  }
 
   const aggregatedExports = module.exports;
   const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
@@ -121,171 +139,6 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
 }
 
-function attemptRegistryBackfill(scope) {
-  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-    return;
-  }
-
-  const registryCandidates = [];
-  if (scope && typeof scope.cineModules === 'object') {
-    registryCandidates.push(scope.cineModules);
-  }
-  if (typeof require === 'function') {
-    try {
-      const required = require('./modules/registry.js');
-      if (required && typeof required === 'object') {
-        registryCandidates.push(required);
-      }
-    } catch (error) {
-      void error;
-    }
-  }
-
-  const registries = [];
-  const seen = new Set();
-
-  for (let index = 0; index < registryCandidates.length; index += 1) {
-    const candidate = registryCandidates[index];
-    if (!candidate || typeof candidate.register !== 'function' || typeof candidate.has !== 'function') {
-      continue;
-    }
-
-    if (seen.has(candidate)) {
-      continue;
-    }
-
-    seen.add(candidate);
-    registries.push(candidate);
-  }
-
-  if (registries.length === 0) {
-    return;
-  }
-
-  const descriptors = [
-    {
-      name: 'cineModuleBase',
-      category: 'infrastructure',
-      description: 'Shared helpers for module registration, freezing, and safe global exposure.',
-      resolve() {
-        return scope.cineModuleBase || null;
-      },
-    },
-    {
-      name: 'cineModuleGlobals',
-      category: 'infrastructure',
-      description: 'Shared module globals for cross-script coordination.',
-      resolve() {
-        return scope.cineModuleGlobals || null;
-      },
-    },
-    {
-      name: 'cineCoreShared',
-      category: 'shared',
-      description: 'Shared helpers for deterministic stringification, weights, and version markers.',
-      resolve() {
-        return scope.cineCoreShared || null;
-      },
-    },
-    {
-      name: 'cinePersistence',
-      category: 'persistence',
-      description: 'Data integrity facade for storage, autosave, backups, restore, and share flows.',
-      resolve() {
-        return scope.cinePersistence || null;
-      },
-    },
-    {
-      name: 'cineOffline',
-      category: 'offline',
-      description: 'Offline helpers for service worker registration and cache recovery.',
-      resolve() {
-        return scope.cineOffline || null;
-      },
-    },
-    {
-      name: 'cineUi',
-      category: 'ui',
-      description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
-      resolve() {
-        return scope.cineUi || null;
-      },
-    },
-    {
-      name: 'cineFeaturePrint',
-      category: 'feature',
-      description: 'Print orchestration helpers for overview exports and fallback workflows.',
-      resolve() {
-        return scope.cineFeaturePrint || null;
-      },
-    },
-    {
-      name: 'cineCoreProject',
-      category: 'domain',
-      description: 'Project intelligence helpers for derived metadata, selectors, and calculations.',
-      resolve() {
-        return scope.cineCoreProject || null;
-      },
-    },
-    {
-      name: 'cineCoreGuard',
-      category: 'safety',
-      description: 'Persistence guards that preserve autosaves, presets, and backup state across workflows.',
-      resolve() {
-        return scope.cineCoreGuard || null;
-      },
-    },
-    {
-      name: 'cineCoreExperience',
-      category: 'experience',
-      description: 'Experience helpers for UI orchestration, feature discovery, and presentation.',
-      resolve() {
-        return scope.cineCoreExperience || null;
-      },
-    },
-    {
-      name: 'cineRuntime',
-      category: 'runtime',
-      description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
-      resolve() {
-        return scope.cineRuntime || null;
-      },
-    },
-  ];
-
-  for (let index = 0; index < descriptors.length; index += 1) {
-    const descriptor = descriptors[index];
-    let moduleValue = null;
-    try {
-      moduleValue = descriptor.resolve();
-    } catch (error) {
-      void error;
-      moduleValue = null;
-    }
-
-    if (!moduleValue) {
-      continue;
-    }
-
-    for (let registryIndex = 0; registryIndex < registries.length; registryIndex += 1) {
-      const registry = registries[registryIndex];
-      try {
-        if (registry.has(descriptor.name)) {
-          continue;
-        }
-
-        registry.register(descriptor.name, moduleValue, {
-          category: descriptor.category,
-          description: descriptor.description,
-          replace: true,
-        });
-      } catch (error) {
-        void error;
-      }
-    }
-  }
-}
-
 const GLOBAL_RUNTIME_SCOPE =
   (typeof globalThis !== 'undefined' && globalThis)
   || (typeof window !== 'undefined' && window)
@@ -293,90 +146,39 @@ const GLOBAL_RUNTIME_SCOPE =
   || (typeof global !== 'undefined' && global)
   || null;
 
-attemptRegistryBackfill(GLOBAL_RUNTIME_SCOPE);
+let runtimeGuardModule = null;
 
-(function ensureRuntimeIntegrity(scope) {
-  if (!scope) {
-    return;
+if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
+  runtimeGuardModule = GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard;
+} else if (typeof require === 'function') {
+  try {
+    runtimeGuardModule = require('./modules/runtime-guard.js');
+  } catch (error) {
+    runtimeGuardModule = null;
   }
+}
 
-  function safeError(message, detail) {
-    if (typeof console === 'undefined' || typeof console.error !== 'function') {
-      return;
-    }
+const runtimeGuard =
+  runtimeGuardModule && typeof runtimeGuardModule.resolveRuntimeGuard === 'function'
+    ? runtimeGuardModule.resolveRuntimeGuard(GLOBAL_RUNTIME_SCOPE)
+    : runtimeGuardModule;
 
-    try {
-      if (typeof detail === 'undefined') {
-        console.error(message);
-      } else {
-        console.error(message, detail);
+if (runtimeGuard && typeof runtimeGuard.bootstrap === 'function') {
+  try {
+    runtimeGuard.bootstrap(GLOBAL_RUNTIME_SCOPE, {
+      warnOnFailure: true,
+      throwOnFailure: typeof require === 'function',
+    });
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      try {
+        console.error('cineRuntimeGuard.bootstrap failed during startup.', error);
+      } catch (consoleError) {
+        void consoleError;
       }
-    } catch (loggingError) {
-      void loggingError;
     }
-  }
-
-  function attachIntegrity(result) {
-    try {
-      Object.defineProperty(scope, '__cineRuntimeIntegrity', {
-        configurable: true,
-        enumerable: false,
-        value: result,
-        writable: false,
-      });
-    } catch (error) {
-      void error;
-      scope.__cineRuntimeIntegrity = result;
-    }
-  }
-
-  let runtime = null;
-
-  try {
-    runtime = scope.cineRuntime;
-  } catch (runtimeError) {
-    void runtimeError;
-    runtime = null;
-  }
-
-  if (!runtime && typeof require === 'function') {
-    try {
-      runtime = require('./modules/runtime.js');
-    } catch (requireError) {
-      void requireError;
-      runtime = null;
-    }
-  }
-
-  if (!runtime || typeof runtime.verifyCriticalFlows !== 'function') {
-    return;
-  }
-
-  let result;
-
-  try {
-    result = runtime.verifyCriticalFlows({ warnOnFailure: true });
-  } catch (verificationError) {
-    attachIntegrity(Object.freeze({ ok: false, error: verificationError }));
-    safeError('cineRuntime.verifyCriticalFlows() threw during startup.', verificationError);
     if (typeof require === 'function') {
-      throw verificationError;
-    }
-    return;
-  }
-
-  if (result && typeof result === 'object') {
-    attachIntegrity(result);
-  } else {
-    attachIntegrity(Object.freeze({ ok: false }));
-  }
-
-  if (!result || result.ok !== true) {
-    const integrityError = new Error('cineRuntime integrity verification failed during startup.');
-    integrityError.details = result || null;
-    safeError(integrityError.message, integrityError);
-    if (typeof require === 'function') {
-      throw integrityError;
+      throw error;
     }
   }
-})(GLOBAL_RUNTIME_SCOPE);
+}
