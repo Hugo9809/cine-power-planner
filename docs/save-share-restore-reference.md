@@ -64,6 +64,8 @@ Once the backup lands successfully, the reset proceeds to run `clearAllData()`, 
 
 Immediately after the storage wipe the runtime fires a dedicated factory-reset event, allowing the onboarding tutorial module to repopulate its default state so the guided walkthrough restarts automatically once the planner reloads and the help button label updates to the “Start guided tutorial” copy during the same session.【F:src/scripts/app-session.js†L9373-L9393】【F:src/scripts/modules/features/onboarding-tour.js†L1141-L1151】
 
+The Help dialog’s quick start status row now records the last completed onboarding step alongside a relative timestamp (“just now”, “2 minutes ago”, etc.) so crews instantly know which workflow finished most recently and when that progress was saved offline before resuming the walkthrough.【F:src/scripts/modules/features/onboarding-tour.js†L1328-L1374】【F:src/scripts/translations.js†L1694-L1704】
+
 ## Console & script checks
 
 Run these quick inspections while documenting or rehearsing the workflows above:

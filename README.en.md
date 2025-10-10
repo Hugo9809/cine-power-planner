@@ -228,13 +228,13 @@ same online or offline.
    Summary (with its quick summary checkpoint) and rehearsing the offline safety
    net step that highlights the top-bar indicator plus autosave status, building
    gear lists, managing contacts, tracking your own gear, tuning automatic
-   rules, and the export/import/backup drills. The step
-  navigator and progress meter let you revisit finished workflows without
-  restarting, the **Resume guided tutorial** button appears automatically
-  with your saved counts if you paused mid-tour so offline progress is never
-  lost, and the checklist row surfaces an offline status message showing how
-  many steps are complete plus the next workflow to cover before you relaunch
-  the tour.
+   rules, and the export/import/backup drills. The step navigator and progress
+   meter let you revisit finished workflows without restarting, the **Resume
+   guided tutorial** button appears automatically with your saved counts if you
+   paused mid-tour so offline progress is never lost, and the checklist row
+   surfaces an offline status message showing how many steps are complete, when
+   the most recent step finished and the next workflow to cover before you
+   relaunch the tour.
 6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
