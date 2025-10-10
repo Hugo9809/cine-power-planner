@@ -4306,14 +4306,54 @@ function updateGearItemNoteElement(entry, value) {
   if (!entry) return;
   var noteEl = entry.querySelector('.gear-item-note');
   if (!noteEl) return;
+  var doc = noteEl.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  var localizedLabel = typeof localGetLocalizedText === 'function'
+    ? localGetLocalizedText('gearListNoteLabel')
+    : '';
+  var noteLabel = typeof localizedLabel === 'string' && localizedLabel.trim()
+    ? localizedLabel.trim()
+    : 'Note:';
   var raw = typeof value === 'string' ? value : String(value !== null && value !== void 0 ? value : '');
   var trimmed = raw.trim();
   if (trimmed) {
-    noteEl.textContent = trimmed;
+    var labelSpan = noteEl.querySelector('.gear-item-note__label');
+    var valueSpan = noteEl.querySelector('.gear-item-note__text');
+    if (!labelSpan && doc) {
+      labelSpan = doc.createElement('span');
+      labelSpan.className = 'gear-item-note__label';
+      if (noteEl.firstChild) {
+        noteEl.insertBefore(labelSpan, noteEl.firstChild);
+      } else {
+        noteEl.appendChild(labelSpan);
+      }
+    }
+    if (!valueSpan && doc) {
+      valueSpan = doc.createElement('span');
+      valueSpan.className = 'gear-item-note__text';
+      noteEl.appendChild(valueSpan);
+    }
+    if (labelSpan && valueSpan) {
+      labelSpan.textContent = noteLabel;
+      valueSpan.textContent = trimmed;
+    } else {
+      noteEl.textContent = noteLabel + ' ' + trimmed;
+    }
     noteEl.hidden = false;
+    noteEl.removeAttribute('hidden');
+    noteEl.setAttribute('aria-label', (noteLabel + ' ' + trimmed).trim());
   } else {
+    var existingLabel = noteEl.querySelector('.gear-item-note__label');
+    var existingValue = noteEl.querySelector('.gear-item-note__text');
+    if (existingLabel) {
+      existingLabel.textContent = '';
+    }
+    if (existingValue) {
+      existingValue.textContent = '';
+    }
     noteEl.textContent = '';
     noteEl.hidden = true;
+    noteEl.setAttribute('hidden', '');
+    noteEl.removeAttribute('aria-label');
   }
 }
 function ensureGearItemNoteSpan(element) {

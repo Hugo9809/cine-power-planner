@@ -4539,14 +4539,59 @@ function updateGearItemNoteElement(entry, value) {
   if (!entry) return;
   const noteEl = entry.querySelector('.gear-item-note');
   if (!noteEl) return;
+  const doc = noteEl.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  const localizedLabel = typeof localGetLocalizedText === 'function'
+    ? localGetLocalizedText('gearListNoteLabel')
+    : '';
+  const noteLabel = typeof localizedLabel === 'string' && localizedLabel.trim()
+    ? localizedLabel.trim()
+    : 'Note:';
   const raw = typeof value === 'string' ? value : String(value ?? '');
   const trimmed = raw.trim();
+
   if (trimmed) {
-    noteEl.textContent = trimmed;
+    let labelSpan = noteEl.querySelector('.gear-item-note__label');
+    let valueSpan = noteEl.querySelector('.gear-item-note__text');
+
+    if (!labelSpan && doc) {
+      labelSpan = doc.createElement('span');
+      labelSpan.className = 'gear-item-note__label';
+      if (noteEl.firstChild) {
+        noteEl.insertBefore(labelSpan, noteEl.firstChild);
+      } else {
+        noteEl.appendChild(labelSpan);
+      }
+    }
+
+    if (!valueSpan && doc) {
+      valueSpan = doc.createElement('span');
+      valueSpan.className = 'gear-item-note__text';
+      noteEl.appendChild(valueSpan);
+    }
+
+    if (labelSpan && valueSpan) {
+      labelSpan.textContent = noteLabel;
+      valueSpan.textContent = trimmed;
+    } else {
+      noteEl.textContent = `${noteLabel} ${trimmed}`;
+    }
+
     noteEl.hidden = false;
+    noteEl.removeAttribute('hidden');
+    noteEl.setAttribute('aria-label', `${noteLabel} ${trimmed}`.trim());
   } else {
+    const labelSpan = noteEl.querySelector('.gear-item-note__label');
+    const valueSpan = noteEl.querySelector('.gear-item-note__text');
+    if (labelSpan) {
+      labelSpan.textContent = '';
+    }
+    if (valueSpan) {
+      valueSpan.textContent = '';
+    }
     noteEl.textContent = '';
     noteEl.hidden = true;
+    noteEl.setAttribute('hidden', '');
+    noteEl.removeAttribute('aria-label');
   }
 }
 

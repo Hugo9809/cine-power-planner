@@ -1478,6 +1478,7 @@ const texts = {
       "Dolly Grip": "Dolly Grip",
       "Rigging Grip": "Rigging Grip"
     },
+    gearListNoteLabel: "Note:",
     gearListAutosaveNote: "",
     gearListAddCustomItem: "Add custom item",
     gearListAddCustomItemToCategory: "Add custom item to {category}",
@@ -2426,6 +2427,7 @@ const texts = {
       "Dolly Grip": "Operatore dolly",
       "Rigging Grip": "Macchinista rigging"
     },
+    gearListNoteLabel: "Nota:",
     gearListAutosaveNote: "",
     gearListAddCustomItem: "Aggiungi elemento personalizzato",
     gearListAddCustomItemToCategory: "Aggiungi elemento personalizzato a {category}",
@@ -4199,6 +4201,7 @@ const texts = {
       "Dolly Grip": "Operador de dolly",
       "Rigging Grip": "Grip de rigging"
     },
+    gearListNoteLabel: "Nota:",
     gearListAutosaveNote: "",
     gearListAddCustomItem: "Añadir elemento personalizado",
     gearListAddCustomItemToCategory: "Añadir elemento personalizado a {category}",
@@ -5976,6 +5979,7 @@ const texts = {
       "Dolly Grip": "Machiniste dolly",
       "Rigging Grip": "Machiniste rigging"
     },
+    gearListNoteLabel: "Note :",
     gearListAutosaveNote: "",
     gearListAddCustomItem: "Ajouter un élément personnalisé",
     gearListAddCustomItemToCategory: "Ajouter un élément personnalisé à {category}",
@@ -7765,6 +7769,7 @@ const texts = {
       "Dolly Grip": "Dolly-Grip",
       "Rigging Grip": "Rigging-Grip"
     },
+    gearListNoteLabel: "Notiz:",
     gearListAutosaveNote: "",
     gearListAddCustomItem: "Benutzerdefinierten Eintrag hinzufügen",
     gearListAddCustomItemToCategory: "Benutzerdefinierten Eintrag zu {category} hinzufügen",

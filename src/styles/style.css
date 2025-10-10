@@ -8598,16 +8598,43 @@ body.dark-mode .requirement-box,
   display: inline;
 }
 
-#gearListOutput .gear-item .gear-item-note:not([hidden]) {
+#gearListOutput .gear-item-note:not([hidden]) {
   display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.1rem 0.45rem;
-  border-radius: calc(var(--border-radius) * 0.75);
-  background: color-mix(in srgb, var(--accent-color) 15%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 75%, var(--text-color));
-  font-size: 0.8rem;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: calc(var(--border-radius) * 0.9);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, var(--accent-color) 35%);
+  background: color-mix(in srgb, var(--panel-bg) 88%, var(--accent-color) 12%);
+  color: color-mix(in srgb, var(--text-color) 88%, var(--accent-color) 12%);
+  font-size: 0.85rem;
+  line-height: 1.4;
   letter-spacing: 0.01em;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.dark-mode #gearListOutput .gear-item-note:not([hidden]) {
+  border-color: color-mix(in srgb, var(--panel-border) 45%, var(--accent-color) 55%);
+  background: color-mix(in srgb, var(--panel-bg) 75%, var(--accent-color) 25%);
+  color: color-mix(in srgb, var(--text-color) 92%, var(--accent-color) 8%);
+}
+
+#gearListOutput .gear-item-note__label {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-color) 70%, var(--text-color) 30%);
+  margin-top: 0.05rem;
+}
+
+#gearListOutput .gear-item-note__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  white-space: normal;
 }
 
 #gearListOutput .auto-gear-rule-badge {
@@ -8758,16 +8785,7 @@ body.dark-mode .requirement-box,
 }
 
 #gearListOutput .gear-custom-item .gear-item-note:not([hidden]) {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: calc(var(--border-radius) * 0.75);
-  background: color-mix(in srgb, var(--accent-color) 15%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 75%, var(--text-color));
-  font-size: 0.8rem;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
+  align-self: stretch;
 }
 
 #gearListOutput .gear-custom-item-actions {
