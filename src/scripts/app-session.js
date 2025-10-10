@@ -154,6 +154,9 @@ function sessionCreateResilientDeepClone(scope) {
   };
 }
 
+let sensorModeDropdown;
+let recordingResolutionDropdown;
+
 const SESSION_DEEP_CLONE =
   CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
     ? CORE_GLOBAL_SCOPE.__cineDeepClone
@@ -13907,12 +13910,12 @@ const recordingFrameRateOptionsList =
     ? document.getElementById('recordingFrameRateOptions')
     : null;
 
-const sensorModeDropdown =
+sensorModeDropdown =
   typeof document !== 'undefined'
     ? document.getElementById('sensorMode')
     : null;
 
-const recordingResolutionDropdown =
+recordingResolutionDropdown =
   typeof document !== 'undefined'
     ? document.getElementById('recordingResolution')
     : null;
