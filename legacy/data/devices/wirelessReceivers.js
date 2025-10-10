@@ -115,7 +115,7 @@
       "latencyMs": null
     },
     "Teradek Bolt 6 LT RX": {
-      "powerDrawWatts": 9,
+      "powerDrawWatts": 18,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "3G-SDI"
