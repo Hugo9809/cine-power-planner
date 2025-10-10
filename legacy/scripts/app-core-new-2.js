@@ -12781,12 +12781,89 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (distanceDisplayOptions.includes(cur)) distanceOutputInput.value = cur;
       }
     }
+    var ensureElementIdResolver = null;
+    var ensureElementIdFallbackCounter = 0;
+
+    function fallbackEnsureElementId(element, baseText) {
+      if (!element) {
+        return '';
+      }
+      if (element.id) {
+        return element.id;
+      }
+      var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
+      var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (!normalized) {
+        normalized = 'field';
+      }
+      ensureElementIdFallbackCounter += 1;
+      var candidate = normalized + '-' + ensureElementIdFallbackCounter;
+      if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+        while (document.getElementById(candidate)) {
+          ensureElementIdFallbackCounter += 1;
+          candidate = normalized + '-' + ensureElementIdFallbackCounter;
+        }
+      }
+      element.id = candidate;
+      return candidate;
+    }
+
+    function getEnsureElementId() {
+      if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
+        return ensureElementIdResolver;
+      }
+
+      var directEnsure = typeof ensureElementId === 'function' ? ensureElementId : null;
+      if (!directEnsure && typeof globalThis !== 'undefined' && globalThis) {
+        var globalEnsure = globalThis.ensureElementId;
+        if (typeof globalEnsure === 'function') {
+          directEnsure = globalEnsure;
+        }
+      }
+
+      if (typeof directEnsure === 'function') {
+        ensureElementIdResolver = directEnsure;
+        return ensureElementIdResolver;
+      }
+
+      ensureElementIdResolver = fallbackEnsureElementId;
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.ensureElementId !== 'function') {
+        try {
+          globalThis.ensureElementId = fallbackEnsureElementId;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+
+      return ensureElementIdResolver;
+    }
+
+    function getHiddenLabelFactory() {
+      if (typeof createHiddenLabel === 'function') {
+        return createHiddenLabel;
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.createHiddenLabel === 'function') {
+        return globalThis.createHiddenLabel;
+      }
+      return function fallbackCreateHiddenLabel(forId, text) {
+        var label = document.createElement('label');
+        label.className = 'visually-hidden';
+        if (forId) {
+          label.setAttribute('for', forId);
+        }
+        label.textContent = typeof text === 'string' ? text : '';
+        return label;
+      };
+    }
+
     function createFieldWithLabel(el, label) {
       var wrapper = document.createElement('div');
       wrapper.className = 'field-with-label';
       wrapper.dataset.label = label;
-      var fieldId = ensureElementId(el, label);
-      var hiddenLabel = createHiddenLabel(fieldId, label);
+      var ensureId = getEnsureElementId();
+      var fieldId = typeof ensureId === 'function' ? ensureId(el, label) : fallbackEnsureElementId(el, label);
+      var hiddenLabelFactory = getHiddenLabelFactory();
+      var hiddenLabel = hiddenLabelFactory(fieldId, label);
       wrapper.appendChild(hiddenLabel);
       wrapper.appendChild(el);
       return wrapper;
