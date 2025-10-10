@@ -3164,6 +3164,12 @@ function updateGlobalFocusScalePreference(value) {
       }
     }
   }
+
+  try {
+    updateLensFocusScaleSelectOptions(undefined, { preserveValue: true });
+  } catch (focusScaleOptionError) {
+    void focusScaleOptionError;
+  }
 }
 
 function initializeDeviceDatabase() {
@@ -10839,6 +10845,21 @@ function setLanguage(lang) {
     lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
     lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
   }
+  const lensFocusScaleLabelElem = document.getElementById("lensFocusScaleUnitLabel");
+  if (lensFocusScaleLabelElem) {
+    const focusScaleLabel = texts[lang].lensFocusScaleLabel || texts[lang].focusScaleSetting;
+    const focusScaleHelp = texts[lang].lensFocusScaleHelp
+      || texts[lang].lensFocusScaleLabel
+      || texts[lang].focusScaleSettingHelp
+      || focusScaleLabel;
+    lensFocusScaleLabelElem.textContent = focusScaleLabel;
+    lensFocusScaleLabelElem.setAttribute('data-help', focusScaleHelp);
+    if (lensFocusScaleSelect) {
+      lensFocusScaleSelect.setAttribute('data-help', focusScaleHelp);
+      lensFocusScaleSelect.setAttribute('aria-label', focusScaleLabel);
+    }
+  }
+  updateLensFocusScaleSelectOptions(lang);
   document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
   document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
   document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
@@ -19109,6 +19130,7 @@ var distanceNotesInput = document.getElementById("distanceNotes");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaContainer = document.getElementById("cameraMediaContainer");
 const lensMountContainer = document.getElementById("lensMountContainer");
+var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
 const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
@@ -19129,12 +19151,39 @@ var importFileInput = document.getElementById("importFileInput");
 var importDataBtn   = document.getElementById("importDataBtn");
 var skipLink       = document.getElementById("skipLink");
 
+function resolveGlobalFocusScalePreference() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+  const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+    ? scope.focusScalePreference
+    : null;
+  const rawPreference = scopePreference
+    || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
+    || 'metric';
+  if (typeof normalizeFocusScale === 'function') {
+    try {
+      const normalized = normalizeFocusScale(rawPreference);
+      if (normalized === 'imperial' || normalized === 'metric') {
+        return normalized;
+      }
+    } catch (focusScaleNormalizeError) {
+      void focusScaleNormalizeError;
+    }
+  }
+  const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+  return normalized === 'imperial' ? 'imperial' : 'metric';
+}
+
 var categoryExcludedAttrs = {
   batteries: ["capacity", "pinA", "dtapA"],
   batteryHotswaps: ["capacity", "pinA"],
   "accessories.batteries": ["capacity", "pinA"],
   cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
-  lenses: ["mount", "mountOptions"],
+  lenses: ["mount", "mountOptions", "focusScale"],
   monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
   viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
@@ -19144,6 +19193,45 @@ var categoryExcludedAttrs = {
   "fiz.controllers": ["batteryType", "connectivity", "fizConnectors", "internalController", "notes", "powerDrawWatts", "powerSource"],
   "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
 };
+
+function updateLensFocusScaleSelectOptions(lang = currentLang, { preserveValue = true } = {}) {
+  if (!lensFocusScaleSelect) {
+    return;
+  }
+
+  const previousValue = preserveValue ? lensFocusScaleSelect.value : '';
+  const language = typeof lang === 'string' ? lang : currentLang;
+  const languageTexts = texts && language && texts[language] ? texts[language] : texts?.en || {};
+  const defaultLabelBase = languageTexts.lensFocusScaleDefault
+    || languageTexts.focusScaleSetting
+    || 'Use global focus scale';
+  const metricLabel = languageTexts.focusScaleMetric || 'Metric';
+  const imperialLabel = languageTexts.focusScaleImperial || 'Imperial';
+  const globalPreference = resolveGlobalFocusScalePreference();
+  const defaultLabel =
+    globalPreference === 'imperial'
+      ? `${defaultLabelBase} (${imperialLabel})`
+      : `${defaultLabelBase} (${metricLabel})`;
+
+  const desiredValue = previousValue && (previousValue === 'metric' || previousValue === 'imperial')
+    ? previousValue
+    : '';
+
+  lensFocusScaleSelect.innerHTML = '';
+
+  const addOption = (value, label) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    lensFocusScaleSelect.appendChild(option);
+  };
+
+  addOption('', defaultLabel);
+  addOption('metric', metricLabel);
+  addOption('imperial', imperialLabel);
+
+  lensFocusScaleSelect.value = desiredValue;
+}
 
 const schemaFieldConfigs = {
   '*': {

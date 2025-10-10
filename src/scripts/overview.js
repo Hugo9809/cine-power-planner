@@ -888,21 +888,33 @@ function generatePrintableOverview(config = {}) {
         return num.toFixed(maximumFractionDigits);
     };
     const normalizeFocusScaleValue = (value) => {
-        const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
-        return normalized === 'imperial' ? 'imperial' : 'metric';
+        if (typeof value !== 'string') {
+            return '';
+        }
+        const normalized = value.trim().toLowerCase();
+        return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
     };
     const resolveFocusScalePreference = () => {
         const scope = resolveOverviewCloneScope();
-        if (scope && typeof scope.focusScalePreference === 'string') {
-            return scope.focusScalePreference;
-        }
-        if (typeof focusScalePreference === 'string') {
-            return focusScalePreference;
-        }
-        return 'metric';
+        const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+            ? scope.focusScalePreference
+            : null;
+        const rawPreference = scopePreference
+            || (typeof focusScalePreference === 'string' ? focusScalePreference : null)
+            || 'metric';
+        return normalizeFocusScaleValue(rawPreference) || 'metric';
     };
-    const formatFocusScalePreference = () => {
-        const preference = normalizeFocusScaleValue(resolveFocusScalePreference());
+    const resolveLensFocusScaleMode = (lensInfo) => {
+        if (lensInfo && typeof lensInfo === 'object') {
+            const override = normalizeFocusScaleValue(lensInfo.focusScale);
+            if (override) {
+                return override;
+            }
+        }
+        return resolveFocusScalePreference();
+    };
+    const formatFocusScalePreference = (lensInfo) => {
+        const preference = resolveLensFocusScaleMode(lensInfo);
         const key = preference === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
         const labelFromLang = t && typeof t[key] === 'string' ? t[key].trim() : '';
         if (labelFromLang) {
@@ -914,13 +926,13 @@ function generatePrintableOverview(config = {}) {
         }
         return preference === 'imperial' ? 'Imperial' : 'Metric';
     };
-    const useImperialFocusScale = () => normalizeFocusScaleValue(resolveFocusScalePreference()) === 'imperial';
-    const formatLengthMm = (value) => {
+    const useImperialFocusScale = (lensInfo = null) => resolveLensFocusScaleMode(lensInfo) === 'imperial';
+    const formatLengthMm = (value, lensInfo = null) => {
         const numeric = typeof value === 'string' ? Number(value) : value;
         if (!Number.isFinite(numeric)) {
             return '';
         }
-        if (useImperialFocusScale()) {
+        if (useImperialFocusScale(lensInfo)) {
             const inches = numeric / 25.4;
             const fractionDigits = inches >= 10 ? 1 : 2;
             const formatted = formatNumber(inches, {
@@ -932,12 +944,12 @@ function generatePrintableOverview(config = {}) {
         const formatted = formatNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
         return formatted ? `${formatted} mm` : '';
     };
-    const formatRodLength = (value) => {
+    const formatRodLength = (value, lensInfo = null) => {
         const numeric = typeof value === 'string' ? Number(value) : value;
         if (!Number.isFinite(numeric)) {
             return '';
         }
-        if (useImperialFocusScale()) {
+        if (useImperialFocusScale(lensInfo)) {
             const inches = numeric / 2.54;
             const fractionDigits = inches >= 10 ? 1 : 2;
             const formatted = formatNumber(inches, {
@@ -949,12 +961,12 @@ function generatePrintableOverview(config = {}) {
         const formatted = formatNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
         return formatted ? `${formatted} cm` : '';
     };
-    const formatWeight = (value) => {
+    const formatWeight = (value, lensInfo = null) => {
         const numeric = typeof value === 'string' ? Number(value) : value;
         if (!Number.isFinite(numeric)) {
             return '';
         }
-        if (useImperialFocusScale()) {
+        if (useImperialFocusScale(lensInfo)) {
             const pounds = numeric / 453.59237;
             const fractionDigits = pounds >= 10 ? 1 : 2;
             const formatted = formatNumber(pounds, {
@@ -984,12 +996,12 @@ function generatePrintableOverview(config = {}) {
         }
         return null;
     };
-    const formatDistanceMeters = (value) => {
+    const formatDistanceMeters = (value, lensInfo = null) => {
         const num = typeof value === 'string' ? Number(value) : value;
         if (!Number.isFinite(num)) {
             return '';
         }
-        if (useImperialFocusScale()) {
+        if (useImperialFocusScale(lensInfo)) {
             const feet = num * 3.280839895;
             const digits = feet < 10 ? 2 : 1;
             const formatted = formatNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
@@ -1096,7 +1108,7 @@ function generatePrintableOverview(config = {}) {
             addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
         }
         addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
-        addLensBox('lensSpecFocusScaleLabel', formatFocusScalePreference());
+        addLensBox('lensSpecFocusScaleLabel', lensInfo, formatFocusScalePreference);
         if (!infoBoxes.length) {
             return '';
         }
