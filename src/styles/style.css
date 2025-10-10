@@ -6452,6 +6452,7 @@ textarea:disabled {
 
 .onboarding-overlay.active {
   display: block;
+  pointer-events: auto;
 }
 
 .onboarding-backdrop {
