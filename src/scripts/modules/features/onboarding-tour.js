@@ -169,6 +169,7 @@
     'autoGear',
     'overviewPrint',
     'exportImport',
+    'quickSafeguards',
     'backupRestore',
     'safetyNet',
     'completion',
@@ -387,6 +388,12 @@
         key: 'exportImport',
         highlight: '#shareSetupBtn',
         alternateHighlight: '#applySharedLinkBtn',
+      },
+      {
+        key: 'quickSafeguards',
+        highlight: '#storageBackupNow',
+        alternateHighlight: '#storageActionsHeading',
+        ensureSettings: { tabId: 'settingsTab-data' },
       },
       {
         key: 'backupRestore',

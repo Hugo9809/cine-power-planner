@@ -1760,6 +1760,11 @@ const texts = {
           body:
             "Export Project downloads a JSON safety bundle for sharing or archiving. Use the Import Project field beside it to restore shared configurations without leaving the planner offline.",
         },
+        quickSafeguards: {
+          title: "Capture quick safeguards backup",
+          body:
+            "Open Settings → Data & Storage → Quick safeguards and press Download full backup before making major changes. The button stores a fresh planner-backup.json offline, logs the action in Latest activity and keeps a restore copy ready even if you stay on this tab.",
+        },
         backupRestore: {
           title: "Back up and rehearse restores",
           body:
@@ -3633,6 +3638,11 @@ const texts = {
           title: "Esporta e importa in sicurezza",
           body:
             "Esporta progetto scarica un pacchetto JSON da archiviare o condividere. Il campo Importa progetto accanto permette di ripristinare configurazioni condivise senza lasciare il planner offline.",
+        },
+        quickSafeguards: {
+          title: "Acquisisci backup con Quick safeguards",
+          body:
+            "Apri Impostazioni → Dati e archiviazione → Quick safeguards e premi Scarica backup completo prima di apportare modifiche importanti. Il pulsante salva offline un nuovo planner-backup.json, registra l'azione in Attività recente e mantiene pronta una copia per il ripristino anche se resti in questa scheda.",
         },
         backupRestore: {
           title: "Esegui backup e prove di ripristino",
@@ -5521,6 +5531,11 @@ const texts = {
           title: "Exporta e importa con seguridad",
           body:
             "Exportar proyecto descarga un paquete JSON para archivar o compartir. El campo Importar proyecto junto a él restaura configuraciones compartidas sin salir del planner sin conexión.",
+        },
+        quickSafeguards: {
+          title: "Captura una copia con Quick safeguards",
+          body:
+            "Abre Configuración → Datos y almacenamiento → Quick safeguards y pulsa Descargar copia completa antes de realizar cambios importantes. El botón guarda un planner-backup.json nuevo sin conexión, registra la acción en Actividad reciente y mantiene una copia lista para restaurar aunque sigas en esta pestaña.",
         },
         backupRestore: {
           title: "Realiza copias y ensayos de restauración",
@@ -7421,6 +7436,11 @@ const texts = {
           title: "Exportez et importez en toute sécurité",
           body:
             "Exporter le projet télécharge un paquet JSON à archiver ou à partager. Le champ Importer un projet juste à côté restaure une configuration partagée sans quitter l’application hors ligne.",
+        },
+        quickSafeguards: {
+          title: "Capturer une sauvegarde Quick safeguards",
+          body:
+            "Ouvrez Paramètres → Données et stockage → Quick safeguards et appuyez sur Télécharger la sauvegarde complète avant d’apporter des changements majeurs. Le bouton enregistre un nouveau planner-backup.json hors ligne, consigne l’action dans Activité récente et garde une copie de restauration prête même si vous restez sur cet onglet.",
         },
         backupRestore: {
           title: "Sauvegardez et répétez les restaurations",
@@ -9326,6 +9346,11 @@ const texts = {
           title: "Sicher exportieren und importieren",
           body:
             "Projekt exportieren lädt ein JSON-Sicherungsbundle zum Archivieren oder Teilen. Das Feld Projekt importieren daneben stellt geteilte Konfigurationen offline wieder her.",
+        },
+        quickSafeguards: {
+          title: "Quick-Safeguards-Backup erfassen",
+          body:
+            "Öffne Einstellungen → Daten & Speicherung → Quick safeguards und drücke „Vollständiges Backup herunterladen“, bevor du größere Änderungen machst. Die Schaltfläche speichert eine frische planner-backup.json offline, protokolliert die Aktion unter Neueste Aktivität und hält eine Wiederherstellungskopie bereit, selbst wenn du in diesem Tab bleibst.",
         },
         backupRestore: {
           title: "Backups und Wiederherstellungen",
