@@ -9224,15 +9224,15 @@ body.dark-mode .requirement-box,
   margin: 0;
   margin-top: var(--spacing-xs);
   align-self: flex-start;
-  padding: 0.25rem;
-  min-height: 2rem;
-  min-width: 2rem;
+  padding: 0.15rem;
+  min-height: 1.5rem;
+  min-width: 1.5rem;
   line-height: 1;
 }
 
 #gearListOutput .gear-item-edit-btn .btn-icon {
-  --icon-size: calc(var(--button-icon-size) * 0.75);
-  font-size: calc(var(--button-icon-size) * 0.9);
+  --icon-size: calc(var(--button-icon-size) * 0.55);
+  font-size: calc(var(--button-icon-size) * 0.7);
 }
 
 #gearListOutput .gear-item-rental-excluded {
