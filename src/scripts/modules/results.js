@@ -116,6 +116,10 @@
         }
       };
 
+  // Runtime state is tracked in a single bag so UI synchronisation logic is
+  // easy to inspect. Keeping the references together helps future maintainers
+  // understand which DOM nodes participate in the results view without chasing
+  // implicit globals across modules.
   var runtimeFeedbackState = {
     elements: {},
     handlers: {},

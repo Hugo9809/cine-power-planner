@@ -72,6 +72,10 @@
   }
 
   function normalizeOwnGearRecord(entry) {
+    // Normalisation keeps the stored own-gear data predictable. Rather than
+    // trusting arbitrary JSON we coerce strings and identifiers up front. This
+    // simplifies migrations and guarantees that backup snapshots always contain
+    // clean, serialisable values that can be restored without data loss.
     if (!entry || typeof entry !== 'object') {
       return null;
     }
@@ -98,6 +102,10 @@
   }
 
   function loadStoredOwnGearItems() {
+    // The storage helpers can be swapped during tests or legacy restore flows,
+    // so we probe the global helpers defensively. Returning an empty array on
+    // failure keeps the UI usable while ensuring we never accidentally throw
+    // away the original data.
     if (typeof GLOBAL_SCOPE.loadOwnGear !== 'function') {
       return [];
     }
@@ -126,6 +134,9 @@
   }
 
   function persistOwnGearItems(items) {
+    // Persistence deliberately trims unknown properties so corrupted entries do
+    // not sneak into the autosave pipeline. Every successful write emits the
+    // change event used by autosave, backups and open windows to stay in sync.
     if (typeof GLOBAL_SCOPE.saveOwnGear !== 'function') {
       return false;
     }
