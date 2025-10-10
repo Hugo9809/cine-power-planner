@@ -15538,7 +15538,15 @@ function createContactCard(contact) {
     updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
     persist();
   });
-  nameInput.addEventListener('blur', () => persist(true));
+  nameInput.addEventListener('blur', event => {
+    const nextActive = event?.relatedTarget
+      || (typeof document !== 'undefined' ? document.activeElement : null);
+    if (nextActive && nextActive !== nameInput && card.contains(nextActive)) {
+      persist();
+      return;
+    }
+    persist(true);
+  });
 
   roleSelect.addEventListener('change', () => {
     contact.role = sanitizeContactValue(roleSelect.value);
