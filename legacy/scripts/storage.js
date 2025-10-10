@@ -6931,7 +6931,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
   var LEGACY_PROJECT_FIELD_LABELS = {
     productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
-    productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
+  productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
+  productionCompanyStreet: ['Street address', 'Straße und Hausnummer', 'Adresse', 'Dirección', 'Indirizzo'],
+  productionCompanyStreet2: ['Address line 2', 'Adresszusatz', "Complément d'adresse", 'Línea 2 de dirección', 'Seconda linea indirizzo'],
+  productionCompanyCity: ['City', 'Stadt', 'Ville', 'Ciudad', 'Città'],
+  productionCompanyRegion: ['State / Province / Region', 'Bundesland / Region', 'État / Région / Département', 'Estado / Provincia / Región', 'Regione / Provincia / Stato'],
+  productionCompanyPostalCode: ['Postal code', 'Postleitzahl', 'Code postal', 'Código postal', 'CAP'],
+  productionCompanyCountry: ['Country', 'Land', 'Pays', 'País', 'Paese'],
     rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: ['Prep Days', 'Prep-Tage', 'Jours de préparation', 'Días de preparación', 'Giorni di preparazione'],

@@ -8288,6 +8288,36 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   width: 100%;
 }
 
+.address-form-row .form-row-label {
+  align-self: start;
+  padding-top: 2px;
+}
+
+.address-field-grid {
+  display: grid;
+  gap: var(--gap-size);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.address-field-grid .address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.address-field-grid .address-field--full {
+  grid-column: 1 / -1;
+}
+
+.address-field-grid .address-field label {
+  font-size: clamp(12px, 1.4vw, 14px);
+  color: var(--text-color-secondary, inherit);
+}
+
+.address-field-grid .address-field input {
+  width: 100%;
+}
+
 #projectDialog select {
   font-family: var(--font-family);
   font-size: var(--form-control-font-size);

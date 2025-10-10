@@ -122,13 +122,23 @@ describe('full user experience speed test', () => {
 
     const setupNameInput = document.getElementById('setupName');
     const productionCompanyInput = document.getElementById('productionCompany');
-    const productionCompanyAddressInput = document.getElementById('productionCompanyAddress');
+    const productionCompanyStreetInput = document.getElementById('productionCompanyStreet');
+    const productionCompanyStreet2Input = document.getElementById('productionCompanyStreet2');
+    const productionCompanyCityInput = document.getElementById('productionCompanyCity');
+    const productionCompanyRegionInput = document.getElementById('productionCompanyRegion');
+    const productionCompanyPostalCodeInput = document.getElementById('productionCompanyPostalCode');
+    const productionCompanyCountryInput = document.getElementById('productionCompanyCountry');
     const gearListOutput = document.getElementById('gearListOutput');
     const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
 
     expect(setupNameInput).not.toBeNull();
     expect(productionCompanyInput).not.toBeNull();
-    expect(productionCompanyAddressInput).not.toBeNull();
+    expect(productionCompanyStreetInput).not.toBeNull();
+    expect(productionCompanyStreet2Input).not.toBeNull();
+    expect(productionCompanyCityInput).not.toBeNull();
+    expect(productionCompanyRegionInput).not.toBeNull();
+    expect(productionCompanyPostalCodeInput).not.toBeNull();
+    expect(productionCompanyCountryInput).not.toBeNull();
     expect(gearListOutput).not.toBeNull();
     expect(projectRequirementsOutput).not.toBeNull();
 
@@ -140,8 +150,18 @@ describe('full user experience speed test', () => {
     measure('set production company', () => {
       productionCompanyInput.value = 'Velocity Media';
       productionCompanyInput.dispatchEvent(new Event('input', { bubbles: true }));
-      productionCompanyAddressInput.value = '500 Cinema Rd, Motion City';
-      productionCompanyAddressInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyStreetInput.value = '500 Cinema Rd';
+      productionCompanyStreetInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyStreet2Input.value = '';
+      productionCompanyStreet2Input.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyCityInput.value = 'Motion City';
+      productionCompanyCityInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyRegionInput.value = 'NY';
+      productionCompanyRegionInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyPostalCodeInput.value = '10001';
+      productionCompanyPostalCodeInput.dispatchEvent(new Event('input', { bubbles: true }));
+      productionCompanyCountryInput.value = 'USA';
+      productionCompanyCountryInput.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
     const cameraLabel = measure('select camera', () => pickFirstRealOption(document.getElementById('cameraSelect')));
@@ -246,7 +266,13 @@ describe('full user experience speed test', () => {
     expect(storedProject).toBeTruthy();
     expect(storedProject.projectInfo).toBeDefined();
     expect(storedProject.projectInfo.productionCompany).toBe('Velocity Media');
-    expect(storedProject.projectInfo.productionCompanyAddress).toBe('500 Cinema Rd, Motion City');
+    expect(storedProject.projectInfo.productionCompanyAddress).toBe('500 Cinema Rd\nMotion City, NY, 10001\nUSA');
+    expect(storedProject.projectInfo.productionCompanyStreet).toBe('500 Cinema Rd');
+    expect(storedProject.projectInfo.productionCompanyStreet2).toBe('');
+    expect(storedProject.projectInfo.productionCompanyCity).toBe('Motion City');
+    expect(storedProject.projectInfo.productionCompanyRegion).toBe('NY');
+    expect(storedProject.projectInfo.productionCompanyPostalCode).toBe('10001');
+    expect(storedProject.projectInfo.productionCompanyCountry).toBe('USA');
     expect(storedProject.gearListAndProjectRequirementsGenerated).toBe(true);
 
     measure('trigger auto backup', () => {

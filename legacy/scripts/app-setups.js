@@ -2197,9 +2197,37 @@ function collectProjectFormData() {
   var proGaffWidth1 = getGearValue('gearListProGaffWidth1');
   var proGaffColor2 = getGearValue('gearListProGaffColor2');
   var proGaffWidth2 = getGearValue('gearListProGaffWidth2');
+  var addressFields = {
+    street: getValue('productionCompanyStreet'),
+    street2: getValue('productionCompanyStreet2'),
+    city: getValue('productionCompanyCity'),
+    region: getValue('productionCompanyRegion'),
+    postalCode: getValue('productionCompanyPostalCode'),
+    country: getValue('productionCompanyCountry')
+  };
+  var addressLines = [];
+  if (addressFields.street) addressLines.push(addressFields.street);
+  if (addressFields.street2) addressLines.push(addressFields.street2);
+  var localityParts = [addressFields.city, addressFields.region, addressFields.postalCode].map(function (part) {
+    return part || '';
+  }).filter(function (part) {
+    return part;
+  });
+  if (localityParts.length) {
+    addressLines.push(localityParts.join(', '));
+  }
+  if (addressFields.country) {
+    addressLines.push(addressFields.country);
+  }
   var info = _objectSpread(_objectSpread({
     productionCompany: getValue('productionCompany'),
-    productionCompanyAddress: getValue('productionCompanyAddress'),
+    productionCompanyAddress: addressLines.join('\n'),
+    productionCompanyStreet: addressFields.street,
+    productionCompanyStreet2: addressFields.street2,
+    productionCompanyCity: addressFields.city,
+    productionCompanyRegion: addressFields.region,
+    productionCompanyPostalCode: addressFields.postalCode,
+    productionCompanyCountry: addressFields.country,
     rentalHouse: getValue('rentalHouse')
   }, people.length ? {
     people: people
@@ -2333,7 +2361,44 @@ function populateProjectForm() {
     populateFrameRateDropdown(info.recordingFrameRate);
   }
   setVal('productionCompany', info.productionCompany);
-  setVal('productionCompanyAddress', info.productionCompanyAddress);
+  var normalizedAddressFields = function () {
+    var resolved = {
+      street: info.productionCompanyStreet || '',
+      street2: info.productionCompanyStreet2 || '',
+      city: info.productionCompanyCity || '',
+      region: info.productionCompanyRegion || '',
+      postalCode: info.productionCompanyPostalCode || '',
+      country: info.productionCompanyCountry || ''
+    };
+    var hasStructured = Object.keys(resolved).some(function (key) {
+      return resolved[key];
+    });
+    if (hasStructured) {
+      return resolved;
+    }
+    var legacyAddress = typeof info.productionCompanyAddress === 'string' ? info.productionCompanyAddress.trim() : '';
+    if (!legacyAddress) {
+      return resolved;
+    }
+    var lines = legacyAddress.split(/\r?\n/).map(function (line) {
+      return line.trim();
+    }).filter(Boolean);
+    if (!lines.length) {
+      return resolved;
+    }
+    resolved.street = lines[0] || '';
+    resolved.street2 = lines[1] || '';
+    if (lines.length >= 3) {
+      resolved.city = lines.slice(2).join(', ');
+    }
+    return resolved;
+  }();
+  setVal('productionCompanyStreet', normalizedAddressFields.street);
+  setVal('productionCompanyStreet2', normalizedAddressFields.street2);
+  setVal('productionCompanyCity', normalizedAddressFields.city);
+  setVal('productionCompanyRegion', normalizedAddressFields.region);
+  setVal('productionCompanyPostalCode', normalizedAddressFields.postalCode);
+  setVal('productionCompanyCountry', normalizedAddressFields.country);
   setVal('rentalHouse', info.rentalHouse);
   if (crewContainer) {
     crewContainer.innerHTML = '';

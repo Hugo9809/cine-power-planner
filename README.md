@@ -858,6 +858,11 @@ data.
   calculator counts and required hot-swap hardware.
 - Crew details, monitoring configurations, video distribution preferences and
   custom notes appear in exports so departments stay aligned.
+- The Project Requirements dialog captures production company information with
+  separate fields for street, address line 2, city, region, postal code and
+  country. Populate whichever fields you have—everything stays optional—and the
+  planner will preserve structured values in saves, backups, imports and
+  printable reports.
 - Gear lists save with the project, appear in printable overviews, live inside
   shareable project files and can be removed with **Delete Gear List** if you
   want a fresh start.
