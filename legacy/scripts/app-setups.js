@@ -130,6 +130,45 @@ function resolveRentalHouseCatalog() {
   return [];
 }
 var rentalHouseCatalog = resolveRentalHouseCatalog();
+var RENTAL_HOUSE_SUGGESTION_LIMIT = 50;
+function normalizeRentalHouseSearchValue(value) {
+  if (!value) return '';
+  var normalized = String(value);
+  try {
+    if (typeof normalized.normalize === 'function') {
+      normalized = normalized.normalize('NFD');
+    }
+  } catch (error) {
+    void error;
+  }
+  return normalized.replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[\u2012\u2013\u2014\u2015]/g, '-').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+var rentalHouseSearchIndex = rentalHouseCatalog.map(function (entry) {
+  if (!entry || _typeof(entry) !== 'object') return null;
+  var name = entry.name ? String(entry.name).trim() : '';
+  if (!name) return null;
+  var key = normalizeRentalHouseKey(name);
+  if (!key) return null;
+  var location = formatRentalHouseLocation(entry);
+  var normalizedName = normalizeRentalHouseSearchValue(name);
+  var normalizedLocation = normalizeRentalHouseSearchValue(location);
+  var additionalParts = normalizeRentalHouseSearchValue([entry.city, entry.country, entry.address, entry.phone, entry.email].map(function (part) {
+    return part ? String(part).trim() : '';
+  }).filter(Boolean).join(' '));
+  var searchKey = [normalizedName, normalizedLocation, additionalParts].filter(Boolean).join(' ');
+  return {
+    entry: entry,
+    name: name,
+    key: key,
+    location: location,
+    normalizedName: normalizedName,
+    normalizedLocation: normalizedLocation,
+    searchKey: searchKey
+  };
+}).filter(Boolean);
+var rentalHouseCatalogSignature = rentalHouseSearchIndex.map(function (info) {
+  return "".concat(info.key, "|").concat(info.location);
+}).join('||');
 function normalizeRentalHouseKey(value) {
   if (!value) return '';
   return String(value).trim().replace(/[\u2012\u2013\u2014\u2015]/g, '-').toLowerCase();
@@ -145,6 +184,161 @@ var rentalHouseLookup = function () {
   });
   return map;
 }();
+var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
+function formatRentalHouseShortName(entryOrName) {
+  if (!entryOrName) return '';
+  var explicit = _typeof(entryOrName) === 'object' && entryOrName && typeof entryOrName.shortName === 'string' ? entryOrName.shortName.trim() : '';
+  if (explicit) {
+    return explicit;
+  }
+  var rawName = typeof entryOrName === 'string' ? entryOrName : entryOrName && entryOrName.name;
+  var name = rawName ? String(rawName).trim() : '';
+  if (!name) return '';
+  var base = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+  var separatorMatch = base.match(/\s*[\u2012\u2013\u2014\u2015-]\s*/);
+  if (separatorMatch) {
+    var index = base.indexOf(separatorMatch[0]);
+    if (index > 0) {
+      base = base.slice(0, index).trim();
+    }
+  }
+  if (!base) {
+    base = name.trim();
+  }
+  var uppercaseTokens = base.match(/\b[A-Z]{2,5}\b/g);
+  if (uppercaseTokens && uppercaseTokens.length) {
+    for (var i = 0; i < uppercaseTokens.length; i += 1) {
+      var token = uppercaseTokens[i];
+      if (!RENTAL_HOUSE_SUFFIX_TOKENS.has(token)) {
+        if (token === 'ARRI') return 'Arri';
+        return token;
+      }
+    }
+  }
+  if (/^arri\b/i.test(base)) {
+    return 'Arri';
+  }
+  if (/^ludwig\s+kamera/i.test(base)) {
+    return 'Kamera Ludwig';
+  }
+  return base.trim();
+}
+function resolveCurrentRentalHouseValue() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var input = options.input || resolveRentalHouseInput();
+  if (options.preferInput !== false && input && typeof input.value === 'string') {
+    var inputValue = input.value.trim();
+    if (inputValue) {
+      return inputValue;
+    }
+  }
+  if (typeof options.rentalHouse === 'string' && options.rentalHouse.trim()) {
+    return options.rentalHouse.trim();
+  }
+  var info = null;
+  var scope = getGlobalScope();
+  if (scope && typeof scope.getCurrentProjectInfo === 'function') {
+    try {
+      info = scope.getCurrentProjectInfo();
+    } catch (scopeError) {
+      void scopeError;
+    }
+  }
+  var profileValue = info && _typeof(info) === 'object' && typeof info.rentalHouse === 'string' ? info.rentalHouse.trim() : '';
+  if (profileValue) {
+    return profileValue;
+  }
+  if (options.preferInput === false && input && typeof input.value === 'string') {
+    return input.value.trim();
+  }
+  return '';
+}
+function resolveRentalProviderNoteLabel() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var fallback = typeof options.fallback === 'string' ? options.fallback : '';
+  var rentalValue = typeof options.rentalHouse === 'string' && options.rentalHouse.trim() ? options.rentalHouse.trim() : resolveCurrentRentalHouseValue({
+    input: options.input
+  });
+  if (!rentalValue) {
+    return fallback;
+  }
+  var match = rentalHouseLookup[normalizeRentalHouseKey(rentalValue)];
+  var shortName = formatRentalHouseShortName(match || rentalValue);
+  if (shortName) {
+    return shortName;
+  }
+  return fallback || rentalValue;
+}
+var appliedRentalNoteLabel = null;
+function refreshRentalProviderNoteDisplays() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var rentalTexts = getGearListRentalToggleTexts(options);
+  var nextLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel.trim() : '';
+  if (appliedRentalNoteLabel === nextLabel) {
+    return nextLabel;
+  }
+  appliedRentalNoteLabel = nextLabel;
+  var doc = typeof document !== 'undefined' ? document : null;
+  var roots = [];
+  if (typeof gearListOutput !== 'undefined' && gearListOutput) {
+    roots.push(gearListOutput);
+  }
+  if (typeof projectRequirementsOutput !== 'undefined' && projectRequirementsOutput) {
+    roots.push(projectRequirementsOutput);
+  }
+  if (doc) {
+    roots.push(doc);
+  }
+  if (roots.length) {
+    var selector = '.gear-item[data-rental-note], .gear-custom-item[data-rental-note]';
+    roots.forEach(function (root) {
+      if (!root || typeof root.querySelectorAll !== 'function') {
+        return;
+      }
+      root.querySelectorAll(selector).forEach(function (element) {
+        if (!element || typeof element.setAttribute !== 'function') {
+          return;
+        }
+        if (nextLabel) {
+          if (element.getAttribute('data-rental-note') !== nextLabel) {
+            element.setAttribute('data-rental-note', nextLabel);
+          }
+        } else if (typeof element.removeAttribute === 'function') {
+          element.removeAttribute('data-rental-note');
+        }
+      });
+    });
+  }
+  var context = null;
+  if (typeof getGearItemEditContext === 'function') {
+    try {
+      context = getGearItemEditContext();
+    } catch (contextError) {
+      if (!contextError || contextError.name !== 'ReferenceError') {
+        throw contextError;
+      }
+    }
+  }
+  if (context && context.rentalDescription) {
+    context.rentalDescription.textContent = nextLabel;
+    context.rentalDescription.hidden = !nextLabel;
+    if (context.rentalCheckbox) {
+      if (nextLabel) {
+        context.rentalCheckbox.setAttribute('aria-describedby', context.rentalDescription.id);
+      } else {
+        context.rentalCheckbox.removeAttribute('aria-describedby');
+      }
+    }
+    if (context.rentalToggleButton) {
+      if (nextLabel) {
+        context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
+      } else {
+        context.rentalToggleButton.removeAttribute('aria-describedby');
+      }
+    }
+  }
+  return nextLabel;
+}
 function formatRentalHouseLocation(entry) {
   var parts = [];
   var city = entry && entry.city ? String(entry.city).trim() : '';
@@ -185,31 +379,81 @@ function ensureRentalHouseDatalist(input) {
   }
   return datalist;
 }
+function scoreRentalHouseMatch(info, query) {
+  if (!query) return 0;
+  if (!info) return Number.POSITIVE_INFINITY;
+  var normalizedName = info.normalizedName,
+    normalizedLocation = info.normalizedLocation,
+    searchKey = info.searchKey;
+  if (!searchKey || searchKey.indexOf(query) === -1) {
+    return Number.POSITIVE_INFINITY;
+  }
+  var nameIndex = normalizedName ? normalizedName.indexOf(query) : -1;
+  var locationIndex = normalizedLocation ? normalizedLocation.indexOf(query) : -1;
+  if (nameIndex === 0) {
+    return 0;
+  }
+  if (locationIndex === 0) {
+    return 100;
+  }
+  if (nameIndex > 0) {
+    return 200 + nameIndex;
+  }
+  if (locationIndex > 0) {
+    return 400 + locationIndex;
+  }
+  var searchIndex = searchKey.indexOf(query);
+  return 800 + (searchIndex >= 0 ? searchIndex : 0);
+}
+function getRentalHouseMatches(query) {
+  var normalizedQuery = normalizeRentalHouseSearchValue(query);
+  if (!normalizedQuery) {
+    return rentalHouseSearchIndex.slice().sort(function (a, b) {
+      return a.name.localeCompare(b.name);
+    }).slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT);
+  }
+  var results = [];
+  rentalHouseSearchIndex.forEach(function (info) {
+    var score = scoreRentalHouseMatch(info, normalizedQuery);
+    if (!Number.isFinite(score)) return;
+    results.push({
+      info: info,
+      score: score
+    });
+  });
+  results.sort(function (a, b) {
+    if (a.score !== b.score) return a.score - b.score;
+    return a.info.name.localeCompare(b.info.name);
+  });
+  return results.slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT).map(function (result) {
+    return result.info;
+  });
+}
 function renderRentalHouseSuggestions() {
   var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : resolveRentalHouseInput();
-  if (!input || !rentalHouseCatalog.length) return;
+  if (!input || !rentalHouseSearchIndex.length) return;
   var datalist = ensureRentalHouseDatalist(input);
   if (!datalist) return;
-  var signature = rentalHouseCatalog.map(function (entry) {
-    return entry && entry.name ? String(entry.name).trim() : '';
-  }).filter(Boolean).join('|');
+  var query = typeof input.value === 'string' ? input.value : '';
+  var normalizedQuery = normalizeRentalHouseSearchValue(query);
+  var signature = "".concat(rentalHouseCatalogSignature, "::").concat(normalizedQuery);
   if (datalist.__rentalHouseSignature === signature) {
     return;
   }
   var fragment = document.createDocumentFragment();
   var seen = new Set();
-  rentalHouseCatalog.forEach(function (entry) {
-    if (!entry || _typeof(entry) !== 'object') return;
-    var name = entry.name ? String(entry.name).trim() : '';
-    if (!name) return;
-    var key = normalizeRentalHouseKey(name);
-    if (seen.has(key)) return;
+  var matches = getRentalHouseMatches(query);
+  var suggestions = matches.length ? matches : getRentalHouseMatches('');
+  suggestions.forEach(function (info) {
+    if (!info || seen.has(info.key)) return;
     var option = document.createElement('option');
-    option.value = name;
-    var label = formatRentalHouseLocation(entry);
-    if (label) option.label = label;
+    option.value = info.name;
+    if (info.location) {
+      option.label = info.location;
+    }
+    option.textContent = info.name;
     fragment.appendChild(option);
-    seen.add(key);
+    seen.add(info.key);
   });
   datalist.innerHTML = '';
   datalist.appendChild(fragment);
@@ -225,26 +469,38 @@ function updateRentalHouseAssistiveDetails() {
     if (tooltip) {
       input.title = tooltip;
       input.setAttribute('data-help', tooltip);
-      return;
+    } else {
+      input.removeAttribute('title');
+      input.removeAttribute('data-help');
     }
+  } else {
+    input.removeAttribute('title');
+    input.removeAttribute('data-help');
   }
-  input.removeAttribute('title');
-  input.removeAttribute('data-help');
+  refreshRentalProviderNoteDisplays({
+    input: input,
+    rentalHouse: value
+  });
 }
 var initialRentalHouseInput = resolveRentalHouseInput();
 if (initialRentalHouseInput) {
-  if (rentalHouseCatalog.length) {
+  if (rentalHouseSearchIndex.length) {
     renderRentalHouseSuggestions(initialRentalHouseInput);
   }
   updateRentalHouseAssistiveDetails(initialRentalHouseInput);
   initialRentalHouseInput.addEventListener('input', function () {
-    return updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+    renderRentalHouseSuggestions(initialRentalHouseInput);
+    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
   });
   initialRentalHouseInput.addEventListener('change', function () {
-    return updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+    renderRentalHouseSuggestions(initialRentalHouseInput);
+    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
   });
   initialRentalHouseInput.addEventListener('blur', function () {
     return updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+  });
+  initialRentalHouseInput.addEventListener('focus', function () {
+    return renderRentalHouseSuggestions(initialRentalHouseInput);
   });
 }
 function hasMeaningfulPowerSelection(value) {
@@ -854,6 +1110,37 @@ if (projectCancelBtnRef) {
     closeDialog(projectDialog);
   });
 }
+function submitProjectFormViaBackdrop() {
+  if (!projectForm || !projectDialog) {
+    return;
+  }
+  var propOpen = typeof projectDialog.open === 'boolean' ? projectDialog.open : null;
+  var attrOpen = typeof projectDialog.hasAttribute === 'function' ? projectDialog.hasAttribute('open') : false;
+  var isOpen = propOpen === null ? attrOpen : propOpen || attrOpen;
+  if (!isOpen) {
+    return;
+  }
+  var submitButton = projectDialog.querySelector('[type="submit"]');
+  if (typeof projectForm.requestSubmit === 'function') {
+    try {
+      if (submitButton) {
+        projectForm.requestSubmit(submitButton);
+      } else {
+        projectForm.requestSubmit();
+      }
+      return;
+    } catch (requestError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Project dialog backdrop submit failed to use requestSubmit', requestError);
+      }
+    }
+  }
+  var submitEvent = new Event('submit', {
+    bubbles: true,
+    cancelable: true
+  });
+  projectForm.dispatchEvent(submitEvent);
+}
 if (projectDialogCloseBtn) {
   projectDialogCloseBtn.addEventListener('click', function () {
     if (projectCancelBtnRef) {
@@ -871,6 +1158,13 @@ if (projectDialog) {
     } else {
       restoreProjectDialogSnapshot();
       closeDialog(projectDialog);
+    }
+  });
+  projectDialog.addEventListener('click', function (event) {
+    if (event.target === projectDialog) {
+      event.preventDefault();
+      event.stopPropagation();
+      submitProjectFormViaBackdrop();
     }
   });
 }
@@ -1101,6 +1395,264 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   } else if (typeof alert === 'function') {
     alert(successMessage);
   }
+}
+var ownGearNameCache = null;
+function getGearProviderTexts() {
+  var textsForDialog = getGearItemEditTexts();
+  return {
+    rental: textsForDialog.providerRental || 'Rental house',
+    user: textsForDialog.providerUser || 'User',
+    crewHeading: textsForDialog.providerCrewHeading || 'Crew',
+    unknown: textsForDialog.providerUnknown || 'Custom provider',
+    help: textsForDialog.providerHelp || ''
+  };
+}
+function refreshOwnGearNameCache() {
+  ownGearNameCache = {
+    names: new Set(),
+    timestamp: Date.now()
+  };
+  if (typeof loadOwnGear !== 'function') {
+    return ownGearNameCache.names;
+  }
+  try {
+    var items = loadOwnGear();
+    if (Array.isArray(items)) {
+      items.forEach(function (item) {
+        if (item && typeof item.name === 'string') {
+          var trimmed = item.name.trim().toLowerCase();
+          if (trimmed) {
+            ownGearNameCache.names.add(trimmed);
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.warn('Unable to refresh own gear cache for provider defaults', error);
+  }
+  return ownGearNameCache.names;
+}
+function getOwnGearNameSet() {
+  if (!ownGearNameCache || !(ownGearNameCache.names instanceof Set)) {
+    return refreshOwnGearNameCache();
+  }
+  return ownGearNameCache.names;
+}
+function guessDefaultProvider(name) {
+  var trimmed = typeof name === 'string' ? name.trim() : '';
+  if (!trimmed) {
+    return 'rental-house';
+  }
+  var lookup = getOwnGearNameSet();
+  if (lookup.has(trimmed.toLowerCase())) {
+    return 'user';
+  }
+  return 'rental-house';
+}
+function ensureGearItemProviderElement(element) {
+  var _element$classList;
+  if (!element) return null;
+  var providerSpan = element.querySelector('.gear-item-provider');
+  if (providerSpan) {
+    return providerSpan;
+  }
+  var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  providerSpan = doc.createElement('span');
+  providerSpan.className = 'gear-item-provider';
+  providerSpan.hidden = true;
+  var isCustom = (_element$classList = element.classList) === null || _element$classList === void 0 ? void 0 : _element$classList.contains('gear-custom-item');
+  if (isCustom) {
+    var summary = element.querySelector('.gear-custom-item-summary');
+    var note = element.querySelector('.gear-item-note');
+    if (summary) {
+      if (note) {
+        summary.insertBefore(providerSpan, note);
+      } else {
+        summary.appendChild(providerSpan);
+      }
+      return providerSpan;
+    }
+  }
+  var reference = element.querySelector('.gear-item-note') || element.querySelector('.gear-item-edit-btn') || element.querySelector('.gear-custom-item-actions') || element.querySelector('.gear-custom-remove-btn');
+  if (reference && reference.parentElement) {
+    reference.parentElement.insertBefore(providerSpan, reference);
+  } else {
+    element.appendChild(providerSpan);
+  }
+  return providerSpan;
+}
+function formatUserProfileProviderName(rawName) {
+  var trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  if (!trimmed) {
+    return '';
+  }
+  var parts = trimmed.split(/\s+/).filter(Boolean);
+  if (!parts.length) {
+    return '';
+  }
+  var firstName = parts[0];
+  if (parts.length === 1) {
+    return firstName;
+  }
+  var lastPart = parts[parts.length - 1];
+  var lastInitial = Array.from(lastPart)[0] || '';
+  if (!lastInitial) {
+    return firstName;
+  }
+  var normalizedInitial = typeof lastInitial.toLocaleUpperCase === 'function' ? lastInitial.toLocaleUpperCase() : lastInitial.toUpperCase();
+  return "".concat(firstName, " ").concat(normalizedInitial);
+}
+function getProviderInfo(value) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var trimmed = typeof value === 'string' ? value.trim() : '';
+  var texts = getGearProviderTexts();
+  if (!trimmed) {
+    return {
+      value: '',
+      label: '',
+      type: ''
+    };
+  }
+  if (trimmed === 'rental-house') {
+    return {
+      value: 'rental-house',
+      label: texts.rental,
+      type: 'rental'
+    };
+  }
+  if (trimmed === 'user') {
+    var profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+    var profileName = profile && profile.name ? profile.name : '';
+    var profileDisplayName = formatUserProfileProviderName(profileName);
+    var label = profileDisplayName ? "".concat(profileDisplayName, " \u2014 ").concat(texts.user) : options.label || texts.user;
+    return {
+      value: 'user',
+      label: label,
+      type: 'user',
+      profileName: profileName,
+      profileDisplayName: profileDisplayName
+    };
+  }
+  if (trimmed.startsWith('contact:')) {
+    var contactId = trimmed.slice('contact:'.length);
+    var contact = typeof getContactById === 'function' ? getContactById(contactId) : null;
+    if (contact) {
+      var _label = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(contact) : contact.name || contact.email || contact.phone || contact.id || texts.crewHeading;
+      return {
+        value: trimmed,
+        label: _label,
+        type: 'contact',
+        contactId: contactId
+      };
+    }
+    var fallback = options && options.label || (typeof getContactsText === 'function' ? getContactsText('missingContactFallback', 'Saved contact') : 'Saved contact');
+    return {
+      value: trimmed,
+      label: fallback,
+      type: 'contact',
+      contactId: contactId,
+      missing: true
+    };
+  }
+  return {
+    value: trimmed,
+    label: options && options.label ? options.label : texts.unknown,
+    type: 'custom'
+  };
+}
+function setGearItemProvider(element, providerValue) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  if (!element) return;
+  var info = getProviderInfo(providerValue || element.getAttribute('data-gear-provider') || '', {
+    label: options.label
+  });
+  if (info.value) {
+    element.setAttribute('data-gear-provider', info.value);
+  } else {
+    element.removeAttribute('data-gear-provider');
+  }
+  if (info.label) {
+    element.setAttribute('data-gear-provider-label', info.label);
+  } else {
+    element.removeAttribute('data-gear-provider-label');
+  }
+  var badge = ensureGearItemProviderElement(element);
+  if (!badge) return;
+  if (info.label) {
+    badge.textContent = info.label;
+    badge.hidden = false;
+    badge.setAttribute('data-provider-type', info.type || '');
+    badge.setAttribute('title', info.label);
+    badge.setAttribute('data-help', info.label);
+  } else {
+    badge.textContent = '';
+    badge.hidden = true;
+    badge.removeAttribute('data-provider-type');
+    badge.removeAttribute('title');
+    badge.removeAttribute('data-help');
+  }
+}
+function getProviderOptionLabel(option) {
+  if (!option) return '';
+  return option.textContent ? option.textContent.trim() : option.value;
+}
+function updateGearItemEditProviderOptions(context) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!context || !context.providerSelect) return;
+  var select = context.providerSelect;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  var texts = getGearProviderTexts();
+  var profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+  var contacts = typeof getContactsSnapshot === 'function' ? getContactsSnapshot() : [];
+  var doc = select.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var rentalOption = doc.createElement('option');
+  rentalOption.value = 'rental-house';
+  rentalOption.textContent = texts.rental;
+  select.appendChild(rentalOption);
+  var userOption = doc.createElement('option');
+  userOption.value = 'user';
+  var profileName = profile && profile.name ? profile.name : '';
+  var profileDisplayName = formatUserProfileProviderName(profileName);
+  userOption.textContent = profileDisplayName ? "".concat(profileDisplayName, " \u2014 ").concat(texts.user) : texts.user;
+  select.appendChild(userOption);
+  if (contacts.length) {
+    var group = doc.createElement('optgroup');
+    group.label = texts.crewHeading;
+    contacts.forEach(function (contact) {
+      var option = doc.createElement('option');
+      option.value = "contact:".concat(contact.id);
+      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.id;
+      group.appendChild(option);
+    });
+    select.appendChild(group);
+  }
+  var selectedValue = typeof data.providedBy === 'string' && data.providedBy.trim() ? data.providedBy.trim() : guessDefaultProvider(data.name || '');
+  if (selectedValue && !Array.from(select.options).some(function (option) {
+    return option.value === selectedValue;
+  })) {
+    var fallbackOption = doc.createElement('option');
+    fallbackOption.value = selectedValue;
+    fallbackOption.textContent = data.providerLabel || (typeof getContactsText === 'function' ? getContactsText('missingContactFallback', 'Saved contact') : texts.unknown);
+    fallbackOption.setAttribute('data-provider-fallback', 'true');
+    select.appendChild(fallbackOption);
+  }
+  select.value = selectedValue || 'rental-house';
+}
+function refreshGearItemProviderDisplays(scope) {
+  var root = scope || gearListOutput;
+  if (!root) return;
+  var items = root.querySelectorAll('.gear-item, .gear-custom-item');
+  items.forEach(function (element) {
+    var data = getGearItemData(element);
+    setGearItemProvider(element, data.providedBy, {
+      label: data.providerLabel
+    });
+  });
+  refreshRentalProviderNoteDisplays();
 }
 function handleShareSetupClick() {
   var shareContext = getShareUiContext(this);
@@ -2390,10 +2942,10 @@ function populateProjectForm() {
       postalCode: info.productionCompanyPostalCode || '',
       country: info.productionCompanyCountry || ''
     };
-    var hasStructured = Object.keys(resolved).some(function (key) {
-      return resolved[key];
+    var hasStructuredValues = Object.values(resolved).some(function (value) {
+      return value;
     });
-    if (hasStructured) {
+    if (hasStructuredValues) {
       return resolved;
     }
     var legacyAddress = typeof info.productionCompanyAddress === 'string' ? info.productionCompanyAddress.trim() : '';
@@ -3234,6 +3786,16 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
   if (normalizedItem.screenSize) {
     span.appendChild(document.createTextNode(" - ".concat(normalizedItem.screenSize)));
   }
+  if (span.dataset) {
+    if (normalizedItem.ownGearId) {
+      span.dataset.autoGearOwnGearId = normalizedItem.ownGearId;
+    } else if (Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearOwnGearId')) {
+      delete span.dataset.autoGearOwnGearId;
+    }
+  }
+  if (normalizedItem.ownGearId) {
+    setGearItemProvider(span, 'user');
+  }
   if (Array.isArray(normalizedItem.contextNotes) && normalizedItem.contextNotes.length) {
     setAutoGearSpanContextNotes(span, normalizedItem.contextNotes, quantity);
   } else {
@@ -3721,6 +4283,18 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   }();
   var rawMonitorSelection = info && typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
+  var ownGearIdSet = function () {
+    if (typeof getAutoGearOwnGearItems !== 'function') return new Set();
+    try {
+      var items = getAutoGearOwnGearItems();
+      return new Set((Array.isArray(items) ? items : []).map(function (item) {
+        return item && typeof item.id === 'string' ? item.id.trim() : '';
+      }).filter(Boolean));
+    } catch (error) {
+      void error;
+      return new Set();
+    }
+  }();
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
   var normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
   var rawTripodHeadBrand = info && typeof info.tripodHeadBrand === 'string' ? info.tripodHeadBrand.trim() : '';
@@ -3851,6 +4425,27 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedCameraSelection) return false;
       if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
     }
+    var ownGearConditionList = Array.isArray(rule.ownGear) ? rule.ownGear.filter(Boolean) : [];
+    if (ownGearConditionList.length) {
+      var _normalizedTargets2 = ownGearConditionList.map(function (value) {
+        return typeof value === 'string' ? value.trim() : '';
+      }).filter(Boolean);
+      if (!_normalizedTargets2.length) return false;
+      var logic = normalizeAutoGearConditionLogic(rule.ownGearLogic);
+      if (logic === 'none') {
+        if (_normalizedTargets2.some(function (target) {
+          return ownGearIdSet.has(target);
+        })) return false;
+      } else if (logic === 'any' || logic === 'or') {
+        if (!_normalizedTargets2.some(function (target) {
+          return ownGearIdSet.has(target);
+        })) return false;
+      } else {
+        if (!_normalizedTargets2.every(function (target) {
+          return ownGearIdSet.has(target);
+        })) return false;
+      }
+    }
     if (cameraWeightCondition) {
       if (!Number.isFinite(selectedCameraWeight)) return false;
       if (!evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight)) {
@@ -3859,69 +4454,69 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {
-      var _normalizedTargets2 = monitorList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets2.length) return false;
+      var _normalizedTargets3 = monitorList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets3.length) return false;
       if (!normalizedMonitorSelection) return false;
-      if (!_normalizedTargets2.includes(normalizedMonitorSelection)) return false;
+      if (!_normalizedTargets3.includes(normalizedMonitorSelection)) return false;
     }
     var tripodHeadList = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.filter(Boolean) : [];
     if (tripodHeadList.length) {
-      var _normalizedTargets3 = tripodHeadList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets3.length) return false;
+      var _normalizedTargets4 = tripodHeadList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets4.length) return false;
       if (!normalizedTripodHeadBrand) return false;
-      if (!_normalizedTargets3.includes(normalizedTripodHeadBrand)) return false;
+      if (!_normalizedTargets4.includes(normalizedTripodHeadBrand)) return false;
     }
     var tripodBowlList = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.filter(Boolean) : [];
     if (tripodBowlList.length) {
-      var _normalizedTargets4 = tripodBowlList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets4.length) return false;
+      var _normalizedTargets5 = tripodBowlList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets5.length) return false;
       if (!normalizedTripodBowl) return false;
-      if (!_normalizedTargets4.includes(normalizedTripodBowl)) return false;
+      if (!_normalizedTargets5.includes(normalizedTripodBowl)) return false;
     }
     var tripodTypesList = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.filter(Boolean) : [];
     if (tripodTypesList.length) {
-      var _normalizedTargets5 = tripodTypesList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets5.length) return false;
-      if (!_normalizedTargets5.every(function (target) {
+      var _normalizedTargets6 = tripodTypesList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets6.length) return false;
+      if (!_normalizedTargets6.every(function (target) {
         return normalizedTripodTypesSet.has(target);
       })) return false;
     }
     var tripodSpreaderList = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.filter(Boolean) : [];
     if (tripodSpreaderList.length) {
-      var _normalizedTargets6 = tripodSpreaderList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets6.length) return false;
+      var _normalizedTargets7 = tripodSpreaderList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets7.length) return false;
       if (!normalizedTripodSpreader) return false;
-      if (!_normalizedTargets6.includes(normalizedTripodSpreader)) return false;
+      if (!_normalizedTargets7.includes(normalizedTripodSpreader)) return false;
     }
     var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
     if (crewPresentList.length) {
-      var _normalizedTargets7 = crewPresentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets7.length) return false;
-      if (!_normalizedTargets7.every(function (target) {
+      var _normalizedTargets8 = crewPresentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets8.length) return false;
+      if (!_normalizedTargets8.every(function (target) {
         return crewRoleSet.has(target);
       })) return false;
     }
     var crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
     if (crewAbsentList.length) {
-      var _normalizedTargets8 = crewAbsentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets8.length) return false;
-      if (_normalizedTargets8.some(function (target) {
+      var _normalizedTargets9 = crewAbsentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets9.length) return false;
+      if (_normalizedTargets9.some(function (target) {
         return crewRoleSet.has(target);
       })) return false;
     }
     var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
     if (wirelessList.length) {
-      var _normalizedTargets9 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets9.length) return false;
+      var _normalizedTargets0 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets0.length) return false;
       if (!normalizedWirelessSelection) return false;
-      if (!_normalizedTargets9.includes(normalizedWirelessSelection)) return false;
+      if (!_normalizedTargets0.includes(normalizedWirelessSelection)) return false;
     }
     var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
     if (motorsList.length) {
-      var _normalizedTargets0 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets0.length) return false;
-      var requiresAnyMotor = _normalizedTargets0.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
-      var specificTargets = _normalizedTargets0.filter(function (target) {
+      var _normalizedTargets1 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets1.length) return false;
+      var requiresAnyMotor = _normalizedTargets1.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+      var specificTargets = _normalizedTargets1.filter(function (target) {
         return target !== AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK;
       });
       if (requiresAnyMotor && normalizedMotorSet.size === 0) return false;
@@ -3931,18 +4526,18 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     }
     var controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
     if (controllersList.length) {
-      var _normalizedTargets1 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets1.length) return false;
-      if (!_normalizedTargets1.every(function (target) {
+      var _normalizedTargets10 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets10.length) return false;
+      if (!_normalizedTargets10.every(function (target) {
         return normalizedControllerSet.has(target);
       })) return false;
     }
     var distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
     if (distanceList.length) {
-      var _normalizedTargets10 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets10.length) return false;
+      var _normalizedTargets11 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets11.length) return false;
       if (!normalizedDistanceSelection) return false;
-      if (!_normalizedTargets10.includes(normalizedDistanceSelection)) return false;
+      if (!_normalizedTargets11.includes(normalizedDistanceSelection)) return false;
     }
     var shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
     if (shootingCondition && Number.isFinite(shootingCondition.value) && shootingCondition.value > 0) {
@@ -3959,37 +4554,37 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     }
     var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
     if (cameraHandleList.length) {
-      var _normalizedTargets11 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets11.length) return false;
-      if (!_normalizedTargets11.every(function (target) {
+      var _normalizedTargets12 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets12.length) return false;
+      if (!_normalizedTargets12.every(function (target) {
         return cameraHandleSet.has(target);
       })) return false;
     }
     var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
     if (viewfinderList.length) {
-      var _normalizedTargets12 = viewfinderList.map(function (value) {
+      var _normalizedTargets13 = viewfinderList.map(function (value) {
         return normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets12.length) return false;
+      if (!_normalizedTargets13.length) return false;
       if (!normalizedViewfinderExtension) return false;
-      if (!_normalizedTargets12.includes(normalizedViewfinderExtension)) return false;
+      if (!_normalizedTargets13.includes(normalizedViewfinderExtension)) return false;
     }
     var deliveryList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
     if (deliveryList.length) {
-      var _normalizedTargets13 = deliveryList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets13.length) return false;
+      var _normalizedTargets14 = deliveryList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets14.length) return false;
       if (!normalizedDeliveryResolution) return false;
-      if (!_normalizedTargets13.includes(normalizedDeliveryResolution)) return false;
+      if (!_normalizedTargets14.includes(normalizedDeliveryResolution)) return false;
     }
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
-      var _normalizedTargets14 = videoDistList.map(function (value) {
+      var _normalizedTargets15 = videoDistList.map(function (value) {
         return normalizeVideoDistributionOptionValue(value);
       }).map(function (value) {
         return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets14.length) return false;
-      if (!_normalizedTargets14.every(function (target) {
+      if (!_normalizedTargets15.length) return false;
+      if (!_normalizedTargets15.every(function (target) {
         return videoDistributionSet.has(target);
       })) return false;
     }
@@ -4115,9 +4710,15 @@ function resolveGearListCustomText(key, fallback, replacements) {
   }, template);
 }
 function getGearListRentalToggleTexts() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var excludeLabel = resolveGearListCustomText('gearListExcludeRentalToggle', 'Exclude for rental house');
   var includeLabel = resolveGearListCustomText('gearListIncludeRentalToggle', 'Include for rental house');
-  var noteLabel = resolveGearListCustomText('gearListRentalNote', 'Rental house handles this item');
+  var fallbackNote = resolveGearListCustomText('gearListRentalNote', 'Rental house handles this item');
+  var noteLabel = resolveRentalProviderNoteLabel({
+    fallback: fallbackNote,
+    rentalHouse: options && options.rentalHouse ? options.rentalHouse : undefined,
+    input: options && options.input ? options.input : undefined
+  });
   return {
     excludeLabel: excludeLabel,
     includeLabel: includeLabel,
@@ -4134,20 +4735,20 @@ function buildRentalToggleMarkup(dataName, labels) {
   return "<button type=\"button\" class=\"gear-rental-toggle\" data-gear-rental-toggle=\"".concat(safeDataName, "\" data-label-off=\"").concat(safeOff, "\" data-label-on=\"").concat(safeOn, "\" aria-pressed=\"false\">").concat(safeOff, "</button>");
 }
 function setRentalExclusionState(element, excluded) {
-  var _element$classList, _element$getAttribute, _element$querySelecto;
+  var _element$classList2, _element$getAttribute, _element$querySelecto;
   if (!element || _typeof(element) !== 'object') {
     return false;
   }
   var shouldExclude = Boolean(excluded);
-  var wasExcluded = ((_element$classList = element.classList) === null || _element$classList === void 0 ? void 0 : _element$classList.contains('gear-item-rental-excluded')) || ((_element$getAttribute = element.getAttribute) === null || _element$getAttribute === void 0 ? void 0 : _element$getAttribute.call(element, 'data-rental-excluded')) === 'true';
+  var wasExcluded = ((_element$classList2 = element.classList) === null || _element$classList2 === void 0 ? void 0 : _element$classList2.contains('gear-item-rental-excluded')) || ((_element$getAttribute = element.getAttribute) === null || _element$getAttribute === void 0 ? void 0 : _element$getAttribute.call(element, 'data-rental-excluded')) === 'true';
   var toggle = (_element$querySelecto = element.querySelector) === null || _element$querySelecto === void 0 ? void 0 : _element$querySelecto.call(element, '.gear-rental-toggle');
   if (shouldExclude) {
-    var _element$classList2, _element$setAttribute;
-    (_element$classList2 = element.classList) === null || _element$classList2 === void 0 || _element$classList2.add('gear-item-rental-excluded');
+    var _element$classList3, _element$setAttribute;
+    (_element$classList3 = element.classList) === null || _element$classList3 === void 0 || _element$classList3.add('gear-item-rental-excluded');
     (_element$setAttribute = element.setAttribute) === null || _element$setAttribute === void 0 || _element$setAttribute.call(element, 'data-rental-excluded', 'true');
   } else {
-    var _element$classList3, _element$removeAttrib;
-    (_element$classList3 = element.classList) === null || _element$classList3 === void 0 || _element$classList3.remove('gear-item-rental-excluded');
+    var _element$classList4, _element$removeAttrib;
+    (_element$classList4 = element.classList) === null || _element$classList4 === void 0 || _element$classList4.remove('gear-item-rental-excluded');
     (_element$removeAttrib = element.removeAttribute) === null || _element$removeAttrib === void 0 || _element$removeAttrib.call(element, 'data-rental-excluded');
   }
   if (toggle) {
@@ -4158,8 +4759,12 @@ function setRentalExclusionState(element, excluded) {
   }
   var _getGearListRentalTog = getGearListRentalToggleTexts(),
     noteLabel = _getGearListRentalTog.noteLabel;
-  if (noteLabel && element.getAttribute && !element.getAttribute('data-rental-note')) {
-    element.setAttribute('data-rental-note', noteLabel);
+  if (noteLabel && element.getAttribute) {
+    if (element.getAttribute('data-rental-note') !== noteLabel) {
+      element.setAttribute('data-rental-note', noteLabel);
+    }
+  } else if (element.removeAttribute) {
+    element.removeAttribute('data-rental-note');
   }
   return wasExcluded !== shouldExclude;
 }
@@ -4392,12 +4997,8 @@ function updateGearItemNoteElement(entry, value) {
   var noteEl = entry.querySelector('.gear-item-note');
   if (!noteEl) return;
   var doc = noteEl.ownerDocument || (typeof document !== 'undefined' ? document : null);
-  var localizedLabel = typeof localGetLocalizedText === 'function'
-    ? localGetLocalizedText('gearListNoteLabel')
-    : '';
-  var noteLabel = typeof localizedLabel === 'string' && localizedLabel.trim()
-    ? localizedLabel.trim()
-    : 'Note:';
+  var localizedLabel = typeof localGetLocalizedText === 'function' ? localGetLocalizedText('gearListNoteLabel') : '';
+  var noteLabel = typeof localizedLabel === 'string' && localizedLabel.trim() ? localizedLabel.trim() : 'Note:';
   var raw = typeof value === 'string' ? value : String(value !== null && value !== void 0 ? value : '');
   var trimmed = raw.trim();
   if (trimmed) {
@@ -4421,19 +5022,19 @@ function updateGearItemNoteElement(entry, value) {
       labelSpan.textContent = noteLabel;
       valueSpan.textContent = trimmed;
     } else {
-      noteEl.textContent = noteLabel + ' ' + trimmed;
+      noteEl.textContent = "".concat(noteLabel, " ").concat(trimmed);
     }
     noteEl.hidden = false;
     noteEl.removeAttribute('hidden');
-    noteEl.setAttribute('aria-label', (noteLabel + ' ' + trimmed).trim());
+    noteEl.setAttribute('aria-label', "".concat(noteLabel, " ").concat(trimmed).trim());
   } else {
-    var existingLabel = noteEl.querySelector('.gear-item-note__label');
-    var existingValue = noteEl.querySelector('.gear-item-note__text');
-    if (existingLabel) {
-      existingLabel.textContent = '';
+    var _labelSpan = noteEl.querySelector('.gear-item-note__label');
+    var _valueSpan = noteEl.querySelector('.gear-item-note__text');
+    if (_labelSpan) {
+      _labelSpan.textContent = '';
     }
-    if (existingValue) {
-      existingValue.textContent = '';
+    if (_valueSpan) {
+      _valueSpan.textContent = '';
     }
     noteEl.textContent = '';
     noteEl.hidden = true;
@@ -4540,6 +5141,8 @@ function getGearItemData(element) {
   var nameAttr = element.getAttribute('data-gear-label') || element.getAttribute('data-gear-name') || '';
   var attributesAttr = element.getAttribute('data-gear-attributes') || '';
   var noteAttr = element.getAttribute('data-gear-note') || '';
+  var providerAttr = element.getAttribute('data-gear-provider') || '';
+  var providerLabelAttr = element.getAttribute('data-gear-provider-label') || '';
   var textContainer = element.querySelector('.gear-item-text');
   var rawText = textContainer ? textContainer.textContent : element.textContent || '';
   var parsed = parseGearItemDisplayParts(rawText);
@@ -4548,12 +5151,19 @@ function getGearItemData(element) {
   var attributes = attributesAttr.trim() || parsed.attributes || '';
   var note = noteAttr.trim();
   var rentalExcluded = element.getAttribute('data-rental-excluded') === 'true' || element.classList.contains('gear-item-rental-excluded');
+  var providedBy = providerAttr.trim();
+  if (!providedBy) {
+    providedBy = guessDefaultProvider(name);
+  }
+  var providerLabel = providerLabelAttr.trim();
   return {
     quantity: quantity,
     name: name,
     attributes: attributes,
     note: note,
-    rentalExcluded: rentalExcluded
+    rentalExcluded: rentalExcluded,
+    providedBy: providedBy,
+    providerLabel: providerLabel
   };
 }
 function getGearItemResetDefaults(element) {
@@ -4597,7 +5207,7 @@ function applyGearItemData(element) {
     var monitorBatteryControl = element.querySelector('select[data-monitor-battery-key]');
     if (monitorBatteryControl) {
       var batteryTypeAttr = monitorBatteryControl.getAttribute('data-monitor-battery-type') || (monitorBatteryControl.dataset ? monitorBatteryControl.dataset.monitorBatteryType : '');
-      if ('large' === batteryTypeAttr) {
+      if (batteryTypeAttr === 'large') {
         trimmedQuantity = '2';
       } else if (batteryTypeAttr) {
         trimmedQuantity = '3';
@@ -4659,6 +5269,11 @@ function applyGearItemData(element) {
   } else {
     element.removeAttribute('data-gear-note');
   }
+  var providerValue = typeof data.providedBy === 'string' ? data.providedBy.trim() : element.getAttribute('data-gear-provider') || '';
+  var providerLabel = typeof data.providerLabel === 'string' ? data.providerLabel.trim() : element.getAttribute('data-gear-provider-label') || '';
+  setGearItemProvider(element, providerValue, {
+    label: providerLabel
+  });
   if (!element.getAttribute('data-gear-original-name')) {
     var originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -4771,13 +5386,10 @@ function enhanceGearItemElement(element) {
     ensureGearItemEditButton(element);
   }
   var data = getGearItemData(element);
-
   if (!data.quantity) {
     var monitorBatteryControl = element.querySelector('select[data-monitor-battery-type]');
     if (monitorBatteryControl) {
-      var fallbackQuantity = monitorBatteryControl.getAttribute('data-monitor-battery-type') === 'handheld'
-        ? '3'
-        : '2';
+      var fallbackQuantity = monitorBatteryControl.getAttribute('data-monitor-battery-type') === 'handheld' ? '3' : '2';
       data.quantity = fallbackQuantity;
     }
   }
@@ -4794,6 +5406,7 @@ function enhanceGearListItems(container) {
   items.forEach(function (element) {
     enhanceGearItemElement(element);
   });
+  refreshRentalProviderNoteDisplays();
 }
 function ensureGearListCustomControls(container) {
   var scope = container || gearListOutput;
@@ -4863,11 +5476,11 @@ function ensureGearListCustomControls(container) {
     addButton.setAttribute('data-gear-custom-category', categoryLabel);
     addButton.setAttribute('aria-label', addAria);
     addButton.setAttribute('title', addLabel);
-    var hasIconRegistry = 'object' === (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) && ICON_GLYPHS;
+    var hasIconRegistry = (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS;
     var addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
-    if ('function' == typeof setButtonLabelWithIcon && hasIconRegistry && addGlyph) {
+    if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
       setButtonLabelWithIcon(addButton, '', addGlyph);
-    } else if ('function' == typeof iconMarkup && addGlyph) {
+    } else if (typeof iconMarkup === 'function' && addGlyph) {
       addButton.innerHTML = iconMarkup(addGlyph, {
         className: 'btn-icon'
       });
@@ -4888,6 +5501,9 @@ function buildGearItemEditContext() {
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
+    providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
+    providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -4919,8 +5535,16 @@ function getGearItemEditTexts() {
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
+    providerLabel: langTexts.gearListEditProviderLabel || fallbackTexts.gearListEditProviderLabel || 'Provided by',
+    providerHelp: langTexts.gearListEditProviderHelp || fallbackTexts.gearListEditProviderHelp || '',
+    providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental house',
+    providerUser: langTexts.gearListProviderUser || fallbackTexts.gearListProviderUser || 'User',
+    providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
+    providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
-    rentalNote: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
+    rentalNote: resolveRentalProviderNoteLabel({
+      fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item'
+    }),
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
@@ -4946,11 +5570,26 @@ function applyGearItemEditDialogTexts(context) {
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
   }
+  if (context.providerLabel) {
+    context.providerLabel.textContent = textsForDialog.providerLabel;
+  }
+  if (context.providerHelp) {
+    context.providerHelp.textContent = textsForDialog.providerHelp || '';
+    context.providerHelp.hidden = !context.providerHelp.textContent;
+  }
+  if (context.providerSelect) {
+    if (context.providerHelp && context.providerHelp.textContent) {
+      context.providerSelect.setAttribute('aria-describedby', context.providerHelp.id);
+    } else {
+      context.providerSelect.removeAttribute('aria-describedby');
+    }
+    context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
+  }
   var rentalTexts = getGearListRentalToggleTexts();
   var baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
   var rentalNote = textsForDialog.rentalNote || rentalTexts.noteLabel || '';
   if (context.rentalLabel) {
-    context.rentalLabel.textContent = rentalNote || baseToggleLabel;
+    context.rentalLabel.textContent = baseToggleLabel;
   }
   if (context.rentalCheckbox) {
     context.rentalCheckbox.setAttribute('aria-label', textsForDialog.rentalLabel);
@@ -4988,7 +5627,8 @@ function applyGearItemEditDialogTexts(context) {
     }
   }
   if (context.rentalToggleButton) {
-    if (context.rentalDescription && context.rentalDescription.textContent) {
+    var hasDescription = context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden;
+    if (hasDescription) {
       context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
     } else {
       context.rentalToggleButton.removeAttribute('aria-describedby');
@@ -5095,6 +5735,13 @@ function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) 
   if (context.rentalDescription) {
     context.rentalDescription.hidden = !context.rentalDescription.textContent;
   }
+  if (context.rentalToggleButton) {
+    if (context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden) {
+      context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
+    } else {
+      context.rentalToggleButton.removeAttribute('aria-describedby');
+    }
+  }
 }
 function handleGearItemEditFieldInput() {
   var context = getGearItemEditContext();
@@ -5199,7 +5846,9 @@ function handleGearItemEditFormSubmit(event) {
     name: context.nameInput ? context.nameInput.value : '',
     attributes: context.attributesInput ? context.attributesInput.value : typeof context.currentAttributes === 'string' ? context.currentAttributes : '',
     note: context.noteInput ? context.noteInput.value : '',
-    rentalExcluded: allowRentalToggle && context.rentalCheckbox ? context.rentalCheckbox.checked : targetEntry.getAttribute('data-rental-excluded') === 'true'
+    rentalExcluded: allowRentalToggle && context.rentalCheckbox ? context.rentalCheckbox.checked : targetEntry.getAttribute('data-rental-excluded') === 'true',
+    providedBy: context.providerSelect ? context.providerSelect.value : '',
+    providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length ? getProviderOptionLabel(context.providerSelect.selectedOptions[0]) : ''
   };
   applyGearItemData(targetEntry, data);
   context.currentAttributes = typeof data.attributes === 'string' ? data.attributes : '';
@@ -5270,6 +5919,19 @@ function handleGearItemEditDialogClose() {
       }
     }
   }
+}
+function refreshGearItemEditProviderOptionsIfOpen() {
+  var context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.providerSelect) {
+    return;
+  }
+  var isDialogOpen = typeof context.dialog.open === 'boolean' ? context.dialog.open : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  var targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  var data = targetEntry ? getGearItemData(targetEntry) : {};
+  updateGearItemEditProviderOptions(context, data);
 }
 function bindGearItemEditDialog(context) {
   if (gearItemEditDialogBound) {
@@ -5355,6 +6017,9 @@ function openGearItemEditor(element) {
   }
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
+  }
+  if (context.providerSelect) {
+    updateGearItemEditProviderOptions(context, data);
   }
   updateGearItemEditRentalControls(context, Boolean(data.rentalExcluded), allowRentalToggle);
   if (context.rentalToggleButton) {
@@ -5451,8 +6116,15 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   } else {
     element.removeAttribute('data-gear-note');
   }
-  updateCustomItemPreview(element);
-  updateGearItemNoteElement(element, noteValue);
+  applyGearItemData(element, {
+    quantity: quantityValue,
+    name: nameValue,
+    attributes: attributesValue,
+    note: noteValue,
+    rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
+    providedBy: data && (data.providedBy || data.provider) ? data.providedBy || data.provider : '',
+    providerLabel: data && data.providerLabel ? data.providerLabel : ''
+  });
   return element;
 }
 function persistCustomItemsChange() {
@@ -5475,7 +6147,17 @@ function addCustomItemEntry(categoryKey, categoryLabel) {
   if (!entry) return null;
   container.appendChild(entry);
   attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
-  updateCustomItemPreview(entry);
+  applyGearItemData(entry, {
+    quantity: data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '',
+    name: data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '',
+    attributes: data && Object.prototype.hasOwnProperty.call(data, 'attributes') ? data.attributes : '',
+    note: data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '',
+    rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
+    providedBy: data && (data.providedBy || data.provider) ? data.providedBy || data.provider : '',
+    providerLabel: data && data.providerLabel ? data.providerLabel : ''
+  }, {
+    skipPreview: false
+  });
   var wantsExcluded = Boolean(data && (data.rentalExcluded === true || data.rentalExcluded === 'true'));
   setRentalExclusionState(entry, wantsExcluded);
   if (!options.skipFocus) {
@@ -5540,12 +6222,16 @@ function readCustomItemsState() {
       var attributes = String(item.getAttribute('data-gear-attributes') || '');
       var note = String(item.getAttribute('data-gear-note') || '');
       var rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
+      var providedBy = String(item.getAttribute('data-gear-provider') || '');
+      var providerLabel = String(item.getAttribute('data-gear-provider-label') || '');
       entries.push({
         quantity: quantity,
         name: name,
         attributes: attributes,
         note: note,
-        rentalExcluded: rentalExcluded
+        rentalExcluded: rentalExcluded,
+        providedBy: providedBy,
+        providerLabel: providerLabel
       });
     });
     if (entries.length) {
@@ -5944,7 +6630,7 @@ function gearListGenerateHtmlImpl() {
   var projectTitleSource = getCurrentProjectName() || info.projectName || '';
   var projectTitle = escapeHtml(projectTitleSource);
   var projectLabels = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
-  var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2', 'storageRequirements']);
+  var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2', 'storageRequirements', 'monitorBatteries']);
   var infoEntries = Object.entries(projectInfo).filter(function (_ref21) {
     var _ref22 = _slicedToArray(_ref21, 2),
       k = _ref22[0],
@@ -5965,7 +6651,9 @@ function gearListGenerateHtmlImpl() {
   }).join('') + '</div>' : '';
   var requirementsHeading = projectFormTexts.heading || 'Project Requirements';
   var infoHtml = infoEntries.length ? "<h3>".concat(escapeHtml(requirementsHeading), "</h3>").concat(boxesHtml) : '';
-  var rentalToggleTexts = getGearListRentalToggleTexts();
+  var rentalToggleTexts = getGearListRentalToggleTexts({
+    rentalHouse: info && info.rentalHouse
+  });
   var rentalNoteAttr = rentalToggleTexts.noteLabel && rentalToggleTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalToggleTexts.noteLabel), "\"") : '';
   var formatItems = function formatItems(arr) {
     var counts = {};
@@ -6146,6 +6834,29 @@ function gearListGenerateHtmlImpl() {
       return "<span class=\"gear-item\" data-gear-name=\"".concat(safeDataName, "\"").concat(quantityAttr).concat(labelAttr).concat(attributesAttr).concat(noteAttr, "><span class=\"gear-item-text\">").concat(escapeHtml(textContent), "</span><span class=\"gear-item-note\" hidden></span></span>");
     }).join('<br>');
   };
+  var wrapGearItemHtml = function wrapGearItemHtml(contentHtml) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (!contentHtml) return '';
+    var _options$name = options.name,
+      name = _options$name === void 0 ? '' : _options$name,
+      _options$quantity = options.quantity,
+      quantity = _options$quantity === void 0 ? '' : _options$quantity,
+      _options$label = options.label,
+      label = _options$label === void 0 ? '' : _options$label,
+      _options$attributes = options.attributes,
+      attributes = _options$attributes === void 0 ? '' : _options$attributes,
+      _options$rentalNote = options.rentalNote,
+      rentalNote = _options$rentalNote === void 0 ? rentalNoteAttr : _options$rentalNote,
+      _options$extraAttribu = options.extraAttributes,
+      extraAttributes = _options$extraAttribu === void 0 ? '' : _options$extraAttribu;
+    var nameAttr = name ? " data-gear-name=\"".concat(escapeHtml(String(name)), "\"") : '';
+    var quantityAttr = quantity ? " data-gear-quantity=\"".concat(escapeHtml(String(quantity)), "\"") : '';
+    var labelAttr = label ? " data-gear-label=\"".concat(escapeHtml(String(label)), "\"") : '';
+    var attributesAttr = attributes ? " data-gear-attributes=\"".concat(escapeHtml(String(attributes)), "\"") : '';
+    var rentalAttr = typeof rentalNote === 'string' ? rentalNote : '';
+    var extraAttr = extraAttributes ? " ".concat(extraAttributes.trim()) : '';
+    return "<span class=\"gear-item\"".concat(nameAttr).concat(quantityAttr).concat(labelAttr).concat(attributesAttr).concat(rentalAttr).concat(extraAttr, "><span class=\"gear-item-text\">").concat(contentHtml, "</span><span class=\"gear-item-note\" hidden></span></span>");
+  };
   var ensureItems = function ensureItems(arr, categoryPath) {
     if (typeof registerDevice !== 'function') return;
     var entries = {};
@@ -6168,8 +6879,8 @@ function gearListGenerateHtmlImpl() {
     var addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', {
       category: categoryLabel
     });
-    var glyph = 'object' === (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) && ICON_GLYPHS ? ICON_GLYPHS.add || ICON_GLYPHS.plus : null;
-    var addIcon = 'function' == typeof iconMarkup && glyph ? iconMarkup(glyph, {
+    var glyph = (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS ? ICON_GLYPHS.add || ICON_GLYPHS.plus : null;
+    var addIcon = typeof iconMarkup === 'function' && glyph ? iconMarkup(glyph, {
       className: 'btn-icon'
     }) : '';
     var buttonContent = addIcon || escapeHtml('+');
@@ -6186,7 +6897,19 @@ function gearListGenerateHtmlImpl() {
     var options = compatibleCages.map(function (c) {
       return "<option value=\"".concat(escapeHtml(c), "\"").concat(c === selectedNames.cage ? ' selected' : '', ">").concat(escapeHtml(addArriKNumber(c)), "</option>");
     }).join('');
-    cageSelectHtml = "<span class=\"cage-select-wrapper\"><span>1x</span><select id=\"gearListCage\">".concat(options, "</select></span>");
+    var cageLabelTextRaw = typeof localGetLocalizedText === 'function' ? localGetLocalizedText('category_cages') : '';
+    var cageLabelText = cageLabelTextRaw && cageLabelTextRaw.trim() ? cageLabelTextRaw.trim() : 'Camera Cage';
+    var ariaLabelAttr = cageLabelText ? " aria-label=\"".concat(escapeHtml(cageLabelText), "\"") : '';
+    var hiddenLabelHtml = cageLabelText ? "<span class=\"visually-hidden\">".concat(escapeHtml(cageLabelText), "</span>") : '';
+    var wrapperHtml = "<span class=\"cage-select-wrapper\"><span>1x</span>".concat(hiddenLabelHtml, "<select id=\"gearListCage\"").concat(ariaLabelAttr, ">").concat(options, "</select></span>");
+    var attributesText = selectedNames.cage ? selectedNames.cage.trim() : '';
+    var dataName = attributesText ? "".concat(cageLabelText, " (").concat(attributesText, ")") : cageLabelText;
+    cageSelectHtml = wrapGearItemHtml(wrapperHtml, {
+      name: dataName,
+      quantity: 1,
+      label: cageLabelText,
+      attributes: attributesText
+    });
   }
   addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
   var storageGearListItems = Array.isArray(info.storageRequirements) ? info.storageRequirements.map(function (entry) {
@@ -6506,12 +7229,12 @@ function gearListGenerateHtmlImpl() {
   if (selectedNames.battery) {
     var count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
     if (!count || isNaN(count)) count = 1;
-    var safeBatt = escapeHtml(addArriKNumber(selectedNames.battery));
-    batteryItems = "".concat(count, "x ").concat(safeBatt);
+    var batteryEntries = ["".concat(count, "x ").concat(selectedNames.battery)];
     var swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
     if (swapName) {
-      batteryItems += "<br>1x ".concat(escapeHtml(swapName));
+      batteryEntries.push("1x ".concat(swapName));
     }
+    batteryItems = formatItems(batteryEntries);
   }
   addRow('Camera Batteries', batteryItems);
   var monitoringItems = '';
@@ -6520,8 +7243,22 @@ function gearListGenerateHtmlImpl() {
     var _devices;
     var size = (_devices = devices) === null || _devices === void 0 || (_devices = _devices.monitors) === null || _devices === void 0 || (_devices = _devices[selectedNames.monitor]) === null || _devices === void 0 ? void 0 : _devices.screenSizeInches;
     if (size) monitorSizes.push(size);
-    var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
-    monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
+    var sizeHtml = size ? "".concat(escapeHtml(String(size)), "&quot; - ") : '';
+    var monitorLabel = 'Onboard Monitor';
+    var monitorName = addArriKNumber(selectedNames.monitor);
+    var displayHtml = "1x <strong>".concat(monitorLabel, "</strong> - ").concat(sizeHtml).concat(escapeHtml(monitorName), " - incl. Sunhood");
+    var attributeParts = [];
+    if (size) attributeParts.push("".concat(size, "\""));
+    if (monitorName) attributeParts.push(monitorName);
+    attributeParts.push('incl. Sunhood');
+    var attributeText = attributeParts.filter(Boolean).join(' - ');
+    var _dataName = attributeText ? "".concat(monitorLabel, " (").concat(attributeText, ")") : monitorLabel;
+    monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+      name: _dataName,
+      quantity: 1,
+      label: monitorLabel,
+      attributes: attributeText
+    });
   }
   handheldPrefs.forEach(function (_ref72) {
     var role = _ref72.role,
@@ -6601,7 +7338,22 @@ function gearListGenerateHtmlImpl() {
     }) : defaultName;
     var selectedMonitor = resolvedName && monitorsDb[resolvedName] ? monitorsDb[resolvedName] : monitorsDb[defaultName] || monitorsDb[candidate] || null;
     var selectedSize = (selectedMonitor === null || selectedMonitor === void 0 ? void 0 : selectedMonitor.screenSizeInches) || '';
-    monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
+    var displayLabel = "".concat(labelRole, " Handheld Monitor");
+    var sizeSpanHtml = "<span id=\"monitorSize".concat(idSuffix, "\">").concat(escapeHtml(selectedSize ? String(selectedSize) : ''), "&quot;</span>");
+    var selectHtml = "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select>");
+    var displayHtml = "1x <strong>".concat(escapeHtml(displayLabel), "</strong> - ").concat(sizeSpanHtml, " - ").concat(selectHtml, " incl. Directors cage, shoulder strap, sunhood, rigging for teradeks");
+    var attributeParts = [];
+    if (selectedSize) attributeParts.push("".concat(selectedSize, "\""));
+    if (resolvedName) attributeParts.push(addArriKNumber(resolvedName));
+    attributeParts.push('incl. Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    var attributeText = attributeParts.filter(Boolean).join(' - ');
+    var dataName = attributeText ? "".concat(displayLabel, " (").concat(attributeText, ")") : displayLabel;
+    monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+      name: dataName,
+      quantity: 1,
+      label: displayLabel,
+      attributes: attributeText
+    });
     if (selectedSize) monitorSizes.push(selectedSize);
   });
   largeMonitorPrefs.forEach(function (_ref73) {
@@ -6669,7 +7421,22 @@ function gearListGenerateHtmlImpl() {
       return value && value.toLowerCase() === (defaultName || '').toLowerCase();
     }) : defaultName;
     var size = resolvedName && (_dirDb$resolvedName = dirDb[resolvedName]) !== null && _dirDb$resolvedName !== void 0 && _dirDb$resolvedName.screenSizeInches ? dirDb[resolvedName].screenSizeInches : ((_dirDb$defaultName = dirDb[defaultName]) === null || _dirDb$defaultName === void 0 ? void 0 : _dirDb$defaultName.screenSizeInches) || ((_dirDb$candidate = dirDb[candidate]) === null || _dirDb$candidate === void 0 ? void 0 : _dirDb$candidate.screenSizeInches) || '';
-    monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(role, " Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "15\">").concat(size, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor15\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)';
+    var displayLabel = "".concat(role, " Monitor");
+    var sizeSpanHtml = "<span id=\"monitorSize".concat(idSuffix, "15\">").concat(escapeHtml(size ? String(size) : ''), "&quot;</span>");
+    var selectHtml = "<select id=\"gearList".concat(idSuffix, "Monitor15\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select>");
+    var displayHtml = "1x <strong>".concat(escapeHtml(displayLabel), "</strong> - ").concat(sizeSpanHtml, " - ").concat(selectHtml, " incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)");
+    var attributeParts = [];
+    if (size) attributeParts.push("".concat(size, "\""));
+    if (resolvedName) attributeParts.push(addArriKNumber(resolvedName));
+    attributeParts.push('incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)');
+    var attributeText = attributeParts.filter(Boolean).join(' - ');
+    var dataName = attributeText ? "".concat(displayLabel, " (").concat(attributeText, ")") : displayLabel;
+    monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+      name: dataName,
+      quantity: 1,
+      label: displayLabel,
+      attributes: attributeText
+    });
     if (size) monitorSizes.push(size);
   });
   if (hasMotor) {
@@ -6733,7 +7500,22 @@ function gearListGenerateHtmlImpl() {
       return value && value.toLowerCase() === (defaultName || '').toLowerCase();
     }) : defaultName;
     var selectedSize = resolvedName && monitorsDb[resolvedName] ? monitorsDb[resolvedName].screenSizeInches : ((_monitorsDb$defaultNa = monitorsDb[defaultName]) === null || _monitorsDb$defaultNa === void 0 ? void 0 : _monitorsDb$defaultNa.screenSizeInches) || ((_monitorsDb$candidate = monitorsDb[candidate]) === null || _monitorsDb$candidate === void 0 ? void 0 : _monitorsDb$candidate.screenSizeInches) || '';
-    monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Focus Monitor</strong> - <span id=\"monitorSizeFocus\">".concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearListFocusMonitor\" data-auto-gear-manual=\"".concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
+    var displayLabel = 'Focus Monitor';
+    var sizeSpanHtml = "<span id=\"monitorSizeFocus\">".concat(escapeHtml(selectedSize ? String(selectedSize) : ''), "&quot;</span>");
+    var selectHtml = "<select id=\"gearListFocusMonitor\" data-auto-gear-manual=\"".concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select>");
+    var _displayHtml = "1x <strong>".concat(escapeHtml(displayLabel), "</strong> - ").concat(sizeSpanHtml, " - ").concat(selectHtml, " incl Directors cage, shoulder strap, sunhood, rigging for teradeks");
+    var _attributeParts = [];
+    if (selectedSize) _attributeParts.push("".concat(selectedSize, "\""));
+    if (resolvedName) _attributeParts.push(addArriKNumber(resolvedName));
+    _attributeParts.push('incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    var _attributeText = _attributeParts.filter(Boolean).join(' - ');
+    var _dataName2 = _attributeText ? "".concat(displayLabel, " (").concat(_attributeText, ")") : displayLabel;
+    monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(_displayHtml, {
+      name: _dataName2,
+      quantity: 1,
+      label: displayLabel,
+      attributes: _attributeText
+    });
     if (selectedSize) monitorSizes.push(selectedSize);
   }
   var monitoringGear = [];
@@ -8526,6 +9308,36 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
     gearDeleteRequestListenerBound = true;
   }
 }
+function resolveGearListCageLabel() {
+  var rawLabel = typeof localGetLocalizedText === 'function' ? localGetLocalizedText('category_cages') : '';
+  var trimmed = typeof rawLabel === 'string' ? rawLabel.trim() : '';
+  return trimmed || 'Camera Cage';
+}
+function syncGearListCageItem(select) {
+  if (!select) return;
+  var gearItem = select.closest('.gear-item');
+  if (!gearItem) return;
+  var option = select.options && select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
+  var optionText = option && typeof option.text === 'string' ? option.text.trim() : option && option.textContent ? option.textContent.trim() : '';
+  var label = resolveGearListCageLabel();
+  var combinedName = optionText ? "".concat(label, " (").concat(optionText, ")") : label;
+  gearItem.setAttribute('data-gear-quantity', '1');
+  if (label) {
+    gearItem.setAttribute('data-gear-label', label);
+  } else {
+    gearItem.removeAttribute('data-gear-label');
+  }
+  if (combinedName) {
+    gearItem.setAttribute('data-gear-name', combinedName);
+  } else {
+    gearItem.removeAttribute('data-gear-name');
+  }
+  if (optionText) {
+    gearItem.setAttribute('data-gear-attributes', optionText);
+  } else {
+    gearItem.removeAttribute('data-gear-attributes');
+  }
+}
 function bindGearListCageListener() {
   if (!gearListOutput) return;
   var sel = gearListOutput.querySelector('#gearListCage');
@@ -8535,8 +9347,10 @@ function bindGearListCageListener() {
         cageSelect.value = e.target.value;
         cageSelect.dispatchEvent(new Event('change'));
       }
+      syncGearListCageItem(sel);
       saveCurrentGearList();
     });
+    syncGearListCageItem(sel);
   }
 }
 function bindGearListEasyrigListener() {
@@ -8658,4 +9472,15 @@ function refreshGearListIfVisible() {
   bindGearListProGaffTapeListener();
   bindGearListDirectorMonitorListener();
   saveCurrentSession();
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('gear-provider-data-changed', function () {
+    refreshGearItemProviderDisplays();
+    refreshGearItemEditProviderOptionsIfOpen();
+  });
+  document.addEventListener('own-gear-data-changed', function () {
+    ownGearNameCache = null;
+    refreshGearItemProviderDisplays();
+    refreshGearItemEditProviderOptionsIfOpen();
+  });
 }

@@ -1190,6 +1190,102 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
     return true;
   }
+  var MODERN_SUPPORT_CACHE_KEY = 'cameraPowerPlanner_modernSupport_v1';
+  var MODERN_SUPPORT_CACHE_VERSION = 1;
+  var MODERN_SUPPORT_CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+  function resolveModernSupportCacheStorage() {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    try {
+      var storage = window.localStorage;
+      if (storage && typeof storage.getItem === 'function' && typeof storage.setItem === 'function') {
+        return storage;
+      }
+    } catch (storageError) {
+      void storageError;
+    }
+    return null;
+  }
+  function readModernSupportCache() {
+    var storage = resolveModernSupportCacheStorage();
+    if (!storage) {
+      return null;
+    }
+    var rawValue = null;
+    try {
+      rawValue = storage.getItem(MODERN_SUPPORT_CACHE_KEY);
+    } catch (readError) {
+      void readError;
+      return null;
+    }
+    if (typeof rawValue !== 'string' || !rawValue) {
+      return null;
+    }
+    var parsed = null;
+    try {
+      parsed = JSON.parse(rawValue);
+    } catch (parseError) {
+      void parseError;
+      return null;
+    }
+    if (!parsed || _typeof(parsed) !== 'object') {
+      return null;
+    }
+    if (parsed.version !== MODERN_SUPPORT_CACHE_VERSION || typeof parsed.result !== 'boolean') {
+      return null;
+    }
+    var now = nowMilliseconds();
+    if (typeof parsed.timestamp === 'number' && typeof now === 'number') {
+      if (now - parsed.timestamp > MODERN_SUPPORT_CACHE_MAX_AGE) {
+        return null;
+      }
+    }
+    if (typeof parsed.userAgent === 'string' && parsed.userAgent) {
+      var currentUserAgent = '';
+      try {
+        if (typeof navigator !== 'undefined' && navigator && typeof navigator.userAgent === 'string') {
+          currentUserAgent = navigator.userAgent;
+        }
+      } catch (userAgentError) {
+        void userAgentError;
+        currentUserAgent = '';
+      }
+      if (currentUserAgent && parsed.userAgent !== currentUserAgent) {
+        return null;
+      }
+    }
+    return parsed.result;
+  }
+  function rememberModernSupportResult(result) {
+    if (typeof result !== 'boolean') {
+      return;
+    }
+    var storage = resolveModernSupportCacheStorage();
+    if (!storage) {
+      return;
+    }
+    var payload = {
+      version: MODERN_SUPPORT_CACHE_VERSION,
+      result: result
+    };
+    var timestamp = nowMilliseconds();
+    if (typeof timestamp === 'number') {
+      payload.timestamp = timestamp;
+    }
+    try {
+      if (typeof navigator !== 'undefined' && navigator && typeof navigator.userAgent === 'string' && navigator.userAgent) {
+        payload.userAgent = navigator.userAgent;
+      }
+    } catch (userAgentError) {
+      void userAgentError;
+    }
+    try {
+      storage.setItem(MODERN_SUPPORT_CACHE_KEY, JSON.stringify(payload));
+    } catch (writeError) {
+      void writeError;
+    }
+  }
   function detectOptionalChainingSupport() {
     if (typeof Function !== 'function') {
       return null;
@@ -1217,43 +1313,58 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       return;
     }
     if (typeof Promise === 'undefined' || typeof Object.assign !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     var arrayProto = Array.prototype;
     var stringProto = String.prototype;
     if (typeof Array.from !== 'function' || typeof arrayProto.includes !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     if (typeof arrayProto.find !== 'function' || typeof arrayProto.findIndex !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     if (typeof arrayProto.flatMap !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
+      rememberModernSupportResult(false);
       cb(false);
+      return;
+    }
+    var cachedSupport = readModernSupportCache();
+    if (typeof cachedSupport === 'boolean') {
+      rememberModernSupportResult(cachedSupport);
+      cb(cachedSupport);
       return;
     }
     var optionalSupport = detectOptionalChainingSupport();
     if (optionalSupport === true) {
+      rememberModernSupportResult(true);
       cb(true);
       return;
     }
     if (optionalSupport === false) {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
     var globalScope = getGlobalScope();
     var scriptElement = document.createElement('script');
     if (!('noModule' in scriptElement)) {
+      rememberModernSupportResult(false);
       cb(false);
       return;
     }
@@ -1280,6 +1391,9 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         optionalCheckScript.parentNode.removeChild(optionalCheckScript);
       }
       cleanupOptionalFlag(globalScope);
+      if (result === true || result === false) {
+        rememberModernSupportResult(result);
+      }
       cb(result);
     }
     optionalCheckScript.type = 'module';

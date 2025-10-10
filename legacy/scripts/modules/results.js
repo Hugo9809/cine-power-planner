@@ -1241,8 +1241,51 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.elements.batteryComparisonSection = batteryComparisonSection;
     runtimeFeedbackState.elements.batteryTableElem = batteryTableElem;
     runtimeFeedbackState.elements.setupDiagramContainer = setupDiagramContainer;
-    function safeSelectValue(select) {
-      return select && typeof select.value === 'string' ? select.value : '';
+    var previewSelections = opts && _typeof(opts.previewSelections) === 'object' && opts.previewSelections ? opts.previewSelections : null;
+    function normalizePreviewItem(value) {
+      if (typeof value === 'string') {
+        var trimmed = value.trim();
+        return trimmed && trimmed !== 'None' ? trimmed : '';
+      }
+      if (value == null) {
+        return '';
+      }
+      var stringified = String(value).trim();
+      return stringified && stringified !== 'None' ? stringified : '';
+    }
+    function getPreviewValue(key) {
+      if (!previewSelections || !key) {
+        return '';
+      }
+      return normalizePreviewItem(previewSelections[key]);
+    }
+    function getPreviewList(key) {
+      if (!previewSelections || !key) {
+        return [];
+      }
+      var list = previewSelections[key];
+      if (!Array.isArray(list)) {
+        return [];
+      }
+      var normalized = [];
+      for (var index = 0; index < list.length; index += 1) {
+        var item = normalizePreviewItem(list[index]);
+        if (item) {
+          normalized.push(item);
+        }
+      }
+      return normalized;
+    }
+    function safeSelectValue(select, previewKey) {
+      var value = select && typeof select.value === 'string' ? select.value : '';
+      if (value && value !== 'None') {
+        return value;
+      }
+      var previewValue = getPreviewValue(previewKey);
+      if (previewValue) {
+        return previewValue;
+      }
+      return value;
     }
     function getSelectedOptionLabel(select) {
       if (!select || typeof select.selectedIndex !== 'number') {
@@ -1258,11 +1301,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return option.textContent.trim();
     }
-    var camera = safeSelectValue(cameraSelect);
-    var monitor = safeSelectValue(monitorSelect);
-    var video = safeSelectValue(videoSelect);
-    var distance = safeSelectValue(distanceSelect);
-    var battery = safeSelectValue(batterySelect);
+    var camera = safeSelectValue(cameraSelect, 'camera');
+    var monitor = safeSelectValue(monitorSelect, 'monitor');
+    var video = safeSelectValue(videoSelect, 'video');
+    var distance = safeSelectValue(distanceSelect, 'distance');
+    var battery = safeSelectValue(batterySelect, 'battery');
     var batteryLabelText = getSelectedOptionLabel(batterySelect);
     var motors = motorSelects.map(function mapMotor(select) {
       return safeSelectValue(select);
@@ -1270,6 +1313,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var controllers = controllerSelects.map(function mapController(select) {
       return safeSelectValue(select);
     });
+    var previewMotors = getPreviewList('motors');
+    if (previewMotors.length) {
+      var hasMotorSelection = motors.some(function hasMotor(value) {
+        return value && value !== 'None';
+      });
+      if (!hasMotorSelection) {
+        motors = previewMotors.slice();
+      }
+    }
+    var previewControllers = getPreviewList('controllers');
+    if (previewControllers.length) {
+      var hasControllerSelection = controllers.some(function hasController(value) {
+        return value && value !== 'None';
+      });
+      if (!hasControllerSelection) {
+        controllers = previewControllers.slice();
+      }
+    }
+    if (!batteryLabelText || !batteryLabelText.trim()) {
+      var previewBatteryLabel = getPreviewValue('batteryLabel') || getPreviewValue('battery');
+      if (previewBatteryLabel) {
+        batteryLabelText = previewBatteryLabel;
+      }
+    }
     var cameraDevices = devices && _typeof(devices.cameras) === 'object' && devices.cameras ? devices.cameras : {};
     var monitorDevices = devices && _typeof(devices.monitors) === 'object' && devices.monitors ? devices.monitors : {};
     var videoDevices = devices && _typeof(devices.video) === 'object' && devices.video ? devices.video : {};
@@ -1437,6 +1504,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         selectedPlate = plateResult;
       }
     }
+    if (!selectedPlate) {
+      selectedPlate = getPreviewValue('plate') || getPreviewValue('batteryPlate') || '';
+    }
     var getMountVoltageConfigFn = resolveFunctionDependency('getMountVoltageConfig');
     var mountVoltages = {};
     if (typeof getMountVoltageConfigFn === 'function') {
@@ -1486,7 +1556,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cineResults.updateCalculations could not refresh battery options.', error);
       }
     }
-    battery = safeSelectValue(batterySelect);
+    battery = safeSelectValue(batterySelect, 'battery');
     var setStatusMessageFn = resolveFunctionDependency('setStatusMessage');
     if (!setStatusMessageFn) {
       setStatusMessageFn = function fallbackSetStatusMessage(element, message) {
@@ -1604,7 +1674,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     } else {
       var batteryData = devices.batteries[battery];
-      var hsName = safeSelectValue(hotswapSelect);
+      var hsName = safeSelectValue(hotswapSelect, 'hotswap');
       var hotswapData = devices.batteryHotswaps && devices.batteryHotswaps[hsName] ? devices.batteryHotswaps[hsName] : null;
       var capacityWh = (batteryData && typeof batteryData.capacity === 'number' ? batteryData.capacity : 0) + (hotswapData && typeof hotswapData.capacity === 'number' ? hotswapData.capacity : 0);
       var maxPinA = batteryData && typeof batteryData.pinA === 'number' ? batteryData.pinA : 0;
@@ -1774,8 +1844,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (batteryTableElem && totalWatt > 0 && devices.batteries) {
       var batteryDevices = devices.batteries;
-      var selectedBatteryName = safeSelectValue(batterySelect);
-      var camName = safeSelectValue(cameraSelect);
+      var selectedBatteryName = safeSelectValue(batterySelect, 'battery');
+      var camName = safeSelectValue(cameraSelect, 'camera');
       var plateFilter = selectedPlate;
       var supportsB = supportsBMountCameraFn ? !!supportsBMountCameraFn(camName) : false;
       var supportsGold = supportsGoldMountCameraFn ? !!supportsGoldMountCameraFn(camName) : false;

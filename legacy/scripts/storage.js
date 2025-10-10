@@ -193,6 +193,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
   var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
   var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
+  var USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
   var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
   var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
   var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -4846,9 +4847,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return 'undefined';
     }
     if (Array.isArray(value)) {
-      return "[".concat(value.map(function (item) {
-        return createStableValueSignature(item);
-      }).join(','), "]");
+      var signature = '[';
+      for (var index = 0; index < value.length; index += 1) {
+        if (index > 0) {
+          signature += ',';
+        }
+        signature += createStableValueSignature(value[index]);
+      }
+      signature += ']';
+      return signature;
     }
     if (value instanceof Date) {
       var timestamp = value.getTime();
@@ -4859,10 +4866,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var keys = Object.keys(value).sort();
-      var entries = keys.map(function (key) {
-        return "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
-      });
-      return "{".concat(entries.join(','), "}");
+      var _signature = '{';
+      for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
+        var key = keys[_index2];
+        if (_index2 > 0) {
+          _signature += ',';
+        }
+        _signature += "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
+      }
+      _signature += '}';
+      return _signature;
     }
     if (typeof value === 'number') {
       if (Number.isNaN(value)) {
@@ -4988,8 +5001,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     for (var i = removable.length - 1; i >= 0 && entries.length > limit; i -= 1) {
-      var _index2 = removable[i];
-      var _entry = entries[_index2];
+      var _index3 = removable[i];
+      var _entry = entries[_index3];
       if (!_entry || typeof _entry.key !== 'string') {
         continue;
       }
@@ -4997,7 +5010,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         continue;
       }
       delete container[_entry.key];
-      entries.splice(_index2, 1);
+      entries.splice(_index3, 1);
       removedKeys.push(_entry.key);
     }
     if (entries.length > limit) {
@@ -6689,6 +6702,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     saveJSONToStorage(safeStorage, SESSION_STATE_KEY, normalizedState, "Error saving session state to localStorage:", saveOptions);
   }
+  function normalizeDeviceDataPayload(rawData) {
+    if (!isPlainObject(rawData)) {
+      return {
+        data: null,
+        changed: false
+      };
+    }
+    var data = _objectSpread({}, rawData);
+    var changed = false;
+    var ensureObject = function ensureObject(target, key) {
+      if (!isPlainObject(target[key])) {
+        target[key] = {};
+        changed = true;
+      }
+      return target[key];
+    };
+    DEVICE_COLLECTION_KEYS.forEach(function (key) {
+      ensureObject(data, key);
+    });
+    if (!isPlainObject(data.fiz)) {
+      data.fiz = {};
+      rawData.fiz = data.fiz;
+      changed = true;
+    }
+    FIZ_COLLECTION_KEYS.forEach(function (key) {
+      var collection = ensureObject(data.fiz, key);
+      rawData.fiz[key] = collection;
+    });
+    if (!isPlainObject(data.accessories)) {
+      data.accessories = {};
+      rawData.accessories = data.accessories;
+      changed = true;
+    }
+    ACCESSORY_COLLECTION_KEYS.forEach(function (key) {
+      var collection = ensureObject(data.accessories, key);
+      rawData.accessories[key] = collection;
+    });
+    if (!Array.isArray(data.filterOptions)) {
+      data.filterOptions = Array.isArray(rawData.filterOptions) ? rawData.filterOptions.slice() : [];
+      rawData.filterOptions = data.filterOptions;
+      changed = true;
+    }
+    return {
+      data: data,
+      changed: changed
+    };
+  }
   function loadDeviceData() {
     applyLegacyStorageMigrations();
     var safeStorage = getSafeLocalStorage();
@@ -6697,37 +6757,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return value === null || isPlainObject(value);
       }
     });
-    if (!isPlainObject(parsedData)) {
+    var _normalizeDeviceDataP = normalizeDeviceDataPayload(parsedData),
+      data = _normalizeDeviceDataP.data,
+      changed = _normalizeDeviceDataP.changed;
+    if (!data) {
       return null;
-    }
-    var data = _objectSpread({}, parsedData);
-    var changed = false;
-    function ensureObject(target, key) {
-      if (!isPlainObject(target[key])) {
-        target[key] = {};
-        changed = true;
-      }
-    }
-    DEVICE_COLLECTION_KEYS.forEach(function (key) {
-      ensureObject(data, key);
-    });
-    if (!isPlainObject(data.fiz)) {
-      data.fiz = {};
-      changed = true;
-    }
-    FIZ_COLLECTION_KEYS.forEach(function (key) {
-      ensureObject(data.fiz, key);
-    });
-    if (!isPlainObject(data.accessories)) {
-      data.accessories = {};
-      changed = true;
-    }
-    ACCESSORY_COLLECTION_KEYS.forEach(function (key) {
-      ensureObject(data.accessories, key);
-    });
-    if (!Array.isArray(data.filterOptions)) {
-      data.filterOptions = Array.isArray(parsedData.filterOptions) ? parsedData.filterOptions.slice() : [];
-      changed = true;
     }
     if (changed) {
       createStorageMigrationBackup(safeStorage, DEVICE_STORAGE_KEY, parsedData);
@@ -6745,8 +6779,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn('Ignoring invalid device data payload. Expected a plain object.');
       return;
     }
+    var _normalizeDeviceDataP2 = normalizeDeviceDataPayload(deviceData),
+      normalizedDeviceData = _normalizeDeviceDataP2.data;
+    var dataToPersist = normalizedDeviceData || deviceData;
     ensurePreWriteMigrationBackup(safeStorage, DEVICE_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, deviceData, "Error saving device data to localStorage:");
+    saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, dataToPersist, "Error saving device data to localStorage:");
   }
   function normalizeSetups(rawData) {
     if (!rawData) {
@@ -6931,13 +6968,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
   var LEGACY_PROJECT_FIELD_LABELS = {
     productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
-  productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
-  productionCompanyStreet: ['Street address', 'Straße und Hausnummer', 'Adresse', 'Dirección', 'Indirizzo'],
-  productionCompanyStreet2: ['Address line 2', 'Adresszusatz', "Complément d'adresse", 'Línea 2 de dirección', 'Seconda linea indirizzo'],
-  productionCompanyCity: ['City', 'Stadt', 'Ville', 'Ciudad', 'Città'],
-  productionCompanyRegion: ['State / Province / Region', 'Bundesland / Region', 'État / Région / Département', 'Estado / Provincia / Región', 'Regione / Provincia / Stato'],
-  productionCompanyPostalCode: ['Postal code', 'Postleitzahl', 'Code postal', 'Código postal', 'CAP'],
-  productionCompanyCountry: ['Country', 'Land', 'Pays', 'País', 'Paese'],
+    productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
+    productionCompanyStreet: ['Street address', 'Straße und Hausnummer', 'Adresse', 'Dirección', 'Indirizzo'],
+    productionCompanyStreet2: ['Address line 2', 'Adresszusatz', "Complément d'adresse", 'Línea 2 de dirección', 'Seconda linea indirizzo'],
+    productionCompanyCity: ['City', 'Stadt', 'Ville', 'Ciudad', 'Città'],
+    productionCompanyRegion: ['State / Province / Region', 'Bundesland / Region', 'État / Région / Département', 'Estado / Provincia / Región', 'Regione / Provincia / Stato'],
+    productionCompanyPostalCode: ['Postal code', 'Postleitzahl', 'Code postal', 'Código postal', 'CAP'],
+    productionCompanyCountry: ['Country', 'Land', 'Pays', 'País', 'Paese'],
     rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
     crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
     prepDays: ['Prep Days', 'Prep-Tage', 'Jours de préparation', 'Días de preparación', 'Giorni di preparazione'],
@@ -8921,6 +8958,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensurePreWriteMigrationBackup(safeStorage, OWN_GEAR_STORAGE_KEY);
     saveJSONToStorage(safeStorage, OWN_GEAR_STORAGE_KEY, normalized, 'Error saving own gear to localStorage:');
   }
+  function normalizeUserProfile(entry) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return null;
+    }
+    var name = typeof entry.name === 'string' ? entry.name.trim() : '';
+    var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
+    if (!name && !avatar) {
+      return {
+        name: '',
+        avatar: ''
+      };
+    }
+    return {
+      name: name,
+      avatar: avatar
+    };
+  }
+  function loadUserProfile() {
+    applyLegacyStorageMigrations();
+    var safeStorage = getSafeLocalStorage();
+    var parsed = loadJSONFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, 'Error loading user profile from localStorage:', null, {
+      validate: function validate(value) {
+        return value === null || isPlainObject(value);
+      }
+    });
+    if (!isPlainObject(parsed)) {
+      return {
+        name: '',
+        avatar: ''
+      };
+    }
+    return normalizeUserProfile(parsed) || {
+      name: '',
+      avatar: ''
+    };
+  }
+  function saveUserProfile(profile) {
+    var safeStorage = getSafeLocalStorage();
+    if (profile === null || profile === undefined) {
+      deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, 'Error deleting user profile from localStorage:');
+      return;
+    }
+    var normalized = normalizeUserProfile(profile) || {
+      name: '',
+      avatar: ''
+    };
+    if (!normalized.name && !normalized.avatar) {
+      deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, 'Error deleting user profile from localStorage:');
+      return;
+    }
+    ensurePreWriteMigrationBackup(safeStorage, USER_PROFILE_STORAGE_KEY);
+    saveJSONToStorage(safeStorage, USER_PROFILE_STORAGE_KEY, normalized, 'Error saving user profile to localStorage:');
+  }
   function loadFeedback() {
     applyLegacyStorageMigrations();
     var safeStorage = getSafeLocalStorage();
@@ -9555,7 +9645,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     });
     var storageCandidates = collectUniqueStorages([safeStorage, typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null, getWindowStorage('localStorage'), typeof localStorage !== 'undefined' ? localStorage : null]);
+    var onboardingStorageKeys = ['cameraPowerPlanner_onboardingTutorial', 'cinePowerPlanner_onboardingTutorial'];
+    var clearOnboardingTutorialState = function clearOnboardingTutorialState(storage) {
+      if (!storage) {
+        return;
+      }
+      for (var index = 0; index < onboardingStorageKeys.length; index += 1) {
+        var key = onboardingStorageKeys[index];
+        deleteFromStorage(storage, key, msg);
+      }
+    };
+    for (var index = 0; index < storageCandidates.length; index += 1) {
+      clearOnboardingTutorialState(storageCandidates[index]);
+    }
     var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
+    for (var _index4 = 0; _index4 < sessionCandidates.length; _index4 += 1) {
+      clearOnboardingTutorialState(sessionCandidates[_index4]);
+    }
     var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
     var collectStorageKeys = function collectStorageKeys(storage) {
       var predicate = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
@@ -9566,10 +9672,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var keys = [];
       if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-        for (var index = 0; index < storage.length; index += 1) {
+        for (var _index5 = 0; _index5 < storage.length; _index5 += 1) {
           var candidateKey = null;
           try {
-            candidateKey = storage.key(index);
+            candidateKey = storage.key(_index5);
           } catch (error) {
             console.warn('Unable to inspect storage key during factory reset', error);
           }
@@ -10297,6 +10403,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     assignJSONValue(PROJECT_STORAGE_KEY, 'project');
     assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
     assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
+    assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
     assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
     assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
     assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -10459,6 +10566,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return entry && _typeof(entry) === 'object';
       });
       saveOwnGear(entries);
+    }
+    if (hasOwn('userProfile')) {
+      if (allData.userProfile === null) {
+        saveUserProfile(null);
+      } else if (isPlainObject(allData.userProfile)) {
+        var profile = normalizeUserProfile(allData.userProfile);
+        if (profile) {
+          saveUserProfile(profile);
+        } else {
+          saveUserProfile(null);
+        }
+      }
     }
     if (isPlainObject(allData.preferences)) {
       var prefs = allData.preferences;
@@ -10673,6 +10792,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     saveFavorites: saveFavorites,
     loadOwnGear: loadOwnGear,
     saveOwnGear: saveOwnGear,
+    loadUserProfile: loadUserProfile,
+    saveUserProfile: saveUserProfile,
     loadAutoGearBackups: loadAutoGearBackups,
     saveAutoGearBackups: saveAutoGearBackups,
     loadFeedback: loadFeedback,

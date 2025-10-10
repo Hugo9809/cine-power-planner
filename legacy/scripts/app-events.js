@@ -1146,9 +1146,15 @@ function createStableValueSignature(value) {
     return 'undefined';
   }
   if (Array.isArray(value)) {
-    return "[".concat(value.map(function (item) {
-      return createStableValueSignature(item);
-    }).join(','), "]");
+    var signature = '[';
+    for (var index = 0; index < value.length; index += 1) {
+      if (index > 0) {
+        signature += ',';
+      }
+      signature += createStableValueSignature(value[index]);
+    }
+    signature += ']';
+    return signature;
   }
   if (value instanceof Date) {
     var timestamp = value.getTime();
@@ -1184,10 +1190,16 @@ function createStableValueSignature(value) {
   }
   if (valueType === 'object') {
     var keys = Object.keys(value).sort();
-    var entries = keys.map(function (key) {
-      return "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
-    });
-    return "{".concat(entries.join(','), "}");
+    var _signature = '{';
+    for (var _index = 0; _index < keys.length; _index += 1) {
+      var key = keys[_index];
+      if (_index > 0) {
+        _signature += ',';
+      }
+      _signature += "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
+    }
+    _signature += '}';
+    return _signature;
   }
   return "".concat(valueType, ":").concat(String(value));
 }

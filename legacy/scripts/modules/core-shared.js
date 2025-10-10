@@ -630,16 +630,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (value === null) return 'null';
       if (value === undefined) return 'undefined';
       if (Array.isArray(value)) {
-        return "[".concat(value.map(function (item) {
-          return stableStringify(item);
-        }).join(','), "]");
+        var serialized = '[';
+        for (var index = 0; index < value.length; index += 1) {
+          if (index > 0) {
+            serialized += ',';
+          }
+          serialized += stableStringify(value[index]);
+        }
+        serialized += ']';
+        return serialized;
       }
       if (_typeof(value) === 'object') {
         var keys = Object.keys(value).sort();
-        var entries = keys.map(function (key) {
-          return "".concat(JSON.stringify(key), ":").concat(stableStringify(value[key]));
-        });
-        return "{".concat(entries.join(','), "}");
+        var _serialized = '{';
+        for (var _index = 0; _index < keys.length; _index += 1) {
+          var key = keys[_index];
+          if (_index > 0) {
+            _serialized += ',';
+          }
+          _serialized += "".concat(JSON.stringify(key), ":").concat(stableStringify(value[key]));
+        }
+        _serialized += '}';
+        return _serialized;
       }
       return JSON.stringify(value);
     }

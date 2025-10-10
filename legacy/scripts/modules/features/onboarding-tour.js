@@ -101,6 +101,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var STORAGE_VERSION = 2;
   var OVERLAY_ID = 'onboardingTutorialOverlay';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
+  var HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   var HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -136,6 +137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
+  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'resultsReview', 'powerSummary', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'safetyNet', 'completion'];
+  var STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
   function normalizeCompletedSteps(value, allowedKeys) {
     if (!Array.isArray(value)) {
       return [];
@@ -172,8 +175,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       snapshot.completed = false;
       snapshot.skipped = false;
       if (!snapshot.activeStep) {
-        for (var stepIndex = 0; stepIndex < allowedKeys.length; stepIndex += 1) {
-          var key = allowedKeys[stepIndex];
+        for (var index = 0; index < allowedKeys.length; index += 1) {
+          var key = allowedKeys[index];
           if (snapshot.completedSteps.indexOf(key) === -1) {
             snapshot.activeStep = key;
             break;
@@ -186,7 +189,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (snapshot.completedSteps.length < allowedKeys.length) {
       snapshot.completed = false;
     }
-    if (typeof snapshot.timestamp !== 'number' || snapshot.timestamp !== snapshot.timestamp) {
+    if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
       snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
     }
     return snapshot;
@@ -251,8 +254,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return sanitized;
     }
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'resultsReview', 'powerSummary', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'safetyNet', 'completion'];
-  var STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
   var storedState = loadStoredState();
   function resolveLanguage() {
     try {
@@ -707,9 +708,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var totalSteps = stepConfig.length;
-    var completedCount = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps.length : 0;
+    var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps.length : 0;
     var template = tourTexts.resumeHintDetailed || tourTexts.resumeHint || 'Resuming where you left off.';
-    var hint = template.replace('{current}', String(index + 1)).replace('{total}', String(totalSteps)).replace('{completed}', String(Math.min(completedCount, totalSteps)));
+    var hint = template.replace('{current}', String(index + 1)).replace('{total}', String(totalSteps)).replace('{completed}', String(Math.min(completedSteps, totalSteps)));
     resumeHintEl.hidden = false;
     resumeHintEl.textContent = hint;
   }
@@ -724,11 +725,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       complete: tourTexts.stepStatusComplete || 'Completed',
       upcoming: tourTexts.stepStatusUpcoming || 'Locked'
     };
-    var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
-    var completedLookup = {};
-    for (var completedIndex = 0; completedIndex < completedSteps.length; completedIndex += 1) {
-      completedLookup[completedSteps[completedIndex]] = true;
-    }
+    var completedSet = new Set(storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : []);
     var activeKey = currentStep ? currentStep.key : stepConfig[resolvedActiveIndex] && stepConfig[resolvedActiveIndex].key;
     stepListEl.textContent = '';
     if (typeof stepListEl.setAttribute === 'function') {
@@ -739,7 +736,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var texts = getStepTexts(step);
       var item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
-      var status = step && step.key === activeKey ? 'current' : step && completedLookup[step.key] ? 'complete' : 'upcoming';
+      var status = void 0;
+      if (step && step.key === activeKey) {
+        status = 'current';
+      } else if (step && completedSet.has(step.key)) {
+        status = 'complete';
+      } else {
+        status = 'upcoming';
+      }
       item.setAttribute('data-status', status);
       var button = DOCUMENT.createElement('button');
       button.type = 'button';
@@ -822,15 +826,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var totalSteps = stepConfig.length;
     var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
-    var completedLookup = {};
-    for (var completedIndex = 0; completedIndex < completedSteps.length; completedIndex += 1) {
-      completedLookup[completedSteps[completedIndex]] = true;
-    }
-    var progressValue = Math.min(totalSteps, Math.max(index + 1, completedSteps.length + (step && !completedLookup[step.key] ? 1 : 0)));
+    var completedSet = new Set(completedSteps);
+    var activeContribution = step && !completedSet.has(step.key) ? 1 : 0;
+    var progressValue = Math.min(totalSteps, Math.max(index + 1, completedSet.size + activeContribution));
     var ratio = totalSteps > 0 ? Math.max(0, Math.min(1, progressValue / totalSteps)) : 0;
     progressMeterFillEl.style.width = "".concat(ratio * 100, "%");
     var labelTemplate = tourTexts.progressValueLabel || 'Completed {completed} of {total} steps';
-    var label = labelTemplate.replace('{completed}', String(Math.min(completedSteps.length, totalSteps))).replace('{total}', String(totalSteps));
+    var label = labelTemplate.replace('{completed}', String(Math.min(completedSet.size, totalSteps))).replace('{total}', String(totalSteps));
     var meterLabel = tourTexts.progressMeterLabel || 'Tutorial progress';
     progressMeterEl.setAttribute('aria-label', meterLabel);
     progressMeterEl.setAttribute('aria-valuemax', String(totalSteps));
@@ -1068,23 +1070,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensureOverlayElements();
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
-    storedState = loadStoredState();
-    var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
-    var completedLookup = {};
-    for (var completedIndex = 0; completedIndex < completedSteps.length; completedIndex += 1) {
-      completedLookup[completedSteps[completedIndex]] = true;
-    }
+    var completedSet = new Set(storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : []);
     var startIndex = resume && storedState && storedState.activeStep ? stepConfig.findIndex(function (step) {
       return step.key === storedState.activeStep;
     }) : -1;
     if (startIndex < 0) {
-      for (var stepIndex = 0; stepIndex < stepConfig.length; stepIndex += 1) {
-        var candidate = stepConfig[stepIndex];
-        if (candidate && !completedLookup[candidate.key]) {
-          startIndex = stepIndex;
-          break;
-        }
-      }
+      startIndex = stepConfig.findIndex(function (step) {
+        return step && !completedSet.has(step.key);
+      });
     }
     var resolvedIndex = startIndex >= 0 ? startIndex : stepConfig.length - 1;
     if (overlayRoot) {
@@ -1096,6 +1089,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
+    storedState = loadStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
     attachGlobalListeners();
@@ -1123,8 +1117,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     applyHelpButtonLabel();
   }
+  function collectHelpButtons() {
+    var buttons = [];
+    var seen = new Set();
+    if (DOCUMENT && typeof DOCUMENT.querySelectorAll === 'function') {
+      var candidates = DOCUMENT.querySelectorAll(HELP_TRIGGER_SELECTOR);
+      for (var index = 0; index < candidates.length; index += 1) {
+        var button = candidates[index];
+        if (!button || typeof button.addEventListener !== 'function') {
+          continue;
+        }
+        if (seen.has(button)) {
+          continue;
+        }
+        seen.add(button);
+        buttons.push(button);
+      }
+    }
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function') {
+      var fallback = DOCUMENT.getElementById(HELP_BUTTON_ID);
+      if (fallback && typeof fallback.addEventListener === 'function' && !seen.has(fallback)) {
+        buttons.push(fallback);
+      }
+    }
+    return buttons;
+  }
   function resolveHelpStatusElement() {
-    if (helpStatusEl && helpStatusEl.parentNode) {
+    if (helpStatusEl && helpStatusEl.isConnected) {
       return helpStatusEl;
     }
     if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
@@ -1150,37 +1169,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var stepList = Array.isArray(steps) && steps.length ? steps : getStepConfig();
-    var allowedKeys = [];
-    for (var allowedIndex = 0; allowedIndex < stepList.length; allowedIndex += 1) {
-      var step = stepList[allowedIndex];
-      if (step && typeof step.key === 'string') {
-        allowedKeys.push(step.key);
-      }
-    }
+    var allowedKeys = stepList.map(function (step) {
+      return step && step.key;
+    }).filter(Boolean);
     var stored = state || storedState || loadStoredState();
     var completedRaw = stored && Array.isArray(stored.completedSteps) ? stored.completedSteps : [];
-    var completedSet = [];
-    for (var completedIndex = 0; completedIndex < completedRaw.length; completedIndex += 1) {
-      var key = completedRaw[completedIndex];
-      if (typeof key !== 'string') {
-        continue;
-      }
-      if (allowedKeys.indexOf(key) === -1) {
-        continue;
-      }
-      if (completedSet.indexOf(key) === -1) {
-        completedSet.push(key);
+    var completedSet = new Set();
+    for (var index = 0; index < completedRaw.length; index += 1) {
+      var key = completedRaw[index];
+      if (typeof key === 'string' && allowedKeys.indexOf(key) !== -1) {
+        completedSet.add(key);
       }
     }
     var total = allowedKeys.length;
-    var completedCount = completedSet.length > total ? total : completedSet.length;
+    var completedCount = Math.min(completedSet.size, total);
     var activeKey = stored && typeof stored.activeStep === 'string' ? stored.activeStep : null;
     var activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
     var nextIndex = -1;
-    for (var index = 0; index < allowedKeys.length; index += 1) {
-      var allowedKey = allowedKeys[index];
-      if (completedSet.indexOf(allowedKey) === -1) {
-        nextIndex = index;
+    for (var _index = 0; _index < allowedKeys.length; _index += 1) {
+      var _key = allowedKeys[_index];
+      if (!completedSet.has(_key)) {
+        nextIndex = _index;
         break;
       }
     }
@@ -1224,16 +1233,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         template = 'Your guided tutorial progress will be saved offline as you go. Next: {next}.';
       }
     }
-    var message = template.replace('{completed}', String(completedCount)).replace('{total}', String(total));
-    var nextValue = nextTitle || activeTitle || '';
-    var currentValue = activeTitle || nextTitle || '';
-    message = message.replace('{next}', nextValue);
-    message = message.replace('{current}', currentValue);
-    message = message.replace('{step}', currentValue);
+    var replacements = {
+      '{completed}': String(completedCount),
+      '{total}': String(total),
+      '{next}': nextTitle || activeTitle || '',
+      '{current}': activeTitle || nextTitle || '',
+      '{step}': activeTitle || nextTitle || ''
+    };
+    var message = template;
+    var tokens = Object.keys(replacements);
+    for (var _index2 = 0; _index2 < tokens.length; _index2 += 1) {
+      var token = tokens[_index2];
+      message = message.split(token).join(replacements[token]);
+    }
     statusElement.textContent = message;
     statusElement.hidden = !message;
   }
   function applyHelpButtonLabel() {
+    var buttons = collectHelpButtons();
+    if (!buttons.length) {
+      applyHelpStatus();
+      return;
+    }
     var state = storedState || loadStoredState();
     var steps = getStepConfig();
     var completedCount = state && Array.isArray(state.completedSteps) ? state.completedSteps.length : 0;
@@ -1252,14 +1273,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (labelTemplate) {
         label = labelTemplate.replace('{completed}', String(Math.min(completedCount, steps.length))).replace('{total}', String(steps.length));
       }
-      if (!label) {
-        label = tourTexts.startLabel || 'Start guided tutorial';
-      }
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
-    var button = DOCUMENT.getElementById(HELP_BUTTON_ID);
-    if (button) {
+    for (var index = 0; index < buttons.length; index += 1) {
+      var button = buttons[index];
+      if (!button) {
+        continue;
+      }
       button.textContent = label;
     }
     applyHelpStatus(state, steps);
@@ -1268,18 +1289,39 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (event && typeof event.preventDefault === 'function') {
       event.preventDefault();
     }
-    storedState = loadStoredState();
-    var resume = Boolean(storedState && storedState.activeStep);
-    startTutorial({
-      resume: resume
-    });
-  }
-  function attachHelpButton() {
-    var button = DOCUMENT.getElementById(HELP_BUTTON_ID);
-    if (!button) {
+    var startFromHelp = function startFromHelp() {
+      storedState = loadStoredState();
+      var resume = Boolean(storedState && storedState.activeStep);
+      startTutorial({
+        resume: resume
+      });
+    };
+    var helpDialog = DOCUMENT && typeof DOCUMENT.getElementById === 'function' ? DOCUMENT.getElementById('helpDialog') : null;
+    if (helpDialog && typeof isDialogOpen === 'function' && typeof closeDialog === 'function' && isDialogOpen(helpDialog)) {
+      closeDialog(helpDialog);
+      if (typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
+        GLOBAL_SCOPE.requestAnimationFrame(function () {
+          GLOBAL_SCOPE.requestAnimationFrame(startFromHelp);
+        });
+      } else {
+        setTimeout(startFromHelp, 0);
+      }
       return;
     }
-    button.addEventListener('click', handleHelpButtonClick);
+    startFromHelp();
+  }
+  function attachHelpButton() {
+    var buttons = collectHelpButtons();
+    if (!buttons.length) {
+      return;
+    }
+    for (var index = 0; index < buttons.length; index += 1) {
+      var button = buttons[index];
+      if (!button) {
+        continue;
+      }
+      button.addEventListener('click', handleHelpButtonClick);
+    }
     applyHelpButtonLabel();
   }
   function shouldAutoStart() {
@@ -1287,16 +1329,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return true;
     }
     if (storedState.completed) {
-      var completedSteps = Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
+      var completedSet = new Set(Array.isArray(storedState.completedSteps) ? storedState.completedSteps : []);
       var steps = getStepConfig();
-      var allStepsCovered = true;
-      for (var index = 0; index < steps.length; index += 1) {
-        var step = steps[index];
-        if (completedSteps.indexOf(step.key) === -1) {
-          allStepsCovered = false;
-          break;
-        }
-      }
+      var allStepsCovered = steps.every(function (step) {
+        return completedSet.has(step.key);
+      });
       if (allStepsCovered) {
         return false;
       }
@@ -1338,11 +1375,40 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     storedState = persisted || loadStoredState();
     applyHelpButtonLabel();
+    if (!active && shouldAutoStart()) {
+      scheduleAutoStart();
+    }
   }
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
     GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChange);
-    GLOBAL_SCOPE.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
   }
+  function attachFactoryResetListeners() {
+    var attached = new Set();
+    var candidates = collectCandidateScopes(GLOBAL_SCOPE);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (!scope || attached.has(scope)) {
+        continue;
+      }
+      if (typeof scope.addEventListener === 'function') {
+        try {
+          scope.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
+          attached.add(scope);
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not attach factory reset listener.', error);
+        }
+      }
+    }
+    if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function' && !attached.has(DOCUMENT)) {
+      try {
+        DOCUMENT.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
+        attached.add(DOCUMENT);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not attach document factory reset listener.', error);
+      }
+    }
+  }
+  attachFactoryResetListeners();
   var moduleApi = clone({
     start: startTutorial,
     skip: skipTutorial,

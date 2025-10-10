@@ -1242,6 +1242,146 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       timestamp: timestamp
     };
   }
+  function isForceReloadHash(hashValue, paramName) {
+    if (typeof hashValue !== 'string' || !hashValue) {
+      return false;
+    }
+    var trimmed = hashValue.trim();
+    if (!trimmed) {
+      return false;
+    }
+    var param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+    var prefix = "#".concat(param);
+    if (!trimmed.startsWith(prefix)) {
+      return false;
+    }
+    if (trimmed.length === prefix.length) {
+      return true;
+    }
+    var suffix = trimmed.slice(prefix.length);
+    return /^[-=]/.test(suffix);
+  }
+  function normaliseHrefForHistory(targetHref, baseHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return targetHref;
+    }
+    if (typeof URL === 'function') {
+      var reference = typeof baseHref === 'string' && baseHref ? baseHref : undefined;
+      try {
+        var parsed = new URL(targetHref, reference);
+        return "".concat(parsed.pathname || '').concat(parsed.search || '').concat(parsed.hash || '') || parsed.toString();
+      } catch (error) {
+        void error;
+      }
+    }
+    return targetHref;
+  }
+  function cleanupForceReloadArtifacts(win) {
+    var paramName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'forceReload';
+    var targetWindow = resolveWindow(win);
+    if (!targetWindow || !targetWindow.location) {
+      return false;
+    }
+    var location = targetWindow.location;
+    var originalHref = readLocationHrefSafe(location);
+    if (!originalHref) {
+      return false;
+    }
+    var param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+    var cleanedHref = originalHref;
+    var removedQuery = false;
+    var removedHash = false;
+    if (typeof URL === 'function') {
+      try {
+        var url = new URL(originalHref);
+        if (url.searchParams && typeof url.searchParams.delete === 'function' && url.searchParams.has(param)) {
+          url.searchParams.delete(param);
+          removedQuery = true;
+        }
+        if (isForceReloadHash(url.hash, param)) {
+          url.hash = '';
+          removedHash = true;
+        }
+        cleanedHref = url.toString();
+      } catch (urlError) {
+        void urlError;
+      }
+    }
+    if (!removedQuery) {
+      var hrefWithoutHash = cleanedHref;
+      var hashPart = '';
+      var hashIndex = hrefWithoutHash.indexOf('#');
+      if (hashIndex !== -1) {
+        hashPart = hrefWithoutHash.slice(hashIndex);
+        hrefWithoutHash = hrefWithoutHash.slice(0, hashIndex);
+      }
+      var queryIndex = hrefWithoutHash.indexOf('?');
+      if (queryIndex !== -1) {
+        var base = hrefWithoutHash.slice(0, queryIndex);
+        var query = hrefWithoutHash.slice(queryIndex + 1);
+        var segments = query.split('&');
+        var filtered = [];
+        for (var index = 0; index < segments.length; index += 1) {
+          var segment = segments[index];
+          if (!segment) {
+            continue;
+          }
+          var equalsIndex = segment.indexOf('=');
+          var key = equalsIndex === -1 ? segment : segment.slice(0, equalsIndex);
+          if (key === param) {
+            removedQuery = true;
+            continue;
+          }
+          filtered.push(segment);
+        }
+        hrefWithoutHash = filtered.length ? "".concat(base, "?").concat(filtered.join('&')) : base;
+      }
+      cleanedHref = hashPart ? "".concat(hrefWithoutHash).concat(hashPart) : hrefWithoutHash;
+    }
+    if (!removedHash && isForceReloadHash(targetWindow.location && targetWindow.location.hash, param)) {
+      removedHash = true;
+      cleanedHref = cleanedHref.replace(/#.*$/, '');
+    }
+    if (!removedQuery && !removedHash) {
+      return false;
+    }
+    var baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
+    var historyLike = null;
+    try {
+      historyLike = targetWindow.history || null;
+    } catch (historyError) {
+      safeWarn('Force reload cleanup failed to access history object', historyError);
+      historyLike = null;
+    }
+    if (historyLike && typeof historyLike.replaceState === 'function') {
+      var stateSnapshot = null;
+      var hasStateSnapshot = false;
+      try {
+        stateSnapshot = historyLike.state;
+        hasStateSnapshot = true;
+      } catch (stateError) {
+        safeWarn('Force reload cleanup failed to snapshot history state', stateError);
+      }
+      var replaceUrl = normaliseHrefForHistory(cleanedHref, baseHref);
+      try {
+        historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
+        return true;
+      } catch (replaceError) {
+        safeWarn('Force reload cleanup failed to update history state', replaceError);
+      }
+    }
+    if (removedHash) {
+      try {
+        if (typeof targetWindow.location.hash === 'string' && isForceReloadHash(targetWindow.location.hash, param)) {
+          targetWindow.location.hash = '';
+          return true;
+        }
+      } catch (hashError) {
+        safeWarn('Force reload cleanup failed to clear hash fallback', hashError);
+      }
+    }
+    return false;
+  }
   function scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, initialAfter) {
     var schedule = null;
     try {
@@ -1764,9 +1904,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       clearUiCacheEntriesFallback: clearUiCacheEntriesFallback,
       unregisterServiceWorkers: unregisterServiceWorkers,
       clearCacheStorage: clearCacheStorage,
-      triggerReload: triggerReload
+      triggerReload: triggerReload,
+      cleanupForceReloadArtifacts: cleanupForceReloadArtifacts
     }
   };
+  cleanupForceReloadArtifacts();
   freezeDeep(offlineAPI);
   informModuleGlobals('cineOffline', offlineAPI);
   registerOrQueueModule('cineOffline', offlineAPI, {
