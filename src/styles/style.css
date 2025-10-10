@@ -6346,7 +6346,8 @@ body.dark-mode .onboarding-card {
 .onboarding-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: var(--spacing-lg);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
 }
@@ -6355,6 +6356,39 @@ body.dark-mode .onboarding-card {
   margin: 0;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.01em;
+}
+
+.onboarding-progress-meter {
+  flex: 1 0 100%;
+  margin-top: 0.25rem;
+  margin-bottom: -0.25rem;
+  position: relative;
+  height: 0.5rem;
+  border-radius: 999px;
+}
+
+.onboarding-progress-track {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--surface-color) 78%, rgba(0, 0, 0, 0.18) 22%);
+  overflow: hidden;
+}
+
+.onboarding-progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--accent-color) 85%, rgba(255, 255, 255, 0.12) 15%);
+  transition: width 0.25s ease;
+}
+
+body.dark-mode .onboarding-progress-track {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .onboarding-progress-fill {
+  background: color-mix(in srgb, var(--accent-color) 88%, rgba(255, 255, 255, 0.25) 12%);
 }
 
 .onboarding-card h2 {

@@ -111,7 +111,7 @@
   }
 
   const STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
-  const STORAGE_VERSION = 1;
+  const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
 
@@ -155,9 +155,41 @@
     return value;
   }
 
+  function normalizeCompletedSteps(value) {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+    const normalized = [];
+    for (let index = 0; index < value.length; index += 1) {
+      const entry = value[index];
+      if (typeof entry !== 'string' || !entry) {
+        continue;
+      }
+      if (normalized.indexOf(entry) === -1) {
+        normalized.push(entry);
+      }
+    }
+    return normalized;
+  }
+
+  function normalizeStateSnapshot(state) {
+    const snapshot = state && typeof state === 'object' ? { ...state } : {};
+    snapshot.version = STORAGE_VERSION;
+    snapshot.completed = Boolean(snapshot.completed);
+    snapshot.skipped = Boolean(snapshot.skipped) && !snapshot.completed;
+    snapshot.activeStep = typeof snapshot.activeStep === 'string' && snapshot.activeStep
+      ? snapshot.activeStep
+      : null;
+    snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps);
+    if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
+      snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
+    }
+    return snapshot;
+  }
+
   function loadStoredState() {
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.getItem !== 'function') {
-      return { version: STORAGE_VERSION };
+      return normalizeStateSnapshot({ version: STORAGE_VERSION });
     }
     let raw = null;
     try {
@@ -167,38 +199,49 @@
       raw = null;
     }
     if (typeof raw !== 'string' || !raw) {
-      return { version: STORAGE_VERSION };
+      return normalizeStateSnapshot({ version: STORAGE_VERSION });
     }
     try {
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') {
-        return { version: STORAGE_VERSION };
+        return normalizeStateSnapshot({ version: STORAGE_VERSION });
       }
       if (parsed.version !== STORAGE_VERSION) {
-        return { ...parsed, version: STORAGE_VERSION, completed: false, skipped: false };
+        return normalizeStateSnapshot({
+          ...parsed,
+          version: STORAGE_VERSION,
+          completed: false,
+          skipped: false,
+        });
       }
-      return parsed;
+      return normalizeStateSnapshot(parsed);
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
-      return { version: STORAGE_VERSION };
+      return normalizeStateSnapshot({ version: STORAGE_VERSION });
     }
   }
 
   function saveState(nextState) {
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.setItem !== 'function') {
-      return false;
+      return normalizeStateSnapshot({
+        ...nextState,
+        version: STORAGE_VERSION,
+      });
     }
-    const payload = {
-      version: STORAGE_VERSION,
-      timestamp: Date.now ? Date.now() : new Date().getTime(),
+    const sanitized = normalizeStateSnapshot({
       ...nextState,
+      version: STORAGE_VERSION,
+    });
+    const payload = {
+      ...sanitized,
+      timestamp: Date.now ? Date.now() : new Date().getTime(),
     };
     try {
       SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
-      return true;
+      return payload;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not persist onboarding state.', error);
-      return false;
+      return sanitized;
     }
   }
 
@@ -210,6 +253,8 @@
     'deviceSelection',
     'gearGeneration',
     'gearCustomization',
+    'resultsReview',
+    'powerSummary',
     'contactsOwnGear',
     'autoGear',
     'overviewPrint',
@@ -281,6 +326,18 @@
         highlight: '[data-nav-key="gearListNav"]',
       },
       {
+        key: 'resultsReview',
+        highlight: '[data-nav-key="resultsHeading"]',
+        alternateHighlight: '#resultsHeading',
+        focus: '#resultsHeading',
+      },
+      {
+        key: 'powerSummary',
+        highlight: '#resultsPlainSummary',
+        alternateHighlight: '#resultsHeading',
+        focus: '#resultsPlainSummaryTitle',
+      },
+      {
         key: 'contactsOwnGear',
         highlight: '#openContactsBtn',
         alternateHighlight: '[data-nav-key="ownGearNav"]',
@@ -320,6 +377,8 @@
   let titleEl = null;
   let bodyEl = null;
   let progressEl = null;
+  let progressMeterEl = null;
+  let progressMeterFillEl = null;
   let stepListEl = null;
   let resumeHintEl = null;
   let backButton = null;
@@ -398,6 +457,22 @@
     progressEl.className = 'onboarding-progress';
     header.appendChild(progressEl);
 
+    progressMeterEl = DOCUMENT.createElement('div');
+    progressMeterEl.className = 'onboarding-progress-meter';
+    progressMeterEl.setAttribute('role', 'progressbar');
+    progressMeterEl.setAttribute('aria-valuemin', '0');
+    progressMeterEl.setAttribute('aria-valuemax', String(stepConfig.length));
+    progressMeterEl.setAttribute('aria-valuenow', '0');
+    progressMeterEl.setAttribute('aria-valuetext', '');
+
+    const progressTrack = DOCUMENT.createElement('div');
+    progressTrack.className = 'onboarding-progress-track';
+    progressMeterFillEl = DOCUMENT.createElement('div');
+    progressMeterFillEl.className = 'onboarding-progress-fill';
+    progressTrack.appendChild(progressMeterFillEl);
+    progressMeterEl.appendChild(progressTrack);
+    header.appendChild(progressMeterEl);
+
     skipButton = DOCUMENT.createElement('button');
     skipButton.type = 'button';
     skipButton.className = 'button-link onboarding-skip';
@@ -467,6 +542,8 @@
     titleEl = null;
     bodyEl = null;
     progressEl = null;
+    progressMeterEl = null;
+    progressMeterFillEl = null;
     stepListEl = null;
     resumeHintEl = null;
     backButton = null;
@@ -692,7 +769,15 @@
       resumeHintEl.textContent = '';
       return;
     }
-    const hint = tourTexts.resumeHint || 'Resuming where you left off. Use the step navigator to revisit steps.';
+    const totalSteps = stepConfig.length;
+    const completedSteps = storedState && Array.isArray(storedState.completedSteps)
+      ? storedState.completedSteps.length
+      : 0;
+    const template = tourTexts.resumeHintDetailed || tourTexts.resumeHint || 'Resuming where you left off.';
+    const hint = template
+      .replace('{current}', String(index + 1))
+      .replace('{total}', String(totalSteps))
+      .replace('{completed}', String(Math.min(completedSteps, totalSteps)));
     resumeHintEl.hidden = false;
     resumeHintEl.textContent = hint;
   }
@@ -712,6 +797,13 @@
       upcoming: tourTexts.stepStatusUpcoming || 'Locked',
     };
 
+    const completedSet = new Set(
+      storedState && Array.isArray(storedState.completedSteps)
+        ? storedState.completedSteps
+        : [],
+    );
+    const activeKey = currentStep ? currentStep.key : (stepConfig[resolvedActiveIndex] && stepConfig[resolvedActiveIndex].key);
+
     stepListEl.textContent = '';
     if (typeof stepListEl.setAttribute === 'function') {
       stepListEl.setAttribute('aria-label', tourTexts.stepListAriaLabel || 'Tutorial steps');
@@ -723,17 +815,20 @@
       const item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
 
-      const status = index === resolvedActiveIndex
-        ? 'current'
-        : index < resolvedActiveIndex
-          ? 'complete'
-          : 'upcoming';
+      let status;
+      if (step && step.key === activeKey) {
+        status = 'current';
+      } else if (step && completedSet.has(step.key)) {
+        status = 'complete';
+      } else {
+        status = 'upcoming';
+      }
       item.setAttribute('data-status', status);
 
       const button = DOCUMENT.createElement('button');
       button.type = 'button';
       button.className = 'onboarding-step-button';
-      button.disabled = index > resolvedActiveIndex;
+      button.disabled = status === 'upcoming';
       button.setAttribute('data-step-index', String(index));
       button.setAttribute('aria-current', status === 'current' ? 'step' : 'false');
 
@@ -798,6 +893,8 @@
       progressEl.textContent = formatStepIndicator(index, totalSteps);
     }
 
+    updateProgressMeter(step, index);
+
     skipButton.textContent = tourTexts.skipLabel || 'Skip tutorial';
     backButton.textContent = tourTexts.backLabel || 'Back';
 
@@ -820,6 +917,34 @@
 
     updateResumeHint(index);
     updateStepList(index);
+  }
+
+  function updateProgressMeter(step, index) {
+    if (!progressMeterEl || !progressMeterFillEl) {
+      return;
+    }
+    const totalSteps = stepConfig.length;
+    const completedSteps = storedState && Array.isArray(storedState.completedSteps)
+      ? storedState.completedSteps
+      : [];
+    const completedSet = new Set(completedSteps);
+    const activeContribution = step && !completedSet.has(step.key) ? 1 : 0;
+    const progressValue = Math.min(
+      totalSteps,
+      Math.max(index + 1, completedSet.size + activeContribution),
+    );
+    const ratio = totalSteps > 0 ? Math.max(0, Math.min(1, progressValue / totalSteps)) : 0;
+    progressMeterFillEl.style.width = `${ratio * 100}%`;
+
+    const labelTemplate = tourTexts.progressValueLabel || 'Completed {completed} of {total} steps';
+    const label = labelTemplate
+      .replace('{completed}', String(Math.min(completedSet.size, totalSteps)))
+      .replace('{total}', String(totalSteps));
+    const meterLabel = tourTexts.progressMeterLabel || 'Tutorial progress';
+    progressMeterEl.setAttribute('aria-label', meterLabel);
+    progressMeterEl.setAttribute('aria-valuemax', String(totalSteps));
+    progressMeterEl.setAttribute('aria-valuenow', String(progressValue));
+    progressMeterEl.setAttribute('aria-valuetext', label);
   }
 
   function showStep(index) {
@@ -877,23 +1002,30 @@
       positionCard();
     }, 50);
 
+    const nextState = {
+      ...storedState,
+      activeStep: step.key,
+      completed: false,
+      skipped: false,
+    };
     try {
-      saveState({
-        ...storedState,
-        activeStep: step.key,
-        completed: false,
-        skipped: false,
-      });
+      const persisted = saveState(nextState);
+      storedState = persisted || normalizeStateSnapshot(nextState);
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not update stored step state.', error);
+      storedState = normalizeStateSnapshot(nextState);
     }
 
     focusCard();
+    applyHelpButtonLabel();
   }
 
   function goToNextStep() {
     if (!active) {
       return;
+    }
+    if (currentStep) {
+      recordStepCompletion(currentStep.key);
     }
     const nextIndex = currentIndex + 1;
     if (nextIndex >= stepConfig.length) {
@@ -909,6 +1041,28 @@
     }
     const previousIndex = Math.max(0, currentIndex - 1);
     showStep(previousIndex);
+  }
+
+  function recordStepCompletion(stepKey) {
+    if (!stepKey) {
+      return;
+    }
+    const completed = storedState && Array.isArray(storedState.completedSteps)
+      ? storedState.completedSteps.slice()
+      : [];
+    if (completed.indexOf(stepKey) !== -1) {
+      return;
+    }
+    completed.push(stepKey);
+    const nextState = {
+      ...storedState,
+      completedSteps: completed,
+    };
+    const persisted = saveState(nextState);
+    storedState = persisted || normalizeStateSnapshot(nextState);
+    updateStepList(currentIndex);
+    updateProgressMeter(currentStep, currentIndex);
+    applyHelpButtonLabel();
   }
 
   function confirmSkip() {
@@ -942,25 +1096,31 @@
   function skipTutorial() {
     closeSettingsIfNeeded();
     endTutorial();
-    saveState({
+    const nextState = {
       ...storedState,
       skipped: true,
       completed: false,
       activeStep: null,
-    });
-    storedState = loadStoredState();
+    };
+    const persisted = saveState(nextState);
+    storedState = persisted || normalizeStateSnapshot(nextState);
+    applyHelpButtonLabel();
   }
 
   function completeTutorial() {
     closeSettingsIfNeeded();
     endTutorial();
-    saveState({
+    const allStepKeys = stepConfig.map(step => step.key);
+    const nextState = {
       ...storedState,
       completed: true,
       skipped: false,
       activeStep: null,
-    });
-    storedState = loadStoredState();
+      completedSteps: allStepKeys,
+    };
+    const persisted = saveState(nextState);
+    storedState = persisted || normalizeStateSnapshot(nextState);
+    applyHelpButtonLabel();
   }
 
   function handleOverlayKeydown(event) {
@@ -1032,10 +1192,18 @@
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
 
-    const startIndex = resume && storedState && storedState.activeStep
+    const completedSet = new Set(
+      storedState && Array.isArray(storedState.completedSteps)
+        ? storedState.completedSteps
+        : [],
+    );
+    let startIndex = resume && storedState && storedState.activeStep
       ? stepConfig.findIndex(step => step.key === storedState.activeStep)
-      : 0;
-    const resolvedIndex = startIndex >= 0 ? startIndex : 0;
+      : -1;
+    if (startIndex < 0) {
+      startIndex = stepConfig.findIndex(step => step && !completedSet.has(step.key));
+    }
+    const resolvedIndex = startIndex >= 0 ? startIndex : stepConfig.length - 1;
 
     if (overlayRoot) {
       overlayRoot.classList.add('active');
@@ -1085,11 +1253,29 @@
       return;
     }
     const state = storedState || loadStoredState();
+    const steps = getStepConfig();
+    const completedCount = state && Array.isArray(state.completedSteps)
+      ? state.completedSteps.length
+      : 0;
+    const labelTemplate = tourTexts.resumeLabelWithProgress || tourTexts.resumeLabel;
     let label;
     if (state && state.completed) {
       label = tourTexts.restartLabel || tourTexts.startLabel || 'Start guided tutorial';
     } else if (state && state.activeStep) {
-      label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
+      if (labelTemplate) {
+        label = labelTemplate
+          .replace('{completed}', String(Math.min(completedCount, steps.length)))
+          .replace('{total}', String(steps.length));
+      }
+      if (!label) {
+        label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
+      }
+    } else if (completedCount > 0) {
+      if (labelTemplate) {
+        label = labelTemplate
+          .replace('{completed}', String(Math.min(completedCount, steps.length)))
+          .replace('{total}', String(steps.length));
+      }
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
@@ -1119,7 +1305,14 @@
       return true;
     }
     if (storedState.completed) {
-      return false;
+      const completedSet = new Set(
+        Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [],
+      );
+      const steps = getStepConfig();
+      const allStepsCovered = steps.every(step => completedSet.has(step.key));
+      if (allStepsCovered) {
+        return false;
+      }
     }
     if (storedState.skipped) {
       return false;
@@ -1152,8 +1345,8 @@
   }
 
   function handleFactoryReset() {
-    saveState({ version: STORAGE_VERSION });
-    storedState = loadStoredState();
+    const persisted = saveState({ version: STORAGE_VERSION });
+    storedState = persisted || loadStoredState();
     applyHelpButtonLabel();
   }
 
@@ -1166,8 +1359,8 @@
     start: startTutorial,
     skip: skipTutorial,
     reset() {
-      saveState({ version: STORAGE_VERSION });
-      storedState = loadStoredState();
+      const persisted = saveState({ version: STORAGE_VERSION });
+      storedState = persisted || loadStoredState();
       applyHelpButtonLabel();
     },
     getStatus() {
