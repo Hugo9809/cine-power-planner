@@ -12409,6 +12409,39 @@ if (helpButton && helpDialog) {
     Number.isFinite(hoverHelpPointerClientX) &&
     Number.isFinite(hoverHelpPointerClientY);
 
+  const extractPointerClientCoords = event => {
+    if (!event) return null;
+    const hasClient =
+      typeof event.clientX === 'number' &&
+      typeof event.clientY === 'number' &&
+      Number.isFinite(event.clientX) &&
+      Number.isFinite(event.clientY);
+    if (hasClient) {
+      return [event.clientX, event.clientY];
+    }
+    const hasPage =
+      typeof event.pageX === 'number' &&
+      typeof event.pageY === 'number' &&
+      Number.isFinite(event.pageX) &&
+      Number.isFinite(event.pageY);
+    if (hasPage) {
+      const scrollX = window.scrollX || window.pageXOffset || 0;
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      return [event.pageX - scrollX, event.pageY - scrollY];
+    }
+    return null;
+  };
+
+  const recordPointerFromEvent = event => {
+    if (!hoverHelpActive || !hoverHelpTooltip) return false;
+    const coords = extractPointerClientCoords(event);
+    if (!coords) return false;
+    const [clientX, clientY] = coords;
+    hoverHelpPointerClientX = clientX;
+    hoverHelpPointerClientY = clientY;
+    return true;
+  };
+
   const positionHoverHelpTooltip = target => {
     if (!hoverHelpTooltip || !target) return;
     const rect = target.getBoundingClientRect();
@@ -12705,10 +12738,7 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('mouseover', e => {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
-    if (typeof e?.clientX === 'number' && typeof e?.clientY === 'number') {
-      hoverHelpPointerClientX = e.clientX;
-      hoverHelpPointerClientY = e.clientY;
-    }
+    recordPointerFromEvent(e);
     const target = findHoverHelpTarget(e.target);
     updateHoverHelpTooltip(target);
   });
@@ -12733,16 +12763,19 @@ if (helpButton && helpDialog) {
   window.addEventListener('resize', refreshTooltipPosition);
 
   const updatePointerPosition = e => {
-    if (!hoverHelpActive || !hoverHelpTooltip) return;
-    hoverHelpPointerClientX = e.clientX;
-    hoverHelpPointerClientY = e.clientY;
+    if (!recordPointerFromEvent(e)) return;
     if (hoverHelpCurrentTarget) {
       positionHoverHelpTooltip(hoverHelpCurrentTarget);
     }
   };
 
-  window.addEventListener('pointermove', updatePointerPosition, true);
-  window.addEventListener('pointerdown', updatePointerPosition, true);
+  if (typeof window !== 'undefined' && 'PointerEvent' in window) {
+    window.addEventListener('pointermove', updatePointerPosition, true);
+    window.addEventListener('pointerdown', updatePointerPosition, true);
+  } else {
+    window.addEventListener('mousemove', updatePointerPosition, true);
+    window.addEventListener('mousedown', updatePointerPosition, true);
+  }
 
   // Prevent interacting with controls like dropdowns while hover help is active
   document.addEventListener(
