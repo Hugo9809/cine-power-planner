@@ -1365,6 +1365,183 @@
     };
   }
 
+  function isForceReloadHash(hashValue, paramName) {
+    if (typeof hashValue !== 'string' || !hashValue) {
+      return false;
+    }
+
+    const trimmed = hashValue.trim();
+    if (!trimmed) {
+      return false;
+    }
+
+    const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+    const prefix = `#${param}`;
+
+    if (!trimmed.startsWith(prefix)) {
+      return false;
+    }
+
+    if (trimmed.length === prefix.length) {
+      return true;
+    }
+
+    const suffix = trimmed.slice(prefix.length);
+    return /^[-=]/.test(suffix);
+  }
+
+  function normaliseHrefForHistory(targetHref, baseHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return targetHref;
+    }
+
+    if (typeof URL === 'function') {
+      const reference = typeof baseHref === 'string' && baseHref ? baseHref : undefined;
+
+      try {
+        const parsed = new URL(targetHref, reference);
+        return `${parsed.pathname || ''}${parsed.search || ''}${parsed.hash || ''}` || parsed.toString();
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return targetHref;
+  }
+
+  function cleanupForceReloadArtifacts(win, paramName = 'forceReload') {
+    const targetWindow = resolveWindow(win);
+    if (!targetWindow || !targetWindow.location) {
+      return false;
+    }
+
+    const { location } = targetWindow;
+    const originalHref = readLocationHrefSafe(location);
+    if (!originalHref) {
+      return false;
+    }
+
+    const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+
+    let cleanedHref = originalHref;
+    let removedQuery = false;
+    let removedHash = false;
+
+    if (typeof URL === 'function') {
+      try {
+        const url = new URL(originalHref);
+
+        if (url.searchParams && typeof url.searchParams.delete === 'function' && url.searchParams.has(param)) {
+          url.searchParams.delete(param);
+          removedQuery = true;
+        }
+
+        if (isForceReloadHash(url.hash, param)) {
+          url.hash = '';
+          removedHash = true;
+        }
+
+        cleanedHref = url.toString();
+      } catch (urlError) {
+        void urlError;
+      }
+    }
+
+    if (!removedQuery) {
+      let hrefWithoutHash = cleanedHref;
+      let hashPart = '';
+
+      const hashIndex = hrefWithoutHash.indexOf('#');
+      if (hashIndex !== -1) {
+        hashPart = hrefWithoutHash.slice(hashIndex);
+        hrefWithoutHash = hrefWithoutHash.slice(0, hashIndex);
+      }
+
+      const queryIndex = hrefWithoutHash.indexOf('?');
+      if (queryIndex !== -1) {
+        const base = hrefWithoutHash.slice(0, queryIndex);
+        const query = hrefWithoutHash.slice(queryIndex + 1);
+
+        const segments = query.split('&');
+        const filtered = [];
+
+        for (let index = 0; index < segments.length; index += 1) {
+          const segment = segments[index];
+          if (!segment) {
+            continue;
+          }
+
+          const equalsIndex = segment.indexOf('=');
+          const key = equalsIndex === -1 ? segment : segment.slice(0, equalsIndex);
+
+          if (key === param) {
+            removedQuery = true;
+            continue;
+          }
+
+          filtered.push(segment);
+        }
+
+        hrefWithoutHash = filtered.length ? `${base}?${filtered.join('&')}` : base;
+      }
+
+      cleanedHref = hashPart ? `${hrefWithoutHash}${hashPart}` : hrefWithoutHash;
+    }
+
+    if (!removedHash && isForceReloadHash(targetWindow.location && targetWindow.location.hash, param)) {
+      removedHash = true;
+      cleanedHref = cleanedHref.replace(/#.*$/, '');
+    }
+
+    if (!removedQuery && !removedHash) {
+      return false;
+    }
+
+    const baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
+
+    let historyLike = null;
+    try {
+      historyLike = targetWindow.history || null;
+    } catch (historyError) {
+      safeWarn('Force reload cleanup failed to access history object', historyError);
+      historyLike = null;
+    }
+
+    if (historyLike && typeof historyLike.replaceState === 'function') {
+      let stateSnapshot = null;
+      let hasStateSnapshot = false;
+
+      try {
+        stateSnapshot = historyLike.state;
+        hasStateSnapshot = true;
+      } catch (stateError) {
+        safeWarn('Force reload cleanup failed to snapshot history state', stateError);
+      }
+
+      const replaceUrl = normaliseHrefForHistory(cleanedHref, baseHref);
+
+      try {
+        historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
+        return true;
+      } catch (replaceError) {
+        safeWarn('Force reload cleanup failed to update history state', replaceError);
+      }
+    }
+
+    if (removedHash) {
+      try {
+        if (typeof targetWindow.location.hash === 'string' && isForceReloadHash(targetWindow.location.hash, param)) {
+          targetWindow.location.hash = '';
+          return true;
+        }
+      } catch (hashError) {
+        safeWarn('Force reload cleanup failed to clear hash fallback', hashError);
+      }
+    }
+
+    return false;
+  }
+
   function scheduleForceReloadNavigationWarning(
     locationLike,
     baseHref,
@@ -1950,8 +2127,11 @@
       unregisterServiceWorkers,
       clearCacheStorage,
       triggerReload,
+      cleanupForceReloadArtifacts,
     },
   };
+
+  cleanupForceReloadArtifacts();
 
   freezeDeep(offlineAPI);
 
