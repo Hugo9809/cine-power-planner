@@ -135,7 +135,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  function normalizeCompletedSteps(value) {
+  function normalizeCompletedSteps(value, allowedKeys) {
     if (!Array.isArray(value)) {
       return [];
     }
@@ -143,6 +143,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     for (var index = 0; index < value.length; index += 1) {
       var entry = value[index];
       if (typeof entry !== 'string' || !entry) {
+        continue;
+      }
+      if (allowedKeys && allowedKeys.indexOf(entry) === -1) {
         continue;
       }
       if (normalized.indexOf(entry) === -1) {
@@ -156,8 +159,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     snapshot.version = STORAGE_VERSION;
     snapshot.completed = Boolean(snapshot.completed);
     snapshot.skipped = Boolean(snapshot.skipped) && !snapshot.completed;
+    var allowedKeys = DEFAULT_STEP_KEYS;
+    snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps, allowedKeys);
     snapshot.activeStep = typeof snapshot.activeStep === 'string' && snapshot.activeStep ? snapshot.activeStep : null;
-    snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps);
+    if (snapshot.activeStep && allowedKeys.indexOf(snapshot.activeStep) === -1) {
+      snapshot.activeStep = null;
+    }
+    var signature = typeof snapshot.stepSignature === 'string' ? snapshot.stepSignature : null;
+    if (signature !== STEP_SIGNATURE) {
+      snapshot.stepSignature = STEP_SIGNATURE;
+      snapshot.completed = false;
+      snapshot.skipped = false;
+      if (!snapshot.activeStep) {
+        for (var stepIndex = 0; stepIndex < allowedKeys.length; stepIndex += 1) {
+          var key = allowedKeys[stepIndex];
+          if (snapshot.completedSteps.indexOf(key) === -1) {
+            snapshot.activeStep = key;
+            break;
+          }
+        }
+      }
+    } else {
+      snapshot.stepSignature = STEP_SIGNATURE;
+    }
+    if (snapshot.completedSteps.length < allowedKeys.length) {
+      snapshot.completed = false;
+    }
     if (typeof snapshot.timestamp !== 'number' || snapshot.timestamp !== snapshot.timestamp) {
       snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
     }
@@ -223,8 +250,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return sanitized;
     }
   }
+  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'resultsReview', 'powerSummary', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'safetyNet', 'completion'];
+  var STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
   var storedState = loadStoredState();
-  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'resultsReview', 'powerSummary', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'completion'];
   function resolveLanguage() {
     try {
       var lang = typeof GLOBAL_SCOPE.currentLang === 'string' && GLOBAL_SCOPE.texts ? GLOBAL_SCOPE.currentLang : null;
@@ -306,6 +334,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       ensureSettings: {
         tabId: 'settingsTab-backup'
       }
+    }, {
+      key: 'safetyNet',
+      highlight: '#offlineIndicator',
+      alternateHighlight: '#saveSetupBtn'
     }, {
       key: 'completion',
       highlight: null

@@ -283,9 +283,11 @@ same online or offline.
 1. Open **Help → Quick start checklist** and press **Start guided tutorial** to
    follow the step-by-step walkthrough of creating a project, selecting
    devices, reviewing the Power Summary (including the quick summary
-   checkpoint), generating gear lists, capturing crew contacts, tracking your
-   own gear, customising automatic gear rules, exporting, importing and
-   backing up data. The step navigator and progress meter let you revisit
+   checkpoint) and rehearsing the offline safety net step that calls out the
+   top-bar indicator and autosave status safeguards, generating gear lists,
+   capturing crew contacts, tracking your own gear, customising automatic gear
+   rules, exporting, importing and backing up data. The step navigator and
+   progress meter let you revisit
    completed workflows without restarting, and the **Resume guided tutorial**
    option appears with your saved counts if you pause mid-tour so progress
    never goes missing offline.
