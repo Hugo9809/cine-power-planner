@@ -6608,8 +6608,7 @@ button {
   justify-content: center;
   transition:
     background-color 0.2s,
-    color 0.2s,
-    transform 0.2s;
+    color 0.2s;
 }
 
 .share-import-group button {
@@ -6622,10 +6621,6 @@ button {
   flex: 0 0 auto;
   width: auto;
   align-self: center;
-}
-button:hover {
-  background-color: var(--control-hover-bg);
-  color: var(--control-text);
 }
 button:active {
   background-color: var(--control-active-bg);
@@ -8834,30 +8829,44 @@ body.dark-mode .requirement-box,
 }
 
 .gear-item-provider {
+  --gear-provider-accent: var(--accent-color);
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 65%, var(--text-color));
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-semibold);
+  justify-content: center;
+  gap: var(--button-icon-gap);
+  min-height: calc(var(--button-size) * 0.8);
+  line-height: var(--button-line-height);
+  padding-block: calc(var(--button-padding-block) + 2px);
+  padding-inline: max(calc(var(--button-link-padding-inline) - 4px), var(--spacing-sm));
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--gear-provider-accent) 35%, var(--control-border));
+  background-color: color-mix(in srgb, var(--gear-provider-accent) 10%, var(--control-bg));
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--gear-provider-accent) 14%, var(--surface-color)) 0%,
+    color-mix(in srgb, var(--gear-provider-accent) 8%, var(--control-bg)) 100%
+  );
+  color: color-mix(in srgb, var(--gear-provider-accent) 58%, var(--control-text));
+  font-size: calc(var(--form-control-font-size) * 0.9);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  text-align: center;
+  word-break: break-word;
+  cursor: default;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .gear-item-provider[data-provider-type="user"] {
-  background: color-mix(in srgb, var(--success-color) 15%, transparent);
-  color: color-mix(in srgb, var(--success-color) 70%, var(--text-color));
+  --gear-provider-accent: var(--success-color);
 }
 
 .gear-item-provider[data-provider-type="contact"] {
-  background: color-mix(in srgb, var(--info-color) 15%, transparent);
-  color: color-mix(in srgb, var(--info-color) 70%, var(--text-color));
+  --gear-provider-accent: var(--info-color);
 }
 
 .gear-item-provider[data-provider-type="custom"] {
-  background: color-mix(in srgb, var(--warning-color) 18%, transparent);
-  color: color-mix(in srgb, var(--warning-color) 75%, var(--text-color));
+  --gear-provider-accent: var(--warning-color);
 }
 
 #gearListOutput .auto-gear-rule-badge {
