@@ -352,51 +352,97 @@ function shouldBypassCache(request, requestUrl) {
   return false;
 }
 
-async function precacheAssets(cacheName, assets) {
-  const cache = await caches.open(cacheName);
+function extractRootAliasAsset(assets) {
+  const filteredAssets = [];
+  let hasRootAlias = false;
 
-  try {
-    await cache.addAll(assets);
+  assets.forEach(asset => {
+    if (asset === './') {
+      hasRootAlias = true;
+      return;
+    }
+
+    filteredAssets.push(asset);
+  });
+
+  return { assetsWithoutRootAlias: filteredAssets, hasRootAlias };
+}
+
+async function ensureRootAlias(cache) {
+  if (!cache) {
     return;
-  } catch (error) {
-    serviceWorkerLog.warn('Precaching via cache.addAll failed, falling back to resilient mode.', error);
   }
 
-  const missingAssets = [];
+  let indexResponse = null;
 
-  await Promise.all(
-    assets.map(async asset => {
-      const request = new Request(asset);
+  try {
+    indexResponse = await cache.match('./index.html');
+  } catch (matchError) {
+    serviceWorkerLog.warn('Unable to locate index.html while preparing root cache alias.', matchError);
+    indexResponse = null;
+  }
 
-      try {
-        await cache.add(request);
-        return;
-      } catch (networkError) {
-        let reusedFromExistingCache = false;
+  if (!indexResponse) {
+    serviceWorkerLog.warn('Unable to populate root cache alias because index.html is unavailable in cache.');
+    return;
+  }
+
+  try {
+    await cache.put('./', indexResponse.clone());
+  } catch (aliasError) {
+    serviceWorkerLog.warn('Unable to populate root cache alias entry.', aliasError);
+  }
+}
+
+async function precacheAssets(cacheName, assets) {
+  const cache = await caches.open(cacheName);
+  const { assetsWithoutRootAlias, hasRootAlias } = extractRootAliasAsset(Array.isArray(assets) ? assets : []);
+
+  try {
+    await cache.addAll(assetsWithoutRootAlias);
+  } catch (error) {
+    serviceWorkerLog.warn('Precaching via cache.addAll failed, falling back to resilient mode.', error);
+
+    const missingAssets = [];
+
+    await Promise.all(
+      assetsWithoutRootAlias.map(async asset => {
+        const request = new Request(asset);
 
         try {
-          const cachedResponse = await caches.match(request, { ignoreSearch: true });
-          if (cachedResponse) {
-            await cache.put(request, cachedResponse.clone());
-            reusedFromExistingCache = true;
+          await cache.add(request);
+          return;
+        } catch (networkError) {
+          let reusedFromExistingCache = false;
+
+          try {
+            const cachedResponse = await caches.match(request, { ignoreSearch: true });
+            if (cachedResponse) {
+              await cache.put(request, cachedResponse.clone());
+              reusedFromExistingCache = true;
+            }
+          } catch (reuseError) {
+            serviceWorkerLog.warn(`Unable to reuse cached response for ${asset}`, reuseError);
           }
-        } catch (reuseError) {
-          serviceWorkerLog.warn(`Unable to reuse cached response for ${asset}`, reuseError);
-        }
 
-        if (!reusedFromExistingCache) {
-          missingAssets.push(asset);
-          serviceWorkerLog.warn(`Failed to precache asset ${asset}`, networkError);
+          if (!reusedFromExistingCache) {
+            missingAssets.push(asset);
+            serviceWorkerLog.warn(`Failed to precache asset ${asset}`, networkError);
+          }
         }
-      }
-    })
-  );
-
-  if (missingAssets.length) {
-    serviceWorkerLog.warn(
-      'Service worker installed with missing cached assets. Offline support may be degraded until the next update.',
-      missingAssets
+      })
     );
+
+    if (missingAssets.length) {
+      serviceWorkerLog.warn(
+        'Service worker installed with missing cached assets. Offline support may be degraded until the next update.',
+        missingAssets
+      );
+    }
+  }
+
+  if (hasRootAlias) {
+    await ensureRootAlias(cache);
   }
 }
 
