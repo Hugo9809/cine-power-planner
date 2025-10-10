@@ -97,6 +97,10 @@
   const CACHE_SUPPORTS_MAP = typeof Map === 'function';
   const NORMALIZE_CACHE = CACHE_SUPPORTS_MAP ? new Map() : [];
 
+  // Normalisation is called frequently while the user types. Caching the
+  // derived strings avoids repeated regex work and keeps the UI snappy on lower
+  // powered devices, which is especially important for offline use on set.
+
   function readNormalizedCache(value) {
     if (!value || value.length > NORMALIZE_CACHE_MAX_LENGTH) {
       return null;

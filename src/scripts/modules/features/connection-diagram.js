@@ -78,6 +78,12 @@
   }
 
   function createConnectionDiagram(context = {}) {
+    // The connection diagram is driven by lazy getters so the module can be
+    // initialised before the DOM is ready (for example when restore flows or
+    // tests run in a DOM-less environment). These helper lookups collect every
+    // dependency in one place which makes it easier to audit how the UI
+    // interacts with user data – a key requirement for maintaining the offline
+    // and autosave guarantees of the planner.
     const document = fallbackValue(context.document, GLOBAL_SCOPE.document || null);
     const windowObj = fallbackValue(context.window, typeof GLOBAL_SCOPE.addEventListener === 'function' ? GLOBAL_SCOPE : null);
     const navigator = fallbackValue(context.navigator, GLOBAL_SCOPE.navigator || null);
@@ -104,6 +110,10 @@
     const getGridSnapToggleBtn = fallbackGetter(context.getGridSnapToggleBtn, () => fallbackValue(context.gridSnapToggleBtn, document ? document.getElementById('gridSnapToggle') : null));
 
     const getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, () => false);
+    // Persistence hooks are resolved lazily so feature modules can opt-in to
+    // saving behaviour without creating hard dependencies on the main runtime.
+    // This keeps backup / restore pathways resilient even when the diagram is
+    // rendered in isolation (for example inside onboarding documentation).
     const scheduleProjectAutoSave = fallbackGetter(context.scheduleProjectAutoSave);
     const saveCurrentSession = fallbackGetter(context.saveCurrentSession);
     const checkSetupChanged = fallbackGetter(context.checkSetupChanged);

@@ -110,6 +110,12 @@
       ? GLOBAL_SCOPE.__cineDeepClone
       : moduleCreateResilientDeepClone(GLOBAL_SCOPE);
 
+  // Auto gear rules power the automated project recommendations. They are
+  // effectively user data, so every helper below leans on the resilient deep
+  // clone to prevent accidental mutations. Documenting this design choice here
+  // makes it harder to accidentally bypass the guard rails when extending the
+  // module.
+
   function resolveModuleBase(scope) {
     if (typeof cineModuleBase === 'object' && cineModuleBase) {
       return cineModuleBase;
