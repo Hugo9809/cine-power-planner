@@ -386,7 +386,7 @@ function loadPrintPreferences() {
     }
     if (parsed.sections || parsed.layout) {
       return {
-        sections: parsed.sections && _typeof(parsed.sections) === 'object' ? _objectSpread({}, parsed.sections) : {},
+        sections: _typeof(parsed.sections) === 'object' && parsed.sections !== null ? _objectSpread({}, parsed.sections) : {},
         layout: typeof parsed.layout === 'string' ? parsed.layout : 'standard'
       };
     }
@@ -523,13 +523,14 @@ function populatePrintOptionsDialog(context, preferences, onConfirm) {
     context.layoutLabel.textContent = layoutLabelText;
     context.layoutChoices.innerHTML = '';
     var currentLayout = preferences && typeof preferences.layout === 'string' ? preferences.layout : 'standard';
-    [{
+    var layoutOptions = [{
       value: 'standard',
       label: layoutStandardLabel
     }, {
       value: 'rental',
       label: layoutRentalLabel
-    }].forEach(function (option) {
+    }];
+    layoutOptions.forEach(function (option) {
       var wrapper = document.createElement('label');
       wrapper.className = 'print-options-section';
       var input = document.createElement('input');
@@ -580,10 +581,10 @@ function populatePrintOptionsDialog(context, preferences, onConfirm) {
     }
   };
   var submitHandler = function submitHandler(event) {
-    handleConfirm(event, 'export');
+    return handleConfirm(event, 'export');
   };
   var printHandler = function printHandler(event) {
-    handleConfirm(event, 'print');
+    return handleConfirm(event, 'print');
   };
   var cancelHandler = function cancelHandler(event) {
     event.preventDefault();

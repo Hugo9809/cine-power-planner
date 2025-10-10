@@ -103,6 +103,8 @@ function sessionCreateResilientDeepClone(scope) {
     return sessionJsonDeepClone(value);
   };
 }
+var sensorModeDropdown;
+var recordingResolutionDropdown;
 var SESSION_DEEP_CLONE = CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function' ? CORE_GLOBAL_SCOPE.__cineDeepClone : sessionCreateResilientDeepClone(getSessionCloneScope());
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
   try {
@@ -7583,8 +7585,8 @@ function refreshStoragePersistenceStatus() {
 function _refreshStoragePersistenceStatus() {
   _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee() {
     var options,
-      _ref26,
-      _ref26$fromRequest,
+      _ref28,
+      _ref28$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -7605,7 +7607,7 @@ function _refreshStoragePersistenceStatus() {
           }
           return _context.a(2);
         case 1:
-          _ref26 = options || {}, _ref26$fromRequest = _ref26.fromRequest, fromRequest = _ref26$fromRequest === void 0 ? false : _ref26$fromRequest;
+          _ref28 = options || {}, _ref28$fromRequest = _ref28.fromRequest, fromRequest = _ref28$fromRequest === void 0 ? false : _ref28$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -11059,6 +11061,31 @@ if (helpButton && helpDialog) {
   var usingPointerAnchor = function usingPointerAnchor() {
     return hoverHelpActive && hoverHelpTooltip && typeof hoverHelpPointerClientX === 'number' && typeof hoverHelpPointerClientY === 'number' && Number.isFinite(hoverHelpPointerClientX) && Number.isFinite(hoverHelpPointerClientY);
   };
+  var extractPointerClientCoords = function extractPointerClientCoords(event) {
+    if (!event) return null;
+    var hasClient = typeof event.clientX === 'number' && typeof event.clientY === 'number' && Number.isFinite(event.clientX) && Number.isFinite(event.clientY);
+    if (hasClient) {
+      return [event.clientX, event.clientY];
+    }
+    var hasPage = typeof event.pageX === 'number' && typeof event.pageY === 'number' && Number.isFinite(event.pageX) && Number.isFinite(event.pageY);
+    if (hasPage) {
+      var scrollX = window.scrollX || window.pageXOffset || 0;
+      var scrollY = window.scrollY || window.pageYOffset || 0;
+      return [event.pageX - scrollX, event.pageY - scrollY];
+    }
+    return null;
+  };
+  var recordPointerFromEvent = function recordPointerFromEvent(event) {
+    if (!hoverHelpActive || !hoverHelpTooltip) return false;
+    var coords = extractPointerClientCoords(event);
+    if (!coords) return false;
+    var _coords = _slicedToArray(coords, 2),
+      clientX = _coords[0],
+      clientY = _coords[1];
+    hoverHelpPointerClientX = clientX;
+    hoverHelpPointerClientY = clientY;
+    return true;
+  };
   var positionHoverHelpTooltip = function positionHoverHelpTooltip(target) {
     if (!hoverHelpTooltip || !target) return;
     var rect = target.getBoundingClientRect();
@@ -11315,10 +11342,7 @@ if (helpButton && helpDialog) {
   };
   document.addEventListener('mouseover', function (e) {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
-    if (typeof (e === null || e === void 0 ? void 0 : e.clientX) === 'number' && typeof (e === null || e === void 0 ? void 0 : e.clientY) === 'number') {
-      hoverHelpPointerClientX = e.clientX;
-      hoverHelpPointerClientY = e.clientY;
-    }
+    recordPointerFromEvent(e);
     var target = findHoverHelpTarget(e.target);
     updateHoverHelpTooltip(target);
   });
@@ -11339,15 +11363,18 @@ if (helpButton && helpDialog) {
   window.addEventListener('scroll', refreshTooltipPosition, true);
   window.addEventListener('resize', refreshTooltipPosition);
   var updatePointerPosition = function updatePointerPosition(e) {
-    if (!hoverHelpActive || !hoverHelpTooltip) return;
-    hoverHelpPointerClientX = e.clientX;
-    hoverHelpPointerClientY = e.clientY;
+    if (!recordPointerFromEvent(e)) return;
     if (hoverHelpCurrentTarget) {
       positionHoverHelpTooltip(hoverHelpCurrentTarget);
     }
   };
-  window.addEventListener('pointermove', updatePointerPosition, true);
-  window.addEventListener('pointerdown', updatePointerPosition, true);
+  if (typeof window !== 'undefined' && 'PointerEvent' in window) {
+    window.addEventListener('pointermove', updatePointerPosition, true);
+    window.addEventListener('pointerdown', updatePointerPosition, true);
+  } else {
+    window.addEventListener('mousemove', updatePointerPosition, true);
+    window.addEventListener('mousedown', updatePointerPosition, true);
+  }
   document.addEventListener('mousedown', function (e) {
     if (hoverHelpActive && !canInteractDuringHoverHelp(e.target)) {
       e.preventDefault();
@@ -12335,73 +12362,10 @@ function populateRecordingResolutionDropdown() {
 var recordingFrameRateInput = typeof document !== 'undefined' ? document.getElementById('recordingFrameRate') : null;
 var recordingFrameRateHint = typeof document !== 'undefined' ? document.getElementById('recordingFrameRateHint') : null;
 var recordingFrameRateOptionsList = typeof document !== 'undefined' ? document.getElementById('recordingFrameRateOptions') : null;
-var sensorModeDropdown = typeof document !== 'undefined' ? document.getElementById('sensorMode') : null;
-var recordingResolutionDropdown = typeof document !== 'undefined' ? document.getElementById('recordingResolution') : null;
-var PREFERRED_FRAME_RATE_VALUES = Object.freeze([
-  0.75,
-  1,
-  8,
-  12,
-  12.5,
-  15,
-  23.976,
-  24,
-  25,
-  29.97,
-  30,
-  47.952,
-  48,
-  50,
-  59.94,
-  60,
-  72,
-  75,
-  90,
-  96,
-  100,
-  110,
-  112,
-  120,
-  144,
-  150,
-  160,
-  170,
-  180,
-  200,
-  240
-]);
-var FALLBACK_FRAME_RATE_VALUES = Object.freeze([
-  '0.75',
-  '1',
-  '8',
-  '12',
-  '12.5',
-  '15',
-  '23.976',
-  '24',
-  '25',
-  '29.97',
-  '30',
-  '48',
-  '50',
-  '59.94',
-  '60',
-  '72',
-  '75',
-  '90',
-  '96',
-  '100',
-  '110',
-  '112',
-  '120',
-  '144',
-  '150',
-  '160',
-  '170',
-  '180',
-  '200',
-  '240'
-]);
+sensorModeDropdown = typeof document !== 'undefined' ? document.getElementById('sensorMode') : null;
+recordingResolutionDropdown = typeof document !== 'undefined' ? document.getElementById('recordingResolution') : null;
+var PREFERRED_FRAME_RATE_VALUES = Object.freeze([0.75, 1, 8, 12, 12.5, 15, 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94, 60, 72, 75, 90, 96, 100, 110, 112, 120, 144, 150, 160, 170, 180, 200, 240]);
+var FALLBACK_FRAME_RATE_VALUES = Object.freeze(['0.75', '1', '8', '12', '12.5', '15', '23.976', '24', '25', '29.97', '30', '48', '50', '59.94', '60', '72', '75', '90', '96', '100', '110', '112', '120', '144', '150', '160', '170', '180', '200', '240']);
 var MIN_RECORDING_FRAME_RATE = 1;
 var FRAME_RATE_RANGE_TOLERANCE = 0.0005;
 function formatFrameRateValue(value) {
@@ -12459,7 +12423,7 @@ function parseFrameRateNumericValues(entry) {
     match = rangePattern.exec(numericSection);
   }
   var upToPattern = /(?:up to|≤|<=|less than|max(?:imum)?(?:\s*of)?)\s*(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/gi;
-  while ((match = upToPattern.exec(numericSection))) {
+  while (match = upToPattern.exec(numericSection)) {
     var formatted = formatFrameRateValue(match[1]);
     if (formatted) {
       values.add(formatted);
@@ -12467,19 +12431,19 @@ function parseFrameRateNumericValues(entry) {
     }
   }
   var explicitPattern = /(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
-  while ((match = explicitPattern.exec(numericSection))) {
-    var _formatted = formatFrameRateValue(match[1]);
-    if (_formatted) {
-      values.add(_formatted);
+  while (match = explicitPattern.exec(numericSection)) {
+    var _formatted4 = formatFrameRateValue(match[1]);
+    if (_formatted4) {
+      values.add(_formatted4);
     }
   }
   if (!values.size) {
     var commaSection = numericSection.split('fps')[0] || numericSection;
     var listPattern = /(\d+(?:\.\d+)?)/g;
-    while ((match = listPattern.exec(commaSection))) {
-      var formattedListValue = formatFrameRateValue(match[1]);
-      if (formattedListValue) {
-        values.add(formattedListValue);
+    while (match = listPattern.exec(commaSection)) {
+      var _formatted5 = formatFrameRateValue(match[1]);
+      if (_formatted5) {
+        values.add(_formatted5);
       }
     }
   }
@@ -12507,7 +12471,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     if (typeof entry !== 'string') return;
     var cleaned = entry.trim();
     if (!cleaned) return;
-    var label = cleaned.split(':')[0];
+    var _cleaned$split = cleaned.split(':'),
+      _cleaned$split2 = _slicedToArray(_cleaned$split, 1),
+      label = _cleaned$split2[0];
     var entryTokens = tokenizeFrameRateContext(label);
     var numericValues = parseFrameRateNumericValues(cleaned);
     var baseScore = entryTokens.length ? 1 : 0;
@@ -12534,7 +12500,10 @@ function buildFrameRateSuggestions(entries, contextTokens) {
       if (!formatted) return;
       var existing = suggestions.get(formatted);
       if (!existing || score > existing.score) {
-        suggestions.set(formatted, { score: score, label: cleaned });
+        suggestions.set(formatted, {
+          score: score,
+          label: cleaned
+        });
       }
     });
   });
@@ -12552,7 +12521,8 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     }
     return a[0].localeCompare(b[0]);
   }).map(function (_ref24) {
-    var value = _ref24[0];
+    var _ref25 = _slicedToArray(_ref24, 1),
+      value = _ref25[0];
     return value;
   });
 }
@@ -12589,7 +12559,10 @@ function populateFrameRateDropdown() {
       if (formatted) {
         value = formatted;
       }
-      numericCandidates.push({ numeric: numeric, formatted: value });
+      numericCandidates.push({
+        numeric: numeric,
+        formatted: value
+      });
     }
     if (uniqueValues.has(value)) return;
     uniqueValues.add(value);
@@ -12608,7 +12581,10 @@ function populateFrameRateDropdown() {
   }
   var maxCandidate = numericCandidates.reduce(function (best, entry) {
     return entry.numeric > best.numeric ? entry : best;
-  }, { numeric: Number.NEGATIVE_INFINITY, formatted: '' });
+  }, {
+    numeric: Number.NEGATIVE_INFINITY,
+    formatted: ''
+  });
   var maxFrameRate = maxCandidate.numeric;
   var formattedMaxFrameRate = Number.isFinite(maxFrameRate) ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate) : '';
   var minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
@@ -12633,7 +12609,9 @@ function populateFrameRateDropdown() {
   if (valueChanged) {
     recordingFrameRateInput.value = adjustedValue;
     currentValue = adjustedValue;
-    recordingFrameRateInput.dispatchEvent(new Event('input', { bubbles: true }));
+    recordingFrameRateInput.dispatchEvent(new Event('input', {
+      bubbles: true
+    }));
   } else {
     recordingFrameRateInput.value = currentValue;
   }
@@ -12901,11 +12879,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref24) {
-    var type = _ref24.type,
-      _ref24$size = _ref24.size,
-      size = _ref24$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref24$size,
-      values = _ref24.values;
+  filters.forEach(function (_ref26) {
+    var type = _ref26.type,
+      _ref26$size = _ref26.size,
+      size = _ref26$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref26$size,
+      values = _ref26.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -13137,6 +13115,9 @@ function renderGearListFilterDetails(details) {
     }
     heading.textContent = label ? "1x ".concat(label) : '';
     row.appendChild(heading);
+    if (typeof enhanceGearItemElement === 'function') {
+      enhanceGearItemElement(heading);
+    }
     var controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
     if (needsSize) {
@@ -13442,8 +13423,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref25) {
-    var type = _ref25.type;
+  filters.forEach(function (_ref27) {
+    var type = _ref27.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -13789,6 +13770,31 @@ function warnMissingMountVoltageHelper(helperName, error) {
     }
   }
 }
+function fallbackParseVoltageValue(value, fallback) {
+  var toNumeric = function toNumeric(candidate) {
+    if (typeof candidate === 'number') {
+      return candidate;
+    }
+    if (typeof candidate === 'string') {
+      var normalized = candidate.replace(',', '.');
+      return Number.parseFloat(normalized);
+    }
+    return Number.NaN;
+  };
+  var clampVoltage = function clampVoltage(numeric) {
+    var clamped = Math.min(1000, Math.max(0.1, numeric));
+    return Math.round(clamped * 100) / 100;
+  };
+  var numeric = toNumeric(value);
+  if (Number.isFinite(numeric) && numeric > 0) {
+    return clampVoltage(numeric);
+  }
+  var fallbackNumeric = toNumeric(fallback);
+  if (Number.isFinite(fallbackNumeric) && fallbackNumeric > 0) {
+    return clampVoltage(fallbackNumeric);
+  }
+  return 0;
+}
 function cloneMountVoltageDefaultsForSession() {
   var runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
   if (runtimeCloneMountVoltageMap) {
@@ -13811,12 +13817,7 @@ function cloneMountVoltageDefaultsForSession() {
   var parse = typeof parseVoltageValue === 'function' ? function (value, fallback) {
     return parseVoltageValue(value, fallback);
   } : function (value, fallback) {
-    var numeric = Number(value);
-    if (Number.isFinite(numeric)) {
-      return numeric;
-    }
-    var fallbackNumeric = Number(fallback);
-    return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+    return fallbackParseVoltageValue(value, fallback);
   };
   if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
     SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
@@ -13875,12 +13876,7 @@ function collectMountVoltageFormValues() {
   var parse = typeof parseVoltageValue === 'function' ? function (value, fallback) {
     return parseVoltageValue(value, fallback);
   } : function (value, fallback) {
-    var numeric = Number(value);
-    if (Number.isFinite(numeric)) {
-      return numeric;
-    }
-    var fallbackNumeric = Number(fallback);
-    return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+    return fallbackParseVoltageValue(value, fallback);
   };
   var defaultClones = cloneMountVoltageDefaultsForSession();
   SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
