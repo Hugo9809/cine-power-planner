@@ -56,6 +56,77 @@ describe('cineResults module', () => {
   let harness;
   let cineResults;
 
+  const BASE_DEVICES = {
+    cameras: { CameraA: { powerDrawWatts: 20 } },
+    monitors: { MonitorA: { powerDrawWatts: 10, brightnessNits: 1000 } },
+    video: { VideoA: { powerDrawWatts: 5 } },
+    fiz: {
+      motors: { MotorA: { powerDrawWatts: 2 } },
+      controllers: { ControllerA: { powerDrawWatts: 3 } },
+      distance: { DistanceA: { powerDrawWatts: 1 } },
+    },
+    batteries: {
+      BatteryA: { capacity: 150, pinA: 10, dtapA: 5, mount_type: 'B-Mount' },
+      BatteryB: { capacity: 100, pinA: 8, dtapA: 4, mount_type: 'B-Mount' },
+    },
+    batteryHotswaps: { HotswapA: { capacity: 30, pinA: 9 } },
+  };
+
+  const BASE_TEXTS = {
+    en: {
+      cameraLabel: 'Camera',
+      monitorLabel: 'Monitor',
+      videoLabel: 'Video',
+      fizMotorsLabel: 'Motors',
+      fizControllersLabel: 'Controllers',
+      distanceLabel: 'Distance',
+      warnHotswapLower: 'Hotswap max {max} vs battery {batt}',
+      pinOk: 'Pin OK {max}',
+      dtapOk: 'DTAP OK {max}',
+      warnPinExceeded: 'Pin exceeded {current}/{max}',
+      warnPinNear: 'Pin near {current}/{max}',
+      warnDTapExceeded: 'DTAP exceeded {current}/{max}',
+      warnDTapNear: 'DTAP near {current}/{max}',
+      batteryTableBatteryHelp: 'Battery help',
+      batteryTableRuntimeHelp: 'Runtime help',
+      batteryTableGraphHelp: 'Graph help',
+      batteryTableGraphLabel: 'Graph',
+      batteryTableLabel: 'Battery',
+      runtimeLabel: 'Runtime',
+      noBatterySupports: 'No batteries',
+      methodPinsOnly: 'Pins only',
+      methodPinsAndDTap: 'Pins and DTAP',
+      methodInfinite: 'Infinite',
+      batteryComparisonTableHelp: 'Table help',
+      batteryLifeLabel: 'Battery life',
+      runtimeUserCountNote: 'Used by {count}',
+      batteryLifeHelp: 'Life help',
+      runtimeAverageNote: 'Average note',
+      resultsPlainSummaryTitle: 'Quick summary',
+      resultsPlainSummaryHelp: 'Plain summary help',
+      resultsPlainSummaryPrompt: 'Add devices and choose a battery to see a plain-language summary of runtime and consumption.',
+      resultsPlainSummaryNeedBattery: 'Choose a battery to see how long the rig will run and how many packs to pack.',
+      resultsPlainSummaryRuntime:
+        'With {batteryName}, expect about {hours} hours of runtime. Pack {batteryCount} batteries for a 10-hour day. Your rig currently draws {totalPower} W.',
+      resultsPlainSummaryUnlimited:
+        'With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.',
+      resultsPlainSummaryNote: 'Pins and D-Tap status updates as you add gear.',
+      resultsPlainSummaryPinsZero: 'Pins: no 12V draw yet.',
+      resultsPlainSummaryPinsOk: 'Pins: {current}A within the {max}A limit.',
+      resultsPlainSummaryPinsNear: 'Pins: {current}A is close to the {max}A limit.',
+      resultsPlainSummaryPinsExceeded: 'Pins: {current}A exceeds the {max}A limit.',
+      resultsPlainSummaryPinsUnknown: 'Pins: draw is {current}A but no limit is documented.',
+      resultsPlainSummaryDtapZero: 'D-Tap: idle.',
+      resultsPlainSummaryDtapOk: 'D-Tap: {current}A within the {max}A rating.',
+      resultsPlainSummaryDtapNear: 'D-Tap: {current}A is close to the {max}A rating.',
+      resultsPlainSummaryDtapExceeded: 'D-Tap: {current}A exceeds the {max}A rating.',
+      resultsPlainSummaryDtapUnavailable: 'D-Tap: auxiliary port disabled for this battery selection.',
+      resultsPlainSummaryDtapUnavailableBMount: 'D-Tap: B-Mount cameras disable the aux port.',
+      resultsPlainSummaryDtapUnknown: 'D-Tap: rating missing, treat {current}A with caution.',
+      resultsPlainSummaryUnnamedBattery: 'your selected battery',
+    },
+  };
+
   function loadModule() {
     harness = setupModuleHarness();
     jest.isolateModules(() => {
@@ -285,76 +356,9 @@ describe('cineResults module', () => {
       createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
     };
 
-    const devices = {
-      cameras: { CameraA: { powerDrawWatts: 20 } },
-      monitors: { MonitorA: { powerDrawWatts: 10, brightnessNits: 1000 } },
-      video: { VideoA: { powerDrawWatts: 5 } },
-      fiz: {
-        motors: { MotorA: { powerDrawWatts: 2 } },
-        controllers: { ControllerA: { powerDrawWatts: 3 } },
-        distance: { DistanceA: { powerDrawWatts: 1 } },
-      },
-      batteries: {
-        BatteryA: { capacity: 150, pinA: 10, dtapA: 5, mount_type: 'B-Mount' },
-        BatteryB: { capacity: 100, pinA: 8, dtapA: 4, mount_type: 'B-Mount' },
-      },
-      batteryHotswaps: { HotswapA: { capacity: 30, pinA: 9 } },
-    };
+    const devices = JSON.parse(JSON.stringify(BASE_DEVICES));
 
-    const texts = {
-      en: {
-        cameraLabel: 'Camera',
-        monitorLabel: 'Monitor',
-        videoLabel: 'Video',
-        fizMotorsLabel: 'Motors',
-        fizControllersLabel: 'Controllers',
-        distanceLabel: 'Distance',
-        warnHotswapLower: 'Hotswap max {max} vs battery {batt}',
-        pinOk: 'Pin OK {max}',
-        dtapOk: 'DTAP OK {max}',
-        warnPinExceeded: 'Pin exceeded {current}/{max}',
-        warnPinNear: 'Pin near {current}/{max}',
-        warnDTapExceeded: 'DTAP exceeded {current}/{max}',
-        warnDTapNear: 'DTAP near {current}/{max}',
-        batteryTableBatteryHelp: 'Battery help',
-        batteryTableRuntimeHelp: 'Runtime help',
-        batteryTableGraphHelp: 'Graph help',
-        batteryTableGraphLabel: 'Graph',
-        batteryTableLabel: 'Battery',
-        runtimeLabel: 'Runtime',
-        noBatterySupports: 'No batteries',
-        methodPinsOnly: 'Pins only',
-        methodPinsAndDTap: 'Pins and DTAP',
-        methodInfinite: 'Infinite',
-        batteryComparisonTableHelp: 'Table help',
-        batteryLifeLabel: 'Battery life',
-        runtimeUserCountNote: 'Used by {count}',
-        batteryLifeHelp: 'Life help',
-        runtimeAverageNote: 'Average note',
-        resultsPlainSummaryTitle: 'Quick summary',
-        resultsPlainSummaryHelp: 'Plain summary help',
-        resultsPlainSummaryPrompt: 'Add devices and choose a battery to see a plain-language summary of runtime and consumption.',
-        resultsPlainSummaryNeedBattery: 'Choose a battery to see how long the rig will run and how many packs to pack.',
-        resultsPlainSummaryRuntime:
-          'With {batteryName}, expect about {hours} hours of runtime. Pack {batteryCount} batteries for a 10-hour day. Your rig currently draws {totalPower} W.',
-        resultsPlainSummaryUnlimited:
-          'With {batteryName}, your rig draws {totalPower} W, so runtime stays unlimited. Keep a charged pack connected before recording.',
-        resultsPlainSummaryNote: 'Pins and D-Tap status updates as you add gear.',
-        resultsPlainSummaryPinsZero: 'Pins: no 12V draw yet.',
-        resultsPlainSummaryPinsOk: 'Pins: {current}A within the {max}A limit.',
-        resultsPlainSummaryPinsNear: 'Pins: {current}A is close to the {max}A limit.',
-        resultsPlainSummaryPinsExceeded: 'Pins: {current}A exceeds the {max}A limit.',
-        resultsPlainSummaryPinsUnknown: 'Pins: draw is {current}A but no limit is documented.',
-        resultsPlainSummaryDtapZero: 'D-Tap: idle.',
-        resultsPlainSummaryDtapOk: 'D-Tap: {current}A within the {max}A rating.',
-        resultsPlainSummaryDtapNear: 'D-Tap: {current}A is close to the {max}A rating.',
-        resultsPlainSummaryDtapExceeded: 'D-Tap: {current}A exceeds the {max}A rating.',
-        resultsPlainSummaryDtapUnavailable: 'D-Tap: auxiliary port disabled for this battery selection.',
-        resultsPlainSummaryDtapUnavailableBMount: 'D-Tap: B-Mount cameras disable the aux port.',
-        resultsPlainSummaryDtapUnknown: 'D-Tap: rating missing, treat {current}A with caution.',
-        resultsPlainSummaryUnnamedBattery: 'your selected battery',
-      },
-    };
+    const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
 
     let lastRuntimeHoursValue = 1.2;
     const refreshTotalCurrentLabels = jest.fn();
@@ -483,6 +487,194 @@ describe('cineResults module', () => {
     expect(lastRuntimeRecorded).toBeCloseTo(3.195, 3);
     const temperatureNoteValue = renderTemperatureNote.mock.calls[renderTemperatureNote.mock.calls.length - 1][0];
     expect(temperatureNoteValue).toBeCloseTo(3.195, 3);
+  });
+
+  test('updateCalculations uses preview selections when DOM inputs are empty', () => {
+    const cameraSelect = { value: '', options: [], selectedIndex: -1 };
+    const monitorSelect = { value: '', options: [], selectedIndex: -1 };
+    const videoSelect = { value: '', options: [], selectedIndex: -1 };
+    const distanceSelect = { value: '', options: [], selectedIndex: -1 };
+    const batterySelect = { value: '', options: [], selectedIndex: -1 };
+    const hotswapSelect = { value: '' };
+    const motorSelects = [{ value: '' }];
+    const controllerSelects = [{ value: '' }];
+
+    const totalPowerElem = createElement('');
+    const totalCurrent144Elem = createElement('');
+    const totalCurrent12Elem = createElement('');
+    const batteryLifeElem = createElement('');
+    const batteryCountElem = createElement('');
+    const batteryLifeLabelElem = createElement('');
+    const runtimeAverageNoteElem = createElement('');
+    const pinWarnElem = createElement('');
+    const dtapWarnElem = createElement('');
+    const hotswapWarnElem = createElement('');
+    const batteryComparisonSection = { style: { display: 'none' } };
+    const batteryTableElem = createElement('');
+    batteryTableElem.innerHTML = '';
+    const resultsPlainSummaryElem = createElement('');
+    const resultsPlainSummaryTextElem = createElement('');
+    const resultsPlainSummaryNoteElem = createElement('');
+
+    const breakdownListElem = {
+      _html: '',
+      entries: [],
+      insertAdjacentHTML: jest.fn(function insertAdjacentHTML(_, html) {
+        this.entries.push(html);
+      }),
+      appendChild: jest.fn(),
+      set innerHTML(value) {
+        this._html = value;
+        this.entries = [];
+      },
+      get innerHTML() {
+        return this._html;
+      },
+    };
+
+    const setupDiagramContainer = {};
+    const doc = {
+      createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
+    };
+
+    const devices = JSON.parse(JSON.stringify(BASE_DEVICES));
+    const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
+
+    let lastRuntimeHoursValue = 1.2;
+    const refreshTotalCurrentLabels = jest.fn();
+    const updateBatteryOptions = jest.fn();
+    const setStatusMessage = jest.fn((elem, message) => {
+      if (elem) elem.textContent = message;
+    });
+    const setStatusLevel = jest.fn((elem, level) => {
+      if (elem) elem.status = level;
+    });
+    const closePowerWarningDialog = jest.fn();
+    const showPowerWarningDialog = jest.fn();
+    const drawPowerDiagram = jest.fn();
+    const renderFeedbackTable = jest.fn(() => ({ runtime: 2, weight: 1, count: 5 }));
+    const getCurrentSetupKey = jest.fn(() => 'key-1');
+    const renderTemperatureNote = jest.fn();
+    const checkFizCompatibility = jest.fn();
+    const checkFizController = jest.fn();
+    const checkArriCompatibility = jest.fn();
+    const renderSetupDiagram = jest.fn();
+    const refreshGearListIfVisible = jest.fn();
+    const supportsBMountCamera = jest.fn(() => true);
+    const supportsGoldMountCamera = jest.fn(() => false);
+    const getCssVariableValue = jest.fn(() => '#123456');
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    const getLastRuntimeHours = jest.fn(() => lastRuntimeHoursValue);
+    const setLastRuntimeHours = jest.fn((value) => {
+      lastRuntimeHoursValue = value;
+    });
+
+    const previewSelections = {
+      camera: 'CameraA',
+      monitor: 'MonitorA',
+      video: 'VideoA',
+      distance: 'DistanceA',
+      battery: 'BatteryA',
+      batteryLabel: 'BatteryA',
+      hotswap: 'HotswapA',
+      motors: ['MotorA'],
+      controllers: ['ControllerA'],
+      plate: 'B-Mount',
+    };
+
+    cineResults.updateCalculations({
+      document: doc,
+      elements: {
+        cameraSelect,
+        monitorSelect,
+        videoSelect,
+        distanceSelect,
+        batterySelect,
+        hotswapSelect,
+        totalPowerElem,
+        breakdownListElem,
+        totalCurrent144Elem,
+        totalCurrent12Elem,
+        batteryLifeElem,
+        batteryCountElem,
+        batteryLifeLabelElem,
+        runtimeAverageNoteElem,
+        pinWarnElem,
+        dtapWarnElem,
+        hotswapWarnElem,
+        batteryComparisonSection,
+        batteryTableElem,
+        setupDiagramContainer,
+        resultsPlainSummaryElem,
+        resultsPlainSummaryTextElem,
+        resultsPlainSummaryNoteElem,
+      },
+      motorSelects,
+      controllerSelects,
+      previewSelections,
+      getDevices: () => devices,
+      getTexts: () => texts,
+      getCurrentLang: () => 'en',
+      getCollator: () => null,
+      getSelectedPlate: () => '',
+      getMountVoltageConfig: () => ({ high: 33.6, low: 21.6 }),
+      refreshTotalCurrentLabels,
+      updateBatteryOptions,
+      setStatusMessage,
+      setStatusLevel,
+      closePowerWarningDialog,
+      showPowerWarningDialog,
+      drawPowerDiagram,
+      renderFeedbackTable,
+      getCurrentSetupKey,
+      renderTemperatureNote,
+      checkFizCompatibility,
+      checkFizController,
+      checkArriCompatibility,
+      renderSetupDiagram,
+      refreshGearListIfVisible,
+      supportsBMountCamera,
+      supportsGoldMountCamera,
+      getCssVariableValue,
+      escapeHtml,
+      getLastRuntimeHours,
+      setLastRuntimeHours,
+    });
+
+    expect(totalPowerElem.textContent).toBe('41.0');
+    expect(totalCurrent144Elem.textContent).toBe('1.22');
+    expect(totalCurrent12Elem.textContent).toBe('1.90');
+    expect(Number(batteryLifeElem.textContent)).toBeCloseTo(3.2, 2);
+    expect(batteryCountElem.textContent).toBe('4');
+    expect(batteryLifeLabelElem.textContent).toContain('Used by 5');
+    expect(runtimeAverageNoteElem.textContent).toBe('Average note');
+    expect(resultsPlainSummaryTextElem.textContent).toBe(
+      'With BatteryA, expect about 3.20 hours of runtime. Pack 4 batteries for a 10-hour day. Your rig currently draws 41.0 W.'
+    );
+    expect(resultsPlainSummaryNoteElem.textContent).toBe(
+      'Pins: 1.90A within the 9A limit. D-Tap: B-Mount cameras disable the aux port.'
+    );
+    expect(pinWarnElem.textContent).toContain('Pin OK');
+    expect(setStatusMessage).toHaveBeenCalledWith(
+      hotswapWarnElem,
+      expect.stringContaining('9'),
+    );
+    expect(setStatusLevel).toHaveBeenCalledWith(hotswapWarnElem, 'warning');
+    expect(refreshTotalCurrentLabels).toHaveBeenCalledWith('en', 'B-Mount', { high: 33.6, low: 21.6 });
+    expect(updateBatteryOptions).toHaveBeenCalled();
+    expect(drawPowerDiagram).toHaveBeenCalled();
+    expect(renderFeedbackTable).toHaveBeenCalledWith('key-1');
+    expect(refreshGearListIfVisible).toHaveBeenCalled();
+    expect(checkFizCompatibility).toHaveBeenCalled();
+    expect(checkFizController).toHaveBeenCalled();
+    expect(checkArriCompatibility).toHaveBeenCalled();
+    expect(renderSetupDiagram).toHaveBeenCalled();
+    expect(batteryComparisonSection.style.display).toBe('block');
   });
 
   test('setupRuntimeFeedback wires handlers and persists sanitized entries', () => {
