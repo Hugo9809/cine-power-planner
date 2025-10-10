@@ -91,6 +91,10 @@ var CORE_PART1_RUNTIME_SCOPE =
           ? global
           : null;
 
+// The planner shares a handful of helper modules across legacy and modern
+// bundles. Rather than assuming a module loader exists we defensively look for
+// pre-attached namespaces first and then fall back to CommonJS style requires.
+// This defensive dance keeps offline builds and automated backups aligned.
 function resolveCoreSupportModule(namespaceName, requirePath) {
   if (
     CORE_PART1_RUNTIME_SCOPE &&
@@ -115,6 +119,10 @@ function resolveCoreSupportModule(namespaceName, requirePath) {
   return null;
 }
 
+// All localisation strings live in a dedicated bridge so that translations can
+// be refreshed without touching the heavy runtime bundle. We resolve it lazily
+// here which allows the help centre and documentation sync scripts to reuse the
+// same entry point while keeping cold start performance predictable.
 const CORE_LOCALIZATION_BRIDGE = resolveCoreSupportModule(
   'cineCoreLocalizationBridge',
   './modules/core/localization-bridge.js'

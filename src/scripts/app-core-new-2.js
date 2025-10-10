@@ -3,6 +3,10 @@
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 
+// The runtime needs a predictable list of global scopes so that background
+// workers, offline tabs and legacy frames all share the same configuration. We
+// build an ordered array here and then let the state helpers below iterate over
+// it when fetching shared utilities.
 var CORE_RUNTIME_CANDIDATE_SCOPES = [
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
     ? CORE_GLOBAL_SCOPE
@@ -64,6 +68,10 @@ function coreSafeFreezeRegistryAdd(value) {
   CORE_SAFE_FREEZE_REGISTRY.push(value);
 }
 
+// Build a lightweight registry around whichever global objects we can access.
+// The planner frequently runs in embedded webviews where referencing window
+// directly can throw. Collecting the scopes once and reusing them keeps the
+// rest of the module intentionally boring and therefore easier to maintain.
 function createLocalRuntimeState(candidateScopes) {
   var scopes = [];
   var seenScopes = typeof Set === 'function' ? new Set() : null;

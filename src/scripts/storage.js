@@ -4,6 +4,10 @@
           resetMountVoltagePreferences, applyFocusScalePreference */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName, loadUserProfile, saveUserProfile */
 
+// Everything in this module is intentionally defensive. Persistent data keeps
+// the planner valuable when crews are offline on set, so we validate every
+// assumption before touching the storage APIs. Please keep this mindset when
+// editing the helpers below.
 (function initializeStorageModule() {
   const GLOBAL_SCOPE =
     typeof globalThis !== 'undefined'
@@ -16,6 +20,9 @@
             ? self
             : null;
 
+  // Test suites and certain recovery tools need a way to force the storage
+  // module to rebuild itself. This flag lets those callers opt-in without
+  // impacting normal user sessions.
   const FORCE_STORAGE_REINITIALIZE =
     typeof process !== 'undefined' &&
     process &&
