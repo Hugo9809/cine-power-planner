@@ -8566,23 +8566,31 @@ function unifyDevices(devicesData) {
     };
 
     const existingMountOptions = lens.mountOptions;
-    let normalizedOptions;
+    const normalizedOptions = [];
+
+    const pushNormalizedEntry = (entry) => {
+      const normalized = normalizeMountEntry(entry);
+      if (normalized) {
+        normalizedOptions.push(normalized);
+      }
+    };
 
     if (Array.isArray(existingMountOptions)) {
-      normalizedOptions = existingMountOptions.map(normalizeMountEntry).filter(Boolean);
+      existingMountOptions.forEach(pushNormalizedEntry);
     } else if (existingMountOptions && typeof existingMountOptions === 'object') {
-      const single = normalizeMountEntry(existingMountOptions);
-      normalizedOptions = single ? [single] : [];
-    } else if (Array.isArray(lens.lensMount)) {
-      normalizedOptions = lens.lensMount.map(normalizeMountEntry).filter(Boolean);
-      delete lens.lensMount;
-    } else {
-      const mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
-      normalizedOptions = mountType ? [{ type: mountType, mount: 'native' }] : [];
+      pushNormalizedEntry(existingMountOptions);
     }
 
-    if (!Array.isArray(normalizedOptions)) {
-      normalizedOptions = [];
+    if (!normalizedOptions.length && Array.isArray(lens.lensMount)) {
+      lens.lensMount.forEach(pushNormalizedEntry);
+      delete lens.lensMount;
+    }
+
+    if (!normalizedOptions.length) {
+      const mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
+      if (mountType) {
+        pushNormalizedEntry({ type: mountType, mount: 'native' });
+      }
     }
 
     const dedupedOptions = [];
