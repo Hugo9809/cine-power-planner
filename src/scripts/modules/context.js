@@ -1,3 +1,14 @@
+/*
+ * context.js
+ * ----------
+ * Exposes utilities that co-ordinate shared runtime context across the
+ * planner. Many of these helpers provide "fallback" implementations so that the
+ * application keeps functioning flawlessly even when specific browser features
+ * are unavailable or when code executes from a cached offline bundle. The
+ * additional comments explain the intent behind each defensive branch to make
+ * auditing easier for anyone safeguarding user data flows.
+ */
+
 (function () {
   const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
 
@@ -17,6 +28,9 @@
     return {};
   }
 
+  // Build an ordered list of potential scopes to inspect. The primary scope is
+  // evaluated first so the active window remains preferred over shared worker
+  // contexts where session storage might behave differently.
   function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
 
@@ -38,6 +52,9 @@
     return scopes;
   }
 
+  // Lightweight require wrapper that mirrors the behaviour of try/catch blocks
+  // used throughout the runtime. Returning null rather than throwing keeps the
+  // bootstrap sequence deterministic.
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -51,6 +68,9 @@
     }
   }
 
+  // Define a property without exposing it during iteration. If defineProperty
+  // is unavailable we gracefully assign the property to keep the runtime alive
+  // on legacy browsers.
   function fallbackDefineHiddenProperty(target, name, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
       return false;
@@ -78,6 +98,8 @@
     return false;
   }
 
+  // Deeply freeze complex objects while tolerating environments that lack
+  // Object.freeze. The WeakSet guards against cyclical references.
   function fallbackFreezeDeep(value, seen = new WeakSet()) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
@@ -126,6 +148,8 @@
     }
   }
 
+  // Provide a safe logging helper that never throws when console access is
+  // restricted (which occasionally happens inside headless test runners).
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
@@ -142,6 +166,9 @@
     }
   }
 
+  // Locate a property from any of the candidate scopes. The predicate allows
+  // callers to define custom matching logic without exposing implementation
+  // details to each lookup site.
   function fallbackResolveFromScopes(propertyName, options) {
     const settings = options || {};
     const predicate = typeof settings.predicate === 'function' ? settings.predicate : null;

@@ -1,4 +1,16 @@
+/*
+ * architecture-helpers.js
+ * ------------------------
+ * Supplies convenience wrappers around the architecture core so feature
+ * modules can locate shared services without duplicating the environment
+ * probing logic. These helpers are intentionally verbose because they need to
+ * succeed even when bundlers reshuffle the module graph or when the app boots
+ * from an offline cache on older browsers.
+ */
+
 (function () {
+  // Mirrors the constant from architecture-core. Duplicating it here keeps the
+  // helper resilient when modules are executed individually during tests.
   const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
 
   function fallbackDetectGlobalScope() {
@@ -19,6 +31,9 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
+  // Attempt to fetch the architecture core module directly. When the require
+  // helper is not available (for example inside a browser Service Worker) we
+  // try to find a previously initialised instance on any known global scope.
   function resolveArchitectureCore(scope) {
     if (typeof require === 'function') {
       try {
@@ -51,6 +66,9 @@
     return null;
   }
 
+  // Resolve the public architecture entry point so consumers can access the
+  // higher level API. Falling back to globals keeps compatibility with legacy
+  // bundles that attached the module directly to window.
   function tryRequireArchitecture(scope) {
     if (typeof require === 'function') {
       try {
@@ -81,6 +99,9 @@
         })
       : null;
 
+  // Gathering candidate scopes upfront avoids repeated global probing. The
+  // helper maintains insertion order to keep the main window preferred over
+  // worker contexts where possible.
   function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
 
@@ -102,6 +123,10 @@
     return scopes;
   }
 
+  // Some environments expose both the architecture core and the helper facade.
+  // We call whichever is available and only rely on the fallback detector when
+  // nothing else succeeds. This approach ensures the detection code always
+  // mirrors what the production bundle uses.
   function detectWithArchitecture() {
     if (CORE_INSTANCE && typeof CORE_INSTANCE.detectGlobalScope === 'function') {
       try {

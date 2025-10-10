@@ -1,4 +1,16 @@
+/*
+ * environment-bridge.js
+ * ----------------------
+ * Bridges the planner runtime with whichever execution environment loads it.
+ * The planner can execute in browsers, worker contexts and Node-based tests,
+ * so every helper here double-checks inputs and avoids assumptions that could
+ * break persistence or offline restores.
+ */
+
 (function () {
+  // Resolve the most appropriate global scope. This mirrors the pattern used
+  // across the runtime so we always end up working with the same window/self
+  // reference regardless of how scripts are bundled.
   function detectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
@@ -17,6 +29,9 @@
 
   var PRIMARY_SCOPE = detectGlobalScope();
 
+  // Build a deduplicated list of candidate scopes to inspect for runtime
+  // bridges. The primary scope is evaluated first so that user-facing state
+  // stays anchored to the active window context.
   function collectCandidateScopes(primary) {
     var scopes = [];
 
@@ -38,6 +53,9 @@
     return scopes;
   }
 
+  // Thin wrapper around require so we can gracefully handle bundlers that do
+  // not expose CommonJS helpers. Returning null instead of throwing keeps the
+  // boot sequence predictable.
   function tryRequireLocal(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -51,6 +69,8 @@
     }
   }
 
+  // Locate the environment module. We prefer direct requires but fall back to
+  // scanning known scopes so Service Workers or offline bundles keep working.
   function locateModuleEnvironment(scope) {
     var required = tryRequireLocal('./environment.js');
     if (required && typeof required === 'object') {
@@ -68,6 +88,9 @@
     return null;
   }
 
+  // Determine whether deep freezing should be skipped for a given value. Some
+  // browser-provided objects (streams, providers) misbehave when frozen, so we
+  // explicitly avoid touching them to keep integrations stable.
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
@@ -106,6 +129,9 @@
     return false;
   }
 
+  // Heuristic that identifies Ethereum-style provider objects. These are
+  // treated as immutable by reference rather than frozen to avoid interfering
+  // with wallet extensions the user relies on.
   function isEthereumProviderCandidate(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
