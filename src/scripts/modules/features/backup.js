@@ -177,6 +177,7 @@
     'projects',
     'gearList',
     'favorites',
+    'ownGear',
     'autoGearRules',
     'autoGearSeeded',
     'autoGearBackups',
@@ -188,6 +189,8 @@
     'autoGearBackupRetention',
     'customLogo',
     'customFonts',
+    'contacts',
+    'userProfile',
     'preferences',
     'schemaCache',
     'fullBackupHistory',
@@ -204,15 +207,43 @@
     'projects',
     'gearList',
     'favorites',
+    'ownGear',
     'autoGearRules',
     'autoGearBackups',
     'autoGearPresets',
     'autoGearMonitorDefaults',
+    'contacts',
+    'userProfile',
     'preferences',
     'fullBackupHistory',
     'fullBackups',
     'customFonts',
   ]);
+
+  const FALLBACK_STORAGE_KEYS = (() => {
+    const keys = new Set();
+    if (BACKUP_STORAGE_KNOWN_KEYS && typeof BACKUP_STORAGE_KNOWN_KEYS.forEach === 'function') {
+      BACKUP_STORAGE_KNOWN_KEYS.forEach((key) => {
+        if (typeof key === 'string' && key) {
+          keys.add(key);
+        }
+      });
+    }
+
+    BACKUP_STORAGE_KEY_PREFIXES.forEach((prefix) => {
+      if (typeof prefix !== 'string' || !prefix) {
+        return;
+      }
+      BACKUP_DATA_KEYS.forEach((name) => {
+        if (typeof name !== 'string' || !name) {
+          return;
+        }
+        keys.add(`${prefix}${name}`);
+      });
+    });
+
+    return keys;
+  })();
 
   function isPlainObject(value) {
     if (value === null || typeof value !== 'object') {
@@ -399,6 +430,9 @@
       if (typeof key !== 'string' || !key) {
         return;
       }
+      if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+        return;
+      }
       try {
         const value = typeof valueOrGetter === 'function'
           ? valueOrGetter()
@@ -498,6 +532,12 @@
       }
     } else if (!Object.keys(snapshot).length) {
       tryEnumerateByForEach();
+    }
+
+    if (typeof storage.getItem === 'function' && FALLBACK_STORAGE_KEYS.size) {
+      FALLBACK_STORAGE_KEYS.forEach((key) => {
+        assignEntry(key, () => storage.getItem(key));
+      });
     }
 
     return snapshot;

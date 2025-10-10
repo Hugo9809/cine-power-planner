@@ -117,8 +117,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     BACKUP_STORAGE_KNOWN_KEYS.add('iosPwaHelpShown');
   }
   var BACKUP_METADATA_BASE_KEYS = new Set(['settings', 'storage', 'localStorage', 'values', 'entries', 'sessionStorage', 'sessionState', 'sessionEntries', 'payload', 'plannerData', 'allData', 'generatedAt', 'version', 'appVersion', 'applicationVersion']);
-  var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'autoGearBackupRetention', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory', 'fullBackups'];
-  var BACKUP_DATA_COMPLEX_KEYS = new Set(['devices', 'setups', 'session', 'sessions', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'preferences', 'fullBackupHistory', 'fullBackups', 'customFonts']);
+  var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'ownGear', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'autoGearBackupRetention', 'customLogo', 'customFonts', 'contacts', 'userProfile', 'preferences', 'schemaCache', 'fullBackupHistory', 'fullBackups'];
+  var BACKUP_DATA_COMPLEX_KEYS = new Set(['devices', 'setups', 'session', 'sessions', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'ownGear', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'contacts', 'userProfile', 'preferences', 'fullBackupHistory', 'fullBackups', 'customFonts']);
+  var FALLBACK_STORAGE_KEYS = function () {
+    var keys = new Set();
+    if (BACKUP_STORAGE_KNOWN_KEYS && typeof BACKUP_STORAGE_KNOWN_KEYS.forEach === 'function') {
+      BACKUP_STORAGE_KNOWN_KEYS.forEach(function (key) {
+        if (typeof key === 'string' && key) {
+          keys.add(key);
+        }
+      });
+    }
+    BACKUP_STORAGE_KEY_PREFIXES.forEach(function (prefix) {
+      if (typeof prefix !== 'string' || !prefix) {
+        return;
+      }
+      BACKUP_DATA_KEYS.forEach(function (name) {
+        if (typeof name !== 'string' || !name) {
+          return;
+        }
+        keys.add("".concat(prefix).concat(name));
+      });
+    });
+    return keys;
+  }();
   function isPlainObject(value) {
     if (value === null || _typeof(value) !== 'object') {
       return false;
@@ -285,6 +307,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof key !== 'string' || !key) {
         return;
       }
+      if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+        return;
+      }
       try {
         var value = typeof valueOrGetter === 'function' ? valueOrGetter() : valueOrGetter;
         snapshot[key] = value;
@@ -399,6 +424,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     } else if (!Object.keys(snapshot).length) {
       tryEnumerateByForEach();
+    }
+    if (typeof storage.getItem === 'function' && FALLBACK_STORAGE_KEYS.size) {
+      FALLBACK_STORAGE_KEYS.forEach(function (key) {
+        assignEntry(key, function () {
+          return storage.getItem(key);
+        });
+      });
     }
     return snapshot;
   }
