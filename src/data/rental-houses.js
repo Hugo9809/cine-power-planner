@@ -1,6 +1,7 @@
 const rentalHouses = Object.freeze([
   Object.freeze({
     name: 'ARRI Rental – Berlin',
+    shortName: 'Arri',
     city: 'Berlin',
     country: 'Germany',
     address: 'Gaußstrasse 17, 10589 Berlin',
@@ -13,6 +14,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'ARRI Rental – London (Lighting)',
+    shortName: 'Arri',
     city: 'Uxbridge (London)',
     country: 'United Kingdom',
     address: '2 Highbridge, Oxford Road, Uxbridge, Middlesex UB8 1LX',
@@ -25,6 +27,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'ARRI Rental – London (Camera)',
+    shortName: 'Arri',
     city: 'Uxbridge (London)',
     country: 'United Kingdom',
     address: 'Uxbridge, Middlesex (ARRI Rental London)',
@@ -37,6 +40,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Ludwig Kameraverleih – Aalen (Essingen)',
+    shortName: 'Kamera Ludwig',
     city: 'Essingen (Aalen)',
     country: 'Germany',
     address: 'Streichhoffeld 3, 73457 Essingen',
@@ -49,6 +53,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Ludwig Kameraverleih – Erfurt',
+    shortName: 'Kamera Ludwig',
     city: 'Erfurt',
     country: 'Germany',
     address: 'Erich-Kästner-Str. 1, 99094 Erfurt',
@@ -61,6 +66,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Shoot Blue',
+    shortName: 'Shoot Blue',
     city: 'London',
     country: 'United Kingdom',
     address: 'South Acton (West London, W3) — studio location',
@@ -73,6 +79,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'MovieTech (MovieTech AG)',
+    shortName: 'MovieTech',
     city: 'Munich',
     country: 'Germany',
     address: '',
@@ -85,6 +92,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'TSF Group (GROUPE TSF)',
+    shortName: 'TSF',
     city: 'Saint-Denis (Paris)',
     country: 'France',
     address: '30 avenue George Sand, 93210 Saint-Denis',
@@ -97,6 +105,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Servicevision (SERVICEVISION BIS, S.L.)',
+    shortName: 'Servicevision',
     city: 'Barcelona (Cornellà de Llobregat)',
     country: 'Spain',
     address: 'C/ Rios Rosas, 20, 08940 Cornellà de Llobregat (Barcelona)',
@@ -109,6 +118,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Vocas Sales & Services B.V.',
+    shortName: 'Vocas',
     city: 'Hilversum',
     country: 'Netherlands',
     address: 'Larenseweg 121, 1221 CL Hilversum',
@@ -121,6 +131,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Camera Nordic – Sweden (HQ)',
+    shortName: 'Camera Nordic',
     city: 'Stockholm',
     country: 'Sweden',
     address: 'Västmannagatan 17, 113 25 Stockholm',
@@ -133,6 +144,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Camera Nordic – Norway',
+    shortName: 'Camera Nordic',
     city: 'Oslo',
     country: 'Norway',
     address: 'Marcus Thranes Gate 4C, 0473 Oslo',
@@ -145,6 +157,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Ljud & Bildmedia – Stockholm HQ',
+    shortName: 'Ljud & Bildmedia',
     city: 'Stockholm (Bromma)',
     country: 'Sweden',
     address: 'Voltavägen 9, 168 69 Bromma',
@@ -157,6 +170,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Ljud & Bildmedia – Gothenburg',
+    shortName: 'Ljud & Bildmedia',
     city: 'Gothenburg (Hisings Backa)',
     country: 'Sweden',
     address: 'Exportgatan 33B, 422 46 Hisings Backa',
@@ -169,6 +183,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'Visuals Switzerland – Geneva (Satigny)',
+    shortName: 'Visuals',
     city: 'Geneva (Satigny)',
     country: 'Switzerland',
     address: 'Rue du Pré-Bouvier 8, 1242 Satigny',
@@ -181,6 +196,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: "Panalight S.p.A. – Rome (HQ)",
+    shortName: 'Panalight',
     city: 'Rome',
     country: 'Italy',
     address: 'Via delle Capannelle 95, 00178 Roma',
@@ -193,6 +209,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'ARRI – Hong Kong (Asia office)',
+    shortName: 'Arri',
     city: 'Hong Kong',
     country: 'China (SAR)',
     address: '',
@@ -205,6 +222,7 @@ const rentalHouses = Object.freeze([
   }),
   Object.freeze({
     name: 'ARRI Australia – Sydney',
+    shortName: 'Arri',
     city: 'Sydney',
     country: 'Australia',
     address: '',
