@@ -660,14 +660,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
   var HISTORY_MIN_LIMIT = 50;
   var HISTORY_ABSOLUTE_MIN_LIMIT = 1;
-  var HISTORY_MAX_LIMIT = 2000;
+  var HISTORY_MAX_LIMIT = 5000;
   var HISTORY_STORAGE_KEY = '__cineLoggingHistory';
   var CONFIG_STORAGE_KEY = '__cineLoggingConfig';
   var ERROR_EVENT_FLAG = typeof Symbol === 'function' ? Symbol.for('cineLoggingHandled') : '__cineLoggingHandled__';
   var DEFAULT_CONFIG_VALUES = {
     level: 'warn',
     historyLevel: 'debug',
-    historyLimit: 400,
+    historyLimit: 1200,
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,

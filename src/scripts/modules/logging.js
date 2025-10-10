@@ -778,7 +778,7 @@
 
   const HISTORY_MIN_LIMIT = 50;
   const HISTORY_ABSOLUTE_MIN_LIMIT = 1;
-  const HISTORY_MAX_LIMIT = 2000;
+  const HISTORY_MAX_LIMIT = 5000;
   const HISTORY_STORAGE_KEY = '__cineLoggingHistory';
   const CONFIG_STORAGE_KEY = '__cineLoggingConfig';
   const ERROR_EVENT_FLAG =
@@ -786,7 +786,7 @@
   const DEFAULT_CONFIG_VALUES = {
     level: 'warn',
     historyLevel: 'debug',
-    historyLimit: 400,
+    historyLimit: 1200,
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
