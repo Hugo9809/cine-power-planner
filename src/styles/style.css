@@ -9645,6 +9645,8 @@ body.dark-mode.pink-mode #gearListOutput h2,
   min-width: 0;
   margin-right: 0;
   line-height: inherit;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 #gearListFilterDetails .filter-detail-controls {
