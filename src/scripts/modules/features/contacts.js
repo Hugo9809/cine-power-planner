@@ -65,6 +65,28 @@
     return value.trim();
   }
 
+  const DEFAULT_AVATAR_POSITION = { x: 50, y: 50 };
+
+  function clampAvatarPercentage(value, fallback) {
+    if (!Number.isFinite(value)) {
+      return fallback;
+    }
+    const clamped = Math.min(100, Math.max(0, value));
+    return Math.round(clamped * 100) / 100;
+  }
+
+  function normalizeAvatarPosition(position) {
+    if (!position || typeof position !== 'object') {
+      return { x: DEFAULT_AVATAR_POSITION.x, y: DEFAULT_AVATAR_POSITION.y };
+    }
+    const parsedX = Number.parseFloat(position.x);
+    const parsedY = Number.parseFloat(position.y);
+    return {
+      x: clampAvatarPercentage(parsedX, DEFAULT_AVATAR_POSITION.x),
+      y: clampAvatarPercentage(parsedY, DEFAULT_AVATAR_POSITION.y)
+    };
+  }
+
   function normalizeContactEntry(entry) {
     if (!entry || typeof entry !== 'object') {
       return null;
@@ -78,12 +100,31 @@
     const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
       ? entry.avatar
       : '';
+    let avatarPosition = null;
+    if (Object.prototype.hasOwnProperty.call(entry, 'avatarPosition')) {
+      const rawPosition = typeof entry.avatarPosition === 'string'
+        ? (() => {
+          try {
+            return JSON.parse(entry.avatarPosition);
+          } catch (error) {
+            safeWarn('cine.features.contacts could not parse avatar position.', error);
+            return null;
+          }
+        })()
+        : entry.avatarPosition;
+      if (rawPosition && typeof rawPosition === 'object') {
+        avatarPosition = normalizeAvatarPosition(rawPosition);
+      }
+    }
     const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
     const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
 
     const normalized = { id, name, role, phone, email, createdAt, updatedAt };
     if (avatar) {
       normalized.avatar = avatar;
+      if (avatarPosition) {
+        normalized.avatarPosition = avatarPosition;
+      }
     }
 
     return normalized;

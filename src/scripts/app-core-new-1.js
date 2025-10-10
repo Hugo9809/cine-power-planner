@@ -14949,10 +14949,31 @@ function normalizeContactEntry(entry) {
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
+  let avatarPosition = null;
+  if (entry && Object.prototype.hasOwnProperty.call(entry, 'avatarPosition')) {
+    const rawPosition = typeof entry.avatarPosition === 'string'
+      ? (() => {
+        try {
+          return JSON.parse(entry.avatarPosition);
+        } catch (error) {
+          void error;
+          return null;
+        }
+      })()
+      : entry.avatarPosition;
+    if (rawPosition && typeof rawPosition === 'object') {
+      avatarPosition = normalizeAvatarPosition(rawPosition);
+    }
+  }
   const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
   const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
   const normalized = { id, name, role, phone, email, createdAt, updatedAt };
-  if (avatar) normalized.avatar = avatar;
+  if (avatar) {
+    normalized.avatar = avatar;
+    if (avatarPosition) {
+      normalized.avatarPosition = avatarPosition;
+    }
+  }
   return normalized;
 }
 
@@ -15075,31 +15096,259 @@ function updateContactPickers() {
   dispatchGearProviderDataChanged('contacts');
 }
 
-function getAvatarInitial(value) {
-  if (typeof value === 'string') {
-    const trimmed = value.trim();
-    if (trimmed) return trimmed.charAt(0).toUpperCase();
+function isAvatarAlphaNumeric(char) {
+  if (!char) return false;
+  try {
+    return /\p{L}|\p{N}/u.test(char);
+  } catch (error) {
+    void error;
   }
+  const code = char.charCodeAt(0);
+  return (code >= 48 && code <= 57) || (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+}
+
+function pickAvatarInitial(word, options = {}) {
+  if (typeof word !== 'string' || !word) return '';
+  const { allowFallback = false, exclude = '' } = options;
+  const chars = Array.from(word);
+  for (let index = 0; index < chars.length; index += 1) {
+    const char = chars[index];
+    if (char === exclude) continue;
+    if (isAvatarAlphaNumeric(char)) return char;
+  }
+  if (!allowFallback) return '';
+  for (let index = 0; index < chars.length; index += 1) {
+    const char = chars[index];
+    if (char === exclude) continue;
+    if (char && char.trim()) return char;
+  }
+  return '';
+}
+
+function pickAvatarSecondaryInitial(word, firstChar) {
+  if (typeof word !== 'string' || !word) return '';
+  const chars = Array.from(word);
+  let skippedFirst = false;
+  for (let index = 0; index < chars.length; index += 1) {
+    const char = chars[index];
+    if (!skippedFirst && char === firstChar) {
+      skippedFirst = true;
+      continue;
+    }
+    if (isAvatarAlphaNumeric(char)) return char;
+  }
+  for (let index = 0; index < chars.length; index += 1) {
+    const char = chars[index];
+    if (!skippedFirst && char === firstChar) {
+      skippedFirst = true;
+      continue;
+    }
+    if (char && char.trim()) return char;
+  }
+  return '';
+}
+
+function getAvatarInitial(value) {
+  if (typeof value !== 'string') return '•';
+  const trimmed = value.trim();
+  if (!trimmed) return '•';
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (!words.length) return '•';
+  const firstWord = words[0];
+  const firstInitial = pickAvatarInitial(firstWord);
+  const lastWord = words.length > 1 ? words[words.length - 1] : '';
+  let secondInitial = '';
+  if (lastWord) {
+    secondInitial = pickAvatarInitial(lastWord, { allowFallback: true, exclude: '' });
+    if (!secondInitial && words.length === 1) {
+      secondInitial = pickAvatarSecondaryInitial(firstWord, firstInitial);
+    }
+  } else {
+    secondInitial = pickAvatarSecondaryInitial(firstWord, firstInitial);
+  }
+  const combined = `${firstInitial || ''}${secondInitial || ''}`.trim();
+  if (combined) return combined.toUpperCase();
+  if (firstInitial) return firstInitial.toUpperCase();
   return '•';
 }
 
-function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
+const DEFAULT_AVATAR_POSITION = Object.freeze({ x: 50, y: 50 });
+
+function clampAvatarPercentage(value, fallback) {
+  if (!Number.isFinite(value)) return fallback;
+  const clamped = Math.min(100, Math.max(0, value));
+  return Math.round(clamped * 100) / 100;
+}
+
+function normalizeAvatarPosition(position) {
+  if (!position || typeof position !== 'object') {
+    return { x: DEFAULT_AVATAR_POSITION.x, y: DEFAULT_AVATAR_POSITION.y };
+  }
+  const parsedX = Number.parseFloat(position.x);
+  const parsedY = Number.parseFloat(position.y);
+  return {
+    x: clampAvatarPercentage(parsedX, DEFAULT_AVATAR_POSITION.x),
+    y: clampAvatarPercentage(parsedY, DEFAULT_AVATAR_POSITION.y)
+  };
+}
+
+function setAvatarPositionData(element, position) {
+  if (!element || !element.dataset) return;
+  if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
+    delete element.dataset.avatarPositionX;
+    delete element.dataset.avatarPositionY;
+    return;
+  }
+  element.dataset.avatarPositionX = String(position.x);
+  element.dataset.avatarPositionY = String(position.y);
+}
+
+function enableAvatarDrag(container, img, options = {}) {
+  if (!container || !img) return null;
+  const { onPositionChange, onPositionCommit } = options;
+  let position = normalizeAvatarPosition(options.position);
+  let activePointerId = null;
+  let startX = 0;
+  let startY = 0;
+  let startPosition = position;
+  let moved = false;
+  const MOVE_THRESHOLD = 4;
+
+  const handlePointerDown = event => {
+    if (event.button !== 0) return;
+    if (event.target && typeof event.target.closest === 'function' && event.target.closest('.avatar-control-button')) {
+      return;
+    }
+    activePointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    startPosition = position;
+    moved = false;
+    container.classList.add('avatar-dragging');
+    if (typeof container.setPointerCapture === 'function') {
+      try {
+        container.setPointerCapture(activePointerId);
+      } catch (error) {
+        void error;
+      }
+    }
+    event.preventDefault();
+  };
+
+  const handlePointerMove = event => {
+    if (activePointerId === null || event.pointerId !== activePointerId) return;
+    const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
+    if (!moved && Math.hypot(deltaX, deltaY) > MOVE_THRESHOLD) {
+      moved = true;
+    }
+    if (!moved) return;
+    event.preventDefault();
+    const width = container.clientWidth || 1;
+    const height = container.clientHeight || 1;
+    const nextPosition = {
+      x: clampAvatarPercentage(startPosition.x - (deltaX / width) * 100, startPosition.x),
+      y: clampAvatarPercentage(startPosition.y - (deltaY / height) * 100, startPosition.y)
+    };
+    if (nextPosition.x === position.x && nextPosition.y === position.y) return;
+    position = nextPosition;
+    img.style.objectPosition = `${position.x}% ${position.y}%`;
+    setAvatarPositionData(container, position);
+    if (typeof onPositionChange === 'function') {
+      onPositionChange({ ...position });
+    }
+  };
+
+  const resetInteraction = () => {
+    if (activePointerId !== null && typeof container.releasePointerCapture === 'function') {
+      try {
+        container.releasePointerCapture(activePointerId);
+      } catch (error) {
+        void error;
+      }
+    }
+    activePointerId = null;
+    moved = false;
+    container.classList.remove('avatar-dragging');
+  };
+
+  const handlePointerEnd = event => {
+    if (activePointerId === null || event.pointerId !== activePointerId) return;
+    const wasMoved = moved;
+    if (wasMoved) {
+      container.dataset.suppressAvatarClick = '1';
+    }
+    resetInteraction();
+    if (wasMoved && typeof onPositionCommit === 'function') {
+      onPositionCommit({ ...position });
+    }
+  };
+
+  const handlePointerCancel = event => {
+    if (activePointerId === null || event.pointerId !== activePointerId) return;
+    resetInteraction();
+  };
+
+  container.addEventListener('pointerdown', handlePointerDown);
+  container.addEventListener('pointermove', handlePointerMove);
+  container.addEventListener('pointerup', handlePointerEnd);
+  container.addEventListener('pointercancel', handlePointerCancel);
+  container.addEventListener('lostpointercapture', handlePointerCancel);
+
+  return () => {
+    container.removeEventListener('pointerdown', handlePointerDown);
+    container.removeEventListener('pointermove', handlePointerMove);
+    container.removeEventListener('pointerup', handlePointerEnd);
+    container.removeEventListener('pointercancel', handlePointerCancel);
+    container.removeEventListener('lostpointercapture', handlePointerCancel);
+    container.classList.remove('avatar-dragging');
+  };
+}
+
+function updateAvatarVisual(container, avatarValue, fallbackName, initialClass, options = {}) {
   if (!container) return;
   const visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
   if (!visual) return;
+  if (typeof container.__avatarDragCleanup === 'function') {
+    container.__avatarDragCleanup();
+    delete container.__avatarDragCleanup;
+  }
   while (visual.firstChild) {
     visual.removeChild(visual.firstChild);
   }
-  if (avatarValue) {
+  const hasAvatar = Boolean(avatarValue);
+  if (hasAvatar) {
     const img = document.createElement('img');
     img.src = avatarValue;
     img.alt = '';
+    img.draggable = false;
+    img.style.pointerEvents = 'none';
+    const normalizedPosition = normalizeAvatarPosition(options.position);
+    img.style.objectPosition = `${normalizedPosition.x}% ${normalizedPosition.y}%`;
     visual.appendChild(img);
+    setAvatarPositionData(container, normalizedPosition);
+    container.classList.add('avatar-has-image');
+    if (options.interactive) {
+      container.classList.add('avatar-interactive');
+      const cleanup = enableAvatarDrag(container, img, {
+        position: normalizedPosition,
+        onPositionChange: options.onPositionChange,
+        onPositionCommit: options.onPositionCommit
+      });
+      if (typeof cleanup === 'function') {
+        container.__avatarDragCleanup = cleanup;
+      }
+    } else {
+      container.classList.remove('avatar-interactive');
+    }
   } else {
     const span = document.createElement('span');
     span.className = initialClass;
     span.textContent = getAvatarInitial(fallbackName);
     visual.appendChild(span);
+    setAvatarPositionData(container, null);
+    container.classList.remove('avatar-has-image');
+    container.classList.remove('avatar-interactive');
   }
 }
 
@@ -15110,11 +15359,43 @@ function setRowAvatar(row, avatarValue, options = {}) {
     dataInput.value = avatarValue || '';
   }
   const nameInput = row.querySelector('.person-name');
-  const fallbackName = options && Object.prototype.hasOwnProperty.call(options, 'name')
+  const fallbackName = Object.prototype.hasOwnProperty.call(options, 'name')
     ? options.name
     : nameInput?.value;
   const avatarContainer = row.querySelector('.person-avatar');
-  updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
+  const hasAvatar = Boolean(avatarValue);
+  if (hasAvatar) {
+    const normalizedPosition = normalizeAvatarPosition(options.position);
+    row.dataset.avatarPositionX = String(normalizedPosition.x);
+    row.dataset.avatarPositionY = String(normalizedPosition.y);
+    updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial', {
+      interactive: true,
+      position: normalizedPosition,
+      onPositionChange: newPosition => {
+        row.dataset.avatarPositionX = String(newPosition.x);
+        row.dataset.avatarPositionY = String(newPosition.y);
+      },
+      onPositionCommit: () => {
+        if (!options.skipDirty && typeof markProjectFormDataDirty === 'function') {
+          markProjectFormDataDirty();
+        }
+        if (!options.skipDirty) {
+          scheduleProjectAutoSave(true);
+        }
+      }
+    });
+  } else {
+    delete row.dataset.avatarPositionX;
+    delete row.dataset.avatarPositionY;
+    updateAvatarVisual(avatarContainer, '', fallbackName, 'person-avatar-initial');
+  }
+  if (avatarContainer) {
+    avatarContainer.classList.toggle('avatar-can-remove', hasAvatar);
+    const removeBtn = avatarContainer.querySelector('.avatar-remove-button');
+    if (removeBtn) {
+      removeBtn.hidden = !hasAvatar;
+    }
+  }
 }
 
 function dispatchGearProviderDataChanged(reason) {
@@ -15136,6 +15417,9 @@ function getContactsSnapshot() {
     phone: contact.phone || '',
     email: contact.email || '',
     avatar: contact.avatar || '',
+    avatarPosition: contact.avatar && contact.avatarPosition
+      ? normalizeAvatarPosition(contact.avatarPosition)
+      : undefined,
     label: getContactDisplayLabel(contact)
   }));
 }
@@ -15478,7 +15762,7 @@ function handleAvatarFileSelection(row, file) {
   readAvatarFile(
     file,
     dataUrl => {
-      setRowAvatar(row, dataUrl);
+      setRowAvatar(row, dataUrl, { position: normalizeAvatarPosition(DEFAULT_AVATAR_POSITION) });
       if (row.dataset.contactId) {
         detachCrewRowContact(row);
       }
@@ -15527,7 +15811,11 @@ function applyContactToCrewRow(row, contact, options = {}) {
     if (phoneInput) phoneInput.value = contact.phone || '';
     const emailInput = row.querySelector('.person-email');
     if (emailInput) emailInput.value = contact.email || '';
-    setRowAvatar(row, contact.avatar || '', { name: contact.name });
+    setRowAvatar(row, contact.avatar || '', {
+      name: contact.name,
+      position: contact.avatarPosition,
+      skipDirty
+    });
     row.dataset.contactId = contact.id;
     const contactSelect = row.querySelector('.person-contact-select');
     if (contactSelect) {
@@ -15565,12 +15853,18 @@ function getCrewRowSnapshot(row) {
   const phoneInput = row.querySelector('.person-phone');
   const emailInput = row.querySelector('.person-email');
   const avatarInput = row.querySelector('.person-avatar-data');
+  const posX = Number.parseFloat(row.dataset.avatarPositionX);
+  const posY = Number.parseFloat(row.dataset.avatarPositionY);
+  const avatarPosition = Number.isFinite(posX) || Number.isFinite(posY)
+    ? normalizeAvatarPosition({ x: posX, y: posY })
+    : undefined;
   return {
     role: sanitizeContactValue(roleSel?.value || ''),
     name: sanitizeContactValue(nameInput?.value || ''),
     phone: sanitizeContactValue(phoneInput?.value || ''),
     email: sanitizeContactValue(emailInput?.value || ''),
     avatar: sanitizeContactValue(avatarInput?.value || ''),
+    avatarPosition,
     contactId: sanitizeContactValue(row.dataset.contactId || '')
   };
 }
@@ -15612,8 +15906,16 @@ function saveCrewRowAsContact(row) {
       existing.email = snapshot.email || existing.email;
       if (snapshot.avatar) {
         existing.avatar = snapshot.avatar;
+        if (snapshot.avatarPosition) {
+          existing.avatarPosition = normalizeAvatarPosition(snapshot.avatarPosition);
+        } else if (existing.avatarPosition) {
+          delete existing.avatarPosition;
+        }
       } else if (!existing.avatar) {
         delete existing.avatar;
+        if (existing.avatarPosition) {
+          delete existing.avatarPosition;
+        }
       }
       existing.updatedAt = now;
       contactsCache = sortContacts(contactsCache);
@@ -15633,6 +15935,9 @@ function saveCrewRowAsContact(row) {
     phone: snapshot.phone,
     email: snapshot.email,
     avatar: snapshot.avatar,
+    avatarPosition: snapshot.avatar && snapshot.avatarPosition
+      ? normalizeAvatarPosition(snapshot.avatarPosition)
+      : undefined,
     createdAt: now,
     updatedAt: now
   });
@@ -15757,7 +16062,24 @@ function mergeImportedContacts(imported) {
       role: sanitizeContactValue(entry.role || ''),
       phone: sanitizeContactValue(entry.phone || ''),
       email: sanitizeContactValue(entry.email || ''),
-      avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
+      avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : '',
+      avatarPosition: (() => {
+        if (!entry || !Object.prototype.hasOwnProperty.call(entry, 'avatarPosition')) return null;
+        const rawPosition = typeof entry.avatarPosition === 'string'
+          ? (() => {
+            try {
+              return JSON.parse(entry.avatarPosition);
+            } catch (error) {
+              void error;
+              return null;
+            }
+          })()
+          : entry.avatarPosition;
+        if (rawPosition && typeof rawPosition === 'object') {
+          return normalizeAvatarPosition(rawPosition);
+        }
+        return null;
+      })()
     };
     const existing = contactsCache.find(contact => {
       if (candidate.email && contact.email && candidate.email.toLowerCase() === contact.email.toLowerCase()) return true;
@@ -15774,7 +16096,14 @@ function mergeImportedContacts(imported) {
       if (candidate.role) existing.role = candidate.role;
       if (candidate.phone) existing.phone = candidate.phone;
       if (candidate.email) existing.email = candidate.email;
-      if (candidate.avatar) existing.avatar = candidate.avatar;
+      if (candidate.avatar) {
+        existing.avatar = candidate.avatar;
+        if (candidate.avatarPosition) {
+          existing.avatarPosition = candidate.avatarPosition;
+        } else if (existing.avatarPosition) {
+          delete existing.avatarPosition;
+        }
+      }
       existing.updatedAt = Date.now();
       updated += 1;
       updateCrewRowsForContact(existing);
@@ -15786,6 +16115,9 @@ function mergeImportedContacts(imported) {
         phone: candidate.phone,
         email: candidate.email,
         avatar: candidate.avatar,
+        avatarPosition: candidate.avatar && candidate.avatarPosition
+          ? candidate.avatarPosition
+          : undefined,
         createdAt: Date.now(),
         updatedAt: Date.now()
       });
@@ -15807,6 +16139,9 @@ function mergeImportedContacts(imported) {
 }
 
 function createContactCard(contact) {
+  if (contact.avatar && contact.avatarPosition) {
+    contact.avatarPosition = normalizeAvatarPosition(contact.avatarPosition);
+  }
   const card = document.createElement('article');
   card.className = 'contact-card';
   card.setAttribute('role', 'listitem');
@@ -15820,13 +16155,32 @@ function createContactCard(contact) {
   const avatarVisual = document.createElement('div');
   avatarVisual.className = 'contact-card-avatar-visual';
   avatarContainer.appendChild(avatarVisual);
-  updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+  const avatarAdjustHint = getContactsText('avatarAdjustHint', 'Drag to adjust framing');
+  const avatarHoverHint = document.createElement('div');
+  avatarHoverHint.className = 'avatar-hover-hint';
+  avatarHoverHint.textContent = avatarAdjustHint;
+  avatarContainer.appendChild(avatarHoverHint);
+  const avatarControls = document.createElement('div');
+  avatarControls.className = 'avatar-control-bar';
   const avatarButton = document.createElement('button');
   avatarButton.type = 'button';
-  const avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+  avatarButton.className = 'avatar-control-button avatar-change-button';
+  const avatarLabel = getContactsText('avatarChange', 'Change photo');
   avatarButton.setAttribute('aria-label', avatarLabel);
   avatarButton.setAttribute('title', avatarLabel);
-  avatarContainer.appendChild(avatarButton);
+  avatarButton.setAttribute('data-help', `${avatarLabel}. ${avatarAdjustHint}`.trim());
+  setButtonLabelWithIcon(avatarButton, avatarLabel, ICON_GLYPHS.camera);
+  avatarControls.appendChild(avatarButton);
+  const avatarRemoveButton = document.createElement('button');
+  avatarRemoveButton.type = 'button';
+  avatarRemoveButton.className = 'avatar-control-button avatar-remove-button';
+  const avatarRemoveLabel = getContactsText('avatarRemove', 'Remove photo');
+  avatarRemoveButton.setAttribute('aria-label', avatarRemoveLabel);
+  avatarRemoveButton.setAttribute('title', avatarRemoveLabel);
+  avatarRemoveButton.setAttribute('data-help', avatarRemoveLabel);
+  setButtonLabelWithIcon(avatarRemoveButton, avatarRemoveLabel, ICON_GLYPHS.circleX);
+  avatarControls.appendChild(avatarRemoveButton);
+  avatarContainer.appendChild(avatarControls);
   const avatarInput = document.createElement('input');
   avatarInput.type = 'file';
   avatarInput.accept = 'image/*';
@@ -15936,7 +16290,7 @@ function createContactCard(contact) {
 
   card.appendChild(actions);
 
-  const persist = (resort = false) => {
+  function persist(resort = false) {
     contact.updatedAt = Date.now();
     saveContactsToStorage(contactsCache);
     updateContactPickers();
@@ -15945,12 +16299,42 @@ function createContactCard(contact) {
       contactsCache = sortContacts(contactsCache);
       renderContactsList({ focusContactId: contact.id });
     }
+  }
+
+  let avatarPositionDirty = false;
+
+  const renderAvatar = (options = {}) => {
+    if (options.resetDirty) {
+      avatarPositionDirty = false;
+    }
+    const hasAvatar = Boolean(contact.avatar);
+    const basePosition = options.position || contact.avatarPosition || DEFAULT_AVATAR_POSITION;
+    const normalizedPosition = hasAvatar ? normalizeAvatarPosition(basePosition) : null;
+    if (hasAvatar && options.forcePositionSync) {
+      contact.avatarPosition = normalizedPosition;
+    }
+    updateAvatarVisual(avatarContainer, hasAvatar ? contact.avatar : '', contact.name, 'contact-card-avatar-initial', {
+      interactive: hasAvatar,
+      position: normalizedPosition || undefined,
+      onPositionChange: newPosition => {
+        avatarPositionDirty = true;
+        contact.avatarPosition = newPosition;
+      },
+      onPositionCommit: () => {
+        if (!avatarPositionDirty) return;
+        avatarPositionDirty = false;
+        persist();
+        announceContactsMessage(getContactsText('avatarAdjusted', 'Photo framing updated.'));
+      }
+    });
+    avatarRemoveButton.hidden = !hasAvatar;
+    avatarContainer.classList.toggle('avatar-can-remove', hasAvatar);
   };
 
   nameInput.addEventListener('input', () => {
     contact.name = sanitizeContactValue(nameInput.value);
     title.textContent = contact.name || getContactsText('contactFallbackName', 'Crew contact');
-    updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
+    renderAvatar();
     persist();
   });
   nameInput.addEventListener('blur', event => {
@@ -15977,14 +16361,33 @@ function createContactCard(contact) {
   });
 
   avatarButton.addEventListener('click', event => {
-    if (event.shiftKey) {
-      contact.avatar = '';
-      updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
-      persist();
-      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+    event.preventDefault();
+    avatarInput.click();
+  });
+
+  const handleAvatarContainerClick = event => {
+    if (event.target && typeof event.target.closest === 'function' && event.target.closest('.avatar-control-button')) {
+      return;
+    }
+    if (avatarContainer.dataset.suppressAvatarClick === '1') {
+      delete avatarContainer.dataset.suppressAvatarClick;
       return;
     }
     avatarInput.click();
+  };
+  avatarContainer.addEventListener('click', handleAvatarContainerClick);
+
+  avatarRemoveButton.addEventListener('click', event => {
+    event.preventDefault();
+    if (!contact.avatar) return;
+    contact.avatar = '';
+    if (contact.avatarPosition) {
+      delete contact.avatarPosition;
+    }
+    avatarInput.value = '';
+    renderAvatar({ resetDirty: true });
+    persist();
+    announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
   });
 
   avatarInput.addEventListener('change', () => {
@@ -15992,7 +16395,9 @@ function createContactCard(contact) {
     if (!file) return;
     readAvatarFile(file, dataUrl => {
       contact.avatar = dataUrl;
-      updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
+      contact.avatarPosition = normalizeAvatarPosition(DEFAULT_AVATAR_POSITION);
+      avatarPositionDirty = false;
+      renderAvatar({ position: contact.avatarPosition, forcePositionSync: true, resetDirty: true });
       persist();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
     }, reason => {
@@ -16004,6 +16409,8 @@ function createContactCard(contact) {
     });
     avatarInput.value = '';
   });
+
+  renderAvatar({ position: contact.avatarPosition, resetDirty: true });
 
   return { card, focusTarget: nameInput };
 }
@@ -16125,7 +16532,7 @@ function createCrewRow(data = {}) {
   const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
   const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
   const crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
-  const avatarChangeLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+  const avatarChangeLabel = getContactsText('avatarChange', 'Change photo');
 
   const avatarDataInput = document.createElement('input');
   avatarDataInput.type = 'hidden';
@@ -16138,12 +16545,31 @@ function createCrewRow(data = {}) {
   const avatarVisual = document.createElement('div');
   avatarVisual.className = 'person-avatar-visual';
   avatarContainer.appendChild(avatarVisual);
+  const avatarAdjustHint = getContactsText('avatarAdjustHint', 'Drag to adjust framing');
+  const avatarHoverHint = document.createElement('div');
+  avatarHoverHint.className = 'avatar-hover-hint';
+  avatarHoverHint.textContent = avatarAdjustHint;
+  avatarContainer.appendChild(avatarHoverHint);
+  const avatarControls = document.createElement('div');
+  avatarControls.className = 'avatar-control-bar';
   const avatarButton = document.createElement('button');
   avatarButton.type = 'button';
+  avatarButton.className = 'avatar-control-button avatar-change-button';
   avatarButton.setAttribute('aria-label', avatarChangeLabel);
   avatarButton.setAttribute('title', avatarChangeLabel);
-  avatarButton.setAttribute('data-help', avatarChangeLabel);
-  avatarContainer.appendChild(avatarButton);
+  avatarButton.setAttribute('data-help', `${avatarChangeLabel}. ${avatarAdjustHint}`.trim());
+  setButtonLabelWithIcon(avatarButton, avatarChangeLabel, ICON_GLYPHS.camera);
+  avatarControls.appendChild(avatarButton);
+  const avatarRemoveButton = document.createElement('button');
+  avatarRemoveButton.type = 'button';
+  avatarRemoveButton.className = 'avatar-control-button avatar-remove-button';
+  const avatarRemoveLabel = getContactsText('avatarRemove', 'Remove photo');
+  avatarRemoveButton.setAttribute('aria-label', avatarRemoveLabel);
+  avatarRemoveButton.setAttribute('title', avatarRemoveLabel);
+  avatarRemoveButton.setAttribute('data-help', avatarRemoveLabel);
+  setButtonLabelWithIcon(avatarRemoveButton, avatarRemoveLabel, ICON_GLYPHS.circleX);
+  avatarControls.appendChild(avatarRemoveButton);
+  avatarContainer.appendChild(avatarControls);
   const avatarFileInput = document.createElement('input');
   avatarFileInput.type = 'file';
   avatarFileInput.accept = 'image/*';
@@ -16258,17 +16684,33 @@ function createCrewRow(data = {}) {
     row.dataset.contactId = data.contactId;
   }
 
-  setRowAvatar(row, avatarDataInput.value, { name: data.name });
+  setRowAvatar(row, avatarDataInput.value, { name: data.name, position: data.avatarPosition });
   updateRowLinkedBadge(row);
 
   avatarButton.addEventListener('click', event => {
-    if (event.shiftKey) {
-      setRowAvatar(row, '');
-      handleCrewRowManualChange(row);
-      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+    event.preventDefault();
+    avatarFileInput.click();
+  });
+
+  const handleRowAvatarClick = event => {
+    if (event.target && typeof event.target.closest === 'function' && event.target.closest('.avatar-control-button')) {
+      return;
+    }
+    if (avatarContainer.dataset.suppressAvatarClick === '1') {
+      delete avatarContainer.dataset.suppressAvatarClick;
       return;
     }
     avatarFileInput.click();
+  };
+  avatarContainer.addEventListener('click', handleRowAvatarClick);
+
+  avatarRemoveButton.addEventListener('click', event => {
+    event.preventDefault();
+    if (!avatarDataInput.value) return;
+    setRowAvatar(row, '', { name: nameInput.value });
+    avatarFileInput.value = '';
+    handleCrewRowManualChange(row);
+    announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
   });
 
   avatarFileInput.addEventListener('change', () => {

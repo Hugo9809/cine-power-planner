@@ -426,7 +426,9 @@ Use Cine Power Planner end-to-end with the following routine:
   localStorage snapshot as your projects, are included in manual backups and
   can be imported from offline `.vcf` (vCard) files whenever you need to merge
   address books. Saving a crew row back to the roster keeps future projects
-  aligned without retyping details.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+  aligned without retyping details, and you can drag profile photos to refine
+  their framing, remove them from the hover controls, or rely on automatically
+  generated initials whenever no image is stored.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L15080-L16405】
 - **Deletion requires confirmation.** Use the trash icon in the selector to
   remove unused versions. You’ll be asked to confirm before anything leaves the
   browser, ensuring you do not lose a project by accident.

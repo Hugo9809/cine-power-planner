@@ -170,7 +170,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
   E-Mails, Telefonnummern und Profilfotos, die sich in jedes Projekt übernehmen lässt. Die Kontakte liegen im selben
   localStorage-Snapshot wie deine Projekte, werden in manuelle Backups eingeschlossen und lassen sich bei Bedarf offline aus
   `.vcf`- (vCard-) Dateien zusammenführen. Speichere Crew-Zeilen zurück in die Liste, damit zukünftige Projekte ohne Nachtippen
-  auf dem aktuellen Stand bleiben.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+  auf dem aktuellen Stand bleiben – Profilfotos kannst du dabei per Drag-and-drop im Ausschnitt verschieben, über die Hover-
+  Steuerung entfernen oder automatisch erzeugte Initialen nutzen, wenn kein Bild gespeichert ist.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L15080-L16405】
 - **Löschen mit Bestätigung.** Papierkorb-Symbol fragt nach, bevor Einträge entfernt werden.
 
 ## Teilen & Importe

@@ -169,7 +169,9 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **I contatti della troupe restano riutilizzabili.** Apri la voce **Contatti** nella barra laterale per mantenere un elenco con
   ruoli, email, numeri di telefono e foto profilo da inserire in qualsiasi progetto. I contatti vivono nello stesso snapshot di
   localStorage dei progetti, rientrano nei backup manuali e possono essere importati offline da file `.vcf` (vCard) per unire
-  rubriche. Salvare una riga della troupe nell’elenco evita di riscrivere i dettagli nei progetti futuri.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+  rubriche. Salvare una riga della troupe nell’elenco evita di riscrivere i dettagli nei progetti futuri, e ora puoi trascinare
+  le foto per regolare l’inquadratura, rimuoverle dai controlli al passaggio del mouse o lasciare che vengano generate iniziali
+  automatiche quando non è presente un’immagine.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L15080-L16405】
 - **Eliminazione con conferma.** L’icona cestino chiede sempre conferma prima di rimuovere elementi.
 
 ## Condivisione e import

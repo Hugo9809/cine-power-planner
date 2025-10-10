@@ -170,7 +170,8 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
   roles, correos, teléfonos y fotos de perfil listo para insertarlo en cualquier proyecto. Los contactos viven en el mismo
   snapshot de localStorage que tus proyectos, se incluyen en las copias de seguridad manuales y pueden importarse desde archivos
   `.vcf` (vCard) sin conexión para fusionar agendas. Guardar una fila del equipo en la libreta evita volver a escribir datos en
-  los próximos proyectos.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+  los próximos proyectos, y puedes arrastrar las fotos para ajustar el encuadre, quitarlas desde los controles flotantes o dejar
+  que se generen iniciales automáticamente cuando no exista imagen.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L15080-L16405】
 - **Eliminación con confirmación.** Usa el icono de papelera; siempre se solicita confirmación antes de borrar.
 
 ## Compartir e importar

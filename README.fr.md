@@ -170,7 +170,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
   rôles, adresses e-mail, numéros et photos prêtes à être injectées dans n’importe quel projet. Les contacts partagent le même
   snapshot localStorage que vos projets, sont inclus dans les sauvegardes manuelles et peuvent être importés depuis des fichiers
   `.vcf` (vCard) hors ligne afin de fusionner des carnets. Sauvegarder une ligne d’équipe dans l’annuaire évite de ressaisir les
-  informations sur les prochains projets.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+  informations sur les prochains projets, et vous pouvez désormais faire glisser les photos pour ajuster le cadrage, les retirer
+  via les contrôles au survol ou laisser des initiales se générer automatiquement lorsqu’aucune image n’est enregistrée.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L15080-L16405】
 - **Suppression avec confirmation.** L’icône corbeille demande toujours une validation avant d’effacer.
 
 ## Partage et imports
