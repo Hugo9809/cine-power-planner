@@ -55,6 +55,29 @@ drive without phoning home.
   and language-specific README files whenever you add or update locales so
   offline readers stay aligned with the latest workflows.
 
+## Documentation & training cadence
+
+Keeping help content, checklists and translated readmes synchronized with the
+runtime is part of the release process. When behavior changes or new safeguards
+ship, run the following loop before handing builds to crews:
+
+1. **Map the change.** Note which save, share, import, backup or restore flows
+   gain new states, prompts or safeguards. Update the relevant walkthroughs in
+   [`docs/`](docs) so rehearsals always mirror the interface users see offline.
+2. **Refresh multilingual guidance.** Propagate wording adjustments to
+   `README.*.md` files and any localized help panels so offline-first teams get
+   the same instructions regardless of language.
+3. **Re-run verification packets.** Execute the
+   [Documentation Verification Packet](docs/documentation-verification-packet.md)
+   against the current build, capturing signed logs that prove every save,
+   share, import, backup and restore path works without network access.
+4. **Distribute updated bundles.** Regenerate shareable training bundles so
+   crews rehearse with the current assets, icons and checklists that ship inside
+   this repository.
+
+Treat these steps as blocking tasks for every merge so documentation remains
+as resilient as the planner itself.
+
 ## Overview
 
 ### Built for crews
