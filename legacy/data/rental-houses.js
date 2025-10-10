@@ -8,7 +8,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.arrirental.com/en/about/contact',
   sourceQuote: 'Gaußstrasse 17 10589 Berlin … Office and out-of-hours: +49 30 346 800 0 … Berlin@arrirental.de',
   sourceUrl: 'https://www.arrirental.com/en/about/contact',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Arri'
 }), Object.freeze({
   name: 'ARRI Rental – London (Lighting)',
   city: 'Uxbridge (London)',
@@ -19,7 +20,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.arrirental.com/en/about/contact',
   sourceQuote: '2 Highbridge, Oxford Road … Office and out-of-hours: +44 1895 457 200 … Londonlighting@arrirental.co.uk',
   sourceUrl: 'https://www.arrirental.com/en/about/contact',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Arri'
 }), Object.freeze({
   name: 'ARRI Rental – London (Camera)',
   city: 'Uxbridge (London)',
@@ -30,7 +32,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.arrirental.com/en/about/contact',
   sourceQuote: 'Londoncamera@arrirental.co.uk',
   sourceUrl: 'https://www.arrirental.com/en/about/contact',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Arri'
 }), Object.freeze({
   name: 'Ludwig Kameraverleih – Aalen (Essingen)',
   city: 'Essingen (Aalen)',
@@ -41,7 +44,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://ludwigkamera.de/en/branches/',
   sourceQuote: 'Address … Streichhoffeld 3 73457 Essingen … Phone +49 7365 9237400 … E-Mail aalen@rental.de',
   sourceUrl: 'https://ludwigkamera.de/en/branches/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Kamera Ludwig'
 }), Object.freeze({
   name: 'Ludwig Kameraverleih – Erfurt',
   city: 'Erfurt',
@@ -52,7 +56,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://ludwigkamera.de/en/branches/',
   sourceQuote: 'Erich-Kästner-Str. 1 99094 Erfurt … Phone +49 361 51143726 … E-Mail erfurt@rental.de',
   sourceUrl: 'https://ludwigkamera.de/en/branches/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Kamera Ludwig'
 }), Object.freeze({
   name: 'Shoot Blue',
   city: 'London',
@@ -63,7 +68,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://shootblue.tv/contact/',
   sourceQuote: '+44 (0) 208 343 1260  hire@shootblue.tv',
   sourceUrl: 'https://shootblue.tv/contact/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Shoot Blue'
 }), Object.freeze({
   name: 'MovieTech (MovieTech AG)',
   city: 'Munich',
@@ -74,7 +80,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.movietech.de/en/about-us/',
   sourceQuote: '+49 89 436 89 13 | info@movietech.de',
   sourceUrl: 'https://www.movietech.de/en/about-us/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'MovieTech'
 }), Object.freeze({
   name: 'TSF Group (GROUPE TSF)',
   city: 'Saint-Denis (Paris)',
@@ -85,7 +92,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://us.tsf.fr/contact/',
   sourceQuote: '30 avenue George Sand · 93210 Saint-Denis – France · +33 (0)1 49 17 60 00 · contact@tsf.fr',
   sourceUrl: 'https://us.tsf.fr/contact/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'TSF'
 }), Object.freeze({
   name: 'Servicevision (SERVICEVISION BIS, S.L.)',
   city: 'Barcelona (Cornellà de Llobregat)',
@@ -96,7 +104,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.servicevision.es/en/contact/',
   sourceQuote: 'Adress : C Rios Rosas, 20. 08940 … Phone : +34 93 223 86 30',
   sourceUrl: 'https://www.servicevision.es/en/contact/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Servicevision'
 }), Object.freeze({
   name: 'Vocas Sales & Services B.V.',
   city: 'Hilversum',
@@ -107,7 +116,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://vocas.nl/',
   sourceQuote: 'Larenseweg 121 1221 CL Hilversum … +31-35-6233707 · info@vocas.nl',
   sourceUrl: 'https://vocas.nl/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Vocas'
 }), Object.freeze({
   name: 'Camera Nordic – Sweden (HQ)',
   city: 'Stockholm',
@@ -118,7 +128,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://cameranordic.com/page/Contact',
   sourceQuote: 'Västmannagatan 17 113 25 Stockholm … E-mail: info@cameranordic.com … Phone: +46 8 410 462 40',
   sourceUrl: 'https://cameranordic.com/page/Contact',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Camera Nordic'
 }), Object.freeze({
   name: 'Camera Nordic – Norway',
   city: 'Oslo',
@@ -129,7 +140,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://cameranordic.com/page/Contact',
   sourceQuote: 'Marcus Thranes Gate 4C 0473 Oslo / Norway … Phone: +47 22 41 04 62',
   sourceUrl: 'https://cameranordic.com/page/Contact',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Camera Nordic'
 }), Object.freeze({
   name: 'Ljud & Bildmedia – Stockholm HQ',
   city: 'Stockholm (Bromma)',
@@ -140,7 +152,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.ljud-bildmedia.se/page/about/contactus',
   sourceQuote: 'Voltavägen 9 168 69 Bromma Sweden … info@ljud-bildmedia.se · +46 8 540 279 26',
   sourceUrl: 'https://www.ljud-bildmedia.se/page/about/contactus',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Ljud & Bildmedia'
 }), Object.freeze({
   name: 'Ljud & Bildmedia – Gothenburg',
   city: 'Gothenburg (Hisings Backa)',
@@ -151,7 +164,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://cameranordic.com/page/Sweden',
   sourceQuote: 'Backa Bergögata 12A 422 46 Hisings Backa … Email: info@ljud-bildmedia.se … Phone: +46 (0) 8 540 279 26',
   sourceUrl: 'https://cameranordic.com/page/Sweden',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Ljud & Bildmedia'
 }), Object.freeze({
   name: 'Visuals Switzerland – Geneva (Satigny)',
   city: 'Geneva (Satigny)',
@@ -162,7 +176,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://rent.visuals.ch/en/content/6-our-shops',
   sourceQuote: 'Visuals Switzerland Geneva. rue du Pré-Bouvier 8, 1242 Satigny Tel: 022 561 07 07',
   sourceUrl: 'https://rent.visuals.ch/en/content/6-our-shops',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Visuals Switzerland'
 }), Object.freeze({
   name: "Panalight S.p.A. – Rome (HQ)",
   city: 'Rome',
@@ -173,7 +188,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.panalight.it/en/',
   sourceQuote: 'Address … Via delle Capannelle 95 - 00178 Roma … tel: (+39) 06 7290.0234',
   sourceUrl: 'https://www.panalight.it/en/',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Panalight'
 }), Object.freeze({
   name: 'ARRI – Hong Kong (Asia office)',
   city: 'Hong Kong',
@@ -184,7 +200,8 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.arri.com/en/company/the-arri-philosophy/arri-global-locations',
   sourceQuote: '+852 2571 6288 … info@arri.asia',
   sourceUrl: 'https://www.arri.com/en/company/the-arri-philosophy/arri-global-locations',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Arri'
 }), Object.freeze({
   name: 'ARRI Australia – Sydney',
   city: 'Sydney',
@@ -195,6 +212,7 @@ var rentalHouses = Object.freeze([Object.freeze({
   website: 'https://www.arri.com/en/company/the-arri-philosophy/arri-global-locations',
   sourceQuote: '+61 298 554 300 … info@arri.com.au',
   sourceUrl: 'https://www.arri.com/en/company/the-arri-philosophy/arri-global-locations',
-  accessDate: '2025-10-09'
+  accessDate: '2025-10-09',
+  shortName: 'Arri'
 })]);
 module.exports = rentalHouses;

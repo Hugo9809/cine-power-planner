@@ -300,15 +300,134 @@ function updateRentalHouseAssistiveDetails(input = resolveRentalHouseInput()) {
     input.removeAttribute('data-help');
 }
 
+function emitGearProviderDataChanged(reason) {
+    if (typeof document === 'undefined' || typeof CustomEvent !== 'function') {
+        return;
+    }
+    try {
+        document.dispatchEvent(new CustomEvent('gear-provider-data-changed', {
+            detail: { reason: reason || 'rental-house' }
+        }));
+    } catch (error) {
+        void error;
+    }
+}
+
+const RENTAL_SHORT_NAME_OVERRIDES = Object.freeze([
+    { pattern: /Kameraverleih Licht und Ton KLT/i, value: 'KLT' },
+    { pattern: /Kameraverleih Licht und Ton/i, value: 'KLT' },
+    { pattern: /Ludwig\s+Kameraverleih/i, value: 'Kamera Ludwig' },
+    { pattern: /\bARRI\b/i, value: 'Arri' }
+]);
+
+function getCurrentRentalHouseName() {
+    const scope = getGlobalScope();
+    const info = scope && scope.currentProjectInfo;
+    const fromInfo = info && typeof info.rentalHouse === 'string' ? info.rentalHouse.trim() : '';
+    if (fromInfo) {
+        return fromInfo;
+    }
+    const input = resolveRentalHouseInput();
+    const value = input && typeof input.value === 'string' ? input.value.trim() : '';
+    return value;
+}
+
+function formatRentalProviderShortName(rawName) {
+    const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+    if (!trimmed) {
+        return '';
+    }
+    const entry = rentalHouseLookup[normalizeRentalHouseKey(trimmed)];
+    if (entry && typeof entry.shortName === 'string' && entry.shortName.trim()) {
+        return entry.shortName.trim();
+    }
+    for (let index = 0; index < RENTAL_SHORT_NAME_OVERRIDES.length; index += 1) {
+        const override = RENTAL_SHORT_NAME_OVERRIDES[index];
+        if (override.pattern.test(trimmed)) {
+            return override.value;
+        }
+    }
+    let base = trimmed.replace(/[\u2012\u2013\u2014\u2015-].*$/, '').trim();
+    base = base.replace(/\s*\([^()]*\)\s*/g, ' ');
+    base = base.replace(/\b(GmbH|AG|S\.p\.A\.|S\.A\.|B\.V\.|Ltd\.|Limited|Inc\.)\b/gi, '');
+    base = base.replace(/\s{2,}/g, ' ').trim();
+    if (/\bARRI\b/i.test(base)) {
+        return 'Arri';
+    }
+    if (/Kameraverleih Licht und Ton/i.test(trimmed)) {
+        const acronym = trimmed.match(/\b([A-ZÄÖÜ]{2,})\b(?!.*\b[A-ZÄÖÜ]{2,}\b)/);
+        if (acronym) {
+            return acronym[1];
+        }
+    }
+    if (!base) {
+        base = trimmed;
+    }
+    const trailingAcronym = base.match(/\b([A-ZÄÖÜ]{2,})\b$/);
+    if (trailingAcronym && trailingAcronym[1].length <= 4) {
+        return trailingAcronym[1];
+    }
+    return base;
+}
+
+function getRentalProviderShortName() {
+    const rawName = getCurrentRentalHouseName();
+    if (!rawName) {
+        return '';
+    }
+    const shortName = formatRentalProviderShortName(rawName);
+    if (!shortName) {
+        return '';
+    }
+    if (/^rental(?:\s+house)?$/i.test(shortName)) {
+        return '';
+    }
+    return shortName;
+}
+
+function getRentalNoteLabel() {
+    const shortName = getRentalProviderShortName();
+    if (shortName) {
+        return shortName;
+    }
+    const fallback = resolveGearListCustomText('gearListRentalNote', '');
+    if (fallback && fallback.trim()) {
+        return fallback.trim();
+    }
+    return '';
+}
+
+function applyRentalNoteToElement(element, providerValue) {
+    if (!element || typeof element.setAttribute !== 'function') {
+        return;
+    }
+    const noteLabel = getRentalNoteLabel();
+    const providerAttr = typeof providerValue === 'string'
+        ? providerValue.trim()
+        : (element.getAttribute && element.getAttribute('data-gear-provider')) || '';
+    const provider = providerAttr ? providerAttr.trim() : '';
+    if ((!provider || provider === 'rental-house') && noteLabel) {
+        element.setAttribute('data-rental-note', noteLabel);
+    } else if (provider && provider !== 'rental-house') {
+        element.removeAttribute('data-rental-note');
+    } else if (!noteLabel) {
+        element.removeAttribute('data-rental-note');
+    }
+}
+
 const initialRentalHouseInput = resolveRentalHouseInput();
 if (initialRentalHouseInput) {
     if (rentalHouseCatalog.length) {
         renderRentalHouseSuggestions(initialRentalHouseInput);
     }
-    updateRentalHouseAssistiveDetails(initialRentalHouseInput);
-    initialRentalHouseInput.addEventListener('input', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
-    initialRentalHouseInput.addEventListener('change', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
-    initialRentalHouseInput.addEventListener('blur', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
+    const handleRentalHouseChange = () => {
+        updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+        emitGearProviderDataChanged('rental-house');
+    };
+    handleRentalHouseChange();
+    initialRentalHouseInput.addEventListener('input', handleRentalHouseChange);
+    initialRentalHouseInput.addEventListener('change', handleRentalHouseChange);
+    initialRentalHouseInput.addEventListener('blur', handleRentalHouseChange);
 }
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
@@ -1531,6 +1650,7 @@ function refreshGearItemProviderDisplays(scope) {
   items.forEach(element => {
     const data = getGearItemData(element);
     setGearItemProvider(element, data.providedBy, { label: data.providerLabel });
+    applyRentalNoteToElement(element, data.providedBy);
   });
 }
 
@@ -2935,6 +3055,7 @@ function populateProjectForm(info = {}) {
         const rentalInput = projectForm.querySelector('#rentalHouse');
         renderRentalHouseSuggestions(rentalInput);
         updateRentalHouseAssistiveDetails(rentalInput);
+        emitGearProviderDataChanged('rental-house');
     }
 
     markProjectFormDataDirty();
@@ -3584,10 +3705,6 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     if (!span || !normalizedItem) return;
     const name = normalizedItem.name ? normalizedItem.name.trim() : '';
     if (!name) return;
-    const rentalTexts = getGearListRentalToggleTexts();
-    const rentalNote = rentalTexts && typeof rentalTexts.noteLabel === 'string'
-        ? rentalTexts.noteLabel.trim()
-        : '';
     const wasRentalExcluded = (
         (span.classList && span.classList.contains('gear-item-rental-excluded'))
         || span.getAttribute?.('data-rental-excluded') === 'true'
@@ -3598,11 +3715,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     span.classList.add('gear-item');
     span.classList.add('auto-gear-item');
     span.setAttribute('data-gear-name', name);
-    if (rentalNote) {
-        span.setAttribute('data-rental-note', rentalNote);
-    } else if (span.removeAttribute) {
-        span.removeAttribute('data-rental-note');
-    }
+    applyRentalNoteToElement(span);
     if (span.dataset) {
         delete span.dataset.autoGearContextCounts;
     }
@@ -4544,7 +4657,7 @@ function resolveGearListCustomText(key, fallback, replacements) {
 function getGearListRentalToggleTexts() {
   const excludeLabel = resolveGearListCustomText('gearListExcludeRentalToggle', 'Exclude for rental house');
   const includeLabel = resolveGearListCustomText('gearListIncludeRentalToggle', 'Include for rental house');
-  const noteLabel = resolveGearListCustomText('gearListRentalNote', 'Rental house handles this item');
+  const noteLabel = getRentalNoteLabel();
   return {
     excludeLabel,
     includeLabel,
@@ -4587,10 +4700,7 @@ function setRentalExclusionState(element, excluded) {
     toggle.setAttribute('aria-pressed', shouldExclude ? 'true' : 'false');
     toggle.textContent = shouldExclude ? (onLabel || offLabel) : offLabel;
   }
-  const { noteLabel } = getGearListRentalToggleTexts();
-  if (noteLabel && element.getAttribute && !element.getAttribute('data-rental-note')) {
-    element.setAttribute('data-rental-note', noteLabel);
-  }
+  applyRentalNoteToElement(element);
   return wasExcluded !== shouldExclude;
 }
 
@@ -5147,6 +5257,7 @@ function applyGearItemData(element, data = {}, options = {}) {
     ? data.providerLabel.trim()
     : (element.getAttribute('data-gear-provider-label') || '');
   setGearItemProvider(element, providerValue, { label: providerLabel });
+  applyRentalNoteToElement(element, providerValue);
   if (!element.getAttribute('data-gear-original-name')) {
     const originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -5430,7 +5541,7 @@ function getGearItemEditTexts() {
     providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
-    rentalNote: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
+    rentalNote: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || '',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
@@ -5474,9 +5585,9 @@ function applyGearItemEditDialogTexts(context) {
   }
   const rentalTexts = getGearListRentalToggleTexts();
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
-  const rentalNote = textsForDialog.rentalNote || rentalTexts.noteLabel || '';
+  const rentalNote = (rentalTexts.noteLabel || textsForDialog.rentalNote || '').trim();
   if (context.rentalLabel) {
-    context.rentalLabel.textContent = rentalNote || baseToggleLabel;
+    context.rentalLabel.textContent = baseToggleLabel;
   }
   if (context.rentalCheckbox) {
     context.rentalCheckbox.setAttribute('aria-label', textsForDialog.rentalLabel);
@@ -5993,8 +6104,6 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   const editIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
     ? iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' })
     : '';
-  const rentalTexts = getGearListRentalToggleTexts();
-  const noteLabel = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? rentalTexts.noteLabel : '';
   template.innerHTML = `
     <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}">
       <div class="gear-custom-item-summary">
@@ -6024,9 +6133,6 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   `.trim();
   const element = template.content.firstElementChild;
   if (!element) return null;
-  if (noteLabel) {
-    element.setAttribute('data-rental-note', noteLabel);
-  }
   element.setAttribute('data-gear-quantity', quantityValue);
   element.setAttribute('data-gear-label', nameValue);
   if (attributesValue) {
@@ -8075,6 +8181,7 @@ function convertCustomItemsForStaticOutput(root) {
                         span.classList.add('gear-item-rental-excluded');
                     }
                 }
+                applyRentalNoteToElement(span);
                 standardContainer.appendChild(span);
             });
         }

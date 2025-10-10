@@ -1524,7 +1524,7 @@ const texts = {
     gearListCustomItemPreviewFallback: "Custom item",
     gearListExcludeRentalToggle: "Exclude for rental house",
     gearListIncludeRentalToggle: "Include for rental house",
-    gearListRentalNote: "Rental house handles this item",
+    gearListRentalNote: "",
     gearListEditProviderLabel: "Provided by",
     gearListEditProviderHelp:
       "Select who provides this item. Rental house stays the default unless the item is in your own gear list.",
@@ -2517,7 +2517,7 @@ const texts = {
     gearListCustomItemPreviewFallback: "Elemento personalizzato",
     gearListExcludeRentalToggle: "Escludi per il rental",
     gearListIncludeRentalToggle: "Includi per il rental",
-    gearListRentalNote: "Il rental house fornisce questo elemento",
+    gearListRentalNote: "",
     gearListEditProviderLabel: "Fornito da",
     gearListEditProviderHelp:
       "Scegli chi fornisce questo elemento. Il rental resta predefinito, a meno che l'elemento sia nella tua lista di attrezzatura personale.",
@@ -4335,7 +4335,7 @@ const texts = {
     gearListCustomItemPreviewFallback: "Elemento personalizado",
     gearListExcludeRentalToggle: "Excluir para rental",
     gearListIncludeRentalToggle: "Incluir para rental",
-    gearListRentalNote: "La casa de alquiler aporta este elemento",
+    gearListRentalNote: "",
     gearListEditProviderLabel: "Proveedor",
     gearListEditProviderHelp:
       "Selecciona quién aporta este elemento. La casa de alquiler es el valor predeterminado salvo que esté en tu lista de equipo propio.",
@@ -6157,7 +6157,7 @@ const texts = {
     gearListCustomItemPreviewFallback: "Élément personnalisé",
     gearListExcludeRentalToggle: "Exclure pour la location",
     gearListIncludeRentalToggle: "Inclure pour la location",
-    gearListRentalNote: "La maison de location fournit cet élément",
+    gearListRentalNote: "",
     gearListEditProviderLabel: "Fournisseur",
     gearListEditProviderHelp:
       "Choisissez qui fournit cet élément. La maison de location reste le choix par défaut sauf si l’élément est dans votre liste de matériel personnel.",
@@ -7991,7 +7991,7 @@ const texts = {
     gearListCustomItemPreviewFallback: "Benutzerdefinierter Eintrag",
     gearListExcludeRentalToggle: "Für Rental House ausblenden",
     gearListIncludeRentalToggle: "Für Rental House einblenden",
-    gearListRentalNote: "Rental House stellt diesen Artikel bereit",
+    gearListRentalNote: "",
     gearListEditProviderLabel: "Bereitgestellt von",
     gearListEditProviderHelp:
       "Wähle, wer diesen Artikel bereitstellt. Standard ist das Rental House, außer der Artikel steht in deiner Eigengear-Liste.",
