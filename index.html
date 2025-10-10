@@ -5029,7 +5029,9 @@
                 <a class="help-link" href="#gearItemEditNote" data-help-target="#gearItemEditNote">notes</a>, assign a
                 provider (including your
                 <a class="help-link" href="#gearItemEditProvider" data-help-target="#gearItemEditProvider">Contacts</a> and
-                <a class="help-link" href="#ownGearDialog" data-help-target="#ownGearDialog">Own Gear</a>) and toggle the
+                <a class="help-link" href="#ownGearDialog" data-help-target="#ownGearDialog">Own Gear</a>) and flip the
+                <a class="help-link" href="#gearItemEditOwned" data-help-target="#gearItemEditOwnedContainer">Owned</a>
+                toggle to sync that line with your inventory before adjusting the
                 <a
                   class="help-link"
                   href="#gearItemEditRentalToggle"
@@ -6706,6 +6708,13 @@
             <div class="gear-item-edit-provider-field">
               <select id="gearItemEditProvider" name="gearItemEditProvider"></select>
               <p id="gearItemEditProviderHelp" class="gear-item-edit-help" hidden></p>
+              <div id="gearItemEditOwnedContainer" class="gear-item-edit-owned">
+                <label id="gearItemEditOwnedLabel" class="gear-item-edit-checkbox" for="gearItemEditOwned">
+                  <input type="checkbox" id="gearItemEditOwned" name="gearItemEditOwned" />
+                  <span>Owned</span>
+                </label>
+                <p id="gearItemEditOwnedHelp" class="gear-item-edit-help" hidden></p>
+              </div>
             </div>
           </div>
           <section

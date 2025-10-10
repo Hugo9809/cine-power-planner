@@ -6,7 +6,9 @@
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
           focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
-          getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic */
+          getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
+          resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
+          OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM */
 
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
@@ -1705,6 +1707,284 @@ function getOwnGearNameSet() {
     return refreshOwnGearNameCache();
   }
   return ownGearNameCache.names;
+}
+
+const OWN_GEAR_SOURCE_CATALOG_VALUE =
+  typeof OWN_GEAR_SOURCE_CATALOG === 'string' && OWN_GEAR_SOURCE_CATALOG
+    ? OWN_GEAR_SOURCE_CATALOG
+    : 'catalog';
+
+const OWN_GEAR_SOURCE_CUSTOM_VALUE =
+  typeof OWN_GEAR_SOURCE_CUSTOM === 'string' && OWN_GEAR_SOURCE_CUSTOM
+    ? OWN_GEAR_SOURCE_CUSTOM
+    : 'custom';
+
+function resolveOwnGearFeatureModuleForEditor() {
+  if (typeof resolveOwnGearModule === 'function') {
+    try {
+      const moduleApi = resolveOwnGearModule();
+      if (moduleApi && typeof moduleApi === 'object') {
+        return moduleApi;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+  if (scope && typeof scope.cineFeaturesOwnGear === 'object' && scope.cineFeaturesOwnGear) {
+    return scope.cineFeaturesOwnGear;
+  }
+  if (typeof cineFeaturesOwnGear === 'object' && cineFeaturesOwnGear) {
+    return cineFeaturesOwnGear;
+  }
+  return null;
+}
+
+function generateOwnGearIdForEditor() {
+  const moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.generateOwnGearId === 'function') {
+    try {
+      return moduleApi.generateOwnGearId();
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof generateOwnGearId === 'function') {
+    try {
+      return generateOwnGearId();
+    } catch (error) {
+      void error;
+    }
+  }
+  const timePart = Date.now().toString(36);
+  const randomPart = Math.floor(Math.random() * 1e8).toString(36);
+  return `own-${timePart}-${randomPart}`;
+}
+
+function normalizeOwnGearRecordForEditor(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+  const moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.normalizeOwnGearRecord === 'function') {
+    try {
+      return moduleApi.normalizeOwnGearRecord(entry);
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof normalizeOwnGearRecord === 'function') {
+    try {
+      return normalizeOwnGearRecord(entry);
+    } catch (error) {
+      void error;
+    }
+  }
+  const rawName = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!rawName) {
+    return null;
+  }
+  const normalized = {
+    id: typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : generateOwnGearIdForEditor(),
+    name: rawName,
+  };
+  if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+    normalized.quantity = entry.quantity.trim();
+  } else if (typeof entry.quantity === 'number' && Number.isFinite(entry.quantity)) {
+    normalized.quantity = String(entry.quantity);
+  }
+  if (typeof entry.notes === 'string' && entry.notes.trim()) {
+    normalized.notes = entry.notes.trim();
+  }
+  if (typeof entry.source === 'string' && entry.source.trim()) {
+    normalized.source = entry.source.trim();
+  }
+  return normalized;
+}
+
+function cloneOwnGearRecords(records) {
+  return Array.isArray(records)
+    ? records
+        .map((item) => normalizeOwnGearRecordForEditor(item))
+        .filter(Boolean)
+        .map((item) => ({ ...item }))
+    : [];
+}
+
+function loadOwnGearRecordsForEditor() {
+  const moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
+    try {
+      const loaded = moduleApi.loadStoredOwnGearItems();
+      if (Array.isArray(loaded)) {
+        return cloneOwnGearRecords(loaded);
+      }
+    } catch (error) {
+      console.warn('Unable to load own gear items for gear editor via module.', error);
+    }
+  }
+  if (typeof loadOwnGear === 'function') {
+    try {
+      const stored = loadOwnGear();
+      if (Array.isArray(stored)) {
+        return cloneOwnGearRecords(stored);
+      }
+    } catch (error) {
+      console.warn('Unable to load own gear items for gear editor from storage.', error);
+    }
+  }
+  return [];
+}
+
+function persistOwnGearRecordsForEditor(records) {
+  const normalized = Array.isArray(records)
+    ? records.map((item) => normalizeOwnGearRecordForEditor(item)).filter(Boolean)
+    : [];
+  const moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.persistOwnGearItems === 'function') {
+    try {
+      moduleApi.persistOwnGearItems(normalized);
+      return true;
+    } catch (error) {
+      console.warn('Unable to persist own gear items via module for gear editor.', error);
+    }
+  }
+  if (typeof saveOwnGear === 'function') {
+    try {
+      saveOwnGear(normalized);
+      if (
+        typeof document !== 'undefined'
+        && typeof document.dispatchEvent === 'function'
+        && typeof CustomEvent === 'function'
+      ) {
+        document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+      }
+      return true;
+    } catch (error) {
+      console.warn('Unable to persist own gear items via storage for gear editor.', error);
+    }
+  }
+  return false;
+}
+
+function lookupOwnGearRecord(records, id, name) {
+  if (!Array.isArray(records)) {
+    return { index: -1, record: null };
+  }
+  const sanitizedId = typeof id === 'string' ? id.trim() : '';
+  const sanitizedName = typeof name === 'string' ? name.trim().toLowerCase() : '';
+  let index = -1;
+  if (sanitizedId) {
+    index = records.findIndex((entry) => entry && entry.id === sanitizedId);
+  }
+  if (index === -1 && sanitizedName) {
+    index = records.findIndex((entry) => {
+      if (!entry || typeof entry.name !== 'string') {
+        return false;
+      }
+      return entry.name.trim().toLowerCase() === sanitizedName;
+    });
+  }
+  return { index, record: index >= 0 ? records[index] : null };
+}
+
+function deriveOwnGearSourceForElement(element) {
+  if (!element || typeof element !== 'object' || !element.classList) {
+    return OWN_GEAR_SOURCE_CATALOG_VALUE;
+  }
+  return element.classList.contains('gear-custom-item')
+    ? OWN_GEAR_SOURCE_CUSTOM_VALUE
+    : OWN_GEAR_SOURCE_CATALOG_VALUE;
+}
+
+function syncGearItemOwnedState(element, data, options = {}) {
+  const wantsOwned = Boolean(options && options.wantsOwned);
+  const existingId = options && typeof options.existingId === 'string' ? options.existingId.trim() : '';
+  const records = loadOwnGearRecordsForEditor();
+  const name = typeof data.name === 'string' ? data.name.trim() : '';
+  const quantityValue = typeof data.quantity === 'string' ? data.quantity.trim() : '';
+  const { index, record } = lookupOwnGearRecord(records, existingId, name);
+
+  if (wantsOwned && name) {
+    if (record && index >= 0) {
+      let changed = false;
+      const updated = { ...record };
+      if (record.name !== name) {
+        updated.name = name;
+        changed = true;
+      }
+      if (quantityValue) {
+        if (record.quantity !== quantityValue) {
+          updated.quantity = quantityValue;
+          changed = true;
+        }
+      } else if (record.quantity) {
+        delete updated.quantity;
+        changed = true;
+      }
+      const desiredSource = deriveOwnGearSourceForElement(element);
+      if (desiredSource && record.source !== desiredSource) {
+        updated.source = desiredSource;
+        changed = true;
+      }
+      if (!changed) {
+        return { id: record.id, changed: false };
+      }
+      const normalized = normalizeOwnGearRecordForEditor(updated);
+      if (!normalized) {
+        return { id: record.id, changed: false };
+      }
+      const nextRecords = records.slice();
+      nextRecords[index] = normalized;
+      if (!persistOwnGearRecordsForEditor(nextRecords)) {
+        return { id: record.id, changed: false };
+      }
+      return { id: normalized.id, changed: true };
+    }
+
+    const newEntry = {
+      id: generateOwnGearIdForEditor(),
+      name,
+    };
+    if (quantityValue) {
+      newEntry.quantity = quantityValue;
+    }
+    const desiredSource = deriveOwnGearSourceForElement(element);
+    if (desiredSource) {
+      newEntry.source = desiredSource;
+    }
+    const normalizedEntry = normalizeOwnGearRecordForEditor(newEntry);
+    if (!normalizedEntry) {
+      return { id: '', changed: false };
+    }
+    const nextRecords = records.slice();
+    nextRecords.push(normalizedEntry);
+    if (!persistOwnGearRecordsForEditor(nextRecords)) {
+      return { id: '', changed: false };
+    }
+    return { id: normalizedEntry.id, changed: true };
+  }
+
+  if (!record || index < 0) {
+    return { id: '', changed: false };
+  }
+  const nextRecords = records.filter((entry, entryIndex) => entryIndex !== index);
+  if (!persistOwnGearRecordsForEditor(nextRecords)) {
+    return { id: record.id, changed: false };
+  }
+  return { id: '', changed: true };
+}
+
+function findOwnedRecordForGearItem(element, options = {}) {
+  const dataName = typeof options.name === 'string' ? options.name.trim() : '';
+  const existingId = typeof options.existingId === 'string' ? options.existingId.trim() : '';
+  const records = loadOwnGearRecordsForEditor();
+  return lookupOwnGearRecord(records, existingId, dataName).record;
 }
 
 function guessDefaultProvider(name) {
@@ -5845,6 +6125,10 @@ function buildGearItemEditContext() {
     providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
     providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
     providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
+    ownedContainer: resolveElementById('gearItemEditOwnedContainer', 'gearItemEditOwnedContainer'),
+    ownedCheckbox: resolveElementById('gearItemEditOwned', 'gearItemEditOwned'),
+    ownedLabel: resolveElementById('gearItemEditOwnedLabel', 'gearItemEditOwnedLabel'),
+    ownedHelp: resolveElementById('gearItemEditOwnedHelp', 'gearItemEditOwnedHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -5856,6 +6140,7 @@ function buildGearItemEditContext() {
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     resetDefaults: null,
     currentAttributes: '',
+    currentOwnedEntryId: '',
   };
 }
 
@@ -5885,6 +6170,8 @@ function getGearItemEditTexts() {
     providerUser: langTexts.gearListProviderUser || fallbackTexts.gearListProviderUser || 'User',
     providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
+    ownedLabel: langTexts.gearListEditOwnedLabel || fallbackTexts.gearListEditOwnedLabel || 'Owned',
+    ownedHelp: langTexts.gearListEditOwnedHelp || fallbackTexts.gearListEditOwnedHelp || '',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
@@ -5929,6 +6216,25 @@ function applyGearItemEditDialogTexts(context) {
       context.providerSelect.removeAttribute('aria-describedby');
     }
     context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
+  }
+  if (context.ownedLabel) {
+    const ownedLabelSpan = context.ownedLabel.querySelector('span');
+    if (ownedLabelSpan) {
+      ownedLabelSpan.textContent = textsForDialog.ownedLabel;
+    }
+  }
+  if (context.ownedHelp) {
+    const helpText = textsForDialog.ownedHelp || '';
+    context.ownedHelp.textContent = helpText;
+    context.ownedHelp.hidden = !helpText;
+  }
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.setAttribute('aria-label', textsForDialog.ownedLabel);
+    if (context.ownedHelp && context.ownedHelp.textContent && !context.ownedHelp.hidden) {
+      context.ownedCheckbox.setAttribute('aria-describedby', context.ownedHelp.id);
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-describedby');
+    }
   }
   const rentalTexts = getGearListRentalToggleTexts();
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
@@ -6110,6 +6416,16 @@ function handleGearItemEditFieldInput() {
       ? `${textsForDialog.dialogTitle} — ${previewText}`
       : textsForDialog.dialogTitle;
   }
+  if (context.ownedCheckbox) {
+    const hasName = Boolean(context.nameInput && context.nameInput.value.trim());
+    context.ownedCheckbox.disabled = !hasName;
+    if (context.ownedCheckbox.disabled) {
+      context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+      context.ownedCheckbox.checked = false;
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+    }
+  }
   updateGearItemEditResetState(context);
 }
 
@@ -6137,6 +6453,31 @@ function handleGearItemEditRentalButtonClick(event) {
     void error;
   }
   updateGearItemEditRentalControls(context, nextState, true);
+}
+
+function handleGearItemEditOwnedChange() {
+  const context = getGearItemEditContext();
+  if (!context || !context.ownedCheckbox) {
+    return;
+  }
+  const hasName = Boolean(context.nameInput && context.nameInput.value.trim());
+  if (!hasName) {
+    context.ownedCheckbox.checked = false;
+    context.ownedCheckbox.disabled = true;
+    context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    return;
+  }
+  context.ownedCheckbox.disabled = false;
+  context.ownedCheckbox.removeAttribute('aria-disabled');
+  if (context.providerSelect) {
+    if (context.ownedCheckbox.checked) {
+      if (!context.providerSelect.value || context.providerSelect.value === 'rental-house') {
+        context.providerSelect.value = 'user';
+      }
+    } else if (context.providerSelect.value === 'user') {
+      context.providerSelect.value = 'rental-house';
+    }
+  }
 }
 
 function handleGearItemEditResetClick(event) {
@@ -6214,7 +6555,36 @@ function handleGearItemEditFormSubmit(event) {
       ? getProviderOptionLabel(context.providerSelect.selectedOptions[0])
       : '',
   };
+  const hasNameForOwned = Boolean(data.name && data.name.trim());
+  const wantsOwned = Boolean(context.ownedCheckbox && context.ownedCheckbox.checked && hasNameForOwned);
+  if (wantsOwned && (!data.providedBy || data.providedBy === 'rental-house')) {
+    if (context.providerSelect) {
+      context.providerSelect.value = 'user';
+      const selected = context.providerSelect.selectedOptions && context.providerSelect.selectedOptions[0];
+      data.providedBy = context.providerSelect.value;
+      data.providerLabel = selected ? getProviderOptionLabel(selected) : data.providerLabel;
+    } else {
+      data.providedBy = 'user';
+    }
+  }
   applyGearItemData(targetEntry, data);
+  const ownedSyncResult = wantsOwned || context.currentOwnedEntryId
+    ? syncGearItemOwnedState(targetEntry, data, {
+        wantsOwned,
+        existingId: context.currentOwnedEntryId || targetEntry.getAttribute('data-gear-own-gear-id') || '',
+      })
+    : { id: '', changed: false };
+  if (ownedSyncResult && Object.prototype.hasOwnProperty.call(ownedSyncResult, 'id')) {
+    if (ownedSyncResult.id) {
+      targetEntry.setAttribute('data-gear-own-gear-id', ownedSyncResult.id);
+    } else {
+      targetEntry.removeAttribute('data-gear-own-gear-id');
+    }
+    context.currentOwnedEntryId = ownedSyncResult.id || '';
+    if (ownedSyncResult.changed) {
+      ownGearNameCache = null;
+    }
+  }
   context.currentAttributes = typeof data.attributes === 'string' ? data.attributes : '';
   if (targetEntry.classList && targetEntry.classList.contains('gear-custom-item')) {
     persistCustomItemsChange();
@@ -6267,9 +6637,16 @@ function handleGearItemEditDialogClose() {
   if (context) {
     context.resetDefaults = null;
     context.currentAttributes = '';
+    context.currentOwnedEntryId = '';
     if (context.resetButton) {
       context.resetButton.disabled = false;
       context.resetButton.setAttribute('aria-disabled', 'false');
+    }
+    if (context.ownedCheckbox) {
+      context.ownedCheckbox.checked = false;
+      context.ownedCheckbox.disabled = false;
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+      context.ownedCheckbox.removeAttribute('aria-describedby');
     }
   }
   activeGearItemEditTarget = null;
@@ -6299,6 +6676,45 @@ function refreshGearItemEditProviderOptionsIfOpen() {
   const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   const data = targetEntry ? getGearItemData(targetEntry) : {};
   updateGearItemEditProviderOptions(context, data);
+}
+
+function refreshGearItemOwnedStateIfOpen() {
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.ownedCheckbox) {
+    return;
+  }
+  const isDialogOpen = typeof context.dialog.open === 'boolean'
+    ? context.dialog.open
+    : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  if (!targetEntry || !targetEntry.isConnected) {
+    return;
+  }
+  const currentInputName = context.nameInput ? context.nameInput.value.trim() : '';
+  const fallbackData = getGearItemData(targetEntry);
+  const lookupName = currentInputName || fallbackData.name || '';
+  const existingId = context.currentOwnedEntryId || targetEntry.getAttribute('data-gear-own-gear-id') || '';
+  const records = loadOwnGearRecordsForEditor();
+  const { record } = lookupOwnGearRecord(records, existingId, lookupName);
+  const hasName = Boolean(lookupName);
+  context.ownedCheckbox.disabled = !hasName;
+  if (context.ownedCheckbox.disabled) {
+    context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    context.ownedCheckbox.checked = false;
+  } else {
+    context.ownedCheckbox.removeAttribute('aria-disabled');
+    context.ownedCheckbox.checked = Boolean(record);
+  }
+  if (record) {
+    context.currentOwnedEntryId = record.id;
+    targetEntry.setAttribute('data-gear-own-gear-id', record.id);
+  } else {
+    context.currentOwnedEntryId = '';
+    targetEntry.removeAttribute('data-gear-own-gear-id');
+  }
 }
 
 function bindGearItemEditDialog(context) {
@@ -6338,6 +6754,9 @@ function bindGearItemEditDialog(context) {
   if (context.rentalToggleButton) {
     context.rentalToggleButton.addEventListener('click', handleGearItemEditRentalButtonClick);
   }
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.addEventListener('change', handleGearItemEditOwnedChange);
+  }
   gearItemEditDialogBound = true;
 }
 
@@ -6368,6 +6787,30 @@ function openGearItemEditor(element, options = {}) {
     context.resetButton.setAttribute('aria-disabled', 'false');
   }
   applyGearItemEditDialogTexts(context);
+  const existingOwnedId = element.getAttribute('data-gear-own-gear-id') || '';
+  const ownedRecord = findOwnedRecordForGearItem(element, {
+    name: data.name || '',
+    existingId: existingOwnedId || context.currentOwnedEntryId || '',
+  });
+  context.currentOwnedEntryId = ownedRecord ? ownedRecord.id : '';
+  const hasNameForOwned = Boolean(data.name && data.name.trim());
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.checked = Boolean(ownedRecord) && hasNameForOwned;
+    context.ownedCheckbox.disabled = !hasNameForOwned;
+    if (context.ownedCheckbox.disabled) {
+      context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+    }
+  }
+  if (context.ownedContainer) {
+    context.ownedContainer.hidden = false;
+  }
+  if (ownedRecord && element) {
+    element.setAttribute('data-gear-own-gear-id', ownedRecord.id);
+  } else if (existingOwnedId) {
+    element.removeAttribute('data-gear-own-gear-id');
+  }
   const allowRentalToggle = options && options.allowRentalToggle === false ? false : true;
   if (context.quantityInput) {
     context.quantityInput.value = data.quantity || '';
@@ -9854,6 +10297,7 @@ if (typeof document !== 'undefined') {
         ownGearNameCache = null;
         refreshGearItemProviderDisplays();
         refreshGearItemEditProviderOptionsIfOpen();
+        refreshGearItemOwnedStateIfOpen();
     });
 }
 

@@ -1544,6 +1544,8 @@ const texts = {
     gearListProviderUser: "User",
     gearListProviderCrewHeading: "Crew",
     gearListProviderUnknown: "Custom provider",
+    gearListEditOwnedLabel: "Owned",
+    gearListEditOwnedHelp: "Add or remove this line from your Own Gear list to keep your inventory in sync.",
     gearListEditDialogTitle: "Edit gear item",
     gearListEditQuantityLabel: "Quantity",
     gearListEditNameLabel: "Item name",
@@ -2575,6 +2577,9 @@ const texts = {
     gearListProviderUser: "Utente",
     gearListProviderCrewHeading: "Crew",
     gearListProviderUnknown: "Altro fornitore",
+    gearListEditOwnedLabel: "Di proprietà",
+    gearListEditOwnedHelp:
+      "Aggiungi o rimuovi questa voce dalla tua lista di Attrezzatura personale per mantenerla sincronizzata.",
     gearListEditDialogTitle: "Modifica elemento della lista",
     gearListEditQuantityLabel: "Quantità",
     gearListEditNameLabel: "Nome elemento",
@@ -4442,6 +4447,9 @@ const texts = {
     gearListProviderUser: "Usuario",
     gearListProviderCrewHeading: "Equipo",
     gearListProviderUnknown: "Proveedor personalizado",
+    gearListEditOwnedLabel: "Propio",
+    gearListEditOwnedHelp:
+      "Añade o elimina esta línea de tu lista de Equipo propio para mantenerla sincronizada.",
     gearListEditDialogTitle: "Editar elemento del equipo",
     gearListEditQuantityLabel: "Cantidad",
     gearListEditNameLabel: "Nombre del elemento",
@@ -6311,6 +6319,9 @@ const texts = {
     gearListProviderUser: "Utilisateur",
     gearListProviderCrewHeading: "Équipe",
     gearListProviderUnknown: "Fournisseur personnalisé",
+    gearListEditOwnedLabel: "Possédé",
+    gearListEditOwnedHelp:
+      "Ajoutez ou retirez cette ligne de votre liste de Matériel personnel pour garder l’inventaire synchronisé.",
     gearListEditDialogTitle: "Modifier l’élément de matériel",
     gearListEditQuantityLabel: "Quantité",
     gearListEditNameLabel: "Nom de l’élément",
@@ -8193,6 +8204,9 @@ const texts = {
     gearListProviderUser: "User",
     gearListProviderCrewHeading: "Crew",
     gearListProviderUnknown: "Eigener Anbieter",
+    gearListEditOwnedLabel: "Eigen",
+    gearListEditOwnedHelp:
+      "Füge diese Zeile deiner Eigengear-Liste hinzu oder entferne sie, damit dein Bestand synchron bleibt.",
     gearListEditDialogTitle: "Gear-Element bearbeiten",
     gearListEditQuantityLabel: "Menge",
     gearListEditNameLabel: "Artikelname",
