@@ -4715,7 +4715,7 @@ function applyGearItemData(element, data = {}, options = {}) {
     : ensureGearItemTextContainer(element);
   ensureGearItemNoteSpan(element);
   if (!textContainer && !isCustomItem) return;
-  const trimmedQuantity = typeof data.quantity === 'string'
+  let trimmedQuantity = typeof data.quantity === 'string'
     ? data.quantity.trim()
     : String(data.quantity ?? '').trim();
   const trimmedName = typeof data.name === 'string'
@@ -4727,6 +4727,18 @@ function applyGearItemData(element, data = {}, options = {}) {
   const trimmedNote = typeof data.note === 'string'
     ? data.note.trim()
     : String(data.note ?? '').trim();
+  if (!isCustomItem && !trimmedQuantity) {
+    const monitorBatteryControl = element.querySelector('select[data-monitor-battery-key]');
+    if (monitorBatteryControl) {
+      const batteryTypeAttr = monitorBatteryControl.getAttribute('data-monitor-battery-type')
+        || (monitorBatteryControl.dataset ? monitorBatteryControl.dataset.monitorBatteryType : '');
+      if (batteryTypeAttr === 'large') {
+        trimmedQuantity = '2';
+      } else if (batteryTypeAttr) {
+        trimmedQuantity = '3';
+      }
+    }
+  }
   if (!isCustomItem && textContainer) {
     const controls = Array.from(textContainer.querySelectorAll('select, input, textarea'));
     controls.forEach(control => {
