@@ -1348,6 +1348,9 @@
     const persisted = saveState({ version: STORAGE_VERSION });
     storedState = persisted || loadStoredState();
     applyHelpButtonLabel();
+    if (!active && shouldAutoStart()) {
+      scheduleAutoStart();
+    }
   }
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
