@@ -1971,17 +1971,39 @@ function resolveHelpModuleApi() {
   return api;
 }
 
-const CONTACTS_OWN_GEAR_MODULE_CACHE_KEY = '__cineContactsOwnGearModuleCache__';
+const CONTACTS_MODULE_CACHE_KEY = '__cineContactsModuleCache__';
+const OWN_GEAR_MODULE_CACHE_KEY = '__cineOwnGearModuleCache__';
+const LEGACY_CONTACTS_OWN_GEAR_MODULE_CACHE_KEY = '__cineContactsOwnGearModuleCache__';
 
-function resolveContactsOwnGearModule() {
+function cacheFeatureModule(globalScope, cacheKey, moduleApi) {
+  try {
+    Object.defineProperty(globalScope, cacheKey, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: moduleApi,
+    });
+    return;
+  } catch (defineError) {
+    void defineError;
+  }
+
+  try {
+    globalScope[cacheKey] = moduleApi;
+  } catch (assignError) {
+    void assignError;
+  }
+}
+
+function resolveLegacyContactsOwnGearModule() {
   const globalScope = getCoreGlobalObject();
 
   if (!globalScope || (typeof globalScope !== 'object' && typeof globalScope !== 'function')) {
     return null;
   }
 
-  if (Object.prototype.hasOwnProperty.call(globalScope, CONTACTS_OWN_GEAR_MODULE_CACHE_KEY)) {
-    return globalScope[CONTACTS_OWN_GEAR_MODULE_CACHE_KEY];
+  if (Object.prototype.hasOwnProperty.call(globalScope, LEGACY_CONTACTS_OWN_GEAR_MODULE_CACHE_KEY)) {
+    return globalScope[LEGACY_CONTACTS_OWN_GEAR_MODULE_CACHE_KEY];
   }
 
   const candidates = [];
@@ -2028,20 +2050,131 @@ function resolveContactsOwnGearModule() {
 
   const moduleApi = candidates.find(candidate => candidate && typeof candidate === 'object') || null;
 
-  try {
-    Object.defineProperty(globalScope, CONTACTS_OWN_GEAR_MODULE_CACHE_KEY, {
-      configurable: true,
-      enumerable: false,
-      writable: true,
-      value: moduleApi,
-    });
-  } catch (defineError) {
+  cacheFeatureModule(globalScope, LEGACY_CONTACTS_OWN_GEAR_MODULE_CACHE_KEY, moduleApi);
+
+  return moduleApi;
+}
+
+function resolveContactsModule() {
+  const globalScope = getCoreGlobalObject();
+
+  if (!globalScope || (typeof globalScope !== 'object' && typeof globalScope !== 'function')) {
+    return null;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(globalScope, CONTACTS_MODULE_CACHE_KEY)) {
+    return globalScope[CONTACTS_MODULE_CACHE_KEY];
+  }
+
+  const candidates = [];
+
+  const moduleBase =
+    (typeof cineModuleBase === 'object' && cineModuleBase)
+    || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+  if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
     try {
-      globalScope[CONTACTS_OWN_GEAR_MODULE_CACHE_KEY] = moduleApi;
-    } catch (assignError) {
-      void assignError;
+      const registry = moduleBase.getModuleRegistry(globalScope);
+      if (registry && typeof registry.get === 'function') {
+        const fromRegistry = registry.get('cine.features.contacts');
+        if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+          candidates.push(fromRegistry);
+        }
+      }
+    } catch (error) {
+      void error;
     }
   }
+
+  const scopeCandidates = [];
+  if (scopeCandidates.indexOf(globalScope) === -1) scopeCandidates.push(globalScope);
+  if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) scopeCandidates.push(globalThis);
+  if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) scopeCandidates.push(window);
+  if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) scopeCandidates.push(self);
+  if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) scopeCandidates.push(global);
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+    try {
+      const exposed = scope.cineFeaturesContacts;
+      if (exposed && typeof exposed === 'object' && candidates.indexOf(exposed) === -1) {
+        candidates.push(exposed);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const moduleApi = candidates.find(candidate => candidate && typeof candidate === 'object')
+    || resolveLegacyContactsOwnGearModule()
+    || null;
+
+  cacheFeatureModule(globalScope, CONTACTS_MODULE_CACHE_KEY, moduleApi);
+
+  return moduleApi;
+}
+
+function resolveOwnGearModule() {
+  const globalScope = getCoreGlobalObject();
+
+  if (!globalScope || (typeof globalScope !== 'object' && typeof globalScope !== 'function')) {
+    return null;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(globalScope, OWN_GEAR_MODULE_CACHE_KEY)) {
+    return globalScope[OWN_GEAR_MODULE_CACHE_KEY];
+  }
+
+  const candidates = [];
+
+  const moduleBase =
+    (typeof cineModuleBase === 'object' && cineModuleBase)
+    || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+  if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+    try {
+      const registry = moduleBase.getModuleRegistry(globalScope);
+      if (registry && typeof registry.get === 'function') {
+        const fromRegistry = registry.get('cine.features.ownGear');
+        if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+          candidates.push(fromRegistry);
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const scopeCandidates = [];
+  if (scopeCandidates.indexOf(globalScope) === -1) scopeCandidates.push(globalScope);
+  if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) scopeCandidates.push(globalThis);
+  if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) scopeCandidates.push(window);
+  if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) scopeCandidates.push(self);
+  if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) scopeCandidates.push(global);
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+    try {
+      const exposed = scope.cineFeaturesOwnGear;
+      if (exposed && typeof exposed === 'object' && candidates.indexOf(exposed) === -1) {
+        candidates.push(exposed);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const moduleApi = candidates.find(candidate => candidate && typeof candidate === 'object')
+    || resolveLegacyContactsOwnGearModule()
+    || null;
+
+  cacheFeatureModule(globalScope, OWN_GEAR_MODULE_CACHE_KEY, moduleApi);
 
   return moduleApi;
 }
@@ -6189,7 +6322,7 @@ let ownGearSuggestionCache = {
 };
 
 function generateOwnGearId() {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.generateOwnGearId === 'function') {
     try {
       return moduleApi.generateOwnGearId();
@@ -6214,7 +6347,7 @@ function generateOwnGearId() {
 }
 
 function normalizeOwnGearRecord(entry) {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.normalizeOwnGearRecord === 'function') {
     try {
       return moduleApi.normalizeOwnGearRecord(entry);
@@ -6248,7 +6381,7 @@ function normalizeOwnGearRecord(entry) {
 }
 
 function loadStoredOwnGearItems() {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
     try {
       return moduleApi.loadStoredOwnGearItems();
@@ -6282,7 +6415,7 @@ function loadStoredOwnGearItems() {
 }
 
 function persistOwnGearItems() {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveOwnGearModule();
   if (moduleApi && typeof moduleApi.persistOwnGearItems === 'function') {
     try {
       moduleApi.persistOwnGearItems(ownGearItems);
@@ -14742,7 +14875,7 @@ function getProjectFormText(key, defaultValue = '') {
 }
 
 const CONTACTS_STORAGE_KEY = (() => {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.CONTACTS_STORAGE_KEY === 'string') {
     return moduleApi.CONTACTS_STORAGE_KEY;
   }
@@ -14770,7 +14903,7 @@ function getContactsText(key, defaultValue = '') {
 }
 
 function generateContactId() {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.generateContactId === 'function') {
     try {
       return moduleApi.generateContactId();
@@ -14782,7 +14915,7 @@ function generateContactId() {
 }
 
 function sanitizeContactValue(value) {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.sanitizeContactValue === 'function') {
     try {
       return moduleApi.sanitizeContactValue(value);
@@ -14795,7 +14928,7 @@ function sanitizeContactValue(value) {
 }
 
 function normalizeContactEntry(entry) {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.normalizeContactEntry === 'function') {
     try {
       return moduleApi.normalizeContactEntry(entry);
@@ -14820,7 +14953,7 @@ function normalizeContactEntry(entry) {
 }
 
 function sortContacts(list) {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.sortContacts === 'function') {
     try {
       return moduleApi.sortContacts(list);
@@ -14848,7 +14981,7 @@ function sortContacts(list) {
 }
 
 function loadStoredContacts() {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.loadStoredContacts === 'function') {
     try {
       return moduleApi.loadStoredContacts();
@@ -14870,7 +15003,7 @@ function loadStoredContacts() {
 }
 
 function saveContactsToStorage(contacts) {
-  const moduleApi = resolveContactsOwnGearModule();
+  const moduleApi = resolveContactsModule();
   if (moduleApi && typeof moduleApi.saveContactsToStorage === 'function') {
     try {
       moduleApi.saveContactsToStorage(contacts);
