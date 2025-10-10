@@ -61,8 +61,13 @@ function getGlobalScope() {
   return null;
 }
 
+// Autosaves are intentionally conservative: we track how many field level
+// mutations happen between runs and enforce a time based cadence. This keeps
+// user data safe even if the browser throttles timers or the tab goes idle.
 const AUTO_BACKUP_CHANGE_THRESHOLD = 50;
 const AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
+// A whitelist of contexts that may trigger an auto backup. Restricting the
+// reasons prevents accidental writes when unrelated systems emit noise.
 const AUTO_BACKUP_ALLOWED_REASONS = [
   'interval',
   'project-switch',
@@ -173,6 +178,9 @@ function triggerAutoBackupForChangeThreshold(details) {
 }
 
 function noteAutoBackupRelevantChange(details = {}) {
+  // Some change types (such as typing) emit a "pending" notification which we
+  // coalesce until the change settles. Others explicitly request a commit when
+  // the user performs a critical action like switching projects.
   if (details && details.reset === true) {
     resetAutoBackupChangeCounter();
     autoBackupChangePendingCommit = false;
