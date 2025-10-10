@@ -12029,23 +12029,39 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
-    function setEditProjectBtnText() {
-      const btn = document.getElementById('editProjectBtn');
-      if (btn) {
-        btn.textContent = texts[currentLang].editProjectBtn;
-        btn.setAttribute('title', texts[currentLang].editProjectBtn);
-        btn.setAttribute('data-help', texts[currentLang].editProjectBtn);
+    function setProjectRequirementButtonsText() {
+      const langTexts = texts[currentLang] || texts.en || {};
+      const fallbackTexts = texts.en || {};
+      const editLabel = langTexts.editProjectBtn || fallbackTexts.editProjectBtn || 'Edit Project requirements';
+      const extraLabel = langTexts.addExtraGearBtn || fallbackTexts.addExtraGearBtn || 'Add temporary extra gear';
+      const editBtn = document.getElementById('editProjectBtn');
+      if (editBtn) {
+        editBtn.textContent = editLabel;
+        editBtn.setAttribute('title', editLabel);
+        editBtn.setAttribute('data-help', editLabel);
+      }
+      const extraBtn = document.getElementById('addExtraGearBtn');
+      if (extraBtn) {
+        extraBtn.textContent = extraLabel;
+        extraBtn.setAttribute('title', extraLabel);
+        extraBtn.setAttribute('data-help', extraLabel);
       }
     }
-    
-    function ensureEditProjectButton() {
+
+    function ensureProjectRequirementButtons() {
       let container = null;
       if (projectRequirementsOutput && !projectRequirementsOutput.classList.contains('hidden')) {
         container = projectRequirementsOutput;
       } else if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
         container = gearListOutput;
       }
-      if (!container) return;
+      if (!container) {
+        const editBtnExisting = document.getElementById('editProjectBtn');
+        if (editBtnExisting) editBtnExisting.remove();
+        const extraBtnExisting = document.getElementById('addExtraGearBtn');
+        if (extraBtnExisting) extraBtnExisting.remove();
+        return;
+      }
       let btn = document.getElementById('editProjectBtn');
       if (!btn) {
         btn = document.createElement('button');
@@ -12076,16 +12092,45 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
         btn.dataset.editProjectBound = 'true';
       }
+      let extraBtn = document.getElementById('addExtraGearBtn');
+      if (!extraBtn) {
+        extraBtn = document.createElement('button');
+        extraBtn.id = 'addExtraGearBtn';
+      }
+      if (!extraBtn.dataset.extraGearBound) {
+        extraBtn.type = 'button';
+        extraBtn.addEventListener('click', () => {
+          try {
+            if (typeof document !== 'undefined') {
+              document.dispatchEvent(new CustomEvent('gearlist:add-extra-gear'));
+            }
+          } catch (error) {
+            console.warn('Unable to request extra gear addition', error);
+          }
+        });
+        extraBtn.dataset.extraGearBound = 'true';
+      }
       const title = container.querySelector('h2');
       if (title && btn.parentElement !== container) {
         title.insertAdjacentElement('afterend', btn);
-      } else if (!title && btn.parentElement !== container) {
-        container.prepend(btn);
+        if (extraBtn.parentElement !== container) {
+          btn.insertAdjacentElement('afterend', extraBtn);
+        }
+      } else if (!title) {
+        if (extraBtn.parentElement !== container) {
+          container.prepend(extraBtn);
+        }
+        if (btn.parentElement !== container) {
+          container.prepend(btn);
+        }
+      } else if (btn.parentElement === container && extraBtn.parentElement !== container) {
+        btn.insertAdjacentElement('afterend', extraBtn);
       }
       btn.type = 'button';
-      setEditProjectBtnText();
+      extraBtn.type = 'button';
+      setProjectRequirementButtonsText();
     }
-    
+
     function updateGearListButtonVisibility() {
       const hasGear =
         gearListOutput &&
@@ -12096,7 +12141,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (deleteGearListProjectBtn) {
           deleteGearListProjectBtn.classList.remove('hidden');
         }
-        ensureEditProjectButton();
+        ensureProjectRequirementButtons();
       } else {
         generateGearListBtn.classList.remove('hidden');
         if (deleteGearListProjectBtn) {
@@ -12104,6 +12149,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         const btn = document.getElementById('editProjectBtn');
         if (btn) btn.remove();
+        const extraBtn = document.getElementById('addExtraGearBtn');
+        if (extraBtn) extraBtn.remove();
       }
     }
     

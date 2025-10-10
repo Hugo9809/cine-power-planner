@@ -19,6 +19,8 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+const EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
+
 let projectPersistenceSuspendedCount = 0;
 
 const PROJECT_FORM_FREEZE =
@@ -5653,6 +5655,43 @@ function ensureGearItemNoteSpan(element) {
   return noteSpan;
 }
 
+function ensureGearItemExtraIndicator(element) {
+  if (!element) return null;
+  let indicator = element.querySelector('.gear-item-extra-indicator');
+  if (indicator) {
+    return indicator;
+  }
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    return null;
+  }
+  indicator = doc.createElement('span');
+  indicator.className = 'gear-item-extra-indicator';
+  indicator.hidden = true;
+  const summary = element.classList && element.classList.contains('gear-custom-item')
+    ? element.querySelector('.gear-custom-item-summary')
+    : null;
+  if (summary) {
+    const summaryNote = summary.querySelector('.gear-item-note');
+    if (summaryNote) {
+      summary.insertBefore(indicator, summaryNote);
+    } else {
+      summary.appendChild(indicator);
+    }
+  } else {
+    const reference = element.querySelector('.gear-item-note')
+      || element.querySelector('.gear-custom-item-actions')
+      || element.querySelector('.gear-custom-remove-btn')
+      || element.querySelector('.gear-item-edit-btn');
+    if (reference) {
+      element.insertBefore(indicator, reference);
+    } else {
+      element.appendChild(indicator);
+    }
+  }
+  return indicator;
+}
+
 function ensureGearItemTextContainer(element) {
   if (!element) return null;
   let textContainer = element.querySelector('.gear-item-text');
@@ -5668,10 +5707,11 @@ function ensureGearItemTextContainer(element) {
   const movableNodes = [];
   element.childNodes.forEach(node => {
     if (!node) return;
-    if (node.nodeType === 1) {
+      if (node.nodeType === 1) {
       const classList = node.classList;
       if (classList && (
         classList.contains('gear-item-note')
+        || classList.contains('gear-item-extra-indicator')
         || classList.contains('gear-item-edit-btn')
         || classList.contains('gear-custom-item-actions')
         || classList.contains('gear-custom-remove-btn')
@@ -5681,7 +5721,8 @@ function ensureGearItemTextContainer(element) {
     }
     movableNodes.push(node);
   });
-  const reference = element.querySelector('.gear-item-note')
+  const reference = element.querySelector('.gear-item-extra-indicator')
+    || element.querySelector('.gear-item-note')
     || element.querySelector('.gear-custom-item-actions')
     || element.querySelector('.gear-custom-remove-btn')
     || element.querySelector('.gear-item-edit-btn');
@@ -5736,6 +5777,10 @@ function getGearItemData(element) {
   const noteAttr = element.getAttribute('data-gear-note') || '';
   const providerAttr = element.getAttribute('data-gear-provider') || '';
   const providerLabelAttr = element.getAttribute('data-gear-provider-label') || '';
+  const extraAttr = element.getAttribute('data-gear-extra') === 'true';
+  const extraStartAttr = element.getAttribute('data-gear-extra-start') || '';
+  const extraEndAttr = element.getAttribute('data-gear-extra-end') || '';
+  const extraLabelAttr = element.getAttribute('data-gear-extra-label') || '';
   const textContainer = element.querySelector('.gear-item-text');
   const rawText = textContainer ? textContainer.textContent : element.textContent || '';
   const parsed = parseGearItemDisplayParts(rawText);
@@ -5758,6 +5803,10 @@ function getGearItemData(element) {
     rentalExcluded,
     providedBy,
     providerLabel,
+    extra: extraAttr,
+    extraStart: extraStartAttr.trim(),
+    extraEnd: extraEndAttr.trim(),
+    extraLabel: extraLabelAttr.trim(),
   };
 }
 
@@ -5784,6 +5833,114 @@ function getGearItemResetDefaults(element) {
     name: typeof originalName === 'string' ? originalName.trim() : '',
     attributes: typeof originalAttributes === 'string' ? originalAttributes.trim() : '',
   };
+}
+
+function getGearItemExtraTexts() {
+  const allTexts = (typeof texts === 'object' && texts) ? texts : {};
+  const activeLang = (typeof currentLang === 'string' && allTexts[currentLang])
+    ? currentLang
+    : 'en';
+  const langTexts = allTexts[activeLang] || {};
+  const fallbackTexts = allTexts.en || {};
+  return {
+    indicatorBase: langTexts.gearListExtraIndicatorNoPeriod
+      || fallbackTexts.gearListExtraIndicatorNoPeriod
+      || 'Temporary extra',
+    indicatorRange: langTexts.gearListExtraIndicatorRange
+      || fallbackTexts.gearListExtraIndicatorRange
+      || 'Temporary extra: %s – %s',
+    indicatorStart: langTexts.gearListExtraIndicatorOpen
+      || fallbackTexts.gearListExtraIndicatorOpen
+      || 'Temporary extra from %s',
+    indicatorEnd: langTexts.gearListExtraIndicatorEnd
+      || fallbackTexts.gearListExtraIndicatorEnd
+      || 'Temporary extra until %s',
+  };
+}
+
+function getExtraGearUiTexts() {
+  const allTexts = (typeof texts === 'object' && texts) ? texts : {};
+  const activeLang = (typeof currentLang === 'string' && allTexts[currentLang])
+    ? currentLang
+    : 'en';
+  const langTexts = allTexts[activeLang] || {};
+  const fallbackTexts = allTexts.en || {};
+  return {
+    categoryLabel: langTexts.gearListExtraCategoryLabel
+      || fallbackTexts.gearListExtraCategoryLabel
+      || 'Temporary Extras',
+    addButton: langTexts.addExtraGearBtn
+      || fallbackTexts.addExtraGearBtn
+      || 'Add temporary extra gear',
+    checkboxLabel: langTexts.gearListEditExtraLabel
+      || fallbackTexts.gearListEditExtraLabel
+      || 'Temporary extra gear',
+    checkboxHelp: langTexts.gearListEditExtraHelp
+      || fallbackTexts.gearListEditExtraHelp
+      || '',
+    periodHelp: langTexts.gearListEditExtraPeriodHelp
+      || fallbackTexts.gearListEditExtraPeriodHelp
+      || '',
+    startLabel: langTexts.gearListEditExtraStartLabel
+      || fallbackTexts.gearListEditExtraStartLabel
+      || 'Needed from',
+    endLabel: langTexts.gearListEditExtraEndLabel
+      || fallbackTexts.gearListEditExtraEndLabel
+      || 'Needed until',
+  };
+}
+
+function formatExtraDate(value) {
+  const trimmed = typeof value === 'string' ? value.trim() : '';
+  if (!trimmed) {
+    return '';
+  }
+  const parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) {
+    return trimmed;
+  }
+  try {
+    return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(parsed);
+  } catch (error) {
+    void error;
+  }
+  return trimmed;
+}
+
+function sanitizeExtraPeriod(start, end) {
+  const normalizedStart = typeof start === 'string' ? start.trim() : '';
+  const normalizedEnd = typeof end === 'string' ? end.trim() : '';
+  let resultStart = normalizedStart;
+  let resultEnd = normalizedEnd;
+  if (normalizedStart && normalizedEnd) {
+    const startDate = new Date(normalizedStart);
+    const endDate = new Date(normalizedEnd);
+    if (!Number.isNaN(startDate.getTime()) && !Number.isNaN(endDate.getTime())) {
+      if (startDate.getTime() > endDate.getTime()) {
+        resultStart = normalizedEnd;
+        resultEnd = normalizedStart;
+      }
+    }
+  }
+  return { start: resultStart, end: resultEnd };
+}
+
+function formatExtraPeriodLabel(start, end) {
+  const textsForExtra = getGearItemExtraTexts();
+  const startLabel = formatExtraDate(start);
+  const endLabel = formatExtraDate(end);
+  if (startLabel && endLabel) {
+    return textsForExtra.indicatorRange
+      .replace('%s', startLabel)
+      .replace('%s', endLabel);
+  }
+  if (startLabel) {
+    return textsForExtra.indicatorStart.replace('%s', startLabel);
+  }
+  if (endLabel) {
+    return textsForExtra.indicatorEnd.replace('%s', endLabel);
+  }
+  return textsForExtra.indicatorBase;
 }
 
 function applyGearItemData(element, data = {}, options = {}) {
@@ -5903,6 +6060,61 @@ function applyGearItemData(element, data = {}, options = {}) {
   } else if (trimmedQuantity) {
     element.setAttribute('data-gear-name', `${trimmedQuantity}x`);
   }
+  const wantsExtra = Boolean(
+    data
+    && (
+      data.extra === true
+      || data.extra === 'true'
+      || data.extra === 1
+      || data.extra === '1'
+    )
+  );
+  const extraPeriod = wantsExtra
+    ? sanitizeExtraPeriod(
+        Object.prototype.hasOwnProperty.call(data, 'extraStart') ? data.extraStart : '',
+        Object.prototype.hasOwnProperty.call(data, 'extraEnd') ? data.extraEnd : ''
+      )
+    : { start: '', end: '' };
+  const extraTexts = getGearItemExtraTexts();
+  const extraLabel = wantsExtra ? formatExtraPeriodLabel(extraPeriod.start, extraPeriod.end) : '';
+  const extraIndicator = ensureGearItemExtraIndicator(element);
+  if (wantsExtra) {
+    element.setAttribute('data-gear-extra', 'true');
+    if (extraPeriod.start) {
+      element.setAttribute('data-gear-extra-start', extraPeriod.start);
+    } else {
+      element.removeAttribute('data-gear-extra-start');
+    }
+    if (extraPeriod.end) {
+      element.setAttribute('data-gear-extra-end', extraPeriod.end);
+    } else {
+      element.removeAttribute('data-gear-extra-end');
+    }
+    const labelToStore = extraLabel || extraTexts.indicatorBase;
+    if (labelToStore) {
+      element.setAttribute('data-gear-extra-label', labelToStore);
+    } else {
+      element.removeAttribute('data-gear-extra-label');
+    }
+    if (extraIndicator) {
+      const indicatorLabel = extraLabel || extraTexts.indicatorBase;
+      extraIndicator.textContent = indicatorLabel;
+      extraIndicator.hidden = false;
+      extraIndicator.removeAttribute('hidden');
+      extraIndicator.setAttribute('aria-label', indicatorLabel);
+    }
+  } else {
+    element.removeAttribute('data-gear-extra');
+    element.removeAttribute('data-gear-extra-start');
+    element.removeAttribute('data-gear-extra-end');
+    element.removeAttribute('data-gear-extra-label');
+    if (extraIndicator) {
+      extraIndicator.textContent = '';
+      extraIndicator.hidden = true;
+      extraIndicator.setAttribute('hidden', '');
+      extraIndicator.removeAttribute('aria-label');
+    }
+  }
   updateGearItemNoteElement(element, trimmedNote);
   if (isCustomItem && !options.skipPreview) {
     updateCustomItemPreview(element);
@@ -5991,6 +6203,7 @@ function enhanceGearItemElement(element) {
   }
   const isCustom = element.classList && element.classList.contains('gear-custom-item');
   ensureGearItemNoteSpan(element);
+  ensureGearItemExtraIndicator(element);
   if (!isCustom) {
     ensureGearItemTextContainer(element);
     ensureGearItemEditButton(element);
@@ -6108,6 +6321,76 @@ function ensureGearListCustomControls(container) {
       addButton.textContent = '+';
     }
   });
+  ensureExtraGearCategory();
+}
+
+function ensureExtraGearCategory() {
+  if (!gearListOutput) return null;
+  const existingContainer = getCustomItemsContainer(EXTRA_GEAR_CATEGORY_KEY);
+  if (existingContainer) {
+    return existingContainer;
+  }
+  const table = gearListOutput.querySelector('.gear-table');
+  if (!table) return null;
+  const doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  const textsForExtra = getExtraGearUiTexts();
+  const categoryLabel = textsForExtra.categoryLabel || 'Temporary Extras';
+  const group = doc.createElement('tbody');
+  group.className = 'category-group';
+  group.setAttribute('data-gear-custom-key', EXTRA_GEAR_CATEGORY_KEY);
+  group.setAttribute('data-gear-table-category', categoryLabel);
+
+  const headerRow = doc.createElement('tr');
+  headerRow.className = 'category-row';
+  const headerCell = doc.createElement('td');
+  headerCell.setAttribute('data-gear-category-label', categoryLabel);
+  const header = doc.createElement('div');
+  header.className = 'gear-category-header';
+  const labelSpan = doc.createElement('span');
+  labelSpan.className = 'gear-category-label';
+  labelSpan.textContent = categoryLabel;
+  header.appendChild(labelSpan);
+
+  const addButton = doc.createElement('button');
+  addButton.type = 'button';
+  addButton.className = 'gear-custom-add-btn';
+  addButton.setAttribute('data-gear-custom-add', EXTRA_GEAR_CATEGORY_KEY);
+  addButton.setAttribute('data-gear-custom-category', categoryLabel);
+  addButton.setAttribute('data-extra-gear', 'true');
+  addButton.setAttribute('aria-label', textsForExtra.addButton);
+  addButton.setAttribute('title', textsForExtra.addButton);
+  const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
+  const addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
+  if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
+    setButtonLabelWithIcon(addButton, '', addGlyph);
+  } else if (typeof iconMarkup === 'function' && addGlyph) {
+    addButton.innerHTML = iconMarkup(addGlyph, { className: 'btn-icon' });
+  } else {
+    addButton.textContent = '+';
+  }
+  header.appendChild(addButton);
+  headerCell.appendChild(header);
+  headerRow.appendChild(headerCell);
+  group.appendChild(headerRow);
+
+  const bodyRow = doc.createElement('tr');
+  const bodyCell = doc.createElement('td');
+  const customSection = doc.createElement('div');
+  customSection.className = 'gear-custom-section';
+  customSection.setAttribute('data-gear-custom-key', EXTRA_GEAR_CATEGORY_KEY);
+  customSection.setAttribute('data-gear-custom-category', categoryLabel);
+  const itemsContainer = doc.createElement('div');
+  itemsContainer.className = 'gear-custom-items';
+  itemsContainer.setAttribute('data-gear-custom-list', EXTRA_GEAR_CATEGORY_KEY);
+  itemsContainer.setAttribute('data-gear-custom-category', categoryLabel);
+  itemsContainer.setAttribute('aria-live', 'polite');
+  customSection.appendChild(itemsContainer);
+  bodyCell.appendChild(customSection);
+  bodyRow.appendChild(bodyCell);
+  group.appendChild(bodyRow);
+  table.appendChild(group);
+  return itemsContainer;
 }
 
 function buildGearItemEditContext() {
@@ -6122,6 +6405,16 @@ function buildGearItemEditContext() {
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    extraContainer: resolveElementById('gearItemEditExtraContainer', 'gearItemEditExtraContainer'),
+    extraCheckbox: resolveElementById('gearItemEditExtra', 'gearItemEditExtra'),
+    extraLabel: resolveElementById('gearItemEditExtraLabel', 'gearItemEditExtraLabel'),
+    extraHelp: resolveElementById('gearItemEditExtraHelp', 'gearItemEditExtraHelp'),
+    extraPeriodContainer: resolveElementById('gearItemEditExtraPeriod', 'gearItemEditExtraPeriod'),
+    extraStartInput: resolveElementById('gearItemEditExtraStart', 'gearItemEditExtraStart'),
+    extraStartLabel: resolveElementById('gearItemEditExtraStartLabel', 'gearItemEditExtraStartLabel'),
+    extraEndInput: resolveElementById('gearItemEditExtraEnd', 'gearItemEditExtraEnd'),
+    extraEndLabel: resolveElementById('gearItemEditExtraEndLabel', 'gearItemEditExtraEndLabel'),
+    extraPeriodHelp: resolveElementById('gearItemEditExtraPeriodHelp', 'gearItemEditExtraPeriodHelp'),
     providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
     providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
     providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
@@ -6164,6 +6457,11 @@ function getGearItemEditTexts() {
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
+    extraLabel: langTexts.gearListEditExtraLabel || fallbackTexts.gearListEditExtraLabel || 'Temporary extra gear',
+    extraHelp: langTexts.gearListEditExtraHelp || fallbackTexts.gearListEditExtraHelp || '',
+    extraStartLabel: langTexts.gearListEditExtraStartLabel || fallbackTexts.gearListEditExtraStartLabel || 'Needed from',
+    extraEndLabel: langTexts.gearListEditExtraEndLabel || fallbackTexts.gearListEditExtraEndLabel || 'Needed until',
+    extraPeriodHelp: langTexts.gearListEditExtraPeriodHelp || fallbackTexts.gearListEditExtraPeriodHelp || '',
     providerLabel: langTexts.gearListEditProviderLabel || fallbackTexts.gearListEditProviderLabel || 'Provided by',
     providerHelp: langTexts.gearListEditProviderHelp || fallbackTexts.gearListEditProviderHelp || '',
     providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental house',
@@ -6201,6 +6499,45 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
+  }
+  if (context.extraLabel) {
+    const labelSpan = context.extraLabel.querySelector('span');
+    if (labelSpan) {
+      labelSpan.textContent = textsForDialog.extraLabel;
+    } else {
+      context.extraLabel.textContent = textsForDialog.extraLabel;
+    }
+  }
+  if (context.extraCheckbox) {
+    context.extraCheckbox.setAttribute('aria-label', textsForDialog.extraLabel);
+  }
+  if (context.extraHelp) {
+    if (textsForDialog.extraHelp) {
+      context.extraHelp.textContent = textsForDialog.extraHelp;
+      context.extraHelp.hidden = false;
+      context.extraHelp.removeAttribute('hidden');
+    } else {
+      context.extraHelp.textContent = '';
+      context.extraHelp.hidden = true;
+      context.extraHelp.setAttribute('hidden', '');
+    }
+  }
+  if (context.extraStartLabel) {
+    context.extraStartLabel.textContent = textsForDialog.extraStartLabel;
+  }
+  if (context.extraEndLabel) {
+    context.extraEndLabel.textContent = textsForDialog.extraEndLabel;
+  }
+  if (context.extraPeriodHelp) {
+    if (textsForDialog.extraPeriodHelp) {
+      context.extraPeriodHelp.textContent = textsForDialog.extraPeriodHelp;
+      context.extraPeriodHelp.hidden = false;
+      context.extraPeriodHelp.removeAttribute('hidden');
+    } else {
+      context.extraPeriodHelp.textContent = '';
+      context.extraPeriodHelp.hidden = true;
+      context.extraPeriodHelp.setAttribute('hidden', '');
+    }
   }
   if (context.providerLabel) {
     context.providerLabel.textContent = textsForDialog.providerLabel;
@@ -6335,6 +6672,36 @@ function updateGearItemEditPreview(context) {
   return previewText;
 }
 
+function updateGearItemEditExtraControls(context, active) {
+  if (!context) return;
+  const enabled = Boolean(active);
+  if (context.extraPeriodContainer) {
+    if (enabled) {
+      context.extraPeriodContainer.hidden = false;
+      context.extraPeriodContainer.removeAttribute('hidden');
+    } else {
+      context.extraPeriodContainer.hidden = true;
+      context.extraPeriodContainer.setAttribute('hidden', '');
+    }
+  }
+  if (context.extraStartInput) {
+    context.extraStartInput.disabled = !enabled;
+    if (!enabled) {
+      context.extraStartInput.setAttribute('aria-disabled', 'true');
+    } else {
+      context.extraStartInput.removeAttribute('aria-disabled');
+    }
+  }
+  if (context.extraEndInput) {
+    context.extraEndInput.disabled = !enabled;
+    if (!enabled) {
+      context.extraEndInput.setAttribute('aria-disabled', 'true');
+    } else {
+      context.extraEndInput.removeAttribute('aria-disabled');
+    }
+  }
+}
+
 function updateGearItemEditResetState(context) {
   if (!context || !context.resetButton) {
     return;
@@ -6409,6 +6776,9 @@ function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) 
 function handleGearItemEditFieldInput() {
   const context = getGearItemEditContext();
   if (!context) return;
+  if (context.extraCheckbox) {
+    updateGearItemEditExtraControls(context, context.extraCheckbox.checked);
+  }
   const previewText = updateGearItemEditPreview(context);
   const textsForDialog = getGearItemEditTexts();
   if (context.title) {
@@ -6478,6 +6848,15 @@ function handleGearItemEditOwnedChange() {
       context.providerSelect.value = 'rental-house';
     }
   }
+}
+
+function handleGearItemEditExtraChange() {
+  const context = getGearItemEditContext();
+  if (!context || !context.extraCheckbox) {
+    return;
+  }
+  updateGearItemEditExtraControls(context, context.extraCheckbox.checked);
+  handleGearItemEditFieldInput();
 }
 
 function handleGearItemEditResetClick(event) {
@@ -6554,7 +6933,18 @@ function handleGearItemEditFormSubmit(event) {
     providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length
       ? getProviderOptionLabel(context.providerSelect.selectedOptions[0])
       : '',
+    extra: context.extraCheckbox ? context.extraCheckbox.checked : Boolean(targetEntry.getAttribute('data-gear-extra') === 'true'),
+    extraStart: context.extraStartInput ? context.extraStartInput.value : targetEntry.getAttribute('data-gear-extra-start') || '',
+    extraEnd: context.extraEndInput ? context.extraEndInput.value : targetEntry.getAttribute('data-gear-extra-end') || '',
   };
+  if (data.extra) {
+    const sanitized = sanitizeExtraPeriod(data.extraStart, data.extraEnd);
+    data.extraStart = sanitized.start;
+    data.extraEnd = sanitized.end;
+  } else {
+    data.extraStart = '';
+    data.extraEnd = '';
+  }
   const hasNameForOwned = Boolean(data.name && data.name.trim());
   const wantsOwned = Boolean(context.ownedCheckbox && context.ownedCheckbox.checked && hasNameForOwned);
   if (wantsOwned && (!data.providedBy || data.providedBy === 'rental-house')) {
@@ -6757,6 +7147,14 @@ function bindGearItemEditDialog(context) {
   if (context.ownedCheckbox) {
     context.ownedCheckbox.addEventListener('change', handleGearItemEditOwnedChange);
   }
+  if (context.extraCheckbox) {
+    context.extraCheckbox.addEventListener('change', handleGearItemEditExtraChange);
+  }
+  [context.extraStartInput, context.extraEndInput].forEach(input => {
+    if (!input) return;
+    input.addEventListener('input', handleGearItemEditFieldInput);
+    input.addEventListener('change', handleGearItemEditFieldInput);
+  });
   gearItemEditDialogBound = true;
 }
 
@@ -6827,6 +7225,21 @@ function openGearItemEditor(element, options = {}) {
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
   }
+  if (context.extraCheckbox) {
+    const extraActive = Boolean(data.extra);
+    context.extraCheckbox.checked = extraActive;
+    updateGearItemEditExtraControls(context, extraActive);
+  }
+  if (context.extraStartInput) {
+    context.extraStartInput.value = data.extraStart || '';
+  }
+  if (context.extraEndInput) {
+    context.extraEndInput.value = data.extraEnd || '';
+  }
+  if (context.extraPeriodContainer && !context.extraCheckbox) {
+    context.extraPeriodContainer.hidden = true;
+    context.extraPeriodContainer.setAttribute('hidden', '');
+  }
   if (context.providerSelect) {
     updateGearItemEditProviderOptions(context, data);
   }
@@ -6889,10 +7302,16 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   const rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
   const rawAttributes = data && Object.prototype.hasOwnProperty.call(data, 'attributes') ? data.attributes : '';
   const rawNote = data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '';
+  const rawExtra = data && Object.prototype.hasOwnProperty.call(data, 'extra') ? data.extra : false;
+  const rawExtraStart = data && Object.prototype.hasOwnProperty.call(data, 'extraStart') ? data.extraStart : '';
+  const rawExtraEnd = data && Object.prototype.hasOwnProperty.call(data, 'extraEnd') ? data.extraEnd : '';
   const quantityValue = typeof rawQuantity === 'string' ? rawQuantity : String(rawQuantity ?? '');
   const nameValue = typeof rawName === 'string' ? rawName : String(rawName ?? '');
   const attributesValue = typeof rawAttributes === 'string' ? rawAttributes : String(rawAttributes ?? '');
   const noteValue = typeof rawNote === 'string' ? rawNote : String(rawNote ?? '');
+  const extraValue = rawExtra === true || rawExtra === 'true' || rawExtra === 1 || rawExtra === '1';
+  const extraStartValue = typeof rawExtraStart === 'string' ? rawExtraStart : String(rawExtraStart ?? '');
+  const extraEndValue = typeof rawExtraEnd === 'string' ? rawExtraEnd : String(rawExtraEnd ?? '');
   const removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
   const removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', { category: categoryLabel });
   const editLabel = resolveGearListCustomText('gearListEditCustomItem', 'Edit custom item');
@@ -6956,6 +7375,9 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
     rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
     providedBy: data && (data.providedBy || data.provider) ? (data.providedBy || data.provider) : '',
     providerLabel: data && data.providerLabel ? data.providerLabel : '',
+    extra: extraValue,
+    extraStart: extraStartValue,
+    extraEnd: extraEndValue,
   });
   return element;
 }
@@ -6979,6 +7401,13 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   if (!entry) return null;
   container.appendChild(entry);
   attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
+  const extraValue = data && (data.extra === true || data.extra === 'true' || data.extra === 1 || data.extra === '1');
+  const extraStartValue = data && Object.prototype.hasOwnProperty.call(data, 'extraStart')
+    ? data.extraStart
+    : '';
+  const extraEndValue = data && Object.prototype.hasOwnProperty.call(data, 'extraEnd')
+    ? data.extraEnd
+    : '';
   applyGearItemData(entry, {
     quantity: data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '',
     name: data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '',
@@ -6987,6 +7416,9 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
     rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
     providedBy: data && (data.providedBy || data.provider) ? (data.providedBy || data.provider) : '',
     providerLabel: data && data.providerLabel ? data.providerLabel : '',
+    extra: extraValue,
+    extraStart: extraStartValue,
+    extraEnd: extraEndValue,
   }, { skipPreview: false });
   const wantsExcluded = Boolean(
     data && (data.rentalExcluded === true || data.rentalExcluded === 'true')
@@ -7013,11 +7445,41 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   return entry;
 }
 
+function addExtraGearItem(options = {}) {
+  const container = ensureExtraGearCategory();
+  if (!container) return null;
+  const textsForExtra = getExtraGearUiTexts();
+  const categoryLabel = container.getAttribute('data-gear-custom-category') || textsForExtra.categoryLabel || '';
+  const entry = addCustomItemEntry(
+    EXTRA_GEAR_CATEGORY_KEY,
+    categoryLabel,
+    {
+      quantity: options && Object.prototype.hasOwnProperty.call(options, 'quantity') ? options.quantity : '1',
+      name: options && Object.prototype.hasOwnProperty.call(options, 'name') ? options.name : '',
+      attributes: options && Object.prototype.hasOwnProperty.call(options, 'attributes') ? options.attributes : '',
+      note: options && Object.prototype.hasOwnProperty.call(options, 'note') ? options.note : '',
+      extra: true,
+      extraStart: options && Object.prototype.hasOwnProperty.call(options, 'extraStart') ? options.extraStart : '',
+      extraEnd: options && Object.prototype.hasOwnProperty.call(options, 'extraEnd') ? options.extraEnd : '',
+    },
+    {
+      skipFocus: Boolean(options && options.skipFocus),
+      skipPersist: Boolean(options && options.skipPersist),
+      skipEditDialog: Boolean(options && options.skipEditDialog),
+    }
+  );
+  return entry;
+}
+
 function handleAddCustomItemRequest(button) {
   if (!button) return;
   const categoryKey = button.getAttribute('data-gear-custom-add') || '';
   if (!categoryKey) return;
   const categoryLabel = button.getAttribute('data-gear-custom-category') || '';
+  if (button.hasAttribute('data-extra-gear') || categoryKey === EXTRA_GEAR_CATEGORY_KEY) {
+    addExtraGearItem({ skipFocus: false, skipPersist: false, skipEditDialog: false });
+    return;
+  }
   addCustomItemEntry(categoryKey, categoryLabel, { quantity: '1', name: '' });
 }
 
@@ -7058,7 +7520,21 @@ function readCustomItemsState() {
       const rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
       const providedBy = String(item.getAttribute('data-gear-provider') || '');
       const providerLabel = String(item.getAttribute('data-gear-provider-label') || '');
-      entries.push({ quantity, name, attributes, note, rentalExcluded, providedBy, providerLabel });
+      const extra = item.getAttribute('data-gear-extra') === 'true';
+      const extraStart = String(item.getAttribute('data-gear-extra-start') || '');
+      const extraEnd = String(item.getAttribute('data-gear-extra-end') || '');
+      entries.push({
+        quantity,
+        name,
+        attributes,
+        note,
+        rentalExcluded,
+        providedBy,
+        providerLabel,
+        extra,
+        extraStart,
+        extraEnd,
+      });
     });
     if (entries.length) {
       state[key] = entries;
@@ -10308,10 +10784,17 @@ function refreshGearListIfVisible() {
 }
 
 if (typeof document !== 'undefined') {
-    document.addEventListener('gear-provider-data-changed', () => {
-        refreshGearItemProviderDisplays();
-        refreshGearItemEditProviderOptionsIfOpen();
-    });
+  document.addEventListener('gearlist:add-extra-gear', () => {
+    try {
+      addExtraGearItem();
+    } catch (error) {
+      console.warn('Failed to add extra gear item from request', error);
+    }
+  });
+  document.addEventListener('gear-provider-data-changed', () => {
+    refreshGearItemProviderDisplays();
+    refreshGearItemEditProviderOptionsIfOpen();
+  });
     document.addEventListener('own-gear-data-changed', () => {
         ownGearNameCache = null;
         refreshGearItemProviderDisplays();

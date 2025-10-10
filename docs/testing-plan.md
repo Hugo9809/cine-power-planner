@@ -68,7 +68,9 @@ you prepare a release candidate or validate a workstation:
 4. **Exercise backups and bundles.** Export a planner backup and a
    `project-name.json` bundle, import both into an offline private profile and
    review gear lists, automatic gear rules, runtime dashboards and favorites for
-   parity. Delete the profile after verification.
+   parity. Confirm any temporary extras retain their coloured badge, date range
+   and dedicated **Temporary Extras** grouping after the restore. Delete the
+   profile after verification.
 5. **Simulate loss of connectivity.** While the verification profile stays
    offline, refresh the planner and make sure the offline indicator appears,
    cached assets render instantly and the restored project remains intact.
