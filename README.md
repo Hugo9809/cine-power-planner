@@ -296,6 +296,13 @@ same online or offline.
 1. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
+1. Open **Settings → Data & Storage** to confirm the **Backup guardian** row
+   shows a mirrored state, scan the **Latest activity** timeline and its safety
+   reminders for stale saves or backups, review the diagnostics log filters and
+   retention toggles, and trigger **Quick safeguards → Download full backup** if
+   the panel suggests refreshing your exports. This double-check keeps the
+   dashboard, logging tools and one-click safety buttons in sync with the
+   rehearsed workflows before you proceed offline.
 1. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
    restore path early proves that no saves are stranded on a single machine and
