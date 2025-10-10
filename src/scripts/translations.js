@@ -1633,7 +1633,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow before configuring your first project. Use the step navigator to revisit finished sections offline.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1650,6 +1650,11 @@ const texts = {
       stepStatusUpcoming: "Up next",
       resumeHint:
         "Resuming where you left off. Use the step navigator to revisit earlier workflows without losing progress.",
+      resumeHintDetailed:
+        "Resuming at step {current} of {total}. {completed} steps are already complete and saved offline.",
+      progressMeterLabel: "Tutorial progress",
+      progressValueLabel: "Completed {completed} of {total} steps",
+      resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
       skipConfirmationTitle: "Skip the guided tutorial?",
       skipConfirmationBody:
         "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
@@ -1680,6 +1685,16 @@ const texts = {
           title: "Customise the gear list",
           body:
             "Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project.",
+        },
+        resultsReview: {
+          title: "Verify power results",
+          body:
+            "Open Power Summary to confirm draw totals, battery coverage and runtime predictions. The quick summary, charts and printable report all reflect your latest offline saves.",
+        },
+        powerSummary: {
+          title: "Review the Power Summary checkpoint",
+          body:
+            "Scan the Quick summary card to validate runtime estimates, battery counts and safety warnings at a glance. Confirming this checkpoint keeps charts, exports and offline reports aligned before you continue.",
         },
         contactsOwnGear: {
           title: "Reuse contacts and personal gear",
@@ -3440,7 +3455,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
     helpOnboardingTutorialCopy:
-      "per seguire ogni flusso di lavoro prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi per riaprire offline le sezioni completate.",
+      "per seguire ogni flusso di lavoro con monitoraggio dei progressi offline, incluso il checkpoint Power Summary, prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per riaprire offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
@@ -3457,6 +3472,11 @@ const texts = {
       stepStatusUpcoming: "In arrivo",
       resumeHint:
         "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
+      resumeHintDetailed:
+        "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già stati completati e salvati offline.",
+      progressMeterLabel: "Avanzamento del tutorial",
+      progressValueLabel: "Completati {completed} di {total} passaggi",
+      resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
       skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
       skipConfirmationBody:
         "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
@@ -3487,6 +3507,16 @@ const texts = {
           title: "Personalizza la gear list",
           body:
             "Usa la sezione Gear List dopo la generazione per regolare quantità, sostituire accessori, applicare filtri o aggiungere voci personalizzate. Le modifiche vengono salvate subito nel progetto.",
+        },
+        resultsReview: {
+          title: "Verifica i risultati energetici",
+          body:
+            "Apri Riepilogo alimentazione per confermare assorbimenti, copertura delle batterie e previsioni di autonomia. Il riepilogo rapido, i grafici e il report stampabile riflettono sempre l'ultimo salvataggio offline.",
+        },
+        powerSummary: {
+          title: "Controlla il checkpoint Power Summary",
+          body:
+            "Analizza la scheda Riepilogo rapido per confermare autonomia, conteggio batterie e avvisi di sicurezza in un colpo d'occhio. Questo controllo mantiene grafici, esportazioni e report offline allineati prima di proseguire.",
         },
         contactsOwnGear: {
           title: "Riutilizza contatti e attrezzatura personale",
@@ -5259,7 +5289,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
     helpOnboardingTutorialCopy:
-      "para recorrer cada flujo de trabajo antes de configurar tu primer proyecto. Usa el navegador de pasos para volver a secciones completadas sin conexión.",
+      "para recorrer cada flujo de trabajo con seguimiento de progreso sin conexión, incluido el punto de control del Resumen de energía, antes de configurar tu primer proyecto. Usa el navegador de pasos y el indicador de progreso para volver a secciones completadas sin conexión.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
@@ -5276,6 +5306,11 @@ const texts = {
       stepStatusUpcoming: "A continuación",
       resumeHint:
         "Retomas justo donde lo dejaste. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
+      resumeHintDetailed:
+        "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y guardados sin conexión.",
+      progressMeterLabel: "Progreso del tutorial",
+      progressValueLabel: "Completados {completed} de {total} pasos",
+      resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
       skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
       skipConfirmationBody:
         "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
@@ -5306,6 +5341,16 @@ const texts = {
           title: "Personaliza la lista de equipo",
           body:
             "Usa la sección Lista de equipo después de generarla para ajustar cantidades, cambiar accesorios, aplicar filtros o añadir elementos personalizados. Los cambios se guardan al instante con el proyecto.",
+        },
+        resultsReview: {
+          title: "Verifica los resultados de energía",
+          body:
+            "Abre Resumen de energía para confirmar consumos, cobertura de baterías y estimaciones de autonomía. El resumen rápido, los gráficos y el informe imprimible reflejan siempre tu último guardado sin conexión.",
+        },
+        powerSummary: {
+          title: "Revisa el punto de control del Resumen de energía",
+          body:
+            "Examina la tarjeta de Resumen rápido para confirmar estimaciones de autonomía, conteos de baterías y alertas de seguridad de un vistazo. Validar este punto de control mantiene alineados los gráficos, exportaciones e informes sin conexión antes de continuar.",
         },
         contactsOwnGear: {
           title: "Reutiliza contactos y tu propio equipo",
@@ -7091,7 +7136,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
     helpOnboardingTutorialCopy:
-      "pour découvrir chaque flux de travail avant de configurer votre premier projet. Utilisez le navigateur d'étapes pour rouvrir hors ligne les sections terminées.",
+      "pour découvrir chaque flux de travail avec un suivi d'avancement hors ligne, y compris le point de contrôle Résumé d'alimentation, avant de configurer votre premier projet. Utilisez le navigateur d'étapes et l'indicateur de progression pour rouvrir hors ligne les sections terminées.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
@@ -7108,6 +7153,11 @@ const texts = {
       stepStatusUpcoming: "À suivre",
       resumeHint:
         "Vous reprenez là où vous vous étiez arrêté. Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
+      resumeHintDetailed:
+        "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et sauvegardées hors ligne.",
+      progressMeterLabel: "Progression du tutoriel",
+      progressValueLabel: "Étapes terminées : {completed} sur {total}",
+      resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
       skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
       skipConfirmationBody:
         "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
@@ -7138,6 +7188,16 @@ const texts = {
           title: "Personnalisez la liste de matériel",
           body:
             "Dans la section Liste du matériel, ajustez les quantités, remplacez des accessoires, appliquez des filtres ou ajoutez vos propres lignes. Chaque modification est enregistrée immédiatement dans le projet.",
+        },
+        resultsReview: {
+          title: "Vérifiez les résultats d'alimentation",
+          body:
+            "Ouvrez Résumé d'alimentation pour confirmer les consommations, la couverture batterie et les estimations d'autonomie. Le résumé rapide, les graphiques et le rapport imprimable reflètent toujours votre dernier enregistrement hors ligne.",
+        },
+        powerSummary: {
+          title: "Vérifiez le point de contrôle Résumé d'alimentation",
+          body:
+            "Parcourez la carte Résumé rapide pour confirmer d'un coup d'œil les autonomies, le nombre de batteries et les alertes de sécurité. Valider ce point de contrôle garde graphiques, exports et rapports hors ligne alignés avant de poursuivre.",
         },
         contactsOwnGear: {
           title: "Réutiliser les contacts et votre propre matériel",
@@ -8927,7 +8987,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
     helpOnboardingTutorialCopy:
-      "um jeden Arbeitsablauf kennenzulernen, bevor du dein erstes Projekt anlegst. Nutze den Schritt-Navigator, um abgeschlossene Abschnitte offline erneut zu öffnen.",
+      "um jeden Arbeitsablauf mit einer Offline-Fortschrittsanzeige kennenzulernen – einschließlich des Power-Summary-Checkpoints – bevor du dein erstes Projekt anlegst. Nutze den Schritt-Navigator und die Fortschrittsleiste, um abgeschlossene Abschnitte offline erneut zu öffnen.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
@@ -8944,6 +9004,11 @@ const texts = {
       stepStatusUpcoming: "Als nächstes",
       resumeHint:
         "Du machst dort weiter, wo du aufgehört hast. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
+      resumeHintDetailed:
+        "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und offline gesichert.",
+      progressMeterLabel: "Tutorial-Fortschritt",
+      progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
+      resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
       skipConfirmationTitle: "Geführtes Tutorial überspringen?",
       skipConfirmationBody:
         "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",
@@ -8974,6 +9039,16 @@ const texts = {
           title: "Gear-Liste anpassen",
           body:
             "In der Gear-Liste kannst du Mengen anpassen, Zubehör tauschen, Filter anwenden oder eigene Positionen hinzufügen. Änderungen werden sofort mit dem Projekt gespeichert.",
+        },
+        resultsReview: {
+          title: "Stromergebnisse prüfen",
+          body:
+            "Öffne die Stromübersicht, um Leistungsbedarf, Batterieabdeckung und Laufzeitprognosen zu kontrollieren. Kurzfassung, Diagramme und der druckbare Bericht spiegeln immer deinen letzten Offline-Speicherstand wider.",
+        },
+        powerSummary: {
+          title: "Power-Summary-Checkpoint prüfen",
+          body:
+            "Sieh dir die Karte Schnellübersicht an, um Laufzeitprognosen, Batterieanzahlen und Sicherheitswarnungen auf einen Blick zu bestätigen. So bleiben Diagramme, Exporte und Offline-Berichte abgestimmt, bevor du weitergehst.",
         },
         contactsOwnGear: {
           title: "Kontakte und eigenes Equipment wiederverwenden",

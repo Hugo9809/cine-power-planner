@@ -223,12 +223,14 @@ same online or offline.
    the last session exactly, including any locally stored Uicons or helper
    assets.
 5. Open **Help → Quick start checklist** and launch the guided tutorial. It
-   walks through creating projects, configuring devices, building gear lists,
-   managing contacts, tracking your own gear, tuning automatic rules, and the
-   export/import/backup drills. The new step navigator lets you revisit
-   finished workflows without restarting, and the **Resume guided tutorial**
-   button appears automatically if you paused mid-tour so offline progress is
-   never lost.
+   walks through creating projects, configuring devices, reviewing the Power
+   Summary (with its quick summary checkpoint), building gear lists, managing
+   contacts, tracking your own gear, tuning automatic rules, and the
+   export/import/backup drills. The step
+   navigator and progress meter let you revisit finished workflows without
+   restarting, and the **Resume guided tutorial** button appears automatically
+   with your saved counts if you paused mid-tour so offline progress is never
+   lost.
 6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
