@@ -96,6 +96,52 @@ var CORE_PART1_RUNTIME_SCOPE =
 // dead zones when the scripts load out of order.
 const DEFAULT_LANGUAGE = 'en';
 
+const RTL_LANGUAGE_CODES = ['ar', 'fa', 'he', 'ur'];
+
+function normalizeLanguageCode(lang) {
+  if (!lang) return DEFAULT_LANGUAGE;
+  try {
+    return String(lang).trim().toLowerCase();
+  } catch (languageNormalizeError) {
+    void languageNormalizeError;
+  }
+  return DEFAULT_LANGUAGE;
+}
+
+function isRtlLanguage(lang) {
+  const normalized = normalizeLanguageCode(lang);
+  const base = normalized.split('-')[0];
+  return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
+}
+
+function resolveDocumentDirection(lang) {
+  if (typeof document !== 'undefined' && document && document.documentElement) {
+    const docDir = document.documentElement.getAttribute('dir');
+    if (docDir === 'rtl' || docDir === 'ltr') {
+      return docDir;
+    }
+  }
+  return isRtlLanguage(lang) ? 'rtl' : 'ltr';
+}
+
+function applyLocaleMetadata(target, lang, direction) {
+  if (!target) return;
+  if (lang) {
+    try {
+      target.lang = lang;
+    } catch (setLangError) {
+      void setLangError;
+    }
+  }
+  if (direction) {
+    try {
+      target.dir = direction;
+    } catch (setDirError) {
+      void setDirError;
+    }
+  }
+}
+
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -15043,17 +15089,27 @@ function getContactDisplayLabel(contact) {
 function setContactSelectOptions(select, selectedId) {
   if (!select) return;
   const currentValue = typeof selectedId === 'string' ? selectedId : select.value;
+  let optionLang = select.lang;
+  if (!optionLang && typeof document !== 'undefined' && document && document.documentElement) {
+    optionLang = document.documentElement.lang || '';
+  }
+  if (!optionLang) {
+    optionLang = currentLang || DEFAULT_LANGUAGE;
+  }
+  const optionDirection = select.dir || resolveDocumentDirection(optionLang || currentLang || DEFAULT_LANGUAGE);
   while (select.firstChild) {
     select.removeChild(select.firstChild);
   }
   const placeholder = document.createElement('option');
   placeholder.value = '';
   placeholder.textContent = getContactsText('selectPlaceholder', 'Select contact');
+  applyLocaleMetadata(placeholder, optionLang, optionDirection);
   select.appendChild(placeholder);
   contactsCache.forEach(contact => {
     const option = document.createElement('option');
     option.value = contact.id;
     option.textContent = getContactDisplayLabel(contact);
+    applyLocaleMetadata(option, optionLang, optionDirection);
     if (contact.id === currentValue) {
       option.selected = true;
     }
@@ -15064,6 +15120,7 @@ function setContactSelectOptions(select, selectedId) {
     fallback.value = currentValue;
     fallback.textContent = getContactsText('missingContactFallback', 'Saved contact');
     fallback.selected = true;
+    applyLocaleMetadata(fallback, optionLang, optionDirection);
     select.appendChild(fallback);
   }
 }
@@ -16116,6 +16173,14 @@ function createCrewRow(data = {}) {
   const row = document.createElement('div');
   row.className = 'person-row';
 
+  let documentLang = '';
+  if (typeof document !== 'undefined' && document && document.documentElement) {
+    documentLang = document.documentElement.lang || '';
+  }
+  const rowLanguage = documentLang || currentLang || DEFAULT_LANGUAGE;
+  const rowDirection = resolveDocumentDirection(rowLanguage);
+  applyLocaleMetadata(row, rowLanguage, rowDirection);
+
   const fallbackProjectForm = texts.en?.projectForm || {};
   const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
   const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
@@ -16154,16 +16219,19 @@ function createCrewRow(data = {}) {
   const roleSel = document.createElement('select');
   roleSel.name = 'crewRole';
   roleSel.className = 'person-role-select';
+  applyLocaleMetadata(roleSel, rowLanguage, rowDirection);
   crewRoles.forEach(r => {
     const opt = document.createElement('option');
     opt.value = r;
     opt.textContent = roleLabels[r] || r;
+    applyLocaleMetadata(opt, rowLanguage, rowDirection);
     roleSel.appendChild(opt);
   });
   if (data.role && !crewRoles.includes(data.role)) {
     const opt = document.createElement('option');
     opt.value = data.role;
     opt.textContent = roleLabels[data.role] || data.role;
+    applyLocaleMetadata(opt, rowLanguage, rowDirection);
     roleSel.appendChild(opt);
   }
   if (data.role) roleSel.value = data.role;
@@ -16174,6 +16242,7 @@ function createCrewRow(data = {}) {
   nameInput.className = 'person-name';
   nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.value = data.name || '';
+  applyLocaleMetadata(nameInput, rowLanguage, rowDirection);
 
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
@@ -16181,6 +16250,7 @@ function createCrewRow(data = {}) {
   phoneInput.className = 'person-phone';
   phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.value = data.phone || '';
+  applyLocaleMetadata(phoneInput, rowLanguage, rowDirection);
 
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
@@ -16188,9 +16258,11 @@ function createCrewRow(data = {}) {
   emailInput.className = 'person-email';
   emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.value = data.email || '';
+  applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
 
   const contactSelect = document.createElement('select');
   contactSelect.className = 'person-contact-select';
+  applyLocaleMetadata(contactSelect, rowLanguage, rowDirection);
   setContactSelectOptions(contactSelect, data.contactId);
 
   const roleLabel = createHiddenLabel(ensureElementId(roleSel, crewRoleLabelText), crewRoleLabelText);
@@ -16200,17 +16272,21 @@ function createCrewRow(data = {}) {
   const contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
 
   const fieldsWrapper = document.createElement('div');
-  fieldsWrapper.className = 'person-fields';
-  fieldsWrapper.append(roleSel, nameInput, phoneInput, emailInput, contactSelect);
+  fieldsWrapper.className = 'person-fields person-details';
+  fieldsWrapper.append(nameInput, phoneInput, emailInput, contactSelect);
 
   const actions = document.createElement('div');
   actions.className = 'person-actions';
+
+  const headerMain = document.createElement('div');
+  headerMain.className = 'person-header-main';
+  headerMain.appendChild(roleSel);
 
   const linkedBadge = document.createElement('span');
   linkedBadge.className = 'person-linked-badge';
   linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
   linkedBadge.hidden = true;
-  actions.appendChild(linkedBadge);
+  headerMain.appendChild(linkedBadge);
 
   const saveContactBtn = document.createElement('button');
   saveContactBtn.type = 'button';
@@ -16250,9 +16326,16 @@ function createCrewRow(data = {}) {
   actions.appendChild(removeBtn);
 
   [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(label => row.appendChild(label));
+  const header = document.createElement('div');
+  header.className = 'person-row-header';
+  header.append(headerMain, actions);
+
+  const content = document.createElement('div');
+  content.className = 'person-content';
+  content.append(header, fieldsWrapper);
+
   row.appendChild(avatarContainer);
-  row.appendChild(fieldsWrapper);
-  row.appendChild(actions);
+  row.appendChild(content);
 
   if (data.contactId) {
     row.dataset.contactId = data.contactId;
