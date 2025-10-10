@@ -5004,6 +5004,17 @@
               ><strong>Generate Gear List and Project Requirements</strong></a>
               button expands every selected device and project detail into a rich table grouped by category and quantity.
             </li>
+              <li>
+                Use the
+                <a
+                  class="help-link button-link"
+                  href="#addExtraGearBtn"
+                  data-help-target="#addExtraGearBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Add temporary extra gear</strong></a>
+                shortcut beside the requirements button to capture short-term rentals. The editor opens immediately so you can
+                log the item, assign a provider and set the optional date range before it appears in the list.
+              </li>
               <li>Any change to devices, lenses, batteries or project information rebuilds the list so it always reflects the current configuration.</li>
               <li>The generator assembles the table step&nbsp;by&nbsp;step:
                 <ol>
@@ -5037,7 +5048,11 @@
                   href="#gearItemEditRentalToggle"
                   data-help-target="#gearItemEditRentalToggle"
                 >exclude from rental house</a>
-                option without leaving the list. Updates appear instantly in badges, printouts and exported bundles.
+                option without leaving the list. Use the
+                <a class="help-link" href="#gearItemEditExtra" data-help-target="#gearItemEditExtraContainer">Temporary extra gear</a>
+                toggle to mark short-term additions and record when they are needed; the gear list highlights the row with a coloured
+                badge and groups it under the temporary extras heading so schedules stay accurate. Updates appear instantly in badges,
+                printouts and exported bundles.
               </li>
               <li>Accessory packs ensure common dependencies are covered:
                 <ul>
@@ -6702,6 +6717,24 @@
               rows="3"
               autocomplete="off"
             ></textarea>
+          </div>
+          <div id="gearItemEditExtraContainer" class="form-row form-row--full gear-item-edit-extra">
+            <label id="gearItemEditExtraLabel" class="gear-item-edit-checkbox" for="gearItemEditExtra">
+              <input type="checkbox" id="gearItemEditExtra" name="gearItemEditExtra" />
+              <span>Temporary extra gear</span>
+            </label>
+            <p id="gearItemEditExtraHelp" class="gear-item-edit-help" hidden></p>
+            <div id="gearItemEditExtraPeriod" class="gear-item-edit-extra-period" hidden>
+              <div class="gear-item-edit-extra-period-field">
+                <label id="gearItemEditExtraStartLabel" for="gearItemEditExtraStart">Needed from</label>
+                <input type="date" id="gearItemEditExtraStart" name="gearItemEditExtraStart" />
+              </div>
+              <div class="gear-item-edit-extra-period-field">
+                <label id="gearItemEditExtraEndLabel" for="gearItemEditExtraEnd">Needed until</label>
+                <input type="date" id="gearItemEditExtraEnd" name="gearItemEditExtraEnd" />
+              </div>
+            </div>
+            <p id="gearItemEditExtraPeriodHelp" class="gear-item-edit-help" hidden></p>
           </div>
           <div class="form-row form-row--full gear-item-edit-provider-row">
             <label id="gearItemEditProviderLabel" for="gearItemEditProvider">Provided by</label>

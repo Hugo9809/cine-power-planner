@@ -10323,6 +10323,13 @@ function setLanguage(lang) {
     editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
     editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
   }
+  const addExtraGearBtnElem = document.getElementById("addExtraGearBtn");
+  if (addExtraGearBtnElem) {
+    const extraLabel = texts[lang].addExtraGearBtn || texts.en?.addExtraGearBtn || "Add temporary extra gear";
+    addExtraGearBtnElem.textContent = extraLabel;
+    addExtraGearBtnElem.setAttribute("title", extraLabel);
+    addExtraGearBtnElem.setAttribute("data-help", extraLabel);
+  }
 
   shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
   shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);

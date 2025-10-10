@@ -151,6 +151,8 @@
   --status-warning-text-color: #ffffff;
   --status-note-text-color: #000;
   --status-success-text-color: #000;
+  --gear-extra-indicator-bg: color-mix(in srgb, var(--warning-color) 22%, transparent);
+  --gear-extra-indicator-text: var(--warning-color);
   --camera-color: #4caf50;
   --monitor-color: #2196f3;
   --video-segment-color: #ffc107;
@@ -1841,6 +1843,25 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   margin: 0;
   color: var(--muted-text-color);
   font-size: 0.85rem;
+}
+
+.gear-item-edit-extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.gear-item-edit-extra-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.gear-item-edit-extra-period-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: min(220px, 100%);
 }
 
 .gear-item-edit-grid {
@@ -8068,6 +8089,8 @@ html.dark-mode,
   --status-note-bg: rgba(255, 214, 102, 0.25);
   --status-success-bg: rgba(102, 187, 106, 0.2);
   --status-border-color: #444;
+  --gear-extra-indicator-bg: color-mix(in srgb, var(--warning-color) 35%, transparent);
+  --gear-extra-indicator-text: #000000;
   --status-error-text-color: #ffffff;
   --status-warning-text-color: #ffffff;
   --status-note-text-color: #ffe082;
@@ -9186,6 +9209,25 @@ body.dark-mode .requirement-box,
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 0.5rem;
+}
+
+.gear-item-extra-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: var(--font-weight-semibold);
+  background: var(--gear-extra-indicator-bg);
+  color: var(--gear-extra-indicator-text);
+  border: 1px solid color-mix(in srgb, var(--gear-extra-indicator-text) 45%, transparent);
+  margin-right: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.gear-item-extra-indicator[hidden] {
+  display: none !important;
 }
 
 #gearListOutput .gear-custom-add-btn {
