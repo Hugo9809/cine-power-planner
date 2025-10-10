@@ -1,7 +1,7 @@
 (function () {
   var videoData = {
     "Teradek Bolt 6 LT TX": {
-      "powerDrawWatts": 9,
+      "powerDrawWatts": 20,
       "videoInputs": [{
         "type": "HDMI"
       }, {

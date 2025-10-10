@@ -52,6 +52,7 @@
         "powerDrawWatts": 20,
         "internalController": false,
         "torqueNm": 0.5,
+        "weight_g": 192,
         "gearTypes": ["0.8 mod", "0.4 mod", "0.5 mod", "0.6 mod", "0.8 mod 25mm wide", "0.8 mod large diameter (e.g., 80T)"],
         "notes": "Constant 0.3 Nm, maximum peak torque 0.5 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth.",
         "fizConnectors": [{
@@ -61,7 +62,8 @@
       "Arri Cforce Plus": {
         "powerDrawWatts": 32,
         "internalController": false,
-        "torqueNm": 1,
+        "torqueNm": 0.7,
+        "weight_g": 325,
         "gearTypes": ["0.8 mod", "0.4 mod", "0.5 mod", "0.6 mod", "0.8 mod 25mm wide", "0.8 mod large diameter (e.g., 80T)"],
         "notes": "Constant 0.7 Nm, maximum peak torque 1.0 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth.",
         "fizConnectors": [{
@@ -89,9 +91,10 @@
         }]
       },
       "Arri CLM-5 (K2.0006361)": {
-        "powerDrawWatts": 24,
+        "powerDrawWatts": 15,
         "internalController": false,
-        "torqueNm": 1.2,
+        "torqueNm": 0.5,
+        "weight_g": 205,
         "gearTypes": ["0.8 mod", "0.6 mod", "0.5 mod"],
         "notes": "High-torque lens motor for ARRI LCS. Requires a UMC-4 for control. The UMC-4 works only with the CLM-4 and CLM-5. Part no. K2.0006361.",
         "fizConnectors": [{
