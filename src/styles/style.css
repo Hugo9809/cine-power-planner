@@ -5290,6 +5290,18 @@ body.dark-mode .storage-status-reminder {
   position: relative;
 }
 
+#helpPrimaryActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap);
+  margin: 12px 0 20px;
+}
+
+#helpPrimaryActions > button {
+  margin: 0;
+}
+
 #helpSearch {
   width: 100%;
   margin: 10px 0;

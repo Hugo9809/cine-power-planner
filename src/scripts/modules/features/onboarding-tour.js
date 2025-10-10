@@ -114,6 +114,7 @@
   const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
+  const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
 
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -1247,9 +1248,42 @@
     applyHelpButtonLabel();
   }
 
+  function collectHelpButtons() {
+    const buttons = [];
+    const seen = new Set();
+
+    if (DOCUMENT && typeof DOCUMENT.querySelectorAll === 'function') {
+      const candidates = DOCUMENT.querySelectorAll(HELP_TRIGGER_SELECTOR);
+      for (let index = 0; index < candidates.length; index += 1) {
+        const button = candidates[index];
+        if (!button || typeof button.addEventListener !== 'function') {
+          continue;
+        }
+        if (seen.has(button)) {
+          continue;
+        }
+        seen.add(button);
+        buttons.push(button);
+      }
+    }
+
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function') {
+      const fallback = DOCUMENT.getElementById(HELP_BUTTON_ID);
+      if (
+        fallback &&
+        typeof fallback.addEventListener === 'function' &&
+        !seen.has(fallback)
+      ) {
+        buttons.push(fallback);
+      }
+    }
+
+    return buttons;
+  }
+
   function applyHelpButtonLabel() {
-    const button = DOCUMENT.getElementById(HELP_BUTTON_ID);
-    if (!button) {
+    const buttons = collectHelpButtons();
+    if (!buttons.length) {
       return;
     }
     const state = storedState || loadStoredState();
@@ -1279,7 +1313,13 @@
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
-    button.textContent = label;
+    for (let index = 0; index < buttons.length; index += 1) {
+      const button = buttons[index];
+      if (!button) {
+        continue;
+      }
+      button.textContent = label;
+    }
   }
 
   function handleHelpButtonClick(event) {
@@ -1292,11 +1332,17 @@
   }
 
   function attachHelpButton() {
-    const button = DOCUMENT.getElementById(HELP_BUTTON_ID);
-    if (!button) {
+    const buttons = collectHelpButtons();
+    if (!buttons.length) {
       return;
     }
-    button.addEventListener('click', handleHelpButtonClick);
+    for (let index = 0; index < buttons.length; index += 1) {
+      const button = buttons[index];
+      if (!button) {
+        continue;
+      }
+      button.addEventListener('click', handleHelpButtonClick);
+    }
     applyHelpButtonLabel();
   }
 
