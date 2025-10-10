@@ -1,14 +1,30 @@
+// ---------------------------------------------------------------------------
+// Auto gear weight helpers
+// ---------------------------------------------------------------------------
+// These utilities normalise and evaluate weight related rules for the automatic
+// gear selection feature. The routines are shared between the modern module
+// loader and the legacy global bundle, which is why the implementation keeps its
+// own dependency surface tiny and operates purely on primitives. Human friendly
+// comments here explain the reasoning behind each transformation so the
+// behaviour stays predictable when future contributors adjust parsing or add new
+// weight units.
 (function initAutoGearWeightHelpers(globalScope) {
   if (!globalScope || typeof globalScope !== 'object') {
     globalScope = {};
   }
 
+  // Accept a fixed set of operators. Using an object instead of an array makes
+  // membership checks O(1) when we encounter previously normalised strings.
   var operatorLookup = {
     greater: true,
     less: true,
     equal: true
   };
 
+  // Interpret user provided operator tokens. The comparison builder allows
+  // people to type shorthand such as "gt" or mathematical symbols. Anything we
+  // do not explicitly recognise is treated as "greater" so the planner errs on
+  // the side of being conservative (showing more equipment rather than less).
   function normalizeAutoGearWeightOperator(value) {
     if (typeof value !== 'string') return 'greater';
     var normalized = value.trim().toLowerCase();
@@ -33,6 +49,11 @@
     return operatorLookup[normalized] ? normalized : 'greater';
   }
 
+  // Parse a weight value supplied as either a number or a human readable
+  // string. The function supports metric and imperial units and gracefully
+  // ignores unknown fragments so that imported projects from older releases do
+  // not fail. The result is always returned in grams because that is what the
+  // planner stores internally.
   function normalizeAutoGearWeightValue(value) {
     if (typeof value === 'number' && Number.isFinite(value)) {
       var roundedNumber = Math.round(value);
@@ -74,6 +95,10 @@
     return null;
   }
 
+  // Consume a loosely structured condition object (or array) and convert it
+  // into the canonical `{ operator, value }` shape used by the rest of the
+  // runtime. This ensures serialised backups from previous versions continue to
+  // hydrate correctly even if the key names changed.
   function normalizeAutoGearCameraWeightCondition(setting) {
     if (!setting) return null;
     if (Array.isArray(setting)) {
@@ -112,6 +137,10 @@
     return null;
   }
 
+  // Format a plain number using the user's locale if possible. Errors are
+  // swallowed deliberately because some browsers restrict Intl usage during
+  // private mode or low memory situations, and we would rather show the raw
+  // value than crash.
   function formatAutoGearWeight(value) {
     if (!Number.isFinite(value)) return '';
     try {
@@ -124,6 +153,9 @@
     return String(value);
   }
 
+  // Look up the translated label for a given operator. We prefer the language
+  // specific texts if available and fall back to English so that even partially
+  // translated installations remain usable.
   function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
     var textsForLang = langTexts && typeof langTexts === 'object' ? langTexts : {};
     var globalTexts = globalScope && globalScope.texts && typeof globalScope.texts === 'object'
@@ -140,6 +172,8 @@
     return textsForLang.autoGearCameraWeightOperatorGreater || fallback.autoGearCameraWeightOperatorGreater || 'Heavier than';
   }
 
+  // Combine the operator label and the numeric value into a sentence fragment
+  // that can be displayed directly in the UI.
   function formatAutoGearCameraWeight(condition, langTexts) {
     if (!condition || !Number.isFinite(condition.value)) return '';
     var label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
@@ -147,6 +181,9 @@
     return label + ' ' + formattedValue + ' g';
   }
 
+  // Evaluate a weight condition against the currently selected camera weight.
+  // The logic is intentionally straightforward so it matches the copy shown to
+  // the user.
   function evaluateAutoGearCameraWeightCondition(condition, selectedCameraWeight) {
     if (!condition || !Number.isFinite(condition.value)) return false;
     if (!Number.isFinite(selectedCameraWeight)) return false;
