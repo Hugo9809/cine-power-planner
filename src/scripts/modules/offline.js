@@ -1,5 +1,12 @@
 (function () {
+  /**
+   * The offline module coordinates how the planner behaves when network access
+   * disappears. Clear documentation keeps the lifecycle predictable, which is
+   * crucial because offline caching and restore flows protect the user's work.
+   */
   function detectGlobalScope() {
+    // The scope discovery mirrors the persistence module so that both features
+    // are always aligned. Every branch is intentionally ordered by likelihood.
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -17,6 +24,11 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
+  /**
+   * Resolve the shared module linker which exposes already-booted runtime
+   * components. We keep the lookup defensive because offline start-up must
+   * never fail even if a linker was not registered yet.
+   */
   function resolveModuleLinker(scope) {
     if (typeof require === 'function') {
       try {
@@ -47,6 +59,11 @@
     return null;
   }
 
+  /**
+   * When the linker is unavailable we fall back to the environment helpers that
+   * other modules stash on the global scope. This mirrors how service workers
+   * hydrate their utilities during startup and keeps offline mode synchronous.
+   */
   function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
@@ -72,6 +89,11 @@
     return null;
   }
 
+  /**
+   * The bridge exposes lightweight wrappers around storage and messaging. By
+   * reusing the same discovery process we avoid creating duplicate bridges that
+   * could drift apart and risk inconsistent offline queues.
+   */
   function fallbackLoadEnvironmentBridge(scope) {
     if (typeof require === 'function') {
       try {
@@ -118,6 +140,11 @@
       : null)
     || FALLBACK_SCOPE;
 
+  /**
+   * Retrieve module globals lazily so we remain compatible with window and
+   * worker contexts alike. The guard keeps us from assuming that globals exist
+   * which is vital for predictable offline recovery.
+   */
   function fallbackResolveModuleGlobals() {
     if (typeof require === 'function') {
       try {
@@ -151,6 +178,11 @@
     : null)
     || fallbackResolveModuleGlobals();
 
+  /**
+   * Publish the module API to the runtime registry. Broadcasting the interface
+   * allows other modules (for example persistence) to coordinate with offline
+   * helpers without creating tight coupling.
+   */
   function informModuleGlobals(name, api) {
     if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
       MODULE_LINKER.recordModule(name, api);

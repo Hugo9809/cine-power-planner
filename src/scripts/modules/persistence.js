@@ -1,5 +1,14 @@
 (function () {
+  /**
+   * The persistence module centralises every interaction with the underlying
+   * storage helpers. The goal is to make it obvious which execution context is
+   * currently responsible for safeguarding the project data. By explaining each
+   * discovery step we help future maintainers reason about why data looks for a
+   * specific bridge or linker before touching user content.
+   */
   function detectGlobalScope() {
+    // We progressively try every known host so the code stays resilient when
+    // bundled for browsers, workers, tests or server-side rendering.
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -17,6 +26,12 @@
 
   const FALLBACK_SCOPE = detectGlobalScope();
 
+  /**
+   * Locate the module linker that wires the loosely coupled runtime together.
+   * We first try `require` so Node based tests gain the same behaviour as the
+   * browser bundles. Each lookup is wrapped in a try/catch because persistence
+   * must never throw and risk breaking autosave flows.
+   */
   function resolveModuleLinker(scope) {
     if (typeof require === 'function') {
       try {
@@ -47,6 +62,11 @@
     return null;
   }
 
+  /**
+   * If the linker cannot provide an environment instance we still want to keep
+   * the storage layer operational. The fallback loader walks through familiar
+   * scopes and reuses the environment that was already injected there.
+   */
   function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
@@ -72,6 +92,11 @@
     return null;
   }
 
+  /**
+   * The environment bridge contains helpers for cross-context communication.
+   * When it is not injected by the linker we replicate the same discovery
+   * strategy as with the environment itself so offline mode keeps functioning.
+   */
   function fallbackLoadEnvironmentBridge(scope) {
     if (typeof require === 'function') {
       try {
@@ -118,6 +143,11 @@
       : null)
     || FALLBACK_SCOPE;
 
+  /**
+   * Module globals store shared singletons such as the persistence registry.
+   * Accessing them through this helper keeps accidental global mutations away
+   * from user projects because we never touch a missing object directly.
+   */
   function fallbackResolveModuleGlobals() {
     if (typeof require === 'function') {
       try {
@@ -151,6 +181,11 @@
     : null)
     || fallbackResolveModuleGlobals();
 
+  /**
+   * Let the runtime know which APIs are available so other modules can reuse
+   * them without creating duplicate instances. The explicit guard rails ensure
+   * the registration is a no-op when the host does not support bookkeeping.
+   */
   function informModuleGlobals(name, api) {
     if (MODULE_LINKER && typeof MODULE_LINKER.recordModule === 'function') {
       MODULE_LINKER.recordModule(name, api);
