@@ -69,13 +69,18 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    The new no-results recovery callout (`#helpNoResultsSuggestions`) keeps operators pointed at
    safe backup workflows—document each of its steps when you adjust help topics so every
    translation and offline manual explains how to recover quickly.【F:index.html†L2784-L2804】【F:src/scripts/app-core-new-1.js†L10095-L10142】【F:src/scripts/app-session.js†L10404-L10436】
-    Highlight that the global feature search now promotes matches whose labels appear on screen
-    and anything crews used recently before keyword-only hits, that starting with `recent` or
-    `history` searches just the usage history before expanding to the full catalog, that wrapping a phrase in double
-    quotes forces an exact match, and that quoted phrases rise to the top so crews know the full
-    control name they typed will surface first even when synonyms exist. Call out the expanded
-    typo recovery so near-miss queries up to two characters off (for example, `backpu` or `savf`)
-    still land on the intended command without losing the operator's place.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
+   Highlight that the global feature search now promotes matches whose labels appear on screen
+   and anything crews used recently before keyword-only hits, that starting with `recent` or
+   `history` searches just the usage history before expanding to the full catalog, that wrapping a phrase in double
+   quotes forces an exact match, and that quoted phrases rise to the top so crews know the full
+   control name they typed will surface first even when synonyms exist. Call out the expanded
+   typo recovery so near-miss queries up to two characters off (for example, `backpu` or `savf`)
+   still land on the intended command without losing the operator's place.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
+   The guided tutorial now includes a dedicated Quick safeguards backup step. Document the
+   Settings → Data & Storage → Quick safeguards flow in every locale so crews always capture a
+   fresh offline `planner-backup.json` before the tutorial continues to Backup & Restore, and
+   reference the new `quickSafeguards` entry when updating translations or hover help so the
+   offline dialog points to the exact button labels.【F:src/scripts/modules/features/onboarding-tour.js†L151-L204】【F:src/scripts/translations.js†L1748-L1763】
    Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and
    ARIA reference IDs), so double-check that contextual copy stays accurate for every
    referenced control when you update docs or UI labels.【F:src/scripts/app-session.js†L8896-L8996】
