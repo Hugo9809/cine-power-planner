@@ -1,4 +1,7 @@
 (function () {
+  // This module mirrors the autosave status note into the settings dialog so
+  // the user always receives feedback about persistence progress, even when
+  // the original text is scrolled out of view.
   if (typeof document === 'undefined') {
     return;
   }
@@ -16,6 +19,8 @@
   var dialogObserver = null;
   var bodyObserver = null;
 
+  // Resolve the dialog lazily because the settings UI might not exist during
+  // early boot or while tests mount partial DOM fragments.
   function getDialog() {
     if (!dialog || !document.contains(dialog)) {
       dialog = document.getElementById(SETTINGS_DIALOG_ID) || null;
@@ -23,6 +28,9 @@
     return dialog;
   }
 
+  // Ensure that a dedicated status paragraph exists inside the dialog. The
+  // overlay is re-used to avoid creating duplicate DOM nodes on repeated
+  // openings of the settings window.
   function ensureOverlay(targetDialog) {
     if (!targetDialog) {
       return null;
@@ -47,6 +55,8 @@
     return overlay;
   }
 
+  // Mirror the source note's text into the overlay, while debouncing redundant
+  // updates. This keeps screen reader announcements calm and predictable.
   function updateOverlayText(note) {
     if (!overlay) {
       return;
@@ -70,6 +80,9 @@
     }
   }
 
+  // Toggle the overlay when the dialog or source note changes visibility. We
+  // prefer explicit attribute updates so assistive tech reads the status
+  // reliably.
   function updateOverlayVisibility(note) {
     if (!overlay || !dialog) {
       return;
@@ -114,6 +127,8 @@
     }
   }
 
+  // Watch the original autosave note for content changes so we can surface
+  // real-time progress updates inside the modal.
   function observeSource(note) {
     if (sourceObserver) {
       sourceObserver.disconnect();
@@ -136,6 +151,8 @@
     });
   }
 
+  // Observe dialog attribute changes (like `open`) because native dialogs do
+  // not fire MutationEvents when their open state flips.
   function observeDialog(targetDialog) {
     if (dialogObserver) {
       dialogObserver.disconnect();
@@ -155,6 +172,8 @@
     });
   }
 
+  // React to DOM mutations that might replace the autosave note. This protects
+  // us from hydration or localisation routines that rebuild parts of the UI.
   function observeBody() {
     if (bodyObserver || typeof MutationObserver !== 'function') {
       return;
@@ -175,6 +194,8 @@
     });
   }
 
+  // Keep the overlay state in sync with manual dialog events such as cancel or
+  // submit. These events may not trigger MutationObservers on all browsers.
   function bindDialogEvents(targetDialog) {
     if (!targetDialog || typeof targetDialog.addEventListener !== 'function') {
       return;
@@ -189,6 +210,8 @@
     targetDialog.addEventListener('submit', handler);
   }
 
+  // Refresh the mirrored text whenever the document language changes so the
+  // overlay stays translated alongside the source element.
   function bindLanguageChange() {
     if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
       return;
@@ -201,6 +224,9 @@
     });
   }
 
+  // Initialise observers when the DOM is ready. Running this only once keeps
+  // runtime overhead low while guaranteeing the overlay reflects the latest
+  // autosave status immediately after opening the dialog.
   function setup() {
     var targetDialog = getDialog();
     if (!targetDialog) {
