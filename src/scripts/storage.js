@@ -7800,6 +7800,57 @@ function saveSessionState(state, options = {}) {
 }
 
 // --- Device Data Storage ---
+function normalizeDeviceDataPayload(rawData) {
+  if (!isPlainObject(rawData)) {
+    return { data: null, changed: false };
+  }
+
+  const data = { ...rawData };
+  let changed = false;
+
+  const ensureObject = (target, key) => {
+    if (!isPlainObject(target[key])) {
+      target[key] = {};
+      changed = true;
+    }
+    return target[key];
+  };
+
+  DEVICE_COLLECTION_KEYS.forEach((key) => {
+    ensureObject(data, key);
+  });
+
+  if (!isPlainObject(data.fiz)) {
+    data.fiz = {};
+    rawData.fiz = data.fiz;
+    changed = true;
+  }
+  FIZ_COLLECTION_KEYS.forEach((key) => {
+    const collection = ensureObject(data.fiz, key);
+    rawData.fiz[key] = collection;
+  });
+
+  if (!isPlainObject(data.accessories)) {
+    data.accessories = {};
+    rawData.accessories = data.accessories;
+    changed = true;
+  }
+  ACCESSORY_COLLECTION_KEYS.forEach((key) => {
+    const collection = ensureObject(data.accessories, key);
+    rawData.accessories[key] = collection;
+  });
+
+  if (!Array.isArray(data.filterOptions)) {
+    data.filterOptions = Array.isArray(rawData.filterOptions)
+      ? rawData.filterOptions.slice()
+      : [];
+    rawData.filterOptions = data.filterOptions;
+    changed = true;
+  }
+
+  return { data, changed };
+}
+
 function loadDeviceData() {
   applyLegacyStorageMigrations();
   const safeStorage = getSafeLocalStorage();
@@ -7810,45 +7861,9 @@ function loadDeviceData() {
     null,
     { validate: (value) => value === null || isPlainObject(value) },
   );
-  if (!isPlainObject(parsedData)) {
+  const { data, changed } = normalizeDeviceDataPayload(parsedData);
+  if (!data) {
     return null;
-  }
-
-  const data = { ...parsedData };
-  let changed = false;
-
-  function ensureObject(target, key) {
-    if (!isPlainObject(target[key])) {
-      target[key] = {};
-      changed = true;
-    }
-  }
-
-  DEVICE_COLLECTION_KEYS.forEach((key) => {
-    ensureObject(data, key);
-  });
-
-  if (!isPlainObject(data.fiz)) {
-    data.fiz = {};
-    changed = true;
-  }
-  FIZ_COLLECTION_KEYS.forEach((key) => {
-    ensureObject(data.fiz, key);
-  });
-
-  if (!isPlainObject(data.accessories)) {
-    data.accessories = {};
-    changed = true;
-  }
-  ACCESSORY_COLLECTION_KEYS.forEach((key) => {
-    ensureObject(data.accessories, key);
-  });
-
-  if (!Array.isArray(data.filterOptions)) {
-    data.filterOptions = Array.isArray(parsedData.filterOptions)
-      ? parsedData.filterOptions.slice()
-      : [];
-    changed = true;
   }
 
   if (changed) {
@@ -7880,11 +7895,14 @@ function saveDeviceData(deviceData) {
     return;
   }
 
+  const { data: normalizedDeviceData } = normalizeDeviceDataPayload(deviceData);
+  const dataToPersist = normalizedDeviceData || deviceData;
+
   ensurePreWriteMigrationBackup(safeStorage, DEVICE_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     DEVICE_STORAGE_KEY,
-    deviceData,
+    dataToPersist,
     "Error saving device data to localStorage:",
   );
 }
