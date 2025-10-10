@@ -13033,6 +13033,30 @@ function setLanguage(lang) {
     setLabelText(codecLabel, 'codec');
     setLabelText(baseFrameRateLabel, 'baseFrameRate');
     setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
+    if (recordingFrameRateHintElem) {
+      const rangeTemplate =
+        projectFormTexts.recordingFrameRateRangeHint ||
+        fallbackProjectForm.recordingFrameRateRangeHint ||
+        '';
+      const defaultHint =
+        projectFormTexts.recordingFrameRateDefaultHint ||
+        fallbackProjectForm.recordingFrameRateDefaultHint ||
+        '';
+      if (rangeTemplate) {
+        recordingFrameRateHintElem.setAttribute('data-range-template', rangeTemplate);
+      } else {
+        recordingFrameRateHintElem.removeAttribute('data-range-template');
+      }
+      if (defaultHint) {
+        recordingFrameRateHintElem.setAttribute('data-default-message', defaultHint);
+        recordingFrameRateHintElem.textContent = defaultHint;
+        recordingFrameRateHintElem.hidden = false;
+      } else {
+        recordingFrameRateHintElem.removeAttribute('data-default-message');
+        recordingFrameRateHintElem.textContent = '';
+        recordingFrameRateHintElem.hidden = true;
+      }
+    }
     setLabelText(lensesHeadingElem, 'lensesHeading');
     setLabelText(lensesLabelElem, 'lensesLabel');
     setLabelText(riggingHeadingElem, 'riggingHeading');
@@ -13317,6 +13341,7 @@ const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel
 const deliveryResolutionSelect = document.getElementById("deliveryResolution");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
 const recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
+const recordingFrameRateHintElem = document.getElementById("recordingFrameRateHint");
 const sensorModeLabel = document.getElementById("sensorModeLabel");
 const aspectRatioLabel = document.getElementById("aspectRatioLabel");
 const codecLabel = document.getElementById("codecLabel");

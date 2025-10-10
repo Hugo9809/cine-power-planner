@@ -6951,7 +6951,24 @@
             </div>
             <div class="form-row">
               <label for="recordingFrameRate" id="recordingFrameRateLabel">Recording Frame Rate:</label>
-              <select id="recordingFrameRate" name="recordingFrameRate"></select>
+              <div class="input-with-datalist">
+                <input
+                  id="recordingFrameRate"
+                  name="recordingFrameRate"
+                  type="number"
+                  inputmode="decimal"
+                  min="1"
+                  step="0.001"
+                  list="recordingFrameRateOptions"
+                  aria-describedby="recordingFrameRateHint"
+                />
+                <datalist id="recordingFrameRateOptions"></datalist>
+              </div>
+              <p
+                id="recordingFrameRateHint"
+                class="project-field-hint"
+                aria-live="polite"
+              ></p>
             </div>
           </div>
         </section>

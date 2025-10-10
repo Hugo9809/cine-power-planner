@@ -3118,7 +3118,32 @@ function populateProjectForm(info = {}) {
     const setVal = (name, value) => {
         if (value === undefined) return;
         const field = projectForm.querySelector(`[name="${name}"]`);
-        if (field) field.value = value;
+        if (!field) return;
+        let resolvedValue = value;
+        if (name === 'recordingFrameRate') {
+            if (typeof value === 'number' && Number.isFinite(value)) {
+                resolvedValue = value % 1 ? value.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1') : String(value);
+            }
+            else if (typeof value === 'string') {
+                const trimmed = value.trim();
+                const numericMatch = trimmed.match(/-?\d+(?:\.\d+)?/);
+                if (numericMatch) {
+                    const num = Number.parseFloat(numericMatch[0]);
+                    if (Number.isFinite(num)) {
+                        resolvedValue = num % 1
+                            ? num.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1')
+                            : String(num);
+                    }
+                    else {
+                        resolvedValue = trimmed;
+                    }
+                }
+                else {
+                    resolvedValue = trimmed;
+                }
+            }
+        }
+        field.value = resolvedValue;
     };
     const setMulti = (name, values) => {
         const field = projectForm.querySelector(`[name="${name}"]`);

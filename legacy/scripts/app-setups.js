@@ -2342,7 +2342,27 @@ function populateProjectForm() {
   var setVal = function setVal(name, value) {
     if (value === undefined) return;
     var field = projectForm.querySelector("[name=\"".concat(name, "\"]"));
-    if (field) field.value = value;
+    if (!field) return;
+    var resolvedValue = value;
+    if (name === 'recordingFrameRate') {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        resolvedValue = value % 1 ? value.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1') : String(value);
+      } else if (typeof value === 'string') {
+        var trimmed = value.trim();
+        var numericMatch = trimmed.match(/-?\d+(?:\.\d+)?/);
+        if (numericMatch) {
+          var num = Number.parseFloat(numericMatch[0]);
+          if (Number.isFinite(num)) {
+            resolvedValue = num % 1 ? num.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1') : String(num);
+          } else {
+            resolvedValue = trimmed;
+          }
+        } else {
+          resolvedValue = trimmed;
+        }
+      }
+    }
+    field.value = resolvedValue;
   };
   var setMulti = function setMulti(name, values) {
     var field = projectForm.querySelector("[name=\"".concat(name, "\"]"));
