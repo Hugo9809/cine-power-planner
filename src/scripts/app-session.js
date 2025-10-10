@@ -1066,7 +1066,7 @@ const applyFontSizeSafe = ensureSessionRuntimePlaceholder(
     const defaultUIScaleValues = {
       '--page-padding': 20,
       '--gap-size': 10,
-      '--button-size': 24,
+      '--button-size': 32,
       '--border-radius': 5,
       '--form-label-width': 150,
       '--form-label-min-width': 120,
