@@ -4585,6 +4585,16 @@ function forEachTrackedSelect(collection, handler) {
   list.forEach(handler);
 }
 
+const sensorModeDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('sensorMode')
+    : null;
+
+const recordingResolutionDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingResolution')
+    : null;
+
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
 forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
   sel.addEventListener('change', updateCalculations);
@@ -13905,16 +13915,6 @@ const recordingFrameRateHint =
 const recordingFrameRateOptionsList =
   typeof document !== 'undefined'
     ? document.getElementById('recordingFrameRateOptions')
-    : null;
-
-const sensorModeDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('sensorMode')
-    : null;
-
-const recordingResolutionDropdown =
-  typeof document !== 'undefined'
-    ? document.getElementById('recordingResolution')
     : null;
 
 const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
