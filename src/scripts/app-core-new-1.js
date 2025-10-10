@@ -8620,13 +8620,14 @@ function unifyDevices(devicesData) {
       }
     });
 
-      lens.mountOptions = Array.isArray(dedupedOptions) ? dedupedOptions : [];
+    const safeMountOptions = Array.isArray(dedupedOptions) ? dedupedOptions : [];
+    lens.mountOptions = safeMountOptions;
 
-      const mountOptions = lens.mountOptions;
+    const mountOptions = Array.isArray(lens.mountOptions) ? lens.mountOptions : [];
 
-      if (mountOptions.length) {
-        const primary = mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
-          || mountOptions[0];
+    if (mountOptions.length) {
+      const primary = mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
+        || mountOptions[0];
       const primaryType = primary && primary.type ? primary.type : '';
       if (primaryType) {
         lens.mount = primaryType;
