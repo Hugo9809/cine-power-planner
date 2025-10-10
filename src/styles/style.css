@@ -1584,10 +1584,18 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
 }
 
 .gear-item-edit-dialog .gear-item-edit-form {
+  --gear-item-edit-max-width: 520px;
   display: flex;
   flex-direction: column;
   gap: clamp(0.85rem, 2.2vw, 1.25rem);
-  width: min(90vw, 520px);
+  width: min(
+    var(--gear-item-edit-max-width),
+    calc(100vw - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px)))
+  );
+  max-width: min(
+    var(--gear-item-edit-max-width),
+    calc(100vw - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px)))
+  );
   max-height: min(640px, calc(100vh - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px))));
   padding: clamp(1.25rem, 3vw, 1.75rem);
   border-color: var(--panel-border);
@@ -1596,25 +1604,34 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   overscroll-behavior: contain;
 }
 
+@supports (width: 100dvw) {
+  .gear-item-edit-dialog .gear-item-edit-form {
+    width: min(
+      var(--gear-item-edit-max-width),
+      calc(100dvw - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px)))
+    );
+    max-width: min(
+      var(--gear-item-edit-max-width),
+      calc(100dvw - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px)))
+    );
+    max-height: min(640px, calc(100dvh - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 24px))));
+  }
+}
+
 .gear-item-edit-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
   gap: clamp(0.75rem, 2vw, 1rem);
-  padding: clamp(0.85rem, 2.2vw, 1.1rem);
-  border-radius: var(--border-radius);
-  background: color-mix(in srgb, var(--surface-color) 90%, var(--accent-color) 10%);
-  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, var(--accent-color) 25%);
+  padding-bottom: clamp(0.75rem, 1.8vw, 1rem);
 }
 
 .gear-item-edit-header-body {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  flex: 1 1 180px;
   min-width: 0;
+}
+
+.gear-item-edit-toolbar {
+  justify-content: flex-start;
 }
 
 .gear-item-edit-reset {
@@ -1817,13 +1834,6 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   .gear-item-edit-grid {
     grid-template-columns: 1fr;
   }
-}
-
-html.dark-mode .gear-item-edit-header,
-body.dark-mode .gear-item-edit-header,
-.dark-mode .gear-item-edit-header {
-  background: color-mix(in srgb, var(--surface-color) 82%, var(--accent-color) 18%);
-  border-color: color-mix(in srgb, var(--panel-border) 55%, var(--accent-color) 45%);
 }
 
 html.dark-mode .gear-item-edit-reset,
