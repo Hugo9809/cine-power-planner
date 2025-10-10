@@ -1394,8 +1394,10 @@ main.legal-content {
 #setup-manager .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle),
 #setup-config .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle) {
   align-self: stretch;
-  flex: 0 0 var(--form-action-width);
+  flex: 0 0 auto;
+  min-width: var(--form-action-width);
   margin: 0;
+  white-space: nowrap;
 }
 
 .form-label-spacer {
