@@ -7464,7 +7464,8 @@ const texts = {
   },
   de: {
     appTitle: "Cine Power Planner",
-    tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
+    tagline:
+      "Plane dein Filmrig und berechne Stromverbrauch sowie Akkulaufzeit deiner Ausrüstung.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
     offlineIndicatorHelp:
