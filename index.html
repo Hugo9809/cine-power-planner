@@ -6195,6 +6195,13 @@
               autocomplete="off"
             ></textarea>
           </div>
+          <div class="form-row form-row--full gear-item-edit-provider-row">
+            <label id="gearItemEditProviderLabel" for="gearItemEditProvider">Provided by</label>
+            <div class="gear-item-edit-provider-field">
+              <select id="gearItemEditProvider" name="gearItemEditProvider"></select>
+              <p id="gearItemEditProviderHelp" class="gear-item-edit-help" hidden></p>
+            </div>
+          </div>
           <section
             id="gearItemEditRentalSection"
             class="gear-item-edit-rental"
@@ -6650,6 +6657,45 @@
         <p id="contactsImportHint" class="modal-hint contacts-import-hint">Import .vcf files to add contacts instantly.</p>
       </header>
       <div class="modal-body contacts-dialog-body">
+        <section
+          id="contactsUserProfile"
+          class="contacts-user-profile"
+          aria-labelledby="contactsUserProfileHeading"
+        >
+          <header class="contacts-user-profile-header">
+            <h3 id="contactsUserProfileHeading">Your profile</h3>
+            <p id="contactsUserProfileDescription" class="contacts-user-profile-description">
+              Add your details so your gear shows as “User”.
+            </p>
+          </header>
+          <div class="contacts-user-card">
+            <div id="userProfileAvatar" class="contact-card-avatar">
+              <div class="contact-card-avatar-visual"></div>
+              <button type="button" id="userProfileAvatarButton">
+                <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE0E0;</span>
+                <span id="userProfileAvatarButtonLabel">Change photo</span>
+              </button>
+              <input
+                type="file"
+                id="userProfileAvatarInput"
+                accept="image/*"
+                class="visually-hidden"
+                tabindex="-1"
+                aria-hidden="true"
+              />
+            </div>
+            <div class="contacts-user-card-fields">
+              <label id="userProfileNameLabel" for="userProfileName">Display name</label>
+              <input type="text" id="userProfileName" name="userProfileName" autocomplete="name" />
+              <p id="userProfileHint" class="contacts-user-card-hint">
+                Used for the “User” option in provided by dropdown.
+              </p>
+              <button type="button" id="userProfileAvatarClear" class="contacts-user-avatar-clear">
+                Remove photo
+              </button>
+            </div>
+          </div>
+        </section>
         <p id="contactsEmptyState" class="contacts-empty-state">No contacts saved yet. Add your crew to reuse them later.</p>
         <div id="contactsList" class="contacts-list" role="list"></div>
       </div>

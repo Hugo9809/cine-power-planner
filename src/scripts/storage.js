@@ -2,7 +2,7 @@
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
           resetMountVoltagePreferences, applyFocusScalePreference */
-/* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName */
+/* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName, loadUserProfile, saveUserProfile */
 
 (function initializeStorageModule() {
   const GLOBAL_SCOPE =
@@ -252,6 +252,7 @@ var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
+var USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -10390,6 +10391,69 @@ function saveOwnGear(items) {
   );
 }
 
+function normalizeUserProfile(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
+    ? entry.avatar
+    : '';
+
+  if (!name && !avatar) {
+    return { name: '', avatar: '' };
+  }
+
+  return { name, avatar };
+}
+
+function loadUserProfile() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    USER_PROFILE_STORAGE_KEY,
+    'Error loading user profile from localStorage:',
+    null,
+    { validate: (value) => value === null || isPlainObject(value) },
+  );
+  if (!isPlainObject(parsed)) {
+    return { name: '', avatar: '' };
+  }
+  return normalizeUserProfile(parsed) || { name: '', avatar: '' };
+}
+
+function saveUserProfile(profile) {
+  const safeStorage = getSafeLocalStorage();
+  if (profile === null || profile === undefined) {
+    deleteFromStorage(
+      safeStorage,
+      USER_PROFILE_STORAGE_KEY,
+      'Error deleting user profile from localStorage:',
+    );
+    return;
+  }
+
+  const normalized = normalizeUserProfile(profile) || { name: '', avatar: '' };
+  if (!normalized.name && !normalized.avatar) {
+    deleteFromStorage(
+      safeStorage,
+      USER_PROFILE_STORAGE_KEY,
+      'Error deleting user profile from localStorage:',
+    );
+    return;
+  }
+
+  ensurePreWriteMigrationBackup(safeStorage, USER_PROFILE_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    USER_PROFILE_STORAGE_KEY,
+    normalized,
+    'Error saving user profile to localStorage:',
+  );
+}
+
 // --- User Feedback Storage ---
 function loadFeedback() {
   applyLegacyStorageMigrations();
@@ -12084,6 +12148,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(PROJECT_STORAGE_KEY, 'project');
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
   assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
+  assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -12259,6 +12324,18 @@ function importAllData(allData, options = {}) {
       (entry) => entry && typeof entry === 'object',
     );
     saveOwnGear(entries);
+  }
+  if (hasOwn('userProfile')) {
+    if (allData.userProfile === null) {
+      saveUserProfile(null);
+    } else if (isPlainObject(allData.userProfile)) {
+      const profile = normalizeUserProfile(allData.userProfile);
+      if (profile) {
+        saveUserProfile(profile);
+      } else {
+        saveUserProfile(null);
+      }
+    }
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
@@ -12479,6 +12556,8 @@ var STORAGE_API = {
   saveFavorites,
   loadOwnGear,
   saveOwnGear,
+  loadUserProfile,
+  saveUserProfile,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

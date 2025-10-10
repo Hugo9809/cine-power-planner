@@ -992,6 +992,77 @@ main.legal-content {
   gap: clamp(0.9rem, 2.2vw, 1.4rem);
 }
 
+.contacts-user-profile {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vw, 1.2rem);
+  padding: clamp(0.9rem, 2.3vw, 1.4rem);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--surface-color) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+}
+
+.contacts-user-profile-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contacts-user-profile-description {
+  margin: 0;
+  color: var(--muted-text-color);
+}
+
+.contacts-user-card {
+  display: grid;
+  grid-template-columns: minmax(110px, 140px) 1fr;
+  gap: clamp(0.75rem, 2vw, 1.2rem);
+  align-items: start;
+}
+
+.contacts-user-card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contacts-user-card-hint {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: 0.85rem;
+}
+
+.contacts-user-avatar-clear {
+  align-self: flex-start;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--control-border);
+  background: var(--surface-1);
+  color: inherit;
+  font-weight: var(--font-weight-medium);
+}
+
+.contacts-user-avatar-clear[disabled],
+.contacts-user-avatar-clear[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contacts-user-card,
+.contact-card {
+  align-items: start;
+}
+
+@media screen and (max-width: 600px) {
+  .contacts-user-card {
+    grid-template-columns: 1fr;
+  }
+
+  .contacts-user-card-fields {
+    width: 100%;
+  }
+}
+
 .contacts-empty-state {
   margin: 0;
   padding: 1rem;
@@ -1603,6 +1674,23 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   display: flex;
   flex-direction: column;
   gap: clamp(0.7rem, 1.8vw, 1rem);
+}
+
+.gear-item-edit-provider-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.gear-item-edit-provider-field select {
+  width: 100%;
+}
+
+.gear-item-edit-help {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: 0.85rem;
 }
 
 .gear-item-edit-grid {
@@ -8669,6 +8757,33 @@ body.dark-mode .requirement-box,
   color: color-mix(in srgb, var(--accent-color) 75%, var(--text-color));
   font-size: 0.8rem;
   letter-spacing: 0.01em;
+}
+
+.gear-item-provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  color: color-mix(in srgb, var(--accent-color) 65%, var(--text-color));
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.gear-item-provider[data-provider-type="user"] {
+  background: color-mix(in srgb, var(--success-color) 15%, transparent);
+  color: color-mix(in srgb, var(--success-color) 70%, var(--text-color));
+}
+
+.gear-item-provider[data-provider-type="contact"] {
+  background: color-mix(in srgb, var(--info-color) 15%, transparent);
+  color: color-mix(in srgb, var(--info-color) 70%, var(--text-color));
+}
+
+.gear-item-provider[data-provider-type="custom"] {
+  background: color-mix(in srgb, var(--warning-color) 18%, transparent);
+  color: color-mix(in srgb, var(--warning-color) 75%, var(--text-color));
 }
 
 #gearListOutput .auto-gear-rule-badge {

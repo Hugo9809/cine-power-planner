@@ -6204,6 +6204,13 @@ function persistOwnGearItems() {
       return entry;
     });
     saveOwnGear(payload);
+    if (typeof document !== 'undefined') {
+      try {
+        document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+      } catch (error) {
+        void error;
+      }
+    }
   } catch (error) {
     console.warn('Failed to save own gear items', error);
   }
@@ -12491,6 +12498,32 @@ function setLanguage(lang) {
     if (contactsEmptyState && contactsTexts.emptyState) {
       contactsEmptyState.textContent = contactsTexts.emptyState;
     }
+    if (userProfileHeading && contactsTexts.userProfileHeading) {
+      userProfileHeading.textContent = contactsTexts.userProfileHeading;
+    }
+    if (userProfileDescription && contactsTexts.userProfileDescription) {
+      userProfileDescription.textContent = contactsTexts.userProfileDescription;
+    }
+    if (userProfileNameLabel && contactsTexts.userProfileNameLabel) {
+      userProfileNameLabel.textContent = contactsTexts.userProfileNameLabel;
+    }
+    if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
+      userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
+    }
+    if (userProfileHint && contactsTexts.userProfileHint) {
+      userProfileHint.textContent = contactsTexts.userProfileHint;
+    }
+    if (userProfileAvatarButtonLabel && contactsTexts.userProfileAvatarButton) {
+      userProfileAvatarButtonLabel.textContent = contactsTexts.userProfileAvatarButton;
+    }
+    if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
+      userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
+      userProfileAvatarButton.setAttribute('data-help', contactsTexts.userProfileAvatarButton);
+    }
+    if (userProfileAvatarClearButton && contactsTexts.userProfileAvatarRemove) {
+      userProfileAvatarClearButton.textContent = contactsTexts.userProfileAvatarRemove;
+      userProfileAvatarClearButton.setAttribute('aria-label', contactsTexts.userProfileAvatarRemove);
+    }
     if (contactsCloseButton && contactsTexts.close) {
       contactsCloseButton.textContent = contactsTexts.close;
     }
@@ -12698,6 +12731,17 @@ var contactsEmptyState = null;
 var contactsCloseButton = null;
 var contactsAnnouncement = null;
 var openContactsBtn = null;
+var userProfileSection = null;
+var userProfileHeading = null;
+var userProfileDescription = null;
+var userProfileNameInput = null;
+var userProfileNameLabel = null;
+var userProfileHint = null;
+var userProfileAvatarContainer = null;
+var userProfileAvatarButton = null;
+var userProfileAvatarButtonLabel = null;
+var userProfileAvatarInput = null;
+var userProfileAvatarClearButton = null;
 
 function resolveContactsDomRefs() {
   if (typeof document === 'undefined') return;
@@ -12718,6 +12762,17 @@ function resolveContactsDomRefs() {
   contactsCloseButton = contactsCloseButton || document.getElementById('contactsCloseButton');
   contactsAnnouncement = contactsAnnouncement || document.getElementById('contactsAnnouncement');
   openContactsBtn = openContactsBtn || document.getElementById('openContactsBtn');
+  userProfileSection = userProfileSection || document.getElementById('contactsUserProfile');
+  userProfileHeading = userProfileHeading || document.getElementById('contactsUserProfileHeading');
+  userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
+  userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
+  userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfileHint = userProfileHint || document.getElementById('userProfileHint');
+  userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
+  userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
+  userProfileAvatarButtonLabel = userProfileAvatarButtonLabel || document.getElementById('userProfileAvatarButtonLabel');
+  userProfileAvatarInput = userProfileAvatarInput || document.getElementById('userProfileAvatarInput');
+  userProfileAvatarClearButton = userProfileAvatarClearButton || document.getElementById('userProfileAvatarClear');
 }
 
 var monitoringConfigurationUserChanged = false;
@@ -14554,6 +14609,10 @@ const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
 var contactsCache = [];
 var contactsInitialized = false;
 
+var userProfileState = { name: '', avatar: '' };
+var userProfileDirty = false;
+var userProfilePendingAnnouncement = false;
+
 function getContactsText(key, defaultValue = '') {
   const fallbackContacts = texts?.en?.contacts || {};
   const contactsTexts = texts?.[currentLang]?.contacts || fallbackContacts;
@@ -14680,6 +14739,7 @@ function updateContactPickers() {
   if (!crewContainer) return;
   const selects = crewContainer.querySelectorAll('.person-contact-select');
   selects.forEach(select => setContactSelectOptions(select));
+  dispatchGearProviderDataChanged('contacts');
 }
 
 function getAvatarInitial(value) {
@@ -14722,6 +14782,176 @@ function setRowAvatar(row, avatarValue, options = {}) {
     : nameInput?.value;
   const avatarContainer = row.querySelector('.person-avatar');
   updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
+}
+
+function dispatchGearProviderDataChanged(reason) {
+  if (typeof document === 'undefined') return;
+  try {
+    document.dispatchEvent(new CustomEvent('gear-provider-data-changed', {
+      detail: { reason }
+    }));
+  } catch (error) {
+    void error;
+  }
+}
+
+function getContactsSnapshot() {
+  return contactsCache.map(contact => ({
+    id: contact.id,
+    name: contact.name || '',
+    role: contact.role || '',
+    phone: contact.phone || '',
+    email: contact.email || '',
+    avatar: contact.avatar || '',
+    label: getContactDisplayLabel(contact)
+  }));
+}
+
+function getUserProfileSnapshot() {
+  const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+  const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
+  return { name, avatar };
+}
+
+function applyUserProfileToDom(options = {}) {
+  resolveContactsDomRefs();
+  const profile = getUserProfileSnapshot();
+  const preserveSelection = Boolean(options && options.preserveSelection);
+  if (userProfileNameInput) {
+    if (preserveSelection && document.activeElement === userProfileNameInput) {
+      const start = userProfileNameInput.selectionStart;
+      const end = userProfileNameInput.selectionEnd;
+      userProfileNameInput.value = profile.name;
+      try {
+        userProfileNameInput.setSelectionRange(start, end);
+      } catch (error) {
+        void error;
+      }
+    } else {
+      userProfileNameInput.value = profile.name;
+    }
+  }
+  if (userProfileAvatarContainer) {
+    updateAvatarVisual(userProfileAvatarContainer, profile.avatar || '', profile.name, 'contact-card-avatar-initial');
+  }
+  if (userProfileAvatarClearButton) {
+    const hasAvatar = Boolean(profile.avatar);
+    userProfileAvatarClearButton.disabled = !hasAvatar;
+    userProfileAvatarClearButton.setAttribute('aria-disabled', hasAvatar ? 'false' : 'true');
+  }
+}
+
+function loadUserProfileState() {
+  try {
+    if (typeof loadUserProfile === 'function') {
+      const loaded = loadUserProfile();
+      if (loaded && typeof loaded === 'object') {
+        userProfileState = {
+          name: typeof loaded.name === 'string' ? loaded.name : '',
+          avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
+        };
+      } else {
+        userProfileState = { name: '', avatar: '' };
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load user profile', error);
+    userProfileState = { name: '', avatar: '' };
+  }
+  userProfileDirty = false;
+  userProfilePendingAnnouncement = false;
+  applyUserProfileToDom();
+  dispatchGearProviderDataChanged('user-profile');
+}
+
+function persistUserProfileState(options = {}) {
+  const profile = getUserProfileSnapshot();
+  userProfileState = profile;
+  if (typeof saveUserProfile === 'function') {
+    try {
+      saveUserProfile(profile);
+    } catch (error) {
+      console.warn('Failed to save user profile', error);
+    }
+  }
+  userProfileDirty = false;
+  const isNameActive = typeof document !== 'undefined' && document.activeElement === userProfileNameInput;
+  applyUserProfileToDom({ preserveSelection: isNameActive });
+  if (options && options.announce) {
+    announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
+    userProfilePendingAnnouncement = false;
+  }
+  dispatchGearProviderDataChanged('user-profile');
+}
+
+function handleUserProfileNameInput() {
+  if (!userProfileNameInput) return;
+  const rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
+  if (rawValue.trim() === userProfileState.name.trim()) {
+    return;
+  }
+  userProfileState = {
+    name: rawValue,
+    avatar: userProfileState.avatar || ''
+  };
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileNameBlur() {
+  if (!userProfileDirty && !userProfilePendingAnnouncement) {
+    return;
+  }
+  userProfileDirty = false;
+  if (userProfilePendingAnnouncement) {
+    userProfilePendingAnnouncement = false;
+    announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
+  }
+}
+
+function handleUserProfileAvatarCleared() {
+  if (!userProfileState.avatar) {
+    return;
+  }
+  userProfileState = {
+    name: userProfileState.name || '',
+    avatar: ''
+  };
+  persistUserProfileState();
+  announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+}
+
+function handleUserProfileAvatarButtonClick(event) {
+  if (!userProfileAvatarInput) return;
+  if (event && event.shiftKey) {
+    handleUserProfileAvatarCleared();
+    return;
+  }
+  userProfileAvatarInput.click();
+}
+
+function handleUserProfileAvatarInputChange() {
+  if (!userProfileAvatarInput) return;
+  const [file] = userProfileAvatarInput.files || [];
+  if (!file) {
+    return;
+  }
+  readAvatarFile(file, dataUrl => {
+    userProfileState = {
+      name: userProfileState.name || '',
+      avatar: dataUrl
+    };
+    persistUserProfileState();
+    announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+  }, reason => {
+    if (reason === 'tooLarge') {
+      announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
+    } else {
+      announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+    }
+  });
+  userProfileAvatarInput.value = '';
 }
 
 function refreshRowAvatarInitial(row) {
@@ -15356,8 +15586,24 @@ function initializeContactsModule() {
   if (contactsInitialized) return;
   contactsInitialized = true;
   contactsCache = loadStoredContacts();
+  loadUserProfileState();
   renderContactsList();
   updateContactPickers();
+  applyUserProfileToDom();
+
+  if (userProfileNameInput) {
+    userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
+    userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileAvatarButton) {
+    userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);
+  }
+  if (userProfileAvatarClearButton) {
+    userProfileAvatarClearButton.addEventListener('click', handleUserProfileAvatarCleared);
+  }
+  if (userProfileAvatarInput) {
+    userProfileAvatarInput.addEventListener('change', handleUserProfileAvatarInputChange);
+  }
 
   if (contactsAddButton) {
     contactsAddButton.addEventListener('click', () => {

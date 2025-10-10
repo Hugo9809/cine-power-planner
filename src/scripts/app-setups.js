@@ -5,7 +5,8 @@
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
-          focusScalePreference */
+          focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
+          getContactDisplayLabel, getContactsText */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -1308,6 +1309,229 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   } else if (typeof alert === 'function') {
     alert(successMessage);
   }
+}
+
+let ownGearNameCache = null;
+
+function getGearProviderTexts() {
+  const textsForDialog = getGearItemEditTexts();
+  return {
+    rental: textsForDialog.providerRental || 'Rental house',
+    user: textsForDialog.providerUser || 'User',
+    crewHeading: textsForDialog.providerCrewHeading || 'Crew',
+    unknown: textsForDialog.providerUnknown || 'Custom provider',
+    help: textsForDialog.providerHelp || '',
+  };
+}
+
+function refreshOwnGearNameCache() {
+  ownGearNameCache = { names: new Set(), timestamp: Date.now() };
+  if (typeof loadOwnGear !== 'function') {
+    return ownGearNameCache.names;
+  }
+  try {
+    const items = loadOwnGear();
+    if (Array.isArray(items)) {
+      items.forEach(item => {
+        if (item && typeof item.name === 'string') {
+          const trimmed = item.name.trim().toLowerCase();
+          if (trimmed) {
+            ownGearNameCache.names.add(trimmed);
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.warn('Unable to refresh own gear cache for provider defaults', error);
+  }
+  return ownGearNameCache.names;
+}
+
+function getOwnGearNameSet() {
+  if (!ownGearNameCache || !(ownGearNameCache.names instanceof Set)) {
+    return refreshOwnGearNameCache();
+  }
+  return ownGearNameCache.names;
+}
+
+function guessDefaultProvider(name) {
+  const trimmed = typeof name === 'string' ? name.trim() : '';
+  if (!trimmed) {
+    return 'rental-house';
+  }
+  const lookup = getOwnGearNameSet();
+  if (lookup.has(trimmed.toLowerCase())) {
+    return 'user';
+  }
+  return 'rental-house';
+}
+
+function ensureGearItemProviderElement(element) {
+  if (!element) return null;
+  let providerSpan = element.querySelector('.gear-item-provider');
+  if (providerSpan) {
+    return providerSpan;
+  }
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  providerSpan = doc.createElement('span');
+  providerSpan.className = 'gear-item-provider';
+  providerSpan.hidden = true;
+  const isCustom = element.classList?.contains('gear-custom-item');
+  if (isCustom) {
+    const summary = element.querySelector('.gear-custom-item-summary');
+    const note = element.querySelector('.gear-item-note');
+    if (summary) {
+      if (note) {
+        summary.insertBefore(providerSpan, note);
+      } else {
+        summary.appendChild(providerSpan);
+      }
+      return providerSpan;
+    }
+  }
+  const reference = element.querySelector('.gear-item-note')
+    || element.querySelector('.gear-item-edit-btn')
+    || element.querySelector('.gear-custom-item-actions')
+    || element.querySelector('.gear-custom-remove-btn');
+  if (reference && reference.parentElement) {
+    reference.parentElement.insertBefore(providerSpan, reference);
+  } else {
+    element.appendChild(providerSpan);
+  }
+  return providerSpan;
+}
+
+function getProviderInfo(value, options = {}) {
+  const trimmed = typeof value === 'string' ? value.trim() : '';
+  const texts = getGearProviderTexts();
+  if (!trimmed) {
+    return { value: '', label: '', type: '' };
+  }
+  if (trimmed === 'rental-house') {
+    return { value: 'rental-house', label: texts.rental, type: 'rental' };
+  }
+  if (trimmed === 'user') {
+    const profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+    const profileName = profile && profile.name ? profile.name : '';
+    const label = profileName ? `${profileName} — ${texts.user}` : (options.label || texts.user);
+    return { value: 'user', label, type: 'user', profileName };
+  }
+  if (trimmed.startsWith('contact:')) {
+    const contactId = trimmed.slice('contact:'.length);
+    const contact = typeof getContactById === 'function' ? getContactById(contactId) : null;
+    if (contact) {
+      const label = typeof getContactDisplayLabel === 'function'
+        ? getContactDisplayLabel(contact)
+        : (contact.name || contact.email || contact.phone || contact.id || texts.crewHeading);
+      return { value: trimmed, label, type: 'contact', contactId };
+    }
+    const fallback = (options && options.label) || (typeof getContactsText === 'function'
+      ? getContactsText('missingContactFallback', 'Saved contact')
+      : 'Saved contact');
+    return { value: trimmed, label: fallback, type: 'contact', contactId, missing: true };
+  }
+  return { value: trimmed, label: options && options.label ? options.label : texts.unknown, type: 'custom' };
+}
+
+function setGearItemProvider(element, providerValue, options = {}) {
+  if (!element) return;
+  const info = getProviderInfo(providerValue || element.getAttribute('data-gear-provider') || '', {
+    label: options.label,
+  });
+  if (info.value) {
+    element.setAttribute('data-gear-provider', info.value);
+  } else {
+    element.removeAttribute('data-gear-provider');
+  }
+  if (info.label) {
+    element.setAttribute('data-gear-provider-label', info.label);
+  } else {
+    element.removeAttribute('data-gear-provider-label');
+  }
+  const badge = ensureGearItemProviderElement(element);
+  if (!badge) return;
+  if (info.label) {
+    badge.textContent = info.label;
+    badge.hidden = false;
+    badge.setAttribute('data-provider-type', info.type || '');
+    badge.setAttribute('title', info.label);
+    badge.setAttribute('data-help', info.label);
+  } else {
+    badge.textContent = '';
+    badge.hidden = true;
+    badge.removeAttribute('data-provider-type');
+    badge.removeAttribute('title');
+    badge.removeAttribute('data-help');
+  }
+}
+
+function getProviderOptionLabel(option) {
+  if (!option) return '';
+  return option.textContent ? option.textContent.trim() : option.value;
+}
+
+function updateGearItemEditProviderOptions(context, data = {}) {
+  if (!context || !context.providerSelect) return;
+  const select = context.providerSelect;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  const texts = getGearProviderTexts();
+  const profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+  const contacts = typeof getContactsSnapshot === 'function' ? getContactsSnapshot() : [];
+  const doc = select.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+
+  const rentalOption = doc.createElement('option');
+  rentalOption.value = 'rental-house';
+  rentalOption.textContent = texts.rental;
+  select.appendChild(rentalOption);
+
+  const userOption = doc.createElement('option');
+  userOption.value = 'user';
+  const profileName = profile && profile.name ? profile.name : '';
+  userOption.textContent = profileName ? `${profileName} — ${texts.user}` : texts.user;
+  select.appendChild(userOption);
+
+  if (contacts.length) {
+    const group = doc.createElement('optgroup');
+    group.label = texts.crewHeading;
+    contacts.forEach(contact => {
+      const option = doc.createElement('option');
+      option.value = `contact:${contact.id}`;
+      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.id;
+      group.appendChild(option);
+    });
+    select.appendChild(group);
+  }
+
+  const selectedValue = typeof data.providedBy === 'string' && data.providedBy.trim()
+    ? data.providedBy.trim()
+    : guessDefaultProvider(data.name || '');
+
+  if (selectedValue && !Array.from(select.options).some(option => option.value === selectedValue)) {
+    const fallbackOption = doc.createElement('option');
+    fallbackOption.value = selectedValue;
+    fallbackOption.textContent = data.providerLabel
+      || (typeof getContactsText === 'function'
+        ? getContactsText('missingContactFallback', 'Saved contact')
+        : texts.unknown);
+    fallbackOption.setAttribute('data-provider-fallback', 'true');
+    select.appendChild(fallbackOption);
+  }
+
+  select.value = selectedValue || 'rental-house';
+}
+
+function refreshGearItemProviderDisplays(scope) {
+  const root = scope || gearListOutput;
+  if (!root) return;
+  const items = root.querySelectorAll('.gear-item, .gear-custom-item');
+  items.forEach(element => {
+    const data = getGearItemData(element);
+    setGearItemProvider(element, data.providedBy, { label: data.providerLabel });
+  });
 }
 
 function handleShareSetupClick() {
@@ -4662,6 +4886,8 @@ function getGearItemData(element) {
     || '';
   const attributesAttr = element.getAttribute('data-gear-attributes') || '';
   const noteAttr = element.getAttribute('data-gear-note') || '';
+  const providerAttr = element.getAttribute('data-gear-provider') || '';
+  const providerLabelAttr = element.getAttribute('data-gear-provider-label') || '';
   const textContainer = element.querySelector('.gear-item-text');
   const rawText = textContainer ? textContainer.textContent : element.textContent || '';
   const parsed = parseGearItemDisplayParts(rawText);
@@ -4671,12 +4897,19 @@ function getGearItemData(element) {
   const note = noteAttr.trim();
   const rentalExcluded = element.getAttribute('data-rental-excluded') === 'true'
     || element.classList.contains('gear-item-rental-excluded');
+  let providedBy = providerAttr.trim();
+  if (!providedBy) {
+    providedBy = guessDefaultProvider(name);
+  }
+  const providerLabel = providerLabelAttr.trim();
   return {
     quantity,
     name,
     attributes,
     note,
     rentalExcluded,
+    providedBy,
+    providerLabel,
   };
 }
 
@@ -4782,6 +5015,13 @@ function applyGearItemData(element, data = {}, options = {}) {
   } else {
     element.removeAttribute('data-gear-note');
   }
+  const providerValue = typeof data.providedBy === 'string'
+    ? data.providedBy.trim()
+    : (element.getAttribute('data-gear-provider') || '');
+  const providerLabel = typeof data.providerLabel === 'string'
+    ? data.providerLabel.trim()
+    : (element.getAttribute('data-gear-provider-label') || '');
+  setGearItemProvider(element, providerValue, { label: providerLabel });
   if (!element.getAttribute('data-gear-original-name')) {
     const originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -5011,6 +5251,9 @@ function buildGearItemEditContext() {
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
+    providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
+    providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -5045,6 +5288,12 @@ function getGearItemEditTexts() {
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
+    providerLabel: langTexts.gearListEditProviderLabel || fallbackTexts.gearListEditProviderLabel || 'Provided by',
+    providerHelp: langTexts.gearListEditProviderHelp || fallbackTexts.gearListEditProviderHelp || '',
+    providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental house',
+    providerUser: langTexts.gearListProviderUser || fallbackTexts.gearListProviderUser || 'User',
+    providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
+    providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
     saveLabel: langTexts.gearListEditSave || fallbackTexts.gearListEditSave || 'Save',
@@ -5072,6 +5321,21 @@ function applyGearItemEditDialogTexts(context) {
   }
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
+  }
+  if (context.providerLabel) {
+    context.providerLabel.textContent = textsForDialog.providerLabel;
+  }
+  if (context.providerHelp) {
+    context.providerHelp.textContent = textsForDialog.providerHelp || '';
+    context.providerHelp.hidden = !context.providerHelp.textContent;
+  }
+  if (context.providerSelect) {
+    if (context.providerHelp && context.providerHelp.textContent) {
+      context.providerSelect.setAttribute('aria-describedby', context.providerHelp.id);
+    } else {
+      context.providerSelect.removeAttribute('aria-describedby');
+    }
+    context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
   }
   const rentalTexts = getGearListRentalToggleTexts();
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
@@ -5344,6 +5608,10 @@ function handleGearItemEditFormSubmit(event) {
     rentalExcluded: allowRentalToggle && context.rentalCheckbox
       ? context.rentalCheckbox.checked
       : targetEntry.getAttribute('data-rental-excluded') === 'true',
+    providedBy: context.providerSelect ? context.providerSelect.value : '',
+    providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length
+      ? getProviderOptionLabel(context.providerSelect.selectedOptions[0])
+      : '',
   };
   applyGearItemData(targetEntry, data);
   context.currentAttributes = typeof data.attributes === 'string' ? data.attributes : '';
@@ -5414,6 +5682,22 @@ function handleGearItemEditDialogClose() {
       }
     }
   }
+}
+
+function refreshGearItemEditProviderOptionsIfOpen() {
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.providerSelect) {
+    return;
+  }
+  const isDialogOpen = typeof context.dialog.open === 'boolean'
+    ? context.dialog.open
+    : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  const data = targetEntry ? getGearItemData(targetEntry) : {};
+  updateGearItemEditProviderOptions(context, data);
 }
 
 function bindGearItemEditDialog(context) {
@@ -5498,6 +5782,9 @@ function openGearItemEditor(element, options = {}) {
   }
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
+  }
+  if (context.providerSelect) {
+    updateGearItemEditProviderOptions(context, data);
   }
   updateGearItemEditRentalControls(context, Boolean(data.rentalExcluded), allowRentalToggle);
   if (context.rentalToggleButton) {
@@ -5617,8 +5904,15 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   } else {
     element.removeAttribute('data-gear-note');
   }
-  updateCustomItemPreview(element);
-  updateGearItemNoteElement(element, noteValue);
+  applyGearItemData(element, {
+    quantity: quantityValue,
+    name: nameValue,
+    attributes: attributesValue,
+    note: noteValue,
+    rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
+    providedBy: data && (data.providedBy || data.provider) ? (data.providedBy || data.provider) : '',
+    providerLabel: data && data.providerLabel ? data.providerLabel : '',
+  });
   return element;
 }
 
@@ -5641,7 +5935,15 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   if (!entry) return null;
   container.appendChild(entry);
   attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
-  updateCustomItemPreview(entry);
+  applyGearItemData(entry, {
+    quantity: data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '',
+    name: data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '',
+    attributes: data && Object.prototype.hasOwnProperty.call(data, 'attributes') ? data.attributes : '',
+    note: data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '',
+    rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
+    providedBy: data && (data.providedBy || data.provider) ? (data.providedBy || data.provider) : '',
+    providerLabel: data && data.providerLabel ? data.providerLabel : '',
+  }, { skipPreview: false });
   const wantsExcluded = Boolean(
     data && (data.rentalExcluded === true || data.rentalExcluded === 'true')
   );
@@ -5710,7 +6012,9 @@ function readCustomItemsState() {
       const attributes = String(item.getAttribute('data-gear-attributes') || '');
       const note = String(item.getAttribute('data-gear-note') || '');
       const rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
-      entries.push({ quantity, name, attributes, note, rentalExcluded });
+      const providedBy = String(item.getAttribute('data-gear-provider') || '');
+      const providerLabel = String(item.getAttribute('data-gear-provider-label') || '');
+      entries.push({ quantity, name, attributes, note, rentalExcluded, providedBy, providerLabel });
     });
     if (entries.length) {
       state[key] = entries;
@@ -8793,5 +9097,17 @@ function refreshGearListIfVisible() {
     // Ensure both the gear list HTML and the associated session state are
     // saved whenever the visible list is refreshed so reloads keep it visible.
     saveCurrentSession();
+}
+
+if (typeof document !== 'undefined') {
+    document.addEventListener('gear-provider-data-changed', () => {
+        refreshGearItemProviderDisplays();
+        refreshGearItemEditProviderOptionsIfOpen();
+    });
+    document.addEventListener('own-gear-data-changed', () => {
+        ownGearNameCache = null;
+        refreshGearItemProviderDisplays();
+        refreshGearItemEditProviderOptionsIfOpen();
+    });
 }
 
