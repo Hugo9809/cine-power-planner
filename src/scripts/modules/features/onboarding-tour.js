@@ -1564,8 +1564,37 @@
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
     GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChange);
-    GLOBAL_SCOPE.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
   }
+
+  function attachFactoryResetListeners() {
+    const attached = new Set();
+    const candidates = collectCandidateScopes(GLOBAL_SCOPE);
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
+      if (!scope || attached.has(scope)) {
+        continue;
+      }
+      if (typeof scope.addEventListener === 'function') {
+        try {
+          scope.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
+          attached.add(scope);
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not attach factory reset listener.', error);
+        }
+      }
+    }
+
+    if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function' && !attached.has(DOCUMENT)) {
+      try {
+        DOCUMENT.addEventListener('cameraPowerPlannerFactoryReset', handleFactoryReset);
+        attached.add(DOCUMENT);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not attach document factory reset listener.', error);
+      }
+    }
+  }
+
+  attachFactoryResetListeners();
 
   const moduleApi = clone({
     start: startTutorial,
