@@ -3124,9 +3124,33 @@ if (projectForm) {
   projectForm.querySelectorAll('select[multiple]').forEach(function (sel) {
     attachMultiSelectToggle(sel);
   });
+
+  var safeUpdateSelectIconBoxes = function safeUpdateSelectIconBoxes(selectElement) {
+    if (!selectElement) {
+      return;
+    }
+
+    var localFn = typeof updateSelectIconBoxes === 'function' ? updateSelectIconBoxes : null;
+    var globalScope = typeof globalThis !== 'undefined' && globalThis ? globalThis : typeof window !== 'undefined' ? window : null;
+    var globalFn = globalScope && typeof globalScope.updateSelectIconBoxes === 'function' ? globalScope.updateSelectIconBoxes : null;
+    var target = localFn || globalFn;
+
+    if (typeof target !== 'function') {
+      return;
+    }
+
+    try {
+      target(selectElement);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('updateSelectIconBoxes handler failed', error);
+      }
+    }
+  };
+
   projectForm.querySelectorAll('select').forEach(function (sel) {
     var handleUpdate = function handleUpdate() {
-      return updateSelectIconBoxes(sel);
+      return safeUpdateSelectIconBoxes(sel);
     };
     sel.addEventListener('change', handleUpdate);
     handleUpdate();
