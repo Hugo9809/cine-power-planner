@@ -44,6 +44,13 @@ drive without phoning home.
   [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every
   time you ship new behavior so help topics, translations and manuals stay in
   lockstep with the runtime.
+- **Log verification rehearsals.** Pair each release or workstation audit with
+  the [Documentation Verification Packet](docs/documentation-verification-packet.md)
+  and file copies of the [Verification Log Template](docs/verification-log-template.md)
+  so every save/share/import/backup/restore drill is documented alongside the
+  assets that shipped. Maintaining these records keeps help topics, translation
+  notes and workflow screenshots provably in sync with the builds crews run
+  offline.
 - **Localize with confidence.** Reference the [Translation Guide](docs/translation-guide.md)
   and language-specific README files whenever you add or update locales so
   offline readers stay aligned with the latest workflows.
@@ -276,6 +283,12 @@ same online or offline.
    every crew can prove when the drill succeeded. This keeps save, share,
    import, backup and restore workflows provably in sync from the first session
    and gives you redundant recovery media for travel days.
+1. Duplicate the worksheet in
+   `docs/verification-log-template.md` (or store a copy of the rendered
+   template) and record the completed rehearsal, including timestamps for each
+   save/share/import/backup/restore step and notes from the offline run.
+   Attach screenshots, exported bundles and verification hashes to the packet
+   so documentation reviewers can trace the exact data that was protected.
 1. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
     `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
    that the runtime guard validated every save/share/restore gateway and the
@@ -285,7 +298,11 @@ same online or offline.
     translations render without fetching remote assets and the documentation
     reiterates the save → share → import → backup → restore drills you just ran.
     This step keeps Help, Documentation and Translation resources verified
-    alongside the core workflows.
+    alongside the core workflows. When updates are needed, follow the
+    [Documentation Maintenance guide](docs/documentation-maintenance.md) and
+    [Documentation Audit Checklist](docs/documentation-audit-checklist.md) to
+    ensure every offline asset ships updated screenshots, localized strings and
+    safety instructions before the next rehearsal.
 
 ## Key Workflow Reference
 
