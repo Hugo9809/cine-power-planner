@@ -9,6 +9,11 @@
           createProjectDeletionBackup,
           resumeProjectPersistence */
 
+// Locate a logging helper without assuming a specific runtime. The application
+// runs in browsers, service workers and occasionally Node based tooling, so we
+// patiently walk through every known global scope until we find the shared
+// cineLogging helper. Keeping this logic centralised makes it far easier for
+// on-call engineers to diagnose sync or autosave issues when working offline.
 const eventsLogger = (function resolveEventsLogger() {
   const scopes = [];
 
@@ -53,6 +58,9 @@ const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
 
+// We frequently need a safe reference to the global scope to access runtime
+// helpers. This tiny utility keeps that logic readable so future maintainers do
+// not have to remember every possible environment in which the planner runs.
 function getGlobalScope() {
   if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
   if (typeof window !== 'undefined' && window) return window;

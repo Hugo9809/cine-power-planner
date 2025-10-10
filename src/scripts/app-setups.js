@@ -8,6 +8,10 @@
           focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic */
 
+// Setups orchestrates saving and restoring complex project forms. A gentle
+// reminder: every helper here feeds into autosave, backup and sharing flows, so
+// prefer descriptive names and leave breadcrumbs when adjusting logic.
+
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
