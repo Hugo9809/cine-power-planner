@@ -22,6 +22,9 @@
   --panel-border: #ddd;
   --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
+  --surface-1: color-mix(in srgb, var(--surface-color) 96%, transparent);
+  --surface-2: color-mix(in srgb, var(--surface-color) 90%, transparent);
+  --text-muted: var(--muted-text-color);
   --border-radius: 5px;
   --spacing-2xs: 2px;
   --spacing-xs: 4px;
@@ -151,6 +154,10 @@
   --auto-gear-highlight-border: rgba(255, 181, 0, 0.7);
   --nd-grad-border-color: var(--accent-color);
   --auto-gear-highlight-text: var(--text-color);
+  --person-card-gap: clamp(0.75rem, 1.6vw, 1.1rem);
+  --person-card-padding-block: clamp(0.75rem, 1.5vw, 1rem);
+  --person-card-padding-inline: clamp(0.85rem, 2.4vw, 1.5rem);
+  --person-card-radius: 0.95rem;
 }
 @media (max-width: 600px) {
   :root {
@@ -850,25 +857,41 @@ main.legal-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--gap-size);
+  gap: var(--person-card-gap);
+  align-items: stretch;
+  inline-size: 100%;
+  max-inline-size: min(100%, 960px);
 }
 
 .person-row {
   display: flex;
-  gap: var(--gap-size);
+  gap: var(--person-card-gap);
   flex-wrap: wrap;
   align-items: stretch;
-  padding: 0.5rem;
-  border-radius: 0.75rem;
+  padding-block: var(--person-card-padding-block);
+  padding-inline: var(--person-card-padding-inline);
+  border-radius: var(--person-card-radius);
   background: var(--surface-1);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
   box-shadow: var(--panel-shadow);
+  transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.person-row:hover,
+.person-row:focus-within {
+  box-shadow: var(--panel-shadow-hover);
+  border-color: color-mix(in srgb, var(--accent-color) 28%, var(--panel-border));
+}
+
+.person-row:dir(rtl) {
+  flex-direction: row-reverse;
 }
 
 .person-avatar {
   position: relative;
   flex: 0 0 auto;
-  width: 56px;
-  height: 56px;
+  inline-size: 56px;
+  block-size: 56px;
   border-radius: 999px;
   overflow: hidden;
   background: var(--surface-2);
@@ -917,12 +940,51 @@ main.legal-content {
   outline-offset: 2px;
 }
 
-.person-fields {
+.person-content {
   flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.65rem, 1.8vw, 1.1rem);
+  min-width: 0;
+}
+
+.person-row-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.65rem, 1.4vw, 0.9rem);
+  row-gap: clamp(0.4rem, 1vw, 0.65rem);
+  padding-block-end: 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--panel-border) 45%, transparent);
+}
+
+.person-header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1 1 clamp(200px, 32vw, 320px);
+  min-inline-size: clamp(180px, 28vw, 320px);
+}
+
+.person-header-main .person-role-select {
+  flex: 1 1 clamp(180px, 26vw, 280px);
+  min-inline-size: clamp(160px, 24vw, 260px);
+}
+
+.person-fields {
+  flex: 1 1 auto;
   display: grid;
-  gap: calc(var(--gap-size) / 2);
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: clamp(0.5rem, 1.6vw, 0.85rem);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 32vw, 260px), 1fr));
   align-content: start;
+  padding-block-start: 0.35rem;
+  min-width: 0;
+}
+
+.person-details .person-contact-select {
+  grid-column: 1 / -1;
 }
 
 .person-fields select,
@@ -937,19 +999,22 @@ main.legal-content {
 
 .person-actions {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  align-self: center;
-  min-width: 140px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 1 clamp(220px, 30vw, 260px);
+  min-inline-size: clamp(200px, 28vw, 260px);
 }
 
 .person-actions button {
-  width: 100%;
   margin: 0;
+  min-height: 2.5rem;
+  min-inline-size: clamp(120px, 28vw, 140px);
 }
 
 .person-actions .person-remove-btn {
-  align-self: stretch;
+  align-self: center;
 }
 
 .person-linked-badge {
@@ -958,7 +1023,7 @@ main.legal-content {
   gap: 0.25rem;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--accent-color) 12%, var(--surface-2));
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
@@ -966,6 +1031,38 @@ main.legal-content {
 
 .person-row[data-contact-id] .person-linked-badge {
   color: var(--accent-color);
+}
+
+.person-row:dir(rtl) .person-row-header {
+  justify-content: flex-start;
+}
+
+.person-row:dir(rtl) .person-actions {
+  justify-content: flex-start;
+}
+
+@media screen and (max-width: 720px) {
+  .person-row {
+    padding-block: clamp(0.65rem, 3vw, 0.9rem);
+    padding-inline: clamp(0.75rem, 4vw, 1rem);
+  }
+
+  .person-row-header {
+    align-items: stretch;
+    flex-direction: column;
+    align-content: stretch;
+    gap: clamp(0.5rem, 2.5vw, 0.75rem);
+  }
+
+  .person-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .person-actions button {
+    flex: 1 1 auto;
+    min-inline-size: auto;
+  }
 }
 
 
