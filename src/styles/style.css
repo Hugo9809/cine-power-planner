@@ -6532,6 +6532,10 @@ body.pink-mode:not(.dark-mode) .onboarding-backdrop {
   flex-direction: column;
   gap: var(--spacing-lg);
   border: 1px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+  max-height: min(90vh, calc(100vh - 3rem));
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
 }
 
 body.dark-mode .onboarding-card {
