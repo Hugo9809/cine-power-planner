@@ -3636,32 +3636,34 @@ const texts = {
     installBannerDismiss: "Cerrar",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
     installHelpTitleAndroid: "Instala Cine Power Planner en Android",
-    installHelpIntroIos: "Añade Cine Power Planner a la pantalla de inicio para usarlo como una aplicación.",
-    installHelpIntroAndroid: "Añade Cine Power Planner a la pantalla de inicio para usarlo como una aplicación.",
+    installHelpIntroIos:
+      "Añade Cine Power Planner a la pantalla de inicio para usarlo como si fuera una aplicación.",
+    installHelpIntroAndroid:
+      "Añade Cine Power Planner a la pantalla de inicio para usarlo como si fuera una aplicación.",
     installHelpStepsIos: [
       "Abre Cine Power Planner en Safari.",
       "Toca el botón Compartir.",
-      "Elige Añadir a pantalla de inicio y confirma.",
+      "Elige Añadir a la pantalla de inicio y confirma.",
     ],
     installHelpStepsAndroid: [
       "Abre Cine Power Planner en Chrome.",
       "Toca el menú del navegador (⋮).",
-      "Elige Añadir a pantalla de inicio y confirma.",
+      "Elige Añadir a la pantalla de inicio y confirma.",
     ],
-    installHelpNoteIos: "Después de la instalación, abre Cine Power Planner desde la pantalla de inicio.",
+    installHelpNoteIos: "Una vez instalado, abre Cine Power Planner desde la pantalla de inicio.",
     installHelpNoteAndroid:
       "Android utiliza el mismo almacenamiento en el navegador y en la aplicación instalada, por lo que tus proyectos siguen disponibles.",
     installHelpMigrationTitle: "Traslada tus datos a la aplicación",
     installHelpClose: "Cerrar",
     iosPwaHelpTitle: "Mantén tus datos al instalar en iOS",
     iosPwaHelpIntro:
-      "Safari separa la pestaña del navegador y la app instalada. Sigue estos pasos para llevar tus datos de Cine Power Planner a la app:",
+      "Safari separa la pestaña del navegador y la app instalada. Sigue estos pasos para mover tus datos de Cine Power Planner a la app:",
     iosPwaHelpStep1: "Abre Cine Power Planner en Safari, donde tus proyectos siguen visibles.",
     iosPwaHelpStep2:
-      "Ve a Ajustes → Copia de seguridad y restaurar → Copia de seguridad para descargar una copia de tus datos.",
+      "Ve a Ajustes → Copia de seguridad y restauración → Copia de seguridad para descargar una copia de tus datos.",
     iosPwaHelpStep3: "Abre Cine Power Planner desde el icono de la pantalla de inicio.",
     iosPwaHelpStep4:
-      "Ve a Ajustes → Copia de seguridad y restaurar → Restaurar y selecciona el archivo de copia de seguridad.",
+      "Ve a Ajustes → Copia de seguridad y restauración → Restaurar y selecciona el archivo de copia de seguridad.",
     iosPwaHelpNote:
       "Tras restaurar una vez, todos los cambios permanecen en la app instalada. Conserva la copia de seguridad si piensas reinstalar o cambiar de dispositivo.",
     iosPwaHelpClose: "Entendido",
@@ -3670,7 +3672,7 @@ const texts = {
 
     setupManageHeading: "Resumen del proyecto",
     deviceSelectionHeading: "Configurar dispositivos",
-    overviewDeviceSelectionHeading: "Dispositivos de la configuración de cámara",
+    overviewDeviceSelectionHeading: "Dispositivos de la configuración de la cámara",
     resultsHeading: "Resumen de potencia",
     pdfWarningsHeading: "Avisos",
     deviceManagerHeading: "Biblioteca de dispositivos",
@@ -3678,46 +3680,46 @@ const texts = {
     batteryComparisonDescription:
       "Revisa cada batería compatible para ver las estimaciones de autonomía con tu configuración actual.",
     batteryComparisonDescriptionHelp:
-      "Esta tabla reúne todas las baterías compatibles y se actualiza al cambiar tu configuración. Pasa el cursor por los encabezados para conocer qué representa cada dato.",
+      "Esta tabla reúne todas las baterías compatibles y se actualiza al cambiar tu configuración. Pasa el cursor por los encabezados para saber qué representa cada dato.",
     batteryComparisonTableHelp:
-      "Cada fila muestra una batería compatible. El tiempo estimado incluye el consumo calculado y la barra de color compara la duración de un vistazo.",
+      "Cada fila muestra una batería compatible. El tiempo estimado incluye el consumo calculado, y la barra de color compara la duración de un vistazo.",
     setupDiagramHeading: "Diagrama de conexiones",
     diagramPdfNote:
       "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
     projectRequirementsNav: "Requisitos del proyecto",
     projectRequirementsNavHelp:
-      "Ir a la salida Requisitos del proyecto cuando esté disponible.",
+      "Ir a la sección Requisitos del proyecto en cuanto esté disponible.",
     gearListNav: "Lista de equipo",
     gearListNavHelp:
-      "Ver la lista de equipo generada con todos los artículos y categorías.",
+      "Consulta la lista de equipo generada con todos los elementos y categorías.",
     ownGearNav: "Equipo propio",
-    ownGearNavHelp: "Registra el equipo que ya tienes disponible y reutilízalo en tus proyectos.",
+    ownGearNavHelp: "Registra el equipo que ya tienes a mano y reutilízalo en tus proyectos.",
     overviewExportTitleSuffix: "Lista de equipo y requisitos del proyecto",
     openSettingsNav: "Ajustes",
     openSettingsNavHelp:
       "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
     openHelpNav: "Centro de ayuda",
     openHelpNavHelp:
-      "Abrir la guía de ayuda integrada con tutoriales, consejos de resolución de problemas y atajos.",
+      "Abrir la guía de ayuda integrada con tutoriales, consejos para resolver problemas y atajos.",
     setupManageHeadingHelp:
-      "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
+      "Gestiona los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp:
       "Elige cámaras, monitores y accesorios para tu equipo.",
     resultsHeadingHelp:
       "Consulta el consumo de energía, la autonomía estimada y la cantidad de baterías.",
     resultsPlainSummaryTitle: "Resumen rápido",
     resultsPlainSummaryHelp:
-      "Explica el resumen de potencia con un lenguaje sencillo y ayuda a planificar la autonomía.",
+      "Explica el resumen de potencia con un lenguaje sencillo y te ayuda a planificar la autonomía.",
     resultsPlainSummaryPrompt:
       "Añade dispositivos y elige una batería para ver un resumen en lenguaje claro.",
     resultsPlainSummaryNeedBattery:
-      "Elige una batería para saber cuánto durará tu equipo y cuántos packs llevar.",
+      "Elige una batería para saber cuánto durará tu equipo y cuántos packs debes llevar.",
     resultsPlainSummaryRuntime:
       "Con {batteryName} tendrás unas {hours} horas de autonomía. Para una jornada de 10 horas lleva {batteryCount} baterías. Tu equipo consume ahora {totalPower} W.",
     resultsPlainSummaryUnlimited:
       "Con {batteryName} tu equipo consume {totalPower} W, así que la autonomía es prácticamente ilimitada. Asegúrate de tener una batería cargada conectada antes de grabar.",
     resultsPlainSummaryNote:
-      "El estado de los pines y del D-Tap se actualiza a medida que añades equipo.",
+      "Los estados de los pines y del D-Tap se actualizan a medida que añades equipo.",
     resultsPlainSummaryPinsZero: "Pines: sin consumo de 12V por ahora.",
     resultsPlainSummaryPinsOk:
       "Pines: {current}A dentro del límite de {max}A.",
@@ -3739,7 +3741,7 @@ const texts = {
     resultsPlainSummaryDtapUnavailableBMount:
       "D-Tap: las cámaras B-Mount desactivan el puerto auxiliar.",
     resultsPlainSummaryDtapUnknown:
-      "D-Tap: sin rango documentado, maneja con precaución {current}A.",
+      "D-Tap: sin rango documentado; manipula {current}A con precaución.",
     resultsPlainSummaryUnnamedBattery: "la batería seleccionada",
     deviceManagerHeadingHelp:
       "Añade, edita o elimina entradas de la base de datos de dispositivos, incluidas categorías, subcategorías y atributos.",
@@ -3754,24 +3756,24 @@ const texts = {
       "La longitud de la barra compara la autonomía entre baterías. El verde cubre pines y D-Tap, el naranja significa solo los pines principales y el azul marca estimaciones de autonomía infinita.",
     setupDiagramHeadingHelp:
       "Visualiza cómo se conectan los dispositivos del proyecto.",
-    setupDiagramPlaceholder: "Selecciona dispositivos para mostrar el diagrama del proyecto.",
+    setupDiagramPlaceholder: "Selecciona dispositivos para ver el diagrama del proyecto.",
     diagramLegendPower: "Energía",
     diagramLegendVideo: "Vídeo",
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Descargar el diagrama",
     gridSnapToggle: "Ajustar a la cuadrícula",
-    existingDevicesHeading: "Dispositivos Existentes",
+    existingDevicesHeading: "Dispositivos existentes",
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
     menuToggleLabel: "Menú",
     menuToggleHelp:
-      "Abre la barra lateral para saltar entre las secciones del planificador o mostrar los controles en pantallas pequeñas. Pulsa de nuevo para cerrarla.",
+      "Abre la barra lateral para saltar entre las secciones del planificador o mostrar los controles en pantallas pequeñas. Vuelve a pulsarla para cerrarla.",
     sideMenuTitle: "Secciones del planificador",
     sideMenuTitleHelp:
-      "Desliza para explorar las secciones y controles del planificador en el móvil. El proyecto se guarda automáticamente mientras navegas.",
+      "Desliza hacia arriba para explorar las secciones y controles del planificador en el móvil. El proyecto se guarda automáticamente mientras navegas.",
     sideMenuClose: "Cerrar navegación",
     sideMenuCloseHelp:
-      "Cierra el panel de navegación y vuelve al planificador. Tus datos permanecen guardados y listos para restaurarse.",
+      "Cierra el panel de navegación y vuelve al planificador. Tus datos permanecen guardados y listos para restaurarse en cualquier momento.",
     sideMenuHelp:
       "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     contacts: {
@@ -3780,7 +3782,7 @@ const texts = {
       addContactButton: "Agregar contacto",
       importButton: "Importar vCard",
       importHint: "Importa archivos .vcf para añadir contactos al instante.",
-      emptyState: "Todavía no hay contactos guardados. Añade a tu equipo para reutilizarlo más tarde.",
+      emptyState: "Todavía no hay contactos guardados. Añade a tu equipo ahora para reutilizarlo más tarde.",
       close: "Cerrar",
       selectLabel: "Contactos guardados",
       selectPlaceholder: "Selecciona un contacto",
@@ -3788,7 +3790,7 @@ const texts = {
       openManager: "Abrir contactos",
       linkedBadge: "Vinculado a un contacto",
       contactMissingDetails: "Introduce un nombre, correo electrónico o teléfono antes de guardar este contacto.",
-      avatarChange: "Cambiar foto (Mayús + clic para eliminar)",
+      avatarChange: "Cambiar foto (Mayús + clic para quitarla)",
       avatarCleared: "Foto de perfil eliminada.",
       avatarTooLarge: "Elige una imagen de menos de 300 KB.",
       avatarReadError: "No se pudo leer la imagen seleccionada.",
