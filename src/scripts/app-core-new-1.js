@@ -8565,32 +8565,39 @@ function unifyDevices(devicesData) {
       return { type, mount: status === 'adapted' ? 'adapted' : 'native' };
     };
 
-    if (Array.isArray(lens.mountOptions)) {
-      lens.mountOptions = lens.mountOptions
-        .map(normalizeMountEntry)
-        .filter(Boolean);
-    } else if (lens.mountOptions && typeof lens.mountOptions === 'object') {
-      const single = normalizeMountEntry(lens.mountOptions);
-      lens.mountOptions = single ? [single] : [];
+    const existingMountOptions = lens.mountOptions;
+    let normalizedOptions;
+
+    if (Array.isArray(existingMountOptions)) {
+      normalizedOptions = existingMountOptions.map(normalizeMountEntry).filter(Boolean);
+    } else if (existingMountOptions && typeof existingMountOptions === 'object') {
+      const single = normalizeMountEntry(existingMountOptions);
+      normalizedOptions = single ? [single] : [];
     } else if (Array.isArray(lens.lensMount)) {
-      lens.mountOptions = lens.lensMount
-        .map(normalizeMountEntry)
-        .filter(Boolean);
+      normalizedOptions = lens.lensMount.map(normalizeMountEntry).filter(Boolean);
       delete lens.lensMount;
     } else {
       const mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
-      lens.mountOptions = mountType ? [{ type: mountType, mount: 'native' }] : [];
+      normalizedOptions = mountType ? [{ type: mountType, mount: 'native' }] : [];
     }
 
-    if (!Array.isArray(lens.mountOptions)) {
-      lens.mountOptions = [];
+    if (!Array.isArray(normalizedOptions)) {
+      normalizedOptions = [];
     }
 
-    lens.mountOptions = lens.mountOptions.filter((opt, index, arr) => (
-      opt
-      && opt.type
-      && index === arr.findIndex(other => other && other.type === opt.type && other.mount === opt.mount)
-    ));
+    const dedupedOptions = [];
+    normalizedOptions.forEach(opt => {
+      if (!opt || !opt.type) return;
+      const mountState = opt.mount === 'adapted' ? 'adapted' : 'native';
+      const alreadyPresent = dedupedOptions.some(existing => (
+        existing.type === opt.type && existing.mount === mountState
+      ));
+      if (!alreadyPresent) {
+        dedupedOptions.push({ type: opt.type, mount: mountState });
+      }
+    });
+
+    lens.mountOptions = dedupedOptions;
 
     if (lens.mountOptions.length) {
       const primary = lens.mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
