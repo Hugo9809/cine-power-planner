@@ -6642,6 +6642,34 @@ function gearListGenerateHtmlImpl(info = {}) {
             })
             .join('<br>');
     };
+    const wrapGearItemHtml = (contentHtml, options = {}) => {
+        if (!contentHtml) return '';
+        const {
+            name = '',
+            quantity = '',
+            label = '',
+            attributes = '',
+            rentalNote = rentalNoteAttr,
+            extraAttributes = ''
+        } = options;
+        const nameAttr = name
+            ? ` data-gear-name="${escapeHtml(String(name))}"`
+            : '';
+        const quantityAttr = quantity
+            ? ` data-gear-quantity="${escapeHtml(String(quantity))}"`
+            : '';
+        const labelAttr = label
+            ? ` data-gear-label="${escapeHtml(String(label))}"`
+            : '';
+        const attributesAttr = attributes
+            ? ` data-gear-attributes="${escapeHtml(String(attributes))}"`
+            : '';
+        const rentalAttr = typeof rentalNote === 'string' ? rentalNote : '';
+        const extraAttr = extraAttributes
+            ? ` ${extraAttributes.trim()}`
+            : '';
+        return `<span class="gear-item"${nameAttr}${quantityAttr}${labelAttr}${attributesAttr}${rentalAttr}${extraAttr}><span class="gear-item-text">${contentHtml}</span><span class="gear-item-note" hidden></span></span>`;
+    };
     const ensureItems = (arr, categoryPath) => {
         if (typeof registerDevice !== 'function') return;
         const entries = {};
@@ -7015,8 +7043,22 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (selectedNames.monitor) {
         const size = devices?.monitors?.[selectedNames.monitor]?.screenSizeInches;
         if (size) monitorSizes.push(size);
-        const sizeHtml = size ? `${size}&quot; - ` : '';
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${sizeHtml}${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
+        const sizeHtml = size ? `${escapeHtml(String(size))}&quot; - ` : '';
+        const monitorLabel = 'Onboard Monitor';
+        const monitorName = addArriKNumber(selectedNames.monitor);
+        const displayHtml = `1x <strong>${monitorLabel}</strong> - ${sizeHtml}${escapeHtml(monitorName)} - incl. Sunhood`;
+        const attributeParts = [];
+        if (size) attributeParts.push(`${size}"`);
+        if (monitorName) attributeParts.push(monitorName);
+        attributeParts.push('incl. Sunhood');
+        const attributeText = attributeParts.filter(Boolean).join(' - ');
+        const dataName = attributeText ? `${monitorLabel} (${attributeText})` : monitorLabel;
+        monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+            name: dataName,
+            quantity: 1,
+            label: monitorLabel,
+            attributes: attributeText
+        });
     }
     handheldPrefs.forEach(({ role, size }) => {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
@@ -7092,10 +7134,22 @@ function gearListGenerateHtmlImpl(info = {}) {
             ? monitorsDb[resolvedName]
             : monitorsDb[defaultName] || monitorsDb[candidate] || null;
         const selectedSize = selectedMonitor?.screenSizeInches || '';
-        monitoringItems += (monitoringItems ? '<br>' : '')
-            + `1x <strong>${labelRole} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - `
-            + `<select id="gearList${idSuffix}Monitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
-            + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
+        const displayLabel = `${labelRole} Handheld Monitor`;
+        const sizeSpanHtml = `<span id="monitorSize${idSuffix}">${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;</span>`;
+        const selectHtml = `<select id="gearList${idSuffix}Monitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
+        const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        const attributeParts = [];
+        if (selectedSize) attributeParts.push(`${selectedSize}"`);
+        if (resolvedName) attributeParts.push(addArriKNumber(resolvedName));
+        attributeParts.push('incl. Directors cage, shoulder strap, sunhood, rigging for teradeks');
+        const attributeText = attributeParts.filter(Boolean).join(' - ');
+        const dataName = attributeText ? `${displayLabel} (${attributeText})` : displayLabel;
+        monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+            name: dataName,
+            quantity: 1,
+            label: displayLabel,
+            attributes: attributeText
+        });
         if (selectedSize) monitorSizes.push(selectedSize);
     });
     largeMonitorPrefs.forEach(({ role }) => {
@@ -7159,10 +7213,22 @@ function gearListGenerateHtmlImpl(info = {}) {
         const size = resolvedName && dirDb[resolvedName]?.screenSizeInches
             ? dirDb[resolvedName].screenSizeInches
             : (dirDb[defaultName]?.screenSizeInches || dirDb[candidate]?.screenSizeInches || '');
-        monitoringItems += (monitoringItems ? '<br>' : '')
-            + `1x <strong>${role} Monitor</strong> - <span id="monitorSize${idSuffix}15">${size}&quot;</span> - `
-            + `<select id="gearList${idSuffix}Monitor15" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
-            + 'incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)';
+        const displayLabel = `${role} Monitor`;
+        const sizeSpanHtml = `<span id="monitorSize${idSuffix}15">${escapeHtml(size ? String(size) : '')}&quot;</span>`;
+        const selectHtml = `<select id="gearList${idSuffix}Monitor15" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
+        const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+        const attributeParts = [];
+        if (size) attributeParts.push(`${size}"`);
+        if (resolvedName) attributeParts.push(addArriKNumber(resolvedName));
+        attributeParts.push('incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)');
+        const attributeText = attributeParts.filter(Boolean).join(' - ');
+        const dataName = attributeText ? `${displayLabel} (${attributeText})` : displayLabel;
+        monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+            name: dataName,
+            quantity: 1,
+            label: displayLabel,
+            attributes: attributeText
+        });
         if (size) monitorSizes.push(size);
     });
     if (hasMotor) {
@@ -7225,10 +7291,22 @@ function gearListGenerateHtmlImpl(info = {}) {
         const selectedSize = resolvedName && monitorsDb[resolvedName]
             ? monitorsDb[resolvedName].screenSizeInches
             : (monitorsDb[defaultName]?.screenSizeInches || monitorsDb[candidate]?.screenSizeInches || '');
-        monitoringItems += (monitoringItems ? '<br>' : '')
-            + `1x <strong>Focus Monitor</strong> - <span id="monitorSizeFocus">${selectedSize}&quot;</span> - `
-            + `<select id="gearListFocusMonitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
-            + 'incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
+        const displayLabel = 'Focus Monitor';
+        const sizeSpanHtml = `<span id="monitorSizeFocus">${escapeHtml(selectedSize ? String(selectedSize) : '')}&quot;</span>`;
+        const selectHtml = `<select id="gearListFocusMonitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select>`;
+        const displayHtml = `1x <strong>${escapeHtml(displayLabel)}</strong> - ${sizeSpanHtml} - ${selectHtml} incl Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        const attributeParts = [];
+        if (selectedSize) attributeParts.push(`${selectedSize}"`);
+        if (resolvedName) attributeParts.push(addArriKNumber(resolvedName));
+        attributeParts.push('incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
+        const attributeText = attributeParts.filter(Boolean).join(' - ');
+        const dataName = attributeText ? `${displayLabel} (${attributeText})` : displayLabel;
+        monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
+            name: dataName,
+            quantity: 1,
+            label: displayLabel,
+            attributes: attributeText
+        });
         if (selectedSize) monitorSizes.push(selectedSize);
     }
     const monitoringGear = [];
