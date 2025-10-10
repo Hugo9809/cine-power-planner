@@ -427,6 +427,11 @@ Use Cine Power Planner end-to-end with the following routine:
   straight to the restore tools without leaving your current tab; each run is
   logged in the storage dashboard so you can archive the JSON immediately.
   【F:index.html†L2548-L2570】
+- **Watch the autosave status overlay.** Open **Settings → Backup & Restore** to
+  mirror the latest autosave note inside the dialog. The overlay captures the
+  timestamp and outcome from the background autosave cycle so you can prove
+  in-progress edits continue to land while you rehearse restores or capture
+  manual backups.
 - **Reveal auto backup snapshots on demand.** Toggle **Settings → Backup &
   Restore → Show auto backups** to temporarily display the timestamped safety
   copies in the project selector when you need to restore one manually.
@@ -559,6 +564,11 @@ Use Cine Power Planner end-to-end with the following routine:
   search field.
 - Search suggestions highlight matching keywords so you can confirm results
   before committing to a navigation or action.
+- Global search suggestions label whether they open a feature, action, device or
+  help topic. Wrap a query in quotes to force an exact match, start with
+  `recent` or `history` to filter by the items you used most recently, and clear
+  the field to bubble your frequent commands back to the top so repeating crew
+  workflows stays fast.
 - Star icons pin favorite devices so they stay at the top of selectors and
   persist across sessions and backups.
 
