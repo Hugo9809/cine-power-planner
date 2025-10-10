@@ -15848,6 +15848,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (cameraSelect) {
       cameraSelect.addEventListener('change', () => {
         updateRecordingMediaOptions();
+        if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          try {
+            document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+          } catch (error) {
+            void error;
+          }
+        }
       });
     }
     applyFilters();
