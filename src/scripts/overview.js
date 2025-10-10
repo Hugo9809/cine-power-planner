@@ -4,6 +4,12 @@ let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
 
 (function resolveOverviewPrintWorkflowModule() {
+    // The overview dialog can run inside different boot contexts (browser,
+    // service worker driven print view, unit tests). To keep the behaviour
+    // predictable we probe every known namespace for the print workflow module
+    // and record whichever implementation we find first. The explicit comments
+    // below document the discovery order so future refactors keep the
+    // experience identical for end users.
     const globalScope = (typeof globalThis !== 'undefined' && globalThis)
         || (typeof window !== 'undefined' && window)
         || (typeof self !== 'undefined' && self)
@@ -13,6 +19,9 @@ let triggerOverviewPrintWorkflowModule = null;
     const candidates = [];
 
     if (typeof require === 'function') {
+        // Node based environments (for example Jest) rely on the CommonJS path
+        // so we try that first when available. Any failure is ignored because
+        // browser bundles will provide the module through the global scope.
         try {
             const required = require('./modules/features/print-workflow.js');
             if (required && typeof required === 'object') {
@@ -24,6 +33,9 @@ let triggerOverviewPrintWorkflowModule = null;
     }
 
     if (globalScope && typeof globalScope.cineFeaturePrint === 'object' && globalScope.cineFeaturePrint) {
+        // When running in the production bundle the loader already exposed the
+        // module on the global scope. Reusing that instance keeps shared state
+        // such as queued print jobs intact.
         candidates.push(globalScope.cineFeaturePrint);
     }
 
@@ -45,6 +57,10 @@ let triggerOverviewPrintWorkflowModule = null;
 })();
 
 const overviewLogger = (() => {
+    // Logging is optional so we attempt to reuse whichever diagnostics system
+    // the host injected. By looping through the common globals we avoid
+    // breaking the overview dialog when embedded into iframes or worker
+    // contexts where `console` might be absent or locked down.
     const scopes = [];
 
     if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);

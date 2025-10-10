@@ -1,5 +1,15 @@
 /* global cineModuleBase */
 
+// ---------------------------------------------------------------------------
+// Contacts feature module
+// ---------------------------------------------------------------------------
+// The contacts helper keeps personal crew information alongside the power
+// planner project data. Because these records can include critical call sheet
+// notes we keep the implementation intentionally small and well documented.
+// The additional comments below explain how each helper works so that future
+// maintainers understand the user data safeguards without having to reverse
+// engineer the storage flow.
+
 (function () {
   function detectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
@@ -23,6 +33,9 @@
     (typeof cineModuleBase === 'object' && cineModuleBase)
     || (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.cineModuleBase === 'object' ? GLOBAL_SCOPE.cineModuleBase : null);
 
+  // Prefer the runtime provided logging facade so that diagnostics remain
+  // consistent across the application. Falling back to console.warn keeps the
+  // module functional inside tests and legacy entry points.
   const safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function'
     ? MODULE_BASE.safeWarn
     : function fallbackWarn(message, error) {
@@ -40,9 +53,15 @@
         }
       };
 
+  // Contacts live under a dedicated storage key to avoid colliding with other
+  // project level metadata. The name mirrors the legacy implementation so
+  // existing backups import cleanly.
   const CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 
   function resolveLocalStorage(scope) {
+    // The helper intentionally accepts an optional scope so that callers can
+    // inject mocked storage instances during tests. When no override is
+    // provided we fall back to the detected global scope.
     const target = scope || GLOBAL_SCOPE;
     try {
       if (target && typeof target.localStorage !== 'undefined') {
@@ -55,10 +74,14 @@
   }
 
   function generateContactId() {
+    // Persisting a random suffix avoids accidental collisions when multiple
+    // contacts are created in quick succession before the autosave triggers.
     return `contact-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
   function sanitizeContactValue(value) {
+    // Every field in the contact form is stored as a trimmed string so backup
+    // exports stay compact and predictable.
     if (typeof value !== 'string') {
       return '';
     }
@@ -66,6 +89,10 @@
   }
 
   function normalizeContactEntry(entry) {
+    // The normalisation step ensures that manually constructed contacts (for
+    // example when importing older backups) adopt the latest schema without
+    // mutating the original payload. This is critical for preserving user data
+    // across application upgrades.
     if (!entry || typeof entry !== 'object') {
       return null;
     }
@@ -90,6 +117,9 @@
   }
 
   function sortContacts(list) {
+    // Contacts are sorted alphabetically so that the UI provides a predictable
+    // reading order. When names are missing we fall back to creation time which
+    // keeps imported records stable.
     return (Array.isArray(list) ? list.filter(Boolean) : [])
       .map(normalizeContactEntry)
       .filter(Boolean)
@@ -114,6 +144,8 @@
   }
 
   function loadStoredContacts(options = {}) {
+    // The load helper wraps JSON.parse inside a try/catch so that a single
+    // corrupted entry never risks crashing the surrounding autosave recovery.
     const storage = resolveLocalStorage(options.scope);
     if (!storage || typeof storage.getItem !== 'function') {
       return [];
@@ -139,6 +171,9 @@
   }
 
   function saveContactsToStorage(contacts, options = {}) {
+    // We serialise the entire contact list in one go to avoid partial writes.
+    // This keeps backups and offline snapshots coherent even if the browser
+    // crashes mid-operation.
     const storage = resolveLocalStorage(options.scope);
     if (!storage || typeof storage.setItem !== 'function') {
       return false;
