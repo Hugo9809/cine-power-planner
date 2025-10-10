@@ -13346,6 +13346,10 @@ function setLanguage(lang) {
     }
     setLabelText(lensesHeadingElem, 'lensesHeading');
     setLabelText(lensesLabelElem, 'lensesLabel');
+    setLabelText(lensManufacturerFilterLabelElem, 'lensManufacturerFilterLabel');
+    setLabelText(lensSeriesFilterLabelElem, 'lensSeriesFilterLabel');
+    setLabelText(selectedLensesHeadingElem, 'selectedLensesHeading');
+    setLabelText(selectedLensEmptyElem, 'selectedLensEmpty');
     setLabelText(riggingHeadingElem, 'riggingHeading');
     setLabelText(requiredScenariosLabel, 'requiredScenarios');
     setLabelText(cameraHandleLabel, 'cameraHandle');
@@ -13635,6 +13639,10 @@ const codecLabel = document.getElementById("codecLabel");
 const baseFrameRateLabel = document.getElementById("baseFrameRateLabel");
 const lensesHeadingElem = document.getElementById("lensesHeading");
 const lensesLabelElem = document.getElementById("lensesLabel");
+const lensManufacturerFilterLabelElem = document.getElementById("lensManufacturerFilterLabel");
+const lensSeriesFilterLabelElem = document.getElementById("lensSeriesFilterLabel");
+const selectedLensesHeadingElem = document.getElementById("selectedLensesHeading");
+const selectedLensEmptyElem = document.getElementById("selectedLensEmpty");
 const riggingHeadingElem = document.getElementById("riggingHeading");
 const requiredScenariosLabel = document.getElementById("requiredScenariosLabel");
 const cameraHandleLabel = document.getElementById("cameraHandleLabel");

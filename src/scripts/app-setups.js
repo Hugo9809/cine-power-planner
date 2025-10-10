@@ -3,7 +3,7 @@
           normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, filterDetailsStorage,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
-          callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
+          callCoreFunctionIfAvailable, callSessionCoreFunction, hydrateSelectedLensMounts, cineGearList, updateStorageRequirementTypeOptions,
           storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow, populateFrameRateDropdown,
           focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic */
@@ -2870,6 +2870,9 @@ function cloneProjectFormDataSnapshot(snapshot) {
     if (Array.isArray(snapshot.returnDays)) {
         clone.returnDays = [...snapshot.returnDays];
     }
+    if (Array.isArray(snapshot.lensSelections)) {
+        clone.lensSelections = snapshot.lensSelections.map(entry => ({ ...entry }));
+    }
     if (Array.isArray(snapshot.storageRequirements)) {
         clone.storageRequirements = snapshot.storageRequirements.map(entry => ({ ...entry }));
     }
@@ -2894,6 +2897,11 @@ function freezeProjectFormDataSnapshot(info) {
     }
     if (Array.isArray(info.returnDays)) {
         snapshot.returnDays = PROJECT_FORM_FREEZE([...info.returnDays]);
+    }
+    if (Array.isArray(info.lensSelections)) {
+        snapshot.lensSelections = PROJECT_FORM_FREEZE(
+            info.lensSelections.map(entry => PROJECT_FORM_FREEZE({ ...entry }))
+        );
     }
     if (Array.isArray(info.storageRequirements)) {
         snapshot.storageRequirements = PROJECT_FORM_FREEZE(
@@ -3030,6 +3038,29 @@ function collectProjectFormData() {
         addressLines.push(addressFields.country);
     }
 
+    const lensSelectionEntries = Array.from(projectForm?.querySelectorAll('.selected-lens-card') || [])
+        .map(card => {
+            if (!card) return null;
+            const rawName = card.dataset && typeof card.dataset.lensName === 'string'
+                ? card.dataset.lensName
+                : card.getAttribute('data-lens-name');
+            const name = typeof rawName === 'string' ? rawName.trim() : '';
+            if (!name) {
+                return null;
+            }
+            const mountSelect = card.querySelector('.selected-lens-mount-select');
+            const rawMount = mountSelect && typeof mountSelect.value === 'string'
+                ? mountSelect.value
+                : '';
+            const mount = rawMount ? rawMount.trim() : '';
+            const entry = { name };
+            if (mount) {
+                entry.mount = mount;
+            }
+            return entry;
+        })
+        .filter(Boolean);
+
     const info = {
         productionCompany: getValue('productionCompany'),
         productionCompanyAddress: addressLines.join('\n'),
@@ -3074,6 +3105,10 @@ function collectProjectFormData() {
         easyrig: getSetupsCoreValue('getEasyrigValue'),
         filter: filterStr
     };
+
+    if (lensSelectionEntries.length) {
+        info.lensSelections = lensSelectionEntries.map(entry => ({ ...entry }));
+    }
 
     if (monitorBatteryMap && Object.keys(monitorBatteryMap).length) {
         info.monitorBatteries = monitorBatteryMap;
@@ -3303,6 +3338,18 @@ function populateProjectForm(info = {}) {
     setVal('recordingFrameRate', info.recordingFrameRate);
     setVal('sensorMode', info.sensorMode);
     setMulti('lenses', info.lenses);
+    const lensSelectionsForHydration = Array.isArray(info.lensSelections)
+        ? info.lensSelections.map(entry => ({ ...entry }))
+        : [];
+    if (typeof callSessionCoreFunction === 'function') {
+        callSessionCoreFunction('hydrateSelectedLensMounts', [lensSelectionsForHydration], { defer: true });
+    } else if (typeof hydrateSelectedLensMounts === 'function') {
+        try {
+            hydrateSelectedLensMounts(lensSelectionsForHydration);
+        } catch (hydrateError) {
+            void hydrateError;
+        }
+    }
     setMulti('requiredScenarios', info.requiredScenarios);
     setMulti('cameraHandle', info.cameraHandle);
     setVal('viewfinderExtension', info.viewfinderExtension);

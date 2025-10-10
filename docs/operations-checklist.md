@@ -30,6 +30,11 @@ update the repository or hand off a project at the end of the day.
    documented heads (Cartoni Maxima 40, Miller CX18 Fluid, Libec RH45D and
    Vinten Vision 10AS) so offline crews can rely on the expanded options when
    planning support kits.
+   - Walk through the updated lens selector: choose a manufacturer, then a series,
+     add a few lenses and verify the chips beneath the list show each selection
+     with its assigned mount. Removing a chip should immediately clear the lens
+     from the list, and reopening the project offline must retain the mount
+     choices applied to every lens.
 2. **Exercise manual save.** Make a harmless edit, press `Enter` or
    `Ctrl+S`/`⌘S`, then confirm the timestamp updates in the project selector.
 3. **Export safety snapshots.** Download both a `planner-backup.json` file and a

@@ -4608,6 +4608,7 @@ if (cameraSelect) {
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
     }
+    syncSelectedLensSelections();
   });
 }
 
@@ -4634,6 +4635,21 @@ if (monitoringConfigurationSelect) {
 }
 if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
+}
+if (lensManufacturerFilterSelect) {
+  lensManufacturerFilterSelect.addEventListener('change', () => {
+    populateLensDropdown();
+  });
+}
+if (lensSeriesFilterSelect) {
+  lensSeriesFilterSelect.addEventListener('change', () => {
+    populateLensDropdown();
+  });
+}
+if (lensMultiSelectElement) {
+  lensMultiSelectElement.addEventListener('change', () => {
+    syncSelectedLensSelections();
+  });
 }
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
 if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
@@ -13837,111 +13853,959 @@ function populateEnvironmentDropdowns() {
 
 }
 
-function populateLensDropdown() {
-  if (!lensSelect) return;
+function resolveLensFocusScaleMode() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
 
-  const resolveFocusScaleMode = () => {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis)
-      || (typeof window !== 'undefined' && window)
-      || (typeof self !== 'undefined' && self)
-      || (typeof global !== 'undefined' && global)
-      || null;
-    const scopePreference = scope && typeof scope.focusScalePreference === 'string'
-      ? scope.focusScalePreference
-      : null;
-    const fallbackPreference =
-      typeof sessionFocusScale !== 'undefined' && sessionFocusScale
-        ? sessionFocusScale
-        : typeof focusScalePreference === 'string'
-          ? focusScalePreference
-          : null;
-    const rawPreference = scopePreference || fallbackPreference || 'metric';
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        return normalizeFocusScale(rawPreference);
-      } catch (normalizeError) {
-        void normalizeError;
-      }
-    }
-    const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
-    return normalized === 'imperial' ? 'imperial' : 'metric';
-  };
-  const focusScaleMode = resolveFocusScaleMode();
-  const useImperialFocusScale = focusScaleMode === 'imperial';
-  const { lang: focusScaleLang } = resolveCompatibilityTexts();
-  const formatLensNumber = (value, options = {}) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
-    }
-    const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
-      ? options.maximumFractionDigits
-      : 0;
-    const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
-      ? options.minimumFractionDigits
-      : Math.min(0, maximumFractionDigits);
-    if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
-      try {
-        return new Intl.NumberFormat(focusScaleLang, {
-          maximumFractionDigits,
-          minimumFractionDigits,
-        }).format(numeric);
-      } catch (formatError) {
-        void formatError;
-      }
-    }
-    const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+  const scopePreference = scope && typeof scope.focusScalePreference === 'string'
+    ? scope.focusScalePreference
+    : null;
+
+  const fallbackPreference =
+    typeof sessionFocusScale !== 'undefined' && sessionFocusScale
+      ? sessionFocusScale
+      : typeof focusScalePreference === 'string'
+        ? focusScalePreference
+        : null;
+
+  const rawPreference = scopePreference || fallbackPreference || 'metric';
+
+  if (typeof normalizeFocusScale === 'function') {
     try {
-      return numeric.toFixed(digits);
-    } catch (toFixedError) {
-      void toFixedError;
+      return normalizeFocusScale(rawPreference);
+    } catch (normalizeError) {
+      void normalizeError;
     }
-    return String(numeric);
+  }
+
+  const normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
+  return normalized === 'imperial' ? 'imperial' : 'metric';
+}
+
+function resolveLensLocalization() {
+  const compatibilityTexts = resolveCompatibilityTexts();
+  const fallbackTexts = compatibilityTexts && compatibilityTexts.fallbackTexts ? compatibilityTexts.fallbackTexts : {};
+  const fallbackProjectForm = fallbackTexts && fallbackTexts.projectForm ? fallbackTexts.projectForm : {};
+  const langTexts = compatibilityTexts && compatibilityTexts.langTexts ? compatibilityTexts.langTexts : {};
+  const projectFormTexts = (langTexts && langTexts.projectForm) || fallbackProjectForm;
+  const focusScaleLang = compatibilityTexts && typeof compatibilityTexts.lang === 'string'
+    ? compatibilityTexts.lang
+    : 'en';
+
+  return {
+    focusScaleLang,
+    manufacturerPlaceholder:
+      projectFormTexts.lensManufacturerFilterPlaceholder
+        || fallbackProjectForm.lensManufacturerFilterPlaceholder
+        || 'Select a manufacturer',
+    manufacturerAllLabel:
+      projectFormTexts.lensManufacturerFilterAll
+        || fallbackProjectForm.lensManufacturerFilterAll
+        || 'All manufacturers',
+    seriesPlaceholder:
+      projectFormTexts.lensSeriesFilterPlaceholder
+        || fallbackProjectForm.lensSeriesFilterPlaceholder
+        || 'Select a series',
+    seriesAllLabel:
+      projectFormTexts.lensSeriesFilterAll
+        || fallbackProjectForm.lensSeriesFilterAll
+        || 'All series',
+    retainedSuffix:
+      projectFormTexts.lensFilterRetainedSuffix
+        || fallbackProjectForm.lensFilterRetainedSuffix
+        || '— currently selected',
+    selectedHeading:
+      projectFormTexts.selectedLensesHeading
+        || fallbackProjectForm.selectedLensesHeading
+        || 'Selected lenses',
+    emptyMessage:
+      projectFormTexts.selectedLensEmpty
+        || fallbackProjectForm.selectedLensEmpty
+        || 'Selected lenses appear here after you add them.',
+    lensMountLabel:
+      projectFormTexts.lensMountSelectLabel
+        || fallbackProjectForm.lensMountSelectLabel
+        || 'Mount',
+    mountNativeTag:
+      projectFormTexts.lensMountNativeTag
+        || fallbackProjectForm.lensMountNativeTag
+        || 'native',
+    mountAdaptedTag:
+      projectFormTexts.lensMountAdaptedTag
+        || fallbackProjectForm.lensMountAdaptedTag
+        || 'adapted',
+    removeLensLabel:
+      projectFormTexts.removeSelectedLens
+        || fallbackProjectForm.removeSelectedLens
+        || 'Remove lens',
   };
-  const formatLensWeight = (value) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
+}
+
+function formatLensNumber(value, focusScaleLang, options = {}) {
+  const numeric = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+
+  const maximumFractionDigits = typeof options.maximumFractionDigits === 'number'
+    ? options.maximumFractionDigits
+    : 0;
+  const minimumFractionDigits = typeof options.minimumFractionDigits === 'number'
+    ? options.minimumFractionDigits
+    : Math.min(0, maximumFractionDigits);
+
+  if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+    try {
+      return new Intl.NumberFormat(focusScaleLang, {
+        maximumFractionDigits,
+        minimumFractionDigits,
+      }).format(numeric);
+    } catch (formatError) {
+      void formatError;
     }
-    if (useImperialFocusScale) {
-      const pounds = numeric / 453.59237;
-      const digits = pounds >= 10 ? 1 : 2;
-      const formatted = formatLensNumber(pounds, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-      return formatted ? `${formatted} lb` : '';
+  }
+
+  const digits = Math.max(minimumFractionDigits, Math.min(20, maximumFractionDigits));
+  try {
+    return numeric.toFixed(digits);
+  } catch (toFixedError) {
+    void toFixedError;
+  }
+  return String(numeric);
+}
+
+function formatLensWeight(value, formattingContext) {
+  const numeric = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+
+  if (formattingContext.useImperialFocusScale) {
+    const pounds = numeric / 453.59237;
+    const digits = pounds >= 10 ? 1 : 2;
+    const formatted = formatLensNumber(pounds, formattingContext.focusScaleLang, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: 0,
+    });
+    return formatted ? `${formatted} lb` : '';
+  }
+
+  const formatted = formatLensNumber(numeric, formattingContext.focusScaleLang, {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+  return formatted ? `${formatted} g` : '';
+}
+
+function formatLensDiameter(value, formattingContext) {
+  const numeric = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+
+  if (formattingContext.useImperialFocusScale) {
+    const inches = numeric / 25.4;
+    const digits = inches >= 10 ? 1 : 2;
+    const formatted = formatLensNumber(inches, formattingContext.focusScaleLang, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: 0,
+    });
+    return formatted ? `${formatted} in` : '';
+  }
+
+  const formatted = formatLensNumber(numeric, formattingContext.focusScaleLang, {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+  });
+  return formatted ? `${formatted} mm` : '';
+}
+
+function formatLensMinFocus(value, formattingContext) {
+  const numeric = typeof value === 'string' ? Number(value) : value;
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+
+  if (formattingContext.useImperialFocusScale) {
+    const feet = numeric * 3.280839895;
+    const digits = feet < 10 ? 2 : 1;
+    const formatted = formatLensNumber(feet, formattingContext.focusScaleLang, {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: digits,
+    });
+    return formatted ? `${formatted} ft` : '';
+  }
+
+  const digits = numeric < 1 ? 2 : 1;
+  const formatted = formatLensNumber(numeric, formattingContext.focusScaleLang, {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  });
+  return formatted ? `${formatted} m` : '';
+}
+
+function buildLensAttributeList(lens, formattingContext) {
+  if (!lens || typeof lens !== 'object') {
+    return [];
+  }
+
+  const attributes = [];
+  const formattedWeight = formatLensWeight(lens.weight_g, formattingContext);
+  if (formattedWeight) attributes.push(formattedWeight);
+
+  if (lens.clampOn) {
+    if (lens.frontDiameterMm) {
+      const formattedDiameter = formatLensDiameter(lens.frontDiameterMm, formattingContext);
+      attributes.push(formattedDiameter ? `${formattedDiameter} clamp-on` : 'clamp-on');
+    } else {
+      attributes.push('clamp-on');
     }
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
-    return formatted ? `${formatted} g` : '';
+  } else if (lens.clampOn === false) {
+    attributes.push('no clamp-on');
+  }
+
+  const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
+  if (Number.isFinite(minFocus) && minFocus > 0) {
+    const formattedMinFocus = formatLensMinFocus(minFocus, formattingContext);
+    if (formattedMinFocus) {
+      attributes.push(`${formattedMinFocus} min focus`);
+    }
+  }
+
+  return attributes;
+}
+
+function deriveLensBrand(name, lens) {
+  if (lens && typeof lens.brand === 'string') {
+    const trimmedBrand = lens.brand.trim();
+    if (trimmedBrand) {
+      return trimmedBrand;
+    }
+  }
+
+  const trimmedName = typeof name === 'string' ? name.trim() : '';
+  if (!trimmedName) {
+    return '';
+  }
+
+  const parts = trimmedName.split(/\s+/);
+  return parts.length ? parts[0] : '';
+}
+
+function deriveLensSeries(name, lens) {
+  if (lens && typeof lens.series === 'string') {
+    const trimmedSeries = lens.series.trim();
+    if (trimmedSeries) {
+      return trimmedSeries;
+    }
+  }
+
+  const trimmedName = typeof name === 'string' ? name.trim() : '';
+  if (!trimmedName) {
+    return '';
+  }
+
+  const mmMatch = trimmedName.match(/^(.*?)(?:\s+\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?mm\b.*)$/i);
+  if (mmMatch && mmMatch[1]) {
+    const candidate = mmMatch[1].trim();
+    if (candidate && candidate !== trimmedName) {
+      return candidate;
+    }
+  }
+
+  const tStopMatch = trimmedName.match(/^(.*?)(?:\s+T\d+(?:\.\d+)?)/i);
+  if (tStopMatch && tStopMatch[1]) {
+    const candidate = tStopMatch[1].trim();
+    if (candidate && candidate !== trimmedName) {
+      return candidate;
+    }
+  }
+
+  return '';
+}
+
+function buildLensEntries(lensData) {
+  const lensNames = Object.keys(lensData);
+  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
+  lensNames.sort(sortFn);
+
+  return lensNames.map(name => {
+    const lens = lensData[name] || {};
+    return {
+      name,
+      lens,
+      brand: deriveLensBrand(name, lens),
+      series: deriveLensSeries(name, lens),
+    };
+  });
+}
+
+function collectLensFilterMetadata(lensEntries) {
+  const manufacturerSet = new Set();
+  const seriesByManufacturer = new Map();
+  const globalSeriesCounts = new Map();
+
+  lensEntries.forEach(entry => {
+    if (entry.brand) {
+      manufacturerSet.add(entry.brand);
+      if (!seriesByManufacturer.has(entry.brand)) {
+        seriesByManufacturer.set(entry.brand, new Map());
+      }
+      if (entry.series) {
+        const brandSeriesMap = seriesByManufacturer.get(entry.brand);
+        brandSeriesMap.set(entry.series, (brandSeriesMap.get(entry.series) || 0) + 1);
+      }
+    }
+
+    if (entry.series) {
+      globalSeriesCounts.set(entry.series, (globalSeriesCounts.get(entry.series) || 0) + 1);
+    }
+  });
+
+  return { manufacturerSet, seriesByManufacturer, globalSeriesCounts };
+}
+
+function setSelectDisabled(selectElement, disabled) {
+  if (!selectElement) {
+    return;
+  }
+  const shouldDisable = Boolean(disabled);
+  selectElement.disabled = shouldDisable;
+  if (shouldDisable) {
+    selectElement.setAttribute('aria-disabled', 'true');
+  } else {
+    selectElement.removeAttribute('aria-disabled');
+  }
+}
+
+function createLensFilterPlaceholderOption(label) {
+  const option = document.createElement('option');
+  option.value = '';
+  option.textContent = label;
+  option.dataset.placeholder = 'true';
+  return option;
+}
+
+function isLensFilterPlaceholderSelected(selectElement) {
+  if (!selectElement || selectElement.selectedIndex < 0) {
+    return true;
+  }
+  const selectedOption = selectElement.options[selectElement.selectedIndex];
+  if (!selectedOption) {
+    return true;
+  }
+  return selectedOption.dataset && selectedOption.dataset.placeholder === 'true';
+}
+
+function resetLensFilterSelect(selectElement, placeholderLabel, options = {}) {
+  if (!selectElement) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  fragment.appendChild(createLensFilterPlaceholderOption(placeholderLabel));
+
+  selectElement.innerHTML = '';
+  selectElement.appendChild(fragment);
+  selectElement.selectedIndex = 0;
+
+  setSelectDisabled(selectElement, options.disabled !== false);
+}
+
+function updateLensManufacturerOptions(selectElement, manufacturerSet, previousValue, localization, options = {}) {
+  if (!selectElement) {
+    return '';
+  }
+
+  const { hasSelections = false } = options;
+  const fragment = document.createDocumentFragment();
+  fragment.appendChild(createLensFilterPlaceholderOption(localization.manufacturerPlaceholder));
+
+  if (localization.manufacturerAllLabel) {
+    const allOption = document.createElement('option');
+    allOption.value = '__all__';
+    allOption.textContent = localization.manufacturerAllLabel;
+    fragment.appendChild(allOption);
+  }
+
+  const sortedManufacturers = Array.from(manufacturerSet).filter(Boolean);
+  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
+  sortedManufacturers.sort(sortFn);
+
+  sortedManufacturers.forEach(brand => {
+    const opt = document.createElement('option');
+    opt.value = brand;
+    opt.textContent = brand;
+    fragment.appendChild(opt);
+  });
+
+  selectElement.innerHTML = '';
+  selectElement.appendChild(fragment);
+
+  let desiredValue = '';
+  if (previousValue && (previousValue === '__all__' || manufacturerSet.has(previousValue))) {
+    desiredValue = previousValue;
+  } else if (hasSelections && localization.manufacturerAllLabel) {
+    desiredValue = '__all__';
+  }
+
+  if (desiredValue) {
+    selectElement.value = desiredValue;
+  } else {
+    selectElement.selectedIndex = 0;
+  }
+
+  setSelectDisabled(selectElement, false);
+  return selectElement.value;
+}
+
+function updateLensSeriesOptions(
+  selectElement,
+  seriesByManufacturer,
+  globalSeriesCounts,
+  activeManufacturer,
+  previousValue,
+  localization,
+  options = {},
+) {
+  if (!selectElement) {
+    return '';
+  }
+
+  const { hasSelections = false, placeholderOnly = false } = options;
+  const fragment = document.createDocumentFragment();
+  fragment.appendChild(createLensFilterPlaceholderOption(localization.seriesPlaceholder));
+
+  if (placeholderOnly) {
+    selectElement.innerHTML = '';
+    selectElement.appendChild(fragment);
+    selectElement.selectedIndex = 0;
+    setSelectDisabled(selectElement, !hasSelections);
+    return selectElement.value;
+  }
+
+  if (localization.seriesAllLabel) {
+    const allOption = document.createElement('option');
+    allOption.value = '__all__';
+    allOption.textContent = localization.seriesAllLabel;
+    fragment.appendChild(allOption);
+  }
+
+  let availableSeries = [];
+  if (activeManufacturer && seriesByManufacturer.has(activeManufacturer)) {
+    availableSeries = Array.from(seriesByManufacturer.get(activeManufacturer).keys()).filter(Boolean);
+  } else {
+    availableSeries = Array.from(globalSeriesCounts.entries())
+      .filter(([, count]) => count > 1)
+      .map(([series]) => series)
+      .filter(Boolean);
+  }
+
+  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
+  availableSeries.sort(sortFn);
+
+  availableSeries.forEach(seriesName => {
+    const opt = document.createElement('option');
+    opt.value = seriesName;
+    opt.textContent = seriesName;
+    fragment.appendChild(opt);
+  });
+
+  selectElement.innerHTML = '';
+  selectElement.appendChild(fragment);
+
+  let desiredValue = '';
+  if (previousValue && (previousValue === '__all__' || availableSeries.includes(previousValue))) {
+    desiredValue = previousValue;
+  } else if (hasSelections && localization.seriesAllLabel) {
+    desiredValue = '__all__';
+  } else if (!previousValue && availableSeries.length === 1) {
+    desiredValue = availableSeries[0];
+  }
+
+  if (desiredValue) {
+    selectElement.value = desiredValue;
+  } else {
+    selectElement.selectedIndex = 0;
+  }
+
+  setSelectDisabled(selectElement, false);
+  return selectElement.value;
+}
+
+function createLensOptionsFragment(lensEntries, filterState, previousSelection, formattingContext, options = {}) {
+  const fragment = document.createDocumentFragment();
+
+  if (!options.multiple) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    fragment.appendChild(emptyOpt);
+  }
+
+  const visibleEntries = [];
+  const retainedEntries = [];
+
+  lensEntries.forEach(entry => {
+    const matchesManufacturer = !filterState.manufacturer || entry.brand === filterState.manufacturer;
+    const matchesSeries = !filterState.series || entry.series === filterState.series;
+    const matchesFilters = matchesManufacturer && matchesSeries;
+    const isSelected = previousSelection.has(entry.name);
+
+    if (!matchesFilters && !isSelected) {
+      return;
+    }
+
+    if (matchesFilters) {
+      visibleEntries.push(entry);
+    } else if (isSelected) {
+      retainedEntries.push(entry);
+    }
+  });
+
+  const appendOptionForEntry = (entry, isRetained) => {
+    const opt = document.createElement('option');
+    opt.value = entry.name;
+
+    const attributes = buildLensAttributeList(entry.lens, formattingContext);
+    let label = attributes.length ? `${entry.name} (${attributes.join(', ')})` : entry.name;
+    if (isRetained && formattingContext.retainedSuffix) {
+      label = `${label} ${formattingContext.retainedSuffix}`;
+    }
+
+    opt.textContent = label;
+
+    if (entry.brand) {
+      opt.dataset.manufacturer = entry.brand;
+    }
+    if (entry.series) {
+      opt.dataset.series = entry.series;
+    }
+    if (isRetained) {
+      opt.dataset.filterRetained = 'true';
+    }
+    if (previousSelection.has(entry.name)) {
+      opt.selected = true;
+    }
+
+    fragment.appendChild(opt);
   };
-  const formatLensDiameter = (value) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
+
+  visibleEntries.forEach(entry => appendOptionForEntry(entry, false));
+  retainedEntries.forEach(entry => appendOptionForEntry(entry, true));
+
+  return fragment;
+}
+
+function getLensCatalogData() {
+  const lensData =
+    (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
+    || (devices && devices.accessories && devices.accessories.lenses)
+    || null;
+  return lensData;
+}
+
+function getLensEntryByName(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+  const lensData = getLensCatalogData();
+  if (!lensData || typeof lensData !== 'object') {
+    return null;
+  }
+  return lensData[name] || null;
+}
+
+function getCameraLensMountEntries() {
+  const camKey = cameraSelect && typeof cameraSelect.value === 'string' ? cameraSelect.value : '';
+  if (!camKey || !devices || !devices.cameras) {
+    return [];
+  }
+  const camera = devices.cameras[camKey];
+  if (!camera || !Array.isArray(camera.lensMount)) {
+    return [];
+  }
+  return camera.lensMount
+    .map(entry => {
+      if (!entry || typeof entry.type !== 'string') {
+        return null;
+      }
+      const type = entry.type.trim();
+      if (!type) {
+        return null;
+      }
+      const mountKind = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+      return {
+        type,
+        mount: mountKind,
+        isNative: mountKind === 'native',
+      };
+    })
+    .filter(Boolean);
+}
+
+function buildLensMountOptions(lensName, localization) {
+  const loc = localization || resolveLensLocalization();
+  const optionMap = new Map();
+  const options = [];
+  const addOption = (type, meta = {}) => {
+    const normalized = typeof type === 'string' ? type.trim() : '';
+    if (!normalized) {
+      return;
     }
-    if (useImperialFocusScale) {
-      const inches = numeric / 25.4;
-      const digits = inches >= 10 ? 1 : 2;
-      const formatted = formatLensNumber(inches, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
-      return formatted ? `${formatted} in` : '';
+    if (optionMap.has(normalized)) {
+      return;
     }
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
-    return formatted ? `${formatted} mm` : '';
+    let label = normalized;
+    if (meta.isNative) {
+      label = `${normalized} (${loc.mountNativeTag})`;
+    } else if (meta.mountKind === 'adapted') {
+      label = `${normalized} (${loc.mountAdaptedTag})`;
+    }
+    const option = {
+      type: normalized,
+      label,
+      isNative: meta.isNative === true,
+    };
+    optionMap.set(normalized, option);
+    options.push(option);
   };
-  const formatLensMinFocus = (value) => {
-    const numeric = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(numeric)) {
-      return '';
+
+  const cameraMounts = getCameraLensMountEntries();
+  cameraMounts.filter(entry => entry.isNative).forEach(entry => {
+    addOption(entry.type, { isNative: true, mountKind: entry.mount });
+  });
+
+  const lensEntry = getLensEntryByName(lensName);
+  const lensMount = lensEntry && typeof lensEntry.mount === 'string' ? lensEntry.mount.trim() : '';
+  if (lensMount) {
+    addOption(lensMount, { mountKind: 'lens' });
+  }
+
+  cameraMounts.filter(entry => !entry.isNative).forEach(entry => {
+    addOption(entry.type, { mountKind: entry.mount });
+  });
+
+  ['PL', 'EF', 'LPL'].forEach(fallbackType => {
+    addOption(fallbackType, { mountKind: 'fallback' });
+  });
+
+  let defaultType = '';
+  const nativeOption = options.find(option => option.isNative);
+  if (nativeOption) {
+    defaultType = nativeOption.type;
+  } else {
+    const fallbackOrder = ['PL', 'EF', 'LPL'];
+    defaultType = fallbackOrder.find(type => optionMap.has(type)) || '';
+  }
+
+  if (!defaultType && lensMount && optionMap.has(lensMount)) {
+    defaultType = lensMount;
+  }
+
+  if (!defaultType && options.length) {
+    defaultType = options[0].type;
+  }
+
+  return { options, defaultType };
+}
+
+function notifyLensSelectionChanged() {
+  if (typeof markProjectFormDataDirty === 'function') {
+    try {
+      markProjectFormDataDirty();
+    } catch (markError) {
+      void markError;
     }
-    if (useImperialFocusScale) {
-      const feet = numeric * 3.280839895;
-      const digits = feet < 10 ? 2 : 1;
-      const formatted = formatLensNumber(feet, { maximumFractionDigits: digits, minimumFractionDigits: digits });
-      return formatted ? `${formatted} ft` : '';
+  }
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+    } catch (scheduleError) {
+      void scheduleError;
     }
-    const digits = numeric < 1 ? 2 : 1;
-    const formatted = formatLensNumber(numeric, { maximumFractionDigits: digits, minimumFractionDigits: digits });
-    return formatted ? `${formatted} m` : '';
+  }
+  if (typeof saveCurrentSession === 'function') {
+    try {
+      saveCurrentSession();
+    } catch (sessionError) {
+      void sessionError;
+    }
+  }
+  if (typeof saveCurrentGearList === 'function') {
+    try {
+      saveCurrentGearList();
+    } catch (gearError) {
+      void gearError;
+    }
+  }
+  if (typeof checkSetupChanged === 'function') {
+    try {
+      checkSetupChanged();
+    } catch (checkError) {
+      void checkError;
+    }
+  }
+  if (typeof autoSaveCurrentSetup === 'function') {
+    try {
+      autoSaveCurrentSetup();
+    } catch (autoSaveError) {
+      void autoSaveError;
+    }
+  }
+}
+
+function createSelectedLensCard(lensName, localization) {
+  if (!selectedLensListContainer) {
+    return null;
+  }
+  const loc = localization || resolveLensLocalization();
+  const card = document.createElement('div');
+  card.className = 'selected-lens-card';
+  card.dataset.lensName = lensName;
+  card.setAttribute('role', 'listitem');
+
+  const header = document.createElement('div');
+  header.className = 'selected-lens-card-header';
+
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'selected-lens-name';
+  nameSpan.textContent = lensName;
+
+  const removeButton = document.createElement('button');
+  removeButton.type = 'button';
+  removeButton.className = 'selected-lens-remove';
+  const removeLabelBase = loc.removeLensLabel || 'Remove lens';
+  removeButton.setAttribute('aria-label', `${removeLabelBase} ${lensName}`);
+  removeButton.setAttribute('title', `${removeLabelBase} ${lensName}`);
+
+  const iconSpan = document.createElement('span');
+  iconSpan.className = 'btn-icon icon-glyph';
+  iconSpan.setAttribute('aria-hidden', 'true');
+  iconSpan.setAttribute('data-icon-font', 'essential');
+  iconSpan.innerHTML = '&#xF131;';
+  removeButton.appendChild(iconSpan);
+
+  const hiddenLabel = document.createElement('span');
+  hiddenLabel.className = 'visually-hidden';
+  hiddenLabel.textContent = `${removeLabelBase} ${lensName}`;
+  removeButton.appendChild(hiddenLabel);
+
+  removeButton.addEventListener('click', () => {
+    const lensSelect = lensMultiSelectElement
+      || (typeof document !== 'undefined' ? document.getElementById('lenses') : null);
+    if (!lensSelect) {
+      return;
+    }
+    let selectionChanged = false;
+    Array.from(lensSelect.options || []).forEach(opt => {
+      if (opt.value === lensName && opt.selected) {
+        opt.selected = false;
+        selectionChanged = true;
+      }
+    });
+    if (selectionChanged) {
+      lensSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+
+  header.appendChild(nameSpan);
+  header.appendChild(removeButton);
+  card.appendChild(header);
+
+  const label = document.createElement('label');
+  label.className = 'selected-lens-mount-label';
+  const selectId = `selected-lens-mount-${++lensCardIdCounter}`;
+  label.setAttribute('for', selectId);
+  label.textContent = loc.lensMountLabel || 'Mount';
+
+  const select = document.createElement('select');
+  select.className = 'selected-lens-mount-select';
+  select.id = selectId;
+  select.dataset.lensName = lensName;
+
+  select.addEventListener('change', () => {
+    lensSelectionState.set(lensName, typeof select.value === 'string' ? select.value : '');
+    notifyLensSelectionChanged();
+  });
+
+  label.appendChild(select);
+  card.appendChild(label);
+
+  return card;
+}
+
+function refreshSelectedLensCard(card, lensName, preferredMount, localization) {
+  if (!card) {
+    return false;
+  }
+  const select = card.querySelector('.selected-lens-mount-select');
+  if (!select) {
+    return false;
+  }
+  const loc = localization || resolveLensLocalization();
+  const previousValue = typeof select.value === 'string' ? select.value : '';
+  const { options, defaultType } = buildLensMountOptions(lensName, loc);
+
+  select.innerHTML = '';
+  options.forEach(opt => {
+    const optionEl = document.createElement('option');
+    optionEl.value = opt.type;
+    optionEl.textContent = opt.label;
+    select.appendChild(optionEl);
+  });
+
+  const trimmedPreferred = typeof preferredMount === 'string' ? preferredMount.trim() : '';
+
+  let desiredValue = '';
+  if (trimmedPreferred && options.some(opt => opt.type === trimmedPreferred)) {
+    desiredValue = trimmedPreferred;
+  } else if (previousValue && options.some(opt => opt.type === previousValue)) {
+    desiredValue = previousValue;
+  } else if (defaultType) {
+    desiredValue = defaultType;
+  } else if (options.length) {
+    desiredValue = options[0].type;
+  }
+
+  if (desiredValue) {
+    select.value = desiredValue;
+  } else if (options.length) {
+    select.selectedIndex = 0;
+  }
+
+  const finalValue = typeof select.value === 'string' ? select.value : '';
+  lensSelectionState.set(lensName, finalValue);
+
+  return finalValue !== previousValue;
+}
+
+function toggleSelectedLensEmptyState(hasLenses) {
+  if (selectedLensEmptyState) {
+    selectedLensEmptyState.toggleAttribute('hidden', hasLenses);
+  }
+  if (selectedLensListContainer) {
+    selectedLensListContainer.classList.toggle('selected-lens-list--empty', !hasLenses);
+  }
+}
+
+function syncSelectedLensSelections(options = {}) {
+  if (!selectedLensListContainer) {
+    return;
+  }
+  const lensSelect = lensMultiSelectElement
+    || (typeof document !== 'undefined' ? document.getElementById('lenses') : null);
+  if (!lensSelect) {
+    return;
+  }
+
+  const selectedLensNames = Array.from(lensSelect.options || [])
+    .filter(opt => opt && opt.selected && typeof opt.value === 'string' && opt.value)
+    .map(opt => opt.value);
+
+  const localization = resolveLensLocalization();
+  const existingCards = new Map();
+  Array.from(selectedLensListContainer.querySelectorAll('.selected-lens-card') || []).forEach(card => {
+    const lensName = card && card.dataset ? card.dataset.lensName : card ? card.getAttribute('data-lens-name') : '';
+    if (typeof lensName === 'string' && lensName) {
+      existingCards.set(lensName, card);
+    }
+  });
+
+  let stateChanged = false;
+
+  existingCards.forEach((card, lensName) => {
+    if (!selectedLensNames.includes(lensName)) {
+      card.remove();
+      existingCards.delete(lensName);
+      if (lensSelectionState.has(lensName)) {
+        lensSelectionState.delete(lensName);
+        stateChanged = true;
+      }
+    }
+  });
+
+  selectedLensNames.forEach(lensName => {
+    const storedMount = lensSelectionState.get(lensName) || '';
+    let card = existingCards.get(lensName);
+    if (!card) {
+      card = createSelectedLensCard(lensName, localization);
+      if (card) {
+        selectedLensListContainer.appendChild(card);
+        stateChanged = true;
+      }
+    } else {
+      selectedLensListContainer.appendChild(card);
+    }
+    if (card) {
+      const changed = refreshSelectedLensCard(card, lensName, storedMount, localization);
+      if (changed) {
+        stateChanged = true;
+      }
+    }
+  });
+
+  const hasLenses = selectedLensNames.length > 0;
+  toggleSelectedLensEmptyState(hasLenses);
+
+  if (!hasLenses) {
+    lensSelectionState.clear();
+  }
+
+  const shouldNotify = options && options.notify !== false;
+  if (stateChanged && shouldNotify) {
+    notifyLensSelectionChanged();
+  }
+}
+
+function hydrateSelectedLensMounts(selectionArray = []) {
+  lensSelectionState = new Map();
+  if (Array.isArray(selectionArray)) {
+    selectionArray.forEach(entry => {
+      if (!entry || typeof entry.name !== 'string') {
+        return;
+      }
+      const lensName = entry.name.trim();
+      if (!lensName) {
+        return;
+      }
+      const mountValue = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+      lensSelectionState.set(lensName, mountValue);
+    });
+  }
+  syncSelectedLensSelections({ notify: false });
+}
+
+function populateLensDropdown() {
+  const lensSelectElement =
+    typeof lensSelect !== 'undefined' && lensSelect && typeof lensSelect === 'object'
+      ? lensSelect
+      : (typeof document !== 'undefined' ? document.getElementById('lenses') : null);
+
+  if (!lensSelectElement) {
+    return;
+  }
+
+  const localization = resolveLensLocalization();
+  const focusScaleMode = resolveLensFocusScaleMode();
+  const formattingContext = {
+    focusScaleLang: localization.focusScaleLang,
+    useImperialFocusScale: focusScaleMode === 'imperial',
+    retainedSuffix: localization.retainedSuffix,
   };
+
+  const manufacturerSelect = lensManufacturerFilterSelect
+    || (typeof document !== 'undefined' ? document.getElementById('lensManufacturerFilter') : null);
+  const seriesSelect = lensSeriesFilterSelect
+    || (typeof document !== 'undefined' ? document.getElementById('lensSeriesFilter') : null);
+
+  const previousManufacturer = manufacturerSelect ? manufacturerSelect.value : '';
+  const previousSeries = seriesSelect ? seriesSelect.value : '';
+  const previousSelection = new Set(Array.from(lensSelectElement.selectedOptions || []).map(opt => opt.value));
+  const hasPersistedSelections = previousSelection.size > 0 || lensSelectionState.size > 0;
 
   const lensData =
     (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
@@ -13949,56 +14813,93 @@ function populateLensDropdown() {
     || null;
 
   if (!lensData || Object.keys(lensData).length === 0) {
+    resetLensFilterSelect(manufacturerSelect, localization.manufacturerPlaceholder);
+    resetLensFilterSelect(seriesSelect, localization.seriesPlaceholder);
+
+    lensSelectElement.innerHTML = '';
+    if (!lensSelectElement.multiple) {
+      const emptyOpt = document.createElement('option');
+      emptyOpt.value = '';
+      lensSelectElement.appendChild(emptyOpt);
+    }
+    setSelectDisabled(lensSelectElement, true);
+    syncSelectedLensSelections({ notify: false });
     return;
   }
 
-  const previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(opt => opt.value));
+  const lensEntries = buildLensEntries(lensData);
+  const { manufacturerSet, seriesByManufacturer, globalSeriesCounts } = collectLensFilterMetadata(lensEntries);
 
-  const fragment = document.createDocumentFragment();
+  updateLensManufacturerOptions(
+    manufacturerSelect,
+    manufacturerSet,
+    previousManufacturer,
+    localization,
+    { hasSelections: hasPersistedSelections },
+  );
 
-  if (!lensSelect.multiple) {
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    fragment.appendChild(emptyOpt);
+  if (manufacturerSelect && isLensFilterPlaceholderSelected(manufacturerSelect) && hasPersistedSelections) {
+    const allOption = Array.from(manufacturerSelect.options).find(opt => opt.value === '__all__');
+    if (allOption) {
+      manufacturerSelect.value = '__all__';
+    }
   }
 
-  const lensNames = Object.keys(lensData);
-  const sortFn = typeof localeSort === 'function' ? localeSort : undefined;
-  lensNames.sort(sortFn);
+  const manufacturerFilter = manufacturerSelect
+    ? (manufacturerSelect.value === '__all__' ? '' : manufacturerSelect.value)
+    : '';
+  const manufacturerReady = manufacturerSelect ? !isLensFilterPlaceholderSelected(manufacturerSelect) : true;
 
-  for (let index = 0; index < lensNames.length; index += 1) {
-    const name = lensNames[index];
-    const opt = document.createElement('option');
-    opt.value = name;
-    const lens = lensData[name] || {};
-    const attrs = [];
-    const formattedWeight = formatLensWeight(lens.weight_g);
-    if (formattedWeight) attrs.push(formattedWeight);
-    if (lens.clampOn) {
-      if (lens.frontDiameterMm) {
-        const formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
-        attrs.push(formattedDiameter ? `${formattedDiameter} clamp-on` : 'clamp-on');
-      }
-      else attrs.push('clamp-on');
-    } else if (lens.clampOn === false) {
-      attrs.push('no clamp-on');
+  const shouldResetSeries = !manufacturerReady && !hasPersistedSelections;
+  if (seriesSelect) {
+    if (shouldResetSeries) {
+      resetLensFilterSelect(seriesSelect, localization.seriesPlaceholder);
+    } else {
+      updateLensSeriesOptions(
+        seriesSelect,
+        seriesByManufacturer,
+        globalSeriesCounts,
+        manufacturerFilter,
+        previousSeries,
+        localization,
+        { hasSelections: hasPersistedSelections },
+      );
     }
-    const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-    if (Number.isFinite(minFocus) && minFocus > 0) {
-      const formattedMinFocus = formatLensMinFocus(minFocus);
-      if (formattedMinFocus) {
-        attrs.push(`${formattedMinFocus} min focus`);
-      }
-    }
-    opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
-    if (previousSelection.has(name)) {
-      opt.selected = true;
-    }
-    fragment.appendChild(opt);
   }
 
-  lensSelect.innerHTML = '';
-  lensSelect.appendChild(fragment);
+  if (seriesSelect && isLensFilterPlaceholderSelected(seriesSelect) && hasPersistedSelections && !shouldResetSeries) {
+    const allOption = Array.from(seriesSelect.options).find(opt => opt.value === '__all__');
+    if (allOption) {
+      seriesSelect.value = '__all__';
+    }
+  }
+
+  const seriesFilter = seriesSelect
+    ? (seriesSelect.value === '__all__' ? '' : seriesSelect.value)
+    : '';
+  const seriesReady = seriesSelect ? !isLensFilterPlaceholderSelected(seriesSelect) : true;
+
+  const shouldDisableLensSelect = (!manufacturerReady || !seriesReady) && !hasPersistedSelections;
+  setSelectDisabled(lensSelectElement, shouldDisableLensSelect);
+
+  if (!manufacturerReady && !hasPersistedSelections) {
+    lensSelectElement.innerHTML = '';
+    syncSelectedLensSelections({ notify: false });
+    return;
+  }
+
+  const fragment = createLensOptionsFragment(
+    lensEntries,
+    { manufacturer: manufacturerFilter, series: seriesReady || hasPersistedSelections ? seriesFilter : '' },
+    previousSelection,
+    formattingContext,
+    { multiple: lensSelectElement.multiple },
+  );
+
+  lensSelectElement.innerHTML = '';
+  lensSelectElement.appendChild(fragment);
+
+  syncSelectedLensSelections({ notify: false });
 }
 
 function populateCameraPropertyDropdown(selectId, property, selected = '') {
@@ -14054,6 +14955,34 @@ recordingResolutionDropdown =
   typeof document !== 'undefined'
     ? document.getElementById('recordingResolution')
     : null;
+
+const lensManufacturerFilterSelect =
+  typeof document !== 'undefined'
+    ? document.getElementById('lensManufacturerFilter')
+    : null;
+
+const lensSeriesFilterSelect =
+  typeof document !== 'undefined'
+    ? document.getElementById('lensSeriesFilter')
+    : null;
+
+const lensMultiSelectElement =
+  typeof document !== 'undefined'
+    ? document.getElementById('lenses')
+    : null;
+
+const selectedLensListContainer =
+  typeof document !== 'undefined'
+    ? document.getElementById('selectedLensList')
+    : null;
+
+const selectedLensEmptyState =
+  typeof document !== 'undefined'
+    ? document.getElementById('selectedLensEmpty')
+    : null;
+
+let lensSelectionState = new Map();
+let lensCardIdCounter = 0;
 
 const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
   0.75,
@@ -15268,6 +16197,15 @@ if (document.readyState === "loading") {
   initApp();
 }
 
+if (typeof globalThis !== 'undefined') {
+  try {
+    globalThis.hydrateSelectedLensMounts = hydrateSelectedLensMounts;
+    globalThis.syncSelectedLensSelections = syncSelectedLensSelections;
+  } catch (assignLensFunctionsError) {
+    void assignLensFunctionsError;
+  }
+}
+
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -15327,6 +16265,8 @@ if (typeof module !== "undefined" && module.exports) {
     bindGearListEasyrigListener,
     populateSelect,
     populateLensDropdown,
+    syncSelectedLensSelections,
+    hydrateSelectedLensMounts,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,
     populateFrameRateDropdown,

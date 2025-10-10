@@ -6987,7 +6987,23 @@
             <div class="form-row lens-selector-row">
               <label for="lenses" id="lensesLabel">Lenses:</label>
               <div class="select-wrapper lens-selector">
+                <div class="lens-filter-controls">
+                  <div class="lens-filter">
+                    <label for="lensManufacturerFilter" id="lensManufacturerFilterLabel">Step 1: Choose a manufacturer</label>
+                    <select id="lensManufacturerFilter" class="lens-filter-select"></select>
+                  </div>
+                  <div class="lens-filter">
+                    <label for="lensSeriesFilter" id="lensSeriesFilterLabel">Step 2: Choose a series</label>
+                    <select id="lensSeriesFilter" class="lens-filter-select"></select>
+                  </div>
+                </div>
                 <select id="lenses" name="lenses" multiple size="10" aria-labelledby="lensesLabel"></select>
+                <div class="selected-lenses-wrapper" aria-live="polite">
+                  <h4 id="selectedLensesHeading" class="selected-lenses-title">Selected lenses</h4>
+                  <div id="selectedLensList" class="selected-lens-list" role="list" aria-describedby="selectedLensesHeading">
+                    <p id="selectedLensEmpty" class="selected-lens-empty">Selected lenses appear here after you add them.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
