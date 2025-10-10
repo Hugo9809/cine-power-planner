@@ -1645,7 +1645,7 @@ const texts = {
       backLabel: "Back",
       nextLabel: "Next",
       doneLabel: "Finish tutorial",
-      stepIndicator: "Step {current} of {total}",
+      stepIndicator: "Step {current} of {total} ({percent}% complete)",
       completionIndicator: "You're ready to build projects",
       stepListAriaLabel: "Tutorial steps",
       stepStatusCurrent: "Current step",
@@ -1653,6 +1653,11 @@ const texts = {
       stepStatusUpcoming: "Up next",
       resumeHint:
         "Resuming where you left off. Use the step navigator to revisit earlier workflows without losing progress.",
+      resumeHintWithStep:
+        "Resuming at “{step}”. Use the step navigator to revisit earlier workflows without losing progress.",
+      resumeHintLastUpdated: "Last updated {timestamp}.",
+      progressSummary: "{completed} of {total} steps complete",
+      progressComplete: "Tutorial completed. Replay any step whenever you need a refresher.",
       skipConfirmationTitle: "Skip the guided tutorial?",
       skipConfirmationBody:
         "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
@@ -3455,7 +3460,7 @@ const texts = {
       backLabel: "Indietro",
       nextLabel: "Avanti",
       doneLabel: "Termina tutorial",
-      stepIndicator: "Passo {current} di {total}",
+      stepIndicator: "Passo {current} di {total} ({percent}% completato)",
       completionIndicator: "Ora puoi creare progetti",
       stepListAriaLabel: "Passaggi del tutorial",
       stepStatusCurrent: "Passaggio attuale",
@@ -3463,6 +3468,11 @@ const texts = {
       stepStatusUpcoming: "In arrivo",
       resumeHint:
         "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
+      resumeHintWithStep:
+        "Riprendi su “{step}”. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
+      resumeHintLastUpdated: "Ultimo aggiornamento {timestamp}.",
+      progressSummary: "{completed} di {total} passaggi completati",
+      progressComplete: "Tutorial completato. Puoi rivedere qualsiasi passaggio quando vuoi un ripasso.",
       skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
       skipConfirmationBody:
         "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
@@ -5277,7 +5287,7 @@ const texts = {
       backLabel: "Atrás",
       nextLabel: "Siguiente",
       doneLabel: "Finalizar tutorial",
-      stepIndicator: "Paso {current} de {total}",
+      stepIndicator: "Paso {current} de {total} ({percent}% completado)",
       completionIndicator: "Listo para crear proyectos",
       stepListAriaLabel: "Pasos del tutorial",
       stepStatusCurrent: "Paso actual",
@@ -5285,6 +5295,11 @@ const texts = {
       stepStatusUpcoming: "A continuación",
       resumeHint:
         "Retomas justo donde lo dejaste. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
+      resumeHintWithStep:
+        "Retomas en “{step}”. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
+      resumeHintLastUpdated: "Última actualización {timestamp}.",
+      progressSummary: "{completed} de {total} pasos completados",
+      progressComplete: "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
       skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
       skipConfirmationBody:
         "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
@@ -7112,7 +7127,7 @@ const texts = {
       backLabel: "Retour",
       nextLabel: "Suivant",
       doneLabel: "Terminer le tutoriel",
-      stepIndicator: "Étape {current} sur {total}",
+      stepIndicator: "Étape {current} sur {total} ({percent} % terminé)",
       completionIndicator: "Prêt à créer des projets",
       stepListAriaLabel: "Étapes du tutoriel",
       stepStatusCurrent: "Étape actuelle",
@@ -7120,6 +7135,12 @@ const texts = {
       stepStatusUpcoming: "À suivre",
       resumeHint:
         "Vous reprenez là où vous vous étiez arrêté. Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
+      resumeHintWithStep:
+        "Reprise sur « {step} ». Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
+      resumeHintLastUpdated: "Dernière mise à jour {timestamp}.",
+      progressSummary: "{completed} sur {total} étapes terminées",
+      progressComplete:
+        "Tutoriel terminé. Rejouez n'importe quelle étape lorsque vous avez besoin d'un rappel.",
       skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
       skipConfirmationBody:
         "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
@@ -8951,7 +8972,7 @@ const texts = {
       backLabel: "Zurück",
       nextLabel: "Weiter",
       doneLabel: "Tutorial abschließen",
-      stepIndicator: "Schritt {current} von {total}",
+      stepIndicator: "Schritt {current} von {total} ({percent}% abgeschlossen)",
       completionIndicator: "Bereit für neue Projekte",
       stepListAriaLabel: "Tutorial-Schritte",
       stepStatusCurrent: "Aktueller Schritt",
@@ -8959,6 +8980,12 @@ const texts = {
       stepStatusUpcoming: "Als nächstes",
       resumeHint:
         "Du machst dort weiter, wo du aufgehört hast. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
+      resumeHintWithStep:
+        "Weiter bei „{step}“. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
+      resumeHintLastUpdated: "Zuletzt aktualisiert {timestamp}.",
+      progressSummary: "{completed} von {total} Schritten abgeschlossen",
+      progressComplete:
+        "Tutorial abgeschlossen. Wiederhole einzelne Schritte jederzeit für eine Auffrischung.",
       skipConfirmationTitle: "Geführtes Tutorial überspringen?",
       skipConfirmationBody:
         "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",

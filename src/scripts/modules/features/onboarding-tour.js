@@ -111,9 +111,136 @@
   }
 
   const STORAGE_KEY = 'cameraPowerPlanner_onboardingTutorial';
-  const STORAGE_VERSION = 1;
+  const STORAGE_VERSION = 2;
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
+
+  const DEFAULT_STATE = {
+    version: STORAGE_VERSION,
+    activeStep: null,
+    completed: false,
+    skipped: false,
+    completedSteps: [],
+    lastUpdatedAt: null,
+  };
+
+  const DEFAULT_STEP_KEYS = [
+    'intro',
+    'projectOverview',
+    'deviceSelection',
+    'gearGeneration',
+    'gearCustomization',
+    'contactsOwnGear',
+    'autoGear',
+    'overviewPrint',
+    'exportImport',
+    'backupRestore',
+    'completion',
+  ];
+
+  function getNowTimestamp() {
+    if (typeof Date !== 'function') {
+      return null;
+    }
+    if (typeof Date.now === 'function') {
+      return Date.now();
+    }
+    try {
+      return new Date().getTime();
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+
+  function normalizeCompletedSteps(value) {
+    const normalized = [];
+    if (!value) {
+      return normalized;
+    }
+    const seen = Object.create(null);
+    const source = Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : [];
+    for (let index = 0; index < source.length; index += 1) {
+      const key = source[index];
+      if (typeof key !== 'string' || !key) {
+        continue;
+      }
+      if (DEFAULT_STEP_KEYS.indexOf(key) === -1) {
+        continue;
+      }
+      if (seen[key]) {
+        continue;
+      }
+      seen[key] = true;
+      normalized.push(key);
+    }
+    return normalized;
+  }
+
+  function normalizeState(raw) {
+    const state = { ...DEFAULT_STATE };
+    if (!raw || typeof raw !== 'object') {
+      return state;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(raw, 'activeStep')) {
+      state.activeStep = typeof raw.activeStep === 'string' && raw.activeStep ? raw.activeStep : null;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(raw, 'completed')) {
+      state.completed = Boolean(raw.completed);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(raw, 'skipped')) {
+      state.skipped = Boolean(raw.skipped) && !state.completed;
+    }
+
+    let completedSteps = normalizeCompletedSteps(raw.completedSteps);
+    if (!completedSteps.length && state.activeStep) {
+      const index = DEFAULT_STEP_KEYS.indexOf(state.activeStep);
+      if (index >= 0) {
+        completedSteps = DEFAULT_STEP_KEYS.slice(0, index + 1);
+      }
+    }
+
+    if (state.completed) {
+      completedSteps = DEFAULT_STEP_KEYS.slice();
+      state.activeStep = null;
+      state.skipped = false;
+    }
+
+    state.completedSteps = completedSteps;
+
+    const timestampCandidates = [
+      raw.lastUpdatedAt,
+      raw.timestamp,
+      raw.lastUpdated,
+    ];
+    for (let index = 0; index < timestampCandidates.length; index += 1) {
+      const candidate = timestampCandidates[index];
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        state.lastUpdatedAt = candidate;
+        break;
+      }
+    }
+
+    state.version = STORAGE_VERSION;
+
+    return state;
+  }
+
+  function getCompletedStepSet(state) {
+    const normalized = normalizeState(state);
+    const set = new Set();
+    for (let index = 0; index < normalized.completedSteps.length; index += 1) {
+      set.add(normalized.completedSteps[index]);
+    }
+    return set;
+  }
 
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -157,7 +284,7 @@
 
   function loadStoredState() {
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.getItem !== 'function') {
-      return { version: STORAGE_VERSION };
+      return { ...DEFAULT_STATE };
     }
     let raw = null;
     try {
@@ -167,20 +294,14 @@
       raw = null;
     }
     if (typeof raw !== 'string' || !raw) {
-      return { version: STORAGE_VERSION };
+      return { ...DEFAULT_STATE };
     }
     try {
       const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== 'object') {
-        return { version: STORAGE_VERSION };
-      }
-      if (parsed.version !== STORAGE_VERSION) {
-        return { ...parsed, version: STORAGE_VERSION, completed: false, skipped: false };
-      }
-      return parsed;
+      return normalizeState(parsed);
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
-      return { version: STORAGE_VERSION };
+      return { ...DEFAULT_STATE };
     }
   }
 
@@ -188,13 +309,8 @@
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.setItem !== 'function') {
       return false;
     }
-    const payload = {
-      version: STORAGE_VERSION,
-      timestamp: Date.now ? Date.now() : new Date().getTime(),
-      ...nextState,
-    };
     try {
-      SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
+      SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(nextState));
       return true;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not persist onboarding state.', error);
@@ -203,20 +319,91 @@
   }
 
   let storedState = loadStoredState();
+  let completedStepKeys = getCompletedStepSet(storedState);
 
-  const DEFAULT_STEP_KEYS = [
-    'intro',
-    'projectOverview',
-    'deviceSelection',
-    'gearGeneration',
-    'gearCustomization',
-    'contactsOwnGear',
-    'autoGear',
-    'overviewPrint',
-    'exportImport',
-    'backupRestore',
-    'completion',
-  ];
+  function persistState(updates = {}) {
+    const base = storedState && typeof storedState === 'object' ? storedState : DEFAULT_STATE;
+    const merged = { ...base, ...updates };
+
+    if (!Array.isArray(merged.completedSteps) || !merged.completedSteps.length) {
+      merged.completedSteps = Array.from(completedStepKeys);
+    }
+
+    const normalized = normalizeState(merged);
+    const mergedSet = getCompletedStepSet({
+      ...normalized,
+      completedSteps: Array.from(
+        new Set([...completedStepKeys, ...normalized.completedSteps]),
+      ),
+    });
+
+    completedStepKeys = mergedSet;
+
+    const now = getNowTimestamp();
+    const payload = {
+      ...normalized,
+      version: STORAGE_VERSION,
+      completedSteps: Array.from(mergedSet),
+    };
+
+    if (typeof now === 'number' && Number.isFinite(now)) {
+      payload.timestamp = now;
+      payload.lastUpdatedAt = now;
+    }
+
+    saveState(payload);
+    storedState = normalizeState(payload);
+    return storedState;
+  }
+
+  function resetProgress() {
+    completedStepKeys = new Set();
+  }
+
+  function markStepAsReached(index) {
+    if (typeof index !== 'number' || index < 0) {
+      return;
+    }
+    if (!Array.isArray(stepConfig)) {
+      return;
+    }
+    for (let position = 0; position <= index && position < stepConfig.length; position += 1) {
+      const step = stepConfig[position];
+      if (step && step.key) {
+        completedStepKeys.add(step.key);
+      }
+    }
+  }
+
+  function markAllStepsCompleted() {
+    if (!Array.isArray(stepConfig)) {
+      return;
+    }
+    for (let index = 0; index < stepConfig.length; index += 1) {
+      const step = stepConfig[index];
+      if (step && step.key) {
+        completedStepKeys.add(step.key);
+      }
+    }
+  }
+
+  function formatLastUpdated(timestamp) {
+    if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) {
+      return '';
+    }
+    try {
+      const lang = resolveLanguage();
+      const locale = lang || undefined;
+      const date = new Date(timestamp);
+      if (typeof date.toLocaleString === 'function') {
+        return date.toLocaleString(locale);
+      }
+      return date.toString();
+    } catch (error) {
+      void error;
+    }
+    return '';
+  }
 
   function resolveLanguage() {
     try {
@@ -396,6 +583,8 @@
 
     progressEl = DOCUMENT.createElement('p');
     progressEl.className = 'onboarding-progress';
+    progressEl.setAttribute('role', 'status');
+    progressEl.setAttribute('aria-live', 'polite');
     header.appendChild(progressEl);
 
     skipButton = DOCUMENT.createElement('button');
@@ -410,6 +599,8 @@
     resumeHintEl = DOCUMENT.createElement('p');
     resumeHintEl.className = 'onboarding-resume-hint';
     resumeHintEl.hidden = true;
+    resumeHintEl.setAttribute('role', 'status');
+    resumeHintEl.setAttribute('aria-live', 'polite');
     cardEl.appendChild(resumeHintEl);
 
     titleEl = DOCUMENT.createElement('h2');
@@ -481,9 +672,11 @@
       ? tourTexts.stepIndicator
       : 'Step {current} of {total}';
     const current = index + 1;
+    const percent = total > 0 ? Math.round((current / total) * 100) : 0;
     return template
       .replace('{current}', current)
-      .replace('{total}', total);
+      .replace('{total}', total)
+      .replace('{percent}', percent);
   }
 
   function focusCard() {
@@ -692,7 +885,30 @@
       resumeHintEl.textContent = '';
       return;
     }
-    const hint = tourTexts.resumeHint || 'Resuming where you left off. Use the step navigator to revisit steps.';
+    const step = stepConfig[index];
+    const stepTexts = step ? getStepTexts(step) : null;
+    const stepTitle = stepTexts && stepTexts.title ? stepTexts.title : (step ? step.key : '');
+    const baseHint = tourTexts.resumeHint
+      || 'Resuming where you left off. Use the step navigator to revisit steps.';
+    let hint = baseHint;
+    if (stepTitle) {
+      if (typeof tourTexts.resumeHintWithStep === 'string' && tourTexts.resumeHintWithStep) {
+        hint = tourTexts.resumeHintWithStep.replace('{step}', stepTitle);
+      } else {
+        hint = `${baseHint} (${stepTitle})`;
+      }
+    }
+
+    const lastUpdated = storedState && storedState.lastUpdatedAt
+      ? formatLastUpdated(storedState.lastUpdatedAt)
+      : '';
+    if (lastUpdated) {
+      const timestampTemplate = typeof tourTexts.resumeHintLastUpdated === 'string' && tourTexts.resumeHintLastUpdated
+        ? tourTexts.resumeHintLastUpdated
+        : 'Last updated {timestamp}.';
+      hint = `${hint} ${timestampTemplate.replace('{timestamp}', lastUpdated)}`.trim();
+    }
+
     resumeHintEl.hidden = false;
     resumeHintEl.textContent = hint;
   }
@@ -720,12 +936,13 @@
     for (let index = 0; index < total; index += 1) {
       const step = stepConfig[index];
       const texts = getStepTexts(step);
+      const reached = completedStepKeys.has(step.key);
       const item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
 
       const status = index === resolvedActiveIndex
         ? 'current'
-        : index < resolvedActiveIndex
+        : reached
           ? 'complete'
           : 'upcoming';
       item.setAttribute('data-status', status);
@@ -733,7 +950,7 @@
       const button = DOCUMENT.createElement('button');
       button.type = 'button';
       button.className = 'onboarding-step-button';
-      button.disabled = index > resolvedActiveIndex;
+      button.disabled = !reached && index > resolvedActiveIndex;
       button.setAttribute('data-step-index', String(index));
       button.setAttribute('aria-current', status === 'current' ? 'step' : 'false');
 
@@ -864,6 +1081,7 @@
       }
     }
 
+    markStepAsReached(index);
     updateCardForStep(step, index);
 
     if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
@@ -878,8 +1096,7 @@
     }, 50);
 
     try {
-      saveState({
-        ...storedState,
+      persistState({
         activeStep: step.key,
         completed: false,
         skipped: false,
@@ -887,6 +1104,8 @@
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not update stored step state.', error);
     }
+
+    updateResumeHint(index);
 
     focusCard();
   }
@@ -942,25 +1161,32 @@
   function skipTutorial() {
     closeSettingsIfNeeded();
     endTutorial();
-    saveState({
-      ...storedState,
-      skipped: true,
-      completed: false,
-      activeStep: null,
-    });
-    storedState = loadStoredState();
+    try {
+      persistState({
+        skipped: true,
+        completed: false,
+        activeStep: null,
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not persist skip state.', error);
+    }
+    applyHelpButtonLabel();
   }
 
   function completeTutorial() {
     closeSettingsIfNeeded();
     endTutorial();
-    saveState({
-      ...storedState,
-      completed: true,
-      skipped: false,
-      activeStep: null,
-    });
-    storedState = loadStoredState();
+    markAllStepsCompleted();
+    try {
+      persistState({
+        completed: true,
+        skipped: false,
+        activeStep: null,
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not persist completion state.', error);
+    }
+    applyHelpButtonLabel();
   }
 
   function handleOverlayKeydown(event) {
@@ -1048,6 +1274,7 @@
     autoOpenedSettings = false;
     settingsDialogRef = null;
     storedState = loadStoredState();
+    completedStepKeys = getCompletedStepSet(storedState);
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
 
@@ -1084,7 +1311,7 @@
     if (!button) {
       return;
     }
-    const state = storedState || loadStoredState();
+    const state = normalizeState(storedState || loadStoredState());
     let label;
     if (state && state.completed) {
       label = tourTexts.restartLabel || tourTexts.startLabel || 'Start guided tutorial';
@@ -1093,7 +1320,34 @@
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
+    const totalSteps = Array.isArray(stepConfig) && stepConfig.length
+      ? stepConfig.length
+      : DEFAULT_STEP_KEYS.length;
+    const completedCount = state && Array.isArray(state.completedSteps)
+      ? Math.min(totalSteps, state.completedSteps.length)
+      : 0;
+    let summary = '';
+    if (state && state.completed) {
+      summary = tourTexts.progressComplete || 'Tutorial completed.';
+    } else if (completedCount > 0) {
+      const template = typeof tourTexts.progressSummary === 'string' && tourTexts.progressSummary
+        ? tourTexts.progressSummary
+        : '{completed} of {total} steps complete';
+      summary = template
+        .replace('{completed}', completedCount)
+        .replace('{total}', totalSteps);
+    }
+
     button.textContent = label;
+    if (summary) {
+      button.setAttribute('data-onboarding-progress', summary);
+      button.setAttribute('aria-label', `${label}. ${summary}`);
+      button.setAttribute('title', summary);
+    } else {
+      button.removeAttribute('data-onboarding-progress');
+      button.setAttribute('aria-label', label);
+      button.removeAttribute('title');
+    }
   }
 
   function handleHelpButtonClick(event) {
@@ -1101,6 +1355,7 @@
       event.preventDefault();
     }
     storedState = loadStoredState();
+    completedStepKeys = getCompletedStepSet(storedState);
     const resume = Boolean(storedState && storedState.activeStep);
     startTutorial({ resume });
   }
@@ -1115,13 +1370,14 @@
   }
 
   function shouldAutoStart() {
-    if (!storedState) {
+    const state = normalizeState(storedState || loadStoredState());
+    if (!state) {
       return true;
     }
-    if (storedState.completed) {
+    if (state.completed) {
       return false;
     }
-    if (storedState.skipped) {
+    if (state.skipped) {
       return false;
     }
     return true;
@@ -1132,7 +1388,8 @@
       return;
     }
     setTimeout(() => {
-      const resume = storedState && storedState.activeStep;
+      const state = normalizeState(storedState || loadStoredState());
+      const resume = Boolean(state && state.activeStep);
       startTutorial({ resume, focusStart: true });
     }, 600);
   }
@@ -1152,8 +1409,17 @@
   }
 
   function handleFactoryReset() {
-    saveState({ version: STORAGE_VERSION });
-    storedState = loadStoredState();
+    resetProgress();
+    try {
+      persistState({
+        activeStep: null,
+        completed: false,
+        skipped: false,
+        completedSteps: [],
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not clear state after factory reset.', error);
+    }
     applyHelpButtonLabel();
   }
 
@@ -1166,13 +1432,27 @@
     start: startTutorial,
     skip: skipTutorial,
     reset() {
-      saveState({ version: STORAGE_VERSION });
-      storedState = loadStoredState();
+      resetProgress();
+      try {
+        persistState({
+          activeStep: null,
+          completed: false,
+          skipped: false,
+          completedSteps: [],
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not reset tutorial state.', error);
+      }
       applyHelpButtonLabel();
     },
     getStatus() {
-      const state = loadStoredState();
-      return clone(state);
+      const state = normalizeState(loadStoredState());
+      return clone({
+        ...state,
+        completedSteps: Array.isArray(state.completedSteps)
+          ? state.completedSteps.slice()
+          : [],
+      });
     },
     isActive() {
       return active;
