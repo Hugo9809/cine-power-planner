@@ -770,12 +770,28 @@
       if (value === null) return 'null';
       if (value === undefined) return 'undefined';
       if (Array.isArray(value)) {
-        return `[${value.map(item => stableStringify(item)).join(',')}]`;
+        let serialized = '[';
+        for (let index = 0; index < value.length; index += 1) {
+          if (index > 0) {
+            serialized += ',';
+          }
+          serialized += stableStringify(value[index]);
+        }
+        serialized += ']';
+        return serialized;
       }
       if (typeof value === 'object') {
         const keys = Object.keys(value).sort();
-        const entries = keys.map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`);
-        return `{${entries.join(',')}}`;
+        let serialized = '{';
+        for (let index = 0; index < keys.length; index += 1) {
+          const key = keys[index];
+          if (index > 0) {
+            serialized += ',';
+          }
+          serialized += `${JSON.stringify(key)}:${stableStringify(value[key])}`;
+        }
+        serialized += '}';
+        return serialized;
       }
       return JSON.stringify(value);
     }

@@ -5607,7 +5607,15 @@ function createStableValueSignature(value) {
     return 'undefined';
   }
   if (Array.isArray(value)) {
-    return `[${value.map(item => createStableValueSignature(item)).join(',')}]`;
+    let signature = '[';
+    for (let index = 0; index < value.length; index += 1) {
+      if (index > 0) {
+        signature += ',';
+      }
+      signature += createStableValueSignature(value[index]);
+    }
+    signature += ']';
+    return signature;
   }
   if (value instanceof Date) {
     const timestamp = value.getTime();
@@ -5618,8 +5626,16 @@ function createStableValueSignature(value) {
   }
   if (isPlainObject(value)) {
     const keys = Object.keys(value).sort();
-    const entries = keys.map(key => `${JSON.stringify(key)}:${createStableValueSignature(value[key])}`);
-    return `{${entries.join(',')}}`;
+    let signature = '{';
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+      if (index > 0) {
+        signature += ',';
+      }
+      signature += `${JSON.stringify(key)}:${createStableValueSignature(value[key])}`;
+    }
+    signature += '}';
+    return signature;
   }
   if (typeof value === 'number') {
     if (Number.isNaN(value)) {
