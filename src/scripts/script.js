@@ -18,6 +18,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/context.js',
     'modules/environment-bridge.js',
     'modules/globals.js',
+    'modules/localization.js',
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/core/project-intelligence.js',
