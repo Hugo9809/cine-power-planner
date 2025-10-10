@@ -270,7 +270,8 @@ const batteryData = {
     "capacity": 150,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 703
   },
   "Core SWX NANO X Micro 98Wh (V-Mount)": {
     "capacity": 98,
@@ -504,7 +505,8 @@ const batteryData = {
     "capacity": 155,
     "pinA": 12,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 760
   },
   "SmallRig VB210 mini (V-Mount)": {
     "capacity": 210,
