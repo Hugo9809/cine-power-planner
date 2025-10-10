@@ -1489,9 +1489,34 @@
     if (event && typeof event.preventDefault === 'function') {
       event.preventDefault();
     }
-    storedState = loadStoredState();
-    const resume = Boolean(storedState && storedState.activeStep);
-    startTutorial({ resume });
+    const startFromHelp = () => {
+      storedState = loadStoredState();
+      const resume = Boolean(storedState && storedState.activeStep);
+      startTutorial({ resume });
+    };
+
+    const helpDialog = DOCUMENT && typeof DOCUMENT.getElementById === 'function'
+      ? DOCUMENT.getElementById('helpDialog')
+      : null;
+
+    if (
+      helpDialog &&
+      typeof isDialogOpen === 'function' &&
+      typeof closeDialog === 'function' &&
+      isDialogOpen(helpDialog)
+    ) {
+      closeDialog(helpDialog);
+      if (typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
+        GLOBAL_SCOPE.requestAnimationFrame(() => {
+          GLOBAL_SCOPE.requestAnimationFrame(startFromHelp);
+        });
+      } else {
+        setTimeout(startFromHelp, 0);
+      }
+      return;
+    }
+
+    startFromHelp();
   }
 
   function attachHelpButton() {
