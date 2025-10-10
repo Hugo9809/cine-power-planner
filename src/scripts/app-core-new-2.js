@@ -13650,17 +13650,85 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
-    // Wrap a form field with a div containing a data-label attribute for styling.
-    function createFieldWithLabel(el, label) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'field-with-label';
-      wrapper.dataset.label = label;
-      const fieldId = ensureElementId(el, label);
-      const hiddenLabel = createHiddenLabel(fieldId, label);
-      wrapper.appendChild(hiddenLabel);
-      wrapper.appendChild(el);
-      return wrapper;
-    }
+      var ensureElementIdResolver = null;
+      var ensureElementIdFallbackCounter = 0;
+
+      function getEnsureElementId() {
+        if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
+          return ensureElementIdResolver;
+        }
+
+        var directEnsure = typeof ensureElementId === 'function' ? ensureElementId : null;
+        if (!directEnsure && typeof globalThis !== 'undefined' && globalThis) {
+          var globalEnsure = globalThis.ensureElementId;
+          if (typeof globalEnsure === 'function') {
+            directEnsure = globalEnsure;
+          }
+        }
+
+        if (typeof directEnsure === 'function') {
+          ensureElementIdResolver = directEnsure;
+          return ensureElementIdResolver;
+        }
+
+        ensureElementIdResolver = function fallbackEnsureElementId(element, baseText) {
+          if (!element) {
+            return '';
+          }
+          if (element.id) {
+            return element.id;
+          }
+          var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
+          var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          if (!normalized) {
+            normalized = 'field';
+          }
+          ensureElementIdFallbackCounter += 1;
+          var candidate = normalized + '-' + ensureElementIdFallbackCounter;
+          if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+            while (document.getElementById(candidate)) {
+              ensureElementIdFallbackCounter += 1;
+              candidate = normalized + '-' + ensureElementIdFallbackCounter;
+            }
+          }
+          element.id = candidate;
+          return candidate;
+        };
+
+        return ensureElementIdResolver;
+      }
+
+      function getHiddenLabelFactory() {
+        if (typeof createHiddenLabel === 'function') {
+          return createHiddenLabel;
+        }
+        if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.createHiddenLabel === 'function') {
+          return globalThis.createHiddenLabel;
+        }
+        return function fallbackCreateHiddenLabel(forId, text) {
+          var label = document.createElement('label');
+          label.className = 'visually-hidden';
+          if (forId) {
+            label.setAttribute('for', forId);
+          }
+          label.textContent = typeof text === 'string' ? text : '';
+          return label;
+        };
+      }
+
+      // Wrap a form field with a div containing a data-label attribute for styling.
+      function createFieldWithLabel(el, label) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'field-with-label';
+        wrapper.dataset.label = label;
+        const ensureId = getEnsureElementId();
+        const fieldId = ensureId(el, label);
+        const hiddenLabelFactory = getHiddenLabelFactory();
+        const hiddenLabel = hiddenLabelFactory(fieldId, label);
+        wrapper.appendChild(hiddenLabel);
+        wrapper.appendChild(el);
+        return wrapper;
+      }
     
     // Helper used by select-row builders to insert an empty option.
     // Previously this inserted a blank option at the top of each select.
