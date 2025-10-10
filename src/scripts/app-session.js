@@ -10705,6 +10705,7 @@ function createReloadFallback(win, delayMs = 4500) {
   };
 }
 
+const OFFLINE_RELOAD_TIMEOUT_MS = 1200;
 const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 
 function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
@@ -10804,22 +10805,38 @@ async function clearCachesAndReload() {
 
   if (offlineModule && typeof offlineModule.reloadApp === 'function') {
     try {
-      const result = await offlineModule.reloadApp({
+      const reloadAttempt = offlineModule.reloadApp({
         window,
         navigator: typeof navigator !== 'undefined' ? navigator : undefined,
         caches: typeof caches !== 'undefined' ? caches : undefined,
       });
 
-      const reloadHandled =
-        result === true ||
-        (result &&
-          typeof result === 'object' &&
-          (result.reloadTriggered === true || result.navigationTriggered === true));
+      const { timedOut, result } = await awaitPromiseWithSoftTimeout(
+        reloadAttempt,
+        OFFLINE_RELOAD_TIMEOUT_MS,
+        () => {
+          console.warn(
+            'Offline module reload timed out; continuing with manual fallback after soft timeout.',
+            { timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS },
+          );
+        },
+        (lateError) => {
+          console.warn('Offline module reload promise rejected after timeout', lateError);
+        },
+      );
 
-      if (reloadHandled) {
-        const navigationObserved = await waitForReloadNavigation(beforeReloadHref).catch(() => false);
-        if (navigationObserved) {
-          return;
+      if (!timedOut) {
+        const reloadHandled =
+          result === true ||
+          (result &&
+            typeof result === 'object' &&
+            (result.reloadTriggered === true || result.navigationTriggered === true));
+
+        if (reloadHandled) {
+          const navigationObserved = await waitForReloadNavigation(beforeReloadHref).catch(() => false);
+          if (navigationObserved) {
+            return;
+          }
         }
       }
     } catch (offlineReloadError) {
