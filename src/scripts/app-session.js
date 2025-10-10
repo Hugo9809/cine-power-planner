@@ -14890,6 +14890,72 @@ function renderFilterDetailsStorage(details) {
   });
 }
 
+function resolveGlobalScope() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof window !== 'undefined') return window;
+  if (typeof self !== 'undefined') return self;
+  if (typeof global !== 'undefined') return global;
+  return null;
+}
+
+function ensureFilterDetailEditButton(element) {
+  if (!element) return null;
+  const existing = element.querySelector('.gear-item-edit-btn');
+  if (existing) return existing;
+
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+
+  const scope = resolveGlobalScope();
+  let editLabel = 'Edit item';
+  const textGetter = scope && typeof scope.getGearItemEditTexts === 'function'
+    ? scope.getGearItemEditTexts
+    : null;
+  if (textGetter) {
+    try {
+      const texts = textGetter.call(scope) || {};
+      if (texts.editButtonLabel && typeof texts.editButtonLabel === 'string') {
+        const trimmed = texts.editButtonLabel.trim();
+        if (trimmed) {
+          editLabel = trimmed;
+        }
+      }
+    } catch {
+      // Ignore localization lookup failures and use fallback label.
+    }
+  }
+
+  const button = doc.createElement('button');
+  button.type = 'button';
+  button.className = 'gear-item-edit-btn';
+  button.setAttribute('data-gear-edit', '');
+
+  if (editLabel) {
+    button.setAttribute('aria-label', editLabel);
+    button.setAttribute('title', editLabel);
+  }
+
+  const setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function'
+    ? scope.setButtonLabelWithIcon
+    : null;
+  const iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
+  const sliderGlyph = iconRegistry && iconRegistry.sliders ? iconRegistry.sliders : null;
+  if (setLabelWithIcon && sliderGlyph) {
+    setLabelWithIcon.call(scope, button, '', sliderGlyph);
+  } else if (editLabel) {
+    button.textContent = editLabel;
+  }
+
+  const noteSpan = element.querySelector('.gear-item-note');
+  if (noteSpan && noteSpan.parentNode === element) {
+    element.insertBefore(button, noteSpan.nextSibling);
+  } else {
+    element.appendChild(button);
+  }
+
+  return button;
+}
+
 function renderGearListFilterDetails(details) {
   const container = getGearListFilterDetailsContainer();
   if (!container) return;
@@ -14922,7 +14988,10 @@ function renderGearListFilterDetails(details) {
     heading.className = 'filter-detail-label gear-item';
     if (entryId) heading.setAttribute('data-filter-entry', entryId);
     if (gearName) heading.setAttribute('data-gear-name', gearName);
-    if (label) heading.setAttribute('data-filter-label', label);
+    if (label) {
+      heading.setAttribute('data-filter-label', label);
+      heading.setAttribute('data-gear-label', label);
+    }
     if (type) heading.setAttribute('data-filter-type', type);
     const shouldHideSize = !!needsSize;
     if (shouldHideSize) {
@@ -14935,6 +15004,7 @@ function renderGearListFilterDetails(details) {
     if (typeof enhanceGearItemElement === 'function') {
       enhanceGearItemElement(heading);
     }
+    ensureFilterDetailEditButton(heading);
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
     if (needsSize) {
