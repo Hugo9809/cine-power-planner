@@ -210,6 +210,7 @@
     'deviceSelection',
     'gearGeneration',
     'gearCustomization',
+    'contactsOwnGear',
     'autoGear',
     'overviewPrint',
     'exportImport',
@@ -278,6 +279,11 @@
       {
         key: 'gearCustomization',
         highlight: '[data-nav-key="gearListNav"]',
+      },
+      {
+        key: 'contactsOwnGear',
+        highlight: '#openContactsBtn',
+        alternateHighlight: '[data-nav-key="ownGearNav"]',
       },
       {
         key: 'autoGear',

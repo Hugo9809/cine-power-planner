@@ -1405,6 +1405,10 @@ var texts = {
           title: "Customise the gear list",
           body: "Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project."
         },
+        contactsOwnGear: {
+          title: "Reuse contacts and personal gear",
+          body: "Use the sidebar buttons for Contacts and Own Gear to capture crew roles, phone/email details and the kit you already own. Both managers import vCards, save instantly to local storage, flow into backups and exports, and stay available offline for every project."
+        },
         autoGear: {
           title: "Refine automatic gear rules",
           body: "Open Settings → Automatic Gear Rules to set default monitors, create scenario-based additions and manage backups for the automation engine. Every change stays offline in your browser."
@@ -2898,6 +2902,10 @@ var texts = {
         gearCustomization: {
           title: "Personalizza la gear list",
           body: "Usa la sezione Gear List dopo la generazione per regolare quantità, sostituire accessori, applicare filtri o aggiungere voci personalizzate. Le modifiche vengono salvate subito nel progetto."
+        },
+        contactsOwnGear: {
+          title: "Riutilizza contatti e attrezzatura personale",
+          body: "Usa i pulsanti della barra laterale per aprire Contatti e Attrezzatura personale, salvare ruoli di troupe, telefono/email e il kit che possiedi già. Entrambi i pannelli importano vCard, si salvano subito nello storage locale, rientrano in backup ed esportazioni e restano disponibili offline per ogni progetto."
         },
         autoGear: {
           title: "Affina le regole automatiche",
@@ -4393,6 +4401,10 @@ var texts = {
           title: "Personaliza la lista de equipo",
           body: "Usa la sección Lista de equipo después de generarla para ajustar cantidades, cambiar accesorios, aplicar filtros o añadir elementos personalizados. Los cambios se guardan al instante con el proyecto."
         },
+        contactsOwnGear: {
+          title: "Reutiliza contactos y tu propio equipo",
+          body: "Usa los botones de la barra lateral para abrir Contactos y Equipo propio, guardar funciones del equipo, teléfonos/correos y el material que ya tienes. Ambos gestores importan vCards, se guardan al instante en el almacenamiento local, se incluyen en copias de seguridad y exportaciones y permanecen disponibles sin conexión para cada proyecto."
+        },
         autoGear: {
           title: "Perfecciona las reglas automáticas",
           body: "Abre Configuración → Reglas automáticas para definir monitores predeterminados, crear añadidos por escenario y gestionar las copias de seguridad del motor automático. Todo queda almacenado sin conexión en tu navegador."
@@ -5887,6 +5899,10 @@ var texts = {
           title: "Personnalisez la liste de matériel",
           body: "Dans la section Liste du matériel, ajustez les quantités, remplacez des accessoires, appliquez des filtres ou ajoutez vos propres lignes. Chaque modification est enregistrée immédiatement dans le projet."
         },
+        contactsOwnGear: {
+          title: "Réutiliser les contacts et votre propre matériel",
+          body: "Utilisez les boutons de la barre latérale pour ouvrir Contacts et Matériel personnel, enregistrer les membres d'équipe, leurs coordonnées et l'équipement que vous possédez déjà. Les deux gestionnaires importent les vCards, s'enregistrent immédiatement en local, s'intègrent aux sauvegardes et exports et restent disponibles hors ligne pour chaque projet."
+        },
         autoGear: {
           title: "Affinez les règles automatiques",
           body: "Ouvrez Paramètres → Règles de matériel automatique pour définir les moniteurs par défaut, créer des ajouts dépendant des scénarios et gérer les sauvegardes du moteur automatique. Tout reste stocké hors ligne dans votre navigateur."
@@ -7380,6 +7396,10 @@ var texts = {
         gearCustomization: {
           title: "Gear-Liste anpassen",
           body: "In der Gear-Liste kannst du Mengen anpassen, Zubehör tauschen, Filter anwenden oder eigene Positionen hinzufügen. Änderungen werden sofort mit dem Projekt gespeichert."
+        },
+        contactsOwnGear: {
+          title: "Kontakte und eigenes Equipment wiederverwenden",
+          body: "Nutze die Schaltflächen in der Seitenleiste für Kontakte und Eigenes Equipment, um Crew-Rollen, Telefon/E-Mail-Daten und dein vorhandenes Kit zu sichern. Beide Verwalter importieren vCards, speichern sofort lokal, fließen in Backups und Exporte ein und bleiben offline für jedes Projekt verfügbar."
         },
         autoGear: {
           title: "Automatische Regeln verfeinern",

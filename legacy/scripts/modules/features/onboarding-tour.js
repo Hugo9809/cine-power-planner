@@ -192,7 +192,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   var storedState = loadStoredState();
-  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'completion'];
   function resolveLanguage() {
     try {
       var lang = typeof GLOBAL_SCOPE.currentLang === 'string' && GLOBAL_SCOPE.texts ? GLOBAL_SCOPE.currentLang : null;
@@ -241,6 +241,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: 'gearCustomization',
       highlight: '[data-nav-key="gearListNav"]'
+    }, {
+      key: 'contactsOwnGear',
+      highlight: '#openContactsBtn',
+      alternateHighlight: '[data-nav-key="ownGearNav"]'
     }, {
       key: 'autoGear',
       highlight: '#autoGearHeading',

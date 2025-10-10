@@ -252,11 +252,12 @@ same online or offline.
    assets.
 1. Open **Help → Quick start checklist** and press **Start guided tutorial** to
    follow the step-by-step walkthrough of creating a project, selecting
-   devices, generating gear lists, customising automatic gear rules, exporting,
-   importing and backing up data. The new step navigator lets you jump back to
-   finished workflows without restarting, and the **Resume guided tutorial**
-   option appears automatically if you paused mid-tour so progress never goes
-   missing offline.
+   devices, generating gear lists, capturing crew contacts, tracking your own
+   gear, customising automatic gear rules, exporting, importing and backing up
+   data. The new step navigator lets you jump back to finished workflows
+   without restarting, and the **Resume guided tutorial** option appears
+   automatically if you paused mid-tour so progress never goes missing
+   offline.
 1. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
