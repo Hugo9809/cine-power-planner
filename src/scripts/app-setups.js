@@ -2187,6 +2187,54 @@ function updateGearItemEditProviderOptions(context, data = {}) {
   select.value = selectedValue || 'rental-house';
 }
 
+function updateGearItemEditCameraLinkOptions(context, data = {}) {
+  if (!context || !context.cameraLinkSelect) return;
+  const select = context.cameraLinkSelect;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  const doc = select.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  const texts = getGearItemEditTexts();
+  const noneOption = doc.createElement('option');
+  noneOption.value = '';
+  noneOption.textContent = texts.cameraLinkNoneOption || 'No camera link';
+  select.appendChild(noneOption);
+
+  const cameraName = getActiveCameraDisplayName();
+  const cameraOption = doc.createElement('option');
+  cameraOption.value = 'camera';
+  let optionLabel = texts.cameraLinkCameraOption || 'Link to camera';
+  if (optionLabel.includes('%s')) {
+    if (cameraName) {
+      optionLabel = optionLabel.replace('%s', cameraName);
+    } else {
+      optionLabel = optionLabel.replace(/\s*\(\s*%s\s*\)/g, '').replace('%s', '').trim();
+      if (!optionLabel) {
+        optionLabel = texts.cameraLinkUnavailableOption || 'Link to camera';
+      }
+    }
+  }
+  if (!cameraName && !optionLabel) {
+    optionLabel = texts.cameraLinkUnavailableOption || 'Link to camera';
+  }
+  cameraOption.textContent = optionLabel;
+  const storedCameraLabel = typeof data.cameraLinkLabel === 'string' ? data.cameraLinkLabel.trim() : '';
+  if (cameraName) {
+    cameraOption.dataset.cameraLabel = cameraName;
+  } else if (storedCameraLabel) {
+    cameraOption.dataset.cameraLabel = storedCameraLabel;
+  }
+  select.appendChild(cameraOption);
+
+  const desiredValue = typeof data.cameraLink === 'string' && data.cameraLink.trim() === 'camera' ? 'camera' : '';
+  if (desiredValue) {
+    select.value = desiredValue;
+  } else {
+    select.value = '';
+  }
+}
+
 function refreshGearItemProviderDisplays(scope) {
   const root = scope || gearListOutput;
   if (!root) return;
@@ -5692,6 +5740,144 @@ function ensureGearItemExtraIndicator(element) {
   return indicator;
 }
 
+let cachedCameraCategoryLabelSet = null;
+
+function getCameraCategoryLabelSet() {
+  if (cachedCameraCategoryLabelSet && cachedCameraCategoryLabelSet.size) {
+    return cachedCameraCategoryLabelSet;
+  }
+  const labels = new Set();
+  ['camera', 'cameras'].forEach(value => labels.add(value));
+  if (typeof localGetLocalizedText === 'function') {
+    const localized = localGetLocalizedText('category_cameras');
+    if (typeof localized === 'string' && localized.trim()) {
+      labels.add(localized.trim().toLowerCase());
+      labels.add(createCustomCategoryKey(localized));
+    }
+  }
+  const translations = (typeof texts === 'object' && texts) ? texts : null;
+  if (translations && typeof Object.keys === 'function') {
+    Object.keys(translations).forEach(lang => {
+      const entry = translations[lang];
+      if (!entry || typeof entry !== 'object') {
+        return;
+      }
+      const label = entry.category_cameras;
+      if (typeof label === 'string' && label.trim()) {
+        const trimmed = label.trim().toLowerCase();
+        labels.add(trimmed);
+        labels.add(createCustomCategoryKey(label));
+      }
+    });
+  }
+  cachedCameraCategoryLabelSet = labels;
+  return labels;
+}
+
+function isPrimaryCameraItem(element) {
+  if (!element || typeof element.closest !== 'function') {
+    return false;
+  }
+  const group = element.closest('tbody.category-group');
+  if (!group) {
+    return false;
+  }
+  const label = (group.getAttribute('data-gear-category-label') || '').trim().toLowerCase();
+  const key = (group.getAttribute('data-gear-custom-key') || '').trim().toLowerCase();
+  const tableLabel = (group.getAttribute('data-gear-table-category') || '').trim().toLowerCase();
+  const candidates = getCameraCategoryLabelSet();
+  return (
+    (label && candidates.has(label))
+    || (key && candidates.has(key))
+    || (tableLabel && candidates.has(tableLabel))
+  );
+}
+
+function getActiveCameraDisplayName() {
+  if (typeof cameraSelect === 'undefined' || !cameraSelect) {
+    return '';
+  }
+  const selectedOption = cameraSelect.options && cameraSelect.options[cameraSelect.selectedIndex];
+  if (!selectedOption || (selectedOption.value && selectedOption.value === 'None')) {
+    return '';
+  }
+  const label = typeof selectedOption.text === 'string'
+    ? selectedOption.text
+    : (selectedOption.textContent || '');
+  return typeof label === 'string' ? label.trim() : '';
+}
+
+function ensureGearItemCameraLinkIndicator(element) {
+  if (!element) return null;
+  let indicator = element.querySelector('.gear-item-camera-link');
+  if (indicator) {
+    return indicator;
+  }
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    return null;
+  }
+  const textsForDialog = getGearItemEditTexts();
+  indicator = doc.createElement('span');
+  indicator.className = 'gear-item-camera-link';
+  indicator.hidden = true;
+  const icon = doc.createElement('span');
+  icon.className = 'gear-item-camera-link__icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = 'A';
+  indicator.appendChild(icon);
+  const botText = doc.createElement('span');
+  botText.className = 'gear-item-camera-link__text';
+  botText.textContent = textsForDialog.cameraLinkBotLabel || 'bot';
+  indicator.appendChild(botText);
+  const assist = doc.createElement('span');
+  assist.className = 'visually-hidden';
+  assist.setAttribute('data-camera-link-assist', 'true');
+  assist.textContent = textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
+  indicator.appendChild(assist);
+  const reference = element.querySelector('.gear-item-note')
+    || element.querySelector('.gear-item-provider')
+    || element.querySelector('.gear-item-extra-indicator')
+    || element.querySelector('.gear-item-edit-btn')
+    || element.querySelector('.gear-custom-item-actions')
+    || element.querySelector('.gear-custom-remove-btn');
+  if (reference) {
+    element.insertBefore(indicator, reference);
+  } else {
+    element.appendChild(indicator);
+  }
+  return indicator;
+}
+
+function updateGearItemCameraLinkIndicator(element, active, options = {}) {
+  const indicator = ensureGearItemCameraLinkIndicator(element);
+  if (!indicator) return;
+  if (!active) {
+    indicator.hidden = true;
+    indicator.setAttribute('hidden', '');
+    indicator.classList.remove('gear-item-camera-link--primary');
+    return;
+  }
+  const textsForDialog = getGearItemEditTexts();
+  indicator.hidden = false;
+  indicator.removeAttribute('hidden');
+  indicator.classList.toggle('gear-item-camera-link--primary', Boolean(options.isPrimary));
+  const icon = indicator.querySelector('.gear-item-camera-link__icon');
+  if (icon) {
+    icon.textContent = (options.iconText && options.iconText.trim()) || 'A';
+  }
+  const botText = indicator.querySelector('.gear-item-camera-link__text');
+  if (botText) {
+    const nextLabel = options.botLabel || textsForDialog.cameraLinkBotLabel || 'bot';
+    botText.textContent = nextLabel;
+  }
+  const assist = indicator.querySelector('[data-camera-link-assist]');
+  if (assist) {
+    const labelText = options.badgeLabel || textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
+    assist.textContent = labelText;
+  }
+}
+
 function ensureGearItemTextContainer(element) {
   if (!element) return null;
   let textContainer = element.querySelector('.gear-item-text');
@@ -5795,6 +5981,11 @@ function getGearItemData(element) {
     providedBy = guessDefaultProvider(name);
   }
   const providerLabel = providerLabelAttr.trim();
+  const cameraLinkAttr = element.getAttribute('data-gear-camera-link') || '';
+  const cameraLinkLabelAttr = element.getAttribute('data-gear-camera-link-label') || '';
+  const cameraItem = isPrimaryCameraItem(element);
+  const cameraLinkValue = (cameraLinkAttr && cameraLinkAttr !== 'none') || cameraItem ? 'camera' : '';
+  const cameraLinkLabel = cameraLinkLabelAttr.trim() || (cameraItem ? getActiveCameraDisplayName() : '');
   return {
     quantity,
     name,
@@ -5807,6 +5998,8 @@ function getGearItemData(element) {
     extraStart: extraStartAttr.trim(),
     extraEnd: extraEndAttr.trim(),
     extraLabel: extraLabelAttr.trim(),
+    cameraLink: cameraLinkValue,
+    cameraLinkLabel: cameraLinkLabel,
   };
 }
 
@@ -6039,6 +6232,34 @@ function applyGearItemData(element, data = {}, options = {}) {
     ? data.providerLabel.trim()
     : (element.getAttribute('data-gear-provider-label') || '');
   setGearItemProvider(element, providerValue, { label: providerLabel });
+  const cameraLinkRaw = typeof data.cameraLink === 'string' ? data.cameraLink.trim() : '';
+  const cameraLabelRaw = typeof data.cameraLinkLabel === 'string' ? data.cameraLinkLabel.trim() : '';
+  const cameraItem = isPrimaryCameraItem(element);
+  const wantsCameraLink = cameraItem || cameraLinkRaw === 'camera';
+  const effectiveCameraLabel = cameraLabelRaw || (cameraItem ? getActiveCameraDisplayName() : '');
+  if (wantsCameraLink) {
+    element.setAttribute('data-gear-camera-link', 'camera');
+    if (effectiveCameraLabel) {
+      element.setAttribute('data-gear-camera-link-label', effectiveCameraLabel);
+    } else {
+      element.removeAttribute('data-gear-camera-link-label');
+    }
+  } else {
+    element.removeAttribute('data-gear-camera-link');
+    element.removeAttribute('data-gear-camera-link-label');
+  }
+  if (element.classList) {
+    element.classList.toggle('gear-item-camera-linked', wantsCameraLink);
+  }
+  const badgeTexts = getGearItemEditTexts();
+  const badgeBase = badgeTexts.cameraLinkBadgeLabel || 'Linked to camera';
+  const badgeLabel = effectiveCameraLabel
+    ? `${badgeBase} — ${effectiveCameraLabel}`
+    : badgeBase;
+  updateGearItemCameraLinkIndicator(element, wantsCameraLink, {
+    isPrimary: cameraItem,
+    badgeLabel,
+  });
   if (!element.getAttribute('data-gear-original-name')) {
     const originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -6422,6 +6643,10 @@ function buildGearItemEditContext() {
     ownedCheckbox: resolveElementById('gearItemEditOwned', 'gearItemEditOwned'),
     ownedLabel: resolveElementById('gearItemEditOwnedLabel', 'gearItemEditOwnedLabel'),
     ownedHelp: resolveElementById('gearItemEditOwnedHelp', 'gearItemEditOwnedHelp'),
+    cameraLinkContainer: resolveElementById('gearItemEditCameraLinkContainer', 'gearItemEditCameraLinkContainer'),
+    cameraLinkSelect: resolveElementById('gearItemEditCameraLink', 'gearItemEditCameraLink'),
+    cameraLinkLabel: resolveElementById('gearItemEditCameraLinkLabel', 'gearItemEditCameraLinkLabel'),
+    cameraLinkHelp: resolveElementById('gearItemEditCameraLinkHelp', 'gearItemEditCameraLinkHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -6434,6 +6659,8 @@ function buildGearItemEditContext() {
     resetDefaults: null,
     currentAttributes: '',
     currentOwnedEntryId: '',
+    currentCameraLinkValue: '',
+    isCameraItem: false,
   };
 }
 
@@ -6470,6 +6697,13 @@ function getGearItemEditTexts() {
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
     ownedLabel: langTexts.gearListEditOwnedLabel || fallbackTexts.gearListEditOwnedLabel || 'Owned',
     ownedHelp: langTexts.gearListEditOwnedHelp || fallbackTexts.gearListEditOwnedHelp || '',
+    cameraLinkLabel: langTexts.gearListEditCameraLinkLabel || fallbackTexts.gearListEditCameraLinkLabel || 'Camera link',
+    cameraLinkHelp: langTexts.gearListEditCameraLinkHelp || fallbackTexts.gearListEditCameraLinkHelp || '',
+    cameraLinkNoneOption: langTexts.gearListEditCameraLinkNoneOption || fallbackTexts.gearListEditCameraLinkNoneOption || 'No camera link',
+    cameraLinkCameraOption: langTexts.gearListEditCameraLinkCameraOption || fallbackTexts.gearListEditCameraLinkCameraOption || 'Link to camera (%s)',
+    cameraLinkUnavailableOption: langTexts.gearListEditCameraLinkUnavailableOption || fallbackTexts.gearListEditCameraLinkUnavailableOption || 'Link to camera',
+    cameraLinkBadgeLabel: langTexts.gearListCameraLinkBadgeLabel || fallbackTexts.gearListCameraLinkBadgeLabel || 'Linked to camera',
+    cameraLinkBotLabel: langTexts.gearListCameraLinkBotLabel || fallbackTexts.gearListCameraLinkBotLabel || 'bot',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',
@@ -6553,6 +6787,28 @@ function applyGearItemEditDialogTexts(context) {
       context.providerSelect.removeAttribute('aria-describedby');
     }
     context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
+  }
+  if (context.cameraLinkLabel) {
+    context.cameraLinkLabel.textContent = textsForDialog.cameraLinkLabel;
+  }
+  if (context.cameraLinkHelp) {
+    const cameraHelp = textsForDialog.cameraLinkHelp || '';
+    context.cameraLinkHelp.textContent = cameraHelp;
+    if (cameraHelp) {
+      context.cameraLinkHelp.hidden = false;
+      context.cameraLinkHelp.removeAttribute('hidden');
+    } else {
+      context.cameraLinkHelp.hidden = true;
+      context.cameraLinkHelp.setAttribute('hidden', '');
+    }
+  }
+  if (context.cameraLinkSelect) {
+    if (context.cameraLinkHelp && context.cameraLinkHelp.textContent) {
+      context.cameraLinkSelect.setAttribute('aria-describedby', context.cameraLinkHelp.id);
+    } else {
+      context.cameraLinkSelect.removeAttribute('aria-describedby');
+    }
+    context.cameraLinkSelect.setAttribute('aria-label', textsForDialog.cameraLinkLabel);
   }
   if (context.ownedLabel) {
     const ownedLabelSpan = context.ownedLabel.querySelector('span');
@@ -6936,6 +7192,8 @@ function handleGearItemEditFormSubmit(event) {
     extra: context.extraCheckbox ? context.extraCheckbox.checked : Boolean(targetEntry.getAttribute('data-gear-extra') === 'true'),
     extraStart: context.extraStartInput ? context.extraStartInput.value : targetEntry.getAttribute('data-gear-extra-start') || '',
     extraEnd: context.extraEndInput ? context.extraEndInput.value : targetEntry.getAttribute('data-gear-extra-end') || '',
+    cameraLink: '',
+    cameraLinkLabel: '',
   };
   if (data.extra) {
     const sanitized = sanitizeExtraPeriod(data.extraStart, data.extraEnd);
@@ -6957,6 +7215,33 @@ function handleGearItemEditFormSubmit(event) {
       data.providedBy = 'user';
     }
   }
+  const isCameraItem = Boolean(context.isCameraItem);
+  let cameraLinkSelection = '';
+  let cameraLinkLabel = '';
+  if (context.cameraLinkSelect) {
+    cameraLinkSelection = context.cameraLinkSelect.value || '';
+    const selectedOption = context.cameraLinkSelect.selectedOptions && context.cameraLinkSelect.selectedOptions[0];
+    if (selectedOption) {
+      cameraLinkLabel = selectedOption.getAttribute('data-camera-label')
+        || (selectedOption.dataset ? selectedOption.dataset.cameraLabel : '')
+        || '';
+      if (!cameraLinkLabel) {
+        const optionText = selectedOption.textContent || '';
+        if (optionText) {
+          cameraLinkLabel = optionText.replace(/\s*\([^)]*\)\s*$/, '').trim();
+        }
+      }
+    }
+  }
+  const wantsCameraLink = isCameraItem || cameraLinkSelection === 'camera';
+  if (wantsCameraLink) {
+    data.cameraLink = 'camera';
+    data.cameraLinkLabel = cameraLinkLabel || getActiveCameraDisplayName() || '';
+  } else {
+    data.cameraLink = '';
+    data.cameraLinkLabel = '';
+  }
+  context.currentCameraLinkValue = data.cameraLink;
   applyGearItemData(targetEntry, data);
   const ownedSyncResult = wantsOwned || context.currentOwnedEntryId
     ? syncGearItemOwnedState(targetEntry, data, {
@@ -7028,6 +7313,8 @@ function handleGearItemEditDialogClose() {
     context.resetDefaults = null;
     context.currentAttributes = '';
     context.currentOwnedEntryId = '';
+    context.currentCameraLinkValue = '';
+    context.isCameraItem = false;
     if (context.resetButton) {
       context.resetButton.disabled = false;
       context.resetButton.setAttribute('aria-disabled', 'false');
@@ -7037,6 +7324,11 @@ function handleGearItemEditDialogClose() {
       context.ownedCheckbox.disabled = false;
       context.ownedCheckbox.removeAttribute('aria-disabled');
       context.ownedCheckbox.removeAttribute('aria-describedby');
+    }
+    if (context.cameraLinkSelect) {
+      context.cameraLinkSelect.disabled = false;
+      context.cameraLinkSelect.value = '';
+      context.cameraLinkSelect.removeAttribute('aria-disabled');
     }
   }
   activeGearItemEditTarget = null;
@@ -7066,6 +7358,32 @@ function refreshGearItemEditProviderOptionsIfOpen() {
   const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   const data = targetEntry ? getGearItemData(targetEntry) : {};
   updateGearItemEditProviderOptions(context, data);
+}
+
+function refreshGearItemEditCameraLinkOptionsIfOpen() {
+  const context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.cameraLinkSelect) {
+    return;
+  }
+  const isDialogOpen = typeof context.dialog.open === 'boolean'
+    ? context.dialog.open
+    : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  const data = targetEntry ? getGearItemData(targetEntry) : {};
+  updateGearItemEditCameraLinkOptions(context, data);
+  const isCameraItem = Boolean(context.isCameraItem || (targetEntry && isPrimaryCameraItem(targetEntry)));
+  const nextValue = isCameraItem || data.cameraLink === 'camera' ? 'camera' : '';
+  context.cameraLinkSelect.value = nextValue;
+  if (isCameraItem) {
+    context.cameraLinkSelect.disabled = true;
+    context.cameraLinkSelect.setAttribute('aria-disabled', 'true');
+  } else {
+    context.cameraLinkSelect.disabled = false;
+    context.cameraLinkSelect.removeAttribute('aria-disabled');
+  }
 }
 
 function refreshGearItemOwnedStateIfOpen() {
@@ -7155,6 +7473,9 @@ function bindGearItemEditDialog(context) {
     input.addEventListener('input', handleGearItemEditFieldInput);
     input.addEventListener('change', handleGearItemEditFieldInput);
   });
+  if (context.cameraLinkSelect) {
+    context.cameraLinkSelect.addEventListener('change', handleGearItemEditFieldInput);
+  }
   gearItemEditDialogBound = true;
 }
 
@@ -7243,6 +7564,26 @@ function openGearItemEditor(element, options = {}) {
   if (context.providerSelect) {
     updateGearItemEditProviderOptions(context, data);
   }
+  const cameraLinked = data.cameraLink === 'camera';
+  const isCameraItem = isPrimaryCameraItem(element);
+  context.isCameraItem = isCameraItem;
+  if (context.cameraLinkContainer) {
+    context.cameraLinkContainer.hidden = false;
+    context.cameraLinkContainer.removeAttribute('hidden');
+  }
+  if (context.cameraLinkSelect) {
+    updateGearItemEditCameraLinkOptions(context, data);
+    const nextValue = isCameraItem ? 'camera' : (cameraLinked ? 'camera' : '');
+    context.cameraLinkSelect.value = nextValue;
+    if (isCameraItem) {
+      context.cameraLinkSelect.disabled = true;
+      context.cameraLinkSelect.setAttribute('aria-disabled', 'true');
+    } else {
+      context.cameraLinkSelect.disabled = false;
+      context.cameraLinkSelect.removeAttribute('aria-disabled');
+    }
+  }
+  context.currentCameraLinkValue = isCameraItem || cameraLinked ? 'camera' : '';
   updateGearItemEditRentalControls(context, Boolean(data.rentalExcluded), allowRentalToggle);
   if (context.rentalToggleButton) {
     context.rentalToggleButton.blur();
@@ -7419,6 +7760,8 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
     extra: extraValue,
     extraStart: extraStartValue,
     extraEnd: extraEndValue,
+    cameraLink: data && Object.prototype.hasOwnProperty.call(data, 'cameraLink') ? data.cameraLink : '',
+    cameraLinkLabel: data && Object.prototype.hasOwnProperty.call(data, 'cameraLinkLabel') ? data.cameraLinkLabel : '',
   }, { skipPreview: false });
   const wantsExcluded = Boolean(
     data && (data.rentalExcluded === true || data.rentalExcluded === 'true')
@@ -7523,6 +7866,8 @@ function readCustomItemsState() {
       const extra = item.getAttribute('data-gear-extra') === 'true';
       const extraStart = String(item.getAttribute('data-gear-extra-start') || '');
       const extraEnd = String(item.getAttribute('data-gear-extra-end') || '');
+      const cameraLink = String(item.getAttribute('data-gear-camera-link') || '');
+      const cameraLinkLabel = String(item.getAttribute('data-gear-camera-link-label') || '');
       entries.push({
         quantity,
         name,
@@ -7534,6 +7879,8 @@ function readCustomItemsState() {
         extra,
         extraStart,
         extraEnd,
+        cameraLink,
+        cameraLinkLabel,
       });
     });
     if (entries.length) {
@@ -10801,5 +11148,8 @@ if (typeof document !== 'undefined') {
         refreshGearItemEditProviderOptionsIfOpen();
         refreshGearItemOwnedStateIfOpen();
     });
+  document.addEventListener('camera-selection-changed', () => {
+    refreshGearItemEditCameraLinkOptionsIfOpen();
+  });
 }
 

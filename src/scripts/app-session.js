@@ -4630,6 +4630,13 @@ if (cameraSelect) {
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
     }
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      try {
+        document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+      } catch (error) {
+        void error;
+      }
+    }
   });
 }
 

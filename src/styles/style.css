@@ -1832,6 +1832,17 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   width: 100%;
 }
 
+.gear-item-edit-camera-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.gear-item-edit-camera-field select {
+  width: 100%;
+}
+
 .gear-item-edit-owned {
   display: flex;
   flex-direction: column;
@@ -9104,6 +9115,44 @@ body.dark-mode .requirement-box,
   background: color-mix(in srgb, var(--panel-bg) 80%, var(--accent-color) 20%);
   color: color-mix(in srgb, var(--text-color) 92%, var(--accent-color) 8%);
   box-shadow: none;
+}
+
+.gear-item-camera-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  margin-inline-start: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.gear-item-camera-link[hidden] {
+  display: none !important;
+}
+
+.gear-item-camera-link__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25em;
+  min-height: 1.25em;
+  padding-inline: 0.25em;
+  border-radius: 0.35em;
+  background: var(--danger-color);
+  color: var(--inverse-text-color);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.95em;
+  letter-spacing: 0.02em;
+}
+
+.gear-item-camera-link__text {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+.gear-item-camera-link--primary .gear-item-camera-link__text {
+  display: none;
 }
 
 #gearListOutput .auto-gear-rule-badge {
