@@ -34,6 +34,16 @@ The **Diagnostics log** inside **Settings → Data & Storage** exposes those cin
 
 **Quick safeguards** live beside that log inside **Settings → Data & Storage**, giving crews a one-click path to download a fresh full backup or jump directly to the restore workspace without leaving the dialog. Every time you press the button the planner records the action in the same storage dashboard, making it easy to archive the JSON alongside the verification note.【F:index.html†L2548-L2570】
 
+### Rapid recovery drill
+
+The Help Center now walks crews through a rapid recovery drill so backups, project exports and rehearsal restores happen together before anyone goes offline.【F:index.html†L4065-L4124】 Run it at the end of each work session:
+
+1. Download a full backup via **Settings → Data & Storage → Download full backup** and copy the JSON to at least two offline destinations before changing tabs.【F:index.html†L4069-L4084】
+2. Return to **Saved Projects → Export project** to capture the active configuration with the same timestamp so archives stay paired.【F:index.html†L4085-L4097】
+3. Launch **Restore rehearsal**, load either the project bundle or full backup, and inspect the status banner plus comparison table to confirm the sandbox matches expectations before touching live data.【F:index.html†L4098-L4109】
+4. Capture screenshots or console output listed under the Help Center’s console verification commands to document which safeguards you exercised.【F:index.html†L4110-L4116】【F:index.html†L4125-L4144】
+5. Verify the **Latest activity** ledger reflects the same timestamps as your stored files and notes before going offline.【F:index.html†L4117-L4123】【F:index.html†L2558-L2586】
+
 The logging serializers now retain detail from Maps, Sets, typed arrays, URL parameters and regular expressions so incident reviews capture the full context without chasing down reproduced payloads. Map entries and typed array previews truncate with explicit counters when the payload is large, keeping diagnostics responsive while still documenting how much data the runtime handled.【F:src/scripts/modules/logging.js†L712-L901】
 
 ## Workflow matrix

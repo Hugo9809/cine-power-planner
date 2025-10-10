@@ -4160,6 +4160,105 @@
             </p>
           </div>
           <div
+            id="rapidRecoveryDrill"
+            class="help-callout"
+            role="note"
+            aria-label="Rapid recovery drill"
+          >
+            <h4>Rapid recovery drill</h4>
+            <ol>
+              <li>
+                Open
+                <a
+                  class="help-link button-link"
+                  href="#settingsButton"
+                  data-help-target="#settingsButton"
+                ><strong>Settings</strong></a>
+                →
+                <a
+                  class="help-link"
+                  href="#dataHeading"
+                  data-help-target="#dataHeading"
+                  data-help-highlight="#settingsPanel-data"
+                >Data &amp; Storage</a>
+                and trigger
+                <a
+                  class="help-link button-link"
+                  href="#storageBackupNow"
+                  data-help-target="#storageBackupNow"
+                  data-help-highlight="#storageActions"
+                ><strong>Download full backup</strong></a>
+                . Confirm the JSON saves locally, then copy it to two offline destinations before you continue.
+              </li>
+              <li>
+                Switch back to the
+                <a
+                  class="help-link"
+                  href="#setup-manager"
+                  data-help-target="#setup-manager"
+                >Saved Projects</a>
+                area and use
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export project</strong></a>
+                to capture the active configuration. Give the file the same timestamp as the full backup so the pair stays
+                matched in your archive.
+              </li>
+              <li>
+                Rehearse the backup immediately.
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                lets you load either file into a sandbox, inspect the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalStatus"
+                  data-help-target="#restoreRehearsalStatus"
+                  data-help-highlight="#restoreRehearsalSection"
+                >status banner</a>
+                and
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalTable"
+                  data-help-target="#restoreRehearsalTable"
+                  data-help-highlight="#restoreRehearsalSection"
+                >comparison table</a>
+                before committing anything live. Abort the rehearsal if differences appear, then investigate while your verified
+                copies remain untouched.
+              </li>
+              <li>
+                Record the results. Capture screenshots or console output from the
+                <a
+                  class="help-link"
+                  href="#helpConsoleVerification"
+                  data-help-target="#helpConsoleVerification"
+                >console verification commands</a>
+                below so your audit trail shows which safeguards you exercised and when.
+              </li>
+              <li>
+                Update the storage ledger.
+                <a
+                  class="help-link"
+                  href="#storageStatus"
+                  data-help-target="#storageStatus"
+                  data-help-highlight="#settingsPanel-data"
+                >Latest activity</a>
+                timestamps, manual notes and redundant copies should all agree before you leave the browser or disconnect from
+                the network.
+              </li>
+            </ol>
+            <p class="help-callout-note">
+              Tip: Repeat the drill at the end of every shooting day. Practiced recoveries prevent surprises and prove that
+              offline archives stay current across teams and devices.
+            </p>
+          </div>
+          <div
             id="helpConsoleVerification"
             class="help-callout"
             role="note"
