@@ -2827,7 +2827,17 @@
           <span class="icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>
         </button>
       </div>
-      <button id="hoverHelpButton" type="button">Hover for help</button>
+      <div id="helpPrimaryActions" class="help-primary-actions">
+        <button id="hoverHelpButton" type="button">Hover for help</button>
+        <button
+          id="helpOnboardingTutorialButton"
+          class="button-link"
+          type="button"
+          data-onboarding-tour-trigger="primary"
+        >
+          Start guided tutorial
+        </button>
+      </div>
       <nav id="helpQuickLinks" aria-label="Help topics" hidden>
         <h3 id="helpQuickLinksHeading">Jump to a topic</h3>
         <ul id="helpQuickLinksList"></ul>
@@ -2960,7 +2970,11 @@
             <h4>Quick start checklist</h4>
             <ol>
               <li id="helpOnboardingTutorialRow">
-                <button type="button" id="helpOnboardingTutorialButton" class="button-link">
+                <button
+                  type="button"
+                  class="button-link help-onboarding-secondary"
+                  data-onboarding-tour-trigger="secondary"
+                >
                   Start guided tutorial
                 </button>
                 <span id="helpOnboardingTutorialCopy">
