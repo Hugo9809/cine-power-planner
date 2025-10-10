@@ -333,14 +333,14 @@
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 545
+      "weight_g": 520
     },
     "FXLion Nano Three (V-Mount)": {
       "capacity": 150,
       "pinA": 12,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 795
+      "weight_g": 773
     },
     "FXLion Nano ONE Wireless (V-Mount)": {
       "capacity": 50,

@@ -1,7 +1,7 @@
 (function () {
   var wirelessReceiversData = {
     "Teradek Bolt 6 XT RX": {
-      "powerDrawWatts": 16,
+      "powerDrawWatts": 18,
       "videoInputs": [],
       "videoOutputs": [{
         "type": "HDMI"

@@ -7585,8 +7585,8 @@ function refreshStoragePersistenceStatus() {
 function _refreshStoragePersistenceStatus() {
   _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee() {
     var options,
-      _ref28,
-      _ref28$fromRequest,
+      _ref29,
+      _ref29$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -7607,7 +7607,7 @@ function _refreshStoragePersistenceStatus() {
           }
           return _context.a(2);
         case 1:
-          _ref28 = options || {}, _ref28$fromRequest = _ref28.fromRequest, fromRequest = _ref28$fromRequest === void 0 ? false : _ref28$fromRequest;
+          _ref29 = options || {}, _ref29$fromRequest = _ref29.fromRequest, fromRequest = _ref29$fromRequest === void 0 ? false : _ref29$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -10176,15 +10176,15 @@ if (helpButton && helpDialog) {
         }
         var labelHeight = label.offsetHeight || label.getBoundingClientRect().height;
         var lineCount = lineHeight ? Math.round(labelHeight / lineHeight) : 1;
-        if (lineCount > 1) {
-          button.classList.add('help-quick-link-multiline');
+        var isMultiLine = lineCount > 1;
+        button.classList.toggle('help-quick-link-multiline', isMultiLine);
+        if (isMultiLine) {
           multiLineItems.push({
             index: index,
             node: item,
             button: button
           });
         } else {
-          button.classList.remove('help-quick-link-multiline');
           singleLineItems.push({
             index: index,
             node: item,
@@ -10228,8 +10228,9 @@ if (helpButton && helpDialog) {
       }
       hiddenItems.sort(function (a, b) {
         return a.index - b.index;
-      }).forEach(function (item) {
-        return fragment.appendChild(item.node);
+      }).forEach(function (_ref16) {
+        var node = _ref16.node;
+        return fragment.appendChild(node);
       });
       if (fragment.childNodes.length) {
         helpQuickLinksList.appendChild(fragment);
@@ -10262,10 +10263,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref16) {
-      var section = _ref16.section,
-        listItem = _ref16.listItem,
-        button = _ref16.button;
+    helpQuickLinkItems.forEach(function (_ref17) {
+      var section = _ref17.section,
+        listItem = _ref17.listItem,
+        button = _ref17.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -10298,9 +10299,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref17) {
-      var button = _ref17.button,
-        label = _ref17.label;
+    helpQuickLinkItems.forEach(function (_ref18) {
+      var button = _ref18.button,
+        label = _ref18.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -10401,7 +10402,8 @@ if (helpButton && helpDialog) {
   buildHelpQuickLinks();
   if (typeof window !== 'undefined') {
     window.addEventListener('resize', function () {
-      if (!helpQuickLinksList || helpQuickLinksNav && helpQuickLinksNav.hasAttribute('hidden')) {
+      var _helpQuickLinksNav;
+      if (!helpQuickLinksList || (_helpQuickLinksNav = helpQuickLinksNav) !== null && _helpQuickLinksNav !== void 0 && _helpQuickLinksNav.hasAttribute('hidden')) {
         return;
       }
       scheduleHelpQuickLinksArrangement();
@@ -10510,11 +10512,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref18 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref18.totalCount,
-      visibleCount = _ref18.visibleCount,
-      hasQuery = _ref18.hasQuery,
-      queryText = _ref18.queryText;
+    var _ref19 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref19.totalCount,
+      visibleCount = _ref19.visibleCount,
+      hasQuery = _ref19.hasQuery,
+      queryText = _ref19.queryText;
     var hideAssist = function hideAssist() {
       if (!helpResultsAssist) return;
       helpResultsAssist.textContent = '';
@@ -11068,11 +11070,11 @@ if (helpButton && helpDialog) {
       return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref19 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref19$includeTextCon = _ref19.includeTextContent,
-        includeTextContent = _ref19$includeTextCon === void 0 ? false : _ref19$includeTextCon,
-        _ref19$preferTextAsLa = _ref19.preferTextAsLabel,
-        preferTextAsLabel = _ref19$preferTextAsLa === void 0 ? false : _ref19$preferTextAsLa;
+      var _ref20 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref20$includeTextCon = _ref20.includeTextContent,
+        includeTextContent = _ref20$includeTextCon === void 0 ? false : _ref20$includeTextCon,
+        _ref20$preferTextAsLa = _ref20.preferTextAsLabel,
+        preferTextAsLabel = _ref20$preferTextAsLa === void 0 ? false : _ref20$preferTextAsLa;
       if (!element) return;
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
@@ -11104,9 +11106,9 @@ if (helpButton && helpDialog) {
       }
     };
     var applyFromIds = function applyFromIds(ids) {
-      var _ref20 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref20$preferTextAsLa = _ref20.preferTextAsLabel,
-        preferTextAsLabel = _ref20$preferTextAsLa === void 0 ? false : _ref20$preferTextAsLa;
+      var _ref21 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref21$preferTextAsLa = _ref21.preferTextAsLabel,
+        preferTextAsLabel = _ref21$preferTextAsLa === void 0 ? false : _ref21$preferTextAsLa;
       if (!ids) return;
       ids.split(/\s+/).map(function (id) {
         return id.trim();
@@ -12066,10 +12068,10 @@ function getRequiredScenarioOptionEntries() {
     }
     options.set(value, value);
   });
-  return Array.from(options.entries()).map(function (_ref21) {
-    var _ref22 = _slicedToArray(_ref21, 2),
-      value = _ref22[0],
-      label = _ref22[1];
+  return Array.from(options.entries()).map(function (_ref22) {
+    var _ref23 = _slicedToArray(_ref22, 2),
+      value = _ref23[0],
+      label = _ref23[1];
     return {
       value: value,
       label: label
@@ -12445,7 +12447,7 @@ function populateLensDropdown() {
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
   for (var _index15 = 0; _index15 < lensNames.length; _index15 += 1) {
-    var _ref23, _lens$minFocusMeters;
+    var _ref24, _lens$minFocusMeters;
     var name = lensNames[_index15];
     var opt = document.createElement('option');
     opt.value = name;
@@ -12461,7 +12463,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref23 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref23 !== void 0 ? _ref23 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref24 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref24 !== void 0 ? _ref24 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus);
       if (formattedMinFocus) {
@@ -12662,9 +12664,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
       return aNum - bNum;
     }
     return a[0].localeCompare(b[0]);
-  }).map(function (_ref24) {
-    var _ref25 = _slicedToArray(_ref24, 1),
-      value = _ref25[0];
+  }).map(function (_ref25) {
+    var _ref26 = _slicedToArray(_ref25, 1),
+      value = _ref26[0];
     return value;
   });
 }
@@ -13021,11 +13023,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref26) {
-    var type = _ref26.type,
-      _ref26$size = _ref26.size,
-      size = _ref26$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref26$size,
-      values = _ref26.values;
+  filters.forEach(function (_ref27) {
+    var type = _ref27.type,
+      _ref27$size = _ref27.size,
+      size = _ref27$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref27$size,
+      values = _ref27.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -13565,8 +13567,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref27) {
-    var type = _ref27.type;
+  filters.forEach(function (_ref28) {
+    var type = _ref28.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
