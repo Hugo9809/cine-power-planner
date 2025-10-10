@@ -1299,6 +1299,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var helpDialog = DOCUMENT && typeof DOCUMENT.getElementById === 'function' ? DOCUMENT.getElementById('helpDialog') : null;
     if (helpDialog && typeof isDialogOpen === 'function' && typeof closeDialog === 'function' && isDialogOpen(helpDialog)) {
       closeDialog(helpDialog);
+      if (typeof helpDialog.setAttribute === 'function') {
+        try {
+          helpDialog.setAttribute('hidden', '');
+        } catch (error) {
+          void error;
+        }
+      }
+      if (helpDialog && _typeof(helpDialog) === 'object' && 'hidden' in helpDialog) {
+        try {
+          helpDialog.hidden = true;
+        } catch (error) {
+          void error;
+        }
+      }
       if (typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
         GLOBAL_SCOPE.requestAnimationFrame(function () {
           GLOBAL_SCOPE.requestAnimationFrame(startFromHelp);
