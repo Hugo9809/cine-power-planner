@@ -11375,10 +11375,34 @@ function clearAllData() {
     getWindowStorage('localStorage'),
     typeof localStorage !== 'undefined' ? localStorage : null,
   ]);
+
+  const onboardingStorageKeys = [
+    'cameraPowerPlanner_onboardingTutorial',
+    'cinePowerPlanner_onboardingTutorial',
+  ];
+
+  const clearOnboardingTutorialState = (storage) => {
+    if (!storage) {
+      return;
+    }
+    for (let index = 0; index < onboardingStorageKeys.length; index += 1) {
+      const key = onboardingStorageKeys[index];
+      deleteFromStorage(storage, key, msg);
+    }
+  };
+
+  for (let index = 0; index < storageCandidates.length; index += 1) {
+    clearOnboardingTutorialState(storageCandidates[index]);
+  }
+
   const sessionCandidates = collectUniqueStorages([
     typeof sessionStorage !== 'undefined' ? sessionStorage : null,
     getWindowStorage('sessionStorage'),
   ]);
+
+  for (let index = 0; index < sessionCandidates.length; index += 1) {
+    clearOnboardingTutorialState(sessionCandidates[index]);
+  }
   const prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 
   const collectStorageKeys = (storage, predicate = () => true) => {
