@@ -1438,6 +1438,295 @@ function getOwnGearNameSet() {
   }
   return ownGearNameCache.names;
 }
+var OWN_GEAR_SOURCE_CATALOG_VALUE = typeof OWN_GEAR_SOURCE_CATALOG === 'string' && OWN_GEAR_SOURCE_CATALOG ? OWN_GEAR_SOURCE_CATALOG : 'catalog';
+var OWN_GEAR_SOURCE_CUSTOM_VALUE = typeof OWN_GEAR_SOURCE_CUSTOM === 'string' && OWN_GEAR_SOURCE_CUSTOM ? OWN_GEAR_SOURCE_CUSTOM : 'custom';
+function resolveOwnGearFeatureModuleForEditor() {
+  if (typeof resolveOwnGearModule === 'function') {
+    try {
+      var moduleApi = resolveOwnGearModule();
+      if (moduleApi && _typeof(moduleApi) === 'object') {
+        return moduleApi;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (scope && _typeof(scope.cineFeaturesOwnGear) === 'object' && scope.cineFeaturesOwnGear) {
+    return scope.cineFeaturesOwnGear;
+  }
+  if ((typeof cineFeaturesOwnGear === "undefined" ? "undefined" : _typeof(cineFeaturesOwnGear)) === 'object' && cineFeaturesOwnGear) {
+    return cineFeaturesOwnGear;
+  }
+  return null;
+}
+function generateOwnGearIdForEditor() {
+  var moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.generateOwnGearId === 'function') {
+    try {
+      return moduleApi.generateOwnGearId();
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof generateOwnGearId === 'function') {
+    try {
+      return generateOwnGearId();
+    } catch (error) {
+      void error;
+    }
+  }
+  var timePart = Date.now().toString(36);
+  var randomPart = Math.floor(Math.random() * 1e8).toString(36);
+  return "own-".concat(timePart, "-").concat(randomPart);
+}
+function normalizeOwnGearRecordForEditor(entry) {
+  if (!entry || _typeof(entry) !== 'object') {
+    return null;
+  }
+  var moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.normalizeOwnGearRecord === 'function') {
+    try {
+      return moduleApi.normalizeOwnGearRecord(entry);
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof normalizeOwnGearRecord === 'function') {
+    try {
+      return normalizeOwnGearRecord(entry);
+    } catch (error) {
+      void error;
+    }
+  }
+  var rawName = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!rawName) {
+    return null;
+  }
+  var normalized = {
+    id: typeof entry.id === 'string' && entry.id.trim() ? entry.id.trim() : generateOwnGearIdForEditor(),
+    name: rawName
+  };
+  if (typeof entry.quantity === 'string' && entry.quantity.trim()) {
+    normalized.quantity = entry.quantity.trim();
+  } else if (typeof entry.quantity === 'number' && Number.isFinite(entry.quantity)) {
+    normalized.quantity = String(entry.quantity);
+  }
+  if (typeof entry.notes === 'string' && entry.notes.trim()) {
+    normalized.notes = entry.notes.trim();
+  }
+  if (typeof entry.source === 'string' && entry.source.trim()) {
+    normalized.source = entry.source.trim();
+  }
+  return normalized;
+}
+function cloneOwnGearRecords(records) {
+  return Array.isArray(records) ? records.map(function (item) {
+    return normalizeOwnGearRecordForEditor(item);
+  }).filter(Boolean).map(function (item) {
+    return _objectSpread({}, item);
+  }) : [];
+}
+function loadOwnGearRecordsForEditor() {
+  var moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
+    try {
+      var loaded = moduleApi.loadStoredOwnGearItems();
+      if (Array.isArray(loaded)) {
+        return cloneOwnGearRecords(loaded);
+      }
+    } catch (error) {
+      console.warn('Unable to load own gear items for gear editor via module.', error);
+    }
+  }
+  if (typeof loadOwnGear === 'function') {
+    try {
+      var stored = loadOwnGear();
+      if (Array.isArray(stored)) {
+        return cloneOwnGearRecords(stored);
+      }
+    } catch (error) {
+      console.warn('Unable to load own gear items for gear editor from storage.', error);
+    }
+  }
+  return [];
+}
+function persistOwnGearRecordsForEditor(records) {
+  var normalized = Array.isArray(records) ? records.map(function (item) {
+    return normalizeOwnGearRecordForEditor(item);
+  }).filter(Boolean) : [];
+  var moduleApi = resolveOwnGearFeatureModuleForEditor();
+  if (moduleApi && typeof moduleApi.persistOwnGearItems === 'function') {
+    try {
+      moduleApi.persistOwnGearItems(normalized);
+      return true;
+    } catch (error) {
+      console.warn('Unable to persist own gear items via module for gear editor.', error);
+    }
+  }
+  if (typeof saveOwnGear === 'function') {
+    try {
+      saveOwnGear(normalized);
+      if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+        document.dispatchEvent(new CustomEvent('own-gear-data-changed'));
+      }
+      return true;
+    } catch (error) {
+      console.warn('Unable to persist own gear items via storage for gear editor.', error);
+    }
+  }
+  return false;
+}
+function lookupOwnGearRecord(records, id, name) {
+  if (!Array.isArray(records)) {
+    return {
+      index: -1,
+      record: null
+    };
+  }
+  var sanitizedId = typeof id === 'string' ? id.trim() : '';
+  var sanitizedName = typeof name === 'string' ? name.trim().toLowerCase() : '';
+  var index = -1;
+  if (sanitizedId) {
+    index = records.findIndex(function (entry) {
+      return entry && entry.id === sanitizedId;
+    });
+  }
+  if (index === -1 && sanitizedName) {
+    index = records.findIndex(function (entry) {
+      if (!entry || typeof entry.name !== 'string') {
+        return false;
+      }
+      return entry.name.trim().toLowerCase() === sanitizedName;
+    });
+  }
+  return {
+    index: index,
+    record: index >= 0 ? records[index] : null
+  };
+}
+function deriveOwnGearSourceForElement(element) {
+  if (!element || _typeof(element) !== 'object' || !element.classList) {
+    return OWN_GEAR_SOURCE_CATALOG_VALUE;
+  }
+  return element.classList.contains('gear-custom-item') ? OWN_GEAR_SOURCE_CUSTOM_VALUE : OWN_GEAR_SOURCE_CATALOG_VALUE;
+}
+function syncGearItemOwnedState(element, data) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var wantsOwned = Boolean(options && options.wantsOwned);
+  var existingId = options && typeof options.existingId === 'string' ? options.existingId.trim() : '';
+  var records = loadOwnGearRecordsForEditor();
+  var name = typeof data.name === 'string' ? data.name.trim() : '';
+  var quantityValue = typeof data.quantity === 'string' ? data.quantity.trim() : '';
+  var _lookupOwnGearRecord = lookupOwnGearRecord(records, existingId, name),
+    index = _lookupOwnGearRecord.index,
+    record = _lookupOwnGearRecord.record;
+  if (wantsOwned && name) {
+    if (record && index >= 0) {
+      var changed = false;
+      var updated = _objectSpread({}, record);
+      if (record.name !== name) {
+        updated.name = name;
+        changed = true;
+      }
+      if (quantityValue) {
+        if (record.quantity !== quantityValue) {
+          updated.quantity = quantityValue;
+          changed = true;
+        }
+      } else if (record.quantity) {
+        delete updated.quantity;
+        changed = true;
+      }
+      var _desiredSource = deriveOwnGearSourceForElement(element);
+      if (_desiredSource && record.source !== _desiredSource) {
+        updated.source = _desiredSource;
+        changed = true;
+      }
+      if (!changed) {
+        return {
+          id: record.id,
+          changed: false
+        };
+      }
+      var normalized = normalizeOwnGearRecordForEditor(updated);
+      if (!normalized) {
+        return {
+          id: record.id,
+          changed: false
+        };
+      }
+      var _nextRecords = records.slice();
+      _nextRecords[index] = normalized;
+      if (!persistOwnGearRecordsForEditor(_nextRecords)) {
+        return {
+          id: record.id,
+          changed: false
+        };
+      }
+      return {
+        id: normalized.id,
+        changed: true
+      };
+    }
+    var newEntry = {
+      id: generateOwnGearIdForEditor(),
+      name: name
+    };
+    if (quantityValue) {
+      newEntry.quantity = quantityValue;
+    }
+    var desiredSource = deriveOwnGearSourceForElement(element);
+    if (desiredSource) {
+      newEntry.source = desiredSource;
+    }
+    var normalizedEntry = normalizeOwnGearRecordForEditor(newEntry);
+    if (!normalizedEntry) {
+      return {
+        id: '',
+        changed: false
+      };
+    }
+    var _nextRecords2 = records.slice();
+    _nextRecords2.push(normalizedEntry);
+    if (!persistOwnGearRecordsForEditor(_nextRecords2)) {
+      return {
+        id: '',
+        changed: false
+      };
+    }
+    return {
+      id: normalizedEntry.id,
+      changed: true
+    };
+  }
+  if (!record || index < 0) {
+    return {
+      id: '',
+      changed: false
+    };
+  }
+  var nextRecords = records.filter(function (entry, entryIndex) {
+    return entryIndex !== index;
+  });
+  if (!persistOwnGearRecordsForEditor(nextRecords)) {
+    return {
+      id: record.id,
+      changed: false
+    };
+  }
+  return {
+    id: '',
+    changed: true
+  };
+}
+function findOwnedRecordForGearItem(element) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var dataName = typeof options.name === 'string' ? options.name.trim() : '';
+  var existingId = typeof options.existingId === 'string' ? options.existingId.trim() : '';
+  var records = loadOwnGearRecordsForEditor();
+  return lookupOwnGearRecord(records, existingId, dataName).record;
+}
 function guessDefaultProvider(name) {
   var trimmed = typeof name === 'string' ? name.trim() : '';
   if (!trimmed) {
@@ -5504,6 +5793,10 @@ function buildGearItemEditContext() {
     providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
     providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
     providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
+    ownedContainer: resolveElementById('gearItemEditOwnedContainer', 'gearItemEditOwnedContainer'),
+    ownedCheckbox: resolveElementById('gearItemEditOwned', 'gearItemEditOwned'),
+    ownedLabel: resolveElementById('gearItemEditOwnedLabel', 'gearItemEditOwnedLabel'),
+    ownedHelp: resolveElementById('gearItemEditOwnedHelp', 'gearItemEditOwnedHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -5514,7 +5807,8 @@ function buildGearItemEditContext() {
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     resetDefaults: null,
-    currentAttributes: ''
+    currentAttributes: '',
+    currentOwnedEntryId: ''
   };
 }
 var cachedGearItemEditContext = null;
@@ -5541,6 +5835,8 @@ function getGearItemEditTexts() {
     providerUser: langTexts.gearListProviderUser || fallbackTexts.gearListProviderUser || 'User',
     providerCrewHeading: langTexts.gearListProviderCrewHeading || fallbackTexts.gearListProviderCrewHeading || 'Crew',
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
+    ownedLabel: langTexts.gearListEditOwnedLabel || fallbackTexts.gearListEditOwnedLabel || 'Owned',
+    ownedHelp: langTexts.gearListEditOwnedHelp || fallbackTexts.gearListEditOwnedHelp || '',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item'
@@ -5584,6 +5880,25 @@ function applyGearItemEditDialogTexts(context) {
       context.providerSelect.removeAttribute('aria-describedby');
     }
     context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
+  }
+  if (context.ownedLabel) {
+    var ownedLabelSpan = context.ownedLabel.querySelector('span');
+    if (ownedLabelSpan) {
+      ownedLabelSpan.textContent = textsForDialog.ownedLabel;
+    }
+  }
+  if (context.ownedHelp) {
+    var helpText = textsForDialog.ownedHelp || '';
+    context.ownedHelp.textContent = helpText;
+    context.ownedHelp.hidden = !helpText;
+  }
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.setAttribute('aria-label', textsForDialog.ownedLabel);
+    if (context.ownedHelp && context.ownedHelp.textContent && !context.ownedHelp.hidden) {
+      context.ownedCheckbox.setAttribute('aria-describedby', context.ownedHelp.id);
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-describedby');
+    }
   }
   var rentalTexts = getGearListRentalToggleTexts();
   var baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
@@ -5751,6 +6066,16 @@ function handleGearItemEditFieldInput() {
   if (context.title) {
     context.title.textContent = previewText ? "".concat(textsForDialog.dialogTitle, " \u2014 ").concat(previewText) : textsForDialog.dialogTitle;
   }
+  if (context.ownedCheckbox) {
+    var hasName = Boolean(context.nameInput && context.nameInput.value.trim());
+    context.ownedCheckbox.disabled = !hasName;
+    if (context.ownedCheckbox.disabled) {
+      context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+      context.ownedCheckbox.checked = false;
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+    }
+  }
   updateGearItemEditResetState(context);
 }
 function handleGearItemEditRentalCheckboxChange() {
@@ -5778,6 +6103,30 @@ function handleGearItemEditRentalButtonClick(event) {
     void error;
   }
   updateGearItemEditRentalControls(context, nextState, true);
+}
+function handleGearItemEditOwnedChange() {
+  var context = getGearItemEditContext();
+  if (!context || !context.ownedCheckbox) {
+    return;
+  }
+  var hasName = Boolean(context.nameInput && context.nameInput.value.trim());
+  if (!hasName) {
+    context.ownedCheckbox.checked = false;
+    context.ownedCheckbox.disabled = true;
+    context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    return;
+  }
+  context.ownedCheckbox.disabled = false;
+  context.ownedCheckbox.removeAttribute('aria-disabled');
+  if (context.providerSelect) {
+    if (context.ownedCheckbox.checked) {
+      if (!context.providerSelect.value || context.providerSelect.value === 'rental-house') {
+        context.providerSelect.value = 'user';
+      }
+    } else if (context.providerSelect.value === 'user') {
+      context.providerSelect.value = 'rental-house';
+    }
+  }
 }
 function handleGearItemEditResetClick(event) {
   if (event) {
@@ -5850,7 +6199,37 @@ function handleGearItemEditFormSubmit(event) {
     providedBy: context.providerSelect ? context.providerSelect.value : '',
     providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length ? getProviderOptionLabel(context.providerSelect.selectedOptions[0]) : ''
   };
+  var hasNameForOwned = Boolean(data.name && data.name.trim());
+  var wantsOwned = Boolean(context.ownedCheckbox && context.ownedCheckbox.checked && hasNameForOwned);
+  if (wantsOwned && (!data.providedBy || data.providedBy === 'rental-house')) {
+    if (context.providerSelect) {
+      context.providerSelect.value = 'user';
+      var selected = context.providerSelect.selectedOptions && context.providerSelect.selectedOptions[0];
+      data.providedBy = context.providerSelect.value;
+      data.providerLabel = selected ? getProviderOptionLabel(selected) : data.providerLabel;
+    } else {
+      data.providedBy = 'user';
+    }
+  }
   applyGearItemData(targetEntry, data);
+  var ownedSyncResult = wantsOwned || context.currentOwnedEntryId ? syncGearItemOwnedState(targetEntry, data, {
+    wantsOwned: wantsOwned,
+    existingId: context.currentOwnedEntryId || targetEntry.getAttribute('data-gear-own-gear-id') || ''
+  }) : {
+    id: '',
+    changed: false
+  };
+  if (ownedSyncResult && Object.prototype.hasOwnProperty.call(ownedSyncResult, 'id')) {
+    if (ownedSyncResult.id) {
+      targetEntry.setAttribute('data-gear-own-gear-id', ownedSyncResult.id);
+    } else {
+      targetEntry.removeAttribute('data-gear-own-gear-id');
+    }
+    context.currentOwnedEntryId = ownedSyncResult.id || '';
+    if (ownedSyncResult.changed) {
+      ownGearNameCache = null;
+    }
+  }
   context.currentAttributes = typeof data.attributes === 'string' ? data.attributes : '';
   if (targetEntry.classList && targetEntry.classList.contains('gear-custom-item')) {
     persistCustomItemsChange();
@@ -5901,9 +6280,16 @@ function handleGearItemEditDialogClose() {
   if (context) {
     context.resetDefaults = null;
     context.currentAttributes = '';
+    context.currentOwnedEntryId = '';
     if (context.resetButton) {
       context.resetButton.disabled = false;
       context.resetButton.setAttribute('aria-disabled', 'false');
+    }
+    if (context.ownedCheckbox) {
+      context.ownedCheckbox.checked = false;
+      context.ownedCheckbox.disabled = false;
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+      context.ownedCheckbox.removeAttribute('aria-describedby');
     }
   }
   activeGearItemEditTarget = null;
@@ -5932,6 +6318,43 @@ function refreshGearItemEditProviderOptionsIfOpen() {
   var targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   var data = targetEntry ? getGearItemData(targetEntry) : {};
   updateGearItemEditProviderOptions(context, data);
+}
+function refreshGearItemOwnedStateIfOpen() {
+  var context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.ownedCheckbox) {
+    return;
+  }
+  var isDialogOpen = typeof context.dialog.open === 'boolean' ? context.dialog.open : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  var targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  if (!targetEntry || !targetEntry.isConnected) {
+    return;
+  }
+  var currentInputName = context.nameInput ? context.nameInput.value.trim() : '';
+  var fallbackData = getGearItemData(targetEntry);
+  var lookupName = currentInputName || fallbackData.name || '';
+  var existingId = context.currentOwnedEntryId || targetEntry.getAttribute('data-gear-own-gear-id') || '';
+  var records = loadOwnGearRecordsForEditor();
+  var _lookupOwnGearRecord2 = lookupOwnGearRecord(records, existingId, lookupName),
+    record = _lookupOwnGearRecord2.record;
+  var hasName = Boolean(lookupName);
+  context.ownedCheckbox.disabled = !hasName;
+  if (context.ownedCheckbox.disabled) {
+    context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    context.ownedCheckbox.checked = false;
+  } else {
+    context.ownedCheckbox.removeAttribute('aria-disabled');
+    context.ownedCheckbox.checked = Boolean(record);
+  }
+  if (record) {
+    context.currentOwnedEntryId = record.id;
+    targetEntry.setAttribute('data-gear-own-gear-id', record.id);
+  } else {
+    context.currentOwnedEntryId = '';
+    targetEntry.removeAttribute('data-gear-own-gear-id');
+  }
 }
 function bindGearItemEditDialog(context) {
   if (gearItemEditDialogBound) {
@@ -5970,6 +6393,9 @@ function bindGearItemEditDialog(context) {
   if (context.rentalToggleButton) {
     context.rentalToggleButton.addEventListener('click', handleGearItemEditRentalButtonClick);
   }
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.addEventListener('change', handleGearItemEditOwnedChange);
+  }
   gearItemEditDialogBound = true;
 }
 function openGearItemEditor(element) {
@@ -6002,6 +6428,30 @@ function openGearItemEditor(element) {
     context.resetButton.setAttribute('aria-disabled', 'false');
   }
   applyGearItemEditDialogTexts(context);
+  var existingOwnedId = element.getAttribute('data-gear-own-gear-id') || '';
+  var ownedRecord = findOwnedRecordForGearItem(element, {
+    name: data.name || '',
+    existingId: existingOwnedId || context.currentOwnedEntryId || ''
+  });
+  context.currentOwnedEntryId = ownedRecord ? ownedRecord.id : '';
+  var hasNameForOwned = Boolean(data.name && data.name.trim());
+  if (context.ownedCheckbox) {
+    context.ownedCheckbox.checked = Boolean(ownedRecord) && hasNameForOwned;
+    context.ownedCheckbox.disabled = !hasNameForOwned;
+    if (context.ownedCheckbox.disabled) {
+      context.ownedCheckbox.setAttribute('aria-disabled', 'true');
+    } else {
+      context.ownedCheckbox.removeAttribute('aria-disabled');
+    }
+  }
+  if (context.ownedContainer) {
+    context.ownedContainer.hidden = false;
+  }
+  if (ownedRecord && element) {
+    element.setAttribute('data-gear-own-gear-id', ownedRecord.id);
+  } else if (existingOwnedId) {
+    element.removeAttribute('data-gear-own-gear-id');
+  }
   var allowRentalToggle = options && options.allowRentalToggle === false ? false : true;
   if (context.quantityInput) {
     context.quantityInput.value = data.quantity || '';
@@ -9482,5 +9932,6 @@ if (typeof document !== 'undefined') {
     ownGearNameCache = null;
     refreshGearItemProviderDisplays();
     refreshGearItemEditProviderOptionsIfOpen();
+    refreshGearItemOwnedStateIfOpen();
   });
 }

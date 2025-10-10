@@ -6492,6 +6492,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     note: iconGlyph("\\uF13E", ICON_FONT_KEYS.ESSENTIAL),
     overview: iconGlyph("\\uF1F5", ICON_FONT_KEYS.UICONS),
     gearList: iconGlyph("\\uE467", ICON_FONT_KEYS.UICONS),
+    contacts: iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS),
     feedback: iconGlyph("\\uE791", ICON_FONT_KEYS.UICONS),
     resetView: iconGlyph("\\uEB6D", ICON_FONT_KEYS.UICONS),
     pin: iconGlyph("\\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
@@ -9087,7 +9088,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       var label = texts[lang][navKey];
       if (label) {
-        link.textContent = label;
+        if (navKey === 'contactsNav' && typeof setButtonLabelWithIcon === 'function' && (link === null || link === void 0 ? void 0 : link.tagName) === 'BUTTON') {
+          setButtonLabelWithIcon(link, label, _typeof(ICON_GLYPHS) === 'object' && ICON_GLYPHS && ICON_GLYPHS.contacts ? ICON_GLYPHS.contacts : iconGlyph("\\uF404", ICON_FONT_KEYS.UICONS));
+        } else {
+          link.textContent = label;
+        }
         link.setAttribute("aria-label", label);
       }
       var helpKey = "".concat(navKey, "Help");
