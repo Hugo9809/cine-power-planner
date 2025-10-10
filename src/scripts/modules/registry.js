@@ -1,4 +1,9 @@
 (function () {
+  /**
+   * The registry is the shared phone book for every module that bootstraps the
+   * planner. Comments throughout the file explain why we cache the lookups and
+   * which safeguards keep user data utilities from being redefined by accident.
+   */
   const GLOBAL_SCOPE =
     typeof globalThis !== 'undefined'
       ? globalThis
@@ -41,6 +46,11 @@
   let metadataMap = Object.create(null);
   let registryReference = null;
 
+  /**
+   * Discover the immutability helpers that freeze exported APIs. We perform the
+   * same guarded probing used across the codebase so the registry works in
+   * browsers, workers and tests without assuming a specific runtime.
+   */
   function resolveImmutability(scope) {
     const targetScope = scope || GLOBAL_SCOPE;
 
@@ -72,6 +82,9 @@
   }
 
   const BUILTIN_IMMUTABILITY = (function resolveBuiltinImmutability() {
+    // Built-in guards are cached on the global scope because they are reused by
+    // multiple modules. Documenting this avoids confusion when debugging deep
+    // freeze issues across different bundles.
     const registryKey = '__cineBuiltinImmutabilityGuards__';
     const scopes = [GLOBAL_SCOPE];
     if (typeof globalThis !== 'undefined' && globalThis !== GLOBAL_SCOPE) scopes.push(globalThis);
@@ -110,6 +123,10 @@
   })();
 
   function createFallbackImmutability() {
+    // The fallback freeze logic imitates the helper shipped with the modern
+    // runtime. Extensive inline comments make it clear why certain objects such
+    // as streams are excluded from freezing: mutating them is necessary for
+    // Node-based tooling and does not impact project persistence.
     function shouldBypass(value) {
       if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
         return false;
