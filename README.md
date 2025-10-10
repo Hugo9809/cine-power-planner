@@ -287,10 +287,12 @@ same online or offline.
    top-bar indicator and autosave status safeguards, generating gear lists,
    capturing crew contacts, tracking your own gear, customising automatic gear
    rules, exporting, importing and backing up data. The step navigator and
-   progress meter let you revisit
-   completed workflows without restarting, and the **Resume guided tutorial**
-   option appears with your saved counts if you pause mid-tour so progress
-   never goes missing offline.
+  progress meter let you revisit
+  completed workflows without restarting, the **Resume guided tutorial**
+  option appears with your saved counts if you pause mid-tour so progress
+  never goes missing offline, and the checklist row surfaces an offline
+  progress status message showing how many steps are complete plus the next
+  workflow to cover before you relaunch the tour.
 1. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
