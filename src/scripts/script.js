@@ -21,6 +21,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/localization.js',
     'modules/offline.js',
     'modules/core-shared.js',
+    'modules/core/runtime-tools.js',
+    'modules/core/localization-bridge.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
     'modules/core/experience.js',
@@ -101,6 +103,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
+  ensureModule('modules/core/runtime-tools.js');
+  ensureModule('modules/core/localization-bridge.js');
   ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');
@@ -111,7 +115,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     runtimeGuardModule =
       (globalScope && globalScope.cineRuntimeGuard)
       || require('./modules/runtime-guard.js');
-  } catch (error) {
+  } catch (runtimeGuardLoadError) {
+    void runtimeGuardLoadError;
     runtimeGuardModule = globalScope && globalScope.cineRuntimeGuard ? globalScope.cineRuntimeGuard : null;
   }
 
@@ -153,7 +158,8 @@ if (GLOBAL_RUNTIME_SCOPE && GLOBAL_RUNTIME_SCOPE.cineRuntimeGuard) {
 } else if (typeof require === 'function') {
   try {
     runtimeGuardModule = require('./modules/runtime-guard.js');
-  } catch (error) {
+  } catch (runtimeGuardRequireError) {
+    void runtimeGuardRequireError;
     runtimeGuardModule = null;
   }
 }

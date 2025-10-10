@@ -91,30 +91,50 @@ var CORE_PART1_RUNTIME_SCOPE =
           ? global
           : null;
 
-// Language fallback used across the runtime must be defined before any
-// localisation helpers execute. The module lookup is resilient so the browser
-// never trips over temporal dead zones when scripts load out of order.
-function resolveLocaleModule(scope) {
+function resolveCoreSupportModule(namespaceName, requirePath) {
+  if (
+    CORE_PART1_RUNTIME_SCOPE &&
+    typeof CORE_PART1_RUNTIME_SCOPE === 'object' &&
+    CORE_PART1_RUNTIME_SCOPE[namespaceName] &&
+    typeof CORE_PART1_RUNTIME_SCOPE[namespaceName] === 'object'
+  ) {
+    return CORE_PART1_RUNTIME_SCOPE[namespaceName];
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const required = require(requirePath);
+      if (required && typeof required === 'object') {
+        return required;
+      }
+    } catch (supportModuleError) {
+      void supportModuleError;
+    }
+  }
+
+  return null;
+}
+
+const CORE_LOCALIZATION_BRIDGE = resolveCoreSupportModule(
+  'cineCoreLocalizationBridge',
+  './modules/core/localization-bridge.js'
+);
+
+const CORE_RUNTIME_TOOLS = resolveCoreSupportModule(
+  'cineCoreRuntimeTools',
+  './modules/core/runtime-tools.js'
+);
+
+function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale === 'object') {
     return cineLocale;
   }
 
-  const candidates = [];
-  if (scope && candidates.indexOf(scope) === -1) {
-    candidates.push(scope);
-  }
-  if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) {
-    candidates.push(globalThis);
-  }
-  if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) {
-    candidates.push(window);
-  }
-  if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) {
-    candidates.push(self);
-  }
-  if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) {
-    candidates.push(global);
-  }
+  const candidates = [scope];
+  if (typeof globalThis !== 'undefined') candidates.push(globalThis);
+  if (typeof window !== 'undefined') candidates.push(window);
+  if (typeof self !== 'undefined') candidates.push(self);
+  if (typeof global !== 'undefined') candidates.push(global);
 
   for (let index = 0; index < candidates.length; index += 1) {
     const candidate = candidates[index];
@@ -146,39 +166,19 @@ function resolveLocaleModule(scope) {
   return null;
 }
 
-const LOCALE_MODULE = resolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
-
-const DEFAULT_LANGUAGE =
-  LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string'
-    ? LOCALE_MODULE.DEFAULT_LANGUAGE
-    : 'en';
-
-const RTL_LANGUAGE_CODES =
-  LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0
-    ? LOCALE_MODULE.RTL_LANGUAGE_CODES
-    : ['ar', 'fa', 'he', 'ur'];
-
 function fallbackNormalizeLanguageCode(lang) {
-  if (!lang) return DEFAULT_LANGUAGE;
+  if (!lang) {
+    return DEFAULT_LANGUAGE;
+  }
+
   try {
     return String(lang).trim().toLowerCase();
   } catch (languageNormalizeError) {
     void languageNormalizeError;
   }
+
   return DEFAULT_LANGUAGE;
 }
-
-const normalizeLanguageCode =
-  LOCALE_MODULE && typeof LOCALE_MODULE.normalizeLanguageCode === 'function'
-    ? function normalizeLanguageCodeProxy(lang) {
-        try {
-          return LOCALE_MODULE.normalizeLanguageCode(lang);
-        } catch (normalizeError) {
-          void normalizeError;
-        }
-        return fallbackNormalizeLanguageCode(lang);
-      }
-    : fallbackNormalizeLanguageCode;
 
 function fallbackIsRtlLanguage(lang) {
   const normalized = fallbackNormalizeLanguageCode(lang);
@@ -186,42 +186,26 @@ function fallbackIsRtlLanguage(lang) {
   return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
 }
 
-const isRtlLanguage =
-  LOCALE_MODULE && typeof LOCALE_MODULE.isRtlLanguage === 'function'
-    ? function isRtlLanguageProxy(lang) {
-        try {
-          return LOCALE_MODULE.isRtlLanguage(lang);
-        } catch (isRtlError) {
-          void isRtlError;
-        }
-        return fallbackIsRtlLanguage(lang);
-      }
-    : fallbackIsRtlLanguage;
-
 function fallbackResolveDocumentDirection(lang) {
   if (typeof document !== 'undefined' && document && document.documentElement) {
-    const docDir = document.documentElement.getAttribute('dir');
-    if (docDir === 'rtl' || docDir === 'ltr') {
-      return docDir;
+    try {
+      const docDir = document.documentElement.getAttribute('dir');
+      if (docDir === 'rtl' || docDir === 'ltr') {
+        return docDir;
+      }
+    } catch (documentDirectionError) {
+      void documentDirectionError;
     }
   }
+
   return fallbackIsRtlLanguage(lang) ? 'rtl' : 'ltr';
 }
 
-const resolveDocumentDirection =
-  LOCALE_MODULE && typeof LOCALE_MODULE.resolveDocumentDirection === 'function'
-    ? function resolveDocumentDirectionProxy(lang) {
-        try {
-          return LOCALE_MODULE.resolveDocumentDirection(lang);
-        } catch (resolveDirectionError) {
-          void resolveDirectionError;
-        }
-        return fallbackResolveDocumentDirection(lang);
-      }
-    : fallbackResolveDocumentDirection;
-
 function fallbackApplyLocaleMetadata(target, lang, direction) {
-  if (!target) return;
+  if (!target) {
+    return;
+  }
+
   if (lang) {
     try {
       target.lang = lang;
@@ -229,6 +213,7 @@ function fallbackApplyLocaleMetadata(target, lang, direction) {
       void setLangError;
     }
   }
+
   if (direction) {
     try {
       target.dir = direction;
@@ -238,11 +223,103 @@ function fallbackApplyLocaleMetadata(target, lang, direction) {
   }
 }
 
+const LOCALE_MODULE =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.resolveLocaleModule === 'function'
+    ? function resolveLocaleWithBridge() {
+        try {
+          return CORE_LOCALIZATION_BRIDGE.resolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
+        } catch (bridgeResolveError) {
+          void bridgeResolveError;
+        }
+        return fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
+      }()
+    : fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
+
+const DEFAULT_LANGUAGE =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.getDefaultLanguage === 'function'
+    ? (function resolveDefaultLanguage() {
+        try {
+          return CORE_LOCALIZATION_BRIDGE.getDefaultLanguage(CORE_PART1_RUNTIME_SCOPE);
+        } catch (resolveDefaultLanguageError) {
+          void resolveDefaultLanguageError;
+        }
+        return (
+          LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string'
+            ? LOCALE_MODULE.DEFAULT_LANGUAGE
+            : 'en'
+        );
+      })()
+    : LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string'
+      ? LOCALE_MODULE.DEFAULT_LANGUAGE
+      : 'en';
+
+const RTL_LANGUAGE_CODES =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.getRtlLanguageCodes === 'function'
+    ? (function resolveRtlCodes() {
+        try {
+          const codes = CORE_LOCALIZATION_BRIDGE.getRtlLanguageCodes(CORE_PART1_RUNTIME_SCOPE);
+          return Array.isArray(codes) && codes.length > 0
+            ? codes
+            : ['ar', 'fa', 'he', 'ur'];
+        } catch (resolveRtlCodesError) {
+          void resolveRtlCodesError;
+        }
+        return (
+          LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0
+            ? LOCALE_MODULE.RTL_LANGUAGE_CODES
+            : ['ar', 'fa', 'he', 'ur']
+        );
+      })()
+    : LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0
+      ? LOCALE_MODULE.RTL_LANGUAGE_CODES
+      : ['ar', 'fa', 'he', 'ur'];
+
+const normalizeLanguageCode =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode === 'function'
+    ? function normalizeLanguageCodeProxy(lang) {
+        try {
+          return CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode(lang, CORE_PART1_RUNTIME_SCOPE);
+        } catch (normalizeError) {
+          void normalizeError;
+        }
+        return fallbackNormalizeLanguageCode(lang);
+      }
+    : fallbackNormalizeLanguageCode;
+
+const isRtlLanguage =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.isRtlLanguage === 'function'
+    ? function isRtlLanguageProxy(lang) {
+        try {
+          return CORE_LOCALIZATION_BRIDGE.isRtlLanguage(lang, CORE_PART1_RUNTIME_SCOPE);
+        } catch (isRtlError) {
+          void isRtlError;
+        }
+        return fallbackIsRtlLanguage(lang);
+      }
+    : fallbackIsRtlLanguage;
+
+const resolveDocumentDirection =
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection === 'function'
+    ? function resolveDocumentDirectionProxy(lang) {
+        try {
+          return CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection(lang, CORE_PART1_RUNTIME_SCOPE);
+        } catch (resolveDirectionError) {
+          void resolveDirectionError;
+        }
+        return fallbackResolveDocumentDirection(lang);
+      }
+    : fallbackResolveDocumentDirection;
+
 const applyLocaleMetadata =
-  LOCALE_MODULE && typeof LOCALE_MODULE.applyLocaleMetadata === 'function'
+  CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata === 'function'
     ? function applyLocaleMetadataProxy(target, lang, direction) {
         try {
-          return LOCALE_MODULE.applyLocaleMetadata(target, lang, direction);
+          return CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata(
+            target,
+            lang,
+            direction,
+            CORE_PART1_RUNTIME_SCOPE
+          );
         } catch (applyLocaleError) {
           void applyLocaleError;
         }
@@ -269,121 +346,42 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
 var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
-function coreJsonDeepClone(value) {
-  if (value === null || typeof value !== 'object') {
-    return value;
-  }
 
-  try {
-    return JSON.parse(JSON.stringify(value));
-  } catch (jsonCloneError) {
-    void jsonCloneError;
-  }
-
-  return value;
-}
-
-function coreResolveStructuredClone(scope) {
-  if (typeof structuredClone === 'function') {
-    return structuredClone;
-  }
-
-  if (scope && typeof scope.structuredClone === 'function') {
-    try {
-      return scope.structuredClone.bind(scope);
-    } catch (bindError) {
-      void bindError;
-    }
-  }
-
-  if (typeof require === 'function') {
-    try {
-      const nodeUtil = require('node:util');
-      if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
-        return nodeUtil.structuredClone.bind(nodeUtil);
-      }
-    } catch (nodeUtilError) {
-      void nodeUtilError;
-    }
-
-    try {
-      const legacyUtil = require('util');
-      if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
-        return legacyUtil.structuredClone.bind(legacyUtil);
-      }
-    } catch (legacyUtilError) {
-      void legacyUtilError;
-    }
-  }
-
-  return null;
-}
-
-function coreCreateResilientDeepClone(scope) {
-  const structuredCloneImpl = coreResolveStructuredClone(scope);
-
-  if (!structuredCloneImpl) {
-    return coreJsonDeepClone;
-  }
-
-  return function coreResilientDeepClone(value) {
-    if (value === null || typeof value !== 'object') {
-      return value;
-    }
-
-    try {
-      return structuredCloneImpl(value);
-    } catch (structuredCloneError) {
-      void structuredCloneError;
-    }
-
-    return coreJsonDeepClone(value);
-  };
-}
-
-const CORE_DEEP_CLONE =
-  CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
-    ? CORE_GLOBAL_SCOPE.__cineDeepClone
-    : coreCreateResilientDeepClone(getCoreGlobalObject());
-
-if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
-  try {
-    CORE_GLOBAL_SCOPE.__cineDeepClone = CORE_DEEP_CLONE;
-  } catch (coreDeepCloneError) {
-    void coreDeepCloneError;
-  }
-}
-const CORE_TEMPERATURE_QUEUE_KEY = "__cinePendingTemperatureNote";
-const CORE_TEMPERATURE_RENDER_NAME = "renderTemperatureNote";
-
-function getCoreGlobalObject() {
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === "object") {
+function fallbackGetCoreGlobalObject() {
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
     return CORE_GLOBAL_SCOPE;
   }
-  if (typeof globalThis !== "undefined" && typeof globalThis === "object") {
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
     return globalThis;
   }
-  if (typeof window !== "undefined" && typeof window === "object") {
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
     return window;
   }
-  if (typeof self !== "undefined" && typeof self === "object") {
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
     return self;
   }
-  if (typeof global !== "undefined" && typeof global === "object") {
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
     return global;
   }
   return null;
 }
 
-function ensureCoreGlobalValue(name, fallbackValue) {
+function fallbackEnsureCoreGlobalValue(name, fallbackValue) {
   const fallbackProvider =
-    typeof fallbackValue === 'function' ? fallbackValue : () => fallbackValue;
+    typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+      return fallbackValue;
+    };
 
   if (typeof name !== 'string' || !name) {
-    return fallbackProvider();
+    try {
+      return fallbackProvider();
+    } catch (fallbackError) {
+      void fallbackError;
+      return undefined;
+    }
   }
 
-  const scope = getCoreGlobalObject();
+  const scope = fallbackGetCoreGlobalObject();
   if (!scope || typeof scope !== 'object') {
     return fallbackProvider();
   }
@@ -427,6 +425,163 @@ function ensureCoreGlobalValue(name, fallbackValue) {
 
   return value;
 }
+
+function fallbackJsonDeepClone(value) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (jsonCloneError) {
+    void jsonCloneError;
+  }
+
+  return value;
+}
+
+function fallbackResolveStructuredClone(scope) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone;
+  }
+
+  const targetScope = scope || fallbackGetCoreGlobalObject();
+  if (targetScope && typeof targetScope.structuredClone === 'function') {
+    try {
+      return targetScope.structuredClone.bind(targetScope);
+    } catch (bindError) {
+      void bindError;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const nodeUtil = require('node:util');
+      if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+        return nodeUtil.structuredClone.bind(nodeUtil);
+      }
+    } catch (nodeUtilError) {
+      void nodeUtilError;
+    }
+
+    try {
+      const legacyUtil = require('util');
+      if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+        return legacyUtil.structuredClone.bind(legacyUtil);
+      }
+    } catch (legacyUtilError) {
+      void legacyUtilError;
+    }
+  }
+
+  return null;
+}
+
+function fallbackCreateResilientDeepClone(scope) {
+  const structuredCloneImpl = fallbackResolveStructuredClone(scope);
+
+  if (!structuredCloneImpl) {
+    return fallbackJsonDeepClone;
+  }
+
+  return function fallbackResilientDeepClone(value) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    try {
+      return structuredCloneImpl(value);
+    } catch (structuredCloneError) {
+      void structuredCloneError;
+    }
+
+    return fallbackJsonDeepClone(value);
+  };
+}
+
+function fallbackEnsureDeepClone(scope) {
+  const targetScope = scope || fallbackGetCoreGlobalObject();
+  const clone = fallbackCreateResilientDeepClone(targetScope);
+
+  if (targetScope && typeof targetScope === 'object') {
+    try {
+      Object.defineProperty(targetScope, '__cineDeepClone', {
+        configurable: true,
+        writable: true,
+        value: clone,
+      });
+    } catch (defineError) {
+      void defineError;
+
+      try {
+        targetScope.__cineDeepClone = clone;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  }
+
+  return clone;
+}
+
+const getCoreGlobalObject =
+  CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.detectScope === 'function'
+    ? function getCoreGlobalObjectProxy() {
+        try {
+          return CORE_RUNTIME_TOOLS.detectScope(CORE_GLOBAL_SCOPE);
+        } catch (detectScopeError) {
+          void detectScopeError;
+        }
+        return fallbackGetCoreGlobalObject();
+      }
+    : fallbackGetCoreGlobalObject;
+
+const ensureCoreGlobalValue =
+  CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.ensureGlobalValue === 'function'
+    ? function ensureCoreGlobalValueProxy(name, fallbackValue) {
+        return CORE_RUNTIME_TOOLS.ensureGlobalValue(name, fallbackValue, CORE_GLOBAL_SCOPE);
+      }
+    : fallbackEnsureCoreGlobalValue;
+
+const coreJsonDeepClone =
+  CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.jsonDeepClone === 'function'
+    ? function coreJsonDeepCloneProxy(value) {
+        try {
+          return CORE_RUNTIME_TOOLS.jsonDeepClone(value);
+        } catch (jsonCloneError) {
+          void jsonCloneError;
+        }
+        return fallbackJsonDeepClone(value);
+      }
+    : fallbackJsonDeepClone;
+
+const coreCreateResilientDeepClone =
+  CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.createResilientDeepClone === 'function'
+    ? function coreCreateResilientDeepCloneProxy(scope) {
+        try {
+          return CORE_RUNTIME_TOOLS.createResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
+        } catch (createDeepCloneError) {
+          void createDeepCloneError;
+        }
+        return fallbackCreateResilientDeepClone(scope || CORE_GLOBAL_SCOPE);
+      }
+    : fallbackCreateResilientDeepClone;
+
+const CORE_DEEP_CLONE =
+  CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.ensureDeepClone === 'function'
+    ? CORE_RUNTIME_TOOLS.ensureDeepClone(CORE_GLOBAL_SCOPE)
+    : fallbackEnsureDeepClone(CORE_GLOBAL_SCOPE);
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+  try {
+    CORE_GLOBAL_SCOPE.__cineDeepClone = CORE_DEEP_CLONE;
+  } catch (coreDeepCloneError) {
+    void coreDeepCloneError;
+  }
+}
+
+const CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+const CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 
 function getEscapeHtmlFunction() {
   try {
