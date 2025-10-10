@@ -12731,6 +12731,13 @@ function setLanguage(lang) {
       const fallback = restoreDrillHeading.textContent || "Restore rehearsal drill";
       applyTextContent(restoreDrillHeading, "helpRestoreDrillTitle", fallback);
     }
+    const restoreDrillNote = doc ? doc.getElementById("helpRestoreDrillNote") : null;
+    if (restoreDrillNote) {
+      const fallback =
+        restoreDrillNote.textContent
+        || "Record the filename, timestamp and verification results in your backup log before closing the rehearsal so every drill leaves behind a documented recovery point.";
+      applyTextContent(restoreDrillNote, "helpRestoreDrillNote", fallback);
+    }
     if (helpDataAuditHeading) {
       const fallback = helpDataAuditHeading.textContent || "Monthly data health check";
       applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", fallback);
@@ -12810,6 +12817,15 @@ function setLanguage(lang) {
             resolveLocaleString("offlineIndicator") || "Offline",
             {
               target: "#offlineIndicator",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#applySharedLinkBtn",
+            resolveLocaleString("loadSharedLinkBtn") || "Import Project",
+            {
+              target: "#applySharedLinkBtn",
+              highlight: "#setup-manager",
             },
           ),
       ],
