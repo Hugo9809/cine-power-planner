@@ -970,7 +970,14 @@ main.legal-content {
 
 
 .contacts-dialog {
-  min-width: min(720px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 2.1vw, 1.25rem);
+  width: min(92vw, 720px);
+  min-width: min(720px, 92vw);
+  padding: clamp(1.25rem, 3vw, 1.85rem);
+  border-color: var(--panel-border);
+  box-shadow: var(--panel-shadow);
 }
 
 .contacts-dialog-header {
