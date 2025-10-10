@@ -149,6 +149,88 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('cleans up forceReload markers from the current URL during initialization', () => {
+    if (harness) {
+      harness.teardown();
+      harness = null;
+    }
+
+    jest.resetModules();
+    delete global.cineOffline;
+    delete global.CINE_CACHE_NAME;
+
+    const locationMock = {
+      href: 'https://example.test/app/index.html?foo=bar&forceReload=token#forceReload-token',
+      origin: 'https://example.test',
+      pathname: '/app/index.html',
+      search: '?foo=bar&forceReload=token',
+      hash: '#forceReload-token',
+    };
+
+    const historyState = { keep: true };
+
+    const historyMock = {
+      state: historyState,
+      replaceState: jest.fn((state, title, url) => {
+        historyMock.state = state;
+
+        if (typeof url !== 'string') {
+          return;
+        }
+
+        let absolute = url;
+        if (/^[a-zA-Z][a-zA-Z\d+.-]*:\/\//.test(url)) {
+          absolute = url;
+        } else if (url.startsWith('//')) {
+          absolute = `${locationMock.origin.split(':')[0]}:${url}`;
+        } else if (url.startsWith('/')) {
+          absolute = `${locationMock.origin}${url}`;
+        } else {
+          absolute = `${locationMock.origin.replace(/\/$/, '')}/${url}`;
+        }
+
+        locationMock.href = absolute;
+
+        const hashIndex = url.indexOf('#');
+        const searchIndex = url.indexOf('?');
+
+        if (searchIndex !== -1) {
+          const searchEnd = hashIndex === -1 ? url.length : hashIndex;
+          locationMock.search = url.slice(searchIndex, searchEnd);
+        } else {
+          locationMock.search = '';
+        }
+
+        if (hashIndex !== -1) {
+          locationMock.hash = url.slice(hashIndex);
+        } else {
+          locationMock.hash = '';
+        }
+      }),
+    };
+
+    const windowMock = {
+      location: locationMock,
+      history: historyMock,
+    };
+
+    global.window = windowMock;
+
+    harness = setupModuleHarness();
+    offline = require(path.join('..', '..', 'src', 'scripts', 'modules', 'offline.js'));
+    internal = offline.__internal;
+
+    expect(historyMock.replaceState).toHaveBeenCalledTimes(1);
+    const [stateArg, titleArg, urlArg] = historyMock.replaceState.mock.calls[0];
+    expect(stateArg).toBe(historyState);
+    expect(titleArg).toBe('');
+    expect(urlArg).toBe('/app/index.html?foo=bar');
+    expect(locationMock.href).toBe('https://example.test/app/index.html?foo=bar');
+    expect(locationMock.search).toBe('?foo=bar');
+    expect(locationMock.hash).toBe('');
+    expect(typeof internal.cleanupForceReloadArtifacts).toBe('function');
+  });
+
   describe('__internal helpers', () => {
     test('collectFallbackUiCacheStorages collects safe local storage, explicit scopes and window storage', () => {
       const resolvedSafeStorage = createStorageSpy();
