@@ -378,6 +378,7 @@ const texts = {
     autoGearConditionLogicAll: "Require every selected value",
     autoGearConditionLogicAny: "Match any selected value",
     autoGearConditionLogicOr: "Start a new OR group (matches any selected value)",
+    autoGearConditionLogicNone: "Require none of the selected values",
     autoGearConditionLogicMultiplier: "Multiply by matched values",
     autoGearConditionRepeatHint:
       "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
@@ -487,6 +488,14 @@ const texts = {
     autoGearRuleConditionRequired:
       "Select at least one scenario, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
     autoGearAddItemsHeading: "Add these items",
+    autoGearOwnGearLabel: "Own gear item",
+    autoGearOwnGearHelp: "Select an item you own to link this rule to your inventory.",
+    autoGearConditionOwnGearLabel: "Own gear",
+    autoGearConditionOwnGearHelp:
+      "Apply this rule when these items are saved in your own gear list.",
+    autoGearOwnGearMissing: "Removed own gear",
+    autoGearOwnGearPlaceholder: "Manual entry",
+    autoGearOwnGearBadge: "Own gear",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
     autoGearAddQuantityLabel: "Qty",
@@ -2775,6 +2784,7 @@ const texts = {
     autoGearConditionLogicAll: "Richiedi tutti i valori selezionati",
     autoGearConditionLogicAny: "Abbina qualsiasi valore selezionato",
     autoGearConditionLogicOr: "Avvia un nuovo gruppo OR (abbina qualsiasi valore selezionato)",
+    autoGearConditionLogicNone: "Richiedi che nessuno dei valori selezionati sia presente",
     autoGearConditionLogicMultiplier: "Moltiplica in base ai valori corrispondenti",
     autoGearConditionRepeatHint:
       "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
@@ -2887,6 +2897,14 @@ const texts = {
     autoGearRuleConditionRequired:
       "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
+    autoGearOwnGearLabel: "Attrezzatura personale",
+    autoGearOwnGearHelp: "Seleziona un elemento del tuo inventario per collegare questa regola.",
+    autoGearConditionOwnGearLabel: "Attrezzatura personale",
+    autoGearConditionOwnGearHelp:
+      "Applica questa regola quando questi elementi sono salvati nel tuo elenco di attrezzatura personale.",
+    autoGearOwnGearMissing: "Attrezzatura personale rimossa",
+    autoGearOwnGearPlaceholder: "Inserimento manuale",
+    autoGearOwnGearBadge: "Attrezzatura personale",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoria",
     autoGearAddQuantityLabel: "Qtà",
@@ -4595,6 +4613,7 @@ const texts = {
     autoGearConditionLogicAll: "Requerir todos los valores seleccionados",
     autoGearConditionLogicAny: "Coincidir con cualquier valor seleccionado",
     autoGearConditionLogicOr: "Iniciar un nuevo grupo OR (coincide con cualquier valor seleccionado)",
+    autoGearConditionLogicNone: "Requiere que ninguno de los valores seleccionados esté presente",
     autoGearConditionLogicMultiplier: "Multiplicar por los valores coincidentes",
     autoGearConditionRepeatHint:
       "Condición ya añadida. Resaltamos los campos existentes de {condition} para que puedas añadir más selecciones.",
@@ -4707,6 +4726,14 @@ const texts = {
     autoGearRuleConditionRequired:
       "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
+    autoGearOwnGearLabel: "Equipo propio",
+    autoGearOwnGearHelp: "Selecciona un elemento de tu inventario para vincular esta regla.",
+    autoGearConditionOwnGearLabel: "Equipo propio",
+    autoGearConditionOwnGearHelp:
+      "Aplica esta regla cuando estos elementos estén guardados en tu lista de equipo propio.",
+    autoGearOwnGearMissing: "Equipo propio eliminado",
+    autoGearOwnGearPlaceholder: "Entrada manual",
+    autoGearOwnGearBadge: "Equipo propio",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoría",
     autoGearAddQuantityLabel: "Cantidad",
@@ -6418,6 +6445,7 @@ const texts = {
     autoGearConditionLogicAll: "Exiger toutes les valeurs sélectionnées",
     autoGearConditionLogicAny: "Correspondre à n’importe quelle valeur sélectionnée",
     autoGearConditionLogicOr: "Démarrer un nouveau groupe OR (correspond à n’importe quelle valeur sélectionnée)",
+    autoGearConditionLogicNone: "Exiger qu’aucune des valeurs sélectionnées ne soit présente",
     autoGearConditionLogicMultiplier: "Multiplier selon les valeurs correspondantes",
     autoGearConditionRepeatHint:
       "Condition déjà ajoutée. Les champs existants pour {condition} sont mis en évidence pour vous permettre d'ajouter d'autres sélections.",
@@ -6530,6 +6558,14 @@ const texts = {
     autoGearRuleConditionRequired:
       "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
+    autoGearOwnGearLabel: "Matériel personnel",
+    autoGearOwnGearHelp: "Sélectionnez un élément de votre inventaire pour associer cette règle.",
+    autoGearConditionOwnGearLabel: "Matériel personnel",
+    autoGearConditionOwnGearHelp:
+      "Appliquez cette règle lorsque ces éléments sont enregistrés dans votre liste de matériel personnel.",
+    autoGearOwnGearMissing: "Matériel personnel supprimé",
+    autoGearOwnGearPlaceholder: "Saisie manuelle",
+    autoGearOwnGearBadge: "Matériel personnel",
     autoGearAddItemLabel: "Élément",
     autoGearAddCategoryLabel: "Catégorie",
     autoGearAddQuantityLabel: "Qté",
@@ -8252,6 +8288,7 @@ const texts = {
     autoGearConditionLogicAll: "Alle ausgewählten Werte erforderlich",
     autoGearConditionLogicAny: "Beliebiger ausgewählter Wert genügt",
     autoGearConditionLogicOr: "Neuen OR-Block beginnen (entspricht beliebigem ausgewähltem Wert)",
+    autoGearConditionLogicNone: "Keine der ausgewählten Werte zulassen",
     autoGearConditionLogicMultiplier: "Mit passenden Werten multiplizieren",
     autoGearConditionRepeatHint:
       "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",
@@ -8365,6 +8402,14 @@ const texts = {
     autoGearRuleConditionRequired:
       "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
+    autoGearOwnGearLabel: "Eigenes Equipment",
+    autoGearOwnGearHelp: "Wählen Sie einen Eintrag aus Ihrem eigenen Bestand aus, um diese Regel zu verknüpfen.",
+    autoGearConditionOwnGearLabel: "Eigenes Equipment",
+    autoGearConditionOwnGearHelp:
+      "Wende diese Regel an, wenn diese Geräte in deiner Liste für eigenes Equipment gespeichert sind.",
+    autoGearOwnGearMissing: "Eigenes Equipment entfernt",
+    autoGearOwnGearPlaceholder: "Manuelle Eingabe",
+    autoGearOwnGearBadge: "Eigenes Equipment",
     autoGearAddItemLabel: "Gerät",
     autoGearAddCategoryLabel: "Kategorie",
     autoGearAddQuantityLabel: "Menge",
