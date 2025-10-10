@@ -1,4 +1,28 @@
+/*
+ * architecture-core.js
+ * ---------------------
+ * Centralises the low-level bootstrapping logic that wires the modular runtime
+ * together. The helpers in this file are intentionally defensive because the
+ * planner must continue to operate in browsers, service workers, offline
+ * contexts and automated test environments without ever risking user data.
+ *
+ * The primary responsibilities covered here are:
+ *   • Detecting whichever global scope is available so modules can exchange
+ *     shared state without depending on window-specific globals.
+ *   • Resolving helper utilities (such as scope collectors) even when the
+ *     bundler changes how modules are packaged.
+ *   • Providing safe fallbacks when optional helpers are missing so loading the
+ *     planner never interrupts saving, backups or restore flows.
+ *
+ * Adding the rationale up front makes it easier for future maintainers to
+ * understand why the orchestration code looks verbose and how it preserves the
+ * offline-first guarantees that protect user projects.
+ */
+
 (function () {
+  // Key under which pending module registrations are cached before the full
+  // registry boots. We keep this constant local so tests can stub it without
+  // leaking additional globals.
   const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
 
   function baseDetectGlobalScope() {
@@ -19,6 +43,9 @@
 
   const LOCAL_SCOPE = baseDetectGlobalScope();
 
+  // Attempt to locate helper utilities that know how to work with multiple
+  // execution contexts. When running in environments that do not bundle the
+  // helpers we still succeed by probing the known global scopes.
   function resolveScopeUtils(scope) {
     const primaryScope = scope || LOCAL_SCOPE;
 
@@ -89,6 +116,9 @@
       ? SCOPE_UTILS.defineHiddenProperty
       : defineHiddenPropertyFallback;
 
+  // The collector keeps track of all discovered scopes. That makes it possible
+  // to attach shared runtime services (such as persistence guards) exactly once
+  // even when multiple script bundles execute in different orders.
   function resolveScopeCollector() {
     const required = tryRequire('./helpers/scope-collector.js');
     if (required && typeof required.createCollector === 'function') {
@@ -142,6 +172,9 @@
   const DEFAULT_EXTRAS_KEY = { key: 'defaultExtras' };
   const HELPER_COLLECTOR_CACHE = [];
 
+  // Helper collectors are cached to avoid repeatedly scanning the entire
+  // environment. A cache entry captures the detection strategy and optional
+  // extra scopes so that each unique combination reuses the same collector.
   function resolveHelperCollector(detectFn, extras) {
     const extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
 
