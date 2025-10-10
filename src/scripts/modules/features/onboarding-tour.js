@@ -212,14 +212,18 @@
       snapshot.stepSignature = STEP_SIGNATURE;
       snapshot.completed = false;
       snapshot.skipped = false;
-      if (!snapshot.activeStep) {
-        for (let index = 0; index < allowedKeys.length; index += 1) {
-          const key = allowedKeys[index];
-          if (snapshot.completedSteps.indexOf(key) === -1) {
-            snapshot.activeStep = key;
-            break;
-          }
+      let firstIncompleteStep = null;
+      for (let index = 0; index < allowedKeys.length; index += 1) {
+        const key = allowedKeys[index];
+        if (snapshot.completedSteps.indexOf(key) === -1) {
+          firstIncompleteStep = key;
+          break;
         }
+      }
+      if (firstIncompleteStep) {
+        snapshot.activeStep = firstIncompleteStep;
+      } else if (!snapshot.activeStep) {
+        snapshot.activeStep = allowedKeys.length > 0 ? allowedKeys[allowedKeys.length - 1] : null;
       }
     } else {
       snapshot.stepSignature = STEP_SIGNATURE;
