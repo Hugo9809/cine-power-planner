@@ -34,6 +34,7 @@
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
           markProjectFormDataDirty, loadAutoGearMonitorDefaults,
+          enhanceGearItemElement,
           settingsFocusScale, focusScalePreference, normalizeFocusScale,
           applyFocusScalePreference: true */
 /* eslint-enable no-redeclare */
@@ -14247,6 +14248,9 @@ function renderGearListFilterDetails(details) {
     }
     heading.textContent = label ? `1x ${label}` : '';
     row.appendChild(heading);
+    if (typeof enhanceGearItemElement === 'function') {
+      enhanceGearItemElement(heading);
+    }
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
     if (needsSize) {
