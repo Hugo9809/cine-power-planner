@@ -4866,13 +4866,12 @@ function ensureGearItemEditButton(element) {
     button.setAttribute('aria-label', editLabel);
     button.setAttribute('title', editLabel);
   }
-  if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-    setButtonLabelWithIcon(button, editLabel, ICON_GLYPHS.sliders);
-  } else if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-    button.innerHTML = iconMarkup(ICON_GLYPHS.sliders, { className: 'btn-icon' });
-    if (editLabel) {
-      button.appendChild(doc.createTextNode(editLabel));
-    }
+  const hasIconRegistry = typeof ICON_GLYPHS === 'object' && ICON_GLYPHS;
+  const sliderGlyph = hasIconRegistry ? ICON_GLYPHS.sliders : null;
+  if (typeof setButtonLabelWithIcon === 'function' && sliderGlyph) {
+    setButtonLabelWithIcon(button, '', sliderGlyph);
+  } else if (typeof iconMarkup === 'function' && sliderGlyph) {
+    button.innerHTML = iconMarkup(sliderGlyph, { className: 'btn-icon' });
   } else if (editLabel) {
     button.textContent = editLabel;
   }
