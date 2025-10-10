@@ -1450,7 +1450,7 @@
 
     function safeSelectValue(select, previewKey) {
       var value = select && typeof select.value === 'string' ? select.value : '';
-      if (value && value !== 'None') {
+      if (value !== '') {
         return value;
       }
       var previewValue = getPreviewValue(previewKey);
