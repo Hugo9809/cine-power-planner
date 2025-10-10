@@ -99,4 +99,27 @@ describe('onboarding tour manual start', () => {
     expect(overlay.getAttribute('aria-hidden')).toBe('false');
     expect(helpDialog.hidden).toBe(true);
   });
+
+  test('activates overlay for help triggers injected after initialization', async () => {
+    loadModule();
+
+    const helpDialog = document.getElementById('helpDialog');
+    helpDialog.removeAttribute('hidden');
+    helpDialog.setAttribute('open', '');
+
+    const dynamicTrigger = document.createElement('button');
+    dynamicTrigger.type = 'button';
+    dynamicTrigger.setAttribute('data-onboarding-tour-trigger', 'dynamic');
+    helpDialog.appendChild(dynamicTrigger);
+
+    dynamicTrigger.click();
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+    expect(overlay.classList.contains('active')).toBe(true);
+    expect(overlay.getAttribute('aria-hidden')).toBe('false');
+    expect(helpDialog.hidden).toBe(true);
+  });
 });
