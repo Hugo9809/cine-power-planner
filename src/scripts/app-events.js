@@ -1357,7 +1357,9 @@ function createStableValueSignature(value) {
       if (index > 0) {
         signature += ',';
       }
-      signature += createStableValueSignature(value[index]);
+      if (index in value) {
+        signature += createStableValueSignature(value[index]);
+      }
     }
     signature += ']';
     return signature;
