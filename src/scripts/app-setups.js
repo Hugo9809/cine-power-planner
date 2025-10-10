@@ -1402,6 +1402,30 @@ function ensureGearItemProviderElement(element) {
   return providerSpan;
 }
 
+function formatUserProfileProviderName(rawName) {
+  const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  if (!trimmed) {
+    return '';
+  }
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  if (!parts.length) {
+    return '';
+  }
+  const firstName = parts[0];
+  if (parts.length === 1) {
+    return firstName;
+  }
+  const lastPart = parts[parts.length - 1];
+  const lastInitial = Array.from(lastPart)[0] || '';
+  if (!lastInitial) {
+    return firstName;
+  }
+  const normalizedInitial = typeof lastInitial.toLocaleUpperCase === 'function'
+    ? lastInitial.toLocaleUpperCase()
+    : lastInitial.toUpperCase();
+  return `${firstName} ${normalizedInitial}`;
+}
+
 function getProviderInfo(value, options = {}) {
   const trimmed = typeof value === 'string' ? value.trim() : '';
   const texts = getGearProviderTexts();
@@ -1414,8 +1438,11 @@ function getProviderInfo(value, options = {}) {
   if (trimmed === 'user') {
     const profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
     const profileName = profile && profile.name ? profile.name : '';
-    const label = profileName ? `${profileName} — ${texts.user}` : (options.label || texts.user);
-    return { value: 'user', label, type: 'user', profileName };
+    const profileDisplayName = formatUserProfileProviderName(profileName);
+    const label = profileDisplayName
+      ? `${profileDisplayName} — ${texts.user}`
+      : (options.label || texts.user);
+    return { value: 'user', label, type: 'user', profileName, profileDisplayName };
   }
   if (trimmed.startsWith('contact:')) {
     const contactId = trimmed.slice('contact:'.length);
@@ -1491,7 +1518,8 @@ function updateGearItemEditProviderOptions(context, data = {}) {
   const userOption = doc.createElement('option');
   userOption.value = 'user';
   const profileName = profile && profile.name ? profile.name : '';
-  userOption.textContent = profileName ? `${profileName} — ${texts.user}` : texts.user;
+  const profileDisplayName = formatUserProfileProviderName(profileName);
+  userOption.textContent = profileDisplayName ? `${profileDisplayName} — ${texts.user}` : texts.user;
   select.appendChild(userOption);
 
   if (contacts.length) {
