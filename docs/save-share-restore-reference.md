@@ -34,6 +34,8 @@ The **Diagnostics log** inside **Settings → Data & Storage** exposes those cin
 
 **Quick safeguards** live beside that log inside **Settings → Data & Storage**, giving crews a one-click path to download a fresh full backup or jump directly to the restore workspace without leaving the dialog. Every time you press the button the planner records the action in the same storage dashboard, making it easy to archive the JSON alongside the verification note.【F:index.html†L2548-L2570】
 
+The **Backup & Restore** workspace mirrors the autosave status overlay so you can watch background saves land while rehearsing restores. From the same panel you can open **Compare versions**, export the diff log and launch **Restore rehearsal** without leaving the checklist, keeping audit notes, sandbox verifications and autosave telemetry aligned for offline reviews.【F:index.html†L5604-L5671】【F:index.html†L5685-L5736】
+
 The logging serializers now retain detail from Maps, Sets, typed arrays, URL parameters and regular expressions so incident reviews capture the full context without chasing down reproduced payloads. Map entries and typed array previews truncate with explicit counters when the payload is large, keeping diagnostics responsive while still documenting how much data the runtime handled.【F:src/scripts/modules/logging.js†L712-L901】
 
 ## Workflow matrix
