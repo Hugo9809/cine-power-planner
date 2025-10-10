@@ -182,6 +182,62 @@ function resolveRentalHouseCatalog() {
 }
 
 const rentalHouseCatalog = resolveRentalHouseCatalog();
+const RENTAL_HOUSE_SUGGESTION_LIMIT = 50;
+
+function normalizeRentalHouseSearchValue(value) {
+    if (!value) return '';
+    let normalized = String(value);
+    try {
+        if (typeof normalized.normalize === 'function') {
+            normalized = normalized.normalize('NFD');
+        }
+    } catch (error) {
+        void error;
+    }
+    return normalized
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[\u2012\u2013\u2014\u2015]/g, '-')
+        .replace(/[^a-z0-9]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+const rentalHouseSearchIndex = rentalHouseCatalog
+    .map(entry => {
+        if (!entry || typeof entry !== 'object') return null;
+        const name = entry.name ? String(entry.name).trim() : '';
+        if (!name) return null;
+        const key = normalizeRentalHouseKey(name);
+        if (!key) return null;
+        const location = formatRentalHouseLocation(entry);
+        const normalizedName = normalizeRentalHouseSearchValue(name);
+        const normalizedLocation = normalizeRentalHouseSearchValue(location);
+        const additionalParts = normalizeRentalHouseSearchValue(
+            [entry.city, entry.country, entry.address, entry.phone, entry.email]
+                .map(part => (part ? String(part).trim() : ''))
+                .filter(Boolean)
+                .join(' ')
+        );
+        const searchKey = [normalizedName, normalizedLocation, additionalParts]
+            .filter(Boolean)
+            .join(' ');
+
+        return {
+            entry,
+            name,
+            key,
+            location,
+            normalizedName,
+            normalizedLocation,
+            searchKey
+        };
+    })
+    .filter(Boolean);
+
+const rentalHouseCatalogSignature = rentalHouseSearchIndex
+    .map(info => `${info.key}|${info.location}`)
+    .join('||');
 
 function normalizeRentalHouseKey(value) {
     if (!value) return '';
@@ -247,15 +303,68 @@ function ensureRentalHouseDatalist(input) {
     return datalist;
 }
 
+function scoreRentalHouseMatch(info, query) {
+    if (!query) return 0;
+    if (!info) return Number.POSITIVE_INFINITY;
+
+    const { normalizedName, normalizedLocation, searchKey } = info;
+    if (!searchKey || searchKey.indexOf(query) === -1) {
+        return Number.POSITIVE_INFINITY;
+    }
+
+    const nameIndex = normalizedName ? normalizedName.indexOf(query) : -1;
+    const locationIndex = normalizedLocation ? normalizedLocation.indexOf(query) : -1;
+
+    if (nameIndex === 0) {
+        return 0;
+    }
+    if (locationIndex === 0) {
+        return 100;
+    }
+    if (nameIndex > 0) {
+        return 200 + nameIndex;
+    }
+    if (locationIndex > 0) {
+        return 400 + locationIndex;
+    }
+
+    const searchIndex = searchKey.indexOf(query);
+    return 800 + (searchIndex >= 0 ? searchIndex : 0);
+}
+
+function getRentalHouseMatches(query) {
+    const normalizedQuery = normalizeRentalHouseSearchValue(query);
+
+    if (!normalizedQuery) {
+        return rentalHouseSearchIndex
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT);
+    }
+
+    const results = [];
+    rentalHouseSearchIndex.forEach(info => {
+        const score = scoreRentalHouseMatch(info, normalizedQuery);
+        if (!Number.isFinite(score)) return;
+        results.push({ info, score });
+    });
+
+    results.sort((a, b) => {
+        if (a.score !== b.score) return a.score - b.score;
+        return a.info.name.localeCompare(b.info.name);
+    });
+
+    return results.slice(0, RENTAL_HOUSE_SUGGESTION_LIMIT).map(result => result.info);
+}
+
 function renderRentalHouseSuggestions(input = resolveRentalHouseInput()) {
-    if (!input || !rentalHouseCatalog.length) return;
+    if (!input || !rentalHouseSearchIndex.length) return;
     const datalist = ensureRentalHouseDatalist(input);
     if (!datalist) return;
 
-    const signature = rentalHouseCatalog
-        .map(entry => (entry && entry.name ? String(entry.name).trim() : ''))
-        .filter(Boolean)
-        .join('|');
+    const query = typeof input.value === 'string' ? input.value : '';
+    const normalizedQuery = normalizeRentalHouseSearchValue(query);
+    const signature = `${rentalHouseCatalogSignature}::${normalizedQuery}`;
 
     if (datalist.__rentalHouseSignature === signature) {
         return;
@@ -264,19 +373,19 @@ function renderRentalHouseSuggestions(input = resolveRentalHouseInput()) {
     const fragment = document.createDocumentFragment();
     const seen = new Set();
 
-    rentalHouseCatalog.forEach(entry => {
-        if (!entry || typeof entry !== 'object') return;
-        const name = entry.name ? String(entry.name).trim() : '';
-        if (!name) return;
-        const key = normalizeRentalHouseKey(name);
-        if (seen.has(key)) return;
+    const matches = getRentalHouseMatches(query);
+    const suggestions = matches.length ? matches : getRentalHouseMatches('');
 
+    suggestions.forEach(info => {
+        if (!info || seen.has(info.key)) return;
         const option = document.createElement('option');
-        option.value = name;
-        const label = formatRentalHouseLocation(entry);
-        if (label) option.label = label;
+        option.value = info.name;
+        if (info.location) {
+            option.label = info.location;
+        }
+        option.textContent = info.name;
         fragment.appendChild(option);
-        seen.add(key);
+        seen.add(info.key);
     });
 
     datalist.innerHTML = '';
@@ -302,13 +411,20 @@ function updateRentalHouseAssistiveDetails(input = resolveRentalHouseInput()) {
 
 const initialRentalHouseInput = resolveRentalHouseInput();
 if (initialRentalHouseInput) {
-    if (rentalHouseCatalog.length) {
+    if (rentalHouseSearchIndex.length) {
         renderRentalHouseSuggestions(initialRentalHouseInput);
     }
     updateRentalHouseAssistiveDetails(initialRentalHouseInput);
-    initialRentalHouseInput.addEventListener('input', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
-    initialRentalHouseInput.addEventListener('change', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
+    initialRentalHouseInput.addEventListener('input', () => {
+        renderRentalHouseSuggestions(initialRentalHouseInput);
+        updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+    });
+    initialRentalHouseInput.addEventListener('change', () => {
+        renderRentalHouseSuggestions(initialRentalHouseInput);
+        updateRentalHouseAssistiveDetails(initialRentalHouseInput);
+    });
     initialRentalHouseInput.addEventListener('blur', () => updateRentalHouseAssistiveDetails(initialRentalHouseInput));
+    initialRentalHouseInput.addEventListener('focus', () => renderRentalHouseSuggestions(initialRentalHouseInput));
 }
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
