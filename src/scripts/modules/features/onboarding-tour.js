@@ -176,6 +176,18 @@
 
   const STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
 
+  function getTimestamp() {
+    if (typeof Date !== 'undefined' && typeof Date.now === 'function') {
+      return Date.now();
+    }
+    try {
+      return new Date().getTime();
+    } catch (error) {
+      void error;
+    }
+    return 0;
+  }
+
   function normalizeCompletedSteps(value, allowedKeys) {
     if (!Array.isArray(value)) {
       return [];
@@ -230,7 +242,20 @@
       snapshot.completed = false;
     }
     if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
-      snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
+      snapshot.timestamp = getTimestamp();
+    }
+    snapshot.lastCompletedStep = typeof snapshot.lastCompletedStep === 'string' && snapshot.lastCompletedStep
+      ? snapshot.lastCompletedStep
+      : null;
+    if (snapshot.lastCompletedStep && allowedKeys.indexOf(snapshot.lastCompletedStep) === -1) {
+      snapshot.lastCompletedStep = null;
+    }
+    snapshot.lastCompletedAt = typeof snapshot.lastCompletedAt === 'number' && !Number.isNaN(snapshot.lastCompletedAt)
+      ? snapshot.lastCompletedAt
+      : null;
+    if (signature !== STEP_SIGNATURE) {
+      snapshot.lastCompletedStep = null;
+      snapshot.lastCompletedAt = snapshot.timestamp;
     }
     return snapshot;
   }
@@ -282,7 +307,7 @@
     });
     const payload = {
       ...sanitized,
-      timestamp: Date.now ? Date.now() : new Date().getTime(),
+      timestamp: getTimestamp(),
     };
     try {
       SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -1092,9 +1117,12 @@
       return;
     }
     completed.push(stepKey);
+    const timestamp = getTimestamp();
     const nextState = {
       ...storedState,
       completedSteps: completed,
+      lastCompletedStep: stepKey,
+      lastCompletedAt: timestamp,
     };
     const persisted = saveState(nextState);
     storedState = persisted || normalizeStateSnapshot(nextState);
@@ -1149,12 +1177,16 @@
     closeSettingsIfNeeded();
     endTutorial();
     const allStepKeys = stepConfig.map(step => step.key);
+    const timestamp = getTimestamp();
+    const finalStep = allStepKeys.length ? allStepKeys[allStepKeys.length - 1] : null;
     const nextState = {
       ...storedState,
       completed: true,
       skipped: false,
       activeStep: null,
       completedSteps: allStepKeys,
+      lastCompletedStep: finalStep,
+      lastCompletedAt: timestamp,
     };
     const persisted = saveState(nextState);
     storedState = persisted || normalizeStateSnapshot(nextState);
@@ -1342,6 +1374,60 @@
     return stepKey;
   }
 
+  function formatTimeAgo(timestamp) {
+    if (typeof timestamp !== 'number' || Number.isNaN(timestamp) || timestamp <= 0) {
+      return '';
+    }
+    const now = getTimestamp();
+    if (!now) {
+      return '';
+    }
+    const diff = Math.max(0, now - timestamp);
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    if (diff < 45 * 1000) {
+      return tourTexts.helpStatusTimeJustNow || 'just now';
+    }
+    if (diff < 90 * 1000) {
+      return tourTexts.helpStatusTimeMinute || '1 minute ago';
+    }
+    if (diff < 45 * minute) {
+      const count = Math.round(diff / minute);
+      const template = tourTexts.helpStatusTimeMinutes || '{count} minutes ago';
+      return template.replace('{count}', String(count));
+    }
+    if (diff < 90 * minute) {
+      return tourTexts.helpStatusTimeHour || '1 hour ago';
+    }
+    if (diff < 22 * hour) {
+      const count = Math.round(diff / hour);
+      const template = tourTexts.helpStatusTimeHours || '{count} hours ago';
+      return template.replace('{count}', String(count));
+    }
+    if (diff < 36 * hour) {
+      return tourTexts.helpStatusTimeDay || '1 day ago';
+    }
+    const count = Math.round(diff / day);
+    const template = tourTexts.helpStatusTimeDays || '{count} days ago';
+    return template.replace('{count}', String(count));
+  }
+
+  function formatProgressUpdate(stepTitle, timestamp) {
+    const timeAgo = formatTimeAgo(timestamp);
+    if (!timeAgo) {
+      return '';
+    }
+    if (stepTitle) {
+      const template = tourTexts.helpStatusLastCompleted || 'Last completed: {step} ({timeAgo}).';
+      return template
+        .replace('{step}', stepTitle)
+        .replace('{timeAgo}', timeAgo);
+    }
+    const fallbackTemplate = tourTexts.helpStatusLastUpdated || 'Last update: {timeAgo}.';
+    return fallbackTemplate.replace('{timeAgo}', timeAgo);
+  }
+
   function applyHelpStatus(state, steps) {
     const statusElement = resolveHelpStatusElement();
     if (!statusElement) {
@@ -1382,6 +1468,15 @@
     const nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
     const nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
     const activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
+    const lastCompletedKey = stored && typeof stored.lastCompletedStep === 'string'
+      ? stored.lastCompletedStep
+      : null;
+    const lastCompletedTitle = lastCompletedKey && allowedKeys.indexOf(lastCompletedKey) !== -1
+      ? resolveStepTitle(lastCompletedKey)
+      : '';
+    const lastCompletedAt = stored && typeof stored.lastCompletedAt === 'number'
+      ? stored.lastCompletedAt
+      : null;
 
     let statusType = 'notStarted';
     if (stored && stored.completed) {
@@ -1435,6 +1530,11 @@
     for (let index = 0; index < tokens.length; index += 1) {
       const token = tokens[index];
       message = message.split(token).join(replacements[token]);
+    }
+
+    const progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);
+    if (progressUpdate) {
+      message = `${message} ${progressUpdate}`.trim();
     }
 
     statusElement.textContent = message;

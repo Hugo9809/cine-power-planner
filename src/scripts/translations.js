@@ -1699,6 +1699,16 @@ const texts = {
         "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted:
         "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusLastCompleted:
+        "Last completed: {step} ({timeAgo}).",
+      helpStatusLastUpdated: "Last update: {timeAgo}.",
+      helpStatusTimeJustNow: "just now",
+      helpStatusTimeMinute: "1 minute ago",
+      helpStatusTimeMinutes: "{count} minutes ago",
+      helpStatusTimeHour: "1 hour ago",
+      helpStatusTimeHours: "{count} hours ago",
+      helpStatusTimeDay: "1 day ago",
+      helpStatusTimeDays: "{count} days ago",
       skipConfirmationTitle: "Skip the guided tutorial?",
       skipConfirmationBody:
         "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
@@ -3573,6 +3583,16 @@ const texts = {
         "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted:
         "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusLastCompleted:
+        "Ultimo completamento: {step} ({timeAgo}).",
+      helpStatusLastUpdated: "Ultimo aggiornamento: {timeAgo}.",
+      helpStatusTimeJustNow: "proprio ora",
+      helpStatusTimeMinute: "1 minuto fa",
+      helpStatusTimeMinutes: "{count} minuti fa",
+      helpStatusTimeHour: "1 ora fa",
+      helpStatusTimeHours: "{count} ore fa",
+      helpStatusTimeDay: "1 giorno fa",
+      helpStatusTimeDays: "{count} giorni fa",
       skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
       skipConfirmationBody:
         "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
@@ -5461,6 +5481,16 @@ const texts = {
         "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted:
         "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusLastCompleted:
+        "Último paso completado: {step} ({timeAgo}).",
+      helpStatusLastUpdated: "Última actualización: {timeAgo}.",
+      helpStatusTimeJustNow: "ahora mismo",
+      helpStatusTimeMinute: "hace 1 minuto",
+      helpStatusTimeMinutes: "hace {count} minutos",
+      helpStatusTimeHour: "hace 1 hora",
+      helpStatusTimeHours: "hace {count} horas",
+      helpStatusTimeDay: "hace 1 día",
+      helpStatusTimeDays: "hace {count} días",
       skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
       skipConfirmationBody:
         "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
@@ -7361,6 +7391,16 @@ const texts = {
         "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted:
         "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusLastCompleted:
+        "Dernière étape terminée : {step} ({timeAgo}).",
+      helpStatusLastUpdated: "Dernière mise à jour : {timeAgo}.",
+      helpStatusTimeJustNow: "à l’instant",
+      helpStatusTimeMinute: "il y a 1 minute",
+      helpStatusTimeMinutes: "il y a {count} minutes",
+      helpStatusTimeHour: "il y a 1 heure",
+      helpStatusTimeHours: "il y a {count} heures",
+      helpStatusTimeDay: "il y a 1 jour",
+      helpStatusTimeDays: "il y a {count} jours",
       skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
       skipConfirmationBody:
         "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
@@ -9266,6 +9306,16 @@ const texts = {
         "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted:
         "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusLastCompleted:
+        "Zuletzt abgeschlossen: {step} ({timeAgo}).",
+      helpStatusLastUpdated: "Letzte Aktualisierung: {timeAgo}.",
+      helpStatusTimeJustNow: "gerade eben",
+      helpStatusTimeMinute: "vor 1 Minute",
+      helpStatusTimeMinutes: "vor {count} Minuten",
+      helpStatusTimeHour: "vor 1 Stunde",
+      helpStatusTimeHours: "vor {count} Stunden",
+      helpStatusTimeDay: "vor 1 Tag",
+      helpStatusTimeDays: "vor {count} Tagen",
       skipConfirmationTitle: "Geführtes Tutorial überspringen?",
       skipConfirmationBody:
         "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",
