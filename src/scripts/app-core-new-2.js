@@ -13653,6 +13653,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var ensureElementIdResolver = null;
       var ensureElementIdFallbackCounter = 0;
 
+      function fallbackEnsureElementId(element, baseText) {
+        if (!element) {
+          return '';
+        }
+        if (element.id) {
+          return element.id;
+        }
+        var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
+        var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        if (!normalized) {
+          normalized = 'field';
+        }
+        ensureElementIdFallbackCounter += 1;
+        var candidate = normalized + '-' + ensureElementIdFallbackCounter;
+        if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+          while (document.getElementById(candidate)) {
+            ensureElementIdFallbackCounter += 1;
+            candidate = normalized + '-' + ensureElementIdFallbackCounter;
+          }
+        }
+        element.id = candidate;
+        return candidate;
+      }
+
       function getEnsureElementId() {
         if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
           return ensureElementIdResolver;
@@ -13671,29 +13695,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           return ensureElementIdResolver;
         }
 
-        ensureElementIdResolver = function fallbackEnsureElementId(element, baseText) {
-          if (!element) {
-            return '';
+        ensureElementIdResolver = fallbackEnsureElementId;
+        if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.ensureElementId !== 'function') {
+          try {
+            globalThis.ensureElementId = fallbackEnsureElementId;
+          } catch (assignError) {
+            void assignError;
           }
-          if (element.id) {
-            return element.id;
-          }
-          var fallbackBase = typeof baseText === 'string' && baseText ? baseText : 'field';
-          var normalized = fallbackBase.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-          if (!normalized) {
-            normalized = 'field';
-          }
-          ensureElementIdFallbackCounter += 1;
-          var candidate = normalized + '-' + ensureElementIdFallbackCounter;
-          if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
-            while (document.getElementById(candidate)) {
-              ensureElementIdFallbackCounter += 1;
-              candidate = normalized + '-' + ensureElementIdFallbackCounter;
-            }
-          }
-          element.id = candidate;
-          return candidate;
-        };
+        }
 
         return ensureElementIdResolver;
       }
@@ -13722,7 +13731,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         wrapper.className = 'field-with-label';
         wrapper.dataset.label = label;
         const ensureId = getEnsureElementId();
-        const fieldId = ensureId(el, label);
+        const fieldId = typeof ensureId === 'function' ? ensureId(el, label) : fallbackEnsureElementId(el, label);
         const hiddenLabelFactory = getHiddenLabelFactory();
         const hiddenLabel = hiddenLabelFactory(fieldId, label);
         wrapper.appendChild(hiddenLabel);
