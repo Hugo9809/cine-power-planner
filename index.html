@@ -1769,6 +1769,41 @@
                   ></select>
                 </section>
                 <section
+                  id="autoGearCondition-ownGear"
+                  class="auto-gear-condition"
+                  data-condition="ownGear"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearOwnGear" id="autoGearOwnGearLabel">Own gear</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="ownGear"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-condition-mode">
+                    <label for="autoGearOwnGearMode" id="autoGearOwnGearModeLabel">Match behavior</label>
+                    <select id="autoGearOwnGearMode">
+                      <option value="all" selected>Require every selected value</option>
+                      <option value="any">Match any selected value</option>
+                      <option value="none">Require none of the selected values</option>
+                      <option value="multiplier">Multiply by matched values</option>
+                    </select>
+                  </div>
+                  <select
+                    id="autoGearOwnGear"
+                    class="auto-gear-own-gear auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
                   id="autoGearCondition-cameraWeight"
                   class="auto-gear-condition"
                   data-condition="cameraWeight"
@@ -2182,14 +2217,18 @@
               </div>
             </div>
           </div>
-          <div class="auto-gear-editor-columns">
-            <div class="auto-gear-column">
-              <h4 id="autoGearAddItemsHeading">Add these items</h4>
-              <div class="auto-gear-add-controls">
-                <div class="auto-gear-field">
-                  <label for="autoGearAddName" id="autoGearAddItemLabel">Item</label>
-                  <input type="text" id="autoGearAddName" list="autoGearItemCatalog" />
-                </div>
+            <div class="auto-gear-editor-columns">
+              <div class="auto-gear-column">
+                <h4 id="autoGearAddItemsHeading">Add these items</h4>
+                <div class="auto-gear-add-controls">
+                  <div class="auto-gear-field">
+                    <label for="autoGearAddOwnGear" id="autoGearAddOwnGearLabel">Own gear</label>
+                    <select id="autoGearAddOwnGear"></select>
+                  </div>
+                  <div class="auto-gear-field">
+                    <label for="autoGearAddName" id="autoGearAddItemLabel">Item</label>
+                    <input type="text" id="autoGearAddName" list="autoGearItemCatalog" />
+                  </div>
                 <div class="auto-gear-field">
                   <label for="autoGearAddCategory" id="autoGearAddCategoryLabel">Category</label>
                   <select id="autoGearAddCategory"></select>
@@ -2226,13 +2265,17 @@
               </div>
               <ul id="autoGearAddList" class="auto-gear-item-list"></ul>
             </div>
-            <div class="auto-gear-column">
-              <h4 id="autoGearRemoveItemsHeading">Remove these items</h4>
-              <div class="auto-gear-add-controls">
-                <div class="auto-gear-field">
-                  <label for="autoGearRemoveName" id="autoGearRemoveItemLabel">Item</label>
-                  <input type="text" id="autoGearRemoveName" list="autoGearItemCatalog" />
-                </div>
+              <div class="auto-gear-column">
+                <h4 id="autoGearRemoveItemsHeading">Remove these items</h4>
+                <div class="auto-gear-add-controls">
+                  <div class="auto-gear-field">
+                    <label for="autoGearRemoveOwnGear" id="autoGearRemoveOwnGearLabel">Own gear</label>
+                    <select id="autoGearRemoveOwnGear"></select>
+                  </div>
+                  <div class="auto-gear-field">
+                    <label for="autoGearRemoveName" id="autoGearRemoveItemLabel">Item</label>
+                    <input type="text" id="autoGearRemoveName" list="autoGearItemCatalog" />
+                  </div>
                 <div class="auto-gear-field">
                   <label for="autoGearRemoveCategory" id="autoGearRemoveCategoryLabel">Category</label>
                   <select id="autoGearRemoveCategory"></select>

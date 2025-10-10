@@ -4226,6 +4226,137 @@ function populateAutoGearCategorySelect(select, currentValue) {
   select.appendChild(customOption);
 }
 
+function formatAutoGearOwnGearLabel(item) {
+  if (!item || typeof item.name !== 'string') return '';
+  const quantityValue = typeof item?.quantity === 'number'
+    ? String(item.quantity)
+    : item?.quantity;
+  const quantityText = formatOwnGearQuantityText(quantityValue);
+  if (quantityText) {
+    return `${item.name} (${quantityText})`;
+  }
+  return item.name;
+}
+
+function refreshAutoGearOwnGearConditionOptions(selected) {
+  if (!autoGearOwnGearSelect) return;
+
+  const selectedValues = Array.isArray(selected)
+    ? selected
+        .filter(value => typeof value === 'string')
+        .map(value => value.trim())
+        .filter(Boolean)
+    : collectAutoGearSelectedValues(selected, 'ownGear');
+
+  autoGearOwnGearSelect.innerHTML = '';
+  autoGearOwnGearSelect.multiple = true;
+
+  const items = getAutoGearOwnGearItems();
+  const seen = new Set();
+
+  const appendOption = (id, label, options = {}) => {
+    if (typeof id !== 'string') return;
+    const trimmedId = id.trim();
+    if (!trimmedId || seen.has(trimmedId)) return;
+    const option = document.createElement('option');
+    option.value = trimmedId;
+    option.textContent = label || trimmedId;
+    if (options.dataset && option.dataset) {
+      Object.entries(options.dataset).forEach(([key, value]) => {
+        if (value == null) return;
+        option.dataset[key] = value;
+      });
+    }
+    if (options.fallback) {
+      option.dataset.autoGearFallback = 'true';
+    }
+    if (selectedValues.includes(trimmedId)) {
+      option.selected = true;
+    }
+    autoGearOwnGearSelect.appendChild(option);
+    seen.add(trimmedId);
+  };
+
+  items.forEach(item => {
+    if (!item || typeof item.id !== 'string') return;
+    const trimmedId = item.id.trim();
+    if (!trimmedId) return;
+    const dataset = {};
+    if (typeof item.name === 'string' && item.name) {
+      dataset.name = item.name;
+    }
+    const formattedQuantity = formatOwnGearQuantityText(item.quantity);
+    if (formattedQuantity) {
+      dataset.quantity = formattedQuantity;
+    }
+    if (typeof item.notes === 'string' && item.notes) {
+      dataset.notes = item.notes;
+    }
+    appendOption(trimmedId, formatAutoGearOwnGearLabel(item) || item.name || trimmedId, { dataset });
+  });
+
+  selectedValues.forEach(value => {
+    if (!value || seen.has(value)) return;
+    const record = typeof findAutoGearOwnGearById === 'function'
+      ? findAutoGearOwnGearById(value)
+      : null;
+    const label = record?.name || value;
+    appendOption(value, label, { fallback: true });
+  });
+
+  const selectableOptions = Array.from(autoGearOwnGearSelect.options || []).filter(option => !option.disabled);
+  autoGearOwnGearSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
+  const hasSelectable = selectableOptions.some(option => option.dataset.autoGearFallback !== 'true');
+  autoGearOwnGearSelect.disabled = !hasSelectable && selectedValues.length === 0;
+}
+
+function updateAutoGearOwnGearOptions() {
+  const selects = [autoGearAddOwnGearSelect, autoGearRemoveOwnGearSelect].filter(Boolean);
+  if (!selects.length) return;
+  const items = getAutoGearOwnGearItems();
+  selects.forEach(select => {
+    if (!select) return;
+    const currentValue = select.value || '';
+    const placeholder = select.getAttribute('data-placeholder')
+      || texts[currentLang]?.autoGearOwnGearPlaceholder
+      || texts.en?.autoGearOwnGearPlaceholder
+      || 'Manual entry';
+    select.innerHTML = '';
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+    items.forEach(item => {
+      if (!item || typeof item.id !== 'string' || !item.id || typeof item.name !== 'string') return;
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = formatAutoGearOwnGearLabel(item) || item.name;
+      option.dataset.name = item.name;
+      if (item.notes) option.dataset.notes = item.notes;
+      if (item.source) option.dataset.source = item.source;
+      const formattedQuantity = formatOwnGearQuantityText(item.quantity);
+      if (formattedQuantity) option.dataset.quantity = formattedQuantity;
+      if (item.id === currentValue) option.selected = true;
+      select.appendChild(option);
+    });
+    if (currentValue && select.value !== currentValue) {
+      if (select.querySelector(`option[value="${currentValue}"]`)) {
+        select.value = currentValue;
+      } else {
+        select.value = '';
+      }
+    }
+    select.disabled = items.length === 0;
+  });
+
+  refreshAutoGearOwnGearConditionOptions(Array.isArray(autoGearEditorDraft?.ownGear)
+    ? autoGearEditorDraft.ownGear
+    : undefined);
+}
+
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
   return value.trim().toLowerCase() === 'monitoring';
@@ -4349,10 +4480,20 @@ function extractAutoGearContextNotes(name) {
 
 function normalizeAutoGearItem(entry) {
   if (!entry || typeof entry !== 'object') return null;
-  const rawName = normalizeAutoGearText(entry.name);
+  const requestedName = normalizeAutoGearText(entry.name);
+  const ownGearSourceId = typeof entry.ownGearId === 'string' ? entry.ownGearId.trim() : '';
+  const ownGearFallbackLabel = normalizeAutoGearText(entry.ownGearLabel);
+  const ownGearNameInput = normalizeAutoGearText(entry.ownGearName);
+  let ownGearRecord = null;
+  if (ownGearSourceId) {
+    ownGearRecord = findAutoGearOwnGearById(ownGearSourceId) || null;
+  }
+  const rawName = ownGearRecord?.name
+    || ownGearNameInput
+    || requestedName;
   if (!rawName) return null;
-  const { baseName, contexts } = extractAutoGearContextNotes(rawName);
-  const name = baseName || rawName;
+  const { baseName, contexts } = extractAutoGearContextNotes(requestedName || rawName);
+  let name = baseName || rawName;
   const storedContexts = Array.isArray(entry.contextNotes)
     ? entry.contextNotes.filter(value => typeof value === 'string' && value.trim())
     : [];
@@ -4380,7 +4521,21 @@ function normalizeAutoGearItem(entry) {
   } else if (isAutoGearMonitoringCategory(category)) {
     selectorEnabled = true;
   }
-  const notes = normalizeAutoGearText(entry.notes);
+  let notes = normalizeAutoGearText(entry.notes);
+  let ownGearId = '';
+  let ownGearLabel = '';
+  if (ownGearRecord) {
+    ownGearId = ownGearRecord.id;
+    ownGearLabel = ownGearRecord.name || '';
+    name = ownGearRecord.name || name;
+    if (!notes && typeof ownGearRecord.notes === 'string') {
+      const trimmedNotes = normalizeAutoGearText(ownGearRecord.notes);
+      if (trimmedNotes) notes = trimmedNotes;
+    }
+  } else if (ownGearSourceId) {
+    ownGearId = ownGearSourceId;
+    ownGearLabel = ownGearFallbackLabel || ownGearNameInput || name;
+  }
   return {
     id,
     name,
@@ -4393,6 +4548,8 @@ function normalizeAutoGearItem(entry) {
     selectorContext,
     notes,
     contextNotes: contexts,
+    ownGearId,
+    ownGearLabel,
   };
 }
 
@@ -4418,7 +4575,7 @@ function normalizeAutoGearScenarioLogic(value) {
   return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
 }
 
-const AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'or', 'multiplier']);
+const AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'or', 'none', 'multiplier']);
 const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   mattebox: 'matteboxLogic',
   cameraHandle: 'cameraHandleLogic',
@@ -4426,6 +4583,7 @@ const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   deliveryResolution: 'deliveryResolutionLogic',
   videoDistribution: 'videoDistributionLogic',
   camera: 'cameraLogic',
+  ownGear: 'ownGearLogic',
   monitor: 'monitorLogic',
   tripodHeadBrand: 'tripodHeadBrandLogic',
   tripodBowl: 'tripodBowlLogic',
@@ -4446,6 +4604,9 @@ function normalizeAutoGearConditionLogic(value) {
   if (normalized === 'or') return 'or';
   if (normalized === 'and') return 'all';
   if (normalized === 'any') return 'any';
+  if (normalized === 'none' || normalized === 'no' || normalized === 'exclude' || normalized === 'absent') {
+    return 'none';
+  }
   if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
     return 'multiplier';
   }
@@ -4652,6 +4813,7 @@ function normalizeAutoGearRule(rule) {
   const videoDistribution = normalizeVideoDistributionTriggerList(rule.videoDistribution)
     .sort((a, b) => a.localeCompare(b));
   const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
+  const ownGear = normalizeAutoGearTriggerList(rule.ownGear).sort((a, b) => a.localeCompare(b));
   const cameraWeight = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
   const monitor = normalizeAutoGearTriggerList(rule.monitor).sort((a, b) => a.localeCompare(b));
   const tripodHeadBrand = normalizeAutoGearTriggerList(rule.tripodHeadBrand).sort((a, b) => a.localeCompare(b));
@@ -4671,6 +4833,7 @@ function normalizeAutoGearRule(rule) {
   const deliveryResolutionLogic = readAutoGearConditionLogic(rule, 'deliveryResolution');
   const videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
   const cameraLogic = readAutoGearConditionLogic(rule, 'camera');
+  const ownGearLogic = readAutoGearConditionLogic(rule, 'ownGear');
   const monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
   const tripodHeadBrandLogic = readAutoGearConditionLogic(rule, 'tripodHeadBrand');
   const tripodBowlLogic = readAutoGearConditionLogic(rule, 'tripodBowl');
@@ -4698,6 +4861,7 @@ function normalizeAutoGearRule(rule) {
     conditionLogic.videoDistribution = videoDistributionLogic;
   }
   if (cameraLogic && cameraLogic !== 'all') conditionLogic.camera = cameraLogic;
+  if (ownGearLogic && ownGearLogic !== 'all') conditionLogic.ownGear = ownGearLogic;
   if (monitorLogic && monitorLogic !== 'all') conditionLogic.monitor = monitorLogic;
   if (tripodHeadBrandLogic && tripodHeadBrandLogic !== 'all') {
     conditionLogic.tripodHeadBrand = tripodHeadBrandLogic;
@@ -4727,6 +4891,7 @@ function normalizeAutoGearRule(rule) {
     && !deliveryResolution.length
     && !videoDistribution.length
     && !camera.length
+    && !ownGear.length
     && !cameraWeight
     && !monitor.length
     && !tripodHeadBrand.length
@@ -4757,6 +4922,7 @@ function normalizeAutoGearRule(rule) {
     deliveryResolution,
     videoDistribution,
     camera,
+    ownGear,
     cameraWeight,
     monitor,
     tripodHeadBrand,
@@ -4776,6 +4942,7 @@ function normalizeAutoGearRule(rule) {
     deliveryResolutionLogic,
     videoDistributionLogic,
     cameraLogic,
+    ownGearLogic,
     monitorLogic,
     tripodHeadBrandLogic,
     tripodBowlLogic,
@@ -4805,6 +4972,8 @@ function autoGearItemSnapshot(item) {
       selectorDefault: '',
       selectorEnabled: false,
       notes: '',
+      ownGearId: '',
+      ownGearLabel: '',
     };
   }
   const {
@@ -4816,6 +4985,8 @@ function autoGearItemSnapshot(item) {
     selectorDefault,
     selectorEnabled,
     notes,
+    ownGearId,
+    ownGearLabel,
   } = normalized;
   return {
     name,
@@ -4826,6 +4997,8 @@ function autoGearItemSnapshot(item) {
     selectorDefault,
     selectorEnabled,
     notes,
+    ownGearId,
+    ownGearLabel,
   };
 }
 
@@ -4839,7 +5012,9 @@ function autoGearItemSortKey(item) {
   const selectorDefault = snapshot.selectorDefault || '';
   const selectorEnabled = snapshot.selectorEnabled ? '1' : '0';
   const notes = snapshot.notes || '';
-  return `${name}|${category}|${quantity}|${screenSize}|${selectorType}|${selectorEnabled}|${selectorDefault}|${notes}`;
+  const ownGearId = snapshot.ownGearId || '';
+  const ownGearLabel = snapshot.ownGearLabel || '';
+  return `${name}|${category}|${quantity}|${screenSize}|${selectorType}|${selectorEnabled}|${selectorDefault}|${notes}|${ownGearId}|${ownGearLabel}`;
 }
 
 function snapshotAutoGearRuleForFingerprint(rule) {
@@ -5838,6 +6013,9 @@ function collectAutoGearCatalogNames() {
   if (typeof devices === 'object' && devices) {
     visit(devices);
   }
+  getAutoGearOwnGearItems().forEach(item => {
+    if (item && typeof item.name === 'string') addName(item.name);
+  });
   autoGearRules.forEach(rule => {
     [...rule.add, ...rule.remove].forEach(item => addName(item.name));
   });
@@ -6366,6 +6544,69 @@ let ownGearSuggestionCache = {
   list: [],
   lookup: new Set(),
 };
+
+let autoGearOwnGearCache = {
+  items: [],
+  map: new Map(),
+};
+
+function invalidateAutoGearOwnGearCache() {
+  autoGearOwnGearCache = {
+    items: [],
+    map: new Map(),
+  };
+}
+
+function refreshAutoGearOwnGearCache() {
+  let items = [];
+  const moduleApi = resolveOwnGearModule();
+  if (moduleApi && typeof moduleApi.loadStoredOwnGearItems === 'function') {
+    try {
+      items = moduleApi.loadStoredOwnGearItems();
+    } catch (error) {
+      console.warn('Unable to load own gear items for automatic gear rules via module.', error);
+    }
+  }
+  if (!Array.isArray(items) || !items.length) {
+    if (Array.isArray(ownGearItems) && ownGearItems.length) {
+      items = ownGearItems.slice();
+    } else {
+      items = loadStoredOwnGearItems();
+    }
+  }
+  const normalized = Array.isArray(items)
+    ? items
+        .map(normalizeOwnGearRecord)
+        .filter(Boolean)
+    : [];
+  const map = new Map();
+  normalized.forEach(item => {
+    if (!item || !item.id) return;
+    map.set(item.id, item);
+  });
+  autoGearOwnGearCache = {
+    items: normalized,
+    map,
+  };
+  return autoGearOwnGearCache;
+}
+
+function getAutoGearOwnGearCache() {
+  if (autoGearOwnGearCache && Array.isArray(autoGearOwnGearCache.items) && autoGearOwnGearCache.items.length) {
+    return autoGearOwnGearCache;
+  }
+  return refreshAutoGearOwnGearCache();
+}
+
+function getAutoGearOwnGearItems() {
+  return getAutoGearOwnGearCache().items.slice();
+}
+
+function findAutoGearOwnGearById(id) {
+  if (!id) return null;
+  const cache = getAutoGearOwnGearCache();
+  return cache.map.get(id) || null;
+}
 
 function generateOwnGearId() {
   const moduleApi = resolveOwnGearModule();
@@ -8961,6 +9202,7 @@ var autoGearConditionSections = {
   deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
   videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
   camera: document.getElementById('autoGearCondition-camera'),
+  ownGear: document.getElementById('autoGearCondition-ownGear'),
   cameraWeight: autoGearCameraWeightSection,
   monitor: document.getElementById('autoGearCondition-monitor'),
   tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
@@ -8985,6 +9227,7 @@ var autoGearConditionAddShortcuts = {
   deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-add') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
+  ownGear: autoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-add') || null,
   cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-add') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
   tripodHeadBrand: autoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-add') || null,
@@ -9009,6 +9252,7 @@ var autoGearConditionRemoveButtons = {
   deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-remove') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
+  ownGear: autoGearConditionSections.ownGear?.querySelector('.auto-gear-condition-remove') || null,
   cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-remove') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
   tripodHeadBrand: autoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-remove') || null,
@@ -9073,6 +9317,10 @@ var autoGearCameraSelect = document.getElementById('autoGearCamera');
 var autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
 var autoGearCameraModeLabel = document.getElementById('autoGearCameraModeLabel');
 var autoGearCameraModeSelect = document.getElementById('autoGearCameraMode');
+var autoGearOwnGearLabel = document.getElementById('autoGearOwnGearLabel');
+var autoGearOwnGearModeLabel = document.getElementById('autoGearOwnGearModeLabel');
+var autoGearOwnGearModeSelect = document.getElementById('autoGearOwnGearMode');
+var autoGearOwnGearSelect = document.getElementById('autoGearOwnGear');
 var autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
 var autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
 var autoGearCameraWeightOperatorLabel = document.getElementById('autoGearCameraWeightOperatorLabel');
@@ -9133,6 +9381,7 @@ var autoGearConditionLabels = {
   deliveryResolution: autoGearDeliveryResolutionLabel,
   videoDistribution: autoGearVideoDistributionLabel,
   camera: autoGearCameraLabel,
+  ownGear: autoGearOwnGearLabel,
   cameraWeight: autoGearCameraWeightLabel,
   monitor: autoGearMonitorLabel,
   tripodHeadBrand: autoGearTripodHeadBrandLabel,
@@ -9156,6 +9405,7 @@ var autoGearConditionSelects = {
   deliveryResolution: autoGearDeliveryResolutionSelect,
   videoDistribution: autoGearVideoDistributionSelect,
   camera: autoGearCameraSelect,
+  ownGear: autoGearOwnGearSelect,
   cameraWeight: autoGearCameraWeightValueInput,
   monitor: autoGearMonitorSelect,
   tripodHeadBrand: autoGearTripodHeadBrandSelect,
@@ -9176,6 +9426,7 @@ var autoGearConditionLogicLabels = {
   deliveryResolution: autoGearDeliveryResolutionModeLabel,
   videoDistribution: autoGearVideoDistributionModeLabel,
   camera: autoGearCameraModeLabel,
+  ownGear: autoGearOwnGearModeLabel,
   monitor: autoGearMonitorModeLabel,
   tripodHeadBrand: autoGearTripodHeadBrandModeLabel,
   tripodBowl: autoGearTripodBowlModeLabel,
@@ -9195,6 +9446,7 @@ var autoGearConditionLogicSelects = {
   deliveryResolution: autoGearDeliveryResolutionModeSelect,
   videoDistribution: autoGearVideoDistributionModeSelect,
   camera: autoGearCameraModeSelect,
+  ownGear: autoGearOwnGearModeSelect,
   monitor: autoGearMonitorModeSelect,
   tripodHeadBrand: autoGearTripodHeadBrandModeSelect,
   tripodBowl: autoGearTripodBowlModeSelect,
@@ -9220,6 +9472,7 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'deliveryResolution',
   'videoDistribution',
   'camera',
+  'ownGear',
   'cameraWeight',
   'monitor',
   'tripodHeadBrand',
@@ -9241,6 +9494,7 @@ const AUTO_GEAR_REPEATABLE_CONDITIONS = new Set([
   'deliveryResolution',
   'videoDistribution',
   'camera',
+  'ownGear',
   'monitor',
   'tripodHeadBrand',
   'tripodBowl',
@@ -9263,6 +9517,7 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   deliveryResolution: 'Delivery resolution',
   videoDistribution: 'Video distribution',
   camera: 'Camera',
+  ownGear: 'Own gear items',
   cameraWeight: 'Camera weight',
   monitor: 'Onboard monitor',
   tripodHeadBrand: 'Tripod head brand',
@@ -11137,6 +11392,24 @@ function setLanguage(lang) {
       autoGearCameraSelect.setAttribute('aria-label', label);
     }
   }
+  if (autoGearOwnGearLabel) {
+    const label = texts[lang].autoGearConditionOwnGearLabel
+      || texts[lang].autoGearOwnGearLabel
+      || texts.en?.autoGearConditionOwnGearLabel
+      || texts.en?.autoGearOwnGearLabel
+      || autoGearOwnGearLabel.textContent;
+    const help = texts[lang].autoGearConditionOwnGearHelp
+      || texts.en?.autoGearConditionOwnGearHelp
+      || texts[lang].autoGearOwnGearHelp
+      || texts.en?.autoGearOwnGearHelp
+      || label;
+    autoGearOwnGearLabel.textContent = label;
+    autoGearOwnGearLabel.setAttribute('data-help', help);
+    if (autoGearOwnGearSelect) {
+      autoGearOwnGearSelect.setAttribute('data-help', help);
+      autoGearOwnGearSelect.setAttribute('aria-label', label);
+    }
+  }
   if (autoGearCameraWeightLabel) {
     const label = texts[lang].autoGearCameraWeightLabel
       || texts.en?.autoGearCameraWeightLabel
@@ -11351,6 +11624,9 @@ function setLanguage(lang) {
     any: texts[lang]?.autoGearConditionLogicAny
       || texts.en?.autoGearConditionLogicAny
       || 'Match any selected value',
+    none: texts[lang]?.autoGearConditionLogicNone
+      || texts.en?.autoGearConditionLogicNone
+      || 'Require none of the selected values',
     multiplier: texts[lang]?.autoGearConditionLogicMultiplier
       || texts.en?.autoGearConditionLogicMultiplier
       || 'Multiply by matched values',
@@ -11374,6 +11650,22 @@ function setLanguage(lang) {
   });
   if (autoGearAddItemsHeading) {
     autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || texts.en?.autoGearAddItemsHeading || autoGearAddItemsHeading.textContent;
+  }
+  if (autoGearAddOwnGearLabel) {
+    const label = texts[lang].autoGearOwnGearLabel || texts.en?.autoGearOwnGearLabel || autoGearAddOwnGearLabel.textContent;
+    const help = texts[lang].autoGearOwnGearHelp || texts.en?.autoGearOwnGearHelp || label;
+    const placeholder = texts[lang].autoGearOwnGearPlaceholder || texts.en?.autoGearOwnGearPlaceholder || '';
+    autoGearAddOwnGearLabel.textContent = label;
+    autoGearAddOwnGearLabel.setAttribute('data-help', help);
+    if (autoGearAddOwnGearSelect) {
+      autoGearAddOwnGearSelect.setAttribute('aria-label', label);
+      autoGearAddOwnGearSelect.setAttribute('data-help', help);
+      if (placeholder) {
+        autoGearAddOwnGearSelect.setAttribute('data-placeholder', placeholder);
+      } else {
+        autoGearAddOwnGearSelect.removeAttribute('data-placeholder');
+      }
+    }
   }
   if (autoGearAddItemLabel) {
     const label = texts[lang].autoGearAddItemLabel || texts.en?.autoGearAddItemLabel || autoGearAddItemLabel.textContent;
@@ -11461,6 +11753,22 @@ function setLanguage(lang) {
   if (autoGearRemoveItemsHeading) {
     autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || texts.en?.autoGearRemoveItemsHeading || autoGearRemoveItemsHeading.textContent;
   }
+  if (autoGearRemoveOwnGearLabel) {
+    const label = texts[lang].autoGearOwnGearLabel || texts.en?.autoGearOwnGearLabel || autoGearRemoveOwnGearLabel.textContent;
+    const help = texts[lang].autoGearOwnGearHelp || texts.en?.autoGearOwnGearHelp || label;
+    const placeholder = texts[lang].autoGearOwnGearPlaceholder || texts.en?.autoGearOwnGearPlaceholder || '';
+    autoGearRemoveOwnGearLabel.textContent = label;
+    autoGearRemoveOwnGearLabel.setAttribute('data-help', help);
+    if (autoGearRemoveOwnGearSelect) {
+      autoGearRemoveOwnGearSelect.setAttribute('aria-label', label);
+      autoGearRemoveOwnGearSelect.setAttribute('data-help', help);
+      if (placeholder) {
+        autoGearRemoveOwnGearSelect.setAttribute('data-placeholder', placeholder);
+      } else {
+        autoGearRemoveOwnGearSelect.removeAttribute('data-placeholder');
+      }
+    }
+  }
   if (autoGearRemoveItemLabel) {
     const label = texts[lang].autoGearRemoveItemLabel || texts.en?.autoGearRemoveItemLabel || autoGearRemoveItemLabel.textContent;
     const hint = texts[lang].autoGearRemoveMultipleHint || texts.en?.autoGearRemoveMultipleHint || '';
@@ -11539,6 +11847,7 @@ function setLanguage(lang) {
       autoGearRemoveNotesInput.setAttribute('aria-label', label);
     }
   }
+  updateAutoGearOwnGearOptions();
   if (autoGearDraftImpactHeading) {
     const heading = texts[lang].autoGearDraftImpactHeading
       || texts.en?.autoGearDraftImpactHeading
@@ -19840,6 +20149,7 @@ var autoGearConditionRefreshers = {
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
   camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
+  ownGear: refreshAutoGearOwnGearConditionOptions,
   cameraWeight: createDeferredAutoGearRefresher('refreshAutoGearCameraWeightCondition'),
   monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
   tripodHeadBrand: createDeferredAutoGearRefresher('refreshAutoGearTripodHeadOptions'),
@@ -20421,6 +20731,7 @@ if (autoGearCameraWeightValueInput) {
   autoGearCameraWeightValueInput.addEventListener('blur', handleCameraWeightValueInput);
 }
 var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
+var autoGearAddOwnGearLabel = document.getElementById('autoGearAddOwnGearLabel');
 var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
 var autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
@@ -20428,6 +20739,7 @@ var autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeL
 var autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
 var autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
 var autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
+var autoGearAddOwnGearSelect = document.getElementById('autoGearAddOwnGear');
 var autoGearAddNameInput = document.getElementById('autoGearAddName');
 var autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
 var autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
@@ -20438,6 +20750,7 @@ var autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
 var autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
 var autoGearAddList = document.getElementById('autoGearAddList');
 var autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
+var autoGearRemoveOwnGearLabel = document.getElementById('autoGearRemoveOwnGearLabel');
 var autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
 var autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
 var autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
@@ -20445,6 +20758,7 @@ var autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScree
 var autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
 var autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
 var autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
+var autoGearRemoveOwnGearSelect = document.getElementById('autoGearRemoveOwnGear');
 var autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
 var autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
 var autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
@@ -20464,6 +20778,16 @@ var autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList
 var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 var autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
+
+updateAutoGearOwnGearOptions();
+
+if (typeof document !== 'undefined' && document) {
+  document.addEventListener('own-gear-data-changed', () => {
+    invalidateAutoGearOwnGearCache();
+    updateAutoGearOwnGearOptions();
+    updateAutoGearCatalogOptions();
+  });
+}
 
 function enableAutoGearMultiSelectToggle(select) {
   if (!select || !select.multiple) return;
@@ -20530,6 +20854,7 @@ function enableAutoGearMultiSelectToggle(select) {
   autoGearViewfinderExtensionSelect,
   autoGearVideoDistributionSelect,
   autoGearCameraSelect,
+  autoGearOwnGearSelect,
   autoGearMonitorSelect,
   autoGearCrewPresentSelect,
   autoGearCrewAbsentSelect,
@@ -21010,6 +21335,8 @@ function cloneAutoGearDraftItem(item) {
     selectorDefault: '',
     selectorEnabled: false,
     notes: '',
+    ownGearId: '',
+    ownGearLabel: '',
   };
 }
 
@@ -21022,6 +21349,7 @@ function createAutoGearDraft(rule) {
     const deliveryResolutionLogic = readAutoGearConditionLogic(rule, 'deliveryResolution');
     const videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
     const cameraLogic = readAutoGearConditionLogic(rule, 'camera');
+    const ownGearLogic = readAutoGearConditionLogic(rule, 'ownGear');
     const monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
     const crewPresentLogic = readAutoGearConditionLogic(rule, 'crewPresent');
     const crewAbsentLogic = readAutoGearConditionLogic(rule, 'crewAbsent');
@@ -21037,6 +21365,7 @@ function createAutoGearDraft(rule) {
     if (deliveryResolutionLogic !== 'all') draftConditionLogic.deliveryResolution = deliveryResolutionLogic;
     if (videoDistributionLogic !== 'all') draftConditionLogic.videoDistribution = videoDistributionLogic;
     if (cameraLogic !== 'all') draftConditionLogic.camera = cameraLogic;
+    if (ownGearLogic !== 'all') draftConditionLogic.ownGear = ownGearLogic;
     if (monitorLogic !== 'all') draftConditionLogic.monitor = monitorLogic;
     if (crewPresentLogic !== 'all') draftConditionLogic.crewPresent = crewPresentLogic;
     if (crewAbsentLogic !== 'all') draftConditionLogic.crewAbsent = crewAbsentLogic;
@@ -21058,6 +21387,7 @@ function createAutoGearDraft(rule) {
       deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+      ownGear: Array.isArray(rule.ownGear) ? rule.ownGear.slice() : [],
       cameraWeight: rule.cameraWeight
         ? normalizeAutoGearCameraWeightCondition(rule.cameraWeight) || null
         : null,
@@ -21077,6 +21407,7 @@ function createAutoGearDraft(rule) {
       deliveryResolutionLogic,
       videoDistributionLogic,
       cameraLogic,
+      ownGearLogic,
       monitorLogic,
       crewPresentLogic,
       crewAbsentLogic,
@@ -21101,6 +21432,7 @@ function createAutoGearDraft(rule) {
     deliveryResolution: [],
     videoDistribution: [],
     camera: [],
+    ownGear: [],
     cameraWeight: null,
     monitor: [],
     crewPresent: [],
@@ -21118,6 +21450,7 @@ function createAutoGearDraft(rule) {
     deliveryResolutionLogic: 'all',
     videoDistributionLogic: 'all',
     cameraLogic: 'all',
+    ownGearLogic: 'all',
     monitorLogic: 'all',
     crewPresentLogic: 'all',
     crewAbsentLogic: 'all',
