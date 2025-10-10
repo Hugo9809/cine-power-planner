@@ -78,6 +78,7 @@ const fizData = {
       "powerDrawWatts": 20,
       "internalController": false,
       "torqueNm": 0.5,
+      "weight_g": 192,
       "gearTypes": [
         "0.8 mod",
         "0.4 mod",
@@ -96,7 +97,8 @@ const fizData = {
     "Arri Cforce Plus": {
       "powerDrawWatts": 32,
       "internalController": false,
-      "torqueNm": 1,
+      "torqueNm": 0.7,
+      "weight_g": 325,
       "gearTypes": [
         "0.8 mod",
         "0.4 mod",
@@ -145,9 +147,10 @@ const fizData = {
       ]
     },
     "Arri CLM-5 (K2.0006361)": {
-      "powerDrawWatts": 24,
+      "powerDrawWatts": 15,
       "internalController": false,
-      "torqueNm": 1.2,
+      "torqueNm": 0.5,
+      "weight_g": 205,
       "gearTypes": [
         "0.8 mod",
         "0.6 mod",
