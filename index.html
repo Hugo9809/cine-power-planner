@@ -6899,20 +6899,25 @@
   </dialog>
   <dialog id="overviewDialog"></dialog>
   <dialog
-    id="rentalPrintDialog"
+    id="printOptionsDialog"
     class="app-modal print-options-dialog"
-    aria-labelledby="rentalPrintDialogTitle"
-    aria-describedby="rentalPrintDialogDescription"
+    aria-labelledby="printOptionsDialogTitle"
+    aria-describedby="printOptionsDialogDescription"
   >
-    <form id="rentalPrintForm" method="dialog" class="modal-surface print-options-surface">
-      <h2 id="rentalPrintDialogTitle"></h2>
-      <p id="rentalPrintDialogDescription"></p>
-      <fieldset id="rentalPrintSections" class="print-options-sections"></fieldset>
+    <form id="printOptionsForm" method="dialog" class="modal-surface print-options-surface">
+      <h2 id="printOptionsDialogTitle"></h2>
+      <p id="printOptionsDialogDescription"></p>
+      <fieldset id="printOptionsLayout" class="print-options-layout">
+        <legend id="printOptionsLayoutLabel"></legend>
+        <div id="printOptionsLayoutChoices" class="print-options-layout-options"></div>
+      </fieldset>
+      <fieldset id="printOptionsSections" class="print-options-sections"></fieldset>
       <div class="print-options-footer">
-        <button type="button" id="rentalPrintSelectAllBtn"></button>
+        <button type="button" id="printOptionsSelectAllBtn"></button>
         <div class="print-options-actions">
-          <button type="button" id="rentalPrintCancelBtn"></button>
-          <button type="submit" id="rentalPrintConfirmBtn" class="primary"></button>
+          <button type="button" id="printOptionsCancelBtn"></button>
+          <button type="button" id="printOptionsPrintBtn"></button>
+          <button type="submit" id="printOptionsExportBtn" class="primary"></button>
         </div>
       </div>
     </form>

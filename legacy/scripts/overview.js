@@ -331,8 +331,8 @@ function logOverview(level, message, detail, meta) {
   return baseMeta.eventId;
 }
 var _pendingPrintCleanup = null;
-var RENTAL_PRINT_STORAGE_KEY = 'cineRentalPrintSections';
-function getRentalPrintSectionConfig() {
+var PRINT_PREFERENCES_STORAGE_KEY = 'cineRentalPrintSections';
+function getPrintSectionConfig() {
   return [{
     id: 'project',
     selector: '#projectRequirementsOutput',
@@ -371,12 +371,12 @@ function getRentalPrintSectionConfig() {
     fallbackLabel: 'Battery Comparison'
   }];
 }
-function loadRentalPrintPreferences() {
+function loadPrintPreferences() {
   if (typeof localStorage === 'undefined') {
     return null;
   }
   try {
-    var raw = localStorage.getItem(RENTAL_PRINT_STORAGE_KEY);
+    var raw = localStorage.getItem(PRINT_PREFERENCES_STORAGE_KEY);
     if (!raw) {
       return null;
     }
@@ -384,7 +384,16 @@ function loadRentalPrintPreferences() {
     if (!parsed || _typeof(parsed) !== 'object') {
       return null;
     }
-    return parsed;
+    if (parsed.sections || parsed.layout) {
+      return {
+        sections: parsed.sections && _typeof(parsed.sections) === 'object' ? _objectSpread({}, parsed.sections) : {},
+        layout: typeof parsed.layout === 'string' ? parsed.layout : 'standard'
+      };
+    }
+    return {
+      sections: _objectSpread({}, parsed),
+      layout: 'rental'
+    };
   } catch (error) {
     logOverview('warn', 'Unable to read rental print section preferences.', error, {
       action: 'rental-print-load-preferences'
@@ -392,13 +401,13 @@ function loadRentalPrintPreferences() {
   }
   return null;
 }
-function saveRentalPrintPreferences(preferences) {
+function savePrintPreferences(preferences) {
   if (typeof localStorage === 'undefined') {
     return false;
   }
   try {
     var serialized = JSON.stringify(preferences || {});
-    localStorage.setItem(RENTAL_PRINT_STORAGE_KEY, serialized);
+    localStorage.setItem(PRINT_PREFERENCES_STORAGE_KEY, serialized);
     return true;
   } catch (error) {
     logOverview('warn', 'Unable to persist rental print section preferences.', error, {
@@ -422,73 +431,87 @@ function runPendingPrintCleanup(reason) {
     });
   }
 }
-var rentalPrintDialogContext = null;
-function getRentalPrintDialogContext() {
-  if (rentalPrintDialogContext) {
-    return rentalPrintDialogContext;
+var printOptionsDialogContext = null;
+function getPrintOptionsDialogContext() {
+  if (printOptionsDialogContext) {
+    return printOptionsDialogContext;
   }
   if (typeof document === 'undefined') {
     return null;
   }
-  var dialog = document.getElementById('rentalPrintDialog');
+  var dialog = document.getElementById('printOptionsDialog');
   if (!dialog) {
     return null;
   }
-  var form = dialog.querySelector('#rentalPrintForm');
-  var sections = dialog.querySelector('#rentalPrintSections');
-  var selectAllBtn = dialog.querySelector('#rentalPrintSelectAllBtn');
-  var cancelBtn = dialog.querySelector('#rentalPrintCancelBtn');
-  var confirmBtn = dialog.querySelector('#rentalPrintConfirmBtn');
-  var title = dialog.querySelector('#rentalPrintDialogTitle');
-  var description = dialog.querySelector('#rentalPrintDialogDescription');
-  if (!form || !sections || !title || !description || !selectAllBtn || !cancelBtn || !confirmBtn) {
+  var form = dialog.querySelector('#printOptionsForm');
+  var sections = dialog.querySelector('#printOptionsSections');
+  var selectAllBtn = dialog.querySelector('#printOptionsSelectAllBtn');
+  var cancelBtn = dialog.querySelector('#printOptionsCancelBtn');
+  var exportBtn = dialog.querySelector('#printOptionsExportBtn');
+  var printBtn = dialog.querySelector('#printOptionsPrintBtn');
+  var title = dialog.querySelector('#printOptionsDialogTitle');
+  var description = dialog.querySelector('#printOptionsDialogDescription');
+  var layoutFieldset = dialog.querySelector('#printOptionsLayout');
+  var layoutLabel = dialog.querySelector('#printOptionsLayoutLabel');
+  var layoutChoices = dialog.querySelector('#printOptionsLayoutChoices');
+  if (!form || !sections || !title || !description || !selectAllBtn || !cancelBtn || !exportBtn || !printBtn) {
     return null;
   }
-  rentalPrintDialogContext = {
+  printOptionsDialogContext = {
     dialog: dialog,
     form: form,
     sections: sections,
     selectAllBtn: selectAllBtn,
     cancelBtn: cancelBtn,
-    confirmBtn: confirmBtn,
+    exportBtn: exportBtn,
+    printBtn: printBtn,
+    layoutFieldset: layoutFieldset,
+    layoutLabel: layoutLabel,
+    layoutChoices: layoutChoices,
     title: title,
     description: description
   };
-  return rentalPrintDialogContext;
+  return printOptionsDialogContext;
 }
-function populateRentalPrintDialog(context, preferences, onConfirm) {
+function populatePrintOptionsDialog(context, preferences, onConfirm) {
   var _texts, _texts2;
   if (!context) {
     return;
   }
   var langTexts = texts && texts[currentLang] || ((_texts = texts) === null || _texts === void 0 ? void 0 : _texts.en) || {};
   var fallbackTexts = ((_texts2 = texts) === null || _texts2 === void 0 ? void 0 : _texts2.en) || {};
-  var title = langTexts.rentalPrintDialogTitle || fallbackTexts.rentalPrintDialogTitle || 'Export rental PDF';
-  var description = langTexts.rentalPrintDialogDescription || fallbackTexts.rentalPrintDialogDescription || 'Choose which sections should appear in the rental PDF.';
+  var title = langTexts.rentalPrintDialogTitle || fallbackTexts.rentalPrintDialogTitle || 'Export PDF / Print';
+  var description = langTexts.rentalPrintDialogDescription || fallbackTexts.rentalPrintDialogDescription || 'Choose what to include before exporting or printing.';
   var sectionsLabel = langTexts.rentalPrintDialogSectionsLabel || fallbackTexts.rentalPrintDialogSectionsLabel || 'Sections to include';
-  var confirmLabel = langTexts.rentalPrintDialogConfirm || fallbackTexts.rentalPrintDialogConfirm || 'Export';
+  var exportLabel = langTexts.rentalPrintDialogConfirm || fallbackTexts.rentalPrintDialogConfirm || 'Export PDF';
   var cancelLabel = langTexts.rentalPrintDialogCancel || fallbackTexts.rentalPrintDialogCancel || 'Cancel';
   var selectAllLabel = langTexts.rentalPrintDialogSelectAll || fallbackTexts.rentalPrintDialogSelectAll || 'Select all';
+  var printLabel = langTexts.printBtn || fallbackTexts.printBtn || 'Print';
+  var layoutLabelText = langTexts.printOptionsLayoutLabel || fallbackTexts.printOptionsLayoutLabel || 'Layout';
+  var layoutStandardLabel = langTexts.printOptionsLayoutStandard || fallbackTexts.printOptionsLayoutStandard || 'Standard layout';
+  var layoutRentalLabel = langTexts.printOptionsLayoutRental || fallbackTexts.printOptionsLayoutRental || 'Rental-friendly layout';
   context.title.textContent = title;
   context.description.textContent = description;
   context.selectAllBtn.textContent = selectAllLabel;
   context.cancelBtn.textContent = cancelLabel;
-  context.confirmBtn.textContent = confirmLabel;
+  context.exportBtn.textContent = exportLabel;
+  context.printBtn.textContent = printLabel;
   context.sections.innerHTML = '';
   var legend = document.createElement('legend');
   legend.textContent = sectionsLabel;
   context.sections.appendChild(legend);
-  var sectionConfig = getRentalPrintSectionConfig();
+  var sectionConfig = getPrintSectionConfig();
+  var preferenceSections = preferences && _typeof(preferences.sections) === 'object' ? preferences.sections : preferences;
   sectionConfig.forEach(function (section) {
     var label = langTexts[section.labelKey] || fallbackTexts[section.labelKey] || section.fallbackLabel;
     var wrapper = document.createElement('label');
     wrapper.className = 'print-options-section';
     var input = document.createElement('input');
     input.type = 'checkbox';
-    input.name = 'rental-section';
+    input.name = 'print-section';
     input.value = section.id;
-    input.id = "rentalPrintSection_".concat(section.id);
-    var preferenceValue = preferences && Object.prototype.hasOwnProperty.call(preferences, section.id) ? preferences[section.id] : section.defaultVisible;
+    input.id = "printSection_".concat(section.id);
+    var preferenceValue = preferenceSections && Object.prototype.hasOwnProperty.call(preferenceSections, section.id) ? preferenceSections[section.id] : section.defaultVisible;
     input.checked = preferenceValue !== false;
     var textSpan = document.createElement('span');
     textSpan.textContent = label;
@@ -496,32 +519,94 @@ function populateRentalPrintDialog(context, preferences, onConfirm) {
     wrapper.appendChild(textSpan);
     context.sections.appendChild(wrapper);
   });
-  context.form._rentalConfirmHandler = typeof onConfirm === 'function' ? onConfirm : null;
-  if (!context.form.dataset.rentalDialogBound) {
-    context.form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      var selections = {};
-      context.form.querySelectorAll('input[name="rental-section"]').forEach(function (input) {
-        selections[input.value] = input.checked;
-      });
-      saveRentalPrintPreferences(selections);
-      closeDialog(context.dialog);
-      if (typeof context.form._rentalConfirmHandler === 'function') {
-        context.form._rentalConfirmHandler(selections);
-      }
-    });
-    context.cancelBtn.addEventListener('click', function (event) {
-      event.preventDefault();
-      closeDialog(context.dialog);
-    });
-    context.selectAllBtn.addEventListener('click', function (event) {
-      event.preventDefault();
-      context.form.querySelectorAll('input[name="rental-section"]').forEach(function (input) {
+  if (context.layoutFieldset && context.layoutLabel && context.layoutChoices) {
+    context.layoutLabel.textContent = layoutLabelText;
+    context.layoutChoices.innerHTML = '';
+    var currentLayout = preferences && typeof preferences.layout === 'string' ? preferences.layout : 'standard';
+    [{
+      value: 'standard',
+      label: layoutStandardLabel
+    }, {
+      value: 'rental',
+      label: layoutRentalLabel
+    }].forEach(function (option) {
+      var wrapper = document.createElement('label');
+      wrapper.className = 'print-options-section';
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'print-layout';
+      input.value = option.value;
+      if (option.value === currentLayout) {
         input.checked = true;
-      });
+      }
+      var textSpan = document.createElement('span');
+      textSpan.textContent = option.label;
+      wrapper.appendChild(input);
+      wrapper.appendChild(textSpan);
+      context.layoutChoices.appendChild(wrapper);
     });
-    context.form.dataset.rentalDialogBound = 'true';
+    context.layoutFieldset.hidden = false;
+  } else if (context.layoutFieldset) {
+    context.layoutFieldset.hidden = true;
   }
+  var normalizedPreferences = preferences && _typeof(preferences) === 'object' ? preferences : {};
+  context.form._printConfirmHandler = typeof onConfirm === 'function' ? onConfirm : null;
+  if (typeof context.form._removeDialogListeners === 'function') {
+    context.form._removeDialogListeners();
+    context.form._removeDialogListeners = null;
+  }
+  var collectSelections = function collectSelections() {
+    var selections = {};
+    context.form.querySelectorAll('input[name="print-section"]').forEach(function (input) {
+      selections[input.value] = input.checked;
+    });
+    var layoutInput = context.form.querySelector('input[name="print-layout"]:checked');
+    var layout = layoutInput ? layoutInput.value : normalizedPreferences.layout || 'standard';
+    return {
+      sections: selections,
+      layout: layout
+    };
+  };
+  var handleConfirm = function handleConfirm(event, mode) {
+    event.preventDefault();
+    var result = collectSelections();
+    savePrintPreferences(result);
+    closeDialog(context.dialog);
+    if (typeof context.form._printConfirmHandler === 'function') {
+      context.form._printConfirmHandler({
+        mode: mode,
+        preferences: result
+      });
+    }
+  };
+  var submitHandler = function submitHandler(event) {
+    handleConfirm(event, 'export');
+  };
+  var printHandler = function printHandler(event) {
+    handleConfirm(event, 'print');
+  };
+  var cancelHandler = function cancelHandler(event) {
+    event.preventDefault();
+    closeDialog(context.dialog);
+  };
+  var selectAllHandler = function selectAllHandler(event) {
+    event.preventDefault();
+    context.form.querySelectorAll('input[name="print-section"]').forEach(function (input) {
+      input.checked = true;
+    });
+  };
+  context.form.addEventListener('submit', submitHandler);
+  context.exportBtn.addEventListener('click', submitHandler);
+  context.printBtn.addEventListener('click', printHandler);
+  context.cancelBtn.addEventListener('click', cancelHandler);
+  context.selectAllBtn.addEventListener('click', selectAllHandler);
+  context.form._removeDialogListeners = function () {
+    context.form.removeEventListener('submit', submitHandler);
+    context.exportBtn.removeEventListener('click', submitHandler);
+    context.printBtn.removeEventListener('click', printHandler);
+    context.cancelBtn.removeEventListener('click', cancelHandler);
+    context.selectAllBtn.removeEventListener('click', selectAllHandler);
+  };
 }
 function createOverviewLoggerProxy(baseMeta) {
   var frozenMeta = baseMeta && _typeof(baseMeta) === 'object' ? Object.freeze(_objectSpread({}, baseMeta)) : null;
@@ -1214,7 +1299,7 @@ function generatePrintableOverview() {
   var logoHtml = customLogo ? "<img id=\"printLogo\" src=\"".concat(customLogo, "\" alt=\"Logo\" />") : '';
   var contentClass = customLogo ? 'logo-present' : '';
   var generatedOnDisplay = "".concat(escapeHtmlSafe(generatedOnDisplayLabel), " ").concat(escapeHtmlSafe(dateTimeString));
-  var exportPdfLabel = t.exportPdfBtn || 'Export PDF';
+  var exportPdfLabel = t.exportPdfBtn || 'Export PDF / Print';
   var exportIconHtml = function () {
     if (typeof iconMarkup === 'function' && ICON_GLYPHS && ICON_GLYPHS.fileExport) {
       try {
@@ -1228,25 +1313,7 @@ function generatePrintableOverview() {
     }
     return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
   }();
-  var exportRentalPdfLabel = t.exportRentalPdfBtn || 'Export PDF for Rental House';
-  var rentalExportIconHtml = function () {
-    if (typeof iconMarkup === 'function' && ICON_GLYPHS) {
-      var glyph = ICON_GLYPHS.home || ICON_GLYPHS.house || ICON_GLYPHS.fileExport || null;
-      if (glyph) {
-        try {
-          return iconMarkup(glyph, 'btn-icon');
-        } catch (error) {
-          var glyphName = glyph === ICON_GLYPHS.home ? 'home' : glyph === ICON_GLYPHS.house ? 'house' : 'fileExport';
-          logOverview('warn', 'Unable to render rental export icon for overview dialog.', error, {
-            action: 'render-icon',
-            icon: glyphName
-          });
-        }
-      }
-    }
-    return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
-  }();
-  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n                <button id=\"exportPdfBtn\" class=\"print-btn export-pdf-btn\">").concat(exportIconHtml).concat(escapeHtmlSafe(exportPdfLabel), "</button>\n                <button id=\"exportRentalPdfBtn\" class=\"print-btn export-rental-btn\" data-feature-search=\"true\" data-feature-search-keywords=\"rental export pdf print\" title=\"").concat(escapeHtmlSafe(exportRentalPdfLabel), "\">").concat(rentalExportIconHtml).concat(escapeHtmlSafe(exportRentalPdfLabel), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>").concat(generatedOnDisplay, "</em></p>\n\n            ").concat(projectRequirementsHtml, "\n\n            ").concat(deviceSectionHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtml, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
+  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"openPrintOptionsBtn\" class=\"print-btn export-pdf-btn\" data-feature-search=\"true\" data-feature-search-keywords=\"export pdf print rental\" title=\"").concat(escapeHtmlSafe(exportPdfLabel), "\">").concat(exportIconHtml).concat(escapeHtmlSafe(exportPdfLabel), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>").concat(generatedOnDisplay, "</em></p>\n\n            ").concat(projectRequirementsHtml, "\n\n            ").concat(deviceSectionHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtml, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
   var overviewDialog = document.getElementById('overviewDialog');
   overviewDialog.innerHTML = overviewHtml;
   if (overviewDialog && !overviewDialog.hasAttribute('data-overview-outside-close')) {
@@ -1262,25 +1329,29 @@ function generatePrintableOverview() {
     overviewDialog.setAttribute('data-overview-outside-close', '');
   }
   var content = overviewDialog.querySelector('#overviewDialogContent');
-  var triggerRentalPdfExport = function triggerRentalPdfExport() {
-    var selections = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var runConfiguredPrintWorkflow = function runConfiguredPrintWorkflow() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     if (!overviewDialog || !content) {
-      logOverview('warn', 'Overview dialog is unavailable for rental export.', undefined, {
-        action: 'rental-print',
+      logOverview('warn', 'Overview dialog is unavailable for exporting or printing.', undefined, {
+        action: 'print-workflow',
         stage: 'dialog-missing'
       });
       return false;
     }
-    runPendingPrintCleanup('pre-rental-print');
-    var normalizedSelections = selections && _typeof(selections) === 'object' ? selections : {};
+    runPendingPrintCleanup('pre-configured-print');
+    var normalizedOptions = options && _typeof(options) === 'object' ? options : {};
+    var prefs = normalizedOptions.preferences && _typeof(normalizedOptions.preferences) === 'object' ? normalizedOptions.preferences : normalizedOptions;
+    var sectionSelections = prefs.sections && _typeof(prefs.sections) === 'object' ? prefs.sections : {};
+    var layoutPreference = typeof prefs.layout === 'string' ? prefs.layout : 'standard';
+    var mode = normalizedOptions.mode === 'print' ? 'print' : 'export';
     var cleanupTasks = [];
-    var sectionConfig = getRentalPrintSectionConfig();
+    var sectionConfig = getPrintSectionConfig();
     sectionConfig.forEach(function (section) {
       var target = content.querySelector(section.selector);
       if (!target) {
         return;
       }
-      var shouldShow = Object.prototype.hasOwnProperty.call(normalizedSelections, section.id) ? normalizedSelections[section.id] !== false : section.defaultVisible;
+      var shouldShow = Object.prototype.hasOwnProperty.call(sectionSelections, section.id) ? sectionSelections[section.id] !== false : section.defaultVisible;
       var hiddenClass = 'print-section-hidden';
       var wasHidden = target.classList.contains(hiddenClass);
       if (!shouldShow && !wasHidden) {
@@ -1295,34 +1366,49 @@ function generatePrintableOverview() {
         });
       }
     });
-    content.classList.add('rental-print-mode');
-    cleanupTasks.push(function () {
-      return content.classList.remove('rental-print-mode');
-    });
+    var hadRentalMode = content.classList.contains('rental-print-mode');
+    if (layoutPreference === 'rental' && !hadRentalMode) {
+      content.classList.add('rental-print-mode');
+      cleanupTasks.push(function () {
+        return content.classList.remove('rental-print-mode');
+      });
+    } else if (layoutPreference !== 'rental' && hadRentalMode) {
+      content.classList.remove('rental-print-mode');
+      cleanupTasks.push(function () {
+        return content.classList.add('rental-print-mode');
+      });
+    }
     _pendingPrintCleanup = function pendingPrintCleanup() {
       while (cleanupTasks.length) {
         var task = cleanupTasks.pop();
         try {
           task();
         } catch (cleanupError) {
-          logOverview('warn', 'Failed to restore rental print state.', cleanupError, {
-            action: 'rental-print-cleanup'
+          logOverview('warn', 'Failed to restore print state.', cleanupError, {
+            action: 'print-cleanup'
           });
         }
       }
       _pendingPrintCleanup = null;
     };
-    var success = triggerPrintWorkflow({
-      preferFallback: true,
-      reason: 'rental-export'
-    });
+    var reason = layoutPreference === 'rental' && mode !== 'print' ? 'rental-export' : mode;
+    var workflowOptions = {
+      reason: reason
+    };
+    if (mode !== 'print') {
+      workflowOptions.preferFallback = true;
+    }
+    var success = triggerPrintWorkflow(workflowOptions);
     if (!success) {
-      logOverview('error', 'Unable to open the rental PDF export workflow. Please enable pop-ups and try again.', undefined, {
-        action: 'rental-print',
+      var failureMessage = mode === 'print' ? 'Unable to open the print dialog. Please check your browser settings and try again.' : 'Unable to start the PDF export workflow. Please enable pop-ups and try again.';
+      logOverview('error', failureMessage, undefined, {
+        action: 'print-workflow',
         stage: 'trigger',
-        result: 'not-started'
+        result: 'not-started',
+        mode: mode,
+        layout: layoutPreference
       });
-      runPendingPrintCleanup('rental-print-failed');
+      runPendingPrintCleanup('configured-print-failed');
       return false;
     }
     var ensureCleanup = function ensureCleanup() {
@@ -1333,16 +1419,30 @@ function generatePrintableOverview() {
     });
     return true;
   };
-  var rentalBtn = overviewDialog.querySelector('#exportRentalPdfBtn');
-  if (rentalBtn) {
-    rentalBtn.addEventListener('click', function () {
-      var preferences = loadRentalPrintPreferences() || {};
-      var dialogContext = getRentalPrintDialogContext();
+  var openOptionsBtn = overviewDialog.querySelector('#openPrintOptionsBtn');
+  if (openOptionsBtn) {
+    openOptionsBtn.addEventListener('click', function () {
+      var storedPreferences = loadPrintPreferences() || {
+        sections: {},
+        layout: 'standard'
+      };
+      var dialogContext = getPrintOptionsDialogContext();
+      var onConfirm = function onConfirm(result) {
+        var confirmedMode = result && result.mode === 'print' ? 'print' : 'export';
+        var confirmedPreferences = result && result.preferences ? result.preferences : storedPreferences;
+        runConfiguredPrintWorkflow({
+          mode: confirmedMode,
+          preferences: confirmedPreferences
+        });
+      };
       if (dialogContext && dialogContext.dialog) {
-        populateRentalPrintDialog(dialogContext, preferences, triggerRentalPdfExport);
+        populatePrintOptionsDialog(dialogContext, storedPreferences, onConfirm);
         openDialog(dialogContext.dialog);
       } else {
-        triggerRentalPdfExport(preferences);
+        onConfirm({
+          mode: 'export',
+          preferences: storedPreferences
+        });
       }
     });
   }
@@ -1593,53 +1693,6 @@ function generatePrintableOverview() {
     }
     return fallbackTriggerPrintWorkflow(printWorkflowContext, options);
   };
-  var exportBtn = overviewDialog.querySelector('#exportPdfBtn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', function () {
-      if (exportBtn.disabled) {
-        return;
-      }
-      exportBtn.disabled = true;
-      try {
-        var printStarted = triggerPrintWorkflow({
-          preferFallback: true,
-          reason: 'export'
-        });
-        if (!printStarted) {
-          logOverview('error', 'Unable to start the PDF export print workflow. Please enable pop-ups and try again.', undefined, {
-            action: 'print-workflow',
-            stage: 'trigger',
-            reason: 'export',
-            result: 'not-started'
-          });
-        }
-      } catch (error) {
-        logOverview('error', 'Failed to export overview PDF via print workflow.', error, {
-          action: 'print-workflow',
-          stage: 'trigger',
-          reason: 'export'
-        });
-      } finally {
-        exportBtn.disabled = false;
-      }
-    });
-  }
-  var printBtn = overviewDialog.querySelector('#printOverviewBtn');
-  if (printBtn) {
-    printBtn.addEventListener('click', function () {
-      var success = triggerPrintWorkflow({
-        reason: 'print'
-      });
-      if (!success) {
-        logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
-          action: 'print-workflow',
-          stage: 'trigger',
-          reason: 'print',
-          result: 'not-started'
-        });
-      }
-    });
-  }
   openDialog(overviewDialog);
   if (autoPrint) {
     var printed = triggerPrintWorkflow({

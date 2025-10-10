@@ -2873,7 +2873,8 @@ html.install-banner-visible .app-modal[open] {
   color: color-mix(in srgb, var(--inverse-text-color) 70%, transparent);
 }
 
-.print-options-sections {
+.print-options-sections,
+.print-options-layout {
   margin: 0;
   padding: 0.75rem 0.85rem;
   border: 1px solid var(--panel-border);
@@ -2884,7 +2885,8 @@ html.install-banner-visible .app-modal[open] {
   background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
 }
 
-.print-options-sections legend {
+.print-options-sections legend,
+.print-options-layout legend {
   margin: 0 0 0.35rem;
   padding: 0;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
@@ -2895,13 +2897,17 @@ html.install-banner-visible .app-modal[open] {
 }
 
 .dark-mode .print-options-sections,
-.print-options-dialog.dark-mode .print-options-sections {
+.print-options-dialog.dark-mode .print-options-sections,
+.dark-mode .print-options-layout,
+.print-options-dialog.dark-mode .print-options-layout {
   border-color: color-mix(in srgb, var(--accent-color) 35%, var(--control-border));
   background: color-mix(in srgb, var(--control-bg) 78%, transparent);
 }
 
 .dark-mode .print-options-sections legend,
-.print-options-dialog.dark-mode .print-options-sections legend {
+.print-options-dialog.dark-mode .print-options-sections legend,
+.dark-mode .print-options-layout legend,
+.print-options-dialog.dark-mode .print-options-layout legend {
   color: color-mix(in srgb, var(--inverse-text-color) 65%, transparent);
 }
 
@@ -2914,6 +2920,12 @@ html.install-banner-visible .app-modal[open] {
   border: 1px solid transparent;
   transition: background-color 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
+}
+
+.print-options-layout-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .print-options-section:hover,
@@ -2963,7 +2975,7 @@ html.install-banner-visible .app-modal[open] {
   gap: 0.5rem;
 }
 
-#rentalPrintSelectAllBtn {
+#printOptionsSelectAllBtn {
   border: none;
   background: none;
   color: var(--accent-color);
@@ -2976,21 +2988,21 @@ html.install-banner-visible .app-modal[open] {
   text-underline-offset: 0.18em;
 }
 
-#rentalPrintSelectAllBtn:hover,
-#rentalPrintSelectAllBtn:focus-visible {
+#printOptionsSelectAllBtn:hover,
+#printOptionsSelectAllBtn:focus-visible {
   color: color-mix(in srgb, var(--accent-color) 80%, var(--text-color));
   outline: none;
 }
 
-.dark-mode #rentalPrintSelectAllBtn,
-.print-options-dialog.dark-mode #rentalPrintSelectAllBtn {
+.dark-mode #printOptionsSelectAllBtn,
+.print-options-dialog.dark-mode #printOptionsSelectAllBtn {
   color: color-mix(in srgb, var(--accent-color) 70%, var(--inverse-text-color));
 }
 
-.dark-mode #rentalPrintSelectAllBtn:hover,
-.dark-mode #rentalPrintSelectAllBtn:focus-visible,
-.print-options-dialog.dark-mode #rentalPrintSelectAllBtn:hover,
-.print-options-dialog.dark-mode #rentalPrintSelectAllBtn:focus-visible {
+.dark-mode #printOptionsSelectAllBtn:hover,
+.dark-mode #printOptionsSelectAllBtn:focus-visible,
+.print-options-dialog.dark-mode #printOptionsSelectAllBtn:hover,
+.print-options-dialog.dark-mode #printOptionsSelectAllBtn:focus-visible {
   color: var(--inverse-text-color);
 }
 
