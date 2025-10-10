@@ -9756,6 +9756,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const { filterType, queryText } = extractFeatureSearchFilter(rawTrimmed);
       const trimmed = queryText.trim();
       const quotedPhrases = extractFeatureSearchQuotedPhrases(queryText);
+      const normalizedQuotedPhrases = quotedPhrases
+        .map(phrase =>
+          typeof phrase === 'string' ? phrase.replace(/\s+/g, ' ').trim().toLowerCase() : '',
+        )
+        .filter(Boolean);
 
       if (!trimmed && !filterType) {
         restoreFeatureSearchDefaults();
@@ -9770,7 +9775,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const highlightTokens = [
         ...highlightSegments,
         ...queryTokens,
-        ...quotedPhrases.map(phrase => phrase && phrase.toLowerCase()).filter(Boolean)
+        ...normalizedQuotedPhrases
       ];
       updateFeatureSearchHighlightTokens(highlightTokens);
       const isRecentFilter = filterType === 'recent';
@@ -9797,8 +9802,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const scored = entries
         .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed, quotedPhrases))
         .filter(Boolean);
-    
-      if (scored.length === 0) {
+
+      const enforceQuotedMatches = normalizedQuotedPhrases.length > 0
+        ? scored.filter(item => Number(item.quotedPhraseMatches) >= normalizedQuotedPhrases.length)
+        : scored;
+
+      if (enforceQuotedMatches.length === 0) {
+        if (normalizedQuotedPhrases.length > 0) {
+          renderFeatureListOptions([]);
+          return;
+        }
+
         if (filterType) {
           renderFeatureSearchFilteredDefaults(filterType);
         } else {
@@ -9806,9 +9820,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-    
+
       const meaningful = trimmed
-        ? scored.filter(
+        ? enforceQuotedMatches.filter(
             item =>
               item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
               item.tokenScore > 0 ||
@@ -9817,8 +9831,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               item.quotedPhraseScore > 0
           )
         : [];
-    
-      const candidates = (meaningful.length > 0 ? meaningful : scored).sort(
+
+      const candidates = (meaningful.length > 0 ? meaningful : enforceQuotedMatches).sort(
         compareFeatureSearchCandidates
       );
     
