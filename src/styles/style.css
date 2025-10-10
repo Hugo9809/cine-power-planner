@@ -36,7 +36,7 @@
   --page-padding: var(--spacing-xxl);
   --main-top-padding-multiplier: 1.5;
   --gap-size: var(--spacing-lg);
-  --button-size: 30px;
+  --button-size: 32px;
   --select-height: var(--button-size);
   --button-icon-size: var(--icon-size-md);
   --button-line-height: 1.25;
@@ -64,6 +64,18 @@
     env(safe-area-inset-top, 0px)
   );
   --form-control-font-size: var(--font-size-relative-base);
+  --form-control-line-height: 1.3;
+  --form-control-content-height: calc(
+    var(--form-control-font-size) * var(--form-control-line-height)
+  );
+  --form-control-padding-inline: calc(var(--spacing-md) + var(--spacing-xs));
+  --form-control-padding-block-min: 4px;
+  --form-control-padding-block-base:
+    calc((var(--button-size) - var(--form-control-content-height)) / 2);
+  --form-control-padding-block: max(
+    var(--form-control-padding-block-min),
+    var(--form-control-padding-block-base)
+  );
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
@@ -217,7 +229,10 @@ body.relaxed-spacing {
   --gap-size: 14px;
   --form-label-width: 170px;
   --form-label-min-width: 140px;
-  --button-size: 36px;
+  --button-size: 38px;
+  --form-control-line-height: 1.4;
+  --form-control-padding-inline: calc(var(--spacing-lg) + var(--spacing-sm));
+  --form-control-padding-block-min: 6px;
   --button-line-height: 1.45;
   --button-icon-gap: 0.5em;
   --form-row-margin-block: 8px;
@@ -226,12 +241,6 @@ body.relaxed-spacing {
 
 body.relaxed-spacing .settings-hint {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
-}
-
-body.relaxed-spacing input:not([type='checkbox']):not([type='radio']),
-body.relaxed-spacing select,
-body.relaxed-spacing textarea {
-  padding: 0.65em 0.9em;
 }
 
 html {
@@ -2726,7 +2735,7 @@ body.high-contrast .diff-value-changed {
 /* Ensure favorite star aligns with its select element without stretching */
 .select-wrapper .favorite-toggle {
   align-self: center;
-  min-height: var(--button-size);
+  min-height: var(--select-height);
   height: auto;
   margin-top: 0;
   display: flex;
@@ -3757,7 +3766,7 @@ body.high-contrast .settings-tab[aria-selected="true"] {
 .settings-inline-controls input[type='color'] {
   padding: 0;
   width: 52px;
-  height: 32px;
+  height: var(--button-size);
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   background: var(--surface-color);
@@ -6107,8 +6116,10 @@ body.hover-help-active * {
 input,
 select,
 textarea {
-  padding: 4px;
+  padding-block: var(--form-control-padding-block);
+  padding-inline: var(--form-control-padding-inline);
   font-size: var(--form-control-font-size);
+  line-height: var(--form-control-line-height);
   background-color: var(--control-bg);
   color: var(--control-text);
   border: none;
@@ -6120,7 +6131,7 @@ input:not([type="checkbox"]) {
   height: var(--button-size);
 }
 
-select {
+select:not([multiple]) {
   height: var(--select-height);
 }
 
