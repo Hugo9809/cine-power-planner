@@ -3807,8 +3807,30 @@ if (projectForm) {
     attachMultiSelectToggle(sel);
   });
 
+  const safeUpdateSelectIconBoxes = (selectElement) => {
+    if (!selectElement) {
+      return;
+    }
+    const localFn = typeof updateSelectIconBoxes === 'function' ? updateSelectIconBoxes : null;
+    const globalFn =
+      typeof globalThis !== 'undefined' && globalThis && typeof globalThis.updateSelectIconBoxes === 'function'
+        ? globalThis.updateSelectIconBoxes
+        : null;
+    const target = localFn || globalFn;
+    if (typeof target !== 'function') {
+      return;
+    }
+    try {
+      target(selectElement);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('updateSelectIconBoxes handler failed', error);
+      }
+    }
+  };
+
   projectForm.querySelectorAll('select').forEach(sel => {
-    const handleUpdate = () => updateSelectIconBoxes(sel);
+    const handleUpdate = () => safeUpdateSelectIconBoxes(sel);
     sel.addEventListener('change', handleUpdate);
     handleUpdate();
   });

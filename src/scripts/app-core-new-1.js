@@ -1358,6 +1358,19 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
       : functionName;
 
   if (typeof target === 'function') {
+    if (target.__cineDeferredPlaceholder__ === true) {
+      const optionsObject = options && typeof options === 'object' ? options : {};
+      const attemptCount = typeof optionsObject.attempts === 'number' && Number.isFinite(optionsObject.attempts)
+        ? optionsObject.attempts
+        : 0;
+      if (typeof enqueueCoreBootTask === 'function' && attemptCount < 3) {
+        const nextOptions = { ...optionsObject, defer: false, attempts: attemptCount + 1 };
+        enqueueCoreBootTask(() => {
+          callCoreFunctionIfAvailable(functionName, args, nextOptions);
+        });
+      }
+      return undefined;
+    }
     let attempt = 0;
     while (attempt < 2) {
         try {
@@ -1674,6 +1687,7 @@ function formatWithPlaceholdersSafe(template, ...values) {
         }
       });
     };
+    placeholder.__cineDeferredPlaceholder__ = true;
 
     try {
       scope.populateSelect = placeholder;
@@ -1691,8 +1705,9 @@ function formatWithPlaceholdersSafe(template, ...values) {
     }
 
     const placeholder = function coreDeferredFunctionPlaceholder(...args) {
-      return callCoreFunctionIfAvailable(name, args, { defer: true });
+      return callCoreFunctionIfAvailable(name, args, { defer: true, attempts: 0 });
     };
+    placeholder.__cineDeferredPlaceholder__ = true;
 
     try {
       scope[name] = placeholder;
@@ -8605,11 +8620,13 @@ function unifyDevices(devicesData) {
       }
     });
 
-    lens.mountOptions = dedupedOptions;
+      lens.mountOptions = Array.isArray(dedupedOptions) ? dedupedOptions : [];
 
-    if (lens.mountOptions.length) {
-      const primary = lens.mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
-        || lens.mountOptions[0];
+      const mountOptions = lens.mountOptions;
+
+      if (mountOptions.length) {
+        const primary = mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
+          || mountOptions[0];
       const primaryType = primary && primary.type ? primary.type : '';
       if (primaryType) {
         lens.mount = primaryType;
@@ -15685,13 +15702,19 @@ function getProjectFormText(key, defaultValue = '') {
   return fallback || defaultValue;
 }
 
-const CONTACTS_STORAGE_KEY = (() => {
-  const moduleApi = resolveContactsModule();
-  if (moduleApi && typeof moduleApi.CONTACTS_STORAGE_KEY === 'string') {
-    return moduleApi.CONTACTS_STORAGE_KEY;
+const CONTACTS_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_contacts';
+
+function resolveContactsStorageKey() {
+  try {
+    const moduleApi = resolveContactsModule();
+    if (moduleApi && typeof moduleApi.CONTACTS_STORAGE_KEY === 'string' && moduleApi.CONTACTS_STORAGE_KEY) {
+      return moduleApi.CONTACTS_STORAGE_KEY;
+    }
+  } catch (error) {
+    console.warn('Failed to resolve contacts storage key via module.', error);
   }
-  return 'cameraPowerPlanner_contacts';
-})();
+  return CONTACTS_STORAGE_KEY_DEFAULT;
+}
 const CONTACT_AVATAR_MAX_BYTES = 300 * 1024;
 const CONTACT_AVATAR_MAX_SOURCE_BYTES = 6 * 1024 * 1024;
 const CONTACT_AVATAR_MAX_DIMENSION = 256;
@@ -15806,7 +15829,8 @@ function loadStoredContacts() {
   }
   if (typeof localStorage === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(CONTACTS_STORAGE_KEY);
+    const storageKey = resolveContactsStorageKey();
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -15829,7 +15853,8 @@ function saveContactsToStorage(contacts) {
   }
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts));
+    const storageKey = resolveContactsStorageKey();
+    localStorage.setItem(storageKey, JSON.stringify(contacts));
   } catch (error) {
     console.warn('Failed to save contacts to storage', error);
   }
@@ -18407,9 +18432,21 @@ function decodeSharedSetup(setup) {
   }
   return merged;
 }
-var deviceManagerSection = document.getElementById("device-manager");
-var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
-const deviceListContainer = document.getElementById("deviceListContainer");
+  var deviceManagerSection = document.getElementById("device-manager");
+  var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
+  let deviceListContainerRef = null;
+
+  function resolveDeviceListContainer() {
+    if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
+      return deviceListContainerRef;
+    }
+    const container = document.getElementById('deviceListContainer');
+    if (container) {
+      deviceListContainerRef = container;
+      return container;
+    }
+    return deviceListContainerRef;
+  }
 const deviceManagerLists = (() => {
   const globalScope =
     (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
@@ -18715,8 +18752,9 @@ function collectDeviceManagerCategories() {
   return sorted;
 }
 
-function createDeviceCategorySection(categoryKey) {
-  if (!deviceListContainer || deviceManagerLists.has(categoryKey)) return deviceManagerLists.get(categoryKey) || null;
+  function createDeviceCategorySection(categoryKey) {
+    const container = resolveDeviceListContainer();
+    if (!container || deviceManagerLists.has(categoryKey)) return deviceManagerLists.get(categoryKey) || null;
   const section = document.createElement('div');
   section.className = 'device-category';
   const sanitizedId = categoryKey.replace(/[^a-z0-9]+/gi, '_');
@@ -18740,7 +18778,7 @@ function createDeviceCategorySection(categoryKey) {
     list.setAttribute('data-current-id', 'camerasList');
   }
   section.appendChild(list);
-  deviceListContainer.appendChild(section);
+    container.appendChild(section);
 
   const resolveFilterScope = () => {
     if (typeof globalThis !== 'undefined') return globalThis;
@@ -18767,12 +18805,12 @@ function createDeviceCategorySection(categoryKey) {
     });
   }
   const entry = { section, heading, filterInput, filterLabel, list, sanitizedId };
-  deviceManagerLists.set(categoryKey, entry);
-  return entry;
-}
+    deviceManagerLists.set(categoryKey, entry);
+    return entry;
+  }
 
 function updateDeviceManagerLocalization(lang = currentLang) {
-  if (!deviceManagerLists.size) return;
+    if (!deviceManagerLists.size) return;
   const placeholderTemplate = (texts[lang] && texts[lang].placeholder_filter) || 'Filter {item}...';
   const clearLabel = (texts[lang] && texts[lang].clearFilter) || 'Clear filter';
   deviceManagerLists.forEach((entry, categoryKey) => {
@@ -18803,7 +18841,8 @@ function updateDeviceManagerLocalization(lang = currentLang) {
 }
 
 function syncDeviceManagerCategories() {
-  if (!deviceListContainer) return;
+    const container = resolveDeviceListContainer();
+    if (!container) return;
   const categories = collectDeviceManagerCategories();
   const desiredSet = new Set(categories);
   const existingKeys = Array.from(deviceManagerLists.keys());
@@ -18823,9 +18862,9 @@ function syncDeviceManagerCategories() {
   });
   categories.forEach(categoryKey => {
     const entry = deviceManagerLists.get(categoryKey);
-    if (entry && entry.section) {
-      deviceListContainer.appendChild(entry.section);
-    }
+      if (entry && entry.section) {
+        container.appendChild(entry.section);
+      }
   });
   updateDeviceManagerLocalization(currentLang);
 }
