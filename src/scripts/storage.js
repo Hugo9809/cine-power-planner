@@ -7861,13 +7861,20 @@ function loadDeviceData() {
     null,
     { validate: (value) => value === null || isPlainObject(value) },
   );
+  const backupPayload = isPlainObject(parsedData)
+    ? JSON.parse(JSON.stringify(parsedData))
+    : null;
   const { data, changed } = normalizeDeviceDataPayload(parsedData);
   if (!data) {
     return null;
   }
 
   if (changed) {
-    createStorageMigrationBackup(safeStorage, DEVICE_STORAGE_KEY, parsedData);
+    createStorageMigrationBackup(
+      safeStorage,
+      DEVICE_STORAGE_KEY,
+      backupPayload || parsedData,
+    );
     saveJSONToStorage(
       safeStorage,
       DEVICE_STORAGE_KEY,
