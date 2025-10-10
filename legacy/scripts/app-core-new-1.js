@@ -10637,9 +10637,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var _fallback2 = restoreDrillHeading.textContent || "Restore rehearsal drill";
         applyTextContent(restoreDrillHeading, "helpRestoreDrillTitle", _fallback2);
       }
+      var restoreDrillNote = doc ? doc.getElementById("helpRestoreDrillNote") : null;
+      if (restoreDrillNote) {
+        var _fallback3 = restoreDrillNote.textContent || "Record the filename, timestamp and verification results in your backup log before closing the rehearsal so every drill leaves behind a documented recovery point.";
+        applyTextContent(restoreDrillNote, "helpRestoreDrillNote", _fallback3);
+      }
       if (helpDataAuditHeading) {
-        var _fallback3 = helpDataAuditHeading.textContent || "Monthly data health check";
-        applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", _fallback3);
+        var _fallback4 = helpDataAuditHeading.textContent || "Monthly data health check";
+        applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", _fallback4);
       }
       applySuggestionTemplate(helpDataAuditStep1, "helpDataAuditStep1", [function () {
         return createHelpLink("#settingsButton", resolveLocaleString("settingsButton") || "Settings", {
@@ -10676,6 +10681,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         return createHelpLink("#offlineIndicator", resolveLocaleString("offlineIndicator") || "Offline", {
           target: "#offlineIndicator"
         });
+      }, function () {
+        return createHelpLink("#applySharedLinkBtn", resolveLocaleString("loadSharedLinkBtn") || "Import Project", {
+          target: "#applySharedLinkBtn",
+          highlight: "#setup-manager"
+        });
       }]);
       applySuggestionTemplate(helpDataAuditStep4, "helpDataAuditStep4", [function () {
         return createHelpLink("#restoreRehearsalButton", resolveLocaleString("restoreRehearsalButton") || "Restore rehearsal", {
@@ -10684,8 +10694,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         });
       }]);
       if (helpDataAuditNote) {
-        var _fallback4 = helpDataAuditNote.textContent || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
-        applyTextContent(helpDataAuditNote, "helpDataAuditNote", _fallback4);
+        var _fallback5 = helpDataAuditNote.textContent || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
+        applyTextContent(helpDataAuditNote, "helpDataAuditNote", _fallback5);
       }
       applySuggestionTemplate(helpNoResultsSuggestionClear, "helpNoResultsSuggestionClear", [function () {
         return createHelpLink("#helpSearchClear", resolveLocaleString("helpSearchClear") || "Clear search", {

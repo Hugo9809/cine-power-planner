@@ -1764,13 +1764,15 @@ const texts = {
     helpDataAuditStep1:
       "Open %1$s, switch to %2$s, then use %3$s under %4$s to capture a fresh full-app snapshot before auditing downloads.",
     helpDataAuditStep2:
-      "Export each active project with %1$s and confirm the files are stored in two separate locations.",
+      "Export each active project with %1$s, confirm each download opens without errors, and store the files in two separate locations.",
     helpDataAuditStep3:
-      "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage.",
+      "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage. Test %3$s with one of the new exports to ensure share bundles restore without reconnecting.",
     helpDataAuditStep4:
       "Run %1$s with your latest backup and verify every project, device, and rule before closing the rehearsal without publishing changes.",
     helpDataAuditNote:
       "Log the results in your backup rotation checklist so you always know which copies were verified offline.",
+    helpRestoreDrillNote:
+      "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
     helpSearchClear: "Clear search",
     helpSearchHelp:
       "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
@@ -3615,13 +3617,15 @@ const texts = {
     helpDataAuditStep1:
       "Apri %1$s, passa a %2$s e attiva %3$s in %4$s per acquisire un nuovo snapshot completo prima di verificare i download.",
     helpDataAuditStep2:
-      "Esporta ogni progetto attivo con %1$s e conferma che i file sono archiviati in due posizioni separate.",
+      "Esporta ogni progetto attivo con %1$s, verifica che ogni download si apra senza errori e archivia i file in due posizioni separate.",
     helpDataAuditStep3:
-      "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale.",
+      "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale. Prova %3$s con uno dei nuovi export per assicurarti che i bundle condivisi si ripristinino senza riconnessione.",
     helpDataAuditStep4:
       "Esegui %1$s con il backup più recente e verifica ogni progetto, dispositivo e regola prima di chiudere la prova senza pubblicare modifiche.",
     helpDataAuditNote:
       "Registra i risultati nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
+    helpRestoreDrillNote:
+      "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp:
       "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione. Premi '/' o Ctrl+F (Cmd+F su Mac) per spostare subito il focus sulla casella di ricerca.",
@@ -5480,13 +5484,15 @@ const texts = {
     helpDataAuditStep1:
       "Abre %1$s, cambia a %2$s y usa %3$s en %4$s para capturar una instantánea completa nueva antes de auditar las descargas.",
     helpDataAuditStep2:
-      "Exporta cada proyecto activo con %1$s y confirma que los archivos se guardan en dos ubicaciones independientes.",
+      "Exporta cada proyecto activo con %1$s, confirma que cada descarga se abre sin errores y guarda los archivos en dos ubicaciones distintas.",
     helpDataAuditStep3:
-      "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local.",
+      "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local. Prueba %3$s con una de las nuevas exportaciones para asegurarte de que los paquetes compartidos se restauran sin volver a conectarte.",
     helpDataAuditStep4:
       "Ejecuta %1$s con tu copia de seguridad más reciente y verifica cada proyecto, dispositivo y regla antes de cerrar el ensayo sin aplicar cambios.",
     helpDataAuditNote:
       "Anota los resultados en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
+    helpRestoreDrillNote:
+      "Anota nombres de archivo, marcas de tiempo y resultados de verificación en tu registro de rotación de copias de seguridad para que cada ensayo documente una copia recuperable.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp:
       "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda.",
@@ -7356,13 +7362,15 @@ const texts = {
     helpDataAuditStep1:
       "Ouvrez %1$s, passez à %2$s, puis utilisez %3$s dans %4$s pour capturer une nouvelle sauvegarde complète avant d'auditer les téléchargements.",
     helpDataAuditStep2:
-      "Exportez chaque projet actif avec %1$s et confirmez que les fichiers sont conservés sur deux emplacements distincts.",
+      "Exportez chaque projet actif avec %1$s, vérifiez que chaque téléchargement s’ouvre sans erreur et stockez les fichiers dans deux emplacements distincts.",
     helpDataAuditStep3:
-      "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide.",
+      "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide. Testez %3$s avec l’une des nouvelles exportations pour garantir que les paquets partagés se restaurent sans reconnexion.",
     helpDataAuditStep4:
       "Exécutez %1$s avec votre dernière sauvegarde et vérifiez chaque projet, appareil et règle avant de fermer la répétition sans publier les modifications.",
     helpDataAuditNote:
       "Consignez les résultats dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
+    helpRestoreDrillNote:
+      "Consignez les noms de fichiers, horodatages et résultats de vérification dans votre registre de rotation des sauvegardes afin que chaque répétition documente une copie restaurable.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp:
       "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche.",
@@ -9236,13 +9244,15 @@ const texts = {
     helpDataAuditStep1:
       "Öffne %1$s, wechsle zu %2$s und nutze %3$s in %4$s, um vor der Download-Prüfung einen frischen Komplett-Schnappschuss zu erstellen.",
     helpDataAuditStep2:
-      "Exportiere jedes aktive Projekt mit %1$s und bestätige, dass die Dateien an zwei getrennten Orten gesichert sind.",
+      "Exportiere jedes aktive Projekt mit %1$s, überprüfe, dass sich jeder Download fehlerfrei öffnen lässt, und lege die Dateien an zwei getrennten Orten ab.",
     helpDataAuditStep3:
-      "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden.",
+      "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden. Teste %3$s mit einem der neuen Exporte, um sicherzustellen, dass geteilte Bundles ohne erneute Verbindung wiederhergestellt werden.",
     helpDataAuditStep4:
       "Starte %1$s mit deinem neuesten Backup und kontrolliere jedes Projekt, Gerät und jede Regel, bevor du die Probe ohne Änderungen schließt.",
     helpDataAuditNote:
       "Dokumentiere die Ergebnisse in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
+    helpRestoreDrillNote:
+      "Protokolliere Dateinamen, Zeitstempel und Prüfergebnisse in deinem Backup-Rotationsprotokoll, damit jede Übung eine wiederherstellbare Kopie dokumentiert.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp:
       "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
