@@ -9,7 +9,9 @@
           createProjectDeletionBackup,
           resumeProjectPersistence, lensFieldsDiv,
           setLensDeviceMountOptions, getLensDeviceMountOptions,
-          clearLensDeviceMountOptions, updateMountTypeOptions */
+          clearLensDeviceMountOptions, updateMountTypeOptions,
+          lensFocusScaleSelect, updateLensFocusScaleSelectOptions,
+          normalizeFocusScale */
 
 // Locate a logging helper without assuming a specific runtime. The application
 // runs in browsers, service workers and occasionally Node based tooling, so we
@@ -2334,6 +2336,24 @@ function resolveDefaultLensMountType() {
   return '';
 }
 
+function normalizeLensFocusScale(value) {
+  if (typeof normalizeFocusScale === 'function') {
+    try {
+      const normalized = normalizeFocusScale(value);
+      if (normalized === 'imperial' || normalized === 'metric') {
+        return normalized;
+      }
+    } catch (focusScaleNormalizeError) {
+      void focusScaleNormalizeError;
+    }
+  }
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (normalized === 'imperial' || normalized === 'metric') {
+    return normalized;
+  }
+  return '';
+}
+
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
@@ -2386,6 +2406,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       mountOptions = [{ type: deviceData.mount.trim(), mount: 'native' }];
     }
     setLensDeviceMountOptions(mountOptions, fallbackMount);
+    if (lensFocusScaleSelect) {
+      updateLensFocusScaleSelectOptions();
+      const storedFocusScale = normalizeLensFocusScale(deviceData && deviceData.focusScale);
+      lensFocusScaleSelect.value = storedFocusScale || '';
+    }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
     showFormSection(monitorFieldsDiv);
@@ -2620,6 +2645,10 @@ addSafeEventListener(newCategorySelect, "change", () => {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(lensFieldsDiv);
     setLensDeviceMountOptions([], resolveDefaultLensMountType());
+    if (lensFocusScaleSelect) {
+      updateLensFocusScaleSelectOptions();
+      lensFocusScaleSelect.value = '';
+    }
   } else if (val === "monitors" || val === "directorMonitors") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
@@ -2680,6 +2709,9 @@ addSafeEventListener(newCategorySelect, "change", () => {
   clearRecordingMedia();
   clearLensMounts();
   clearLensDeviceMountOptions();
+  if (lensFocusScaleSelect) {
+    lensFocusScaleSelect.value = '';
+  }
   clearPowerDistribution();
   clearVideoOutputs();
   clearFizConnectors();
@@ -2890,6 +2922,14 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     } else {
       delete existing.mountOptions;
       delete existing.mount;
+    }
+    if (lensFocusScaleSelect) {
+      const selectedFocusScale = normalizeLensFocusScale(lensFocusScaleSelect.value);
+      if (selectedFocusScale) {
+        existing.focusScale = selectedFocusScale;
+      } else {
+        delete existing.focusScale;
+      }
     }
     targetCategory[name] = existing;
     applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
