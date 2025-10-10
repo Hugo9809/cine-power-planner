@@ -5759,6 +5759,104 @@ function parseGearItemDisplayParts(text) {
   };
 }
 
+function upgradeLegacyGearItemMarkup(scope) {
+  const context = scope || gearListOutput;
+  if (!context || typeof context.querySelectorAll !== 'function') {
+    return;
+  }
+
+  const doc = context.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+
+  const ELEMENT_NODE = typeof Node !== 'undefined' ? Node.ELEMENT_NODE : 1;
+  const TEXT_NODE = typeof Node !== 'undefined' ? Node.TEXT_NODE : 3;
+
+  const containers = context.querySelectorAll('.gear-standard-items');
+  containers.forEach(container => {
+    const nodes = Array.from(container.childNodes);
+    nodes.forEach(node => {
+      if (!node) return;
+
+      if (node.nodeType === ELEMENT_NODE) {
+        const element = node;
+        if (element.classList && (element.classList.contains('gear-item') || element.classList.contains('gear-custom-item'))) {
+          return;
+        }
+        if (element.tagName === 'BR') {
+          return;
+        }
+        const textContent = element.textContent ? element.textContent.trim() : '';
+        if (!textContent) {
+          element.remove();
+          return;
+        }
+        const replacement = doc.createElement('span');
+        replacement.className = 'gear-item';
+        if (element.attributes && element.attributes.length) {
+          Array.from(element.attributes).forEach(attr => {
+            if (!attr || attr.name === 'class') return;
+            try {
+              replacement.setAttribute(attr.name, attr.value);
+            } catch (error) {
+              void error;
+            }
+          });
+        }
+        const parts = parseGearItemDisplayParts(textContent);
+        if (parts.name) {
+          replacement.setAttribute('data-gear-name', parts.name);
+          replacement.setAttribute('data-gear-label', parts.name);
+        }
+        if (parts.quantity) {
+          replacement.setAttribute('data-gear-quantity', parts.quantity);
+        }
+        if (parts.attributes) {
+          replacement.setAttribute('data-gear-attributes', parts.attributes);
+        }
+        const textSpan = doc.createElement('span');
+        textSpan.className = 'gear-item-text';
+        textSpan.textContent = textContent;
+        const noteSpan = doc.createElement('span');
+        noteSpan.className = 'gear-item-note';
+        noteSpan.hidden = true;
+        replacement.append(textSpan, noteSpan);
+        element.replaceWith(replacement);
+        return;
+      }
+
+      if (node.nodeType === TEXT_NODE) {
+        const raw = node.textContent || '';
+        const trimmed = raw.trim();
+        if (!trimmed) {
+          return;
+        }
+        const replacement = doc.createElement('span');
+        replacement.className = 'gear-item';
+        const parts = parseGearItemDisplayParts(trimmed);
+        if (parts.name) {
+          replacement.setAttribute('data-gear-name', parts.name);
+          replacement.setAttribute('data-gear-label', parts.name);
+        }
+        if (parts.quantity) {
+          replacement.setAttribute('data-gear-quantity', parts.quantity);
+        }
+        if (parts.attributes) {
+          replacement.setAttribute('data-gear-attributes', parts.attributes);
+        }
+        const textSpan = doc.createElement('span');
+        textSpan.className = 'gear-item-text';
+        textSpan.textContent = trimmed;
+        const noteSpan = doc.createElement('span');
+        noteSpan.className = 'gear-item-note';
+        noteSpan.hidden = true;
+        replacement.append(textSpan, noteSpan);
+        container.insertBefore(replacement, node);
+        node.remove();
+      }
+    });
+  });
+}
+
 function getGearItemData(element) {
   if (!element) {
     return {
@@ -6227,6 +6325,9 @@ function enhanceGearListItems(container) {
   if (!scope || typeof scope.querySelectorAll !== 'function') {
     return;
   }
+
+  upgradeLegacyGearItemMarkup(scope);
+
   const items = scope.querySelectorAll('.gear-item, .gear-custom-item');
   items.forEach(element => {
     enhanceGearItemElement(element);
