@@ -3476,6 +3476,22 @@
               editor.
             </li>
             <li>
+              Keep recurring details ready by opening
+              <a
+                class="help-link button-link"
+                href="#openContactsBtn"
+                data-help-target="#openContactsBtn"
+              ><strong>Contacts</strong></a>
+              for crew information and
+              <a
+                class="help-link button-link"
+                href="#ownGearDialog"
+                data-help-target="#ownGearDialog"
+              ><strong>Own Gear</strong></a>
+              for your personal kit. Both managers save offline, surface in project
+              forms and feed printable reports automatically.
+            </li>
+            <li>
               Star frequently used devices in selectors like
               <a
                 class="help-link"
@@ -4700,39 +4716,183 @@
                 data-help-target="#generateGearListBtn"
                 data-help-highlight="#setup-manager"
               >Project Requirements dialog</a>
-              to capture production metadata such as production company, rental house, DoP, crew roles with email contacts and prep/shoot day ranges alongside delivery notes like resolutions, sensor modes, codecs and base frame rates so every project stays traceable.
+              to capture production company details, full mailing addresses, rental house preferences and delivery specs in one
+              place. Every field autosaves offline so the brief stays attached to the project even without a connection.
             </li>
             <li>
-              Track creative requirements with lens sets, matte box and filter choices, monitoring configurations, frame guides, aspect mask opacity, user button layouts, video distribution and tripod preferences—all of which flow straight into the
+              The <strong>Crew</strong> section supports photos, role pickers and contact fields for each teammate. Link rows to
+              saved directory entries via the
+              <a
+                class="help-link"
+                href="#crewContainer"
+                data-help-target="#crewContainer"
+              >Saved contacts</a>
+              dropdown, duplicate ranges for prep, shoot and return days, and use the inline buttons to add or remove entries as
+              plans change.
+            </li>
+            <li>
+              New <strong>Storage &amp; Media</strong> controls track card types, capacities and notes alongside creative
+              requirements such as lens sets, matte boxes, filters, monitoring setups, user buttons, frame guides, aspect mask
+              opacity, video distribution and tripod preferences—all of which feed the
               <a
                 class="help-link"
                 href="#projectRequirementsOutput"
                 data-help-target="#projectRequirementsOutput"
               >Project Requirements summary</a>
-              and printed reports.
-            </li>
-            <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups so complex shoots are captured in one pass.</li>
-            <li>Use the + buttons to add crew entries or prep/shoot ranges, and tap the − buttons to remove items as plans change.</li>
-            <li>
-              A live summary under <strong>Required Scenarios</strong> displays icon-labelled chips for every selection so you can confirm which accessory packs will trigger; those selections also appear in the
-              <a
-                class="help-link"
-                href="#projectRequirementsOutput"
-                data-help-target="#projectRequirementsOutput"
-              >Project Requirements summary</a>
-              beside the gear list.
+              automatically.
             </li>
             <li>
-              The information is saved with the project, included in printed overviews and ready to populate the
+              Multi-select lists let you cover multiple scenarios or accessory packs in one pass, while the live
+              <strong>Required Scenarios</strong> chips confirm which triggers will fire before you generate the gear list.
+            </li>
+            <li>
+              The entire form saves with the project, flows into printed overviews, print options and exports, and pre-populates
+              the
               <a
                 class="help-link button-link"
                 href="#generateGearListBtn"
                 data-help-target="#generateGearListBtn"
                 data-help-highlight="#setup-manager"
               >Generate Gear List and Project Requirements</a>
-              dialog as soon as the requirements are ready.
+              dialog whenever you revisit the setup.
             </li>
-            </ul>
+          </ul>
+        </section>
+        <section
+          data-help-section
+          id="contactsHelp"
+          data-help-keywords="contacts crew directory phone email avatar import vcard provider saved reuse"
+        >
+          <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE9C6;</span>Contacts</h3>
+          <ul>
+            <li>
+              Launch the
+              <a
+                class="help-link button-link"
+                href="#openContactsBtn"
+                data-help-target="#openContactsBtn"
+              ><strong>Contacts</strong></a>
+              manager from the sidebar to maintain a reusable crew directory. Entries save instantly to local storage and are
+              bundled with backups, exports and restores so no call sheet data is lost offline.
+            </li>
+            <li>
+              Use
+              <a
+                class="help-link button-link"
+                href="#contactsAddButton"
+                data-help-target="#contactsAddButton"
+              ><strong>Add contact</strong></a>
+              for manual entries or
+              <a
+                class="help-link button-link"
+                href="#contactsImportButton"
+                data-help-target="#contactsImportButton"
+              ><strong>Import vCard</strong></a>
+              to drop .vcf files straight into the list. Names, roles, phones, emails and avatars remain editable after import,
+              and the announcement bar confirms every successful merge.
+            </li>
+            <li>
+              Populate
+              <a
+                class="help-link"
+                href="#contactsUserProfile"
+                data-help-target="#contactsUserProfile"
+              >Your profile</a>
+              with a name and optional photo so gear items marked “User” in the provider dropdown show your branding in gear
+              lists, prints and exports.
+            </li>
+            <li>
+              Crew rows inside
+              <a
+                class="help-link"
+                href="#crewContainer"
+                data-help-target="#crewContainer"
+              >Project Requirements</a>
+              include a
+              <a
+                class="help-link"
+                href="#crewContainer"
+                data-help-target="#crewContainer"
+              >Saved contacts</a>
+              selector plus quick actions to
+              <a
+                class="help-link button-link"
+                href="#crewContainer"
+                data-help-target="#crewContainer"
+              ><strong>Save to contacts</strong></a>
+              or reopen the manager without closing the form. Linked rows display a badge so you can tell which records stay in
+              sync with the directory.
+            </li>
+            <li>
+              The gear list editor’s
+              <a
+                class="help-link"
+                href="#gearItemEditProvider"
+                data-help-target="#gearItemEditProvider"
+              >Provided by</a>
+              menu automatically lists saved contacts alongside “Rental house” and “User”. Assigning a provider stamps the
+              badge on the gear list, printed overviews and PDFs so teams know which items come from the crew versus rentals.
+            </li>
+          </ul>
+        </section>
+        <section
+          data-help-section
+          id="ownGearHelp"
+          data-help-keywords="own gear personal kit inventory quantity notes edit delete suggestions provider"
+        >
+          <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE4FF;</span>Own Gear</h3>
+          <ul>
+            <li>
+              Use the sidebar
+              <a
+                class="help-link button-link"
+                href="#ownGearDialog"
+                data-help-target="#ownGearDialog"
+              ><strong>Own Gear</strong></a>
+              button to catalogue the equipment you bring to set. Items save offline immediately and sync with backups, exports
+              and restores so your personal kit is always tracked.
+            </li>
+            <li>
+              Enter item names, quantities and notes in the
+              <a
+                class="help-link"
+                href="#ownGearForm"
+                data-help-target="#ownGearForm"
+              >Add gear</a>
+              form. The
+              <a
+                class="help-link"
+                href="#ownGearName"
+                data-help-target="#ownGearName"
+              >Item</a>
+              field suggests catalog matches as you type, while
+              <a
+                class="help-link"
+                href="#ownGearResetButton"
+                data-help-target="#ownGearResetButton"
+              >Reset</a>
+              clears the form without touching saved entries.
+            </li>
+            <li>
+              Saved rows appear under
+              <a
+                class="help-link"
+                href="#ownGearList"
+                data-help-target="#ownGearList"
+              >Your gear</a>
+              with edit and remove controls. Editing reopens the form with live previews so you can adjust counts or notes,
+              while the summary above the list reports how many personal items are tracked.
+            </li>
+            <li>
+              Own Gear entries integrate with gear list editing—choose “User” or a specific item owner from the
+              <a
+                class="help-link"
+                href="#gearItemEditProvider"
+                data-help-target="#gearItemEditProvider"
+              >Provided by</a>
+              menu to badge lines with your kit, and include those annotations in printable reports and exports automatically.
+            </li>
+          </ul>
         </section>
         <section
           data-help-section
@@ -4762,6 +4922,27 @@
                   <li>Lines are sorted into Camera, Lens, Power, Monitoring and Accessories sections and then alphabetically.</li>
                   <li>Tooltips list weight, dimensions and other metadata for quick reference.</li>
                 </ol>
+            </li>
+              <li>
+                Tap any line’s <strong>Edit</strong> button to open the
+                <a
+                  class="help-link button-link"
+                  href="#gearItemEditDialog"
+                  data-help-target="#gearItemEditDialog"
+                ><strong>Gear item editor</strong></a>
+                where you can refine
+                <a class="help-link" href="#gearItemEditQuantity" data-help-target="#gearItemEditQuantity">quantities</a>,
+                rename items, add
+                <a class="help-link" href="#gearItemEditNote" data-help-target="#gearItemEditNote">notes</a>, assign a
+                provider (including your
+                <a class="help-link" href="#gearItemEditProvider" data-help-target="#gearItemEditProvider">Contacts</a> and
+                <a class="help-link" href="#ownGearDialog" data-help-target="#ownGearDialog">Own Gear</a>) and toggle the
+                <a
+                  class="help-link"
+                  href="#gearItemEditRentalToggle"
+                  data-help-target="#gearItemEditRentalToggle"
+                >exclude from rental house</a>
+                option without leaving the list. Updates appear instantly in badges, printouts and exported bundles.
               </li>
               <li>Accessory packs ensure common dependencies are covered:
                 <ul>
@@ -4810,7 +4991,10 @@
               </li>
               <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
               <li>
-                Each category includes an <strong>Add custom item</strong> button so you can append unique gear with your own quantity, name and attributes. After creating an entry, tap the inline edit icon to open the refreshed popup with its live summary—there you can adjust values, add rental notes or use the dedicated exclude-from-rental button without leaving the gear list. Notes you add appear directly under the preview so everyone sees the context, and the minus button inside the entry still removes items the moment plans change.
+                Each category includes an <strong>Add custom item</strong> button so you can append unique gear with your own
+                quantity, name and attributes. Custom entries reopen in the editor whenever you need adjustments, letting you
+                refine notes, providers or rental status later while the inline minus button still removes items the moment plans
+                change.
               </li>
               <li>
                 Custom entries save instantly, are included in share links, backups and restores, and remain pinned to their category in printable overviews so collaborators always see the manual additions alongside generated items.
@@ -6095,7 +6279,33 @@
                 data-help-target="#generateOverviewBtn"
                 data-help-highlight="#setup-manager"
               ><em>Generate Overview</em></a>
-              and print from the dialog. The overview groups gear by category and expands each selected lens into a spec card with brand, mount, front diameter, weight, rod requirements, clamp-on compatibility and your notes so rentals and prep teams receive the full lens data set automatically.
+              . Use the overview toolbar to open the
+              <a
+                class="help-link button-link"
+                href="#printOptionsDialog"
+                data-help-target="#printOptionsDialog"
+              ><strong>Print options</strong></a>
+              dialog, choose a layout, toggle sections with the
+              <a
+                class="help-link"
+                href="#printOptionsSelectAllBtn"
+                data-help-target="#printOptionsSelectAllBtn"
+              >Select all</a>
+              shortcut and finish with
+              <a
+                class="help-link button-link"
+                href="#printOptionsPrintBtn"
+                data-help-target="#printOptionsPrintBtn"
+              ><strong>Print</strong></a>
+              or
+              <a
+                class="help-link button-link"
+                href="#printOptionsExportBtn"
+                data-help-target="#printOptionsExportBtn"
+              ><strong>Export PDF</strong></a>
+              . The overview groups gear by category and expands each selected lens into a spec card with brand, mount, front
+              diameter, weight, rod requirements, clamp-on compatibility and your notes so rentals and prep teams receive the
+              full lens data set automatically.
             </p>
           </details>
           <details
