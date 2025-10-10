@@ -222,7 +222,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - La ricerca si focalizza con `/` o `Ctrl+K` (`⌘K`), apre il menu laterale su mobile e si azzera con Esc.
 - Switch lingua, temi scuro/rosa e dialogo Impostazioni consentono di regolare colore di accento, dimensione e font, modalità alto contrasto, logo personalizzato e accedere a backup, ripristino e reset (sempre preceduti da backup automatico).
 - Il pulsante Aiuto apre un dialogo ricercabile e risponde a `?`, `H`, `F1` o `Ctrl+/` in qualsiasi momento.
-- Il pulsante 🔄 cancella le risorse in cache e ricarica l’app senza eliminare progetti o dati runtime.
+- Il pulsante 🔄 cancella le risorse in cache e ricarica l’app senza eliminare progetti o dati runtime. Ora il browser precarica il nuovo pacchetto mentre la pulizia è in corso così la nuova versione arriva più rapidamente senza mettere a rischio i dati.
 
 ### Navigazione e ricerca
 

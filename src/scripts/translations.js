@@ -1020,7 +1020,7 @@ const texts = {
 
     reloadAppLabel: "Force reload",
     reloadAppHelp:
-      "Clear cached files, unregister outdated service workers and reload without removing saved data.",
+      "Clear cached files, unregister outdated service workers and reload without removing saved data. The browser now preloads the fresh bundle while cleanup runs so the new version appears faster.",
 
     favoriteToggleLabel: "Toggle favorite",
     favoriteToggleHelp:
@@ -2068,7 +2068,7 @@ const texts = {
       "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
     reloadAppLabel: "Ricarica forzata",
     reloadAppHelp:
-      "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati.",
+      "Svuota la cache, annulla la registrazione dei service worker obsoleti ed esegue una ricarica forzata dell'app senza eliminare i dati salvati. Il browser ora precarica il nuovo pacchetto mentre la pulizia è in corso così la nuova versione arriva più velocemente.",
 
     favoriteToggleLabel: "Preferito",
     favoriteToggleHelp:
@@ -3921,7 +3921,7 @@ const texts = {
       "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez.",
     reloadAppLabel: "Forzar recarga",
     reloadAppHelp:
-      "Borra la caché, cancela el registro de service workers obsoletos y recarga la aplicación sin eliminar los datos guardados.",
+      "Borra la caché, cancela el registro de service workers obsoletos y recarga la aplicación sin eliminar los datos guardados. El navegador ahora precarga el paquete actualizado mientras se ejecuta la limpieza, de modo que la nueva versión aparece más rápido.",
 
     favoriteToggleLabel: "Alternar favorito",
     favoriteToggleHelp:
@@ -5789,7 +5789,7 @@ const texts = {
       "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois.",
     reloadAppLabel: "Forcer le rechargement",
     reloadAppHelp:
-      "Efface le cache, annule l’enregistrement des service workers obsolètes et recharge l’application sans supprimer les données enregistrées.",
+      "Efface le cache, annule l’enregistrement des service workers obsolètes et recharge l’application sans supprimer les données enregistrées. Le navigateur précharge désormais le nouveau lot pendant le nettoyage, ce qui affiche plus rapidement la nouvelle version.",
 
     favoriteToggleLabel: "Basculer favori",
     favoriteToggleHelp:
@@ -7668,7 +7668,7 @@ const texts = {
       "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert.",
     reloadAppLabel: "Neu laden erzwingen",
     reloadAppHelp:
-      "Leert den Cache, meldet veraltete Service Worker ab und erzwingt ein Neuladen, ohne gespeicherte Daten zu entfernen.",
+      "Leert den Cache, meldet veraltete Service Worker ab und erzwingt ein Neuladen, ohne gespeicherte Daten zu entfernen. Der Browser lädt das neue Paket jetzt schon während der Bereinigung vor, sodass die neue Version schneller erscheint.",
 
     favoriteToggleLabel: "Favorit",
     favoriteToggleHelp:

@@ -221,7 +221,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - La barra de búsqueda se enfoca con `/` o `Ctrl+K` (`⌘K`), abre el menú lateral en móviles y se limpia con Escape.
 - El cambio de idioma, los modos oscuro/rosa y el diálogo de Configuración permiten ajustar color de acento, tamaño y familia de fuente, alto contraste, logotipo personalizado y acceder a herramientas de respaldo, restauración y restablecimiento (siempre con copia previa).
 - El botón de ayuda abre el diálogo buscable y responde a `?`, `H`, `F1` o `Ctrl+/` en cualquier momento.
-- El botón 🔄 elimina recursos en caché y recarga la app sin borrar proyectos ni datos de autonomía.
+- El botón 🔄 elimina recursos en caché y recarga la app sin borrar proyectos ni datos de autonomía. Ahora el navegador precarga el paquete actualizado mientras la limpieza termina, así la nueva versión aparece más rápido sin comprometer la seguridad de los datos.
 
 ### Navegación y búsqueda
 

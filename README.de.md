@@ -222,7 +222,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - Globale Suche fokussiert mit `/` oder `Strg+K` (`⌘K`), öffnet auf Mobilgeräten das Menü und lässt sich mit Escape leeren.
 - Sprachwechsel, Dark/Pink-Theme und Einstellungen sitzen in der Kopfleiste; dort lassen sich Akzentfarbe, Schriftgröße, Schriftart, High-Contrast, Custom-Logo sowie Backup-, Restore- und Factory-Reset-Tools (immer mit Sicherung) steuern.
 - Hilfe-Button öffnet den Suchdialog und reagiert jederzeit auf `?`, `H`, `F1` oder `Strg+/`.
-- Der 🔄-Button entfernt gecachte Assets und lädt die App ohne Projektdaten zu löschen.
+- Der 🔄-Button entfernt gecachte Assets und lädt die App ohne Projektdaten zu löschen. Der Browser lädt das neue Paket jetzt parallel zur Bereinigung vor, damit die neue Version schneller erscheint und trotzdem alles gesichert bleibt.
 
 ### Navigation & Suche
 

@@ -441,6 +441,19 @@ if (typeof self !== 'undefined') {
         serviceWorkerLog.warn('Unable to claim clients during activation.', error);
       }
 
+      try {
+        if (
+          self.registration &&
+          self.registration.navigationPreload &&
+          typeof self.registration.navigationPreload.enable === 'function'
+        ) {
+          await self.registration.navigationPreload.enable();
+          serviceWorkerLog.info('Navigation preload enabled for faster reloads.');
+        }
+      } catch (error) {
+        serviceWorkerLog.warn('Unable to enable navigation preload.', error);
+      }
+
       serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
     })());
   });
@@ -458,6 +471,25 @@ if (typeof self !== 'undefined') {
     const bypassCache = shouldBypassCache(event.request, requestUrl);
     const shouldIgnoreSearch =
       isNavigationRequest && (!requestUrl.searchParams || !requestUrl.searchParams.has('forceReload'));
+    const preloadResponsePromise =
+      isNavigationRequest && event.preloadResponse && typeof event.preloadResponse.then === 'function'
+        ? event.preloadResponse.catch(error => {
+            serviceWorkerLog.warn('Navigation preload promise rejected.', error);
+            return null;
+          })
+        : null;
+    let preloadResponseResolved = false;
+    let preloadResponseValue = null;
+    const resolvePreloadResponse = async () => {
+      if (!preloadResponsePromise) {
+        return null;
+      }
+      if (!preloadResponseResolved) {
+        preloadResponseValue = await preloadResponsePromise;
+        preloadResponseResolved = true;
+      }
+      return preloadResponseValue;
+    };
     if (isAppIconRequest) {
       event.respondWith((async () => {
         const cachePromise = caches.open(CACHE_NAME);
@@ -482,6 +514,20 @@ if (typeof self !== 'undefined') {
       const cacheMatchOptions = shouldIgnoreSearch ? { ignoreSearch: true } : undefined;
 
       if (bypassCache) {
+        if (preloadResponsePromise) {
+          const preloadResponse = await resolvePreloadResponse();
+          if (preloadResponse) {
+            if (preloadResponse.ok && isSameOrigin) {
+              scheduleCachePut(
+                event,
+                event.request,
+                preloadResponse,
+                'Unable to store navigation preload response in cache',
+              );
+            }
+            return preloadResponse;
+          }
+        }
         try {
           const freshResponse = await fetch(event.request, { cache: 'no-store' });
           if (freshResponse && freshResponse.ok && isSameOrigin) {
@@ -522,6 +568,21 @@ if (typeof self !== 'undefined') {
       const cachedResponse = await caches.match(event.request, cacheMatchOptions);
       if (cachedResponse) {
         return cachedResponse;
+      }
+
+      if (preloadResponsePromise) {
+        const preloadResponse = await resolvePreloadResponse();
+        if (preloadResponse) {
+          if (preloadResponse.ok && isSameOrigin) {
+            scheduleCachePut(
+              event,
+              event.request,
+              preloadResponse,
+              'Unable to store navigation preload response in cache',
+            );
+          }
+          return preloadResponse;
+        }
       }
 
       try {

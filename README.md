@@ -250,7 +250,8 @@ localization steps.
   a query with `recent` or `history` to narrow suggestions to the items you've
   used lately before scanning the full catalog.
 - **Force reload button** – refresh cached service worker assets without
-  deleting projects or devices.
+  deleting projects or devices. The reload now preloads the fresh bundle while
+  cleanup runs so updates land faster without risking stored data.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping
