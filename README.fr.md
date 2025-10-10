@@ -224,7 +224,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - La recherche se focalise avec `/` ou `Ctrl+K` (`⌘K`), ouvre la navigation sur mobile et se vide avec Échap.
 - Les contrôles de langue, thèmes sombre/rose et le dialogue Paramètres permettent d’ajuster couleur d’accent, taille et police, contraste élevé, logo personnalisé ainsi que d’accéder aux outils de backup, restauration et réinitialisation (avec sauvegarde automatique).
 - Le bouton d’aide ouvre un dialogue consultable et répond à `?`, `H`, `F1` ou `Ctrl+/` à tout moment.
-- Le bouton 🔄 supprime les ressources mises en cache et recharge l’application sans effacer les projets ou données d’autonomie.
+- Le bouton 🔄 supprime les ressources mises en cache et recharge l’application sans effacer les projets ou données d’autonomie. Le navigateur précharge désormais le nouveau lot pendant le nettoyage pour que la nouvelle version arrive plus vite sans risquer les données.
 
 ### Navigation et recherche
 
