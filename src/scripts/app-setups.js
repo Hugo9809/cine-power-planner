@@ -5592,7 +5592,7 @@ function applyGearItemEditDialogTexts(context) {
   const baseToggleLabel = rentalTexts.excludeLabel || textsForDialog.rentalLabel;
   const rentalNote = textsForDialog.rentalNote || rentalTexts.noteLabel || '';
   if (context.rentalLabel) {
-    context.rentalLabel.textContent = rentalNote || baseToggleLabel;
+    context.rentalLabel.textContent = baseToggleLabel;
   }
   if (context.rentalCheckbox) {
     context.rentalCheckbox.setAttribute('aria-label', textsForDialog.rentalLabel);
@@ -5630,7 +5630,8 @@ function applyGearItemEditDialogTexts(context) {
     }
   }
   if (context.rentalToggleButton) {
-    if (context.rentalDescription && context.rentalDescription.textContent) {
+    const hasDescription = context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden;
+    if (hasDescription) {
       context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
     } else {
       context.rentalToggleButton.removeAttribute('aria-describedby');
@@ -5747,6 +5748,13 @@ function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) 
   }
   if (context.rentalDescription) {
     context.rentalDescription.hidden = !context.rentalDescription.textContent;
+  }
+  if (context.rentalToggleButton) {
+    if (context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden) {
+      context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
+    } else {
+      context.rentalToggleButton.removeAttribute('aria-describedby');
+    }
   }
 }
 
