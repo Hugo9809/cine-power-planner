@@ -4596,13 +4596,30 @@ if (cameraSelect) {
     if (typeof updateCageSelectOptions === 'function') {
       updateCageSelectOptions();
     }
+    const desiredFrameRate = currentProjectInfo && currentProjectInfo.recordingFrameRate;
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-    if (typeof populateFrameRateDropdown === 'function') {
-      populateFrameRateDropdown(currentProjectInfo && currentProjectInfo.recordingFrameRate);
-    }
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+    if (typeof populateFrameRateDropdown === 'function') {
+      populateFrameRateDropdown(desiredFrameRate);
+    }
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
+    }
+  });
+}
+
+if (sensorModeDropdown) {
+  sensorModeDropdown.addEventListener('change', () => {
+    if (typeof populateFrameRateDropdown === 'function') {
+      populateFrameRateDropdown(getCurrentFrameRateInputValue());
+    }
+  });
+}
+
+if (recordingResolutionDropdown) {
+  recordingResolutionDropdown.addEventListener('change', () => {
+    if (typeof populateFrameRateDropdown === 'function') {
+      populateFrameRateDropdown(getCurrentFrameRateInputValue());
     }
   });
 }
@@ -13875,8 +13892,415 @@ function populateRecordingResolutionDropdown(selected = '') {
   populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
 }
 
+const recordingFrameRateInput =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRate')
+    : null;
+
+const recordingFrameRateHint =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRateHint')
+    : null;
+
+const recordingFrameRateOptionsList =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingFrameRateOptions')
+    : null;
+
+const sensorModeDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('sensorMode')
+    : null;
+
+const recordingResolutionDropdown =
+  typeof document !== 'undefined'
+    ? document.getElementById('recordingResolution')
+    : null;
+
+const PREFERRED_FRAME_RATE_VALUES = Object.freeze([
+  0.75,
+  1,
+  8,
+  12,
+  12.5,
+  15,
+  23.976,
+  24,
+  25,
+  29.97,
+  30,
+  47.952,
+  48,
+  50,
+  59.94,
+  60,
+  72,
+  75,
+  90,
+  96,
+  100,
+  110,
+  112,
+  120,
+  144,
+  150,
+  160,
+  170,
+  180,
+  200,
+  240,
+]);
+
+const FALLBACK_FRAME_RATE_VALUES = Object.freeze([
+  '0.75',
+  '1',
+  '8',
+  '12',
+  '12.5',
+  '15',
+  '23.976',
+  '24',
+  '25',
+  '29.97',
+  '30',
+  '48',
+  '50',
+  '59.94',
+  '60',
+  '72',
+  '75',
+  '90',
+  '96',
+  '100',
+  '110',
+  '112',
+  '120',
+  '144',
+  '150',
+  '160',
+  '170',
+  '180',
+  '200',
+  '240',
+]);
+
+const MIN_RECORDING_FRAME_RATE = 1;
+const FRAME_RATE_RANGE_TOLERANCE = 0.0005;
+
+function formatFrameRateValue(value) {
+  const numeric = typeof value === 'number' ? value : Number.parseFloat(value);
+  if (!Number.isFinite(numeric)) return '';
+  const rounded = Math.round(numeric * 1000) / 1000;
+  if (Number.isInteger(rounded)) {
+    return String(rounded);
+  }
+  return rounded.toFixed(3).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1');
+}
+
+function tokenizeFrameRateContext(value) {
+  if (typeof value !== 'string' || !value) return [];
+  return value
+    .toLowerCase()
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/[()]/g, ' ')
+    .replace(/[[\]]/g, ' ')
+    .split(/[\s,/]+/)
+    .map(token => token.replace(/[^a-z0-9:.+-]/g, ''))
+    .filter(token => token && token !== 'fps');
+}
+
+function includePreferredValuesForRange(minValue, maxValue, set) {
+  if (!Number.isFinite(minValue) || !Number.isFinite(maxValue) || !set) {
+    return;
+  }
+  const low = Math.min(minValue, maxValue);
+  const high = Math.max(minValue, maxValue);
+  PREFERRED_FRAME_RATE_VALUES.forEach(candidate => {
+    if (candidate >= low - 0.0005 && candidate <= high + 0.0005) {
+      const formatted = formatFrameRateValue(candidate);
+      if (formatted) {
+        set.add(formatted);
+      }
+    }
+  });
+}
+
+function parseFrameRateNumericValues(entry) {
+  if (typeof entry !== 'string' || !entry.trim()) {
+    return [];
+  }
+
+  const normalized = entry.replace(/[\u2013\u2014]/g, '-');
+  const parts = normalized.split(':');
+  const numericSection = parts.length > 1 ? parts.slice(1).join(':') : normalized;
+  const values = new Set();
+
+  const rangePattern = /(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*)(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
+  let match = rangePattern.exec(numericSection);
+  while (match) {
+    const minStr = match[1];
+    const maxStr = match[2];
+    const minVal = Number.parseFloat(minStr);
+    const maxVal = Number.parseFloat(maxStr);
+    const minFormatted = formatFrameRateValue(minVal);
+    const maxFormatted = formatFrameRateValue(maxVal);
+    if (minFormatted) values.add(minFormatted);
+    if (maxFormatted) values.add(maxFormatted);
+    includePreferredValuesForRange(minVal, maxVal, values);
+    match = rangePattern.exec(numericSection);
+  }
+
+  const upToPattern = /(?:up to|≤|<=|less than|max(?:imum)?(?:\s*of)?)\s*(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/gi;
+  while ((match = upToPattern.exec(numericSection))) {
+    const formatted = formatFrameRateValue(match[1]);
+    if (formatted) {
+      values.add(formatted);
+      includePreferredValuesForRange(0, Number.parseFloat(match[1]), values);
+    }
+  }
+
+  const explicitPattern = /(\d+(?:\.\d+)?)(?=\s*(?:fps|FPS))/g;
+  while ((match = explicitPattern.exec(numericSection))) {
+    const formatted = formatFrameRateValue(match[1]);
+    if (formatted) {
+      values.add(formatted);
+    }
+  }
+
+  if (!values.size) {
+    const commaSection = numericSection.split('fps')[0] || numericSection;
+    const listPattern = /(\d+(?:\.\d+)?)/g;
+    while ((match = listPattern.exec(commaSection))) {
+      const formatted = formatFrameRateValue(match[1]);
+      if (formatted) {
+        values.add(formatted);
+      }
+    }
+  }
+
+  return Array.from(values);
+}
+
+function normalizeRecordingFrameRateValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return formatFrameRateValue(value);
+  }
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const numericMatch = trimmed.match(/-?\d+(?:\.\d+)?/);
+  if (!numericMatch) {
+    return trimmed;
+  }
+  return formatFrameRateValue(numericMatch[0]) || trimmed;
+}
+
+function buildFrameRateSuggestions(entries, contextTokens) {
+  const suggestions = new Map();
+  const groups = contextTokens.filter(group => Array.isArray(group) && group.length);
+
+  entries.forEach((entry) => {
+    if (typeof entry !== 'string') return;
+    const cleaned = entry.trim();
+    if (!cleaned) return;
+    const [label] = cleaned.split(':');
+    const entryTokens = tokenizeFrameRateContext(label);
+    const numericValues = parseFrameRateNumericValues(cleaned);
+    const baseScore = entryTokens.length ? 1 : 0;
+    let score = baseScore;
+    if (groups.length && entryTokens.length) {
+      const tokenSet = new Set(entryTokens);
+      groups.forEach(group => {
+        let matches = 0;
+        group.forEach(token => {
+          if (tokenSet.has(token)) {
+            matches += 1;
+          }
+        });
+        if (matches) {
+          score += matches * 3;
+          if (matches === group.length) {
+            score += 2;
+          }
+        }
+      });
+    }
+
+    numericValues.forEach(rawValue => {
+      const formatted = formatFrameRateValue(rawValue);
+      if (!formatted) return;
+      const existing = suggestions.get(formatted);
+      if (!existing || score > existing.score) {
+        suggestions.set(formatted, { score, label: cleaned });
+      }
+    });
+  });
+
+  if (!suggestions.size) {
+    return Array.from(FALLBACK_FRAME_RATE_VALUES);
+  }
+
+  return Array.from(suggestions.entries())
+    .sort((a, b) => {
+      if (b[1].score !== a[1].score) {
+        return b[1].score - a[1].score;
+      }
+      const aNum = Number.parseFloat(a[0]);
+      const bNum = Number.parseFloat(b[0]);
+      if (Number.isFinite(aNum) && Number.isFinite(bNum)) {
+        return aNum - bNum;
+      }
+      return a[0].localeCompare(b[0]);
+    })
+    .map(([value]) => value);
+}
+
+function getCurrentFrameRateInputValue() {
+  if (!recordingFrameRateInput) return '';
+  const raw = recordingFrameRateInput.value;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
+
 function populateFrameRateDropdown(selected = '') {
-  populateCameraPropertyDropdown('recordingFrameRate', 'frameRates', selected);
+  if (!recordingFrameRateInput || !recordingFrameRateOptionsList) {
+    return;
+  }
+
+  const normalizedSelected = normalizeRecordingFrameRateValue(selected);
+  let currentValue = normalizedSelected || getCurrentFrameRateInputValue();
+  const camKey = cameraSelect && cameraSelect.value;
+  const frameRateEntries =
+    camKey && devices && devices.cameras && devices.cameras[camKey]
+      ? devices.cameras[camKey].frameRates
+      : null;
+
+  const sensorTokens = tokenizeFrameRateContext(sensorModeDropdown && sensorModeDropdown.value);
+  const resolutionTokens = tokenizeFrameRateContext(
+    recordingResolutionDropdown && recordingResolutionDropdown.value
+  );
+
+  const suggestions = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [
+    sensorTokens,
+    resolutionTokens,
+  ]);
+
+  recordingFrameRateOptionsList.innerHTML = '';
+  const uniqueValues = new Set();
+  const filteredSuggestions = [];
+  const numericCandidates = [];
+
+  suggestions.forEach(originalValue => {
+    if (!originalValue) return;
+    let value = originalValue;
+    const numeric = Number.parseFloat(value);
+    if (Number.isFinite(numeric)) {
+      if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
+        return;
+      }
+      const formatted = formatFrameRateValue(numeric);
+      if (formatted) {
+        value = formatted;
+      }
+      numericCandidates.push({ numeric, formatted: value });
+    }
+    if (uniqueValues.has(value)) return;
+    uniqueValues.add(value);
+    filteredSuggestions.push(value);
+    const opt = document.createElement('option');
+    opt.value = value;
+    recordingFrameRateOptionsList.appendChild(opt);
+  });
+
+  if (currentValue && !uniqueValues.has(currentValue)) {
+    const numericForList = Number.parseFloat(currentValue);
+    if (
+      !Number.isFinite(numericForList) ||
+      numericForList + FRAME_RATE_RANGE_TOLERANCE >= MIN_RECORDING_FRAME_RATE
+    ) {
+      const opt = document.createElement('option');
+      opt.value = currentValue;
+      recordingFrameRateOptionsList.appendChild(opt);
+    }
+  }
+
+  const maxCandidate = numericCandidates.reduce(
+    (best, entry) => (entry.numeric > best.numeric ? entry : best),
+    { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
+  );
+  const maxFrameRate = maxCandidate.numeric;
+  const formattedMaxFrameRate = Number.isFinite(maxFrameRate)
+    ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate)
+    : '';
+  const minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
+  const numericCurrent = Number.parseFloat(currentValue);
+  let adjustedValue = currentValue;
+  let valueChanged = false;
+
+  if (
+    Number.isFinite(maxFrameRate) &&
+    Number.isFinite(numericCurrent) &&
+    numericCurrent > maxFrameRate + FRAME_RATE_RANGE_TOLERANCE
+  ) {
+    const clampedValue = formattedMaxFrameRate || formatFrameRateValue(maxFrameRate);
+    if (clampedValue) {
+      adjustedValue = clampedValue;
+      if (adjustedValue !== currentValue) {
+        valueChanged = true;
+      }
+    }
+  }
+
+  if (
+    minValue &&
+    Number.isFinite(numericCurrent) &&
+    numericCurrent + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE
+  ) {
+    adjustedValue = minValue;
+    if (adjustedValue !== currentValue) {
+      valueChanged = true;
+    }
+  }
+
+  if (valueChanged) {
+    recordingFrameRateInput.value = adjustedValue;
+    currentValue = adjustedValue;
+    recordingFrameRateInput.dispatchEvent(new Event('input', { bubbles: true }));
+  } else {
+    recordingFrameRateInput.value = currentValue;
+  }
+
+  const placeholderCandidate = filteredSuggestions[0];
+  if (!currentValue && placeholderCandidate) {
+    recordingFrameRateInput.placeholder = placeholderCandidate;
+  } else if (recordingFrameRateInput.placeholder) {
+    recordingFrameRateInput.placeholder = '';
+  }
+
+  if (minValue) {
+    recordingFrameRateInput.min = minValue;
+  }
+
+  if (formattedMaxFrameRate) {
+    recordingFrameRateInput.setAttribute('max', formattedMaxFrameRate);
+  } else {
+    recordingFrameRateInput.removeAttribute('max');
+  }
+
+  if (recordingFrameRateHint) {
+    let hintMessage = '';
+    if (formattedMaxFrameRate) {
+      const template = recordingFrameRateHint.getAttribute('data-range-template');
+      hintMessage = template
+        ? template.replace('{max}', formattedMaxFrameRate)
+        : `Enter a recording frame rate from ${minValue} to ${formattedMaxFrameRate} fps.`;
+    } else {
+      hintMessage =
+        recordingFrameRateHint.getAttribute('data-default-message') ||
+        '';
+    }
+    recordingFrameRateHint.textContent = hintMessage;
+    recordingFrameRateHint.hidden = !hintMessage;
+  }
 }
 
 function populateSensorModeDropdown(selected = '') {

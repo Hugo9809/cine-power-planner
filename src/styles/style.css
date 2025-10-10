@@ -824,6 +824,17 @@ main.legal-content {
   min-width: 0; /* allow shrinking inside flex container */
 }
 
+.input-with-datalist {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+.input-with-datalist input {
+  flex: 1;
+  min-width: 0;
+}
+
 .form-row textarea {
   resize: vertical;
 }
@@ -8391,6 +8402,16 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 #projectDialog .form-row .select-wrapper select {
   flex: 1 1 auto;
   width: 100%;
+}
+
+.project-field-hint {
+  margin: 4px 0 0;
+  font-size: calc(var(--form-control-font-size) * 0.875);
+  color: var(--muted-text-color);
+}
+
+body.high-contrast .project-field-hint {
+  color: var(--text-color);
 }
 
 .address-form-row .form-row-label {

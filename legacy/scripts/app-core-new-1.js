@@ -10826,6 +10826,30 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       setLabelText(codecLabel, 'codec');
       setLabelText(baseFrameRateLabel, 'baseFrameRate');
       setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
+      if (recordingFrameRateHintElem) {
+        var rangeTemplate =
+          projectFormTexts.recordingFrameRateRangeHint ||
+          fallbackProjectForm.recordingFrameRateRangeHint ||
+          '';
+        var defaultHint =
+          projectFormTexts.recordingFrameRateDefaultHint ||
+          fallbackProjectForm.recordingFrameRateDefaultHint ||
+          '';
+        if (rangeTemplate) {
+          recordingFrameRateHintElem.setAttribute('data-range-template', rangeTemplate);
+        } else {
+          recordingFrameRateHintElem.removeAttribute('data-range-template');
+        }
+        if (defaultHint) {
+          recordingFrameRateHintElem.setAttribute('data-default-message', defaultHint);
+          recordingFrameRateHintElem.textContent = defaultHint;
+          recordingFrameRateHintElem.hidden = false;
+        } else {
+          recordingFrameRateHintElem.removeAttribute('data-default-message');
+          recordingFrameRateHintElem.textContent = '';
+          recordingFrameRateHintElem.hidden = true;
+        }
+      }
       setLabelText(lensesHeadingElem, 'lensesHeading');
       setLabelText(lensesLabelElem, 'lensesLabel');
       setLabelText(riggingHeadingElem, 'riggingHeading');
@@ -11060,6 +11084,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var deliveryResolutionSelect = document.getElementById("deliveryResolution");
   var recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
   var recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
+  var recordingFrameRateHintElem = document.getElementById("recordingFrameRateHint");
   var sensorModeLabel = document.getElementById("sensorModeLabel");
   var aspectRatioLabel = document.getElementById("aspectRatioLabel");
   var codecLabel = document.getElementById("codecLabel");
