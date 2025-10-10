@@ -5396,7 +5396,20 @@ body.dark-mode .storage-status-reminder {
   padding: 0;
   display: grid;
   gap: 6px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#helpQuickLinksList .help-quick-link-spacer {
+  visibility: hidden;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 560px) {
+  #helpQuickLinksList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 #helpQuickLinksList li {

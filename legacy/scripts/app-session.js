@@ -10126,6 +10126,136 @@ if (helpButton && helpDialog) {
     }, 1500);
     helpSectionHighlightTimers.set(section, timer);
   };
+  var helpQuickLinksArrangeFrame = null;
+  var helpQuickLinksResizeTimer = null;
+  var arrangeHelpQuickLinksByLineCount = function arrangeHelpQuickLinksByLineCount() {
+    if (!helpQuickLinksList || !helpQuickLinksList.childElementCount) {
+      return;
+    }
+    var applyGrouping = function applyGrouping() {
+      helpQuickLinksList.querySelectorAll('li[data-quick-link-spacer="true"]').forEach(function (node) {
+        return node.remove();
+      });
+      var items = Array.from(helpQuickLinksList.children);
+      if (!items.length) return;
+      var multiLineItems = [];
+      var singleLineItems = [];
+      var hiddenItems = [];
+      items.forEach(function (item, index) {
+        var button = item.querySelector('.help-quick-link');
+        if (!button) {
+          hiddenItems.push({
+            index: index,
+            node: item
+          });
+          return;
+        }
+        if (item.hasAttribute('hidden')) {
+          hiddenItems.push({
+            index: index,
+            node: item,
+            button: button
+          });
+          button.classList.remove('help-quick-link-multiline');
+          return;
+        }
+        var label = button.querySelector('.help-quick-link-label');
+        if (!label) {
+          singleLineItems.push({
+            index: index,
+            node: item,
+            button: button
+          });
+          button.classList.remove('help-quick-link-multiline');
+          return;
+        }
+        var computed = window.getComputedStyle(label);
+        var lineHeight = Number.parseFloat(computed.lineHeight);
+        if (!lineHeight || Number.isNaN(lineHeight)) {
+          lineHeight = Number.parseFloat(computed.fontSize) || 0;
+        }
+        var labelHeight = label.offsetHeight || label.getBoundingClientRect().height;
+        var lineCount = lineHeight ? Math.round(labelHeight / lineHeight) : 1;
+        if (lineCount > 1) {
+          button.classList.add('help-quick-link-multiline');
+          multiLineItems.push({
+            index: index,
+            node: item,
+            button: button
+          });
+        } else {
+          button.classList.remove('help-quick-link-multiline');
+          singleLineItems.push({
+            index: index,
+            node: item,
+            button: button
+          });
+        }
+      });
+      if (!multiLineItems.length && !singleLineItems.length) {
+        return;
+      }
+      var fragment = document.createDocumentFragment();
+      var sortedMulti = multiLineItems.sort(function (a, b) {
+        return a.index - b.index;
+      });
+      var sortedSingle = singleLineItems.sort(function (a, b) {
+        return a.index - b.index;
+      });
+      var totalPairs = Math.max(Math.ceil(sortedMulti.length / 2), Math.ceil(sortedSingle.length / 2));
+      for (var pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
+        var multiStart = pairIndex * 2;
+        if (multiStart < sortedMulti.length) {
+          fragment.appendChild(sortedMulti[multiStart].node);
+          if (multiStart + 1 < sortedMulti.length) {
+            fragment.appendChild(sortedMulti[multiStart + 1].node);
+          } else if (sortedSingle.length) {
+            var spacer = document.createElement('li');
+            spacer.dataset.quickLinkSpacer = 'true';
+            spacer.setAttribute('aria-hidden', 'true');
+            spacer.setAttribute('role', 'presentation');
+            spacer.className = 'help-quick-link-spacer';
+            fragment.appendChild(spacer);
+          }
+        }
+        var singleStart = pairIndex * 2;
+        if (singleStart < sortedSingle.length) {
+          fragment.appendChild(sortedSingle[singleStart].node);
+          if (singleStart + 1 < sortedSingle.length) {
+            fragment.appendChild(sortedSingle[singleStart + 1].node);
+          }
+        }
+      }
+      hiddenItems.sort(function (a, b) {
+        return a.index - b.index;
+      }).forEach(function (item) {
+        return fragment.appendChild(item.node);
+      });
+      if (fragment.childNodes.length) {
+        helpQuickLinksList.appendChild(fragment);
+      }
+    };
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      if (helpQuickLinksArrangeFrame) {
+        window.cancelAnimationFrame(helpQuickLinksArrangeFrame);
+      }
+      helpQuickLinksArrangeFrame = window.requestAnimationFrame(function () {
+        helpQuickLinksArrangeFrame = null;
+        applyGrouping();
+      });
+    } else {
+      applyGrouping();
+    }
+  };
+  var scheduleHelpQuickLinksArrangement = function scheduleHelpQuickLinksArrangement() {
+    if (helpQuickLinksResizeTimer) {
+      clearTimeout(helpQuickLinksResizeTimer);
+    }
+    helpQuickLinksResizeTimer = setTimeout(function () {
+      helpQuickLinksResizeTimer = null;
+      arrangeHelpQuickLinksByLineCount();
+    }, 150);
+  };
   var syncHelpQuickLinksVisibility = function syncHelpQuickLinksVisibility() {
     if (!helpQuickLinksNav || !helpQuickLinksList || !helpQuickLinkItems.size) {
       if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
@@ -10146,6 +10276,7 @@ if (helpButton && helpDialog) {
     });
     if (hasVisible) {
       helpQuickLinksNav.removeAttribute('hidden');
+      arrangeHelpQuickLinksByLineCount();
     } else {
       helpQuickLinksNav.setAttribute('hidden', '');
     }
@@ -10180,6 +10311,7 @@ if (helpButton && helpDialog) {
         button.setAttribute('aria-label', label);
       }
     });
+    arrangeHelpQuickLinksByLineCount();
   };
   updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
   var buildHelpQuickLinks = function buildHelpQuickLinks() {
@@ -10267,6 +10399,16 @@ if (helpButton && helpDialog) {
     syncHelpQuickLinksVisibility();
   };
   buildHelpQuickLinks();
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', function () {
+      if (!helpQuickLinksList || helpQuickLinksNav && helpQuickLinksNav.hasAttribute('hidden')) {
+        return;
+      }
+      scheduleHelpQuickLinksArrangement();
+    }, {
+      passive: true
+    });
+  }
   if (helpDialog) {
     helpDialog.addEventListener('click', function (e) {
       var link = e.target.closest('a[data-help-target]');
