@@ -9005,10 +9005,15 @@ body.dark-mode .requirement-box,
   margin: 0;
   margin-top: var(--spacing-xs);
   align-self: flex-start;
+  padding: 0.35rem;
+  min-height: 2.4rem;
+  min-width: 2.4rem;
+  line-height: 1;
 }
 
 #gearListOutput .gear-item-edit-btn .btn-icon {
-  --icon-size: var(--button-icon-size);
+  --icon-size: calc(var(--button-icon-size) * 0.85);
+  font-size: var(--button-icon-size);
 }
 
 #gearListOutput .gear-item-rental-excluded {
