@@ -796,8 +796,9 @@ repeatable verification loop:
   Monthly data health check**, follow the guided steps to capture a fresh full
   backup from **Settings → Data & Storage → Quick safeguards → Download full
   backup**, export each active project, reload offline to confirm the cached
-  interface and finish with **Restore rehearsal** before logging the outcome in
-  your rotation log.
+  interface, finish with **Restore rehearsal**, then run
+  `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and log the
+  console output with the outcome in your rotation log.
 - **Redundancy rotation (monthly or before archiving).** Store the most recent
   planner backup, a verified `project-name.json` bundle (rename to `.cpproject`
   if your asset tracker expects it) and a ZIP of the repository on at least two

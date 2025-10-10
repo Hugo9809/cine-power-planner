@@ -13260,6 +13260,11 @@ function setLanguage(lang) {
               highlight: "#restoreRehearsalSection",
             },
           ),
+        () => {
+          const code = doc.createElement("code");
+          code.textContent = "window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })";
+          return code;
+        },
       ],
     );
     if (helpDataAuditNote) {

@@ -11407,6 +11407,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           target: "#restoreRehearsalButton",
           highlight: "#restoreRehearsalSection"
         });
+      }, function () {
+        if (!doc) {
+          return null;
+        }
+        var code = doc.createElement("code");
+        code.textContent = "window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })";
+        return code;
       }]);
       if (helpDataAuditNote) {
         var _fallback5 = helpDataAuditNote.textContent || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
