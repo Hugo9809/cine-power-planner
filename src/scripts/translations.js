@@ -1669,6 +1669,16 @@ const texts = {
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
+      helpStatusNotStarted:
+        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+      helpStatusInProgress:
+        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+      helpStatusResume:
+        "Paused at {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusCompleted:
+        "Tutorial complete. Replay any step anytime for a refresher.",
       skipConfirmationTitle: "Skip the guided tutorial?",
       skipConfirmationBody:
         "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
@@ -3510,6 +3520,16 @@ const texts = {
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
+      helpStatusNotStarted:
+        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+      helpStatusInProgress:
+        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+      helpStatusResume:
+        "Paused at {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusCompleted:
+        "Tutorial complete. Replay any step anytime for a refresher.",
       skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
       skipConfirmationBody:
         "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
@@ -5365,6 +5385,16 @@ const texts = {
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
+      helpStatusNotStarted:
+        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+      helpStatusInProgress:
+        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+      helpStatusResume:
+        "Paused at {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusCompleted:
+        "Tutorial complete. Replay any step anytime for a refresher.",
       skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
       skipConfirmationBody:
         "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
@@ -7231,6 +7261,16 @@ const texts = {
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
+      helpStatusNotStarted:
+        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+      helpStatusInProgress:
+        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+      helpStatusResume:
+        "Paused at {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusCompleted:
+        "Tutorial complete. Replay any step anytime for a refresher.",
       skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
       skipConfirmationBody:
         "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
@@ -9101,6 +9141,16 @@ const texts = {
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
+      helpStatusNotStarted:
+        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+      helpStatusInProgress:
+        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+      helpStatusResume:
+        "Paused at {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusCompleted:
+        "Tutorial complete. Replay any step anytime for a refresher.",
       skipConfirmationTitle: "Geführtes Tutorial überspringen?",
       skipConfirmationBody:
         "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",

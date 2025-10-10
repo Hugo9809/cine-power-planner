@@ -101,6 +101,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var STORAGE_VERSION = 2;
   var OVERLAY_ID = 'onboardingTutorialOverlay';
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
+  var HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
       try {
@@ -355,6 +356,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var progressMeterFillEl = null;
   var stepListEl = null;
   var resumeHintEl = null;
+  var helpStatusEl = null;
   var backButton = null;
   var nextButton = null;
   var skipButton = null;
@@ -1098,6 +1100,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
     attachGlobalListeners();
     showStep(resolvedIndex);
+    applyHelpStatus(storedState, stepConfig);
     if (focusStart) {
       focusCard();
     }
@@ -1120,11 +1123,117 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     applyHelpButtonLabel();
   }
-  function applyHelpButtonLabel() {
-    var button = DOCUMENT.getElementById(HELP_BUTTON_ID);
-    if (!button) {
+  function resolveHelpStatusElement() {
+    if (helpStatusEl && helpStatusEl.parentNode) {
+      return helpStatusEl;
+    }
+    if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
+      helpStatusEl = null;
+      return null;
+    }
+    helpStatusEl = DOCUMENT.getElementById(HELP_STATUS_ID) || null;
+    return helpStatusEl;
+  }
+  function resolveStepTitle(stepKey) {
+    if (!stepKey) {
+      return '';
+    }
+    var stepPack = tourTexts.steps && tourTexts.steps[stepKey];
+    if (stepPack && typeof stepPack.title === 'string' && stepPack.title) {
+      return stepPack.title;
+    }
+    return stepKey;
+  }
+  function applyHelpStatus(state, steps) {
+    var statusElement = resolveHelpStatusElement();
+    if (!statusElement) {
       return;
     }
+    var stepList = Array.isArray(steps) && steps.length ? steps : getStepConfig();
+    var allowedKeys = [];
+    for (var allowedIndex = 0; allowedIndex < stepList.length; allowedIndex += 1) {
+      var step = stepList[allowedIndex];
+      if (step && typeof step.key === 'string') {
+        allowedKeys.push(step.key);
+      }
+    }
+    var stored = state || storedState || loadStoredState();
+    var completedRaw = stored && Array.isArray(stored.completedSteps) ? stored.completedSteps : [];
+    var completedSet = [];
+    for (var completedIndex = 0; completedIndex < completedRaw.length; completedIndex += 1) {
+      var key = completedRaw[completedIndex];
+      if (typeof key !== 'string') {
+        continue;
+      }
+      if (allowedKeys.indexOf(key) === -1) {
+        continue;
+      }
+      if (completedSet.indexOf(key) === -1) {
+        completedSet.push(key);
+      }
+    }
+    var total = allowedKeys.length;
+    var completedCount = completedSet.length > total ? total : completedSet.length;
+    var activeKey = stored && typeof stored.activeStep === 'string' ? stored.activeStep : null;
+    var activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
+    var nextIndex = -1;
+    for (var index = 0; index < allowedKeys.length; index += 1) {
+      var allowedKey = allowedKeys[index];
+      if (completedSet.indexOf(allowedKey) === -1) {
+        nextIndex = index;
+        break;
+      }
+    }
+    var nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
+    var nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
+    var activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
+    var statusType = 'notStarted';
+    if (stored && stored.completed) {
+      statusType = 'completed';
+    } else if (stored && stored.skipped) {
+      statusType = 'skipped';
+    } else if (activeIndex >= 0) {
+      statusType = 'resume';
+    } else if (completedCount > 0) {
+      statusType = 'inProgress';
+    }
+    var template;
+    if (statusType === 'completed') {
+      template = tourTexts.helpStatusCompleted || '';
+      if (!template) {
+        template = 'Tutorial complete. Replay any step anytime for a refresher.';
+      }
+    } else if (statusType === 'skipped') {
+      template = tourTexts.helpStatusSkipped || '';
+      if (!template) {
+        template = 'Tutorial skipped. Restart when you\'re ready—the saved progress stays available offline.';
+      }
+    } else if (statusType === 'resume') {
+      template = tourTexts.helpStatusResume || tourTexts.helpStatusInProgress || '';
+      if (!template) {
+        template = 'Paused at {current}. {completed} of {total} steps already saved offline.';
+      }
+    } else if (statusType === 'inProgress') {
+      template = tourTexts.helpStatusInProgress || '';
+      if (!template) {
+        template = 'Progress saved offline: {completed} of {total} steps complete. Next: {next}.';
+      }
+    } else {
+      template = tourTexts.helpStatusNotStarted || '';
+      if (!template) {
+        template = 'Your guided tutorial progress will be saved offline as you go. Next: {next}.';
+      }
+    }
+    var message = template.replace('{completed}', String(completedCount)).replace('{total}', String(total));
+    var nextValue = nextTitle || activeTitle || '';
+    var currentValue = activeTitle || nextTitle || '';
+    message = message.replace('{next}', nextValue);
+    message = message.replace('{current}', currentValue);
+    message = message.replace('{step}', currentValue);
+    statusElement.textContent = message;
+    statusElement.hidden = !message;
+  }
+  function applyHelpButtonLabel() {
     var state = storedState || loadStoredState();
     var steps = getStepConfig();
     var completedCount = state && Array.isArray(state.completedSteps) ? state.completedSteps.length : 0;
@@ -1149,7 +1258,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
-    button.textContent = label;
+    var button = DOCUMENT.getElementById(HELP_BUTTON_ID);
+    if (button) {
+      button.textContent = label;
+    }
+    applyHelpStatus(state, steps);
   }
   function handleHelpButtonClick(event) {
     if (event && typeof event.preventDefault === 'function') {

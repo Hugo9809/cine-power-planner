@@ -115,6 +115,7 @@
   const OVERLAY_ID = 'onboardingTutorialOverlay';
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
+  const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
 
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -417,6 +418,7 @@
   let progressMeterFillEl = null;
   let stepListEl = null;
   let resumeHintEl = null;
+  let helpStatusEl = null;
   let backButton = null;
   let nextButton = null;
   let skipButton = null;
@@ -1257,6 +1259,7 @@
 
     attachGlobalListeners();
     showStep(resolvedIndex);
+    applyHelpStatus(storedState, stepConfig);
 
     if (focusStart) {
       focusCard();
@@ -1316,9 +1319,132 @@
     return buttons;
   }
 
+  function resolveHelpStatusElement() {
+    if (helpStatusEl && helpStatusEl.isConnected) {
+      return helpStatusEl;
+    }
+    if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
+      helpStatusEl = null;
+      return null;
+    }
+    helpStatusEl = DOCUMENT.getElementById(HELP_STATUS_ID) || null;
+    return helpStatusEl;
+  }
+
+  function resolveStepTitle(stepKey) {
+    if (!stepKey) {
+      return '';
+    }
+    const stepPack = tourTexts.steps && tourTexts.steps[stepKey];
+    if (stepPack && typeof stepPack.title === 'string' && stepPack.title) {
+      return stepPack.title;
+    }
+    return stepKey;
+  }
+
+  function applyHelpStatus(state, steps) {
+    const statusElement = resolveHelpStatusElement();
+    if (!statusElement) {
+      return;
+    }
+
+    const stepList = Array.isArray(steps) && steps.length ? steps : getStepConfig();
+    const allowedKeys = stepList.map(step => step && step.key).filter(Boolean);
+    const stored = state || storedState || loadStoredState();
+    const completedRaw = stored && Array.isArray(stored.completedSteps)
+      ? stored.completedSteps
+      : [];
+    const completedSet = new Set();
+    for (let index = 0; index < completedRaw.length; index += 1) {
+      const key = completedRaw[index];
+      if (typeof key === 'string' && allowedKeys.indexOf(key) !== -1) {
+        completedSet.add(key);
+      }
+    }
+
+    const total = allowedKeys.length;
+    const completedCount = Math.min(completedSet.size, total);
+
+    const activeKey = stored && typeof stored.activeStep === 'string'
+      ? stored.activeStep
+      : null;
+    const activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
+
+    let nextIndex = -1;
+    for (let index = 0; index < allowedKeys.length; index += 1) {
+      const key = allowedKeys[index];
+      if (!completedSet.has(key)) {
+        nextIndex = index;
+        break;
+      }
+    }
+
+    const nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
+    const nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
+    const activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
+
+    let statusType = 'notStarted';
+    if (stored && stored.completed) {
+      statusType = 'completed';
+    } else if (stored && stored.skipped) {
+      statusType = 'skipped';
+    } else if (activeIndex >= 0) {
+      statusType = 'resume';
+    } else if (completedCount > 0) {
+      statusType = 'inProgress';
+    }
+
+    let template;
+    if (statusType === 'completed') {
+      template = tourTexts.helpStatusCompleted || '';
+      if (!template) {
+        template = 'Tutorial complete. Replay any step anytime for a refresher.';
+      }
+    } else if (statusType === 'skipped') {
+      template = tourTexts.helpStatusSkipped || '';
+      if (!template) {
+        template = 'Tutorial skipped. Restart when you\'re ready—the saved progress stays available offline.';
+      }
+    } else if (statusType === 'resume') {
+      template = tourTexts.helpStatusResume || tourTexts.helpStatusInProgress || '';
+      if (!template) {
+        template = 'Paused at {current}. {completed} of {total} steps already saved offline.';
+      }
+    } else if (statusType === 'inProgress') {
+      template = tourTexts.helpStatusInProgress || '';
+      if (!template) {
+        template = 'Progress saved offline: {completed} of {total} steps complete. Next: {next}.';
+      }
+    } else {
+      template = tourTexts.helpStatusNotStarted || '';
+      if (!template) {
+        template = 'Your guided tutorial progress will be saved offline as you go. Next: {next}.';
+      }
+    }
+
+    const replacements = {
+      '{completed}': String(completedCount),
+      '{total}': String(total),
+      '{next}': nextTitle || activeTitle || '',
+      '{current}': activeTitle || nextTitle || '',
+      '{step}': activeTitle || nextTitle || '',
+    };
+
+    let message = template;
+    const tokens = Object.keys(replacements);
+    for (let index = 0; index < tokens.length; index += 1) {
+      const token = tokens[index];
+      message = message.split(token).join(replacements[token]);
+    }
+
+    statusElement.textContent = message;
+    statusElement.hidden = !message;
+  }
+
   function applyHelpButtonLabel() {
     const buttons = collectHelpButtons();
     if (!buttons.length) {
+      applyHelpStatus();
       return;
     }
     const state = storedState || loadStoredState();
@@ -1355,6 +1481,8 @@
       }
       button.textContent = label;
     }
+
+    applyHelpStatus(state, steps);
   }
 
   function handleHelpButtonClick(event) {

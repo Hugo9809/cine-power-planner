@@ -5606,6 +5606,17 @@ body.dark-mode .storage-status-reminder {
   color: var(--muted-text-color);
 }
 
+.help-onboarding-status {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  color: var(--muted-text-color);
+}
+
+body.dark-mode .help-onboarding-status {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 body.dark-mode .help-callout {
   background-color: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
