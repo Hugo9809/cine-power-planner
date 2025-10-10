@@ -7493,12 +7493,12 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (selectedNames.battery) {
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
         if (!count || isNaN(count)) count = 1;
-        const safeBatt = escapeHtml(addArriKNumber(selectedNames.battery));
-        batteryItems = `${count}x ${safeBatt}`;
+        const batteryEntries = [`${count}x ${selectedNames.battery}`];
         const swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
         if (swapName) {
-            batteryItems += `<br>1x ${escapeHtml(swapName)}`;
+            batteryEntries.push(`1x ${swapName}`);
         }
+        batteryItems = formatItems(batteryEntries);
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringItems = '';
