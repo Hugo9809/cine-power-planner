@@ -155,7 +155,26 @@
     return value;
   }
 
-  function normalizeCompletedSteps(value) {
+  const DEFAULT_STEP_KEYS = [
+    'intro',
+    'projectOverview',
+    'deviceSelection',
+    'gearGeneration',
+    'gearCustomization',
+    'resultsReview',
+    'powerSummary',
+    'contactsOwnGear',
+    'autoGear',
+    'overviewPrint',
+    'exportImport',
+    'backupRestore',
+    'safetyNet',
+    'completion',
+  ];
+
+  const STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
+
+  function normalizeCompletedSteps(value, allowedKeys) {
     if (!Array.isArray(value)) {
       return [];
     }
@@ -163,6 +182,9 @@
     for (let index = 0; index < value.length; index += 1) {
       const entry = value[index];
       if (typeof entry !== 'string' || !entry) {
+        continue;
+      }
+      if (allowedKeys && allowedKeys.indexOf(entry) === -1) {
         continue;
       }
       if (normalized.indexOf(entry) === -1) {
@@ -177,10 +199,34 @@
     snapshot.version = STORAGE_VERSION;
     snapshot.completed = Boolean(snapshot.completed);
     snapshot.skipped = Boolean(snapshot.skipped) && !snapshot.completed;
+    const allowedKeys = DEFAULT_STEP_KEYS;
+    snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps, allowedKeys);
     snapshot.activeStep = typeof snapshot.activeStep === 'string' && snapshot.activeStep
       ? snapshot.activeStep
       : null;
-    snapshot.completedSteps = normalizeCompletedSteps(snapshot.completedSteps);
+    if (snapshot.activeStep && allowedKeys.indexOf(snapshot.activeStep) === -1) {
+      snapshot.activeStep = null;
+    }
+    const signature = typeof snapshot.stepSignature === 'string' ? snapshot.stepSignature : null;
+    if (signature !== STEP_SIGNATURE) {
+      snapshot.stepSignature = STEP_SIGNATURE;
+      snapshot.completed = false;
+      snapshot.skipped = false;
+      if (!snapshot.activeStep) {
+        for (let index = 0; index < allowedKeys.length; index += 1) {
+          const key = allowedKeys[index];
+          if (snapshot.completedSteps.indexOf(key) === -1) {
+            snapshot.activeStep = key;
+            break;
+          }
+        }
+      }
+    } else {
+      snapshot.stepSignature = STEP_SIGNATURE;
+    }
+    if (snapshot.completedSteps.length < allowedKeys.length) {
+      snapshot.completed = false;
+    }
     if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
       snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
     }
@@ -246,22 +292,6 @@
   }
 
   let storedState = loadStoredState();
-
-  const DEFAULT_STEP_KEYS = [
-    'intro',
-    'projectOverview',
-    'deviceSelection',
-    'gearGeneration',
-    'gearCustomization',
-    'resultsReview',
-    'powerSummary',
-    'contactsOwnGear',
-    'autoGear',
-    'overviewPrint',
-    'exportImport',
-    'backupRestore',
-    'completion',
-  ];
 
   function resolveLanguage() {
     try {
@@ -360,6 +390,11 @@
         key: 'backupRestore',
         highlight: '#backupSettings',
         ensureSettings: { tabId: 'settingsTab-backup' },
+      },
+      {
+        key: 'safetyNet',
+        highlight: '#offlineIndicator',
+        alternateHighlight: '#saveSetupBtn',
       },
       {
         key: 'completion',

@@ -1636,7 +1636,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1723,6 +1723,11 @@ const texts = {
           title: "Back up and rehearse restores",
           body:
             "In Settings → Backup & Restore, capture full-app backups, compare auto-backups, rehearse restores and trigger factory resets after saving a safety copy.",
+        },
+        safetyNet: {
+          title: "Confirm offline safety nets",
+          body:
+            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
         },
         completion: {
           title: "You're ready to plan",
@@ -3461,7 +3466,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
     helpOnboardingTutorialCopy:
-      "per seguire ogni flusso di lavoro con monitoraggio dei progressi offline, incluso il checkpoint Power Summary, prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per riaprire offline le sezioni completate.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
@@ -3548,6 +3553,11 @@ const texts = {
           title: "Esegui backup e prove di ripristino",
           body:
             "In Impostazioni → Backup & Restore acquisisci backup completi dell'app, confronta gli auto-backup, prova i ripristini e avvia il ripristino di fabbrica dopo aver salvato una copia di sicurezza.",
+        },
+        safetyNet: {
+          title: "Confirm offline safety nets",
+          body:
+            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
         },
         completion: {
           title: "Tutto pronto per pianificare",
@@ -5300,7 +5310,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
     helpOnboardingTutorialCopy:
-      "para recorrer cada flujo de trabajo con seguimiento de progreso sin conexión, incluido el punto de control del Resumen de energía, antes de configurar tu primer proyecto. Usa el navegador de pasos y el indicador de progreso para volver a secciones completadas sin conexión.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
@@ -5387,6 +5397,11 @@ const texts = {
           title: "Realiza copias y ensayos de restauración",
           body:
             "En Configuración → Copia de seguridad y restaurar puedes capturar copias completas, comparar copias automáticas, ensayar restauraciones y ejecutar el restablecimiento de fábrica tras guardar una copia de seguridad.",
+        },
+        safetyNet: {
+          title: "Confirm offline safety nets",
+          body:
+            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
         },
         completion: {
           title: "Todo listo para planificar",
@@ -7150,7 +7165,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
     helpOnboardingTutorialCopy:
-      "pour découvrir chaque flux de travail avec un suivi d'avancement hors ligne, y compris le point de contrôle Résumé d'alimentation, avant de configurer votre premier projet. Utilisez le navigateur d'étapes et l'indicateur de progression pour rouvrir hors ligne les sections terminées.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
@@ -7237,6 +7252,11 @@ const texts = {
           title: "Sauvegardez et répétez les restaurations",
           body:
             "Dans Paramètres → Sauvegarde et restauration, capturez des sauvegardes complètes, comparez les copies automatiques, répétez des restaurations et lancez la réinitialisation d'usine après avoir enregistré une copie de sécurité.",
+        },
+        safetyNet: {
+          title: "Confirm offline safety nets",
+          body:
+            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
         },
         completion: {
           title: "Vous êtes prêt à planifier",
@@ -9004,7 +9024,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
     helpOnboardingTutorialCopy:
-      "um jeden Arbeitsablauf mit einer Offline-Fortschrittsanzeige kennenzulernen – einschließlich des Power-Summary-Checkpoints – bevor du dein erstes Projekt anlegst. Nutze den Schritt-Navigator und die Fortschrittsleiste, um abgeschlossene Abschnitte offline erneut zu öffnen.",
+      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
@@ -9091,6 +9111,11 @@ const texts = {
           title: "Backups und Wiederherstellungen",
           body:
             "In Einstellungen → Backup & Restore erstellst du Vollbackups, vergleichst Auto-Sicherungen, probst Wiederherstellungen und setzt bei Bedarf nach einer Sicherung alles zurück.",
+        },
+        safetyNet: {
+          title: "Confirm offline safety nets",
+          body:
+            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
         },
         completion: {
           title: "Alles bereit zum Planen",
