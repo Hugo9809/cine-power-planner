@@ -67,4 +67,13 @@ describe('feature search normalization', () => {
     expect(normalize("Captain's Log"))
       .toBe('captain s log');
   });
+
+  test('normalizes imperial measurement shorthand', () => {
+    loadModule();
+    expect(moduleApi).toBeDefined();
+    const normalize = moduleApi.normalizeSearchValue;
+    expect(normalize('5\'8" tripod mount')).toBe('5 ft 8 inch tripod mount');
+    expect(normalize('7ft boom arm')).toBe('7 ft boom arm');
+    expect(normalize('1/2" adapter')).toBe('1/2 inch adapter');
+  });
 });

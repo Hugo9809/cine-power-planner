@@ -12,6 +12,7 @@ describe('feature search engine module', () => {
     expect(engine.searchKey('Wi‑Fi “Pro” 12°')).toBe('wifipro12deg');
     expect(engine.searchKey('Æther & Co.')).toBe('aetherandco');
     expect(engine.searchKey('Mark IV')).toBe('mk4');
+    expect(engine.searchKey('5\'8" rig plate')).toBe('5ft8inchrigplate');
   });
 
   test('collects search tokens with synonyms and numeric variants', () => {
@@ -23,6 +24,9 @@ describe('feature search engine module', () => {
 
     const capacity = engine.searchTokens('90 watt hours');
     expect(capacity).toEqual(expect.arrayContaining(['90', 'wh', 'watt', 'hours']));
+
+    const measurements = engine.searchTokens('5" monitor mount with 6\' stand');
+    expect(measurements).toEqual(expect.arrayContaining(['inch', 'in', 'ft', 'foot']));
   });
 
   test('parses mark suffixes with roman numerals', () => {

@@ -60,6 +60,13 @@ describe('feature search token synonyms', () => {
     expectTokensToContain('85 mm', ['millimeter']);
   });
 
+  test('imperial measurements share abbreviations and full words', () => {
+    expectTokensToContain('5" monitor', ['inch', 'in']);
+    expectTokensToContain("6' stand", ['ft', 'foot']);
+    expectTokensToContain('2 inch adapter', ['in']);
+    expectTokensToContain('3 ft boom', ['foot', 'feet']);
+  });
+
   test('exposure value searches align with EV abbreviation', () => {
     expectTokensToContain('exposure value', ['ev']);
     expectTokensToContain('ev', ['exposure']);
