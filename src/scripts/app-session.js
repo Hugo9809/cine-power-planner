@@ -14137,22 +14137,35 @@ function buildFrameRateSuggestions(entries, contextTokens) {
   });
 
   if (!suggestions.size) {
-    return Array.from(FALLBACK_FRAME_RATE_VALUES);
+    const fallbackValues = Array.from(FALLBACK_FRAME_RATE_VALUES);
+    const fallbackDetails = new Map();
+    fallbackValues.forEach(value => {
+      fallbackDetails.set(value, { score: 0, label: '' });
+    });
+    return { values: fallbackValues, details: fallbackDetails };
   }
 
-  return Array.from(suggestions.entries())
-    .sort((a, b) => {
-      if (b[1].score !== a[1].score) {
-        return b[1].score - a[1].score;
-      }
-      const aNum = Number.parseFloat(a[0]);
-      const bNum = Number.parseFloat(b[0]);
-      if (Number.isFinite(aNum) && Number.isFinite(bNum)) {
-        return aNum - bNum;
-      }
-      return a[0].localeCompare(b[0]);
-    })
-    .map(([value]) => value);
+  const sortedEntries = Array.from(suggestions.entries()).sort((a, b) => {
+    if (b[1].score !== a[1].score) {
+      return b[1].score - a[1].score;
+    }
+    const aNum = Number.parseFloat(a[0]);
+    const bNum = Number.parseFloat(b[0]);
+    if (Number.isFinite(aNum) && Number.isFinite(bNum)) {
+      return aNum - bNum;
+    }
+    return a[0].localeCompare(b[0]);
+  });
+
+  const details = new Map();
+  const values = [];
+
+  sortedEntries.forEach(([value, info]) => {
+    values.push(value);
+    details.set(value, info);
+  });
+
+  return { values, details };
 }
 
 function getCurrentFrameRateInputValue() {
@@ -14179,10 +14192,16 @@ function populateFrameRateDropdown(selected = '') {
     recordingResolutionDropdown && recordingResolutionDropdown.value
   );
 
-  const suggestions = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [
-    sensorTokens,
-    resolutionTokens,
-  ]);
+  const suggestionResult = buildFrameRateSuggestions(
+    Array.isArray(frameRateEntries) ? frameRateEntries : [],
+    [sensorTokens, resolutionTokens]
+  );
+  const suggestions = suggestionResult && Array.isArray(suggestionResult.values)
+    ? suggestionResult.values
+    : [];
+  const suggestionDetails = suggestionResult && suggestionResult.details instanceof Map
+    ? suggestionResult.details
+    : new Map();
 
   recordingFrameRateOptionsList.innerHTML = '';
   const uniqueValues = new Set();
@@ -14201,7 +14220,12 @@ function populateFrameRateDropdown(selected = '') {
       if (formatted) {
         value = formatted;
       }
-      numericCandidates.push({ numeric, formatted: value });
+      const details =
+        suggestionDetails.get(value) || suggestionDetails.get(originalValue) || {};
+      const score = Number.isFinite(details.score)
+        ? details.score
+        : Number.NEGATIVE_INFINITY;
+      numericCandidates.push({ numeric, formatted: value, score });
     }
     if (uniqueValues.has(value)) return;
     uniqueValues.add(value);
@@ -14224,8 +14248,16 @@ function populateFrameRateDropdown(selected = '') {
   }
 
   const maxCandidate = numericCandidates.reduce(
-    (best, entry) => (entry.numeric > best.numeric ? entry : best),
-    { numeric: Number.NEGATIVE_INFINITY, formatted: '' }
+    (best, entry) => {
+      if (entry.score > best.score) {
+        return entry;
+      }
+      if (entry.score === best.score && entry.numeric > best.numeric) {
+        return entry;
+      }
+      return best;
+    },
+    { numeric: Number.NEGATIVE_INFINITY, formatted: '', score: Number.NEGATIVE_INFINITY }
   );
   const maxFrameRate = maxCandidate.numeric;
   const formattedMaxFrameRate = Number.isFinite(maxFrameRate)

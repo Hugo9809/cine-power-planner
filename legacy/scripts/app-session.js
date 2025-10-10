@@ -12539,9 +12539,14 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     });
   });
   if (!suggestions.size) {
-    return Array.from(FALLBACK_FRAME_RATE_VALUES);
+    var fallbackValues = Array.from(FALLBACK_FRAME_RATE_VALUES);
+    var fallbackDetails = new Map();
+    fallbackValues.forEach(function (value) {
+      fallbackDetails.set(value, { score: 0, label: '' });
+    });
+    return { values: fallbackValues, details: fallbackDetails };
   }
-  return Array.from(suggestions.entries()).sort(function (a, b) {
+  var sortedEntries = Array.from(suggestions.entries()).sort(function (a, b) {
     if (b[1].score !== a[1].score) {
       return b[1].score - a[1].score;
     }
@@ -12551,10 +12556,16 @@ function buildFrameRateSuggestions(entries, contextTokens) {
       return aNum - bNum;
     }
     return a[0].localeCompare(b[0]);
-  }).map(function (_ref24) {
-    var value = _ref24[0];
-    return value;
   });
+  var details = new Map();
+  var values = [];
+  sortedEntries.forEach(function (entry) {
+    var value = entry[0];
+    var info = entry[1];
+    values.push(value);
+    details.set(value, info);
+  });
+  return { values: values, details: details };
 }
 function getCurrentFrameRateInputValue() {
   if (!recordingFrameRateInput) return '';
@@ -12572,7 +12583,9 @@ function populateFrameRateDropdown() {
   var frameRateEntries = camKey && devices && devices.cameras && devices.cameras[camKey] ? devices.cameras[camKey].frameRates : null;
   var sensorTokens = tokenizeFrameRateContext(sensorModeDropdown && sensorModeDropdown.value);
   var resolutionTokens = tokenizeFrameRateContext(recordingResolutionDropdown && recordingResolutionDropdown.value);
-  var suggestions = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens]);
+  var suggestionResult = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens]);
+  var suggestions = suggestionResult && Array.isArray(suggestionResult.values) ? suggestionResult.values : [];
+  var suggestionDetails = suggestionResult && suggestionResult.details instanceof Map ? suggestionResult.details : new Map();
   recordingFrameRateOptionsList.innerHTML = '';
   var uniqueValues = new Set();
   var filteredSuggestions = [];
@@ -12589,7 +12602,9 @@ function populateFrameRateDropdown() {
       if (formatted) {
         value = formatted;
       }
-      numericCandidates.push({ numeric: numeric, formatted: value });
+      var details = suggestionDetails.get(value) || suggestionDetails.get(originalValue) || {};
+      var score = Number.isFinite(details.score) ? details.score : Number.NEGATIVE_INFINITY;
+      numericCandidates.push({ numeric: numeric, formatted: value, score: score });
     }
     if (uniqueValues.has(value)) return;
     uniqueValues.add(value);
@@ -12607,8 +12622,14 @@ function populateFrameRateDropdown() {
     }
   }
   var maxCandidate = numericCandidates.reduce(function (best, entry) {
-    return entry.numeric > best.numeric ? entry : best;
-  }, { numeric: Number.NEGATIVE_INFINITY, formatted: '' });
+    if (entry.score > best.score) {
+      return entry;
+    }
+    if (entry.score === best.score && entry.numeric > best.numeric) {
+      return entry;
+    }
+    return best;
+  }, { numeric: Number.NEGATIVE_INFINITY, formatted: '', score: Number.NEGATIVE_INFINITY });
   var maxFrameRate = maxCandidate.numeric;
   var formattedMaxFrameRate = Number.isFinite(maxFrameRate) ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate) : '';
   var minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
