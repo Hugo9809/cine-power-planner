@@ -454,6 +454,8 @@
   let backButton = null;
   let nextButton = null;
   let skipButton = null;
+  let helpButtonListenerAttached = false;
+  let delegatedHelpListener = null;
 
   let active = false;
   let currentIndex = -1;
@@ -1325,6 +1327,36 @@
     applyHelpButtonLabel();
   }
 
+  function matchesHelpTrigger(node) {
+    if (!node) {
+      return false;
+    }
+    if (typeof node.matches === 'function' && node.matches(HELP_TRIGGER_SELECTOR)) {
+      return true;
+    }
+    if (
+      typeof node.getAttribute === 'function'
+      && node.getAttribute('data-onboarding-tour-trigger') !== null
+    ) {
+      return true;
+    }
+    return typeof node.id === 'string' && node.id === HELP_BUTTON_ID;
+  }
+
+  function resolveHelpTrigger(node) {
+    let current = node;
+    while (current && current !== DOCUMENT && current !== DOCUMENT.body) {
+      if (matchesHelpTrigger(current)) {
+        return current;
+      }
+      current = current.parentElement || current.parentNode || null;
+    }
+    if (matchesHelpTrigger(current)) {
+      return current;
+    }
+    return null;
+  }
+
   function collectHelpButtons() {
     const buttons = [];
     const seen = new Set();
@@ -1641,16 +1673,22 @@
   }
 
   function attachHelpButton() {
-    const buttons = collectHelpButtons();
-    if (!buttons.length) {
-      return;
-    }
-    for (let index = 0; index < buttons.length; index += 1) {
-      const button = buttons[index];
-      if (!button) {
-        continue;
+    if (!helpButtonListenerAttached && DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+      if (!delegatedHelpListener) {
+        delegatedHelpListener = event => {
+          const trigger = resolveHelpTrigger(event && event.target);
+          if (!trigger) {
+            return;
+          }
+          handleHelpButtonClick(event);
+        };
       }
-      button.addEventListener('click', handleHelpButtonClick);
+      try {
+        DOCUMENT.addEventListener('click', delegatedHelpListener, true);
+        helpButtonListenerAttached = true;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not attach help trigger listener.', error);
+      }
     }
     applyHelpButtonLabel();
   }

@@ -361,6 +361,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var backButton = null;
   var nextButton = null;
   var skipButton = null;
+  var helpButtonListenerAttached = false;
+  var delegatedHelpListener = null;
   var active = false;
   var currentIndex = -1;
   var currentStep = null;
@@ -1117,6 +1119,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     applyHelpButtonLabel();
   }
+  function matchesHelpTrigger(node) {
+    if (!node) {
+      return false;
+    }
+    if (typeof node.matches === 'function' && node.matches(HELP_TRIGGER_SELECTOR)) {
+      return true;
+    }
+    if (typeof node.getAttribute === 'function' && node.getAttribute('data-onboarding-tour-trigger') !== null) {
+      return true;
+    }
+    return typeof node.id === 'string' && node.id === HELP_BUTTON_ID;
+  }
+  function resolveHelpTrigger(node) {
+    var current = node;
+    while (current && current !== DOCUMENT && current !== DOCUMENT.body) {
+      if (matchesHelpTrigger(current)) {
+        return current;
+      }
+      current = current.parentElement || current.parentNode || null;
+    }
+    if (matchesHelpTrigger(current)) {
+      return current;
+    }
+    return null;
+  }
   function collectHelpButtons() {
     var buttons = [];
     var seen = new Set();
@@ -1325,16 +1352,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     startFromHelp();
   }
   function attachHelpButton() {
-    var buttons = collectHelpButtons();
-    if (!buttons.length) {
-      return;
-    }
-    for (var index = 0; index < buttons.length; index += 1) {
-      var button = buttons[index];
-      if (!button) {
-        continue;
+    if (!helpButtonListenerAttached && DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+      if (!delegatedHelpListener) {
+        delegatedHelpListener = function (event) {
+          var trigger = resolveHelpTrigger(event && event.target);
+          if (!trigger) {
+            return;
+          }
+          handleHelpButtonClick(event);
+        };
       }
-      button.addEventListener('click', handleHelpButtonClick);
+      try {
+        DOCUMENT.addEventListener('click', delegatedHelpListener, true);
+        helpButtonListenerAttached = true;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not attach help trigger listener.', error);
+      }
     }
     applyHelpButtonLabel();
   }
