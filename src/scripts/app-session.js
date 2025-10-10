@@ -11378,6 +11378,126 @@ if (helpButton && helpDialog) {
     helpSectionHighlightTimers.set(section, timer);
   };
 
+  let helpQuickLinksArrangeFrame = null;
+  let helpQuickLinksResizeTimer = null;
+
+  const arrangeHelpQuickLinksByLineCount = () => {
+    if (!helpQuickLinksList || !helpQuickLinksList.childElementCount) {
+      return;
+    }
+
+    const applyGrouping = () => {
+      helpQuickLinksList
+        .querySelectorAll('li[data-quick-link-spacer="true"]')
+        .forEach(node => node.remove());
+      const items = Array.from(helpQuickLinksList.children);
+      if (!items.length) return;
+
+      const multiLineItems = [];
+      const singleLineItems = [];
+      const hiddenItems = [];
+
+      items.forEach((item, index) => {
+        const button = item.querySelector('.help-quick-link');
+        if (!button) {
+          hiddenItems.push({ index, node: item });
+          return;
+        }
+        if (item.hasAttribute('hidden')) {
+          hiddenItems.push({ index, node: item, button });
+          button.classList.remove('help-quick-link-multiline');
+          return;
+        }
+
+        const label = button.querySelector('.help-quick-link-label');
+        if (!label) {
+          singleLineItems.push({ index, node: item, button });
+          button.classList.remove('help-quick-link-multiline');
+          return;
+        }
+
+        const computed = window.getComputedStyle(label);
+        let lineHeight = Number.parseFloat(computed.lineHeight);
+        if (!lineHeight || Number.isNaN(lineHeight)) {
+          lineHeight = Number.parseFloat(computed.fontSize) || 0;
+        }
+        const labelHeight = label.offsetHeight || label.getBoundingClientRect().height;
+        const lineCount = lineHeight ? Math.round(labelHeight / lineHeight) : 1;
+        const isMultiLine = lineCount > 1;
+        button.classList.toggle('help-quick-link-multiline', isMultiLine);
+        if (isMultiLine) {
+          multiLineItems.push({ index, node: item, button });
+        } else {
+          singleLineItems.push({ index, node: item, button });
+        }
+      });
+
+      if (!multiLineItems.length && !singleLineItems.length) {
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      const sortedMulti = multiLineItems.sort((a, b) => a.index - b.index);
+      const sortedSingle = singleLineItems.sort((a, b) => a.index - b.index);
+      const totalPairs = Math.max(
+        Math.ceil(sortedMulti.length / 2),
+        Math.ceil(sortedSingle.length / 2)
+      );
+      for (let pairIndex = 0; pairIndex < totalPairs; pairIndex += 1) {
+        const multiStart = pairIndex * 2;
+        if (multiStart < sortedMulti.length) {
+          fragment.appendChild(sortedMulti[multiStart].node);
+          if (multiStart + 1 < sortedMulti.length) {
+            fragment.appendChild(sortedMulti[multiStart + 1].node);
+          } else if (sortedSingle.length) {
+            const spacer = document.createElement('li');
+            spacer.dataset.quickLinkSpacer = 'true';
+            spacer.setAttribute('aria-hidden', 'true');
+            spacer.setAttribute('role', 'presentation');
+            spacer.className = 'help-quick-link-spacer';
+            fragment.appendChild(spacer);
+          }
+        }
+        const singleStart = pairIndex * 2;
+        if (singleStart < sortedSingle.length) {
+          fragment.appendChild(sortedSingle[singleStart].node);
+          if (singleStart + 1 < sortedSingle.length) {
+            fragment.appendChild(sortedSingle[singleStart + 1].node);
+          }
+        }
+      }
+      hiddenItems
+        .sort((a, b) => a.index - b.index)
+        .forEach(({ node }) => fragment.appendChild(node));
+
+      if (fragment.childNodes.length) {
+        helpQuickLinksList.appendChild(fragment);
+      }
+    };
+
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      if (helpQuickLinksArrangeFrame) {
+        window.cancelAnimationFrame(helpQuickLinksArrangeFrame);
+      }
+      helpQuickLinksArrangeFrame = window.requestAnimationFrame(() => {
+        helpQuickLinksArrangeFrame = null;
+        applyGrouping();
+      });
+    } else {
+      applyGrouping();
+    }
+  };
+
+  const scheduleHelpQuickLinksArrangement = () => {
+    if (helpQuickLinksResizeTimer) {
+      clearTimeout(helpQuickLinksResizeTimer);
+    }
+    helpQuickLinksResizeTimer = setTimeout(() => {
+      helpQuickLinksResizeTimer = null;
+      arrangeHelpQuickLinksByLineCount();
+    }, 150);
+  };
+
   const syncHelpQuickLinksVisibility = () => {
     if (!helpQuickLinksNav || !helpQuickLinksList || !helpQuickLinkItems.size) {
       if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
@@ -11395,6 +11515,7 @@ if (helpButton && helpDialog) {
     });
     if (hasVisible) {
       helpQuickLinksNav.removeAttribute('hidden');
+      arrangeHelpQuickLinksByLineCount();
     } else {
       helpQuickLinksNav.setAttribute('hidden', '');
     }
@@ -11435,6 +11556,7 @@ if (helpButton && helpDialog) {
         button.setAttribute('aria-label', label);
       }
     });
+    arrangeHelpQuickLinksByLineCount();
   };
 
   updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
@@ -11525,6 +11647,19 @@ if (helpButton && helpDialog) {
   };
 
   buildHelpQuickLinks();
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener(
+      'resize',
+      () => {
+        if (!helpQuickLinksList || helpQuickLinksNav?.hasAttribute('hidden')) {
+          return;
+        }
+        scheduleHelpQuickLinksArrangement();
+      },
+      { passive: true }
+    );
+  }
 
   if (helpDialog) {
     helpDialog.addEventListener('click', e => {
