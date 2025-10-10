@@ -39,11 +39,17 @@
           applyFocusScalePreference: true */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
+// Keep a baseline set of match types so that the session search feature
+// continues to work even when globals have not been initialised yet (for
+// example during unit tests or offline restore flows).
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 
+// Determine which global scope we can use for deep cloning. The order mirrors
+// the environments the planner needs to support: main window first, followed by
+// worker-like contexts and finally Node during testing.
 function getSessionCloneScope() {
   if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
     return CORE_GLOBAL_SCOPE;
@@ -68,6 +74,8 @@ function getSessionCloneScope() {
   return null;
 }
 
+// Basic JSON cloning fallback. We lean on this when structuredClone is not
+// available so that session data stays isolated from the UI state.
 function sessionJsonDeepClone(value) {
   if (value === null || typeof value !== 'object') {
     return value;
@@ -82,6 +90,9 @@ function sessionJsonDeepClone(value) {
   return value;
 }
 
+// Attempt to obtain a native structuredClone implementation. Using the native
+// version keeps complex objects (like Maps or Sets) intact when the runtime
+// supports them, but we still have a safe fallback when it does not.
 function sessionResolveStructuredClone(scope) {
   if (typeof structuredClone === 'function') {
     return structuredClone;
@@ -118,6 +129,9 @@ function sessionResolveStructuredClone(scope) {
   return null;
 }
 
+// Wrap structuredClone so that errors never bubble into the autosave layer. If
+// cloning fails, we quietly fall back to JSON cloning and keep the session
+// usable for the user.
 function sessionCreateResilientDeepClone(scope) {
   const structuredCloneImpl = sessionResolveStructuredClone(scope);
 
@@ -145,6 +159,8 @@ const SESSION_DEEP_CLONE =
     ? CORE_GLOBAL_SCOPE.__cineDeepClone
     : sessionCreateResilientDeepClone(getSessionCloneScope());
 
+// Cache the resolved deep clone helper globally so other modules (and legacy
+// entry points) can reuse the exact same logic without duplicating work.
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
   try {
     CORE_GLOBAL_SCOPE.__cineDeepClone = SESSION_DEEP_CLONE;
@@ -177,6 +193,9 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 /* global requestPersistentStorage */
 
+// Lazily create globally shared placeholders so that other modules can safely
+// attach state without mutating the global namespace unexpectedly. This keeps
+// backwards compatibility with legacy entry points.
 function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   const scope =
     (typeof globalThis !== 'undefined' && globalThis)

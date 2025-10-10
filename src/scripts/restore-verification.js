@@ -1,4 +1,7 @@
 (function () {
+  // Restore verification compares the live session to an imported backup so we
+  // can reassure the user that no data was lost during restore or highlight the
+  // exact discrepancies that still need attention.
   const GLOBAL_SCOPE =
     (typeof globalThis !== 'undefined' && globalThis)
     || (typeof window !== 'undefined' && window)
@@ -6,6 +9,8 @@
     || (typeof global !== 'undefined' && global)
     || null;
 
+  // Normalise translation access and provide a deterministic fallback so that
+  // automated tests and offline usage still receive meaningful copy.
   function getTranslator(translationFn) {
     if (typeof translationFn === 'function') {
       return translationFn;
@@ -16,6 +21,8 @@
     };
   }
 
+  // Validate a single metric row. This ensures broken payloads never bubble up
+  // to the UI and keeps the table easy to reason about.
   function normaliseRow(row, translator) {
     if (!row || typeof row !== 'object') {
       return {
@@ -38,6 +45,8 @@
     return { label, live, sandbox, diff };
   }
 
+  // Build a rich report for UI consumption. The resulting object is consumed by
+  // both alerts and toast notifications so we keep the shape explicit.
   function buildReport(options) {
     const translator = getTranslator(options && options.translation);
     const rows = Array.isArray(options && options.rows) ? options.rows : [];
@@ -96,6 +105,9 @@
     };
   }
 
+  // Dedicated helper for catastrophic failures (e.g. parsing errors). We treat
+  // these as warnings to encourage manual review of the backup instead of
+  // silently continuing.
   function buildFailureReport(options) {
     const translator = getTranslator(options && options.translation);
     const message = translator(

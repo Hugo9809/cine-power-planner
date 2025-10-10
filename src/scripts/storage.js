@@ -63,6 +63,9 @@
     }
   }
 
+  // Perform a defensive deep clone that keeps us safe even when the runtime
+  // does not provide a structured clone implementation. We always fall back to
+  // this logic so that backup/restore data is never mutated accidentally.
   function storageJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
@@ -77,6 +80,10 @@
     return value;
   }
 
+  // Try to locate a built-in structuredClone implementation on whichever
+  // runtime we are executing in. This is intentionally exhaustive because the
+  // application must behave identically in browsers, service workers and
+  // automated test environments.
   function storageResolveStructuredClone(scope) {
     if (typeof structuredClone === 'function') {
       return structuredClone;
@@ -113,6 +120,9 @@
     return null;
   }
 
+  // Wrap the structuredClone implementation in a safety net. If the platform
+  // throws (for example because of cloning functions), we gracefully fall back
+  // to the JSON based strategy so that persistence keeps working.
   function storageCreateResilientDeepClone(scope) {
     const structuredCloneImpl = storageResolveStructuredClone(scope);
 
@@ -140,9 +150,14 @@
       ? GLOBAL_SCOPE.__cineDeepClone
       : storageCreateResilientDeepClone(GLOBAL_SCOPE);
 
+  // Track sessionStorage instances we have already vetted. This allows us to
+  // reuse safe handles even when multiple windows or execution contexts are
+  // interacting with the planner simultaneously.
   const knownSessionStorages =
     typeof WeakSet === 'function' ? new WeakSet() : null;
 
+  // Register a sessionStorage reference that we know is safe to use. The
+  // WeakSet ensures we do not keep windows alive longer than necessary.
   function registerKnownSessionStorage(storage) {
     if (
       !knownSessionStorages
@@ -159,6 +174,9 @@
     }
   }
 
+  // Resolve the sessionStorage object from a candidate scope while silently
+  // handling cross-origin access errors. We prefer returning null over
+  // throwing so that autosave logic can continue without interruption.
   function resolveSessionStorageFromScope(scope) {
     if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
       return null;
@@ -176,6 +194,9 @@
     return null;
   }
 
+  // Attempt to discover sessionStorage references across all known scopes once
+  // during module initialisation. This keeps read/write operations snappy later
+  // on and avoids repeated try/catch cost when autosave is active.
   (function primeSessionStorageCandidates() {
     const scopes = [
       GLOBAL_SCOPE,
@@ -294,6 +315,9 @@ var AUTO_BACKUP_COMPRESSION_CACHE =
 var AUTO_BACKUP_COMPRESSION_CACHE_KEYS = [];
 var AUTO_BACKUP_COMPRESSION_CACHE_LIMIT = 16;
 
+// Compression payloads are reused frequently while we keep the UI responsive.
+// We clone objects before storing them so that later mutations never corrupt
+// previous snapshots.
 function cloneAutoBackupCompressionValue(value) {
   if (!value || typeof value !== 'object') {
     return value;
@@ -309,6 +333,8 @@ function cloneAutoBackupCompressionValue(value) {
   return clone;
 }
 
+// Retrieve a previously cached compression payload. Returning a shallow clone
+// protects the caller from mutating the cache entry by accident.
 function readAutoBackupCompressionCache(signature) {
   if (!AUTO_BACKUP_COMPRESSION_CACHE || typeof signature !== 'string' || !signature) {
     return null;
@@ -334,6 +360,8 @@ function readAutoBackupCompressionCache(signature) {
   };
 }
 
+// Store compression metadata for automatic backups. The cache is intentionally
+// size-limited to keep memory predictable during long offline sessions.
 function writeAutoBackupCompressionCache(signature, payload, compression) {
   if (
     !AUTO_BACKUP_COMPRESSION_CACHE
