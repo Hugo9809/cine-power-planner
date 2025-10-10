@@ -149,7 +149,8 @@ const texts = {
       "Sidebar navigation listing planner sections. Select a section to scroll there and the menu closes automatically.",
     contacts: {
       heading: "Contacts",
-      description: "Save crew members once and reuse them for every project.",
+      description:
+        "Save crew members once, keep them stored offline and reuse them for every project.",
       addContactButton: "Add contact",
       importButton: "Import vCard",
       importHint: "Import .vcf files to add contacts instantly.",
@@ -2011,7 +2012,8 @@ const texts = {
       "Navigazione laterale con le sezioni dell’app. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
     contacts: {
       heading: "Contatti",
-      description: "Salva una volta i membri della troupe e riutilizzali in ogni progetto.",
+      description:
+        "Salva una volta i membri della troupe, conservali offline e riutilizzali in ogni progetto.",
       addContactButton: "Aggiungi contatto",
       importButton: "Importa vCard",
       importHint: "Importa file .vcf per aggiungere contatti all'istante.",
@@ -3864,7 +3866,8 @@ const texts = {
       "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     contacts: {
       heading: "Contactos",
-      description: "Guarda a los miembros del equipo una vez y reutilízalos en cada proyecto.",
+      description:
+        "Guarda a los miembros del equipo una vez, consérvalos sin conexión y reutilízalos en cada proyecto.",
       addContactButton: "Agregar contacto",
       importButton: "Importar vCard",
       importHint: "Importa archivos .vcf para añadir contactos al instante.",
@@ -5732,7 +5735,8 @@ const texts = {
       "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
     contacts: {
       heading: "Contacts",
-      description: "Enregistrez les membres de l'équipe une fois et réutilisez-les dans chaque projet.",
+      description:
+        "Enregistrez les membres de l’équipe une fois, conservez-les hors ligne et réutilisez-les dans chaque projet.",
       addContactButton: "Ajouter un contact",
       importButton: "Importer une vCard",
       importHint: "Importez des fichiers .vcf pour ajouter des contacts instantanément.",
@@ -7611,7 +7615,8 @@ const texts = {
       "Seitenleiste mit den Bereichen des Planers. Wähle einen Bereich aus, um dorthin zu scrollen; das Menü schließt sich dabei automatisch.",
     contacts: {
       heading: "Kontakte",
-      description: "Speichere Crew-Mitglieder einmal und verwende sie in jedem Projekt wieder.",
+      description:
+        "Speichere Crew-Mitglieder einmal, bewahre sie offline auf und nutze sie in jedem Projekt erneut.",
       addContactButton: "Kontakt hinzufügen",
       importButton: "vCard importieren",
       importHint: "Importiere .vcf-Dateien, um Kontakte sofort zu übernehmen.",
