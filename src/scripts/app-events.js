@@ -7,7 +7,9 @@
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           callCoreFunctionIfAvailable, suspendProjectPersistence,
           createProjectDeletionBackup,
-          resumeProjectPersistence */
+          resumeProjectPersistence, lensFieldsDiv,
+          setLensDeviceMountOptions, getLensDeviceMountOptions,
+          clearLensDeviceMountOptions, updateMountTypeOptions */
 
 // Locate a logging helper without assuming a specific runtime. The application
 // runs in browsers, service workers and occasionally Node based tooling, so we
@@ -2291,6 +2293,47 @@ function inferDeviceCategory(key, data) {
   return "generic";
 }
 
+function resolveDefaultLensMountType() {
+  const cameras = devices && devices.cameras ? devices.cameras : null;
+  if (!cameras || typeof cameras !== 'object') {
+    return '';
+  }
+  const findPreferredMount = (cam) => {
+    if (!cam || typeof cam !== 'object' || !Array.isArray(cam.lensMount)) {
+      return '';
+    }
+    const nativeEntry = cam.lensMount.find(entry => (
+      entry
+      && typeof entry.type === 'string'
+      && typeof entry.mount === 'string'
+      && entry.mount.toLowerCase() === 'native'
+    ));
+    if (nativeEntry && nativeEntry.type) {
+      return nativeEntry.type;
+    }
+    const fallback = cam.lensMount.find(entry => entry && typeof entry.type === 'string' && entry.type.trim());
+    return fallback ? fallback.type : '';
+  };
+
+  const selectedCameraName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  if (selectedCameraName && cameras[selectedCameraName]) {
+    const preferred = findPreferredMount(cameras[selectedCameraName]);
+    if (preferred) {
+      return preferred;
+    }
+  }
+
+  const firstCamera = Object.values(cameras).find(entry => entry && typeof entry === 'object');
+  if (firstCamera) {
+    const preferred = findPreferredMount(firstCamera);
+    if (preferred) {
+      return preferred;
+    }
+  }
+
+  return '';
+}
+
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
@@ -2303,6 +2346,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   hideFormSection(motorFieldsDiv);
   hideFormSection(controllerFieldsDiv);
   hideFormSection(distanceFieldsDiv);
+  hideFormSection(lensFieldsDiv);
   clearDynamicFields();
 
   if (type === "batteries") {
@@ -2328,6 +2372,20 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
     setTimecodes(deviceData.timecode || []);
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
+  } else if (type === "lenses") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(lensFieldsDiv);
+    const fallbackMount = resolveDefaultLensMountType();
+    let mountOptions = [];
+    if (Array.isArray(deviceData?.mountOptions)) {
+      mountOptions = deviceData.mountOptions;
+    } else if (Array.isArray(deviceData?.lensMount)) {
+      mountOptions = deviceData.lensMount;
+    } else if (typeof deviceData?.mount === 'string' && deviceData.mount.trim()) {
+      mountOptions = [{ type: deviceData.mount.trim(), mount: 'native' }];
+    }
+    setLensDeviceMountOptions(mountOptions, fallbackMount);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
     showFormSection(monitorFieldsDiv);
@@ -2496,6 +2554,7 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
       refreshDeviceLists();
+      updateMountTypeOptions();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
@@ -2557,6 +2616,10 @@ addSafeEventListener(newCategorySelect, "change", () => {
   } else if (val === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(cameraFieldsDiv);
+  } else if (val === "lenses") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(lensFieldsDiv);
+    setLensDeviceMountOptions([], resolveDefaultLensMountType());
   } else if (val === "monitors" || val === "directorMonitors") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
@@ -2616,6 +2679,7 @@ addSafeEventListener(newCategorySelect, "change", () => {
   clearBatteryPlates();
   clearRecordingMedia();
   clearLensMounts();
+  clearLensDeviceMountOptions();
   clearPowerDistribution();
   clearVideoOutputs();
   clearFizConnectors();
@@ -2816,6 +2880,20 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       timecode: timecode
     };
     applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    updateMountTypeOptions();
+  } else if (category === "lenses") {
+    const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
+    const mountOptions = getLensDeviceMountOptions();
+    if (mountOptions.length) {
+      existing.mountOptions = mountOptions;
+      existing.mount = mountOptions[0].type || '';
+    } else {
+      delete existing.mountOptions;
+      delete existing.mount;
+    }
+    targetCategory[name] = existing;
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    updateMountTypeOptions();
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {

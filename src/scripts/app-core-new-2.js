@@ -14679,6 +14679,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
         }
       });
+      Object.values(devices.lenses || {}).forEach(lens => {
+        if (!lens) return;
+        if (Array.isArray(lens.mountOptions)) {
+          lens.mountOptions.forEach(option => {
+            if (option && option.type) types.add(option.type);
+          });
+        }
+        const baseMount = typeof lens.mount === 'string' ? lens.mount.trim() : '';
+        if (baseMount) types.add(baseMount);
+      });
       return Array.from(types).sort(localeSort);
     }
     
@@ -14701,10 +14711,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     // Build a lens mount row with type and mount selection fields.
-    function createLensMountRow(type = '', mount = 'native') {
+    function createLensMountRow(type = '', mount = 'native', context) {
       const row = document.createElement('div');
       row.className = 'form-row';
-    
+
       const typeSelect = document.createElement('select');
       typeSelect.className = 'lens-mount-type-select';
       typeSelect.name = 'lensMountType';
@@ -14721,9 +14731,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         opt.textContent = type;
         typeSelect.appendChild(opt);
       }
-      typeSelect.value = type;
+      typeSelect.value = type || '';
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
-    
+
       const mountSelect = document.createElement('select');
       addEmptyOption(mountSelect);
       mountSelect.name = 'lensMount';
@@ -14733,33 +14743,52 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         opt.textContent = m;
         mountSelect.appendChild(opt);
       });
-      mountSelect.value = mount || '';
+      mountSelect.value = mount || 'native';
       row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
-    
+
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
+      const headingId = context?.headingId || 'lensMountHeading';
+      const labelId = context?.labelId || 'cameraLensMountLabel';
+      const fallbackContext = context?.fallbackContext || 'Lens Mount';
+      const targetContainer = context?.container || lensMountContainer;
+      const minRows = Number.isFinite(context?.minRows) ? context.minRows : 1;
       configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
-        contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
-        fallbackContext: 'Lens Mount',
+        contextPaths: [headingId, [labelId]],
+        fallbackContext,
         actionKey: 'addEntry'
       });
       addBtn.addEventListener('click', () => {
-        row.after(createLensMountRow());
+        const newRow = createLensMountRow('', 'native', context);
+        if (targetContainer) {
+          if (row.nextSibling) {
+            targetContainer.insertBefore(newRow, row.nextSibling);
+          } else {
+            targetContainer.appendChild(newRow);
+          }
+        } else {
+          row.after(newRow);
+        }
       });
       row.appendChild(addBtn);
-    
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
-        contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
-        fallbackContext: 'Lens Mount',
+        contextPaths: [headingId, [labelId]],
+        fallbackContext,
         actionKey: 'removeEntry'
       });
       removeBtn.addEventListener('click', () => {
-        if (lensMountContainer.children.length > 1) row.remove();
+        const container = targetContainer || row.parentElement;
+        if (!container) return;
+        const min = minRows < 1 ? 1 : minRows;
+        if (container.children.length > min) {
+          row.remove();
+        }
       });
       row.appendChild(removeBtn);
-    
+
       return row;
     }
     
@@ -14787,6 +14816,55 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function clearLensMounts() {
       setLensMounts([]);
+    }
+
+    function getLensDeviceMountContext() {
+      return {
+        container: lensMountOptionsContainer,
+        headingId: 'lensDeviceMountHeading',
+        labelId: 'lensDeviceMountLabel',
+        fallbackContext: 'Lens Mount',
+        minRows: 1,
+      };
+    }
+
+    function setLensDeviceMountOptions(list, fallbackType = '') {
+      if (!lensMountOptionsContainer) return;
+      lensMountOptionsContainer.innerHTML = '';
+      const filtered = Array.isArray(list) ? filterNoneEntries(list) : [];
+      const mounts = filtered.length ? filtered.slice() : [];
+      const normalizedFallback = typeof fallbackType === 'string' ? fallbackType.trim() : '';
+      if (!mounts.length && normalizedFallback) {
+        mounts.push({ type: normalizedFallback, mount: 'native' });
+      }
+      if (!mounts.length) {
+        mounts.push({ type: '', mount: 'native' });
+      }
+      const context = getLensDeviceMountContext();
+      mounts.forEach(entry => {
+        const type = entry && typeof entry.type === 'string' ? entry.type : '';
+        const mount = entry && typeof entry.mount === 'string' ? entry.mount : 'native';
+        lensMountOptionsContainer.appendChild(createLensMountRow(type, mount, context));
+      });
+      updateMountTypeOptions();
+    }
+
+    function getLensDeviceMountOptions() {
+      if (!lensMountOptionsContainer) return [];
+      return Array.from(lensMountOptionsContainer.querySelectorAll('.form-row'))
+        .map(row => {
+          const selects = row ? row.querySelectorAll('select') : null;
+          if (!selects || selects.length < 2) return null;
+          const type = (selects[0].value || '').trim();
+          if (!type) return null;
+          const mount = (selects[1].value || '').trim().toLowerCase();
+          return { type, mount: mount === 'adapted' ? 'adapted' : 'native' };
+        })
+        .filter(Boolean);
+    }
+
+    function clearLensDeviceMountOptions() {
+      setLensDeviceMountOptions([]);
     }
     
     function getAllPowerDistTypes() {
@@ -16168,7 +16246,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       unifyDevices(devices);
       storeDevices(devices);
       refreshDeviceLists();
-    
+      updateMountTypeOptions();
+
       // Re-populate dropdowns to include any newly added devices
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
@@ -16549,6 +16628,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['updateRecordingMediaOptions', () => updateRecordingMediaOptions],
       ['clearRecordingMedia', () => clearRecordingMedia],
       ['clearLensMounts', () => clearLensMounts],
+      ['setLensDeviceMountOptions', () => setLensDeviceMountOptions],
+      ['getLensDeviceMountOptions', () => getLensDeviceMountOptions],
+      ['clearLensDeviceMountOptions', () => clearLensDeviceMountOptions],
       ['clearPowerDistribution', () => clearPowerDistribution],
       ['clearVideoOutputs', () => clearVideoOutputs],
       ['clearFizConnectors', () => clearFizConnectors],

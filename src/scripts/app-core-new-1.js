@@ -3222,6 +3222,8 @@ var monitorWattInput;
 var monitorVoltageInput;
 var monitorPortTypeInput;
 let monitorVideoInputsContainer;
+var lensFieldsDiv;
+let lensMountOptionsContainer;
 
 try {
   if (typeof localStorage !== 'undefined') {
@@ -8541,6 +8543,65 @@ function unifyDevices(devicesData) {
       );
   });
 
+  Object.values(devicesData.lenses || {}).forEach(lens => {
+    if (!lens || typeof lens !== 'object') return;
+    const normalizeMountEntry = (entry) => {
+      if (!entry) return null;
+      if (typeof entry === 'string') {
+        const trimmed = entry.trim();
+        if (!trimmed) return null;
+        return { type: trimmed, mount: 'native' };
+      }
+      const type = typeof entry.type === 'string' ? entry.type.trim() : '';
+      if (!type) return null;
+      const status = typeof entry.mount === 'string' ? entry.mount.trim().toLowerCase() : '';
+      return { type, mount: status === 'adapted' ? 'adapted' : 'native' };
+    };
+
+    if (Array.isArray(lens.mountOptions)) {
+      lens.mountOptions = lens.mountOptions
+        .map(normalizeMountEntry)
+        .filter(Boolean);
+    } else if (lens.mountOptions && typeof lens.mountOptions === 'object') {
+      const single = normalizeMountEntry(lens.mountOptions);
+      lens.mountOptions = single ? [single] : [];
+    } else if (Array.isArray(lens.lensMount)) {
+      lens.mountOptions = lens.lensMount
+        .map(normalizeMountEntry)
+        .filter(Boolean);
+      delete lens.lensMount;
+    } else {
+      const mountType = typeof lens.mount === 'string' ? lens.mount.trim() : '';
+      lens.mountOptions = mountType ? [{ type: mountType, mount: 'native' }] : [];
+    }
+
+    if (!Array.isArray(lens.mountOptions)) {
+      lens.mountOptions = [];
+    }
+
+    lens.mountOptions = lens.mountOptions.filter((opt, index, arr) => (
+      opt
+      && opt.type
+      && index === arr.findIndex(other => other && other.type === opt.type && other.mount === opt.mount)
+    ));
+
+    if (lens.mountOptions.length) {
+      const primary = lens.mountOptions.find(opt => opt && opt.mount === 'native' && opt.type)
+        || lens.mountOptions[0];
+      const primaryType = primary && primary.type ? primary.type : '';
+      if (primaryType) {
+        lens.mount = primaryType;
+      } else if (typeof lens.mount === 'string') {
+        lens.mount = lens.mount.trim();
+      }
+    } else if (typeof lens.mount === 'string') {
+      lens.mount = lens.mount.trim();
+      if (!lens.mount) {
+        delete lens.mount;
+      }
+    }
+  });
+
   ['monitors', 'video', 'viewfinders'].forEach(key => {
     applyFixPowerInput(devicesData[key]);
   });
@@ -10754,6 +10815,15 @@ function setLanguage(lang) {
   document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
   document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
   document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
+  const lensDeviceMountHeadingElem = document.getElementById("lensDeviceMountHeading");
+  if (lensDeviceMountHeadingElem) {
+    lensDeviceMountHeadingElem.textContent = texts[lang].lensDeviceMountHeading;
+  }
+  const lensDeviceMountLabelElem = document.getElementById("lensDeviceMountLabel");
+  if (lensDeviceMountLabelElem) {
+    lensDeviceMountLabelElem.textContent = texts[lang].lensDeviceMountLabel;
+    lensDeviceMountLabelElem.setAttribute('data-help', texts[lang].lensDeviceMountHelp);
+  }
   document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
   document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
   document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
@@ -18812,6 +18882,8 @@ monitorWattInput = document.getElementById("monitorWatt");
 monitorVoltageInput = document.getElementById("monitorVoltage");
 monitorPortTypeInput = document.getElementById("monitorPortType");
 monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
+lensFieldsDiv = document.getElementById("lensFields");
+lensMountOptionsContainer = document.getElementById("lensMountOptionsContainer");
 
 function populateCategoryOptions() {
   if (!newCategorySelect && typeof document !== 'undefined') {
@@ -19047,6 +19119,7 @@ var categoryExcludedAttrs = {
   batteryHotswaps: ["capacity", "pinA"],
   "accessories.batteries": ["capacity", "pinA"],
   cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
+  lenses: ["mount", "mountOptions"],
   monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
   viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
