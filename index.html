@@ -6061,61 +6061,65 @@
     aria-labelledby="ownGearDialogHeading"
     aria-describedby="ownGearDialogDescription"
   >
-    <form id="ownGearForm" method="dialog" class="modal-surface own-gear-surface">
-      <header class="own-gear-header">
-        <h3 id="ownGearDialogHeading">Own gear</h3>
-        <p id="ownGearDialogDescription" class="own-gear-description"></p>
+    <form id="ownGearForm" method="dialog" class="modal-surface modal-surface-scrollable own-gear-surface">
+      <header class="modal-header own-gear-header">
+        <div class="modal-header-main">
+          <h3 id="ownGearDialogHeading" class="modal-title">Own gear</h3>
+          <p id="ownGearDialogDescription" class="modal-description own-gear-description"></p>
+        </div>
       </header>
-      <section class="own-gear-add" aria-labelledby="ownGearAddHeading">
-        <div class="own-gear-add-header">
-          <h4 id="ownGearAddHeading">Add gear</h4>
-          <p id="ownGearAddHelp" class="own-gear-help"></p>
-        </div>
-        <div class="own-gear-fields">
-          <div class="form-row own-gear-name">
-            <label id="ownGearNameLabel" for="ownGearName">Item</label>
-            <input
-              id="ownGearName"
-              name="ownGearName"
-              type="text"
-              autocomplete="off"
-              list="ownGearSuggestions"
-              data-skip-native-picker="true"
-            />
-            <datalist id="ownGearSuggestions"></datalist>
+      <div class="modal-body own-gear-body">
+        <section class="modal-section own-gear-add" aria-labelledby="ownGearAddHeading">
+          <div class="own-gear-add-header">
+            <h4 id="ownGearAddHeading">Add gear</h4>
+            <p id="ownGearAddHelp" class="own-gear-help"></p>
           </div>
-          <div class="form-row own-gear-quantity">
-            <label id="ownGearQuantityLabel" for="ownGearQuantity">Quantity</label>
-            <input
-              id="ownGearQuantity"
-              name="ownGearQuantity"
-              type="number"
-              inputmode="decimal"
-              min="0"
-              step="0.1"
-            />
+          <div class="own-gear-fields">
+            <div class="form-row own-gear-name">
+              <label id="ownGearNameLabel" for="ownGearName">Item</label>
+              <input
+                id="ownGearName"
+                name="ownGearName"
+                type="text"
+                autocomplete="off"
+                list="ownGearSuggestions"
+                data-skip-native-picker="true"
+              />
+              <datalist id="ownGearSuggestions"></datalist>
+            </div>
+            <div class="form-row own-gear-quantity">
+              <label id="ownGearQuantityLabel" for="ownGearQuantity">Quantity</label>
+              <input
+                id="ownGearQuantity"
+                name="ownGearQuantity"
+                type="number"
+                inputmode="decimal"
+                min="0"
+                step="0.1"
+              />
+            </div>
           </div>
-        </div>
-        <div class="form-row own-gear-notes">
-          <label id="ownGearNotesLabel" for="ownGearNotes">Notes</label>
-          <textarea id="ownGearNotes" name="ownGearNotes" rows="2" autocomplete="off"></textarea>
-        </div>
-        <div class="own-gear-form-actions">
-          <button type="button" id="ownGearResetButton">Reset</button>
-          <button type="submit" id="ownGearSaveButton" class="primary">Save item</button>
-        </div>
-      </section>
-      <section class="own-gear-list-section" aria-labelledby="ownGearListHeading">
-        <div class="own-gear-list-header">
-          <h4 id="ownGearListHeading">Your gear</h4>
-          <p id="ownGearListSummary" class="own-gear-list-summary"></p>
-        </div>
-        <ul id="ownGearList" class="own-gear-list" aria-live="polite"></ul>
-        <p id="ownGearEmptyState" class="own-gear-empty">No gear saved yet.</p>
-      </section>
-      <div class="dialog-actions own-gear-footer">
-        <button type="button" id="ownGearCloseButton">Close</button>
+          <div class="form-row own-gear-notes">
+            <label id="ownGearNotesLabel" for="ownGearNotes">Notes</label>
+            <textarea id="ownGearNotes" name="ownGearNotes" rows="2" autocomplete="off"></textarea>
+          </div>
+          <div class="own-gear-form-actions">
+            <button type="button" id="ownGearResetButton">Reset</button>
+            <button type="submit" id="ownGearSaveButton" class="primary">Save item</button>
+          </div>
+        </section>
+        <section class="modal-section own-gear-list-section" aria-labelledby="ownGearListHeading">
+          <div class="own-gear-list-header">
+            <h4 id="ownGearListHeading">Your gear</h4>
+            <p id="ownGearListSummary" class="own-gear-list-summary"></p>
+          </div>
+          <ul id="ownGearList" class="own-gear-list" aria-live="polite"></ul>
+          <p id="ownGearEmptyState" class="own-gear-empty">No gear saved yet.</p>
+        </section>
       </div>
+      <footer class="modal-footer dialog-actions own-gear-footer">
+        <button type="button" id="ownGearCloseButton">Close</button>
+      </footer>
     </form>
   </dialog>
 
@@ -6151,64 +6155,66 @@
     aria-modal="true"
     aria-labelledby="gearItemEditTitle"
   >
-    <form id="gearItemEditForm" method="dialog" class="modal-surface gear-item-edit-form">
-      <div class="gear-item-edit-header">
-        <div class="gear-item-edit-header-body">
-          <h3 id="gearItemEditTitle">Edit gear item</h3>
-          <p id="gearItemEditPreview" class="gear-item-edit-preview" hidden></p>
+    <form id="gearItemEditForm" method="dialog" class="modal-surface modal-surface-scrollable gear-item-edit-form">
+      <header class="modal-header gear-item-edit-header">
+        <div class="modal-header-main gear-item-edit-header-body">
+          <h3 id="gearItemEditTitle" class="modal-title">Edit gear item</h3>
+          <p id="gearItemEditPreview" class="modal-description gear-item-edit-preview" hidden></p>
         </div>
         <button type="button" id="gearItemEditReset" class="gear-item-edit-reset">Reset name</button>
-      </div>
-      <div class="gear-item-edit-fields">
-        <div class="gear-item-edit-grid">
-          <div class="form-row">
-            <label id="gearItemEditQuantityLabel" for="gearItemEditQuantity">Quantity</label>
-            <input
-              id="gearItemEditQuantity"
-              name="gearItemEditQuantity"
-              type="text"
-              inputmode="numeric"
-              autocomplete="off"
-            />
+      </header>
+      <div class="modal-body gear-item-edit-body">
+        <div class="gear-item-edit-fields">
+          <div class="gear-item-edit-grid">
+            <div class="form-row">
+              <label id="gearItemEditQuantityLabel" for="gearItemEditQuantity">Quantity</label>
+              <input
+                id="gearItemEditQuantity"
+                name="gearItemEditQuantity"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+              />
+            </div>
+            <div class="form-row">
+              <label id="gearItemEditNameLabel" for="gearItemEditName">Item name</label>
+              <input
+                id="gearItemEditName"
+                name="gearItemEditName"
+                type="text"
+                autocomplete="off"
+              />
+            </div>
           </div>
-          <div class="form-row">
-            <label id="gearItemEditNameLabel" for="gearItemEditName">Item name</label>
-            <input
-              id="gearItemEditName"
-              name="gearItemEditName"
-              type="text"
+          <div class="form-row form-row--full">
+            <label id="gearItemEditNoteLabel" for="gearItemEditNote">Note</label>
+            <textarea
+              id="gearItemEditNote"
+              name="gearItemEditNote"
+              rows="3"
               autocomplete="off"
-            />
+            ></textarea>
           </div>
+          <section
+            id="gearItemEditRentalSection"
+            class="gear-item-edit-rental"
+            aria-labelledby="gearItemEditRentalLabel"
+          >
+            <label id="gearItemEditRentalContainer" class="gear-item-edit-checkbox">
+              <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
+              <span id="gearItemEditRentalLabel">Exclude from rental house</span>
+            </label>
+            <button type="button" id="gearItemEditRentalToggle" class="gear-item-edit-rental-btn">
+              Exclude from rental house
+            </button>
+            <p id="gearItemEditRentalDescription" class="gear-item-edit-rental-description"></p>
+          </section>
         </div>
-        <div class="form-row form-row--full">
-          <label id="gearItemEditNoteLabel" for="gearItemEditNote">Note</label>
-          <textarea
-            id="gearItemEditNote"
-            name="gearItemEditNote"
-            rows="3"
-            autocomplete="off"
-          ></textarea>
-        </div>
-        <section
-          id="gearItemEditRentalSection"
-          class="gear-item-edit-rental"
-          aria-labelledby="gearItemEditRentalLabel"
-        >
-          <label id="gearItemEditRentalContainer" class="gear-item-edit-checkbox">
-            <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
-            <span id="gearItemEditRentalLabel">Exclude from rental house</span>
-          </label>
-          <button type="button" id="gearItemEditRentalToggle" class="gear-item-edit-rental-btn">
-            Exclude from rental house
-          </button>
-          <p id="gearItemEditRentalDescription" class="gear-item-edit-rental-description"></p>
-        </section>
       </div>
-      <div class="dialog-actions">
+      <footer class="modal-footer dialog-actions">
         <button type="button" id="gearItemEditCancel">Cancel</button>
         <button type="submit" id="gearItemEditSave" class="primary">Save</button>
-      </div>
+      </footer>
     </form>
   </dialog>
 
@@ -6614,10 +6620,14 @@
 
   <dialog id="contactsDialog" class="app-modal" aria-labelledby="contactsDialogHeading">
     <form id="contactsForm" method="dialog" class="modal-surface modal-surface-scrollable contacts-dialog">
-      <div class="contacts-dialog-header">
-        <h2 id="contactsDialogHeading">Contacts</h2>
-        <p id="contactsDialogDescription">Save crew members once and reuse them for every project.</p>
-        <div class="contacts-toolbar" role="group" aria-label="Contacts tools">
+      <header class="modal-header contacts-dialog-header">
+        <div class="modal-header-main">
+          <h2 id="contactsDialogHeading" class="modal-title">Contacts</h2>
+          <p id="contactsDialogDescription" class="modal-description">
+            Save crew members once and reuse them for every project.
+          </p>
+        </div>
+        <div class="modal-toolbar contacts-toolbar" role="group" aria-label="Contacts tools">
           <button type="button" id="contactsAddButton">
             <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE02E;</span>
             <span id="contactsAddButtonLabel">Add contact</span>
@@ -6637,16 +6647,16 @@
             </button>
           </div>
         </div>
-        <p id="contactsImportHint" class="contacts-import-hint">Import .vcf files to add contacts instantly.</p>
-      </div>
-      <div class="contacts-dialog-body">
+        <p id="contactsImportHint" class="modal-hint contacts-import-hint">Import .vcf files to add contacts instantly.</p>
+      </header>
+      <div class="modal-body contacts-dialog-body">
         <p id="contactsEmptyState" class="contacts-empty-state">No contacts saved yet. Add your crew to reuse them later.</p>
         <div id="contactsList" class="contacts-list" role="list"></div>
       </div>
       <p id="contactsAnnouncement" class="visually-hidden" role="status" aria-live="polite"></p>
-      <div class="dialog-actions">
+      <footer class="modal-footer dialog-actions">
         <button type="button" id="contactsCloseButton">Close</button>
-      </div>
+      </footer>
     </form>
   </dialog>
 
