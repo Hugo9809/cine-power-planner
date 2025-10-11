@@ -1,27 +1,26 @@
-function legacyResolveGlobalScope() {
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function resolveGlobalScope() {
   if (typeof globalThis !== 'undefined') return globalThis;
   if (typeof window !== 'undefined') return window;
   if (typeof self !== 'undefined') return self;
   if (typeof global !== 'undefined') return global;
   return null;
 }
-
-function legacyCommitCatalogToTarget(target, catalog) {
-  if (!target || typeof target !== 'object' && typeof target !== 'function') {
+function commitRentalCatalogToTarget(target, catalog) {
+  if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
     return;
   }
-
-  var existing;
-  try {
-    existing = target.rentalHouses;
-  } catch (readError) {
-    existing = undefined;
-  }
-
-  if (existing && Array.isArray(existing) && existing.length) {
+  var existing = function () {
+    try {
+      return target.rentalHouses;
+    } catch (readError) {
+      void readError;
+      return undefined;
+    }
+  }();
+  if (Array.isArray(existing) && existing.length) {
     return;
   }
-
   try {
     Object.defineProperty(target, 'rentalHouses', {
       configurable: true,
@@ -33,34 +32,28 @@ function legacyCommitCatalogToTarget(target, catalog) {
   } catch (defineError) {
     void defineError;
   }
-
   try {
     target.rentalHouses = catalog;
   } catch (assignError) {
     void assignError;
   }
 }
-
-function legacyCommitCatalogToGlobal(catalog) {
-  var scope = legacyResolveGlobalScope();
+function commitRentalCatalogToGlobal(catalog) {
+  var scope = resolveGlobalScope();
   if (!scope) {
     return catalog;
   }
-
-  legacyCommitCatalogToTarget(scope, catalog);
-  legacyCommitCatalogToTarget(scope && scope.devices, catalog);
-
-  if (!scope.__cineRentalHouseCatalog || !Array.isArray(scope.__cineRentalHouseCatalog)) {
+  commitRentalCatalogToTarget(scope, catalog);
+  commitRentalCatalogToTarget(scope && scope.devices, catalog);
+  if (!Array.isArray(scope.__cineRentalHouseCatalog)) {
     try {
       scope.__cineRentalHouseCatalog = catalog;
     } catch (assignError) {
       void assignError;
     }
   }
-
   return catalog;
 }
-
 var rentalHouses = Object.freeze([Object.freeze({
   name: '711rent – Amsterdam',
   shortName: '711rent',
@@ -1430,16 +1423,10 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: 'https://vocas.nl/',
   accessDate: '2025-02-14'
 })]);
-
-var legacyShouldExposeGlobally =
-  typeof module === 'undefined'
-  || !module
-  || !module.exports;
-
-if (legacyShouldExposeGlobally) {
-  legacyCommitCatalogToGlobal(rentalHouses);
+var shouldExposeGlobally = typeof module === 'undefined' || !module || !module.exports;
+if (shouldExposeGlobally) {
+  commitRentalCatalogToGlobal(rentalHouses);
 }
-
 if (typeof module !== 'undefined' && module && module.exports) {
   module.exports = rentalHouses;
 }

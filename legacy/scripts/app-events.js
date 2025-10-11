@@ -1930,6 +1930,62 @@ function inferDeviceCategory(key, data) {
   if (key === "fiz.distance" || data.measurementMethod || data.connectionCompatibility || data.measurementRange || data.accuracy) return "fiz.distance";
   return "generic";
 }
+function resolveDefaultLensMountType() {
+  var _cameraSelect;
+  var cameras = devices && devices.cameras ? devices.cameras : null;
+  if (!cameras || _typeof(cameras) !== 'object') {
+    return '';
+  }
+  var findPreferredMount = function findPreferredMount(cam) {
+    if (!cam || _typeof(cam) !== 'object' || !Array.isArray(cam.lensMount)) {
+      return '';
+    }
+    var nativeEntry = cam.lensMount.find(function (entry) {
+      return entry && typeof entry.type === 'string' && typeof entry.mount === 'string' && entry.mount.toLowerCase() === 'native';
+    });
+    if (nativeEntry && nativeEntry.type) {
+      return nativeEntry.type;
+    }
+    var fallback = cam.lensMount.find(function (entry) {
+      return entry && typeof entry.type === 'string' && entry.type.trim();
+    });
+    return fallback ? fallback.type : '';
+  };
+  var selectedCameraName = typeof ((_cameraSelect = cameraSelect) === null || _cameraSelect === void 0 ? void 0 : _cameraSelect.value) === 'string' ? cameraSelect.value : '';
+  if (selectedCameraName && cameras[selectedCameraName]) {
+    var preferred = findPreferredMount(cameras[selectedCameraName]);
+    if (preferred) {
+      return preferred;
+    }
+  }
+  var firstCamera = Object.values(cameras).find(function (entry) {
+    return entry && _typeof(entry) === 'object';
+  });
+  if (firstCamera) {
+    var _preferred = findPreferredMount(firstCamera);
+    if (_preferred) {
+      return _preferred;
+    }
+  }
+  return '';
+}
+function normalizeLensFocusScale(value) {
+  if (typeof normalizeFocusScale === 'function') {
+    try {
+      var _normalized = normalizeFocusScale(value);
+      if (_normalized === 'imperial' || _normalized === 'metric') {
+        return _normalized;
+      }
+    } catch (focusScaleNormalizeError) {
+      void focusScaleNormalizeError;
+    }
+  }
+  var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (normalized === 'imperial' || normalized === 'metric') {
+    return normalized;
+  }
+  return '';
+}
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   var type = inferDeviceCategory(categoryKey, deviceData);
@@ -1942,6 +1998,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   hideFormSection(motorFieldsDiv);
   hideFormSection(controllerFieldsDiv);
   hideFormSection(distanceFieldsDiv);
+  hideFormSection(lensFieldsDiv);
   clearDynamicFields();
   if (type === "batteries") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
@@ -1967,6 +2024,28 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
     setTimecodes(deviceData.timecode || []);
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
+  } else if (type === "lenses") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(lensFieldsDiv);
+    var fallbackMount = resolveDefaultLensMountType();
+    var mountOptions = [];
+    if (Array.isArray(deviceData === null || deviceData === void 0 ? void 0 : deviceData.mountOptions)) {
+      mountOptions = deviceData.mountOptions;
+    } else if (Array.isArray(deviceData === null || deviceData === void 0 ? void 0 : deviceData.lensMount)) {
+      mountOptions = deviceData.lensMount;
+    } else if (typeof (deviceData === null || deviceData === void 0 ? void 0 : deviceData.mount) === 'string' && deviceData.mount.trim()) {
+      mountOptions = [{
+        type: deviceData.mount.trim(),
+        mount: 'native'
+      }];
+    }
+    setLensDeviceMountOptions(mountOptions, fallbackMount);
+    if (lensFocusScaleSelect) {
+      updateLensFocusScaleSelectOptions();
+      var storedFocusScale = normalizeLensFocusScale(deviceData && deviceData.focusScale);
+      lensFocusScaleSelect.value = storedFocusScale || '';
+    }
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
     var _deviceData$power4, _deviceData$video, _deviceData$video2, _deviceData$audioOutp, _deviceData$audioOutp2;
@@ -2135,6 +2214,7 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
       refreshDeviceLists();
+      updateMountTypeOptions();
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video, true);
@@ -2197,6 +2277,14 @@ addSafeEventListener(newCategorySelect, "change", function () {
   } else if (val === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(cameraFieldsDiv);
+  } else if (val === "lenses") {
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(lensFieldsDiv);
+    setLensDeviceMountOptions([], resolveDefaultLensMountType());
+    if (lensFocusScaleSelect) {
+      updateLensFocusScaleSelectOptions();
+      lensFocusScaleSelect.value = '';
+    }
   } else if (val === "monitors" || val === "directorMonitors") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(monitorFieldsDiv);
@@ -2258,6 +2346,10 @@ addSafeEventListener(newCategorySelect, "change", function () {
   clearBatteryPlates();
   clearRecordingMedia();
   clearLensMounts();
+  clearLensDeviceMountOptions();
+  if (lensFocusScaleSelect) {
+    lensFocusScaleSelect.value = '';
+  }
   clearPowerDistribution();
   clearVideoOutputs();
   clearFizConnectors();
@@ -2436,6 +2528,28 @@ addSafeEventListener(addDeviceBtn, "click", function () {
       timecode: timecode
     };
     applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    updateMountTypeOptions();
+  } else if (category === "lenses") {
+    var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
+    var mountOptions = getLensDeviceMountOptions();
+    if (mountOptions.length) {
+      _existing2.mountOptions = mountOptions;
+      _existing2.mount = mountOptions[0].type || '';
+    } else {
+      delete _existing2.mountOptions;
+      delete _existing2.mount;
+    }
+    if (lensFocusScaleSelect) {
+      var selectedFocusScale = normalizeLensFocusScale(lensFocusScaleSelect.value);
+      if (selectedFocusScale) {
+        _existing2.focusScale = selectedFocusScale;
+      } else {
+        delete _existing2.focusScale;
+      }
+    }
+    targetCategory[name] = _existing2;
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    updateMountTypeOptions();
   } else if (category === "monitors" || category === "directorMonitors") {
     var _watt = parseFloat(monitorWattInput.value);
     if (isNaN(_watt) || _watt <= 0) {
@@ -2566,8 +2680,8 @@ addSafeEventListener(addDeviceBtn, "click", function () {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    targetCategory[name] = _objectSpread(_objectSpread({}, _existing2), {}, {
+    var _existing3 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
+    targetCategory[name] = _objectSpread(_objectSpread({}, _existing3), {}, {
       powerDrawWatts: _watt7
     });
     applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);

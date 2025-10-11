@@ -779,21 +779,29 @@ function generatePrintableOverview() {
     return num.toFixed(maximumFractionDigits);
   };
   var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
-    var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
-    return normalized === 'imperial' ? 'imperial' : 'metric';
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var normalized = value.trim().toLowerCase();
+    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
   };
   var resolveFocusScalePreference = function resolveFocusScalePreference() {
     var scope = resolveOverviewCloneScope();
-    if (scope && typeof scope.focusScalePreference === 'string') {
-      return scope.focusScalePreference;
-    }
-    if (typeof focusScalePreference === 'string') {
-      return focusScalePreference;
-    }
-    return 'metric';
+    var scopePreference = scope && typeof scope.focusScalePreference === 'string' ? scope.focusScalePreference : null;
+    var rawPreference = scopePreference || (typeof focusScalePreference === 'string' ? focusScalePreference : null) || 'metric';
+    return normalizeFocusScaleValue(rawPreference) || 'metric';
   };
-  var formatFocusScalePreference = function formatFocusScalePreference() {
-    var preference = normalizeFocusScaleValue(resolveFocusScalePreference());
+  var resolveLensFocusScaleMode = function resolveLensFocusScaleMode(lensInfo) {
+    if (lensInfo && _typeof(lensInfo) === 'object') {
+      var override = normalizeFocusScaleValue(lensInfo.focusScale);
+      if (override) {
+        return override;
+      }
+    }
+    return resolveFocusScalePreference();
+  };
+  var formatFocusScalePreference = function formatFocusScalePreference(lensInfo) {
+    var preference = resolveLensFocusScaleMode(lensInfo);
     var key = preference === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
     var labelFromLang = t && typeof t[key] === 'string' ? t[key].trim() : '';
     if (labelFromLang) {
@@ -806,14 +814,16 @@ function generatePrintableOverview() {
     return preference === 'imperial' ? 'Imperial' : 'Metric';
   };
   var useImperialFocusScale = function useImperialFocusScale() {
-    return normalizeFocusScaleValue(resolveFocusScalePreference()) === 'imperial';
+    var lensInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    return resolveLensFocusScaleMode(lensInfo) === 'imperial';
   };
   var formatLengthMm = function formatLengthMm(value) {
+    var lensInfo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale()) {
+    if (useImperialFocusScale(lensInfo)) {
       var inches = numeric / 25.4;
       var fractionDigits = inches >= 10 ? 1 : 2;
       var _formatted = formatNumber(inches, {
@@ -829,11 +839,12 @@ function generatePrintableOverview() {
     return formatted ? "".concat(formatted, " mm") : '';
   };
   var formatRodLength = function formatRodLength(value) {
+    var lensInfo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale()) {
+    if (useImperialFocusScale(lensInfo)) {
       var inches = numeric / 2.54;
       var fractionDigits = inches >= 10 ? 1 : 2;
       var _formatted2 = formatNumber(inches, {
@@ -849,11 +860,12 @@ function generatePrintableOverview() {
     return formatted ? "".concat(formatted, " cm") : '';
   };
   var formatWeight = function formatWeight(value) {
+    var lensInfo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale()) {
+    if (useImperialFocusScale(lensInfo)) {
       var pounds = numeric / 453.59237;
       var fractionDigits = pounds >= 10 ? 1 : 2;
       var _formatted3 = formatNumber(pounds, {
@@ -887,11 +899,12 @@ function generatePrintableOverview() {
     return null;
   };
   var formatDistanceMeters = function formatDistanceMeters(value) {
+    var lensInfo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var num = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(num)) {
       return '';
     }
-    if (useImperialFocusScale()) {
+    if (useImperialFocusScale(lensInfo)) {
       var feet = num * 3.280839895;
       var _digits = feet < 10 ? 2 : 1;
       var _formatted4 = formatNumber(feet, {
@@ -1016,7 +1029,7 @@ function generatePrintableOverview() {
       addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
     }
     addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
-    addLensBox('lensSpecFocusScaleLabel', formatFocusScalePreference());
+    addLensBox('lensSpecFocusScaleLabel', lensInfo, formatFocusScalePreference);
     if (!infoBoxes.length) {
       return '';
     }

@@ -3124,21 +3124,16 @@ if (projectForm) {
   projectForm.querySelectorAll('select[multiple]').forEach(function (sel) {
     attachMultiSelectToggle(sel);
   });
-
   var safeUpdateSelectIconBoxes = function safeUpdateSelectIconBoxes(selectElement) {
     if (!selectElement) {
       return;
     }
-
     var localFn = typeof updateSelectIconBoxes === 'function' ? updateSelectIconBoxes : null;
-    var globalScope = typeof globalThis !== 'undefined' && globalThis ? globalThis : typeof window !== 'undefined' ? window : null;
-    var globalFn = globalScope && typeof globalScope.updateSelectIconBoxes === 'function' ? globalScope.updateSelectIconBoxes : null;
+    var globalFn = typeof globalThis !== 'undefined' && globalThis && typeof globalThis.updateSelectIconBoxes === 'function' ? globalThis.updateSelectIconBoxes : null;
     var target = localFn || globalFn;
-
     if (typeof target !== 'function') {
       return;
     }
-
     try {
       target(selectElement);
     } catch (error) {
@@ -3147,7 +3142,6 @@ if (projectForm) {
       }
     }
   };
-
   projectForm.querySelectorAll('select').forEach(function (sel) {
     var handleUpdate = function handleUpdate() {
       return safeUpdateSelectIconBoxes(sel);
@@ -3869,6 +3863,13 @@ if (cameraSelect) {
     }
     if (typeof updateStorageRequirementTypeOptions === 'function') {
       updateStorageRequirementTypeOptions();
+    }
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      try {
+        document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+      } catch (error) {
+        void error;
+      }
     }
   });
 }
@@ -9465,6 +9466,7 @@ function createReloadFallback(win) {
     }
   };
 }
+var OFFLINE_RELOAD_TIMEOUT_MS = 1200;
 var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
 function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
   if (!promise || typeof promise.then !== 'function') {
@@ -9550,7 +9552,7 @@ function clearCachesAndReload() {
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee5() {
-    var reloadFallback, offlineModule, beforeReloadHref, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t8, _t9, _t0;
+    var reloadFallback, offlineModule, beforeReloadHref, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t8, _t9, _t0;
     return _regenerator().w(function (_context5) {
       while (1) switch (_context5.p = _context5.n) {
         case 0:
@@ -9562,14 +9564,27 @@ function _clearCachesAndReload() {
             break;
           }
           _context5.p = 1;
-          _context5.n = 2;
-          return offlineModule.reloadApp({
+          reloadAttempt = offlineModule.reloadApp({
             window: window,
             navigator: typeof navigator !== 'undefined' ? navigator : undefined,
             caches: typeof caches !== 'undefined' ? caches : undefined
           });
+          _context5.n = 2;
+          return awaitPromiseWithSoftTimeout(reloadAttempt, OFFLINE_RELOAD_TIMEOUT_MS, function () {
+            console.warn('Offline module reload timed out; continuing with manual fallback after soft timeout.', {
+              timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS
+            });
+          }, function (lateError) {
+            console.warn('Offline module reload promise rejected after timeout', lateError);
+          });
         case 2:
-          result = _context5.v;
+          _yield$awaitPromiseWi = _context5.v;
+          timedOut = _yield$awaitPromiseWi.timedOut;
+          result = _yield$awaitPromiseWi.result;
+          if (timedOut) {
+            _context5.n = 4;
+            break;
+          }
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
             _context5.n = 4;
@@ -12348,6 +12363,13 @@ function populateEnvironmentDropdowns() {
 }
 function populateLensDropdown() {
   if (!lensSelect) return;
+  var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var normalized = value.trim().toLowerCase();
+    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
+  };
   var resolveFocusScaleMode = function resolveFocusScaleMode() {
     var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
     var scopePreference = scope && typeof scope.focusScalePreference === 'string' ? scope.focusScalePreference : null;
@@ -12355,16 +12377,36 @@ function populateLensDropdown() {
     var rawPreference = scopePreference || fallbackPreference || 'metric';
     if (typeof normalizeFocusScale === 'function') {
       try {
-        return normalizeFocusScale(rawPreference);
+        var _normalized2 = normalizeFocusScale(rawPreference);
+        if (_normalized2 === 'imperial' || _normalized2 === 'metric') {
+          return _normalized2;
+        }
       } catch (normalizeError) {
         void normalizeError;
       }
     }
-    var normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
-    return normalized === 'imperial' ? 'imperial' : 'metric';
+    var normalized = normalizeFocusScaleValue(rawPreference);
+    return normalized || 'metric';
   };
   var focusScaleMode = resolveFocusScaleMode();
   var useImperialFocusScale = focusScaleMode === 'imperial';
+  var resolveLensFocusScaleMode = function resolveLensFocusScaleMode(lens) {
+    if (!lens || _typeof(lens) !== 'object') {
+      return focusScaleMode;
+    }
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        var normalized = normalizeFocusScale(lens.focusScale);
+        if (normalized === 'imperial' || normalized === 'metric') {
+          return normalized;
+        }
+      } catch (lensNormalizeError) {
+        void lensNormalizeError;
+      }
+    }
+    var override = normalizeFocusScaleValue(lens.focusScale);
+    return override || focusScaleMode;
+  };
   var _resolveCompatibility5 = resolveCompatibilityTexts(),
     focusScaleLang = _resolveCompatibility5.lang;
   var formatLensNumber = function formatLensNumber(value) {
@@ -12394,11 +12436,13 @@ function populateLensDropdown() {
     return String(numeric);
   };
   var formatLensWeight = function formatLensWeight(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var pounds = numeric / 453.59237;
       var digits = pounds >= 10 ? 1 : 2;
       var _formatted = formatLensNumber(pounds, {
@@ -12414,11 +12458,13 @@ function populateLensDropdown() {
     return formatted ? "".concat(formatted, " g") : '';
   };
   var formatLensDiameter = function formatLensDiameter(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var inches = numeric / 25.4;
       var digits = inches >= 10 ? 1 : 2;
       var _formatted2 = formatLensNumber(inches, {
@@ -12434,11 +12480,13 @@ function populateLensDropdown() {
     return formatted ? "".concat(formatted, " mm") : '';
   };
   var formatLensMinFocus = function formatLensMinFocus(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var feet = numeric * 3.280839895;
       var _digits = feet < 10 ? 2 : 1;
       var _formatted3 = formatLensNumber(feet, {
@@ -12476,12 +12524,13 @@ function populateLensDropdown() {
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
+    var lensFocusScaleMode = resolveLensFocusScaleMode(lens);
     var attrs = [];
-    var formattedWeight = formatLensWeight(lens.weight_g);
+    var formattedWeight = formatLensWeight(lens.weight_g, lensFocusScaleMode);
     if (formattedWeight) attrs.push(formattedWeight);
     if (lens.clampOn) {
       if (lens.frontDiameterMm) {
-        var formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
+        var formattedDiameter = formatLensDiameter(lens.frontDiameterMm, lensFocusScaleMode);
         attrs.push(formattedDiameter ? "".concat(formattedDiameter, " clamp-on") : 'clamp-on');
       } else attrs.push('clamp-on');
     } else if (lens.clampOn === false) {
@@ -12489,7 +12538,7 @@ function populateLensDropdown() {
     }
     var minFocus = (_ref24 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref24 !== void 0 ? _ref24 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
-      var formattedMinFocus = formatLensMinFocus(minFocus);
+      var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
         attrs.push("".concat(formattedMinFocus, " min focus"));
       }
@@ -12502,6 +12551,17 @@ function populateLensDropdown() {
   }
   lensSelect.innerHTML = '';
   lensSelect.appendChild(fragment);
+  if (typeof updateLensWorkflowCatalog === 'function') {
+    try {
+      updateLensWorkflowCatalog({
+        preserveSelections: true,
+        skipEvent: true,
+        skipDirty: true
+      });
+    } catch (catalogError) {
+      void catalogError;
+    }
+  }
 }
 function populateCameraPropertyDropdown(selectId, property) {
   var selected = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
@@ -12702,7 +12762,6 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     metadata: new Map(sortedEntries)
   };
 }
-
 function findMaxFrameRateForSensor(entries, sensorTokens) {
   if (!Array.isArray(entries) || !entries.length) {
     return null;
@@ -12710,58 +12769,44 @@ function findMaxFrameRateForSensor(entries, sensorTokens) {
   if (!Array.isArray(sensorTokens) || !sensorTokens.length) {
     return null;
   }
-
   var sensorTokenSet = new Set(sensorTokens);
   if (!sensorTokenSet.size) {
     return null;
   }
-
   var bestMatchScore = 0;
   var bestMaxValue = Number.NEGATIVE_INFINITY;
-
   entries.forEach(function (entry) {
     if (typeof entry !== 'string') return;
     var cleaned = entry.trim();
     if (!cleaned) return;
-
     var _cleaned$split3 = cleaned.split(':'),
       _cleaned$split4 = _slicedToArray(_cleaned$split3, 1),
       label = _cleaned$split4[0];
     var entryTokens = tokenizeFrameRateContext(label);
-    var numericValues = parseFrameRateNumericValues(cleaned)
-      .map(function (value) {
-        return Number.parseFloat(value);
-      })
-      .filter(function (value) {
-        return Number.isFinite(value);
-      });
-
+    var numericValues = parseFrameRateNumericValues(cleaned).map(function (value) {
+      return Number.parseFloat(value);
+    }).filter(Number.isFinite);
     if (!numericValues.length) {
       return;
     }
-
     var matchScore = 0;
     entryTokens.forEach(function (token) {
       if (sensorTokenSet.has(token)) {
         matchScore += 1;
       }
     });
-
     if (!matchScore) {
       return;
     }
-
     var entryMaxValue = Math.max.apply(Math, _toConsumableArray(numericValues));
     if (matchScore > bestMatchScore || matchScore === bestMatchScore && entryMaxValue > bestMaxValue) {
       bestMatchScore = matchScore;
       bestMaxValue = entryMaxValue;
     }
   });
-
   if (!bestMatchScore || !Number.isFinite(bestMaxValue)) {
     return null;
   }
-
   return bestMaxValue;
 }
 function getCurrentFrameRateInputValue() {
@@ -12781,7 +12826,6 @@ function populateFrameRateDropdown() {
   var sensorTokens = tokenizeFrameRateContext(sensorModeDropdown && sensorModeDropdown.value);
   var resolutionTokens = tokenizeFrameRateContext(recordingResolutionDropdown && recordingResolutionDropdown.value);
   var sensorModeMaxFrameRate = findMaxFrameRateForSensor(Array.isArray(frameRateEntries) ? frameRateEntries : [], sensorTokens);
-
   var _buildFrameRateSugges = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens]),
     suggestions = _buildFrameRateSugges.values;
   recordingFrameRateOptionsList.innerHTML = '';
@@ -13323,6 +13367,57 @@ function renderFilterDetailsStorage(details) {
     }
   });
 }
+function resolveGlobalScope() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof window !== 'undefined') return window;
+  if (typeof self !== 'undefined') return self;
+  if (typeof global !== 'undefined') return global;
+  return null;
+}
+function ensureFilterDetailEditButton(element) {
+  if (!element) return null;
+  var existing = element.querySelector('.gear-item-edit-btn');
+  if (existing) return existing;
+  var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  var scope = resolveGlobalScope();
+  var editLabel = 'Edit item';
+  var textGetter = scope && typeof scope.getGearItemEditTexts === 'function' ? scope.getGearItemEditTexts : null;
+  if (textGetter) {
+    try {
+      var _texts = textGetter.call(scope) || {};
+      if (_texts.editButtonLabel && typeof _texts.editButtonLabel === 'string') {
+        var trimmed = _texts.editButtonLabel.trim();
+        if (trimmed) {
+          editLabel = trimmed;
+        }
+      }
+    } catch (_unused14) {}
+  }
+  var button = doc.createElement('button');
+  button.type = 'button';
+  button.className = 'gear-item-edit-btn';
+  button.setAttribute('data-gear-edit', '');
+  if (editLabel) {
+    button.setAttribute('aria-label', editLabel);
+    button.setAttribute('title', editLabel);
+  }
+  var setLabelWithIcon = scope && typeof scope.setButtonLabelWithIcon === 'function' ? scope.setButtonLabelWithIcon : null;
+  var iconRegistry = scope && scope.ICON_GLYPHS ? scope.ICON_GLYPHS : null;
+  var sliderGlyph = iconRegistry && iconRegistry.sliders ? iconRegistry.sliders : null;
+  if (setLabelWithIcon && sliderGlyph) {
+    setLabelWithIcon.call(scope, button, '', sliderGlyph);
+  } else if (editLabel) {
+    button.textContent = editLabel;
+  }
+  var noteSpan = element.querySelector('.gear-item-note');
+  if (noteSpan && noteSpan.parentNode === element) {
+    element.insertBefore(button, noteSpan.nextSibling);
+  } else {
+    element.appendChild(button);
+  }
+  return button;
+}
 function renderGearListFilterDetails(details) {
   var container = getGearListFilterDetailsContainer();
   if (!container) return;
@@ -13353,7 +13448,10 @@ function renderGearListFilterDetails(details) {
     heading.className = 'filter-detail-label gear-item';
     if (entryId) heading.setAttribute('data-filter-entry', entryId);
     if (gearName) heading.setAttribute('data-gear-name', gearName);
-    if (label) heading.setAttribute('data-filter-label', label);
+    if (label) {
+      heading.setAttribute('data-filter-label', label);
+      heading.setAttribute('data-gear-label', label);
+    }
     if (type) heading.setAttribute('data-filter-type', type);
     var shouldHideSize = !!needsSize;
     if (shouldHideSize) {
@@ -13366,6 +13464,7 @@ function renderGearListFilterDetails(details) {
     if (typeof enhanceGearItemElement === 'function') {
       enhanceGearItemElement(heading);
     }
+    ensureFilterDetailEditButton(heading);
     var controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
     if (needsSize) {
@@ -13437,6 +13536,9 @@ function syncGearListFilterSize(storageId, value) {
   if (storageSelect.value !== value) {
     storageSelect.value = value;
   }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
   storageSelect.dispatchEvent(new Event('change'));
 }
 function syncGearListFilterValue(storageId, value, isSelected) {
@@ -13456,6 +13558,9 @@ function syncGearListFilterValue(storageId, value, isSelected) {
     }
   });
   if (changed) {
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     storageSelect.dispatchEvent(new Event('change'));
   }
 }
@@ -13757,10 +13862,10 @@ var USER_BUTTON_FUNCTION_ITEMS = [{
   value: 'Shutter'
 }];
 function populateUserButtonDropdowns() {
-  var _texts, _texts2;
+  var _texts2, _texts3;
   var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
-  var fallbackProjectForm = ((_texts = texts) === null || _texts === void 0 || (_texts = _texts.en) === null || _texts === void 0 ? void 0 : _texts.projectForm) || {};
-  var langProjectForm = ((_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2[lang]) === null || _texts2 === void 0 ? void 0 : _texts2.projectForm) || fallbackProjectForm;
+  var fallbackProjectForm = ((_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2.en) === null || _texts2 === void 0 ? void 0 : _texts2.projectForm) || {};
+  var langProjectForm = ((_texts3 = texts) === null || _texts3 === void 0 || (_texts3 = _texts3[lang]) === null || _texts3 === void 0 ? void 0 : _texts3.projectForm) || fallbackProjectForm;
   var labels = langProjectForm.userButtonFunctions || {};
   var fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
   var items = USER_BUTTON_FUNCTION_ITEMS.map(function (item) {

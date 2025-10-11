@@ -1677,26 +1677,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var hsName = safeSelectValue(hotswapSelect, 'hotswap');
       var hotswapData = devices.batteryHotswaps && devices.batteryHotswaps[hsName] ? devices.batteryHotswaps[hsName] : null;
       var capacityWh = (batteryData && typeof batteryData.capacity === 'number' ? batteryData.capacity : 0) + (hotswapData && typeof hotswapData.capacity === 'number' ? hotswapData.capacity : 0);
-      var maxPinA = batteryData && typeof batteryData.pinA === 'number' ? batteryData.pinA : 0;
-      var maxDtapA = batteryData && typeof batteryData.dtapA === 'number' ? batteryData.dtapA : 0;
+      var hasPinLimit = batteryData && typeof batteryData.pinA === 'number';
+      var maxPinA = hasPinLimit ? batteryData.pinA : null;
+      var hasDtapRating = batteryData && typeof batteryData.dtapA === 'number';
+      var maxDtapA = hasDtapRating ? batteryData.dtapA : null;
+      hasPinLimit = hasPinLimit && Number.isFinite(maxPinA) && maxPinA > 0;
+      hasDtapRating = hasDtapRating && Number.isFinite(maxDtapA) && maxDtapA > 0;
       if (hotswapData && typeof hotswapData.pinA === 'number') {
-        if (hotswapData.pinA < maxPinA) {
+        if (!hasPinLimit || hotswapData.pinA < maxPinA) {
           var hotswapMessage = resolveText('warnHotswapLower').replace('{max}', String(hotswapData.pinA)).replace('{batt}', String(maxPinA));
           setStatusMessageFn(hotswapWarnTarget, hotswapMessage);
           setStatusLevelFn(hotswapWarnTarget, 'warning');
-          maxPinA = hotswapData.pinA;
         } else {
           setStatusMessageFn(hotswapWarnTarget, '');
           setStatusLevelFn(hotswapWarnTarget, null);
         }
+        maxPinA = hotswapData.pinA;
+        hasPinLimit = Number.isFinite(maxPinA) && maxPinA > 0;
       } else if (hotswapWarnTarget) {
         setStatusMessageFn(hotswapWarnTarget, '');
         setStatusLevelFn(hotswapWarnTarget, null);
       }
-      var availableWatt = maxPinA * lowV;
+      var availableWatt = hasPinLimit ? maxPinA * lowV : 0;
       if (drawPowerDiagramFn) {
         try {
-          drawPowerDiagramFn(availableWatt, segments, maxPinA);
+          drawPowerDiagramFn(availableWatt, segments, hasPinLimit ? maxPinA : null);
         } catch (error) {
           safeWarn('cineResults.updateCalculations could not draw power diagram.', error);
         }
@@ -1752,29 +1757,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       setStatusMessageFn(dtapWarnTarget, '');
       var pinSeverity = '';
       var dtapSeverity = '';
-      if (totalCurrentLow > maxPinA) {
+      if (hasPinLimit && totalCurrentLow > maxPinA) {
         var pinExceeded = resolveText('warnPinExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
         setStatusMessageFn(pinWarnTarget, pinExceeded);
         pinSeverity = 'danger';
-      } else if (totalCurrentLow > maxPinA * 0.8) {
+      } else if (hasPinLimit && totalCurrentLow > maxPinA * 0.8) {
         var pinNear = resolveText('warnPinNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxPinA));
         setStatusMessageFn(pinWarnTarget, pinNear);
         pinSeverity = 'note';
       }
       if (!bMountCam) {
-        if (totalCurrentLow > maxDtapA) {
+        if (hasDtapRating && totalCurrentLow > maxDtapA) {
           var dtapExceeded = resolveText('warnDTapExceeded').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
           setStatusMessageFn(dtapWarnTarget, dtapExceeded);
           dtapSeverity = 'danger';
-        } else if (totalCurrentLow > maxDtapA * 0.8) {
+        } else if (hasDtapRating && totalCurrentLow > maxDtapA * 0.8) {
           var dtapNear = resolveText('warnDTapNear').replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(maxDtapA));
           setStatusMessageFn(dtapWarnTarget, dtapNear);
           dtapSeverity = 'note';
         }
       }
-      var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
-      var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
-      var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
+      var pinsInsufficient = hasPinLimit && totalCurrentLow > maxPinA;
       var dtapAllowed = !bMountCam && hasDtapRating;
       var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
       var batteryValue = typeof battery === 'string' ? battery.trim() : '';
@@ -1804,7 +1807,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeWarn('cineResults.updateCalculations could not close power warning dialog.', error);
         }
       }
-      if (pinWarnTarget && pinWarnTarget.textContent === '') {
+      if (hasPinLimit && pinWarnTarget && pinWarnTarget.textContent === '') {
         var pinOk = resolveText('pinOk').replace('{max}', String(maxPinA));
         setStatusMessageFn(pinWarnTarget, pinOk);
         setStatusLevelFn(pinWarnTarget, 'success');
@@ -1812,7 +1815,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         setStatusLevelFn(pinWarnTarget, pinSeverity || 'warning');
       }
       if (!bMountCam) {
-        if (dtapWarnTarget && dtapWarnTarget.textContent === '') {
+        if (hasDtapRating && dtapWarnTarget && dtapWarnTarget.textContent === '') {
           var dtapOk = resolveText('dtapOk').replace('{max}', String(maxDtapA));
           setStatusMessageFn(dtapWarnTarget, dtapOk);
           setStatusLevelFn(dtapWarnTarget, 'success');
