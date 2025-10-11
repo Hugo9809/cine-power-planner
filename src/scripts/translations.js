@@ -1705,14 +1705,14 @@ const texts = {
       "No help topics match your search. Try shorter keywords, synonyms, or clear the field to browse everything.",
     helpNoResultsSuggestionsHeading: "Need a different result?",
     helpNoResultsSuggestionsIntro:
-      "Try these steps to get back on track while keeping your data safe:",
+      "Try these steps to get back on track while keeping your data safe and confirming offline safeguards:",
     helpNoResultsSuggestionClear: "Use %s to browse every article again.",
     helpNoResultsSuggestionSynonyms:
       "Search for equipment nicknames, battery part numbers, or shorter keywords.",
     helpNoResultsSuggestionQuickStart:
       "Jump to the %s for a guided refresher on saving, sharing, and backups.",
     helpNoResultsSuggestionBackup:
-      "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
+      "Open %1$s, start a %2$s to confirm your offline exports, and review Settings → Data & Storage for the latest autosave timestamp before you continue.",
     helpOnboardingTutorialCopy:
       "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
@@ -1902,12 +1902,12 @@ const texts = {
     helpDataAuditStep4:
       "Run %1$s with your latest backup, verify every project, device, and rule, then record the runtime guard output from %2$s in your verification log before closing the rehearsal without publishing changes.",
     helpDataAuditNote:
-      "Log the results and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
+      "Log the results, capture a screenshot of Settings → Data & Storage with the latest autosave timestamp, and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
     helpRestoreDrillNote:
       "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
     helpSearchClear: "Clear search",
     helpSearchHelp:
-      "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
+      "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box, then press Tab to step through filtered quick links without leaving your project.",
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
     helpQuickLinksHeading: "Jump to a topic",
     helpQuickLinksAriaLabel: "Help topics quick navigation",
@@ -3691,14 +3691,14 @@ const texts = {
       "Nessun argomento di aiuto corrisponde alla ricerca. Prova con parole chiave più brevi, sinonimi oppure cancella il campo per vedere tutti gli argomenti.",
     helpNoResultsSuggestionsHeading: "Serve un risultato diverso?",
     helpNoResultsSuggestionsIntro:
-      "Segui questi passaggi per rimetterti in carreggiata proteggendo i dati:",
+      "Segui questi passaggi per rimetterti in carreggiata proteggendo i dati e confermando le salvaguardie offline:",
     helpNoResultsSuggestionClear: "Usa %s per mostrare di nuovo tutti gli articoli.",
     helpNoResultsSuggestionSynonyms:
       "Cerca soprannomi dell'attrezzatura, codici batteria o parole chiave più brevi.",
     helpNoResultsSuggestionQuickStart:
       "Apri la %s per un ripasso guidato su salvataggi, condivisioni e backup.",
     helpNoResultsSuggestionBackup:
-      "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
+      "Apri %1$s, avvia una %2$s per confermare le esportazioni offline e controlla Impostazioni → Dati e archiviazione per verificare l'ultimo salvataggio automatico prima di proseguire.",
     helpOnboardingTutorialCopy:
       "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
@@ -3808,12 +3808,12 @@ const texts = {
     helpDataAuditStep4:
       "Esegui %1$s con il backup più recente, verifica ogni progetto, dispositivo e regola, quindi annota nel registro di verifica l'output della sentinella runtime da %2$s prima di chiudere la prova senza pubblicare modifiche.",
     helpDataAuditNote:
-      "Registra i risultati e archivia l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
+      "Registra i risultati, acquisisci uno screenshot di Impostazioni → Dati e archiviazione con l'ultimo salvataggio automatico e archivia anche l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
     helpRestoreDrillNote:
       "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp:
-      "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione. Premi '/' o Ctrl+F (Cmd+F su Mac) per spostare subito il focus sulla casella di ricerca.",
+      "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca, quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
     helpSearchClearHelp:
       "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
     helpQuickLinksHeading: "Vai a un argomento",
@@ -5611,14 +5611,14 @@ const texts = {
       "No hay temas de ayuda que coincidan con la búsqueda. Prueba con palabras clave más cortas, sinónimos o borra el campo para ver todo.",
     helpNoResultsSuggestionsHeading: "¿Necesitas otro resultado?",
     helpNoResultsSuggestionsIntro:
-      "Prueba estos pasos para continuar sin poner en riesgo tus datos:",
+      "Prueba estos pasos para continuar sin poner en riesgo tus datos y confirmando las salvaguardas sin conexión:",
     helpNoResultsSuggestionClear: "Usa %s para volver a mostrar todos los artículos.",
     helpNoResultsSuggestionSynonyms:
       "Busca apodos del equipo, números de parte de baterías o palabras clave más cortas.",
     helpNoResultsSuggestionQuickStart:
       "Ve a la %s para repasar cómo guardar, compartir y hacer copias de seguridad.",
     helpNoResultsSuggestionBackup:
-      "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
+      "Abre %1$s, inicia un %2$s para confirmar tus exportaciones sin conexión y revisa Configuración → Datos y almacenamiento para verificar la marca temporal del último guardado automático antes de continuar.",
     helpOnboardingTutorialCopy:
       "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
@@ -5728,12 +5728,12 @@ const texts = {
     helpDataAuditStep4:
       "Ejecuta %1$s con tu copia de seguridad más reciente, verifica cada proyecto, dispositivo y regla, y luego registra en tu cuaderno de verificación la salida de la guarda runtime desde %2$s antes de cerrar el ensayo sin aplicar cambios.",
     helpDataAuditNote:
-      "Anota los resultados y archiva la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
+      "Anota los resultados, guarda una captura de Configuración → Datos y almacenamiento con la marca temporal más reciente y archiva también la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
     helpRestoreDrillNote:
       "Anota nombres de archivo, marcas de tiempo y resultados de verificación en tu registro de rotación de copias de seguridad para que cada ensayo documente una copia recuperable.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp:
-      "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda.",
+      "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes y resaltan el artículo correspondiente cuando pulsas Intro. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda y usa Tab para recorrer los accesos filtrados sin cerrar el proyecto.",
     helpSearchClearHelp:
       "Vacía el campo de búsqueda y vuelve a mostrar todos los temas.",
     helpQuickLinksHeading: "Ir a un tema",
@@ -7543,14 +7543,14 @@ const texts = {
       "Aucun sujet d'aide ne correspond à votre recherche. Essayez avec des mots-clés plus courts, des synonymes ou effacez le champ pour tout parcourir.",
     helpNoResultsSuggestionsHeading: "Besoin d'un autre résultat ?",
     helpNoResultsSuggestionsIntro:
-      "Suivez ces étapes pour avancer tout en protégeant vos données :",
+      "Suivez ces étapes pour avancer tout en protégeant vos données et en confirmant les sauvegardes hors ligne :",
     helpNoResultsSuggestionClear: "Utilisez %s pour afficher de nouveau tous les articles.",
     helpNoResultsSuggestionSynonyms:
       "Recherchez des surnoms de matériel, des références de batteries ou des mots-clés plus courts.",
     helpNoResultsSuggestionQuickStart:
       "Ouvrez la %s pour revoir comment enregistrer, partager et sauvegarder vos projets.",
     helpNoResultsSuggestionBackup:
-      "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
+      "Ouvrez %1$s, lancez un %2$s pour confirmer vos exports hors ligne et consultez Paramètres → Données et stockage afin de vérifier l'horodatage de la dernière sauvegarde automatique avant de continuer.",
     helpOnboardingTutorialCopy:
       "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
@@ -7660,12 +7660,12 @@ const texts = {
     helpDataAuditStep4:
       "Exécutez %1$s avec votre dernière sauvegarde, vérifiez chaque projet, appareil et règle, puis consignez dans votre journal de vérification la sortie de la sentinelle runtime issue de %2$s avant de fermer la répétition sans publier les modifications.",
     helpDataAuditNote:
-      "Consignez les résultats et archivez la sortie de la sentinelle runtime dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
+      "Consignez les résultats, capturez une capture d’écran de Paramètres → Données et stockage avec le dernier horodatage de sauvegarde automatique, puis archivez également la sortie de la sentinelle runtime dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
     helpRestoreDrillNote:
       "Consignez les noms de fichiers, horodatages et résultats de vérification dans votre registre de rotation des sauvegardes afin que chaque répétition documente une copie restaurable.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp:
-      "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche.",
+      "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie et mettent en évidence l'article correspondant lorsque vous appuyez sur Entrée. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche, puis utilisez Tab pour parcourir les liens filtrés sans fermer votre projet.",
     helpSearchClearHelp:
       "Effacez le champ de recherche et affichez de nouveau tous les sujets.",
     helpQuickLinksHeading: "Accéder à un sujet",
@@ -9480,14 +9480,14 @@ const texts = {
       "Es wurden keine Hilfethemen gefunden. Verwende kürzere Suchbegriffe, Synonyme oder lösche das Feld, um alle Themen zu sehen.",
     helpNoResultsSuggestionsHeading: "Du brauchst ein anderes Ergebnis?",
     helpNoResultsSuggestionsIntro:
-      "Probier diese Schritte, um weiterzukommen und deine Daten zu schützen:",
+      "Probier diese Schritte, um weiterzukommen, deine Daten zu schützen und die Offline-Schutzmaßnahmen zu bestätigen:",
     helpNoResultsSuggestionClear: "Nutze %s, um wieder alle Artikel anzuzeigen.",
     helpNoResultsSuggestionSynonyms:
       "Suche nach Spitznamen der Geräte, Batterieteilenummern oder kürzeren Stichwörtern.",
     helpNoResultsSuggestionQuickStart:
       "Spring zur %s für eine geführte Auffrischung zu Speichern, Teilen und Backups.",
     helpNoResultsSuggestionBackup:
-      "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
+      "Öffne %1$s, starte eine %2$s, um deine Offline-Exporte zu bestätigen, und prüfe unter Einstellungen → Daten & Speicherung den Zeitstempel des letzten automatischen Speicherns, bevor du fortfährst.",
     helpOnboardingTutorialCopy:
       "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
     onboardingTour: {
@@ -9597,12 +9597,12 @@ const texts = {
     helpDataAuditStep4:
       "Starte %1$s mit deinem neuesten Backup, kontrolliere jedes Projekt, Gerät und jede Regel und protokolliere anschließend im Verifizierungslog die Ausgabe der Runtime-Wache aus %2$s, bevor du die Probe ohne Änderungen schließt.",
     helpDataAuditNote:
-      "Dokumentiere die Ergebnisse und archiviere die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
+      "Dokumentiere die Ergebnisse, sichere einen Screenshot von Einstellungen → Daten & Speicherung mit dem aktuellsten Autosave-Zeitstempel und archiviere außerdem die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
     helpRestoreDrillNote:
       "Protokolliere Dateinamen, Zeitstempel und Prüfergebnisse in deinem Backup-Rotationsprotokoll, damit jede Übung eine wiederherstellbare Kopie dokumentiert.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp:
-      "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
+      "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe und heben den passenden Artikel hervor, sobald du Eingabe drückst. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren, und nutze Tab, um durch die gefilterten Links zu wechseln, ohne das Projekt zu schließen.",
     helpSearchClearHelp:
       "Setzt das Suchfeld zurück und zeigt wieder alle Themen an.",
     helpQuickLinksHeading: "Zum Thema springen",
