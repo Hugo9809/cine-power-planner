@@ -299,7 +299,7 @@ const batteryData = {
     "pinA": 20,
     "dtapA": 7.14,
     "mount_type": "V-Mount",
-    "weight_g": 998
+    "weight_g": 1000
   },
   "Core SWX Helix Max 360Wh (V-Mount)": {
     "capacity": 360,
