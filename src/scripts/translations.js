@@ -1089,6 +1089,12 @@ const texts = {
     sharedImportAutoGearPresetFallback: "Shared automatic gear rules",
     sharedImportDialogTitle: "Automatic gear rules",
     sharedImportDialogMessage: "Choose how to apply the shared automatic gear rules from this project.",
+    sharedImportMetadataTimestamp: "Exported {timestamp}",
+    sharedImportMetadataVersion: "Planner version {version}",
+    sharedImportMetadataVersionMismatch:
+      "Planner version {importVersion} (current build {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Includes automatic gear rules",
+    sharedImportMetadataUnavailable: "Export details unavailable.",
     sharedImportDialogConfirm: "Apply",
     sharedImportDialogCancel: "Cancel",
 
@@ -2261,6 +2267,12 @@ const texts = {
     sharedImportAutoGearPresetFallback: "Regole automatiche condivise",
     sharedImportDialogTitle: "Regole automatiche per l'attrezzatura",
     sharedImportDialogMessage: "Scegli come applicare le regole automatiche condivise di questo progetto.",
+    sharedImportMetadataTimestamp: "Esportato il {timestamp}",
+    sharedImportMetadataVersion: "Versione planner {version}",
+    sharedImportMetadataVersionMismatch:
+      "Versione planner {importVersion} (build attuale {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Include regole automatiche",
+    sharedImportMetadataUnavailable: "Dettagli esportazione non disponibili.",
     sharedImportDialogConfirm: "Applica",
     sharedImportDialogCancel: "Annulla",
     cameraLabel: "Telecamera:",
@@ -4161,6 +4173,12 @@ const texts = {
     sharedImportAutoGearPresetFallback: "Reglas automáticas compartidas",
     sharedImportDialogTitle: "Reglas automáticas de equipo",
     sharedImportDialogMessage: "Elige cómo aplicar las reglas automáticas compartidas de este proyecto.",
+    sharedImportMetadataTimestamp: "Exportado el {timestamp}",
+    sharedImportMetadataVersion: "Versión del planificador {version}",
+    sharedImportMetadataVersionMismatch:
+      "Versión del planificador {importVersion} (compilación actual {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Incluye reglas automáticas",
+    sharedImportMetadataUnavailable: "Detalles de exportación no disponibles.",
     sharedImportDialogConfirm: "Aplicar",
     sharedImportDialogCancel: "Cancelar",
 
@@ -6076,6 +6094,12 @@ const texts = {
     sharedImportAutoGearPresetFallback: "Règles automatiques partagées",
     sharedImportDialogTitle: "Règles automatiques d’accessoires",
     sharedImportDialogMessage: "Choisissez comment appliquer les règles automatiques partagées de ce projet.",
+    sharedImportMetadataTimestamp: "Exporté le {timestamp}",
+    sharedImportMetadataVersion: "Version du planificateur {version}",
+    sharedImportMetadataVersionMismatch:
+      "Version du planificateur {importVersion} (version actuelle {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Inclut des règles automatiques",
+    sharedImportMetadataUnavailable: "Détails d’exportation indisponibles.",
     sharedImportDialogConfirm: "Appliquer",
     sharedImportDialogCancel: "Annuler",
 
@@ -8004,6 +8028,12 @@ const texts = {
     sharedImportAutoGearPresetFallback: "Geteilte automatische Gear-Regeln",
     sharedImportDialogTitle: "Automatische Gear-Regeln",
     sharedImportDialogMessage: "Wähle, wie die geteilten automatischen Gear-Regeln für dieses Projekt übernommen werden sollen.",
+    sharedImportMetadataTimestamp: "Exportiert am {timestamp}",
+    sharedImportMetadataVersion: "Planerversion {version}",
+    sharedImportMetadataVersionMismatch:
+      "Planerversion {importVersion} (aktuelle Version {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Enthält automatische Gear-Regeln",
+    sharedImportMetadataUnavailable: "Exportdetails nicht verfügbar.",
     sharedImportDialogConfirm: "Übernehmen",
     sharedImportDialogCancel: "Abbrechen",
 

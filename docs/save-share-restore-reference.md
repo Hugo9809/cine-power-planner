@@ -86,6 +86,8 @@ The Save hover tooltip now spells out that every manual save captures devices, r
 
 Contextual help inside **Share** now reiterates that exported bundles include custom gear, favorites, runtime feedback and devices, directs crews to store downloads with redundant backups, and highlights that the import preview runs after the planner schedules a fresh auto-backup while diagnostics record the attempt so recoveries remain provable offline.【F:src/scripts/translations.js†L1837-L1842】【F:src/scripts/translations.js†L3698-L3703】【F:src/scripts/translations.js†L5573-L5578】【F:src/scripts/translations.js†L7460-L7465】【F:src/scripts/translations.js†L9352-L9357】【F:src/scripts/app-setups.js†L1347-L1369】
 
+Project bundle exports now stamp a metadata block with the export timestamp, planner version, generator and whether automatic gear rules are included; the import dialog surfaces this summary and warns when the bundle comes from a newer or older build so crews can verify provenance before applying it offline.【F:src/scripts/app-setups.js†L2288-L2322】【F:src/scripts/app-core-new-1.js†L18772-L18833】
+
 Shared project imports that arrive without a setup name now generate a unique `-imported` title automatically, refresh the selector and persist the payload immediately so crews never lose unnamed bundles during rehearsals or cross-team handoffs.【F:src/scripts/app-session.js†L4302-L4374】
 
 Record the outputs (or screenshots) in your verification log, and store them alongside the exported files so any teammate can confirm the same safeguards were present.

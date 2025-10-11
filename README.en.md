@@ -438,6 +438,10 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Share without losing context.** Bundles remember language, theme, custom
   logo and other personalization choices so the recipient opens the project in a
   familiar state even if they stay offline.
+- **Metadata travels with the bundle.** Exported projects now record the
+  download timestamp, planner version, generator and whether automatic gear
+  rules are included; the import dialog surfaces that summary and flags version
+  mismatches so crews can verify provenance without reconnecting.
 
 ## Project & Backup File Formats
 
