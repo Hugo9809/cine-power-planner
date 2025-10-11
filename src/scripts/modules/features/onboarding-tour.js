@@ -1176,6 +1176,35 @@
     pendingFrame = null;
   }
 
+  function getOverlayMetrics() {
+    const fallbackWidth = (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerWidth === 'number')
+      ? GLOBAL_SCOPE.innerWidth
+      : (DOCUMENT && DOCUMENT.documentElement && DOCUMENT.documentElement.clientWidth) || 0;
+    const fallbackHeight = (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerHeight === 'number')
+      ? GLOBAL_SCOPE.innerHeight
+      : (DOCUMENT && DOCUMENT.documentElement && DOCUMENT.documentElement.clientHeight) || 0;
+
+    if (!overlayRoot || typeof overlayRoot.getBoundingClientRect !== 'function') {
+      return {
+        offsetLeft: 0,
+        offsetTop: 0,
+        viewportWidth: fallbackWidth,
+        viewportHeight: fallbackHeight,
+      };
+    }
+
+    const rect = overlayRoot.getBoundingClientRect();
+    const width = rect && typeof rect.width === 'number' && rect.width > 0 ? rect.width : fallbackWidth;
+    const height = rect && typeof rect.height === 'number' && rect.height > 0 ? rect.height : fallbackHeight;
+
+    return {
+      offsetLeft: -rect.left,
+      offsetTop: -rect.top,
+      viewportWidth: width,
+      viewportHeight: height,
+    };
+  }
+
   function schedulePositionUpdate() {
     if (!active) {
       return;
@@ -1431,8 +1460,9 @@
     const padding = 12;
     const width = Math.max(0, rect.width + padding * 2);
     const height = Math.max(0, rect.height + padding * 2);
-    const left = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) - padding;
-    const top = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) - padding;
+    const { offsetLeft, offsetTop } = getOverlayMetrics();
+    const left = rect.left + offsetLeft - padding;
+    const top = rect.top + offsetTop - padding;
 
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
@@ -1445,14 +1475,16 @@
     if (!cardEl) {
       return;
     }
-    const viewportWidth = GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
-    const viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
+    const {
+      offsetLeft: scrollX,
+      offsetTop: scrollY,
+      viewportWidth,
+      viewportHeight,
+    } = getOverlayMetrics();
     const targetElement = target || getTargetElement(currentStep);
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const forceFloating = Boolean(currentStep && currentStep.forceFloating);
     const cardRect = cardEl.getBoundingClientRect();
-    const scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
-    const scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
     const margin = 16;
     const viewportRight = scrollX + viewportWidth;
     const viewportBottom = scrollY + viewportHeight;
