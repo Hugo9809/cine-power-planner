@@ -7085,12 +7085,7 @@ function collectOwnGearSuggestionInfo() {
   };
 
   const traverseDevices = (value, seen) => {
-    if (!value) return;
-    if (typeof value === 'string') {
-      addName(value);
-      return;
-    }
-    if (typeof value !== 'object') {
+    if (!value || typeof value !== 'object') {
       return;
     }
     if (seen.has(value)) {
@@ -7113,6 +7108,9 @@ function collectOwnGearSuggestionInfo() {
     Object.keys(value).forEach((key) => {
       if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
         return;
+      }
+      if (key.includes(' ') && looksLikeGearName(key)) {
+        addName(key);
       }
       traverseDevices(value[key], seen);
     });
