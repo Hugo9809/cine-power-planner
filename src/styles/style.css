@@ -1290,19 +1290,37 @@ main.legal-content {
 }
 
 .avatar-options-surface {
-  gap: 1.5rem;
-  max-inline-size: min(540px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.6vw, 1.6rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  width: min(92vw, 520px);
+  min-inline-size: min(320px, 92vw);
+  border-color: var(--panel-border);
+  box-shadow: var(--panel-shadow);
 }
 
-.avatar-options-header .ghost-button {
-  align-self: flex-start;
+.avatar-options-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: clamp(0.6rem, 1.8vw, 0.95rem);
+}
+
+.avatar-options-toolbar {
+  justify-self: end;
+  align-items: flex-start;
+}
+
+.avatar-options-toolbar .ghost-button {
+  margin: 0;
 }
 
 .avatar-options-body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: clamp(1.1rem, 2.8vw, 1.75rem);
 }
 
 .avatar-options-preview {
@@ -1314,6 +1332,7 @@ main.legal-content {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-inline: auto;
 }
 
 .avatar-options-preview .contact-card-avatar-visual {
@@ -1342,7 +1361,25 @@ main.legal-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: center;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .avatar-options-body {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .avatar-options-preview {
+    width: clamp(180px, 28vw, 240px);
+    height: clamp(180px, 28vw, 240px);
+    margin-inline: 0;
+  }
+
+  .avatar-edit {
+    max-width: 320px;
+  }
 }
 
 .avatar-edit-title {
@@ -7237,6 +7274,48 @@ button:active {
 button:disabled {
   background-color: var(--control-disabled-bg);
   cursor: not-allowed;
+}
+
+.ghost-button {
+  background: transparent;
+  color: var(--muted-text-color);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  padding-block: calc(var(--button-padding-block) + 2px);
+  padding-inline: calc(var(--button-padding-inline) * 0.7);
+  margin: 0;
+  min-height: calc(var(--button-size) * 0.85);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.ghost-button:hover,
+.ghost-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  color: var(--text-color);
+  border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
+}
+
+.ghost-button:disabled {
+  background: transparent;
+  color: color-mix(in srgb, var(--muted-text-color) 60%, transparent);
+  border-color: color-mix(in srgb, var(--panel-border) 55%, transparent);
+  opacity: 0.7;
+}
+
+.dark-mode .ghost-button {
+  color: color-mix(in srgb, var(--inverse-text-color) 80%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 30%, var(--panel-border));
+}
+
+.dark-mode .ghost-button:hover,
+.dark-mode .ghost-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 28%, transparent);
+  color: var(--inverse-text-color);
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+}
+
+.dark-mode .ghost-button:disabled {
+  color: color-mix(in srgb, var(--inverse-text-color) 55%, transparent);
+  border-color: color-mix(in srgb, var(--panel-border) 55%, transparent);
 }
 
 body:not(.dark-mode) button .btn-icon.icon-glyph,
