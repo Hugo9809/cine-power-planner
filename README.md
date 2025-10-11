@@ -73,6 +73,12 @@ drive without phoning home.
   assets that shipped. Maintaining these records keeps help topics, translation
   notes and workflow screenshots provably in sync with the builds crews run
   offline.
+- **File a status snapshot.** Complete the new
+  [Documentation Status Report](docs/documentation-status-report-template.md)
+  whenever you update help topics, translations or manuals. It captures which
+  surfaces changed, the offline rehearsal evidence you gathered and where the
+  backups plus verification logs now live so future audits can retrace the
+  release without reconnecting to the network.
 - **Localize with confidence.** Reference the [Translation Guide](docs/translation-guide.md)
   and language-specific README files whenever you add or update locales so
   offline readers stay aligned with the latest workflows.
