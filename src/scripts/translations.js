@@ -1782,7 +1782,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s, start a %2$s to confirm your offline exports, and review Settings → Data & Storage for the latest autosave timestamp before you continue.",
     helpOnboardingTutorialCopy:
-      "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—incluse il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
+      "to follow every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net drill—before configuring your first project. Use the step navigator and progress meter to review completed sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1805,15 +1805,15 @@ const texts = {
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
       helpStatusNotStarted:
-        "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
+        "Guided tutorial progress saves offline as you advance. Next step: {next}.",
       helpStatusInProgress:
-        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
+        "Offline progress saved: {completed} steps completed out of {total}. Next: {next}.",
       helpStatusResume:
-        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
+        "Paused on {current}. {completed} of {total} steps already saved offline.",
       helpStatusSkipped:
-        "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
+        "Tutorial skipped. Restart whenever you're ready—saved progress stays available offline.",
       helpStatusCompleted:
-        "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
+        "Tutorial completed. Replay any step anytime for a refresher.",
       helpStatusLastCompleted:
         "Last completed: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Last update: {timeAgo}.",
