@@ -167,10 +167,14 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Renommer crée une branche.** Modifier le nom puis valider duplique le projet — pratique pour comparer des variantes.
 - **Changer de projet n’efface rien.** Sélectionnez un autre élément dans le menu ; la position et les saisies non sauvegardées se propagent.
 - **Les contacts d’équipe restent réutilisables.** Ouvrez l’entrée **Contacts** de la barre latérale pour tenir un annuaire avec
-  rôles, adresses e-mail, numéros, sites web et photos prêtes à être injectées dans n’importe quel projet. Les contacts partagent le même
-  snapshot localStorage que vos projets, sont inclus dans les sauvegardes manuelles et peuvent être importés depuis des fichiers
-  `.vcf` (vCard) hors ligne afin de fusionner des carnets. Sauvegarder une ligne d’équipe dans l’annuaire évite de ressaisir les
-  informations sur les prochains projets.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+    rôles, adresses e-mail, numéros, sites web et photos prêtes à être injectées dans n’importe quel projet. Les contacts partagent le même
+    snapshot localStorage que vos projets, sont inclus dans les sauvegardes manuelles et peuvent être importés depuis des fichiers
+    `.vcf` (vCard) hors ligne afin de fusionner des carnets. Sauvegarder une ligne d’équipe dans l’annuaire évite de ressaisir les
+    informations sur les prochains projets.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+- **Le matériel personnel reste synchronisé.** Ouvrez **Matériel personnel** dans la barre latérale pour consigner nom,
+    quantité, notes et provenance de votre matériel. Les entrées partagent le même instantané hors ligne que les projets,
+    alimentent les conditions des règles automatiques et voyagent avec les sauvegardes manuelles, les bundles de partage et les
+    garde-fous de quota afin que votre matériel reste toujours aligné avec le planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
 - **Suppression avec confirmation.** L’icône corbeille demande toujours une validation avant d’effacer.
 
 ## Partage et imports

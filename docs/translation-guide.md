@@ -59,6 +59,20 @@ npm run test:unit
   `src/scripts/translations.js`, keep placeholders such as `{adds}` or
   `{visible}` intact and update the language guides so offline reviewers see the
   same coverage insights.
+- The guided onboarding tutorial powers the Quick Start drill and Help status
+  row. Keep `onboardingTour*` and `helpOnboardingTutorialCopy` strings in sync
+  with the narrated steps and propagate any wording adjustments to the Quick
+  Start checklist in each localized README so the offline walkthrough stays
+  accurate.【F:src/scripts/translations.js†L1716-L1775】【F:README.md†L360-L372】
+- The Contacts manager and profile editor rely on the `contacts.*` translation
+  block and the “Crew contacts stay reusable” callout in the Saving & Project
+  Management section. Update those strings and README bullets together whenever
+  you adjust roster copy so offline crews keep consistent guidance.【F:src/scripts/translations.js†L150-L213】【F:README.md†L561-L567】
+- The Own Gear library uses the `ownGearNav*` navigation labels and the
+  `ownGear*` dialog strings along with the new “Personal gear inventory stays in
+  sync” bullet across localized READMEs. Translate those entries and double-check
+  the README copy whenever you tweak the modal so personal kit instructions stay
+  localized with the UI.【F:src/scripts/translations.js†L60-L68】【F:src/scripts/translations.js†L1634-L1664】【F:README.md†L568-L572】
 
 ## Step 5: Open a pull request
 

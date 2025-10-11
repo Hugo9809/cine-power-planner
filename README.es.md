@@ -167,10 +167,14 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Renombrar crea bifurcaciones.** Cambia el nombre y pulsa **Enter** para duplicar la versión. Útil para comparar variantes.
 - **Cambiar de proyecto no destruye datos.** Selecciona otro elemento en el menú; la app conserva la posición de scroll y campos no guardados.
 - **Los contactos del equipo quedan reutilizables.** Abre la entrada **Contactos** de la barra lateral para mantener un padrón con
-  roles, correos, teléfonos, sitios web y fotos de perfil listo para insertarlo en cualquier proyecto. Los contactos viven en el mismo
-  snapshot de localStorage que tus proyectos, se incluyen en las copias de seguridad manuales y pueden importarse desde archivos
-  `.vcf` (vCard) sin conexión para fusionar agendas. Guardar una fila del equipo en la libreta evita volver a escribir datos en
-  los próximos proyectos.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+    roles, correos, teléfonos, sitios web y fotos de perfil listo para insertarlo en cualquier proyecto. Los contactos viven en el mismo
+    snapshot de localStorage que tus proyectos, se incluyen en las copias de seguridad manuales y pueden importarse desde archivos
+    `.vcf` (vCard) sin conexión para fusionar agendas. Guardar una fila del equipo en la libreta evita volver a escribir datos en
+    los próximos proyectos.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+- **El equipo propio permanece sincronizado.** Abre **Equipo propio** en la barra lateral para catalogar nombres,
+    cantidades, notas y procedencia de tu kit personal. Las entradas viven en el mismo snapshot offline que los proyectos,
+    alimentan las condiciones de las reglas automáticas y viajan con los respaldos manuales, los bundles compartidos y las rutinas
+    de protección frente a cuota para que nunca se pierda tu hardware personal.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
 - **Eliminación con confirmación.** Usa el icono de papelera; siempre se solicita confirmación antes de borrar.
 
 ## Compartir e importar

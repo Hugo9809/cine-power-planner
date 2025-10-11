@@ -167,10 +167,14 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
 - **Projektwechsel ist verlustfrei.** Auswahl im Menü lädt sofort, Scrollposition und unsaved Inputs werden übernommen.
 - **Crew-Kontakte bleiben verfügbar.** Über den Seitenleistenpunkt **Kontakte** pflegst du eine Besetzungsliste mit Rollen,
-  E-Mails, Telefonnummern, Websites und Profilfotos, die sich in jedes Projekt übernehmen lässt. Die Kontakte liegen im selben
-  localStorage-Snapshot wie deine Projekte, werden in manuelle Backups eingeschlossen und lassen sich bei Bedarf offline aus
-  `.vcf`- (vCard-) Dateien zusammenführen. Speichere Crew-Zeilen zurück in die Liste, damit zukünftige Projekte ohne Nachtippen
-  auf dem aktuellen Stand bleiben.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+    E-Mails, Telefonnummern, Websites und Profilfotos, die sich in jedes Projekt übernehmen lässt. Die Kontakte liegen im selben
+    localStorage-Snapshot wie deine Projekte, werden in manuelle Backups eingeschlossen und lassen sich bei Bedarf offline aus
+    `.vcf`- (vCard-) Dateien zusammenführen. Speichere Crew-Zeilen zurück in die Liste, damit zukünftige Projekte ohne Nachtippen
+    auf dem aktuellen Stand bleiben.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+- **Eigenes Equipment bleibt synchron.** Öffne den **Eigenes Equipment**-Dialog, um Namen, Mengen, Notizen und Herkunft deiner
+    persönlichen Kits festzuhalten. Die Einträge leben im gleichen Offline-Snapshot wie deine Projekte, greifen in Bedingungen der
+    automatischen Gear-Regeln und reisen in manuellen Backups, Projekt-Bundles sowie Quota-Schutzläufen mit, damit kein privates
+    Equipment aus dem Planer fällt.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
 - **Löschen mit Bestätigung.** Papierkorb-Symbol fragt nach, bevor Einträge entfernt werden.
 
 ## Teilen & Importe
