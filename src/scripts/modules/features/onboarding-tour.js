@@ -712,6 +712,7 @@
   let stepConfig = getStepConfig();
 
   let overlayRoot = null;
+  let overlayKeydownListenerAttached = false;
   let highlightEl = null;
   let activeTargetElement = null;
   let cardEl = null;
@@ -968,12 +969,19 @@
 
     DOCUMENT.body.appendChild(overlayRoot);
 
-    overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
+    if (!overlayKeydownListenerAttached) {
+      DOCUMENT.addEventListener('keydown', handleOverlayKeydown, true);
+      overlayKeydownListenerAttached = true;
+    }
   }
 
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElement();
+    if (overlayKeydownListenerAttached) {
+      DOCUMENT.removeEventListener('keydown', handleOverlayKeydown, true);
+      overlayKeydownListenerAttached = false;
+    }
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
