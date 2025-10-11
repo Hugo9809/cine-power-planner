@@ -244,7 +244,9 @@
     'ownGearAccess',
     'ownGearAddDevice',
     'generateGearAndRequirements',
-    'autoGearRules',
+    'autoGearRulesAccess',
+    'autoGearRulesEdit',
+    'autoGearRulesCreate',
     'projectRequirements',
     'gearList',
     'exportImport',
@@ -337,10 +339,20 @@
       body:
         'Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.',
     },
-    autoGearRules: {
-      title: 'Review automatic gear rules',
+    autoGearRulesAccess: {
+      title: 'Open Automatic Gear Rules',
       body:
-        'Settings → Automatic Gear Rules lets you define conditions that auto-add monitors, wireless links, FIZ gear and cables. Rules execute offline every time you regenerate the kit, ensuring nothing critical is missed.',
+        'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves.',
+    },
+    autoGearRulesEdit: {
+      title: 'Edit stock automatic gear rules',
+      body:
+        'Use the rules list to inspect factory additions. Select a stock rule to open it in the editor, adjust items or conditions, then save so the updated automation stays cached with backups and share bundles.',
+    },
+    autoGearRulesCreate: {
+      title: 'Add a new automatic gear rule',
+      body:
+        'Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups.',
     },
     projectRequirements: {
       title: 'Refine project requirements boxes',
@@ -1250,11 +1262,26 @@
         highlight: '#generateGearListBtn',
       },
       {
-        key: 'autoGearRules',
+        key: 'autoGearRulesAccess',
         highlight: '#settingsPanel-autoGear',
         ensureSettings: {
           tabId: 'settingsTab-autoGear',
         },
+      },
+      {
+        key: 'autoGearRulesEdit',
+        highlight: '#autoGearRulesList',
+        ensureSettings: {
+          tabId: 'settingsTab-autoGear',
+        },
+      },
+      {
+        key: 'autoGearRulesCreate',
+        highlight: '#autoGearAddRule',
+        ensureSettings: {
+          tabId: 'settingsTab-autoGear',
+        },
+        focus: '#autoGearAddRule',
       },
       {
         key: 'projectRequirements',
