@@ -9986,6 +9986,17 @@ function persistAllProjects(projects, options = {}) {
           }
         }
 
+        const removedKey = removeOldestAutoBackupEntry(projects);
+        if (removedKey) {
+          delete serializedProjects[removedKey];
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn(
+              `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
+            );
+          }
+          return true;
+        }
+
         if (typeof console !== 'undefined' && typeof console.warn === 'function') {
           console.warn(
             'Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.',
