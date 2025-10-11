@@ -1,3 +1,66 @@
+function legacyResolveGlobalScope() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof window !== 'undefined') return window;
+  if (typeof self !== 'undefined') return self;
+  if (typeof global !== 'undefined') return global;
+  return null;
+}
+
+function legacyCommitCatalogToTarget(target, catalog) {
+  if (!target || typeof target !== 'object' && typeof target !== 'function') {
+    return;
+  }
+
+  var existing;
+  try {
+    existing = target.rentalHouses;
+  } catch (readError) {
+    existing = undefined;
+  }
+
+  if (existing && Array.isArray(existing) && existing.length) {
+    return;
+  }
+
+  try {
+    Object.defineProperty(target, 'rentalHouses', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: catalog
+    });
+    return;
+  } catch (defineError) {
+    void defineError;
+  }
+
+  try {
+    target.rentalHouses = catalog;
+  } catch (assignError) {
+    void assignError;
+  }
+}
+
+function legacyCommitCatalogToGlobal(catalog) {
+  var scope = legacyResolveGlobalScope();
+  if (!scope) {
+    return catalog;
+  }
+
+  legacyCommitCatalogToTarget(scope, catalog);
+  legacyCommitCatalogToTarget(scope && scope.devices, catalog);
+
+  if (!scope.__cineRentalHouseCatalog || !Array.isArray(scope.__cineRentalHouseCatalog)) {
+    try {
+      scope.__cineRentalHouseCatalog = catalog;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return catalog;
+}
+
 var rentalHouses = Object.freeze([Object.freeze({
   name: '711rent – Amsterdam',
   shortName: '711rent',
@@ -1367,4 +1430,16 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: 'https://vocas.nl/',
   accessDate: '2025-02-14'
 })]);
-module.exports = rentalHouses;
+
+var legacyShouldExposeGlobally =
+  typeof module === 'undefined'
+  || !module
+  || !module.exports;
+
+if (legacyShouldExposeGlobally) {
+  legacyCommitCatalogToGlobal(rentalHouses);
+}
+
+if (typeof module !== 'undefined' && module && module.exports) {
+  module.exports = rentalHouses;
+}
