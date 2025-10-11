@@ -934,8 +934,7 @@
       },
       {
         key: 'addMonitoring',
-        highlight: '#monitorSelect',
-        alternateHighlight: '#videoSelect',
+        highlight: ['#monitorSelectRow', '#wirelessVideoRow', '#fizFieldset'],
         focus: '#monitorSelect',
       },
       {
@@ -1033,7 +1032,7 @@
 
   let overlayRoot = null;
   let highlightEl = null;
-  let activeTargetElement = null;
+  let activeTargetElements = [];
   let cardEl = null;
   let titleEl = null;
   let bodyEl = null;
@@ -1342,7 +1341,7 @@
 
   function teardownOverlayElements() {
     clearFrame();
-    clearActiveTargetElement();
+    clearActiveTargetElements();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -1410,6 +1409,52 @@
     }
   }
 
+  function toSelectorArray(value) {
+    if (typeof value === 'string') {
+      return value ? [value] : [];
+    }
+    if (Array.isArray(value)) {
+      const selectors = [];
+      for (let index = 0; index < value.length; index += 1) {
+        const entry = value[index];
+        if (typeof entry === 'string' && entry) {
+          selectors.push(entry);
+        }
+      }
+      return selectors;
+    }
+    return [];
+  }
+
+  function resolveSelectorElements(selectors) {
+    if (!Array.isArray(selectors) || selectors.length === 0) {
+      return [];
+    }
+    const elements = [];
+    for (let index = 0; index < selectors.length; index += 1) {
+      const selector = selectors[index];
+      if (!selector) {
+        continue;
+      }
+      const element = DOCUMENT.querySelector(selector);
+      if (element) {
+        elements.push(element);
+      }
+    }
+    return elements;
+  }
+
+  function getHighlightElements(step) {
+    if (!step) {
+      return [];
+    }
+    let elements = resolveSelectorElements(toSelectorArray(step.highlight));
+    if (elements.length === 0) {
+      elements = resolveSelectorElements(toSelectorArray(step.alternateHighlight));
+    }
+    return elements;
+  }
+
   function getTargetElement(step) {
     if (!step) {
       return null;
@@ -1421,59 +1466,101 @@
     ) {
       return null;
     }
-    if (typeof step.highlight === 'string' && step.highlight) {
-      const el = DOCUMENT.querySelector(step.highlight);
-      if (el) {
-        return el;
-      }
-      if (typeof step.alternateHighlight === 'string' && step.alternateHighlight) {
-        return DOCUMENT.querySelector(step.alternateHighlight);
-      }
-    }
-    return null;
+    const elements = getHighlightElements(step);
+    return elements.length > 0 ? elements[0] : null;
   }
 
-  function clearActiveTargetElement() {
-    if (activeTargetElement && typeof activeTargetElement.classList === 'object') {
-      activeTargetElement.classList.remove('onboarding-active-target');
+  function clearActiveTargetElements() {
+    if (!Array.isArray(activeTargetElements)) {
+      activeTargetElements = [];
+      return;
     }
-    activeTargetElement = null;
+    for (let index = 0; index < activeTargetElements.length; index += 1) {
+      const element = activeTargetElements[index];
+      if (
+        element
+        && element.classList
+        && typeof element.classList.remove === 'function'
+      ) {
+        element.classList.remove('onboarding-active-target');
+      }
+    }
+    activeTargetElements = [];
   }
 
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
     }
-    const target = getTargetElement(currentStep);
-    if (!target) {
-      if (activeTargetElement) {
-        clearActiveTargetElement();
+    const highlightElements = getHighlightElements(currentStep);
+    if (highlightElements.length === 0) {
+      if (activeTargetElements.length > 0) {
+        clearActiveTargetElements();
       }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
       positionCard(null, null);
       return;
     }
-    if (target !== activeTargetElement) {
-      clearActiveTargetElement();
-      activeTargetElement = target;
-      if (typeof target.classList === 'object') {
-        target.classList.add('onboarding-active-target');
+
+    clearActiveTargetElements();
+    for (let index = 0; index < highlightElements.length; index += 1) {
+      const element = highlightElements[index];
+      if (!element) {
+        continue;
       }
+      if (
+        element.classList
+        && typeof element.classList.add === 'function'
+      ) {
+        element.classList.add('onboarding-active-target');
+      }
+      activeTargetElements.push(element);
     }
-    const rect = target.getBoundingClientRect();
+
+    const combinedRect = highlightElements.reduce((acc, element) => {
+      if (!element || typeof element.getBoundingClientRect !== 'function') {
+        return acc;
+      }
+      const rect = element.getBoundingClientRect();
+      if (!acc) {
+        return {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+        };
+      }
+      return {
+        top: Math.min(acc.top, rect.top),
+        right: Math.max(acc.right, rect.right),
+        bottom: Math.max(acc.bottom, rect.bottom),
+        left: Math.min(acc.left, rect.left),
+      };
+    }, null);
+
+    if (!combinedRect) {
+      highlightEl.style.transform = 'scale(0)';
+      highlightEl.style.opacity = '0';
+      positionCard(highlightElements[0] || null, null);
+      return;
+    }
+
+    combinedRect.width = Math.max(0, combinedRect.right - combinedRect.left);
+    combinedRect.height = Math.max(0, combinedRect.bottom - combinedRect.top);
+
     const padding = 12;
-    const width = Math.max(0, rect.width + padding * 2);
-    const height = Math.max(0, rect.height + padding * 2);
+    const width = Math.max(0, combinedRect.width + padding * 2);
+    const height = Math.max(0, combinedRect.height + padding * 2);
     const { offsetLeft, offsetTop } = getOverlayMetrics();
-    const left = rect.left + offsetLeft - padding;
-    const top = rect.top + offsetTop - padding;
+    const left = combinedRect.left + offsetLeft - padding;
+    const top = combinedRect.top + offsetTop - padding;
 
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
     highlightEl.style.transform = `translate(${Math.max(0, left)}px, ${Math.max(0, top)}px)`;
     highlightEl.style.opacity = '1';
-    positionCard(target, rect);
+    positionCard(highlightElements[0] || null, combinedRect);
   }
 
   function positionCard(target, targetRect) {
@@ -1960,11 +2047,26 @@
       return false;
     }
     const selectors = [];
-    if (typeof step.focus === 'string' && step.focus) {
-      selectors.push(step.focus);
+    const focusSelectors = toSelectorArray(step.focus);
+    for (let index = 0; index < focusSelectors.length; index += 1) {
+      const selector = focusSelectors[index];
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
     }
-    if (typeof step.highlight === 'string' && step.highlight) {
-      selectors.push(step.highlight);
+    const highlightSelectors = toSelectorArray(step.highlight);
+    for (let index = 0; index < highlightSelectors.length; index += 1) {
+      const selector = highlightSelectors[index];
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
+    }
+    const alternateSelectors = toSelectorArray(step.alternateHighlight);
+    for (let index = 0; index < alternateSelectors.length; index += 1) {
+      const selector = alternateSelectors[index];
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
     }
     let target = null;
     for (let index = 0; index < selectors.length; index += 1) {
@@ -2992,17 +3094,17 @@
       autoOpenedOwnGear = false;
     }
 
-    if (typeof step.focus === 'string' && step.focus) {
-      const focusTarget = DOCUMENT.querySelector(step.focus);
-      if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
-        try {
-          focusTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
-        }
+    const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
+    const focusTarget = focusCandidates.length > 0 ? focusCandidates[0] : null;
+    if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
+      try {
+        focusTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
       }
-    } else if (step.highlight) {
-      const highlightTarget = DOCUMENT.querySelector(step.highlight);
+    } else {
+      const highlightCandidates = getHighlightElements(step);
+      const highlightTarget = highlightCandidates.length > 0 ? highlightCandidates[0] : null;
       if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
         try {
           highlightTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
