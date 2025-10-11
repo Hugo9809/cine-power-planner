@@ -20,6 +20,8 @@ Create a localized README so newcomers can discover the project in their languag
 
 All interface labels live in [`src/scripts/translations.js`](../src/scripts/translations.js). Each top-level key inside `texts` corresponds to a language code and the planner automatically treats every listed language as supported. Duplicate the English block, paste it under a new key (for example `pt` for Portuguese) and translate every string.
 
+- The translation alignment script now walks nested objects and arrays when preparing the bundles. Missing entries inherit the English copy so the UI never renders blank text, but the expectation remains that every locale ships its own translation before release.
+
 - Preserve placeholders such as `%s` and keep array structures (`installHelpStepsIos`, `installHelpStepsAndroid`, etc.) intact.
 - The comment `// NEW TEXTS FOR SETUP MANAGEMENT END HERE` marks the current end of the translation set. New interface features append to this object, so review recent additions when updating an existing language.
 - Translate the smaller helper maps as well:

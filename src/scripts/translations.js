@@ -10269,6 +10269,87 @@ const categoryNames = {
   },
 };
 
+function cloneTranslationValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(item => cloneTranslationValue(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.keys(value).reduce((acc, key) => {
+      acc[key] = cloneTranslationValue(value[key]);
+      return acc;
+    }, {});
+  }
+
+  return value;
+}
+
+function alignTranslationValue(referenceValue, translationValue) {
+  const referenceType = Array.isArray(referenceValue)
+    ? 'array'
+    : referenceValue === null
+      ? 'null'
+      : typeof referenceValue;
+
+  const translationType = Array.isArray(translationValue)
+    ? 'array'
+    : translationValue === null
+      ? 'null'
+      : typeof translationValue;
+
+  if (referenceType === 'array') {
+    if (translationType !== 'array') {
+      return cloneTranslationValue(referenceValue);
+    }
+
+    const maxLength = referenceValue.length;
+    const aligned = [];
+
+    for (let index = 0; index < maxLength; index += 1) {
+      const referenceItem = referenceValue[index];
+      const translationItem = index < translationValue.length
+        ? translationValue[index]
+        : undefined;
+
+      aligned[index] = alignTranslationValue(referenceItem, translationItem);
+    }
+
+    return aligned;
+  }
+
+  if (referenceType === 'object') {
+    if (translationType !== 'object') {
+      return cloneTranslationValue(referenceValue);
+    }
+
+    const aligned = translationValue || {};
+    const referenceKeys = Object.keys(referenceValue || {});
+
+    referenceKeys.forEach(key => {
+      const referenceChild = referenceValue[key];
+      const translationChild = Object.prototype.hasOwnProperty.call(aligned, key)
+        ? aligned[key]
+        : undefined;
+
+      aligned[key] = alignTranslationValue(referenceChild, translationChild);
+    });
+
+    Object.keys(aligned).forEach(key => {
+      if (!Object.prototype.hasOwnProperty.call(referenceValue, key)) {
+        delete aligned[key];
+      }
+    });
+
+    return aligned;
+  }
+
+  if (translationType === referenceType && typeof translationValue !== 'undefined') {
+    return translationValue;
+  }
+
+  return cloneTranslationValue(referenceValue);
+}
+
 function ensureLanguageAlignment(
   dataset,
   { datasetName = 'dataset', referenceLang = 'en', expectedLanguages } = {}
@@ -10302,9 +10383,12 @@ function ensureLanguageAlignment(
     const translations = dataset[lang];
 
     referenceKeys.forEach(key => {
-      if (!Object.prototype.hasOwnProperty.call(translations, key)) {
-        translations[key] = reference[key];
-      }
+      const referenceValue = reference[key];
+      const translationValue = Object.prototype.hasOwnProperty.call(translations, key)
+        ? translations[key]
+        : undefined;
+
+      translations[key] = alignTranslationValue(referenceValue, translationValue);
     });
 
     Object.keys(translations).forEach(key => {
