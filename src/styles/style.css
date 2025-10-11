@@ -6693,6 +6693,20 @@ textarea:disabled {
   pointer-events: none;
 }
 
+.onboarding-overlay[data-anchor='element'] {
+  position: absolute;
+  inset: auto;
+  top: 0;
+  left: 0;
+}
+
+.onboarding-overlay[data-anchor='fixed-element'] {
+  position: fixed;
+  inset: auto;
+  top: 0;
+  left: 0;
+}
+
 .onboarding-overlay.active {
   display: block;
 }

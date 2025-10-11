@@ -61,7 +61,7 @@
       <span class="visually-hidden">Dismiss</span>
     </button>
   </div>
-  <header id="topBar">
+  <header id="topBar" data-onboarding-anchor="true">
     <a class="branding" href="index.html">
       <span id="logo" class="logo-wrapper" aria-hidden="true">
         <img src="./Icon Bluenew.svg" class="logo-img logo-default" alt="" />
@@ -249,7 +249,7 @@
   </nav>
   <div id="menuOverlay" class="hidden"></div>
 
-  <main id="mainContent" tabindex="-1">
+  <main id="mainContent" tabindex="-1" data-onboarding-anchor="true">
 
   <p id="tagline">Plan your film rig and calculate power consumption &amp; battery life.</p>
 
@@ -926,7 +926,15 @@
     <a id="privacyLink" href="legal/datenschutz-en.html">Privacy Policy</a>
   </footer>
 
-  <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <dialog
+    id="settingsDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsTitle"
+    hidden
+    data-onboarding-anchor="true"
+  >
     <div class="modal-surface modal-surface-scrollable settings-content">
       <h2 id="settingsTitle">Settings</h2>
       <div class="settings-layout">
@@ -6599,6 +6607,7 @@
     aria-modal="true"
     aria-labelledby="ownGearDialogHeading"
     aria-describedby="ownGearDialogDescription"
+    data-onboarding-anchor="true"
   >
     <form id="ownGearForm" method="dialog" class="modal-surface modal-surface-scrollable own-gear-surface">
       <header class="modal-header own-gear-header">
@@ -6801,7 +6810,13 @@
     </form>
   </dialog>
 
-  <dialog id="sharedImportDialog" class="app-modal" aria-labelledby="sharedImportDialogHeading" aria-modal="true">
+  <dialog
+    id="sharedImportDialog"
+    class="app-modal"
+    aria-labelledby="sharedImportDialogHeading"
+    aria-modal="true"
+    data-onboarding-anchor="true"
+  >
     <form id="sharedImportForm" method="dialog" class="modal-surface share-import-dialog">
       <h3 id="sharedImportDialogHeading">Automatic gear rules</h3>
       <p id="sharedImportDialogMessage">Choose how to apply the shared automatic gear rules from this project.</p>
@@ -6834,7 +6849,12 @@
     </form>
   </dialog>
 
-  <dialog id="projectDialog" class="app-modal" aria-labelledby="projectDialogHeading">
+  <dialog
+    id="projectDialog"
+    class="app-modal"
+    aria-labelledby="projectDialogHeading"
+    data-onboarding-anchor="true"
+  >
     <form id="projectForm" method="dialog" class="modal-surface modal-surface-scrollable project-dialog">
       <div class="project-dialog-header">
         <h2 id="projectDialogHeading">Project Requirements</h2>
@@ -7342,7 +7362,12 @@
     </form>
   </dialog>
 
-  <dialog id="contactsDialog" class="app-modal" aria-labelledby="contactsDialogHeading">
+  <dialog
+    id="contactsDialog"
+    class="app-modal"
+    aria-labelledby="contactsDialogHeading"
+    data-onboarding-anchor="true"
+  >
     <form id="contactsForm" method="dialog" class="modal-surface modal-surface-scrollable contacts-dialog">
       <header class="modal-header contacts-dialog-header">
         <div class="modal-header-main">

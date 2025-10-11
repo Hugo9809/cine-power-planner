@@ -1051,6 +1051,15 @@
   let helpButtonListenerAttached = false;
   let delegatedHelpListener = null;
 
+  let overlayAnchorInfo = {
+    element: null,
+    mode: 'viewport',
+    left: 0,
+    top: 0,
+    width: 0,
+    height: 0,
+  };
+
   let active = false;
   let currentIndex = -1;
   let currentStep = null;
@@ -1192,6 +1201,170 @@
     } else {
       pendingFrame = setTimeout(runner, 16);
     }
+  }
+
+  function resolveAnchorElement(element) {
+    if (!element) {
+      return null;
+    }
+
+    let anchoredAncestor = null;
+
+    if (typeof element.closest === 'function') {
+      anchoredAncestor = element.closest('[data-onboarding-anchor]');
+    }
+
+    if (!anchoredAncestor) {
+      const main = DOCUMENT ? DOCUMENT.getElementById('mainContent') : null;
+      if (main && main.contains(element)) {
+        anchoredAncestor = main;
+      }
+    }
+
+    if (!anchoredAncestor) {
+      return null;
+    }
+
+    let mode = 'element';
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.getComputedStyle === 'function') {
+      try {
+        const position = GLOBAL_SCOPE.getComputedStyle(anchoredAncestor).position;
+        if (position === 'fixed') {
+          mode = 'fixed';
+        } else if (position === 'sticky') {
+          mode = 'sticky';
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return {
+      element: anchoredAncestor,
+      mode,
+    };
+  }
+
+  function updateOverlayAnchor(target) {
+    if (!overlayRoot) {
+      return overlayAnchorInfo;
+    }
+
+    const viewportWidth =
+      GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerWidth === 'number'
+        ? GLOBAL_SCOPE.innerWidth
+        : DOCUMENT && DOCUMENT.documentElement
+          ? DOCUMENT.documentElement.clientWidth
+          : 0;
+    const viewportHeight =
+      GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerHeight === 'number'
+        ? GLOBAL_SCOPE.innerHeight
+        : DOCUMENT && DOCUMENT.documentElement
+          ? DOCUMENT.documentElement.clientHeight
+          : 0;
+    const scrollX = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0 : 0;
+    const scrollY = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0 : 0;
+
+    const descriptor = resolveAnchorElement(target);
+
+    let anchorElement = descriptor ? descriptor.element : null;
+    let anchorMode = descriptor ? descriptor.mode : null;
+
+    if (!anchorElement && currentIndex >= 3) {
+      const main = DOCUMENT ? DOCUMENT.getElementById('mainContent') : null;
+      if (main) {
+        anchorElement = main;
+        anchorMode = 'element';
+        if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.getComputedStyle === 'function') {
+          try {
+            const mainPosition = GLOBAL_SCOPE.getComputedStyle(main).position;
+            if (mainPosition === 'fixed') {
+              anchorMode = 'fixed';
+            } else if (mainPosition === 'sticky') {
+              anchorMode = 'sticky';
+            }
+          } catch (error) {
+            void error;
+          }
+        }
+      }
+    }
+
+    if (!anchorElement) {
+      overlayRoot.removeAttribute('data-anchor');
+      overlayRoot.style.position = '';
+      overlayRoot.style.width = '';
+      overlayRoot.style.height = '';
+      overlayRoot.style.transform = '';
+      overlayRoot.style.inset = '0';
+      overlayRoot.style.top = '';
+      overlayRoot.style.left = '';
+      overlayRoot.style.right = '';
+      overlayRoot.style.bottom = '';
+      overlayAnchorInfo = {
+        element: null,
+        mode: 'viewport',
+        left: scrollX,
+        top: scrollY,
+        width: viewportWidth,
+        height: viewportHeight,
+      };
+      return overlayAnchorInfo;
+    }
+
+    const rect = anchorElement.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+
+    const resolvedMode = anchorMode === 'fixed' || anchorMode === 'sticky' ? 'fixed' : 'element';
+
+    if (resolvedMode === 'fixed') {
+      overlayRoot.dataset.anchor = 'fixed-element';
+      overlayRoot.style.position = 'fixed';
+      overlayRoot.style.inset = 'auto';
+      overlayRoot.style.top = '0';
+      overlayRoot.style.left = '0';
+      overlayRoot.style.right = '';
+      overlayRoot.style.bottom = '';
+      overlayRoot.style.width = `${Math.max(width, 0)}px`;
+      overlayRoot.style.height = `${Math.max(height, 0)}px`;
+      overlayRoot.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+
+      overlayAnchorInfo = {
+        element: anchorElement,
+        mode: 'fixed',
+        left: rect.left,
+        top: rect.top,
+        width,
+        height,
+      };
+      return overlayAnchorInfo;
+    }
+
+    const left = rect.left + scrollX;
+    const top = rect.top + scrollY;
+
+    overlayRoot.dataset.anchor = 'element';
+    overlayRoot.style.position = 'absolute';
+    overlayRoot.style.inset = 'auto';
+    overlayRoot.style.top = '0';
+    overlayRoot.style.left = '0';
+    overlayRoot.style.right = '';
+    overlayRoot.style.bottom = '';
+    overlayRoot.style.width = `${Math.max(width, 0)}px`;
+    overlayRoot.style.height = `${Math.max(height, 0)}px`;
+    overlayRoot.style.transform = `translate(${left}px, ${top}px)`;
+
+    overlayAnchorInfo = {
+      element: anchorElement,
+      mode: 'element',
+      left,
+      top,
+      width,
+      height,
+    };
+
+    return overlayAnchorInfo;
   }
 
   function ensureOverlayElements() {
@@ -1336,6 +1509,14 @@
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     lastCardPlacement = 'floating';
+    overlayAnchorInfo = {
+      element: null,
+      mode: 'viewport',
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0,
+    };
   }
 
   function formatStepIndicator(index, total) {
@@ -1411,13 +1592,17 @@
       return;
     }
     const target = getTargetElement(currentStep);
+    const anchorInfo = updateOverlayAnchor(target);
+    const anchorLeft = anchorInfo ? anchorInfo.left : 0;
+    const anchorTop = anchorInfo ? anchorInfo.top : 0;
+    const anchorMode = anchorInfo ? anchorInfo.mode : 'viewport';
     if (!target) {
       if (activeTargetElement) {
         clearActiveTargetElement();
       }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
-      positionCard(null, null);
+      positionCard(null, null, anchorInfo);
       return;
     }
     if (target !== activeTargetElement) {
@@ -1431,84 +1616,104 @@
     const padding = 12;
     const width = Math.max(0, rect.width + padding * 2);
     const height = Math.max(0, rect.height + padding * 2);
-    const left = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) - padding;
-    const top = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) - padding;
+    const scrollX = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0 : 0;
+    const scrollY = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0 : 0;
+    const positionLeft = anchorMode === 'fixed' ? rect.left : rect.left + scrollX;
+    const positionTop = anchorMode === 'fixed' ? rect.top : rect.top + scrollY;
+    const left = positionLeft - padding - anchorLeft;
+    const top = positionTop - padding - anchorTop;
 
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
     highlightEl.style.transform = `translate(${Math.max(0, left)}px, ${Math.max(0, top)}px)`;
     highlightEl.style.opacity = '1';
-    positionCard(target, rect);
+    positionCard(target, rect, anchorInfo);
   }
 
-  function positionCard(target, targetRect) {
+  function positionCard(target, targetRect, anchorInfo) {
     if (!cardEl) {
       return;
     }
-    const viewportWidth = GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
-    const viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
+    const info = anchorInfo || overlayAnchorInfo;
+    const infoMode = info ? info.mode : 'viewport';
+    const mode = infoMode === 'fixed' ? 'fixed' : infoMode === 'element' ? 'element' : 'viewport';
+    const viewportWidth =
+      mode === 'element' || mode === 'fixed'
+        ? info.width
+        : GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
+    const viewportHeight =
+      mode === 'element' || mode === 'fixed'
+        ? info.height
+        : GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
     const targetElement = target || getTargetElement(currentStep);
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const forceFloating = Boolean(currentStep && currentStep.forceFloating);
     const cardRect = cardEl.getBoundingClientRect();
-    const scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
-    const scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
+    const globalScrollX = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0 : 0;
+    const globalScrollY = GLOBAL_SCOPE ? GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0 : 0;
+    const baseScrollX = mode === 'viewport' ? info.left : 0;
+    const baseScrollY = mode === 'viewport' ? info.top : 0;
+    const anchorLeft = info ? info.left : 0;
+    const anchorTop = info ? info.top : 0;
     const margin = 16;
-    const viewportRight = scrollX + viewportWidth;
-    const viewportBottom = scrollY + viewportHeight;
-    const minLeft = scrollX + margin;
-    const minTop = scrollY + margin;
+    const viewportRight = baseScrollX + viewportWidth;
+    const viewportBottom = baseScrollY + viewportHeight;
+    const minLeft = baseScrollX + margin;
+    const minTop = baseScrollY + margin;
     const maxLeft = Math.max(minLeft, viewportRight - cardRect.width - margin);
     const maxTop = Math.max(minTop, viewportBottom - cardRect.height - margin);
 
-    let top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
-    let left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
+    let top = baseScrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
+    let left = baseScrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     let placement = 'floating';
 
     if (!forceFloating && targetElement && resolvedRect) {
       const rect = resolvedRect;
-      const targetTop = rect.top + scrollY;
-      const targetLeft = rect.left + scrollX;
+      const coordinateLeft = mode === 'fixed' ? rect.left : rect.left + globalScrollX;
+      const coordinateTop = mode === 'fixed' ? rect.top : rect.top + globalScrollY;
+      const targetTop = coordinateTop - anchorTop;
+      const targetLeft = coordinateLeft - anchorLeft;
       const targetCenterX = targetLeft + rect.width / 2;
       const targetCenterY = targetTop + rect.height / 2;
 
       const options = [
         {
           name: 'bottom',
-          top: targetTop + rect.height + margin,
-          left: targetCenterX - cardRect.width / 2,
-          fits:
-            targetTop + rect.height + margin + cardRect.height <= viewportBottom - margin,
+          top: baseScrollY + targetTop + rect.height + margin,
+          left: baseScrollX + targetCenterX - cardRect.width / 2,
         },
         {
           name: 'top',
-          top: targetTop - cardRect.height - margin,
-          left: targetCenterX - cardRect.width / 2,
-          fits: targetTop - cardRect.height - margin >= minTop,
+          top: baseScrollY + targetTop - cardRect.height - margin,
+          left: baseScrollX + targetCenterX - cardRect.width / 2,
         },
         {
           name: 'right',
-          top: targetCenterY - cardRect.height / 2,
-          left: targetLeft + rect.width + margin,
-          fits: targetLeft + rect.width + margin + cardRect.width <= viewportRight - margin,
+          top: baseScrollY + targetCenterY - cardRect.height / 2,
+          left: baseScrollX + targetLeft + rect.width + margin,
         },
         {
           name: 'left',
-          top: targetCenterY - cardRect.height / 2,
-          left: targetLeft - cardRect.width - margin,
-          fits: targetLeft - cardRect.width - margin >= minLeft,
+          top: baseScrollY + targetCenterY - cardRect.height / 2,
+          left: baseScrollX + targetLeft - cardRect.width - margin,
         },
       ];
 
       const resolvedOptions = options.map(option => {
         const clampedTop = Math.min(Math.max(option.top, minTop), maxTop);
         const clampedLeft = Math.min(Math.max(option.left, minLeft), maxLeft);
+        const fits =
+          option.top >= minTop
+          && option.top <= maxTop
+          && option.left >= minLeft
+          && option.left <= maxLeft;
         const overflow = Math.abs(clampedTop - option.top) + Math.abs(clampedLeft - option.left);
         return {
           ...option,
           clampedTop,
           clampedLeft,
           overflow,
+          fits,
         };
       });
 
@@ -1529,8 +1734,10 @@
       }
     }
 
-    cardEl.style.top = `${Math.min(Math.max(top, minTop), maxTop)}px`;
-    cardEl.style.left = `${Math.min(Math.max(left, minLeft), maxLeft)}px`;
+    const finalTop = Math.min(Math.max(top, minTop), maxTop) - baseScrollY;
+    const finalLeft = Math.min(Math.max(left, minLeft), maxLeft) - baseScrollX;
+    cardEl.style.top = `${finalTop}px`;
+    cardEl.style.left = `${finalLeft}px`;
     if (placement !== lastCardPlacement) {
       lastCardPlacement = placement;
       cardEl.setAttribute('data-placement', placement);
