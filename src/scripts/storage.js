@@ -3593,6 +3593,92 @@ function applyProjectEntryCompression(container) {
   return container;
 }
 
+function forceCompressAllProjectEntries(container, options = {}) {
+  if (!isPlainObject(container)) {
+    return { changed: false, keys: [] };
+  }
+
+  const context = options || {};
+  const compressedKeys = [];
+
+  Object.keys(container).forEach((key) => {
+    const currentValue = container[key];
+    const compressedValue = ensureProjectEntryCompressed(currentValue, key);
+    if (compressedValue !== currentValue) {
+      container[key] = compressedValue;
+      compressedKeys.push(key);
+    }
+  });
+
+  if (
+    compressedKeys.length
+    && typeof console !== 'undefined'
+    && typeof console.warn === 'function'
+  ) {
+    const reason = typeof context.reason === 'string' ? context.reason : 'quota-recovery';
+    console.warn(
+      `Forced compression for ${compressedKeys.length} project entr${compressedKeys.length === 1 ? 'y' : 'ies'} while recovering storage quota.`,
+      { keys: compressedKeys, reason },
+    );
+  }
+
+  return { changed: compressedKeys.length > 0, keys: compressedKeys };
+}
+
+function clearDerivedProjectCachesForQuota(storage) {
+  const target = storage && typeof storage.removeItem === 'function'
+    ? storage
+    : getSafeLocalStorage();
+
+  if (!target || typeof target.removeItem !== 'function') {
+    return { cleared: false, keys: [] };
+  }
+
+  const cacheKeys = [DEVICE_SCHEMA_CACHE_KEY, LEGACY_SCHEMA_CACHE_KEY]
+    .filter((key) => typeof key === 'string' && key);
+  const removalCandidates = [];
+
+  cacheKeys.forEach((key) => {
+    getStorageKeyVariants(key).forEach((variant) => {
+      if (typeof variant === 'string' && variant) {
+        removalCandidates.push(variant);
+        if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
+          removalCandidates.push(`${variant}${STORAGE_BACKUP_SUFFIX}`);
+        }
+      }
+    });
+  });
+
+  const removedKeys = [];
+  removalCandidates.forEach((key) => {
+    try {
+      const existing = target.getItem(key);
+      if (existing !== null && existing !== undefined) {
+        target.removeItem(key);
+        removedKeys.push(key);
+      }
+    } catch (error) {
+      console.warn(
+        'Unable to clear derived planner cache entry while recovering storage quota.',
+        { key, error },
+      );
+    }
+  });
+
+  if (
+    removedKeys.length
+    && typeof console !== 'undefined'
+    && typeof console.warn === 'function'
+  ) {
+    console.warn(
+      `Cleared ${removedKeys.length} derived planner cache entr${removedKeys.length === 1 ? 'y' : 'ies'} to free storage before saving projects.`,
+      removedKeys,
+    );
+  }
+
+  return { cleared: removedKeys.length > 0, keys: removedKeys };
+}
+
 function registerActiveSetupStorageSkipKeys(skipSet) {
   if (!skipSet || typeof skipSet.add !== 'function') {
     return;
@@ -9863,6 +9949,8 @@ function persistAllProjects(projects, options = {}) {
   invalidateProjectReadCache();
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
   const disableCompression = skipCompression || shouldDisableProjectCompressionDuringPersist();
+  let forcedProjectCompressionAttempted = false;
+  let derivedCachesClearedForQuota = false;
   saveJSONToStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
@@ -9871,15 +9959,33 @@ function persistAllProjects(projects, options = {}) {
     {
       forceCompressionOnQuota: true,
       disableCompression,
-      onQuotaExceeded: () => {
-        const removedKey = removeOldestAutoBackupEntry(serializedProjects);
-        if (!removedKey) {
-          return false;
+      onQuotaExceeded: (error, context) => {
+        if (!forcedProjectCompressionAttempted) {
+          forcedProjectCompressionAttempted = true;
+          const forcedCompression = forceCompressAllProjectEntries(serializedProjects, {
+            reason: 'project-storage-quota',
+          });
+          if (forcedCompression.changed) {
+            return true;
+          }
         }
-        console.warn(
-          `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
-        );
-        return true;
+
+        if (!derivedCachesClearedForQuota) {
+          const cleared = clearDerivedProjectCachesForQuota(safeStorage);
+          derivedCachesClearedForQuota = Boolean(cleared && cleared.cleared);
+          if (derivedCachesClearedForQuota) {
+            return true;
+          }
+        }
+
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(
+            'Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.',
+            { error, context },
+          );
+        }
+
+        return false;
       },
     },
   );
