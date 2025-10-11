@@ -62,6 +62,9 @@ time:
    `styleMedia` fallback with a `matchMedia`-backed shim that simply shadows the prototype
    binding so Chrome no longer logs the console warning and display-mode detection keeps
   working without touching network resources.【F:src/scripts/loader.js†L1-L128】【F:src/scripts/loader.js†L238-L350】【F:src/scripts/loader.js†L350-L459】
+   When WebKit delays exposing the actual `<body>` element, the loader now waits for the
+   DOM to finish parsing before it injects the bundles so null `scrollHeight` lookups can
+   no longer interrupt offline launches on constrained devices.
 4. **Check the runtime guard.** Open the browser console and inspect
    `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
    `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
