@@ -911,10 +911,11 @@
       },
       {
         key: 'unitsPreferences',
-        highlight: '#settingsPanel-general',
-        focus: '#settingsLanguage',
+        highlight: '#settingsButton',
+        focus: '#settingsButton',
         ensureSettings: {
           tabId: 'settingsTab-general',
+          autoOpen: false,
         },
         size: 'large',
       },
@@ -1384,7 +1385,11 @@
     if (!step) {
       return null;
     }
-    if (step.ensureSettings && (!settingsDialogRef || !isSettingsDialogVisible())) {
+    if (
+      step.ensureSettings
+      && step.ensureSettings.autoOpen !== false
+      && (!settingsDialogRef || !isSettingsDialogVisible())
+    ) {
       return null;
     }
     if (typeof step.highlight === 'string' && step.highlight) {
@@ -1545,11 +1550,12 @@
     if (!dialog) {
       return;
     }
+    const shouldAutoOpen = step.ensureSettings.autoOpen !== false;
     const wasOpen = typeof isDialogOpen === 'function'
       ? isDialogOpen(dialog)
       : !dialog.hasAttribute('hidden');
     settingsDialogRef = dialog;
-    if (!wasOpen) {
+    if (!wasOpen && shouldAutoOpen) {
       const trigger = DOCUMENT.getElementById('settingsButton');
       if (trigger && typeof trigger.click === 'function') {
         try {
