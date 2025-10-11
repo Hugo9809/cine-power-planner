@@ -12670,15 +12670,19 @@ function buildFrameRateSuggestions(entries, contextTokens) {
       if (!existing || score > existing.score) {
         suggestions.set(formatted, {
           score: score,
-          label: cleaned
+          label: cleaned,
+          tokens: entryTokens
         });
       }
     });
   });
   if (!suggestions.size) {
-    return Array.from(FALLBACK_FRAME_RATE_VALUES);
+    return {
+      values: Array.from(FALLBACK_FRAME_RATE_VALUES),
+      metadata: new Map()
+    };
   }
-  return Array.from(suggestions.entries()).sort(function (a, b) {
+  var sortedEntries = Array.from(suggestions.entries()).sort(function (a, b) {
     if (b[1].score !== a[1].score) {
       return b[1].score - a[1].score;
     }
@@ -12688,11 +12692,77 @@ function buildFrameRateSuggestions(entries, contextTokens) {
       return aNum - bNum;
     }
     return a[0].localeCompare(b[0]);
-  }).map(function (_ref25) {
-    var _ref26 = _slicedToArray(_ref25, 1),
-      value = _ref26[0];
-    return value;
   });
+  return {
+    values: sortedEntries.map(function (_ref25) {
+      var _ref26 = _slicedToArray(_ref25, 1),
+        value = _ref26[0];
+      return value;
+    }),
+    metadata: new Map(sortedEntries)
+  };
+}
+
+function findMaxFrameRateForSensor(entries, sensorTokens) {
+  if (!Array.isArray(entries) || !entries.length) {
+    return null;
+  }
+  if (!Array.isArray(sensorTokens) || !sensorTokens.length) {
+    return null;
+  }
+
+  var sensorTokenSet = new Set(sensorTokens);
+  if (!sensorTokenSet.size) {
+    return null;
+  }
+
+  var bestMatchScore = 0;
+  var bestMaxValue = Number.NEGATIVE_INFINITY;
+
+  entries.forEach(function (entry) {
+    if (typeof entry !== 'string') return;
+    var cleaned = entry.trim();
+    if (!cleaned) return;
+
+    var _cleaned$split3 = cleaned.split(':'),
+      _cleaned$split4 = _slicedToArray(_cleaned$split3, 1),
+      label = _cleaned$split4[0];
+    var entryTokens = tokenizeFrameRateContext(label);
+    var numericValues = parseFrameRateNumericValues(cleaned)
+      .map(function (value) {
+        return Number.parseFloat(value);
+      })
+      .filter(function (value) {
+        return Number.isFinite(value);
+      });
+
+    if (!numericValues.length) {
+      return;
+    }
+
+    var matchScore = 0;
+    entryTokens.forEach(function (token) {
+      if (sensorTokenSet.has(token)) {
+        matchScore += 1;
+      }
+    });
+
+    if (!matchScore) {
+      return;
+    }
+
+    var entryMaxValue = Math.max.apply(Math, _toConsumableArray(numericValues));
+    if (matchScore > bestMatchScore || matchScore === bestMatchScore && entryMaxValue > bestMaxValue) {
+      bestMatchScore = matchScore;
+      bestMaxValue = entryMaxValue;
+    }
+  });
+
+  if (!bestMatchScore || !Number.isFinite(bestMaxValue)) {
+    return null;
+  }
+
+  return bestMaxValue;
 }
 function getCurrentFrameRateInputValue() {
   if (!recordingFrameRateInput) return '';
@@ -12710,17 +12780,24 @@ function populateFrameRateDropdown() {
   var frameRateEntries = camKey && devices && devices.cameras && devices.cameras[camKey] ? devices.cameras[camKey].frameRates : null;
   var sensorTokens = tokenizeFrameRateContext(sensorModeDropdown && sensorModeDropdown.value);
   var resolutionTokens = tokenizeFrameRateContext(recordingResolutionDropdown && recordingResolutionDropdown.value);
-  var suggestions = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens]);
+  var sensorModeMaxFrameRate = findMaxFrameRateForSensor(Array.isArray(frameRateEntries) ? frameRateEntries : [], sensorTokens);
+
+  var _buildFrameRateSugges = buildFrameRateSuggestions(Array.isArray(frameRateEntries) ? frameRateEntries : [], [sensorTokens, resolutionTokens]),
+    suggestions = _buildFrameRateSugges.values;
   recordingFrameRateOptionsList.innerHTML = '';
   var uniqueValues = new Set();
   var filteredSuggestions = [];
   var numericCandidates = [];
+  var allowedMaxFrameRate = Number.isFinite(sensorModeMaxFrameRate) ? sensorModeMaxFrameRate : null;
   suggestions.forEach(function (originalValue) {
     if (!originalValue) return;
     var value = originalValue;
     var numeric = Number.parseFloat(value);
     if (Number.isFinite(numeric)) {
       if (numeric + FRAME_RATE_RANGE_TOLERANCE < MIN_RECORDING_FRAME_RATE) {
+        return;
+      }
+      if (allowedMaxFrameRate !== null && numeric > allowedMaxFrameRate + FRAME_RATE_RANGE_TOLERANCE) {
         return;
       }
       var formatted = formatFrameRateValue(numeric);
@@ -12754,6 +12831,9 @@ function populateFrameRateDropdown() {
     formatted: ''
   });
   var maxFrameRate = maxCandidate.numeric;
+  if (Number.isFinite(allowedMaxFrameRate)) {
+    maxFrameRate = Number.isFinite(maxFrameRate) ? Math.min(maxFrameRate, allowedMaxFrameRate) : allowedMaxFrameRate;
+  }
   var formattedMaxFrameRate = Number.isFinite(maxFrameRate) ? maxCandidate.formatted || formatFrameRateValue(maxFrameRate) : '';
   var minValue = formatFrameRateValue(MIN_RECORDING_FRAME_RATE);
   var numericCurrent = Number.parseFloat(currentValue);
