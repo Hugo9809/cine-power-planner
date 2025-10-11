@@ -7344,6 +7344,7 @@ function handleGearItemEditFormSubmit(event) {
   }
   context.currentCameraLinkValue = data.cameraLink;
   applyGearItemData(targetEntry, data);
+  markProjectFormDataDirty();
   const ownedSyncResult = wantsOwned || context.currentOwnedEntryId
     ? syncGearItemOwnedState(targetEntry, data, {
         wantsOwned,
@@ -7825,6 +7826,7 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
 }
 
 function persistCustomItemsChange() {
+  markProjectFormDataDirty();
   if (typeof saveCurrentGearList === 'function') {
     saveCurrentGearList();
   }
@@ -11095,6 +11097,7 @@ function bindGearListCageListener() {
                 cageSelect.dispatchEvent(new Event('change'));
             }
             syncGearListCageItem(sel);
+            markProjectFormDataDirty();
             saveCurrentGearList();
         });
         syncGearListCageItem(sel);
@@ -11106,6 +11109,7 @@ function bindGearListEasyrigListener() {
     const sel = gearListOutput.querySelector('#gearListEasyrig');
     if (sel) {
         sel.addEventListener('change', () => {
+            markProjectFormDataDirty();
             saveCurrentGearList();
             saveCurrentSession();
             checkSetupChanged();
@@ -11118,6 +11122,7 @@ function bindGearListSliderBowlListener() {
     const sel = gearListOutput.querySelector('#gearListSliderBowl');
     if (sel) {
         sel.addEventListener('change', () => {
+            markProjectFormDataDirty();
             saveCurrentGearList();
             saveCurrentSession();
             checkSetupChanged();
@@ -11130,6 +11135,7 @@ function bindGearListEyeLeatherListener() {
     const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
     if (sel) {
         sel.addEventListener('change', () => {
+            markProjectFormDataDirty();
             saveCurrentGearList();
         });
     }
@@ -11143,6 +11149,7 @@ function bindGearListProGaffTapeListener() {
         [colorSel, widthSel].forEach(sel => {
             if (sel) {
                 sel.addEventListener('change', () => {
+                    markProjectFormDataDirty();
                     saveCurrentGearList();
                 });
             }
@@ -11162,6 +11169,7 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 sel.dataset.autoGearManual = 'true';
+                markProjectFormDataDirty();
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
@@ -11178,6 +11186,7 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 sel.dataset.autoGearManual = 'true';
+                markProjectFormDataDirty();
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
