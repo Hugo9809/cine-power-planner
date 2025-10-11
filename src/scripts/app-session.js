@@ -5055,7 +5055,7 @@ const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
 );
 
 const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
-const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+const CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
 
 function normalizeCameraColorValue(value) {
   if (typeof value !== 'string') {
@@ -5118,7 +5118,7 @@ function loadCameraLetterColors() {
   const defaults = getDefaultCameraLetterColors();
   let stored = null;
   try {
-    const raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY);
+    const raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY_SESSION);
     if (raw) {
       stored = JSON.parse(raw);
     }
@@ -5137,7 +5137,7 @@ function loadCameraLetterColors() {
     });
   } else {
     try {
-      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY, JSON.stringify(resolved));
+      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(resolved));
     } catch (persistError) {
       console.warn('Unable to persist default camera colors', persistError);
     }
@@ -5167,7 +5167,7 @@ function setCameraLetterColors(newColors = {}) {
   }
   cachedCameraLetterColors = current;
   try {
-    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY, JSON.stringify(current));
+    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(current));
   } catch (storeError) {
     console.warn('Failed to persist camera color preferences', storeError);
   }
