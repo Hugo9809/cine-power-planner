@@ -17652,36 +17652,21 @@ function createCrewRow(data = {}) {
   const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
   const contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
 
-  const fieldsWrapper = document.createElement('div');
-  fieldsWrapper.className = 'person-fields person-details';
-  fieldsWrapper.append(nameInput, phoneInput, emailInput, contactSelect);
-
-  const actions = document.createElement('div');
-  actions.className = 'person-actions';
-
-  const headerMain = document.createElement('div');
-  headerMain.className = 'person-header-main';
-  headerMain.appendChild(roleSel);
-
   const linkedBadge = document.createElement('span');
   linkedBadge.className = 'person-linked-badge';
   linkedBadge.textContent = getContactsText('linkedBadge', 'Linked to contact');
   linkedBadge.hidden = true;
-  headerMain.appendChild(linkedBadge);
-
   const saveContactBtn = document.createElement('button');
   saveContactBtn.type = 'button';
   saveContactBtn.className = 'person-save-contact';
   setButtonLabelWithIcon(saveContactBtn, getContactsText('saveContact', 'Save to contacts'), ICON_GLYPHS.save);
   saveContactBtn.addEventListener('click', () => saveCrewRowAsContact(row));
-  actions.appendChild(saveContactBtn);
 
   const manageContactsBtn = document.createElement('button');
   manageContactsBtn.type = 'button';
   manageContactsBtn.className = 'person-manage-contacts';
   setButtonLabelWithIcon(manageContactsBtn, getContactsText('openManager', 'Open contacts'), ICON_GLYPHS.gears);
   manageContactsBtn.addEventListener('click', () => openDialog(contactsDialog));
-  actions.appendChild(manageContactsBtn);
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
@@ -17704,19 +17689,20 @@ function createCrewRow(data = {}) {
     }
     scheduleProjectAutoSave(true);
   });
-  actions.appendChild(removeBtn);
+
+  const actions = document.createElement('div');
+  actions.className = 'person-actions';
+  actions.append(saveContactBtn, manageContactsBtn, removeBtn);
 
   [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(label => row.appendChild(label));
-  const header = document.createElement('div');
-  header.className = 'person-row-header';
-  header.append(headerMain, actions);
-
-  const content = document.createElement('div');
-  content.className = 'person-content';
-  content.append(header, fieldsWrapper);
-
   row.appendChild(avatarContainer);
-  row.appendChild(content);
+  row.appendChild(contactSelect);
+  row.appendChild(linkedBadge);
+  row.appendChild(roleSel);
+  row.appendChild(nameInput);
+  row.appendChild(phoneInput);
+  row.appendChild(emailInput);
+  row.appendChild(actions);
 
   if (data.contactId) {
     row.dataset.contactId = data.contactId;
