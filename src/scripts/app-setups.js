@@ -9196,7 +9196,8 @@ function gearListGenerateHtmlImpl(info = {}) {
         'proGaffColor2',
         'proGaffWidth2',
         'storageRequirements',
-        'monitorBatteries'
+        'monitorBatteries',
+        'lensSelections'
     ]);
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) =>
