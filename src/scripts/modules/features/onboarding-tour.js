@@ -1039,6 +1039,7 @@
   let progressEl = null;
   let progressMeterEl = null;
   let progressMeterFillEl = null;
+  let stepListContainerEl = null;
   let stepListEl = null;
   let resumeHintEl = null;
   let interactionContainerEl = null;
@@ -1265,11 +1266,15 @@
     interactionContainerEl.hidden = true;
     cardEl.appendChild(interactionContainerEl);
 
+    stepListContainerEl = DOCUMENT.createElement('div');
+    stepListContainerEl.className = 'onboarding-step-list-container';
+    cardEl.appendChild(stepListContainerEl);
+
     stepListEl = DOCUMENT.createElement('ol');
     stepListEl.className = 'onboarding-step-list';
     stepListEl.setAttribute('role', 'list');
     stepListEl.addEventListener('click', handleStepListClick);
-    cardEl.appendChild(stepListEl);
+    stepListContainerEl.appendChild(stepListEl);
 
     const actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-card-actions';
@@ -1314,6 +1319,7 @@
     progressEl = null;
     progressMeterEl = null;
     progressMeterFillEl = null;
+    stepListContainerEl = null;
     stepListEl = null;
     resumeHintEl = null;
     interactionContainerEl = null;
