@@ -15,7 +15,10 @@ up and restoring must never risk user data.
    plan. These walkthroughs teach crews how to rehearse saves, shares, imports, backups and
    restores without network access.
 3. **Mirror in-app help.** If contextual help or legal pages changed, export the relevant HTML
-   so offline reviewers can confirm the UI still matches the documentation.
+   so offline reviewers can confirm the UI still matches the documentation. Include the
+   refreshed search guidance and the Data & Storage auditing notes so every release packet
+   documents the new safety reminders about capturing autosave timestamps and navigating the
+   quick links while offline.
 
 ## 2. Bundle verification artefacts
 
