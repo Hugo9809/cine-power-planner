@@ -2663,6 +2663,65 @@
       fragment.appendChild(pinkGroup);
     }
 
+    const focusScaleSelect = DOCUMENT.getElementById('settingsFocusScale');
+    if (focusScaleSelect) {
+      const focusGroup = DOCUMENT.createElement('div');
+      focusGroup.className = 'onboarding-field-group';
+      const focusId = getProxyControlId('focus-scale');
+      const focusLabel = DOCUMENT.createElement('label');
+      focusLabel.className = 'onboarding-field-label';
+      focusLabel.setAttribute('for', focusId);
+      const focusLabelSource = DOCUMENT.getElementById('settingsFocusScaleLabel');
+      focusLabel.textContent = focusLabelSource && typeof focusLabelSource.textContent === 'string'
+        ? focusLabelSource.textContent
+        : 'Focus scale';
+      const proxyFocus = DOCUMENT.createElement('select');
+      proxyFocus.id = focusId;
+      proxyFocus.className = 'onboarding-field-select';
+      const focusOptions = Array.from(focusScaleSelect.options || []);
+      if (focusOptions.length === 0) {
+        const option = DOCUMENT.createElement('option');
+        option.value = focusScaleSelect.value || 'metric';
+        option.textContent = focusScaleSelect.value || 'Metric';
+        proxyFocus.appendChild(option);
+      } else {
+        for (let index = 0; index < focusOptions.length; index += 1) {
+          const source = focusOptions[index];
+          const option = DOCUMENT.createElement('option');
+          option.value = source.value;
+          option.textContent = source.textContent || source.value;
+          proxyFocus.appendChild(option);
+        }
+      }
+      proxyFocus.value = focusScaleSelect.value || proxyFocus.value;
+
+      const syncFocusFromTarget = () => {
+        if (proxyFocus.value !== focusScaleSelect.value) {
+          proxyFocus.value = focusScaleSelect.value;
+        }
+      };
+
+      const syncFocusToTarget = () => {
+        if (focusScaleSelect.value !== proxyFocus.value) {
+          focusScaleSelect.value = proxyFocus.value;
+          dispatchSyntheticEvent(focusScaleSelect, 'change');
+        }
+      };
+
+      proxyFocus.addEventListener('change', syncFocusToTarget);
+      registerCleanup(() => {
+        proxyFocus.removeEventListener('change', syncFocusToTarget);
+      });
+      focusScaleSelect.addEventListener('change', syncFocusFromTarget);
+      registerCleanup(() => {
+        focusScaleSelect.removeEventListener('change', syncFocusFromTarget);
+      });
+
+      focusGroup.appendChild(focusLabel);
+      focusGroup.appendChild(proxyFocus);
+      fragment.appendChild(focusGroup);
+    }
+
     const tempUnitSelect = DOCUMENT.getElementById('settingsTemperatureUnit');
     if (tempUnitSelect) {
       const unitsGroup = DOCUMENT.createElement('div');
