@@ -1895,10 +1895,15 @@ const texts = {
           body:
             "Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.",
         },
-        ownGear: {
-          title: "Document your own gear",
+        ownGearAccess: {
+          title: "Open the Own Gear dialog",
           body:
-            "Track owned inventory in the Own Gear dialog. Items saved here appear in gear lists, exports and backups so every workstation knows which equipment is already on hand.",
+            "Use the Own Gear button in the sidebar to open the inventory dialog whenever you need to review equipment you already control. Opening it yourself keeps the workflow familiar when the tutorial is finished.",
+        },
+        ownGearAddDevice: {
+          title: "Add your first owned device",
+          body:
+            "Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.",
         },
         generateGearAndRequirements: {
           title: "Generate requirements and gear list",
@@ -3951,10 +3956,15 @@ const texts = {
           body:
             "Apri l'editor della Libreria dispositivi per aggiungere o modificare camere, batterie e accessori. Gli aggiornamenti vengono archiviati localmente, inclusi nei backup e trasportati in ogni export o pacchetto condiviso.",
         },
-        ownGear: {
-          title: "Documenta la tua attrezzatura",
+        ownGearAccess: {
+          title: "Apri la finestra Attrezzatura propria",
           body:
-            "Traccia l'inventario posseduto nella finestra Attrezzatura propria. Gli elementi salvati qui compaiono negli elenchi attrezzatura, nelle esportazioni e nei backup così ogni postazione sa cosa è già disponibile.",
+            "Usa il pulsante Attrezzatura propria nella barra laterale per aprire la finestra inventario ogni volta che vuoi controllare l’equipaggiamento che hai già. Aprirla tu stesso rende il flusso naturale anche dopo il tutorial.",
+        },
+        ownGearAddDevice: {
+          title: "Aggiungi il primo dispositivo di tua proprietà",
+          body:
+            "Inserisci nome elemento, quantità opzionale e note, quindi salva. L’attrezzatura posseduta viene archiviata offline, inclusa nei backup e contrassegnata nelle esportazioni così la troupe vede subito cosa è disponibile senza doppioni.",
         },
         generateGearAndRequirements: {
           title: "Genera requisiti e elenco attrezzatura",
@@ -6020,10 +6030,15 @@ const texts = {
           body:
             "Abre el editor de la Biblioteca de dispositivos para añadir o ajustar cámaras, baterías y accesorios. Las actualizaciones se guardan localmente, se incluyen en los respaldos y viajan en cada exportación o paquete compartido.",
         },
-        ownGear: {
-          title: "Documenta tu propio equipo",
+        ownGearAccess: {
+          title: "Abre el cuadro de Equipo propio",
           body:
-            "Registra el inventario propio en el cuadro Equipo propio. Los elementos guardados aquí aparecen en las listas de equipo, exportaciones y respaldos para que cada estación sepa qué hay disponible.",
+            "Usa el botón Equipo propio en la barra lateral para abrir el cuadro de inventario siempre que necesites revisar el equipo que ya controlas. Abrirlo tú mismo mantiene el flujo familiar cuando termine el tutorial.",
+        },
+        ownGearAddDevice: {
+          title: "Añade tu primer equipo propio",
+          body:
+            "Introduce el nombre del artículo, la cantidad opcional y las notas, luego guarda. El equipo propio se almacena sin conexión, se incluye en los respaldos y se marca en las exportaciones para que el equipo vea al instante qué está disponible sin duplicar pedidos.",
         },
         generateGearAndRequirements: {
           title: "Genera requisitos y lista de equipo",
@@ -8102,10 +8117,15 @@ const texts = {
           body:
             "Ouvrez l’éditeur de la bibliothèque d’appareils pour ajouter ou ajuster caméras, batteries et accessoires. Les mises à jour sont stockées localement, incluses dans les sauvegardes et intégrées à chaque export ou lot partagé.",
         },
-        ownGear: {
-          title: "Documentez votre matériel personnel",
+        ownGearAccess: {
+          title: "Ouvrez la fenêtre Matériel personnel",
           body:
-            "Suivez l’inventaire possédé dans la fenêtre Matériel personnel. Les éléments enregistrés apparaissent dans les listes, les exports et les sauvegardes pour que chaque poste sache ce qui est déjà disponible.",
+            "Utilisez le bouton Matériel personnel dans la barre latérale pour ouvrir la fenêtre d’inventaire dès que vous devez vérifier ce que vous possédez déjà. L’ouvrir vous-même rend le geste naturel une fois le tutoriel terminé.",
+        },
+        ownGearAddDevice: {
+          title: "Ajoutez votre premier matériel possédé",
+          body:
+            "Saisissez le nom de l’élément, la quantité optionnelle et les notes, puis enregistrez. Le matériel possédé est stocké hors ligne, inclus dans les sauvegardes et signalé dans les exports pour que l’équipe voie immédiatement ce qui est disponible sans doublons.",
         },
         generateGearAndRequirements: {
           title: "Générez exigences et liste du matériel",
@@ -10188,10 +10208,15 @@ const texts = {
           body:
             "Öffne den Gerätekatalog-Editor, um Kameras, Akkus und Zubehör hinzuzufügen oder anzupassen. Aktualisierungen werden lokal gespeichert, in Backups aufgenommen und in jeden Export oder Share-Bundel übernommen.",
         },
-        ownGear: {
-          title: "Eigenes Equipment dokumentieren",
+        ownGearAccess: {
+          title: "Dialog Eigenes Equipment öffnen",
           body:
-            "Dokumentiere eigenes Inventar im Dialog Eigenes Equipment. Gespeicherte Einträge erscheinen in Gerätelisten, Exporten und Backups, damit jeder Arbeitsplatz weiß, was bereits verfügbar ist.",
+            "Nutze die Schaltfläche Eigenes Equipment in der Seitenleiste, um den Inventardialog zu öffnen, sobald du vorhandenes Material prüfen möchtest. Wenn du ihn selbst öffnest, bleibt der Ablauf nach dem Tutorial vertraut.",
+        },
+        ownGearAddDevice: {
+          title: "Erstes eigenes Gerät hinzufügen",
+          body:
+            "Trage Bezeichnung, optionale Menge und Notizen ein und speichere. Eigenes Equipment wird offline abgelegt, in Backups aufgenommen und in Exporten markiert, damit das Team sofort erkennt, was verfügbar ist – ohne doppelte Anfragen.",
         },
         generateGearAndRequirements: {
           title: "Anforderungen und Gear-Liste erzeugen",

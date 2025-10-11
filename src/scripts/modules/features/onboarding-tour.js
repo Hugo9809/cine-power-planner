@@ -241,7 +241,8 @@
     'runtimeFeedback',
     'connectionDiagram',
     'editDeviceData',
-    'ownGear',
+    'ownGearAccess',
+    'ownGearAddDevice',
     'generateGearAndRequirements',
     'autoGearRules',
     'projectRequirements',
@@ -321,10 +322,15 @@
       body:
         'Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.',
     },
-    ownGear: {
-      title: 'Document your own gear',
+    ownGearAccess: {
+      title: 'Open the Own Gear dialog',
       body:
-        'Track owned inventory in the Own Gear dialog. Items saved here appear in gear lists, exports and backups so every workstation knows which equipment is already on hand.',
+        'Use the Own Gear button in the sidebar to open the inventory dialog whenever you need to review equipment you already control. Opening it yourself keeps the workflow familiar when the tutorial is finished.',
+    },
+    ownGearAddDevice: {
+      title: 'Add your first owned device',
+      body:
+        'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.',
     },
     generateGearAndRequirements: {
       title: 'Generate requirements and gear list',
@@ -634,6 +640,198 @@
     };
   }
 
+  function evaluateOwnGearOpenState() {
+    try {
+      return isOwnGearDialogVisible();
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not evaluate Own Gear dialog visibility.', error);
+      return false;
+    }
+  }
+
+  function createOwnGearOpenRequirement() {
+    return {
+      check() {
+        return evaluateOwnGearOpenState();
+      },
+      attach({ complete, incomplete }) {
+        const dialog = getElement('#ownGearDialog');
+        if (!dialog) {
+          return null;
+        }
+
+        let observer = null;
+        const evaluate = () => {
+          if (evaluateOwnGearOpenState()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+
+        evaluate();
+
+        if (typeof MutationObserver === 'function') {
+          try {
+            observer = new MutationObserver(() => {
+              evaluate();
+            });
+            observer.observe(dialog, {
+              attributes: true,
+              attributeFilter: ['open', 'hidden', 'aria-hidden'],
+            });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear dialog attributes.', error);
+            observer = null;
+          }
+        }
+
+        const handleDialogEvent = () => {
+          evaluate();
+        };
+
+        dialog.addEventListener('close', handleDialogEvent);
+        dialog.addEventListener('cancel', handleDialogEvent);
+
+        const trigger = getElement('[data-sidebar-action="open-own-gear"]');
+        const handleTriggerClick = () => {
+          setTimeout(evaluate, 100);
+        };
+        if (trigger) {
+          trigger.addEventListener('click', handleTriggerClick);
+        }
+
+        return () => {
+          dialog.removeEventListener('close', handleDialogEvent);
+          dialog.removeEventListener('cancel', handleDialogEvent);
+          if (trigger) {
+            trigger.removeEventListener('click', handleTriggerClick);
+          }
+          if (observer) {
+            try {
+              observer.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear dialog observer.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
+  function hasOwnGearListEntries() {
+    const list = getElement('#ownGearList');
+    if (list && typeof list.querySelector === 'function') {
+      const item = list.querySelector('.own-gear-item');
+      if (item) {
+        return true;
+      }
+    }
+    const emptyState = getElement('#ownGearEmptyState');
+    if (emptyState && emptyState.hasAttribute('hidden')) {
+      return true;
+    }
+    return false;
+  }
+
+  function createOwnGearItemRequirement() {
+    return {
+      check() {
+        return hasOwnGearListEntries();
+      },
+      attach({ complete, incomplete }) {
+        const list = getElement('#ownGearList');
+        const emptyState = getElement('#ownGearEmptyState');
+
+        const evaluate = () => {
+          if (hasOwnGearListEntries()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+
+        evaluate();
+
+        let listObserver = null;
+        if (list && typeof MutationObserver === 'function') {
+          try {
+            listObserver = new MutationObserver(() => {
+              evaluate();
+            });
+            listObserver.observe(list, { childList: true });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear list changes.', error);
+            listObserver = null;
+          }
+        }
+
+        const handleListEvent = () => {
+          evaluate();
+        };
+
+        if (list) {
+          list.addEventListener('click', handleListEvent, true);
+        }
+
+        const form = getElement('#ownGearForm');
+        const handleFormSubmit = () => {
+          setTimeout(evaluate, 50);
+        };
+        if (form && typeof form.addEventListener === 'function') {
+          form.addEventListener('submit', handleFormSubmit);
+        }
+
+        const saveButton = getElement('#ownGearSaveButton');
+        const handleSaveClick = () => {
+          setTimeout(evaluate, 50);
+        };
+        if (saveButton && typeof saveButton.addEventListener === 'function') {
+          saveButton.addEventListener('click', handleSaveClick);
+        }
+
+        let emptyObserver = null;
+        if (emptyState && typeof MutationObserver === 'function') {
+          try {
+            emptyObserver = new MutationObserver(() => {
+              evaluate();
+            });
+            emptyObserver.observe(emptyState, { attributes: true, attributeFilter: ['hidden', 'aria-hidden'] });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear empty state.', error);
+            emptyObserver = null;
+          }
+        }
+
+        return () => {
+          if (list) {
+            list.removeEventListener('click', handleListEvent, true);
+          }
+          if (form && typeof form.removeEventListener === 'function') {
+            form.removeEventListener('submit', handleFormSubmit);
+          }
+          if (saveButton && typeof saveButton.removeEventListener === 'function') {
+            saveButton.removeEventListener('click', handleSaveClick);
+          }
+          if (listObserver) {
+            try {
+              listObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear list observer.', error);
+            }
+          }
+          if (emptyObserver) {
+            try {
+              emptyObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear empty state observer.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
   function getProjectNameValue() {
     const input = getElement('#setupName');
     return typeof input?.value === 'string' ? input.value.trim() : '';
@@ -760,6 +958,8 @@
       value => value && value !== 'None',
       ['change'],
     ),
+    ownGearAccess: createOwnGearOpenRequirement(),
+    ownGearAddDevice: createOwnGearItemRequirement(),
     generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
     exportImport: createClickCompletionRequirement(
       ['#shareSetupBtn', '#applySharedLinkBtn'],
@@ -1035,7 +1235,12 @@
         highlight: '#toggleDeviceManager',
       },
       {
-        key: 'ownGear',
+        key: 'ownGearAccess',
+        highlight: '[data-sidebar-action="open-own-gear"]',
+        focus: '[data-sidebar-action="open-own-gear"]',
+      },
+      {
+        key: 'ownGearAddDevice',
         highlight: '#ownGearDialog',
         ensureOwnGear: true,
         focus: '#ownGearName',
