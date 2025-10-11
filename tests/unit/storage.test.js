@@ -39,6 +39,8 @@ const {
   deleteProject,
   loadFavorites,
   saveFavorites,
+  loadUserProfile,
+  saveUserProfile,
   clearAllData,
   exportAllData,
   importAllData,
@@ -1941,6 +1943,53 @@ describe('clearAllData', () => {
 
     expect(localStorage.getItem('__cineLoggingHistory')).toBeNull();
     expect(sessionStorage.getItem('__cineLoggingConfig')).toBeNull();
+  });
+});
+
+describe('user profile storage', () => {
+  const USER_PROFILE_KEY = 'cameraPowerPlanner_userProfile';
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('saveUserProfile persists extended contact fields', () => {
+    saveUserProfile({
+      name: ' Jordan ',
+      role: 'Producer',
+      phone: ' +1 555 0100 ',
+      email: ' crew@example.com ',
+      website: ' https://crew.example ',
+      avatar: 'data:image/png;base64,abc',
+    });
+
+    const stored = parseLocalStorageJSON(USER_PROFILE_KEY);
+
+    expect(stored).toEqual({
+      name: 'Jordan',
+      role: 'Producer',
+      phone: '+1 555 0100',
+      email: 'crew@example.com',
+      website: 'https://crew.example',
+      avatar: 'data:image/png;base64,abc',
+    });
+  });
+
+  test('loadUserProfile normalizes missing fields', () => {
+    localStorage.setItem(USER_PROFILE_KEY, JSON.stringify({
+      name: 'Jordan',
+    }));
+
+    const profile = loadUserProfile();
+
+    expect(profile).toEqual({
+      name: 'Jordan',
+      role: '',
+      phone: '',
+      email: '',
+      website: '',
+      avatar: '',
+    });
   });
 });
 

@@ -16,12 +16,804 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
+var EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
 var projectPersistenceSuspendedCount = 0;
 var PROJECT_FORM_FREEZE = typeof Object.freeze === 'function' ? Object.freeze : function (value) {
   return value;
 };
 var projectFormDataCache = null;
 var projectFormDataCacheDirty = true;
+var lensSelectionManager = function () {
+  var doc = typeof document !== 'undefined' ? document : null;
+  var stub = {
+    snapshot: function snapshot() {
+      return {
+        names: [],
+        lensSelections: [],
+        legacyValue: ''
+      };
+    },
+    applyInfo: function applyInfo() {},
+    refreshCatalog: function refreshCatalog() {},
+    getSelections: function getSelections() {
+      return [];
+    }
+  };
+  if (!doc) {
+    return stub;
+  }
+  var manufacturerSelect = doc.getElementById('lensManufacturer');
+  var seriesSelect = doc.getElementById('lensSeries');
+  var manufacturerStep = doc.getElementById('lensManufacturerStep');
+  var seriesStep = doc.getElementById('lensSeriesStep');
+  var optionsStep = doc.getElementById('lensOptionsStep');
+  var optionsContainer = doc.getElementById('lensOptions');
+  var optionsEmptyMessage = doc.getElementById('lensOptionsEmpty');
+  var seriesEmptyMessage = doc.getElementById('lensSeriesEmpty');
+  var selectionChips = doc.getElementById('lensSelectionChips');
+  var hiddenLegacyValue = doc.getElementById('lensSelectionsValue');
+  var hiddenDetailedValue = doc.getElementById('lensSelectionsData');
+  var legacySelect = doc.getElementById('lenses');
+  var manufacturerPlaceholder = doc.getElementById('lensManufacturerPlaceholder');
+  var seriesPlaceholder = doc.getElementById('lensSeriesPlaceholder');
+  if (!manufacturerSelect || !seriesSelect || !optionsContainer || !selectionChips || !hiddenLegacyValue || !hiddenDetailedValue || !legacySelect) {
+    return stub;
+  }
+  var REMOVE_TEMPLATE_ATTR = 'data-remove-template';
+  var MOUNT_LABEL_ATTR = 'data-mount-label';
+  var STEP_DISABLED_CLASS = 'lens-step-disabled';
+  var IGNORED_MOUNT_TOKENS = new Set(['LDS']);
+  var MOUNT_TOKEN_MAP = new Map([['B4', 'B4'], ['DJI DL', 'DJI DL'], ['DJI DL-S', 'DJI DL-S'], ['DL', 'DJI DL'], ['E', 'E-mount'], ['E-mount', 'E-mount'], ['Sony E', 'E-mount'], ['EF', 'EF'], ['F', 'F'], ['Hasselblad', 'Hasselblad'], ['L', 'L-Mount'], ['L-Mount', 'L-Mount'], ['Leica L', 'L-Mount'], ['Leica M', 'Leica M'], ['Leitz M Mount for ARRI', 'Leica M'], ['M', 'Leica M'], ['MFT', 'MFT'], ['PL', 'PL'], ['PV', 'PV'], ['PV70', 'PV70'], ['RF', 'RF'], ['X', 'X-mount'], ['X-mount', 'X-mount'], ['XPL52', 'XPL52'], ['Z', 'Z-mount'], ['Z-mount', 'Z-mount']]);
+  var sortComparator = typeof localeSort === 'function' ? localeSort : undefined;
+  var state = {
+    manufacturer: '',
+    series: '',
+    selections: []
+  };
+  var catalog = {
+    manufacturers: new Map(),
+    lensIndex: new Map()
+  };
+  var mountOptions = [];
+  var optionInputs = new Map();
+  var placeholderToggle = function placeholderToggle(select, isEmpty) {
+    if (!select) return;
+    if (isEmpty) {
+      select.classList.add('select-placeholder');
+    } else {
+      select.classList.remove('select-placeholder');
+    }
+  };
+  var escapeRegExp = function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+  var stripPrefix = function stripPrefix(text, prefix) {
+    if (!text || !prefix) return text;
+    var pattern = new RegExp("^".concat(escapeRegExp(prefix), "\\s+"), 'i');
+    return text.replace(pattern, '').trim();
+  };
+  var isSpecToken = function isSpecToken(token) {
+    if (!token) return false;
+    var value = token.trim();
+    if (!value) return false;
+    if (/^T\d+/i.test(value)) return true;
+    if (/^f\//i.test(value)) return true;
+    if (/\d/.test(value)) {
+      if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
+      if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
+      if (/^\d+-\d+/.test(value)) return true;
+    }
+    return false;
+  };
+  var deriveManufacturer = function deriveManufacturer(lensData, lensName) {
+    if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
+      return lensData.brand.trim();
+    }
+    var firstToken = typeof lensName === 'string' ? lensName.trim().split(/\s+/)[0] : '';
+    return firstToken || 'Other';
+  };
+  var deriveSeriesName = function deriveSeriesName(lensName, manufacturer) {
+    if (typeof lensName !== 'string' || !lensName.trim()) {
+      return 'General';
+    }
+    var remainder = lensName.trim();
+    if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+      remainder = remainder.slice(manufacturer.length).trim();
+    }
+    if (!remainder) return 'General';
+    var tokens = remainder.split(/\s+/);
+    var seriesTokens = [];
+    for (var index = 0; index < tokens.length; index += 1) {
+      var token = tokens[index];
+      if (isSpecToken(token)) {
+        break;
+      }
+      seriesTokens.push(token);
+    }
+    var series = seriesTokens.join(' ').trim();
+    return series || 'General';
+  };
+  var extractMountLabels = function extractMountLabels(rawValue) {
+    var labels = [];
+    var seen = new Set();
+    var addLabel = function addLabel(label) {
+      if (!label || seen.has(label)) return;
+      seen.add(label);
+      labels.push(label);
+    };
+    var processString = function processString(value) {
+      if (!value || typeof value !== 'string') return;
+      var sanitized = value.replace(/\([^)]*\)/g, ' ').replace(/ or /gi, '/').replace(/\\/g, '/');
+      sanitized.split('/').forEach(function (segment) {
+        segment.split(',').forEach(function (part) {
+          var token = part.trim();
+          if (!token || IGNORED_MOUNT_TOKENS.has(token)) {
+            return;
+          }
+          var mapped = MOUNT_TOKEN_MAP.has(token) ? MOUNT_TOKEN_MAP.get(token) : token;
+          if (mapped) addLabel(mapped);
+        });
+      });
+    };
+    if (Array.isArray(rawValue)) {
+      rawValue.forEach(function (value) {
+        return processString(value);
+      });
+    } else {
+      processString(rawValue);
+    }
+    return labels;
+  };
+  var resolveLensDataset = function resolveLensDataset() {
+    var primary = (typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' && devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null;
+    if (primary) return primary;
+    if ((typeof devices === "undefined" ? "undefined" : _typeof(devices)) === 'object' && devices && devices.accessories && devices.accessories.lenses) {
+      return devices.accessories.lenses;
+    }
+    return {};
+  };
+  var buildCatalog = function buildCatalog() {
+    var lensDb = resolveLensDataset();
+    var manufacturerMap = new Map();
+    var lensIndex = new Map();
+    var mountSet = new Set();
+    var lensNames = Object.keys(lensDb || {});
+    if (lensNames.length && sortComparator) {
+      lensNames.sort(sortComparator);
+    } else {
+      lensNames.sort();
+    }
+    lensNames.forEach(function (name) {
+      var lensData = lensDb[name] || {};
+      var manufacturer = deriveManufacturer(lensData, name);
+      var series = deriveSeriesName(name, manufacturer);
+      var focalLabel = stripPrefix(stripPrefix(name, manufacturer), series);
+      var mountLabels = extractMountLabels(lensData.mount);
+      mountLabels.forEach(function (label) {
+        return mountSet.add(label);
+      });
+      var record = {
+        name: name,
+        data: lensData,
+        manufacturer: manufacturer,
+        series: series,
+        displayName: name,
+        focalLabel: focalLabel,
+        mountLabels: mountLabels,
+        optionMeta: mountLabels[0] ? "Mount: ".concat(mountLabels[0]) : ''
+      };
+      if (!manufacturerMap.has(manufacturer)) {
+        manufacturerMap.set(manufacturer, new Map());
+      }
+      var seriesMap = manufacturerMap.get(manufacturer);
+      if (!seriesMap.has(series)) {
+        seriesMap.set(series, []);
+      }
+      seriesMap.get(series).push(record);
+      lensIndex.set(name, record);
+    });
+    manufacturerMap.forEach(function (seriesMap) {
+      seriesMap.forEach(function (list) {
+        if (list.length && sortComparator) {
+          list.sort(function (a, b) {
+            return sortComparator(a.displayName, b.displayName);
+          });
+        } else {
+          list.sort(function (a, b) {
+            return a.displayName.localeCompare(b.displayName);
+          });
+        }
+      });
+    });
+    var ensuredMounts = new Set(mountSet);
+    ['PL', 'EF', 'LPL', 'E-mount'].forEach(function (label) {
+      return ensuredMounts.add(label);
+    });
+    var sortedMounts = Array.from(ensuredMounts);
+    var mountPriority = new Map([['PL', 0], ['EF', 1], ['LPL', 2], ['E-mount', 3]]);
+    sortedMounts.sort(function (a, b) {
+      var rankA = mountPriority.has(a) ? mountPriority.get(a) : 100;
+      var rankB = mountPriority.has(b) ? mountPriority.get(b) : 100;
+      if (rankA !== rankB) return rankA - rankB;
+      if (sortComparator) {
+        return sortComparator(a, b);
+      }
+      return a.localeCompare(b);
+    });
+    mountOptions = sortedMounts;
+    return {
+      manufacturers: manufacturerMap,
+      lensIndex: lensIndex
+    };
+  };
+  var getMountLabelFromCameraEntry = function getMountLabelFromCameraEntry(entry) {
+    if (!entry || typeof entry.type !== 'string') return '';
+    var labels = extractMountLabels(entry.type);
+    return labels[0] || '';
+  };
+  var getCameraNativeMount = function getCameraNativeMount() {
+    var cameraElement = doc.getElementById('cameraSelect');
+    var cameraName = cameraElement && typeof cameraElement.value === 'string' ? cameraElement.value : '';
+    if (!cameraName || (typeof devices === "undefined" ? "undefined" : _typeof(devices)) !== 'object' || !devices || !devices.cameras) {
+      return '';
+    }
+    var camera = devices.cameras[cameraName];
+    if (!camera || !Array.isArray(camera.lensMount)) return '';
+    for (var index = 0; index < camera.lensMount.length; index += 1) {
+      var entry = camera.lensMount[index];
+      if (!entry) continue;
+      var normalizedType = getMountLabelFromCameraEntry(entry);
+      if (normalizedType && String(entry.mount || '').toLowerCase() === 'native') {
+        return normalizedType;
+      }
+    }
+    for (var _index = 0; _index < camera.lensMount.length; _index += 1) {
+      var _entry = camera.lensMount[_index];
+      var _normalizedType = getMountLabelFromCameraEntry(_entry);
+      if (_normalizedType) return _normalizedType;
+    }
+    return '';
+  };
+  var buildMountOptionsForSelection = function buildMountOptionsForSelection(currentMount, lensName) {
+    var options = [];
+    var seen = new Set();
+    var addOption = function addOption(label) {
+      if (!label || seen.has(label)) return;
+      seen.add(label);
+      options.push(label);
+    };
+    if (currentMount) addOption(currentMount);
+    var lensRecord = catalog.lensIndex.get(lensName);
+    if (lensRecord && Array.isArray(lensRecord.mountLabels)) {
+      lensRecord.mountLabels.forEach(addOption);
+    }
+    var cameraMount = getCameraNativeMount();
+    if (cameraMount) addOption(cameraMount);
+    ['PL', 'EF', 'LPL'].forEach(addOption);
+    mountOptions.forEach(addOption);
+    return options;
+  };
+  var resolveDefaultMount = function resolveDefaultMount(lensName) {
+    var cameraMount = getCameraNativeMount();
+    if (cameraMount) {
+      return cameraMount;
+    }
+    var lensRecord = catalog.lensIndex.get(lensName);
+    if (lensRecord && lensRecord.mountLabels && lensRecord.mountLabels.length) {
+      return lensRecord.mountLabels[0];
+    }
+    if (mountOptions.includes('PL')) return 'PL';
+    if (mountOptions.includes('EF')) return 'EF';
+    if (mountOptions.includes('LPL')) return 'LPL';
+    return mountOptions[0] || '';
+  };
+  var normalizeSelectionName = function normalizeSelectionName(value) {
+    if (typeof value !== 'string') return '';
+    return value.trim();
+  };
+  var updateStepState = function updateStepState() {
+    var hasManufacturer = Boolean(state.manufacturer);
+    var hasSeries = Boolean(state.series);
+    if (manufacturerStep) {
+      manufacturerStep.classList.toggle(STEP_DISABLED_CLASS, false);
+    }
+    if (seriesStep) {
+      seriesStep.classList.toggle(STEP_DISABLED_CLASS, !hasManufacturer);
+      seriesStep.setAttribute('aria-disabled', hasManufacturer ? 'false' : 'true');
+    }
+    if (optionsStep) {
+      optionsStep.classList.toggle(STEP_DISABLED_CLASS, !hasSeries);
+      optionsStep.setAttribute('aria-disabled', hasSeries ? 'false' : 'true');
+    }
+    seriesSelect.disabled = !hasManufacturer;
+    placeholderToggle(seriesSelect, !state.series);
+    placeholderToggle(manufacturerSelect, !state.manufacturer);
+  };
+  var syncLegacySelect = function syncLegacySelect() {
+    var names = new Set(state.selections.map(function (selection) {
+      return selection.name;
+    }));
+    Array.from(legacySelect.options || []).forEach(function (option) {
+      if (!option || typeof option.value !== 'string') return;
+      option.selected = names.has(option.value);
+    });
+  };
+  var updateHiddenInputs = function updateHiddenInputs() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref$skipEvent = _ref.skipEvent,
+      skipEvent = _ref$skipEvent === void 0 ? false : _ref$skipEvent,
+      _ref$skipDirty = _ref.skipDirty,
+      skipDirty = _ref$skipDirty === void 0 ? false : _ref$skipDirty;
+    var names = state.selections.map(function (selection) {
+      return selection.name;
+    });
+    var legacyValue = names.join(', ');
+    var detailedValue = JSON.stringify(state.selections.map(function (selection) {
+      return {
+        name: selection.name,
+        mount: selection.mount || ''
+      };
+    }));
+    var legacyChanged = hiddenLegacyValue.value !== legacyValue;
+    var detailedChanged = hiddenDetailedValue.value !== detailedValue;
+    if (legacyChanged) hiddenLegacyValue.value = legacyValue;
+    if (detailedChanged) hiddenDetailedValue.value = detailedValue;
+    if (!skipEvent && (legacyChanged || detailedChanged)) {
+      try {
+        hiddenLegacyValue.dispatchEvent(new Event('change', {
+          bubbles: true
+        }));
+        hiddenDetailedValue.dispatchEvent(new Event('change', {
+          bubbles: true
+        }));
+      } catch (eventError) {
+        void eventError;
+      }
+    }
+    if (!skipDirty && (legacyChanged || detailedChanged)) {
+      try {
+        markProjectFormDataDirty();
+      } catch (markError) {
+        void markError;
+      }
+    }
+    syncLegacySelect();
+  };
+  var renderSelectionChips = function renderSelectionChips() {
+    var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref2$skipEvent = _ref2.skipEvent,
+      skipEvent = _ref2$skipEvent === void 0 ? false : _ref2$skipEvent,
+      _ref2$skipDirty = _ref2.skipDirty,
+      skipDirty = _ref2$skipDirty === void 0 ? false : _ref2$skipDirty;
+    selectionChips.innerHTML = '';
+    if (!state.selections.length) {
+      updateHiddenInputs({
+        skipEvent: skipEvent,
+        skipDirty: skipDirty
+      });
+      return;
+    }
+    var removeTemplate = selectionChips.getAttribute(REMOVE_TEMPLATE_ATTR) || '';
+    var mountLabel = selectionChips.getAttribute(MOUNT_LABEL_ATTR) || 'Mount';
+    state.selections.forEach(function (selection, index) {
+      var lensRecord = catalog.lensIndex.get(selection.name);
+      var displayName = lensRecord ? lensRecord.displayName : selection.name;
+      var focalLabel = lensRecord && lensRecord.focalLabel ? lensRecord.focalLabel : '';
+      var chip = doc.createElement('div');
+      chip.className = 'lens-chip';
+      chip.setAttribute('role', 'listitem');
+      var labelContainer = doc.createElement('div');
+      labelContainer.className = 'lens-chip-label';
+      var nameSpan = doc.createElement('span');
+      nameSpan.className = 'lens-chip-name';
+      nameSpan.textContent = displayName;
+      labelContainer.appendChild(nameSpan);
+      if (focalLabel) {
+        var focalSpan = doc.createElement('span');
+        focalSpan.className = 'lens-chip-focal';
+        focalSpan.textContent = focalLabel;
+        labelContainer.appendChild(focalSpan);
+      }
+      chip.appendChild(labelContainer);
+      var mountId = "lensMount-".concat(index);
+      var mountWrapper = doc.createElement('div');
+      var mountLabelElem = doc.createElement('label');
+      mountLabelElem.className = 'visually-hidden';
+      mountLabelElem.setAttribute('for', mountId);
+      mountLabelElem.textContent = "".concat(mountLabel, ": ").concat(displayName);
+      mountWrapper.appendChild(mountLabelElem);
+      var mountSelect = doc.createElement('select');
+      mountSelect.id = mountId;
+      mountSelect.dataset.lensName = selection.name;
+      var mountOptionsForSelect = buildMountOptionsForSelection(selection.mount, selection.name);
+      mountOptionsForSelect.forEach(function (label) {
+        var option = doc.createElement('option');
+        option.value = label;
+        option.textContent = label;
+        if (selection.mount === label) {
+          option.selected = true;
+        }
+        mountSelect.appendChild(option);
+      });
+      if (!mountSelect.value && mountOptionsForSelect.length) {
+        mountSelect.value = mountOptionsForSelect[0];
+        selection.mount = mountSelect.value;
+      }
+      mountSelect.setAttribute('aria-label', "".concat(mountLabel, ": ").concat(displayName));
+      mountSelect.addEventListener('change', function (event) {
+        var lensName = event.target.dataset.lensName;
+        var newMount = typeof event.target.value === 'string' ? event.target.value : '';
+        var record = state.selections.find(function (sel) {
+          return sel.name === lensName;
+        });
+        if (!record || record.mount === newMount) {
+          return;
+        }
+        record.mount = newMount;
+        updateHiddenInputs();
+      });
+      mountWrapper.appendChild(mountSelect);
+      chip.appendChild(mountWrapper);
+      var removeBtn = doc.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'lens-chip-remove';
+      removeBtn.dataset.lensName = selection.name;
+      var removeLabel = removeTemplate.includes('{lens}') ? removeTemplate.replace('{lens}', displayName) : removeTemplate || displayName;
+      removeBtn.setAttribute('aria-label', removeLabel);
+      removeBtn.setAttribute('title', removeLabel);
+      if (typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS && ICON_GLYPHS.circleX) {
+        removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+      } else {
+        removeBtn.textContent = '×';
+      }
+      removeBtn.addEventListener('click', function () {
+        removeSelection(selection.name, {
+          focus: true
+        });
+      });
+      chip.appendChild(removeBtn);
+      selectionChips.appendChild(chip);
+    });
+    updateHiddenInputs({
+      skipEvent: skipEvent,
+      skipDirty: skipDirty
+    });
+  };
+  var renderLensOptions = function renderLensOptions() {
+    optionsContainer.innerHTML = '';
+    optionInputs.clear();
+    if (!state.series) {
+      if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+      return;
+    }
+    var manufacturerMap = catalog.manufacturers.get(state.manufacturer);
+    var lensList = manufacturerMap ? manufacturerMap.get(state.series) : null;
+    if (!lensList || !lensList.length) {
+      if (optionsEmptyMessage) optionsEmptyMessage.hidden = false;
+      return;
+    }
+    if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+    lensList.forEach(function (lens, index) {
+      var wrapper = doc.createElement('div');
+      wrapper.className = 'lens-option';
+      var optionId = "lensOption-".concat(index);
+      var checkbox = doc.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = optionId;
+      checkbox.dataset.lensName = lens.name;
+      checkbox.checked = state.selections.some(function (sel) {
+        return sel.name === lens.name;
+      });
+      checkbox.addEventListener('change', function (event) {
+        var checked = Boolean(event.target.checked);
+        handleLensToggle(lens.name, checked);
+      });
+      wrapper.appendChild(checkbox);
+      var label = doc.createElement('label');
+      label.className = 'lens-option-label';
+      label.setAttribute('for', optionId);
+      var nameSpan = doc.createElement('span');
+      nameSpan.className = 'lens-option-name';
+      nameSpan.textContent = lens.displayName;
+      label.appendChild(nameSpan);
+      if (lens.optionMeta) {
+        var metaSpan = doc.createElement('span');
+        metaSpan.className = 'lens-option-meta';
+        metaSpan.textContent = lens.optionMeta;
+        label.appendChild(metaSpan);
+      }
+      wrapper.appendChild(label);
+      optionsContainer.appendChild(wrapper);
+      optionInputs.set(lens.name, checkbox);
+    });
+  };
+  var renderSeries = function renderSeries() {
+    seriesSelect.innerHTML = '';
+    seriesSelect.appendChild(seriesPlaceholder);
+    var manufacturerMap = state.manufacturer ? catalog.manufacturers.get(state.manufacturer) : null;
+    if (!manufacturerMap || manufacturerMap.size === 0) {
+      state.series = '';
+      if (seriesEmptyMessage) seriesEmptyMessage.hidden = Boolean(!state.manufacturer);
+      if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+      seriesPlaceholder.selected = true;
+      updateStepState();
+      return;
+    }
+    var seriesNames = Array.from(manufacturerMap.keys());
+    if (!seriesNames.length) {
+      state.series = '';
+      if (seriesEmptyMessage) seriesEmptyMessage.hidden = false;
+      if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+      seriesPlaceholder.selected = true;
+      updateStepState();
+      return;
+    }
+    if (seriesEmptyMessage) seriesEmptyMessage.hidden = true;
+    if (sortComparator) {
+      seriesNames.sort(sortComparator);
+    } else {
+      seriesNames.sort();
+    }
+    seriesNames.forEach(function (name) {
+      var option = doc.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      if (state.series === name) {
+        option.selected = true;
+      }
+      seriesSelect.appendChild(option);
+    });
+    if (!manufacturerMap.has(state.series)) {
+      state.series = '';
+      seriesPlaceholder.selected = true;
+    } else {
+      seriesSelect.value = state.series;
+    }
+    updateStepState();
+  };
+  var renderManufacturers = function renderManufacturers() {
+    manufacturerSelect.innerHTML = '';
+    manufacturerSelect.appendChild(manufacturerPlaceholder);
+    var manufacturerNames = Array.from(catalog.manufacturers.keys());
+    if (manufacturerNames.length) {
+      if (sortComparator) {
+        manufacturerNames.sort(sortComparator);
+      } else {
+        manufacturerNames.sort();
+      }
+      manufacturerNames.forEach(function (name) {
+        var option = doc.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        if (state.manufacturer === name) {
+          option.selected = true;
+        }
+        manufacturerSelect.appendChild(option);
+      });
+    }
+    if (!catalog.manufacturers.has(state.manufacturer)) {
+      state.manufacturer = '';
+      manufacturerPlaceholder.selected = true;
+    } else {
+      manufacturerSelect.value = state.manufacturer;
+    }
+    updateStepState();
+  };
+  var handleLensToggle = function handleLensToggle(lensName, checked) {
+    if (checked) {
+      if (state.selections.some(function (sel) {
+        return sel.name === lensName;
+      })) {
+        return;
+      }
+      var selection = {
+        name: lensName,
+        mount: resolveDefaultMount(lensName)
+      };
+      state.selections.push(selection);
+      renderSelectionChips();
+    } else {
+      removeSelection(lensName);
+    }
+  };
+  var removeSelection = function removeSelection(lensName) {
+    var _ref3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref3$focus = _ref3.focus,
+      focus = _ref3$focus === void 0 ? false : _ref3$focus,
+      _ref3$skipEvent = _ref3.skipEvent,
+      skipEvent = _ref3$skipEvent === void 0 ? false : _ref3$skipEvent,
+      _ref3$skipDirty = _ref3.skipDirty,
+      skipDirty = _ref3$skipDirty === void 0 ? false : _ref3$skipDirty;
+    var index = state.selections.findIndex(function (sel) {
+      return sel.name === lensName;
+    });
+    if (index === -1) return;
+    state.selections.splice(index, 1);
+    var input = optionInputs.get(lensName);
+    if (input) {
+      input.checked = false;
+      if (focus) {
+        input.focus();
+      }
+    }
+    renderSelectionChips({
+      skipEvent: skipEvent,
+      skipDirty: skipDirty
+    });
+  };
+  var handleManufacturerChange = function handleManufacturerChange() {
+    var newValue = normalizeSelectionName(manufacturerSelect.value);
+    if (newValue === state.manufacturer) {
+      return;
+    }
+    state.manufacturer = newValue;
+    state.series = '';
+    renderManufacturers();
+    renderSeries();
+    renderLensOptions();
+  };
+  var handleSeriesChange = function handleSeriesChange() {
+    var newValue = normalizeSelectionName(seriesSelect.value);
+    if (newValue === state.series) {
+      return;
+    }
+    state.series = newValue;
+    renderSeries();
+    renderLensOptions();
+  };
+  var applyInfo = function applyInfo() {
+    var info = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    catalog = buildCatalog();
+    var validNames = new Set(catalog.lensIndex.keys());
+    var prepared = [];
+    var seen = new Set();
+    if (Array.isArray(info.lensSelections)) {
+      info.lensSelections.forEach(function (entry) {
+        if (!entry || _typeof(entry) !== 'object') return;
+        var name = normalizeSelectionName(entry.name);
+        if (!name || seen.has(name) || !validNames.has(name)) return;
+        var mount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+        prepared.push({
+          name: name,
+          mount: mount
+        });
+        seen.add(name);
+      });
+    }
+    if (!prepared.length) {
+      normalizeLensSelectionNames(info.lenses).forEach(function (name) {
+        var normalized = normalizeSelectionName(name);
+        if (!normalized || seen.has(normalized) || !validNames.has(normalized)) return;
+        prepared.push({
+          name: normalized,
+          mount: ''
+        });
+        seen.add(normalized);
+      });
+    }
+    state.selections = prepared.map(function (entry) {
+      return {
+        name: entry.name,
+        mount: entry.mount || resolveDefaultMount(entry.name)
+      };
+    });
+    if (state.selections.length) {
+      var firstRecord = catalog.lensIndex.get(state.selections[0].name);
+      state.manufacturer = firstRecord ? firstRecord.manufacturer : '';
+      state.series = firstRecord ? firstRecord.series : '';
+    } else {
+      state.manufacturer = '';
+      state.series = '';
+    }
+    renderManufacturers();
+    renderSeries();
+    renderLensOptions();
+    renderSelectionChips({
+      skipEvent: true,
+      skipDirty: true
+    });
+  };
+  var snapshot = function snapshot() {
+    return {
+      names: state.selections.map(function (selection) {
+        return selection.name;
+      }),
+      lensSelections: state.selections.map(function (selection) {
+        return {
+          name: selection.name,
+          mount: selection.mount || ''
+        };
+      }),
+      legacyValue: state.selections.map(function (selection) {
+        return selection.name;
+      }).join(', ')
+    };
+  };
+  var refreshCatalog = function refreshCatalog() {
+    var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref4$preserveSelecti = _ref4.preserveSelections,
+      preserveSelections = _ref4$preserveSelecti === void 0 ? true : _ref4$preserveSelecti,
+      _ref4$skipEvent = _ref4.skipEvent,
+      skipEvent = _ref4$skipEvent === void 0 ? false : _ref4$skipEvent,
+      _ref4$skipDirty = _ref4.skipDirty,
+      skipDirty = _ref4$skipDirty === void 0 ? false : _ref4$skipDirty;
+    var previousSelections = preserveSelections ? state.selections.map(function (selection) {
+      return _objectSpread({}, selection);
+    }) : [];
+    var previousManufacturer = preserveSelections ? state.manufacturer : '';
+    var previousSeries = preserveSelections ? state.series : '';
+    catalog = buildCatalog();
+    var validNames = new Set(catalog.lensIndex.keys());
+    state.selections = preserveSelections ? previousSelections.filter(function (selection) {
+      return validNames.has(selection.name);
+    }) : [];
+    state.manufacturer = preserveSelections && catalog.manufacturers.has(previousManufacturer) ? previousManufacturer : '';
+    if (state.manufacturer) {
+      var seriesMap = catalog.manufacturers.get(state.manufacturer);
+      state.series = seriesMap && seriesMap.has(previousSeries) ? previousSeries : '';
+    } else {
+      state.series = '';
+    }
+    renderManufacturers();
+    renderSeries();
+    renderLensOptions();
+    renderSelectionChips({
+      skipEvent: skipEvent || preserveSelections,
+      skipDirty: skipDirty || preserveSelections
+    });
+  };
+  manufacturerSelect.addEventListener('change', handleManufacturerChange);
+  seriesSelect.addEventListener('change', handleSeriesChange);
+  catalog = buildCatalog();
+  renderManufacturers();
+  renderSeries();
+  renderLensOptions();
+  renderSelectionChips({
+    skipEvent: true,
+    skipDirty: true
+  });
+  return {
+    snapshot: snapshot,
+    applyInfo: applyInfo,
+    refreshCatalog: refreshCatalog,
+    getSelections: function getSelections() {
+      return state.selections.map(function (selection) {
+        return _objectSpread({}, selection);
+      });
+    }
+  };
+}();
+if (typeof globalThis !== 'undefined' && globalThis) {
+  if (typeof globalThis.updateLensWorkflowCatalog !== 'function') {
+    globalThis.updateLensWorkflowCatalog = function updateLensWorkflowCatalog(options) {
+      try {
+        lensSelectionManager.refreshCatalog(options || {
+          preserveSelections: true,
+          skipEvent: true,
+          skipDirty: true
+        });
+      } catch (refreshError) {
+        void refreshError;
+      }
+    };
+  }
+  if (!globalThis.lensSelectionManager) {
+    globalThis.lensSelectionManager = lensSelectionManager;
+  }
+}
+function normalizeLensSelectionNames(value) {
+  if (Array.isArray(value)) {
+    return value.map(function (name) {
+      return typeof name === 'string' ? name.trim() : '';
+    }).filter(Boolean);
+  }
+  if (typeof value === 'string') {
+    return value.split(',').map(function (name) {
+      return name.trim();
+    }).filter(Boolean);
+  }
+  return [];
+}
 function markProjectFormDataDirty() {
   projectFormDataCacheDirty = true;
   projectFormDataCache = null;
@@ -974,9 +1766,9 @@ function getPowerSelectionSnapshot() {
   return snapshot;
 }
 function applyStoredPowerSelection(selection) {
-  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    _ref$preferExisting = _ref.preferExisting,
-    preferExisting = _ref$preferExisting === void 0 ? true : _ref$preferExisting;
+  var _ref5 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref5$preferExisting = _ref5.preferExisting,
+    preferExisting = _ref5$preferExisting === void 0 ? true : _ref5$preferExisting;
   if (!selection || _typeof(selection) !== 'object') return false;
   var target = {
     batteryPlate: normalizePowerSelectionString(selection.batteryPlate),
@@ -1827,7 +2619,7 @@ function getProviderInfo(value) {
     var contactId = trimmed.slice('contact:'.length);
     var contact = typeof getContactById === 'function' ? getContactById(contactId) : null;
     if (contact) {
-      var _label = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(contact) : contact.name || contact.email || contact.phone || contact.id || texts.crewHeading;
+      var _label = typeof getContactDisplayLabel === 'function' ? getContactDisplayLabel(contact) : contact.name || contact.email || contact.phone || contact.website || contact.id || texts.crewHeading;
       return {
         value: trimmed,
         label: _label,
@@ -1914,7 +2706,7 @@ function updateGearItemEditProviderOptions(context) {
     contacts.forEach(function (contact) {
       var option = doc.createElement('option');
       option.value = "contact:".concat(contact.id);
-      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.id;
+      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.website || contact.id;
       group.appendChild(option);
     });
     select.appendChild(group);
@@ -1930,6 +2722,52 @@ function updateGearItemEditProviderOptions(context) {
     select.appendChild(fallbackOption);
   }
   select.value = selectedValue || 'rental-house';
+}
+function updateGearItemEditCameraLinkOptions(context) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!context || !context.cameraLinkSelect) return;
+  var select = context.cameraLinkSelect;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  var doc = select.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var texts = getGearItemEditTexts();
+  var noneOption = doc.createElement('option');
+  noneOption.value = '';
+  noneOption.textContent = texts.cameraLinkNoneOption || 'No camera link';
+  select.appendChild(noneOption);
+  var cameraName = getActiveCameraDisplayName();
+  var cameraOption = doc.createElement('option');
+  cameraOption.value = 'camera';
+  var optionLabel = texts.cameraLinkCameraOption || 'Link to camera';
+  if (optionLabel.includes('%s')) {
+    if (cameraName) {
+      optionLabel = optionLabel.replace('%s', cameraName);
+    } else {
+      optionLabel = optionLabel.replace(/\s*\(\s*%s\s*\)/g, '').replace('%s', '').trim();
+      if (!optionLabel) {
+        optionLabel = texts.cameraLinkUnavailableOption || 'Link to camera';
+      }
+    }
+  }
+  if (!cameraName && !optionLabel) {
+    optionLabel = texts.cameraLinkUnavailableOption || 'Link to camera';
+  }
+  cameraOption.textContent = optionLabel;
+  var storedCameraLabel = typeof data.cameraLinkLabel === 'string' ? data.cameraLinkLabel.trim() : '';
+  if (cameraName) {
+    cameraOption.dataset.cameraLabel = cameraName;
+  } else if (storedCameraLabel) {
+    cameraOption.dataset.cameraLabel = storedCameraLabel;
+  }
+  select.appendChild(cameraOption);
+  var desiredValue = typeof data.cameraLink === 'string' && data.cameraLink.trim() === 'camera' ? 'camera' : '';
+  if (desiredValue) {
+    select.value = desiredValue;
+  } else {
+    select.value = '';
+  }
 }
 function refreshGearItemProviderDisplays(scope) {
   var root = scope || gearListOutput;
@@ -2249,10 +3087,10 @@ function connectorBlocks(items, icon) {
   var dir = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
   if (!Array.isArray(items) || items.length === 0) return '';
   var counts = summarizeByType(items);
-  var entries = Object.entries(counts).map(function (_ref2) {
-    var _ref3 = _slicedToArray(_ref2, 2),
-      type = _ref3[0],
-      count = _ref3[1];
+  var entries = Object.entries(counts).map(function (_ref6) {
+    var _ref7 = _slicedToArray(_ref6, 2),
+      type = _ref7[0],
+      count = _ref7[1];
     return "".concat(escapeHtml(type)).concat(count > 1 ? " \xD7".concat(count) : '');
   });
   if (!entries.length) return '';
@@ -2649,11 +3487,11 @@ function suggestArriFizCables() {
 }
 function collectAccessories() {
   var _acc$cables, _acc$cables2;
-  var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    _ref4$hasMotor = _ref4.hasMotor,
-    hasMotor = _ref4$hasMotor === void 0 ? false : _ref4$hasMotor,
-    _ref4$videoDistPrefs = _ref4.videoDistPrefs,
-    videoDistPrefs = _ref4$videoDistPrefs === void 0 ? [] : _ref4$videoDistPrefs;
+  var _ref8 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    _ref8$hasMotor = _ref8.hasMotor,
+    hasMotor = _ref8$hasMotor === void 0 ? false : _ref8$hasMotor,
+    _ref8$videoDistPrefs = _ref8.videoDistPrefs,
+    videoDistPrefs = _ref8$videoDistPrefs === void 0 ? [] : _ref8$videoDistPrefs;
   var cameraSupport = [];
   var misc = [];
   var monitoringSupport = [];
@@ -2921,6 +3759,11 @@ function cloneProjectFormDataSnapshot(snapshot) {
   if (snapshot.monitorBatteries && _typeof(snapshot.monitorBatteries) === 'object') {
     clone.monitorBatteries = _objectSpread({}, snapshot.monitorBatteries);
   }
+  if (Array.isArray(snapshot.lensSelections)) {
+    clone.lensSelections = snapshot.lensSelections.map(function (entry) {
+      return _objectSpread({}, entry);
+    });
+  }
   return clone;
 }
 function freezeProjectFormDataSnapshot(info) {
@@ -2946,6 +3789,11 @@ function freezeProjectFormDataSnapshot(info) {
   }
   if (info.monitorBatteries && _typeof(info.monitorBatteries) === 'object') {
     snapshot.monitorBatteries = PROJECT_FORM_FREEZE(_objectSpread({}, info.monitorBatteries));
+  }
+  if (Array.isArray(info.lensSelections)) {
+    snapshot.lensSelections = PROJECT_FORM_FREEZE(info.lensSelections.map(function (entry) {
+      return PROJECT_FORM_FREEZE(_objectSpread({}, entry));
+    }));
   }
   return PROJECT_FORM_FREEZE(snapshot);
 }
@@ -2983,18 +3831,21 @@ function collectProjectFormData() {
     var nameInput = row.querySelector('.person-name');
     var phoneInput = row.querySelector('.person-phone');
     var emailInput = row.querySelector('.person-email');
+    var websiteInput = row.querySelector('.person-website');
     var role = typeof roleValue === 'string' ? roleValue.trim() : roleValue == null ? '' : String(roleValue);
     var name = typeof (nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) === 'string' ? nameInput.value.trim() : '';
     var phone = typeof (phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) === 'string' ? phoneInput.value.trim() : '';
     var email = typeof (emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) === 'string' ? emailInput.value.trim() : '';
+    var website = typeof (websiteInput === null || websiteInput === void 0 ? void 0 : websiteInput.value) === 'string' ? websiteInput.value.trim() : '';
     return {
       role: role,
       name: name,
       phone: phone,
-      email: email
+      email: email,
+      website: website
     };
   }).filter(function (person) {
-    return person.role || person.name || person.phone || person.email;
+    return person.role || person.name || person.phone || person.email || person.website;
   });
   var collectRanges = function collectRanges(container, startSel, endSel) {
     return Array.from((container === null || container === void 0 ? void 0 : container.querySelectorAll('.period-row')) || []).map(function (row) {
@@ -3060,6 +3911,21 @@ function collectProjectFormData() {
   if (addressFields.country) {
     addressLines.push(addressFields.country);
   }
+  var lensSnapshot = lensSelectionManager && typeof lensSelectionManager.snapshot === 'function' ? lensSelectionManager.snapshot() : {
+    names: normalizeLensSelectionNames(getMultiValue('lenses')),
+    lensSelections: []
+  };
+  var lensNames = Array.isArray(lensSnapshot.names) ? lensSnapshot.names.map(function (name) {
+    return typeof name === 'string' ? name.trim() : '';
+  }).filter(Boolean) : normalizeLensSelectionNames(lensSnapshot.names);
+  var lensSelectionsDetailed = Array.isArray(lensSnapshot.lensSelections) ? lensSnapshot.lensSelections.map(function (entry) {
+    return {
+      name: typeof (entry === null || entry === void 0 ? void 0 : entry.name) === 'string' ? entry.name.trim() : '',
+      mount: typeof (entry === null || entry === void 0 ? void 0 : entry.mount) === 'string' ? entry.mount.trim() : ''
+    };
+  }).filter(function (entry) {
+    return entry.name;
+  }) : [];
   var info = _objectSpread(_objectSpread({
     productionCompany: getValue('productionCompany'),
     productionCompanyAddress: addressLines.join('\n'),
@@ -3083,7 +3949,7 @@ function collectProjectFormData() {
     baseFrameRate: getValue('baseFrameRate'),
     recordingFrameRate: getValue('recordingFrameRate'),
     sensorMode: getValue('sensorMode'),
-    lenses: getMultiValue('lenses'),
+    lenses: lensNames,
     requiredScenarios: getMultiValue('requiredScenarios'),
     cameraHandle: getMultiValue('cameraHandle'),
     viewfinderExtension: getValue('viewfinderExtension'),
@@ -3106,6 +3972,7 @@ function collectProjectFormData() {
     easyrig: getSetupsCoreValue('getEasyrigValue'),
     filter: filterStr
   });
+  info.lensSelections = lensSelectionsDetailed;
   if (monitorBatteryMap && Object.keys(monitorBatteryMap).length) {
     info.monitorBatteries = monitorBatteryMap;
   }
@@ -3328,7 +4195,9 @@ function populateProjectForm() {
   setVal('baseFrameRate', info.baseFrameRate);
   setVal('recordingFrameRate', info.recordingFrameRate);
   setVal('sensorMode', info.sensorMode);
-  setMulti('lenses', info.lenses);
+  if (lensSelectionManager && typeof lensSelectionManager.applyInfo === 'function') {
+    lensSelectionManager.applyInfo(info || {});
+  }
   setMulti('requiredScenarios', info.requiredScenarios);
   setMulti('cameraHandle', info.cameraHandle);
   setVal('viewfinderExtension', info.viewfinderExtension);
@@ -3354,10 +4223,10 @@ function populateProjectForm() {
     return t.type;
   }));
   renderFilterDetails(filterTokens);
-  filterTokens.forEach(function (_ref5) {
-    var type = _ref5.type,
-      size = _ref5.size,
-      values = _ref5.values;
+  filterTokens.forEach(function (_ref9) {
+    var type = _ref9.type,
+      size = _ref9.size,
+      values = _ref9.values;
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     if (sizeSel) sizeSel.value = size;
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
@@ -3992,9 +4861,9 @@ function mergeAutoGearSpanContextNotes(span, contexts, quantity) {
 function renderAutoGearSpanContextNotes(span) {
   if (!span) return;
   var map = getAutoGearSpanContextMap(span);
-  var entries = Array.from(map.entries()).filter(function (_ref6) {
-    var _ref7 = _slicedToArray(_ref6, 2),
-      count = _ref7[1];
+  var entries = Array.from(map.entries()).filter(function (_ref0) {
+    var _ref1 = _slicedToArray(_ref0, 2),
+      count = _ref1[1];
     return Number.isFinite(count) && count > 0;
   });
   var contextNode = span.querySelector('.auto-gear-context-notes');
@@ -4004,22 +4873,22 @@ function renderAutoGearSpanContextNotes(span) {
     }
     return;
   }
-  var parts = entries.sort(function (_ref8, _ref9) {
+  var parts = entries.sort(function (_ref10, _ref11) {
     var _AUTO_GEAR_CONTEXT_SO, _AUTO_GEAR_CONTEXT_SO2;
-    var _ref0 = _slicedToArray(_ref8, 1),
-      a = _ref0[0];
-    var _ref1 = _slicedToArray(_ref9, 1),
-      b = _ref1[0];
+    var _ref12 = _slicedToArray(_ref10, 1),
+      a = _ref12[0];
+    var _ref13 = _slicedToArray(_ref11, 1),
+      b = _ref13[0];
     var pa = (_AUTO_GEAR_CONTEXT_SO = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(a.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO !== void 0 ? _AUTO_GEAR_CONTEXT_SO : Number.POSITIVE_INFINITY;
     var pb = (_AUTO_GEAR_CONTEXT_SO2 = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(b.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO2 !== void 0 ? _AUTO_GEAR_CONTEXT_SO2 : Number.POSITIVE_INFINITY;
     if (pa !== pb) return pa - pb;
     return a.localeCompare(b, undefined, {
       sensitivity: 'base'
     });
-  }).map(function (_ref10) {
-    var _ref11 = _slicedToArray(_ref10, 2),
-      note = _ref11[0],
-      count = _ref11[1];
+  }).map(function (_ref14) {
+    var _ref15 = _slicedToArray(_ref14, 2),
+      note = _ref15[0],
+      count = _ref15[1];
     return "".concat(count, "x ").concat(note);
   });
   var text = " (".concat(parts.join(', '), ")");
@@ -4427,17 +5296,7 @@ function shouldAugmentClampOnRule(rule) {
   return normalized.includes('clamp on');
 }
 function buildClampOnBackingAdditionsFromInfo(info) {
-  var lensValue = info ? info.lenses : '';
-  var lensNames = [];
-  if (Array.isArray(lensValue)) {
-    lensNames = lensValue.filter(function (name) {
-      return typeof name === 'string' && name.trim();
-    });
-  } else if (typeof lensValue === 'string') {
-    lensNames = lensValue.split(',').map(function (name) {
-      return name.trim();
-    }).filter(Boolean);
-  }
+  var lensNames = normalizeLensSelectionNames(info ? info.lenses : null);
   if (!lensNames.length) return [];
   var lensDb = devices && devices.lenses ? devices.lenses : null;
   if (!lensDb || _typeof(lensDb) !== 'object') return [];
@@ -4480,9 +5339,9 @@ function buildClampOnBackingAdditionsFromInfo(info) {
     if (a.diameter === b.diameter) return 0;
     return a.diameter < b.diameter ? -1 : 1;
   });
-  return sorted.map(function (_ref12) {
-    var diameter = _ref12.diameter,
-      lenses = _ref12.lenses;
+  return sorted.map(function (_ref16) {
+    var diameter = _ref16.diameter,
+      lenses = _ref16.lenses;
     var sizeLabel = formatClampOnDiameterLabel(diameter) || String(Number(diameter));
     var item = {
       name: "Mattebox Clamp-On Backing ".concat(sizeLabel, "mm"),
@@ -4884,8 +5743,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   });
   if (!triggeredEntries.length) return tableHtml;
   if (normalizedMattebox) {
-    var filtered = triggeredEntries.filter(function (_ref13) {
-      var rule = _ref13.rule;
+    var filtered = triggeredEntries.filter(function (_ref17) {
+      var rule = _ref17.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
       if (!matteboxList.length) return true;
@@ -4904,9 +5763,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
   var monitorRiggingTriggered = false;
-  triggeredEntries.forEach(function (_ref14) {
-    var rule = _ref14.rule,
-      multiplier = _ref14.multiplier;
+  triggeredEntries.forEach(function (_ref18) {
+    var rule = _ref18.rule,
+      multiplier = _ref18.multiplier;
     var effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
     rule.remove.forEach(function (item) {
       var remaining = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
@@ -5061,10 +5920,10 @@ function applyRentalExclusionsState(state) {
   if (!gearListOutput) return;
   var normalizedState = state && _typeof(state) === 'object' ? state : {};
   var exclusions = new Set();
-  Object.entries(normalizedState).forEach(function (_ref15) {
-    var _ref16 = _slicedToArray(_ref15, 2),
-      name = _ref16[0],
-      value = _ref16[1];
+  Object.entries(normalizedState).forEach(function (_ref19) {
+    var _ref20 = _slicedToArray(_ref19, 2),
+      name = _ref20[0],
+      value = _ref20[1];
     if (value) {
       exclusions.add(name);
     }
@@ -5124,10 +5983,10 @@ function isSuggestionDeviceEntry(entry) {
 function collectDeviceSuggestionNames(source) {
   if (!source || _typeof(source) !== 'object') return [];
   var names = [];
-  Object.entries(source).forEach(function (_ref17) {
-    var _ref18 = _slicedToArray(_ref17, 2),
-      name = _ref18[0],
-      value = _ref18[1];
+  Object.entries(source).forEach(function (_ref21) {
+    var _ref22 = _slicedToArray(_ref21, 2),
+      name = _ref22[0],
+      value = _ref22[1];
     if (!value || _typeof(value) !== 'object') {
       return;
     }
@@ -5357,6 +6216,161 @@ function ensureGearItemNoteSpan(element) {
   }
   return noteSpan;
 }
+function ensureGearItemExtraIndicator(element) {
+  if (!element) return null;
+  var indicator = element.querySelector('.gear-item-extra-indicator');
+  if (indicator) {
+    return indicator;
+  }
+  var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    return null;
+  }
+  indicator = doc.createElement('span');
+  indicator.className = 'gear-item-extra-indicator';
+  indicator.hidden = true;
+  var summary = element.classList && element.classList.contains('gear-custom-item') ? element.querySelector('.gear-custom-item-summary') : null;
+  if (summary) {
+    var summaryNote = summary.querySelector('.gear-item-note');
+    if (summaryNote) {
+      summary.insertBefore(indicator, summaryNote);
+    } else {
+      summary.appendChild(indicator);
+    }
+  } else {
+    var reference = element.querySelector('.gear-item-note') || element.querySelector('.gear-custom-item-actions') || element.querySelector('.gear-custom-remove-btn') || element.querySelector('.gear-item-edit-btn');
+    if (reference) {
+      element.insertBefore(indicator, reference);
+    } else {
+      element.appendChild(indicator);
+    }
+  }
+  return indicator;
+}
+var cachedCameraCategoryLabelSet = null;
+function getCameraCategoryLabelSet() {
+  if (cachedCameraCategoryLabelSet && cachedCameraCategoryLabelSet.size) {
+    return cachedCameraCategoryLabelSet;
+  }
+  var labels = new Set();
+  ['camera', 'cameras'].forEach(function (value) {
+    return labels.add(value);
+  });
+  if (typeof localGetLocalizedText === 'function') {
+    var localized = localGetLocalizedText('category_cameras');
+    if (typeof localized === 'string' && localized.trim()) {
+      labels.add(localized.trim().toLowerCase());
+      labels.add(createCustomCategoryKey(localized));
+    }
+  }
+  var translations = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts : null;
+  if (translations && typeof Object.keys === 'function') {
+    Object.keys(translations).forEach(function (lang) {
+      var entry = translations[lang];
+      if (!entry || _typeof(entry) !== 'object') {
+        return;
+      }
+      var label = entry.category_cameras;
+      if (typeof label === 'string' && label.trim()) {
+        var trimmed = label.trim().toLowerCase();
+        labels.add(trimmed);
+        labels.add(createCustomCategoryKey(label));
+      }
+    });
+  }
+  cachedCameraCategoryLabelSet = labels;
+  return labels;
+}
+function isPrimaryCameraItem(element) {
+  if (!element || typeof element.closest !== 'function') {
+    return false;
+  }
+  var group = element.closest('tbody.category-group');
+  if (!group) {
+    return false;
+  }
+  var label = (group.getAttribute('data-gear-category-label') || '').trim().toLowerCase();
+  var key = (group.getAttribute('data-gear-custom-key') || '').trim().toLowerCase();
+  var tableLabel = (group.getAttribute('data-gear-table-category') || '').trim().toLowerCase();
+  var candidates = getCameraCategoryLabelSet();
+  return label && candidates.has(label) || key && candidates.has(key) || tableLabel && candidates.has(tableLabel);
+}
+function getActiveCameraDisplayName() {
+  if (typeof cameraSelect === 'undefined' || !cameraSelect) {
+    return '';
+  }
+  var selectedOption = cameraSelect.options && cameraSelect.options[cameraSelect.selectedIndex];
+  if (!selectedOption || selectedOption.value && selectedOption.value === 'None') {
+    return '';
+  }
+  var label = typeof selectedOption.text === 'string' ? selectedOption.text : selectedOption.textContent || '';
+  return typeof label === 'string' ? label.trim() : '';
+}
+function ensureGearItemCameraLinkIndicator(element) {
+  if (!element) return null;
+  var indicator = element.querySelector('.gear-item-camera-link');
+  if (indicator) {
+    return indicator;
+  }
+  var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    return null;
+  }
+  var textsForDialog = getGearItemEditTexts();
+  indicator = doc.createElement('span');
+  indicator.className = 'gear-item-camera-link';
+  indicator.hidden = true;
+  var icon = doc.createElement('span');
+  icon.className = 'gear-item-camera-link__icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = 'A';
+  indicator.appendChild(icon);
+  var botText = doc.createElement('span');
+  botText.className = 'gear-item-camera-link__text';
+  botText.textContent = textsForDialog.cameraLinkBotLabel || 'bot';
+  indicator.appendChild(botText);
+  var assist = doc.createElement('span');
+  assist.className = 'visually-hidden';
+  assist.setAttribute('data-camera-link-assist', 'true');
+  assist.textContent = textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
+  indicator.appendChild(assist);
+  var reference = element.querySelector('.gear-item-note') || element.querySelector('.gear-item-provider') || element.querySelector('.gear-item-extra-indicator') || element.querySelector('.gear-item-edit-btn') || element.querySelector('.gear-custom-item-actions') || element.querySelector('.gear-custom-remove-btn');
+  if (reference) {
+    element.insertBefore(indicator, reference);
+  } else {
+    element.appendChild(indicator);
+  }
+  return indicator;
+}
+function updateGearItemCameraLinkIndicator(element, active) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var indicator = ensureGearItemCameraLinkIndicator(element);
+  if (!indicator) return;
+  if (!active) {
+    indicator.hidden = true;
+    indicator.setAttribute('hidden', '');
+    indicator.classList.remove('gear-item-camera-link--primary');
+    return;
+  }
+  var textsForDialog = getGearItemEditTexts();
+  indicator.hidden = false;
+  indicator.removeAttribute('hidden');
+  indicator.classList.toggle('gear-item-camera-link--primary', Boolean(options.isPrimary));
+  var icon = indicator.querySelector('.gear-item-camera-link__icon');
+  if (icon) {
+    icon.textContent = options.iconText && options.iconText.trim() || 'A';
+  }
+  var botText = indicator.querySelector('.gear-item-camera-link__text');
+  if (botText) {
+    var nextLabel = options.botLabel || textsForDialog.cameraLinkBotLabel || 'bot';
+    botText.textContent = nextLabel;
+  }
+  var assist = indicator.querySelector('[data-camera-link-assist]');
+  if (assist) {
+    var labelText = options.badgeLabel || textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
+    assist.textContent = labelText;
+  }
+}
 function ensureGearItemTextContainer(element) {
   if (!element) return null;
   var textContainer = element.querySelector('.gear-item-text');
@@ -5374,13 +6388,13 @@ function ensureGearItemTextContainer(element) {
     if (!node) return;
     if (node.nodeType === 1) {
       var classList = node.classList;
-      if (classList && (classList.contains('gear-item-note') || classList.contains('gear-item-edit-btn') || classList.contains('gear-custom-item-actions') || classList.contains('gear-custom-remove-btn'))) {
+      if (classList && (classList.contains('gear-item-note') || classList.contains('gear-item-extra-indicator') || classList.contains('gear-item-edit-btn') || classList.contains('gear-custom-item-actions') || classList.contains('gear-custom-remove-btn'))) {
         return;
       }
     }
     movableNodes.push(node);
   });
-  var reference = element.querySelector('.gear-item-note') || element.querySelector('.gear-custom-item-actions') || element.querySelector('.gear-custom-remove-btn') || element.querySelector('.gear-item-edit-btn');
+  var reference = element.querySelector('.gear-item-extra-indicator') || element.querySelector('.gear-item-note') || element.querySelector('.gear-custom-item-actions') || element.querySelector('.gear-custom-remove-btn') || element.querySelector('.gear-item-edit-btn');
   movableNodes.forEach(function (node) {
     textContainer.appendChild(node);
   });
@@ -5416,6 +6430,98 @@ function parseGearItemDisplayParts(text) {
     attributes: attributes
   };
 }
+function upgradeLegacyGearItemMarkup(scope) {
+  var context = scope || gearListOutput;
+  if (!context || typeof context.querySelectorAll !== 'function') {
+    return;
+  }
+  var doc = context.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var ELEMENT_NODE = typeof Node !== 'undefined' ? Node.ELEMENT_NODE : 1;
+  var TEXT_NODE = typeof Node !== 'undefined' ? Node.TEXT_NODE : 3;
+  var containers = context.querySelectorAll('.gear-standard-items');
+  containers.forEach(function (container) {
+    var nodes = Array.from(container.childNodes);
+    nodes.forEach(function (node) {
+      if (!node) return;
+      if (node.nodeType === ELEMENT_NODE) {
+        var element = node;
+        if (element.classList && (element.classList.contains('gear-item') || element.classList.contains('gear-custom-item'))) {
+          return;
+        }
+        if (element.tagName === 'BR') {
+          return;
+        }
+        var textContent = element.textContent ? element.textContent.trim() : '';
+        if (!textContent) {
+          element.remove();
+          return;
+        }
+        var replacement = doc.createElement('span');
+        replacement.className = 'gear-item';
+        if (element.attributes && element.attributes.length) {
+          Array.from(element.attributes).forEach(function (attr) {
+            if (!attr || attr.name === 'class') return;
+            try {
+              replacement.setAttribute(attr.name, attr.value);
+            } catch (error) {
+              void error;
+            }
+          });
+        }
+        var parts = parseGearItemDisplayParts(textContent);
+        if (parts.name) {
+          replacement.setAttribute('data-gear-name', parts.name);
+          replacement.setAttribute('data-gear-label', parts.name);
+        }
+        if (parts.quantity) {
+          replacement.setAttribute('data-gear-quantity', parts.quantity);
+        }
+        if (parts.attributes) {
+          replacement.setAttribute('data-gear-attributes', parts.attributes);
+        }
+        var textSpan = doc.createElement('span');
+        textSpan.className = 'gear-item-text';
+        textSpan.textContent = textContent;
+        var noteSpan = doc.createElement('span');
+        noteSpan.className = 'gear-item-note';
+        noteSpan.hidden = true;
+        replacement.append(textSpan, noteSpan);
+        element.replaceWith(replacement);
+        return;
+      }
+      if (node.nodeType === TEXT_NODE) {
+        var raw = node.textContent || '';
+        var trimmed = raw.trim();
+        if (!trimmed) {
+          return;
+        }
+        var _replacement = doc.createElement('span');
+        _replacement.className = 'gear-item';
+        var _parts = parseGearItemDisplayParts(trimmed);
+        if (_parts.name) {
+          _replacement.setAttribute('data-gear-name', _parts.name);
+          _replacement.setAttribute('data-gear-label', _parts.name);
+        }
+        if (_parts.quantity) {
+          _replacement.setAttribute('data-gear-quantity', _parts.quantity);
+        }
+        if (_parts.attributes) {
+          _replacement.setAttribute('data-gear-attributes', _parts.attributes);
+        }
+        var _textSpan = doc.createElement('span');
+        _textSpan.className = 'gear-item-text';
+        _textSpan.textContent = trimmed;
+        var _noteSpan = doc.createElement('span');
+        _noteSpan.className = 'gear-item-note';
+        _noteSpan.hidden = true;
+        _replacement.append(_textSpan, _noteSpan);
+        container.insertBefore(_replacement, node);
+        node.remove();
+      }
+    });
+  });
+}
 function getGearItemData(element) {
   if (!element) {
     return {
@@ -5432,6 +6538,10 @@ function getGearItemData(element) {
   var noteAttr = element.getAttribute('data-gear-note') || '';
   var providerAttr = element.getAttribute('data-gear-provider') || '';
   var providerLabelAttr = element.getAttribute('data-gear-provider-label') || '';
+  var extraAttr = element.getAttribute('data-gear-extra') === 'true';
+  var extraStartAttr = element.getAttribute('data-gear-extra-start') || '';
+  var extraEndAttr = element.getAttribute('data-gear-extra-end') || '';
+  var extraLabelAttr = element.getAttribute('data-gear-extra-label') || '';
   var textContainer = element.querySelector('.gear-item-text');
   var rawText = textContainer ? textContainer.textContent : element.textContent || '';
   var parsed = parseGearItemDisplayParts(rawText);
@@ -5445,6 +6555,11 @@ function getGearItemData(element) {
     providedBy = guessDefaultProvider(name);
   }
   var providerLabel = providerLabelAttr.trim();
+  var cameraLinkAttr = element.getAttribute('data-gear-camera-link') || '';
+  var cameraLinkLabelAttr = element.getAttribute('data-gear-camera-link-label') || '';
+  var cameraItem = isPrimaryCameraItem(element);
+  var cameraLinkValue = cameraLinkAttr && cameraLinkAttr !== 'none' || cameraItem ? 'camera' : '';
+  var cameraLinkLabel = cameraLinkLabelAttr.trim() || (cameraItem ? getActiveCameraDisplayName() : '');
   return {
     quantity: quantity,
     name: name,
@@ -5452,7 +6567,13 @@ function getGearItemData(element) {
     note: note,
     rentalExcluded: rentalExcluded,
     providedBy: providedBy,
-    providerLabel: providerLabel
+    providerLabel: providerLabel,
+    extra: extraAttr,
+    extraStart: extraStartAttr.trim(),
+    extraEnd: extraEndAttr.trim(),
+    extraLabel: extraLabelAttr.trim(),
+    cameraLink: cameraLinkValue,
+    cameraLinkLabel: cameraLinkLabel
   };
 }
 function getGearItemResetDefaults(element) {
@@ -5476,6 +6597,86 @@ function getGearItemResetDefaults(element) {
     name: typeof originalName === 'string' ? originalName.trim() : '',
     attributes: typeof originalAttributes === 'string' ? originalAttributes.trim() : ''
   };
+}
+function getGearItemExtraTexts() {
+  var allTexts = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts : {};
+  var activeLang = typeof currentLang === 'string' && allTexts[currentLang] ? currentLang : 'en';
+  var langTexts = allTexts[activeLang] || {};
+  var fallbackTexts = allTexts.en || {};
+  return {
+    indicatorBase: langTexts.gearListExtraIndicatorNoPeriod || fallbackTexts.gearListExtraIndicatorNoPeriod || 'Temporary extra',
+    indicatorRange: langTexts.gearListExtraIndicatorRange || fallbackTexts.gearListExtraIndicatorRange || 'Temporary extra: %s – %s',
+    indicatorStart: langTexts.gearListExtraIndicatorOpen || fallbackTexts.gearListExtraIndicatorOpen || 'Temporary extra from %s',
+    indicatorEnd: langTexts.gearListExtraIndicatorEnd || fallbackTexts.gearListExtraIndicatorEnd || 'Temporary extra until %s'
+  };
+}
+function getExtraGearUiTexts() {
+  var allTexts = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts : {};
+  var activeLang = typeof currentLang === 'string' && allTexts[currentLang] ? currentLang : 'en';
+  var langTexts = allTexts[activeLang] || {};
+  var fallbackTexts = allTexts.en || {};
+  return {
+    categoryLabel: langTexts.gearListExtraCategoryLabel || fallbackTexts.gearListExtraCategoryLabel || 'Temporary Extras',
+    addButton: langTexts.addExtraGearBtn || fallbackTexts.addExtraGearBtn || 'Add temporary extra gear',
+    checkboxLabel: langTexts.gearListEditExtraLabel || fallbackTexts.gearListEditExtraLabel || 'Temporary extra gear',
+    checkboxHelp: langTexts.gearListEditExtraHelp || fallbackTexts.gearListEditExtraHelp || '',
+    periodHelp: langTexts.gearListEditExtraPeriodHelp || fallbackTexts.gearListEditExtraPeriodHelp || '',
+    startLabel: langTexts.gearListEditExtraStartLabel || fallbackTexts.gearListEditExtraStartLabel || 'Needed from',
+    endLabel: langTexts.gearListEditExtraEndLabel || fallbackTexts.gearListEditExtraEndLabel || 'Needed until'
+  };
+}
+function formatExtraDate(value) {
+  var trimmed = typeof value === 'string' ? value.trim() : '';
+  if (!trimmed) {
+    return '';
+  }
+  var parsed = new Date(trimmed);
+  if (Number.isNaN(parsed.getTime())) {
+    return trimmed;
+  }
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium'
+    }).format(parsed);
+  } catch (error) {
+    void error;
+  }
+  return trimmed;
+}
+function sanitizeExtraPeriod(start, end) {
+  var normalizedStart = typeof start === 'string' ? start.trim() : '';
+  var normalizedEnd = typeof end === 'string' ? end.trim() : '';
+  var resultStart = normalizedStart;
+  var resultEnd = normalizedEnd;
+  if (normalizedStart && normalizedEnd) {
+    var startDate = new Date(normalizedStart);
+    var endDate = new Date(normalizedEnd);
+    if (!Number.isNaN(startDate.getTime()) && !Number.isNaN(endDate.getTime())) {
+      if (startDate.getTime() > endDate.getTime()) {
+        resultStart = normalizedEnd;
+        resultEnd = normalizedStart;
+      }
+    }
+  }
+  return {
+    start: resultStart,
+    end: resultEnd
+  };
+}
+function formatExtraPeriodLabel(start, end) {
+  var textsForExtra = getGearItemExtraTexts();
+  var startLabel = formatExtraDate(start);
+  var endLabel = formatExtraDate(end);
+  if (startLabel && endLabel) {
+    return textsForExtra.indicatorRange.replace('%s', startLabel).replace('%s', endLabel);
+  }
+  if (startLabel) {
+    return textsForExtra.indicatorStart.replace('%s', startLabel);
+  }
+  if (endLabel) {
+    return textsForExtra.indicatorEnd.replace('%s', endLabel);
+  }
+  return textsForExtra.indicatorBase;
 }
 function applyGearItemData(element) {
   var _data$quantity, _data$name, _data$attributes, _data$note;
@@ -5563,6 +6764,32 @@ function applyGearItemData(element) {
   setGearItemProvider(element, providerValue, {
     label: providerLabel
   });
+  var cameraLinkRaw = typeof data.cameraLink === 'string' ? data.cameraLink.trim() : '';
+  var cameraLabelRaw = typeof data.cameraLinkLabel === 'string' ? data.cameraLinkLabel.trim() : '';
+  var cameraItem = isPrimaryCameraItem(element);
+  var wantsCameraLink = cameraItem || cameraLinkRaw === 'camera';
+  var effectiveCameraLabel = cameraLabelRaw || (cameraItem ? getActiveCameraDisplayName() : '');
+  if (wantsCameraLink) {
+    element.setAttribute('data-gear-camera-link', 'camera');
+    if (effectiveCameraLabel) {
+      element.setAttribute('data-gear-camera-link-label', effectiveCameraLabel);
+    } else {
+      element.removeAttribute('data-gear-camera-link-label');
+    }
+  } else {
+    element.removeAttribute('data-gear-camera-link');
+    element.removeAttribute('data-gear-camera-link-label');
+  }
+  if (element.classList) {
+    element.classList.toggle('gear-item-camera-linked', wantsCameraLink);
+  }
+  var badgeTexts = getGearItemEditTexts();
+  var badgeBase = badgeTexts.cameraLinkBadgeLabel || 'Linked to camera';
+  var badgeLabel = effectiveCameraLabel ? "".concat(badgeBase, " \u2014 ").concat(effectiveCameraLabel) : badgeBase;
+  updateGearItemCameraLinkIndicator(element, wantsCameraLink, {
+    isPrimary: cameraItem,
+    badgeLabel: badgeLabel
+  });
   if (!element.getAttribute('data-gear-original-name')) {
     var originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -5581,6 +6808,51 @@ function applyGearItemData(element) {
     element.setAttribute('data-gear-name', combinedName);
   } else if (trimmedQuantity) {
     element.setAttribute('data-gear-name', "".concat(trimmedQuantity, "x"));
+  }
+  var wantsExtra = Boolean(data && (data.extra === true || data.extra === 'true' || data.extra === 1 || data.extra === '1'));
+  var extraPeriod = wantsExtra ? sanitizeExtraPeriod(Object.prototype.hasOwnProperty.call(data, 'extraStart') ? data.extraStart : '', Object.prototype.hasOwnProperty.call(data, 'extraEnd') ? data.extraEnd : '') : {
+    start: '',
+    end: ''
+  };
+  var extraTexts = getGearItemExtraTexts();
+  var extraLabel = wantsExtra ? formatExtraPeriodLabel(extraPeriod.start, extraPeriod.end) : '';
+  var extraIndicator = ensureGearItemExtraIndicator(element);
+  if (wantsExtra) {
+    element.setAttribute('data-gear-extra', 'true');
+    if (extraPeriod.start) {
+      element.setAttribute('data-gear-extra-start', extraPeriod.start);
+    } else {
+      element.removeAttribute('data-gear-extra-start');
+    }
+    if (extraPeriod.end) {
+      element.setAttribute('data-gear-extra-end', extraPeriod.end);
+    } else {
+      element.removeAttribute('data-gear-extra-end');
+    }
+    var labelToStore = extraLabel || extraTexts.indicatorBase;
+    if (labelToStore) {
+      element.setAttribute('data-gear-extra-label', labelToStore);
+    } else {
+      element.removeAttribute('data-gear-extra-label');
+    }
+    if (extraIndicator) {
+      var indicatorLabel = extraLabel || extraTexts.indicatorBase;
+      extraIndicator.textContent = indicatorLabel;
+      extraIndicator.hidden = false;
+      extraIndicator.removeAttribute('hidden');
+      extraIndicator.setAttribute('aria-label', indicatorLabel);
+    }
+  } else {
+    element.removeAttribute('data-gear-extra');
+    element.removeAttribute('data-gear-extra-start');
+    element.removeAttribute('data-gear-extra-end');
+    element.removeAttribute('data-gear-extra-label');
+    if (extraIndicator) {
+      extraIndicator.textContent = '';
+      extraIndicator.hidden = true;
+      extraIndicator.setAttribute('hidden', '');
+      extraIndicator.removeAttribute('aria-label');
+    }
   }
   updateGearItemNoteElement(element, trimmedNote);
   if (isCustomItem && !options.skipPreview) {
@@ -5670,6 +6942,7 @@ function enhanceGearItemElement(element) {
   }
   var isCustom = element.classList && element.classList.contains('gear-custom-item');
   ensureGearItemNoteSpan(element);
+  ensureGearItemExtraIndicator(element);
   if (!isCustom) {
     ensureGearItemTextContainer(element);
     ensureGearItemEditButton(element);
@@ -5691,6 +6964,7 @@ function enhanceGearListItems(container) {
   if (!scope || typeof scope.querySelectorAll !== 'function') {
     return;
   }
+  upgradeLegacyGearItemMarkup(scope);
   var items = scope.querySelectorAll('.gear-item, .gear-custom-item');
   items.forEach(function (element) {
     enhanceGearItemElement(element);
@@ -5777,6 +7051,74 @@ function ensureGearListCustomControls(container) {
       addButton.textContent = '+';
     }
   });
+  ensureExtraGearCategory();
+}
+function ensureExtraGearCategory() {
+  if (!gearListOutput) return null;
+  var existingContainer = getCustomItemsContainer(EXTRA_GEAR_CATEGORY_KEY);
+  if (existingContainer) {
+    return existingContainer;
+  }
+  var table = gearListOutput.querySelector('.gear-table');
+  if (!table) return null;
+  var doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  var textsForExtra = getExtraGearUiTexts();
+  var categoryLabel = textsForExtra.categoryLabel || 'Temporary Extras';
+  var group = doc.createElement('tbody');
+  group.className = 'category-group';
+  group.setAttribute('data-gear-custom-key', EXTRA_GEAR_CATEGORY_KEY);
+  group.setAttribute('data-gear-table-category', categoryLabel);
+  var headerRow = doc.createElement('tr');
+  headerRow.className = 'category-row';
+  var headerCell = doc.createElement('td');
+  headerCell.setAttribute('data-gear-category-label', categoryLabel);
+  var header = doc.createElement('div');
+  header.className = 'gear-category-header';
+  var labelSpan = doc.createElement('span');
+  labelSpan.className = 'gear-category-label';
+  labelSpan.textContent = categoryLabel;
+  header.appendChild(labelSpan);
+  var addButton = doc.createElement('button');
+  addButton.type = 'button';
+  addButton.className = 'gear-custom-add-btn';
+  addButton.setAttribute('data-gear-custom-add', EXTRA_GEAR_CATEGORY_KEY);
+  addButton.setAttribute('data-gear-custom-category', categoryLabel);
+  addButton.setAttribute('data-extra-gear', 'true');
+  addButton.setAttribute('aria-label', textsForExtra.addButton);
+  addButton.setAttribute('title', textsForExtra.addButton);
+  var hasIconRegistry = (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' && ICON_GLYPHS;
+  var addGlyph = hasIconRegistry && (ICON_GLYPHS.add || ICON_GLYPHS.plus);
+  if (typeof setButtonLabelWithIcon === 'function' && hasIconRegistry && addGlyph) {
+    setButtonLabelWithIcon(addButton, '', addGlyph);
+  } else if (typeof iconMarkup === 'function' && addGlyph) {
+    addButton.innerHTML = iconMarkup(addGlyph, {
+      className: 'btn-icon'
+    });
+  } else {
+    addButton.textContent = '+';
+  }
+  header.appendChild(addButton);
+  headerCell.appendChild(header);
+  headerRow.appendChild(headerCell);
+  group.appendChild(headerRow);
+  var bodyRow = doc.createElement('tr');
+  var bodyCell = doc.createElement('td');
+  var customSection = doc.createElement('div');
+  customSection.className = 'gear-custom-section';
+  customSection.setAttribute('data-gear-custom-key', EXTRA_GEAR_CATEGORY_KEY);
+  customSection.setAttribute('data-gear-custom-category', categoryLabel);
+  var itemsContainer = doc.createElement('div');
+  itemsContainer.className = 'gear-custom-items';
+  itemsContainer.setAttribute('data-gear-custom-list', EXTRA_GEAR_CATEGORY_KEY);
+  itemsContainer.setAttribute('data-gear-custom-category', categoryLabel);
+  itemsContainer.setAttribute('aria-live', 'polite');
+  customSection.appendChild(itemsContainer);
+  bodyCell.appendChild(customSection);
+  bodyRow.appendChild(bodyCell);
+  group.appendChild(bodyRow);
+  table.appendChild(group);
+  return itemsContainer;
 }
 function buildGearItemEditContext() {
   return {
@@ -5790,6 +7132,16 @@ function buildGearItemEditContext() {
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    extraContainer: resolveElementById('gearItemEditExtraContainer', 'gearItemEditExtraContainer'),
+    extraCheckbox: resolveElementById('gearItemEditExtra', 'gearItemEditExtra'),
+    extraLabel: resolveElementById('gearItemEditExtraLabel', 'gearItemEditExtraLabel'),
+    extraHelp: resolveElementById('gearItemEditExtraHelp', 'gearItemEditExtraHelp'),
+    extraPeriodContainer: resolveElementById('gearItemEditExtraPeriod', 'gearItemEditExtraPeriod'),
+    extraStartInput: resolveElementById('gearItemEditExtraStart', 'gearItemEditExtraStart'),
+    extraStartLabel: resolveElementById('gearItemEditExtraStartLabel', 'gearItemEditExtraStartLabel'),
+    extraEndInput: resolveElementById('gearItemEditExtraEnd', 'gearItemEditExtraEnd'),
+    extraEndLabel: resolveElementById('gearItemEditExtraEndLabel', 'gearItemEditExtraEndLabel'),
+    extraPeriodHelp: resolveElementById('gearItemEditExtraPeriodHelp', 'gearItemEditExtraPeriodHelp'),
     providerSelect: resolveElementById('gearItemEditProvider', 'gearItemEditProvider'),
     providerLabel: resolveElementById('gearItemEditProviderLabel', 'gearItemEditProviderLabel'),
     providerHelp: resolveElementById('gearItemEditProviderHelp', 'gearItemEditProviderHelp'),
@@ -5797,6 +7149,10 @@ function buildGearItemEditContext() {
     ownedCheckbox: resolveElementById('gearItemEditOwned', 'gearItemEditOwned'),
     ownedLabel: resolveElementById('gearItemEditOwnedLabel', 'gearItemEditOwnedLabel'),
     ownedHelp: resolveElementById('gearItemEditOwnedHelp', 'gearItemEditOwnedHelp'),
+    cameraLinkContainer: resolveElementById('gearItemEditCameraLinkContainer', 'gearItemEditCameraLinkContainer'),
+    cameraLinkSelect: resolveElementById('gearItemEditCameraLink', 'gearItemEditCameraLink'),
+    cameraLinkLabel: resolveElementById('gearItemEditCameraLinkLabel', 'gearItemEditCameraLinkLabel'),
+    cameraLinkHelp: resolveElementById('gearItemEditCameraLinkHelp', 'gearItemEditCameraLinkHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -5808,7 +7164,9 @@ function buildGearItemEditContext() {
     resetButton: resolveElementById('gearItemEditReset', 'gearItemEditReset'),
     resetDefaults: null,
     currentAttributes: '',
-    currentOwnedEntryId: ''
+    currentOwnedEntryId: '',
+    currentCameraLinkValue: '',
+    isCameraItem: false
   };
 }
 var cachedGearItemEditContext = null;
@@ -5829,6 +7187,11 @@ function getGearItemEditTexts() {
     quantityLabel: langTexts.gearListEditQuantityLabel || fallbackTexts.gearListEditQuantityLabel || 'Quantity',
     nameLabel: langTexts.gearListEditNameLabel || fallbackTexts.gearListEditNameLabel || 'Item name',
     noteLabel: langTexts.gearListEditNoteLabel || fallbackTexts.gearListEditNoteLabel || 'Note',
+    extraLabel: langTexts.gearListEditExtraLabel || fallbackTexts.gearListEditExtraLabel || 'Temporary extra gear',
+    extraHelp: langTexts.gearListEditExtraHelp || fallbackTexts.gearListEditExtraHelp || '',
+    extraStartLabel: langTexts.gearListEditExtraStartLabel || fallbackTexts.gearListEditExtraStartLabel || 'Needed from',
+    extraEndLabel: langTexts.gearListEditExtraEndLabel || fallbackTexts.gearListEditExtraEndLabel || 'Needed until',
+    extraPeriodHelp: langTexts.gearListEditExtraPeriodHelp || fallbackTexts.gearListEditExtraPeriodHelp || '',
     providerLabel: langTexts.gearListEditProviderLabel || fallbackTexts.gearListEditProviderLabel || 'Provided by',
     providerHelp: langTexts.gearListEditProviderHelp || fallbackTexts.gearListEditProviderHelp || '',
     providerRental: langTexts.gearListProviderRental || fallbackTexts.gearListProviderRental || 'Rental house',
@@ -5837,6 +7200,13 @@ function getGearItemEditTexts() {
     providerUnknown: langTexts.gearListProviderUnknown || fallbackTexts.gearListProviderUnknown || 'Custom provider',
     ownedLabel: langTexts.gearListEditOwnedLabel || fallbackTexts.gearListEditOwnedLabel || 'Owned',
     ownedHelp: langTexts.gearListEditOwnedHelp || fallbackTexts.gearListEditOwnedHelp || '',
+    cameraLinkLabel: langTexts.gearListEditCameraLinkLabel || fallbackTexts.gearListEditCameraLinkLabel || 'Camera link',
+    cameraLinkHelp: langTexts.gearListEditCameraLinkHelp || fallbackTexts.gearListEditCameraLinkHelp || '',
+    cameraLinkNoneOption: langTexts.gearListEditCameraLinkNoneOption || fallbackTexts.gearListEditCameraLinkNoneOption || 'No camera link',
+    cameraLinkCameraOption: langTexts.gearListEditCameraLinkCameraOption || fallbackTexts.gearListEditCameraLinkCameraOption || 'Link to camera (%s)',
+    cameraLinkUnavailableOption: langTexts.gearListEditCameraLinkUnavailableOption || fallbackTexts.gearListEditCameraLinkUnavailableOption || 'Link to camera',
+    cameraLinkBadgeLabel: langTexts.gearListCameraLinkBadgeLabel || fallbackTexts.gearListCameraLinkBadgeLabel || 'Linked to camera',
+    cameraLinkBotLabel: langTexts.gearListCameraLinkBotLabel || fallbackTexts.gearListCameraLinkBotLabel || 'bot',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item'
@@ -5866,6 +7236,45 @@ function applyGearItemEditDialogTexts(context) {
   if (context.noteLabel) {
     context.noteLabel.textContent = textsForDialog.noteLabel;
   }
+  if (context.extraLabel) {
+    var labelSpan = context.extraLabel.querySelector('span');
+    if (labelSpan) {
+      labelSpan.textContent = textsForDialog.extraLabel;
+    } else {
+      context.extraLabel.textContent = textsForDialog.extraLabel;
+    }
+  }
+  if (context.extraCheckbox) {
+    context.extraCheckbox.setAttribute('aria-label', textsForDialog.extraLabel);
+  }
+  if (context.extraHelp) {
+    if (textsForDialog.extraHelp) {
+      context.extraHelp.textContent = textsForDialog.extraHelp;
+      context.extraHelp.hidden = false;
+      context.extraHelp.removeAttribute('hidden');
+    } else {
+      context.extraHelp.textContent = '';
+      context.extraHelp.hidden = true;
+      context.extraHelp.setAttribute('hidden', '');
+    }
+  }
+  if (context.extraStartLabel) {
+    context.extraStartLabel.textContent = textsForDialog.extraStartLabel;
+  }
+  if (context.extraEndLabel) {
+    context.extraEndLabel.textContent = textsForDialog.extraEndLabel;
+  }
+  if (context.extraPeriodHelp) {
+    if (textsForDialog.extraPeriodHelp) {
+      context.extraPeriodHelp.textContent = textsForDialog.extraPeriodHelp;
+      context.extraPeriodHelp.hidden = false;
+      context.extraPeriodHelp.removeAttribute('hidden');
+    } else {
+      context.extraPeriodHelp.textContent = '';
+      context.extraPeriodHelp.hidden = true;
+      context.extraPeriodHelp.setAttribute('hidden', '');
+    }
+  }
   if (context.providerLabel) {
     context.providerLabel.textContent = textsForDialog.providerLabel;
   }
@@ -5880,6 +7289,28 @@ function applyGearItemEditDialogTexts(context) {
       context.providerSelect.removeAttribute('aria-describedby');
     }
     context.providerSelect.setAttribute('aria-label', textsForDialog.providerLabel);
+  }
+  if (context.cameraLinkLabel) {
+    context.cameraLinkLabel.textContent = textsForDialog.cameraLinkLabel;
+  }
+  if (context.cameraLinkHelp) {
+    var cameraHelp = textsForDialog.cameraLinkHelp || '';
+    context.cameraLinkHelp.textContent = cameraHelp;
+    if (cameraHelp) {
+      context.cameraLinkHelp.hidden = false;
+      context.cameraLinkHelp.removeAttribute('hidden');
+    } else {
+      context.cameraLinkHelp.hidden = true;
+      context.cameraLinkHelp.setAttribute('hidden', '');
+    }
+  }
+  if (context.cameraLinkSelect) {
+    if (context.cameraLinkHelp && context.cameraLinkHelp.textContent) {
+      context.cameraLinkSelect.setAttribute('aria-describedby', context.cameraLinkHelp.id);
+    } else {
+      context.cameraLinkSelect.removeAttribute('aria-describedby');
+    }
+    context.cameraLinkSelect.setAttribute('aria-label', textsForDialog.cameraLinkLabel);
   }
   if (context.ownedLabel) {
     var ownedLabelSpan = context.ownedLabel.querySelector('span');
@@ -5994,6 +7425,35 @@ function updateGearItemEditPreview(context) {
   }
   return previewText;
 }
+function updateGearItemEditExtraControls(context, active) {
+  if (!context) return;
+  var enabled = Boolean(active);
+  if (context.extraPeriodContainer) {
+    if (enabled) {
+      context.extraPeriodContainer.hidden = false;
+      context.extraPeriodContainer.removeAttribute('hidden');
+    } else {
+      context.extraPeriodContainer.hidden = true;
+      context.extraPeriodContainer.setAttribute('hidden', '');
+    }
+  }
+  if (context.extraStartInput) {
+    context.extraStartInput.disabled = !enabled;
+    if (!enabled) {
+      context.extraStartInput.setAttribute('aria-disabled', 'true');
+    } else {
+      context.extraStartInput.removeAttribute('aria-disabled');
+    }
+  }
+  if (context.extraEndInput) {
+    context.extraEndInput.disabled = !enabled;
+    if (!enabled) {
+      context.extraEndInput.setAttribute('aria-disabled', 'true');
+    } else {
+      context.extraEndInput.removeAttribute('aria-disabled');
+    }
+  }
+}
 function updateGearItemEditResetState(context) {
   if (!context || !context.resetButton) {
     return;
@@ -6061,6 +7521,9 @@ function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) 
 function handleGearItemEditFieldInput() {
   var context = getGearItemEditContext();
   if (!context) return;
+  if (context.extraCheckbox) {
+    updateGearItemEditExtraControls(context, context.extraCheckbox.checked);
+  }
   var previewText = updateGearItemEditPreview(context);
   var textsForDialog = getGearItemEditTexts();
   if (context.title) {
@@ -6127,6 +7590,14 @@ function handleGearItemEditOwnedChange() {
       context.providerSelect.value = 'rental-house';
     }
   }
+}
+function handleGearItemEditExtraChange() {
+  var context = getGearItemEditContext();
+  if (!context || !context.extraCheckbox) {
+    return;
+  }
+  updateGearItemEditExtraControls(context, context.extraCheckbox.checked);
+  handleGearItemEditFieldInput();
 }
 function handleGearItemEditResetClick(event) {
   if (event) {
@@ -6197,8 +7668,21 @@ function handleGearItemEditFormSubmit(event) {
     note: context.noteInput ? context.noteInput.value : '',
     rentalExcluded: allowRentalToggle && context.rentalCheckbox ? context.rentalCheckbox.checked : targetEntry.getAttribute('data-rental-excluded') === 'true',
     providedBy: context.providerSelect ? context.providerSelect.value : '',
-    providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length ? getProviderOptionLabel(context.providerSelect.selectedOptions[0]) : ''
+    providerLabel: context.providerSelect && context.providerSelect.selectedOptions && context.providerSelect.selectedOptions.length ? getProviderOptionLabel(context.providerSelect.selectedOptions[0]) : '',
+    extra: context.extraCheckbox ? context.extraCheckbox.checked : Boolean(targetEntry.getAttribute('data-gear-extra') === 'true'),
+    extraStart: context.extraStartInput ? context.extraStartInput.value : targetEntry.getAttribute('data-gear-extra-start') || '',
+    extraEnd: context.extraEndInput ? context.extraEndInput.value : targetEntry.getAttribute('data-gear-extra-end') || '',
+    cameraLink: '',
+    cameraLinkLabel: ''
   };
+  if (data.extra) {
+    var sanitized = sanitizeExtraPeriod(data.extraStart, data.extraEnd);
+    data.extraStart = sanitized.start;
+    data.extraEnd = sanitized.end;
+  } else {
+    data.extraStart = '';
+    data.extraEnd = '';
+  }
   var hasNameForOwned = Boolean(data.name && data.name.trim());
   var wantsOwned = Boolean(context.ownedCheckbox && context.ownedCheckbox.checked && hasNameForOwned);
   if (wantsOwned && (!data.providedBy || data.providedBy === 'rental-house')) {
@@ -6211,7 +7695,33 @@ function handleGearItemEditFormSubmit(event) {
       data.providedBy = 'user';
     }
   }
+  var isCameraItem = Boolean(context.isCameraItem);
+  var cameraLinkSelection = '';
+  var cameraLinkLabel = '';
+  if (context.cameraLinkSelect) {
+    cameraLinkSelection = context.cameraLinkSelect.value || '';
+    var selectedOption = context.cameraLinkSelect.selectedOptions && context.cameraLinkSelect.selectedOptions[0];
+    if (selectedOption) {
+      cameraLinkLabel = selectedOption.getAttribute('data-camera-label') || (selectedOption.dataset ? selectedOption.dataset.cameraLabel : '') || '';
+      if (!cameraLinkLabel) {
+        var optionText = selectedOption.textContent || '';
+        if (optionText) {
+          cameraLinkLabel = optionText.replace(/\s*\([^)]*\)\s*$/, '').trim();
+        }
+      }
+    }
+  }
+  var wantsCameraLink = isCameraItem || cameraLinkSelection === 'camera';
+  if (wantsCameraLink) {
+    data.cameraLink = 'camera';
+    data.cameraLinkLabel = cameraLinkLabel || getActiveCameraDisplayName() || '';
+  } else {
+    data.cameraLink = '';
+    data.cameraLinkLabel = '';
+  }
+  context.currentCameraLinkValue = data.cameraLink;
   applyGearItemData(targetEntry, data);
+  markProjectFormDataDirty();
   var ownedSyncResult = wantsOwned || context.currentOwnedEntryId ? syncGearItemOwnedState(targetEntry, data, {
     wantsOwned: wantsOwned,
     existingId: context.currentOwnedEntryId || targetEntry.getAttribute('data-gear-own-gear-id') || ''
@@ -6281,6 +7791,8 @@ function handleGearItemEditDialogClose() {
     context.resetDefaults = null;
     context.currentAttributes = '';
     context.currentOwnedEntryId = '';
+    context.currentCameraLinkValue = '';
+    context.isCameraItem = false;
     if (context.resetButton) {
       context.resetButton.disabled = false;
       context.resetButton.setAttribute('aria-disabled', 'false');
@@ -6290,6 +7802,11 @@ function handleGearItemEditDialogClose() {
       context.ownedCheckbox.disabled = false;
       context.ownedCheckbox.removeAttribute('aria-disabled');
       context.ownedCheckbox.removeAttribute('aria-describedby');
+    }
+    if (context.cameraLinkSelect) {
+      context.cameraLinkSelect.disabled = false;
+      context.cameraLinkSelect.value = '';
+      context.cameraLinkSelect.removeAttribute('aria-disabled');
     }
   }
   activeGearItemEditTarget = null;
@@ -6318,6 +7835,29 @@ function refreshGearItemEditProviderOptionsIfOpen() {
   var targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   var data = targetEntry ? getGearItemData(targetEntry) : {};
   updateGearItemEditProviderOptions(context, data);
+}
+function refreshGearItemEditCameraLinkOptionsIfOpen() {
+  var context = getGearItemEditContext();
+  if (!context || !context.dialog || !context.cameraLinkSelect) {
+    return;
+  }
+  var isDialogOpen = typeof context.dialog.open === 'boolean' ? context.dialog.open : !context.dialog.hasAttribute('hidden');
+  if (!isDialogOpen) {
+    return;
+  }
+  var targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
+  var data = targetEntry ? getGearItemData(targetEntry) : {};
+  updateGearItemEditCameraLinkOptions(context, data);
+  var isCameraItem = Boolean(context.isCameraItem || targetEntry && isPrimaryCameraItem(targetEntry));
+  var nextValue = isCameraItem || data.cameraLink === 'camera' ? 'camera' : '';
+  context.cameraLinkSelect.value = nextValue;
+  if (isCameraItem) {
+    context.cameraLinkSelect.disabled = true;
+    context.cameraLinkSelect.setAttribute('aria-disabled', 'true');
+  } else {
+    context.cameraLinkSelect.disabled = false;
+    context.cameraLinkSelect.removeAttribute('aria-disabled');
+  }
 }
 function refreshGearItemOwnedStateIfOpen() {
   var context = getGearItemEditContext();
@@ -6396,6 +7936,17 @@ function bindGearItemEditDialog(context) {
   if (context.ownedCheckbox) {
     context.ownedCheckbox.addEventListener('change', handleGearItemEditOwnedChange);
   }
+  if (context.extraCheckbox) {
+    context.extraCheckbox.addEventListener('change', handleGearItemEditExtraChange);
+  }
+  [context.extraStartInput, context.extraEndInput].forEach(function (input) {
+    if (!input) return;
+    input.addEventListener('input', handleGearItemEditFieldInput);
+    input.addEventListener('change', handleGearItemEditFieldInput);
+  });
+  if (context.cameraLinkSelect) {
+    context.cameraLinkSelect.addEventListener('change', handleGearItemEditFieldInput);
+  }
   gearItemEditDialogBound = true;
 }
 function openGearItemEditor(element) {
@@ -6468,9 +8019,44 @@ function openGearItemEditor(element) {
   if (context.noteInput) {
     context.noteInput.value = data.note || '';
   }
+  if (context.extraCheckbox) {
+    var extraActive = Boolean(data.extra);
+    context.extraCheckbox.checked = extraActive;
+    updateGearItemEditExtraControls(context, extraActive);
+  }
+  if (context.extraStartInput) {
+    context.extraStartInput.value = data.extraStart || '';
+  }
+  if (context.extraEndInput) {
+    context.extraEndInput.value = data.extraEnd || '';
+  }
+  if (context.extraPeriodContainer && !context.extraCheckbox) {
+    context.extraPeriodContainer.hidden = true;
+    context.extraPeriodContainer.setAttribute('hidden', '');
+  }
   if (context.providerSelect) {
     updateGearItemEditProviderOptions(context, data);
   }
+  var cameraLinked = data.cameraLink === 'camera';
+  var isCameraItem = isPrimaryCameraItem(element);
+  context.isCameraItem = isCameraItem;
+  if (context.cameraLinkContainer) {
+    context.cameraLinkContainer.hidden = false;
+    context.cameraLinkContainer.removeAttribute('hidden');
+  }
+  if (context.cameraLinkSelect) {
+    updateGearItemEditCameraLinkOptions(context, data);
+    var nextValue = isCameraItem ? 'camera' : cameraLinked ? 'camera' : '';
+    context.cameraLinkSelect.value = nextValue;
+    if (isCameraItem) {
+      context.cameraLinkSelect.disabled = true;
+      context.cameraLinkSelect.setAttribute('aria-disabled', 'true');
+    } else {
+      context.cameraLinkSelect.disabled = false;
+      context.cameraLinkSelect.removeAttribute('aria-disabled');
+    }
+  }
+  context.currentCameraLinkValue = isCameraItem || cameraLinked ? 'camera' : '';
   updateGearItemEditRentalControls(context, Boolean(data.rentalExcluded), allowRentalToggle);
   if (context.rentalToggleButton) {
     context.rentalToggleButton.blur();
@@ -6531,10 +8117,16 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
   var rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
   var rawAttributes = data && Object.prototype.hasOwnProperty.call(data, 'attributes') ? data.attributes : '';
   var rawNote = data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '';
+  var rawExtra = data && Object.prototype.hasOwnProperty.call(data, 'extra') ? data.extra : false;
+  var rawExtraStart = data && Object.prototype.hasOwnProperty.call(data, 'extraStart') ? data.extraStart : '';
+  var rawExtraEnd = data && Object.prototype.hasOwnProperty.call(data, 'extraEnd') ? data.extraEnd : '';
   var quantityValue = typeof rawQuantity === 'string' ? rawQuantity : String(rawQuantity !== null && rawQuantity !== void 0 ? rawQuantity : '');
   var nameValue = typeof rawName === 'string' ? rawName : String(rawName !== null && rawName !== void 0 ? rawName : '');
   var attributesValue = typeof rawAttributes === 'string' ? rawAttributes : String(rawAttributes !== null && rawAttributes !== void 0 ? rawAttributes : '');
   var noteValue = typeof rawNote === 'string' ? rawNote : String(rawNote !== null && rawNote !== void 0 ? rawNote : '');
+  var extraValue = rawExtra === true || rawExtra === 'true' || rawExtra === 1 || rawExtra === '1';
+  var extraStartValue = typeof rawExtraStart === 'string' ? rawExtraStart : String(rawExtraStart !== null && rawExtraStart !== void 0 ? rawExtraStart : '');
+  var extraEndValue = typeof rawExtraEnd === 'string' ? rawExtraEnd : String(rawExtraEnd !== null && rawExtraEnd !== void 0 ? rawExtraEnd : '');
   var removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
   var removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', {
     category: categoryLabel
@@ -6573,11 +8165,15 @@ function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
     note: noteValue,
     rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
     providedBy: data && (data.providedBy || data.provider) ? data.providedBy || data.provider : '',
-    providerLabel: data && data.providerLabel ? data.providerLabel : ''
+    providerLabel: data && data.providerLabel ? data.providerLabel : '',
+    extra: extraValue,
+    extraStart: extraStartValue,
+    extraEnd: extraEndValue
   });
   return element;
 }
 function persistCustomItemsChange() {
+  markProjectFormDataDirty();
   if (typeof saveCurrentGearList === 'function') {
     saveCurrentGearList();
   }
@@ -6597,6 +8193,9 @@ function addCustomItemEntry(categoryKey, categoryLabel) {
   if (!entry) return null;
   container.appendChild(entry);
   attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
+  var extraValue = data && (data.extra === true || data.extra === 'true' || data.extra === 1 || data.extra === '1');
+  var extraStartValue = data && Object.prototype.hasOwnProperty.call(data, 'extraStart') ? data.extraStart : '';
+  var extraEndValue = data && Object.prototype.hasOwnProperty.call(data, 'extraEnd') ? data.extraEnd : '';
   applyGearItemData(entry, {
     quantity: data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '',
     name: data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '',
@@ -6604,7 +8203,12 @@ function addCustomItemEntry(categoryKey, categoryLabel) {
     note: data && Object.prototype.hasOwnProperty.call(data, 'note') ? data.note : '',
     rentalExcluded: data && (data.rentalExcluded === true || data.rentalExcluded === 'true'),
     providedBy: data && (data.providedBy || data.provider) ? data.providedBy || data.provider : '',
-    providerLabel: data && data.providerLabel ? data.providerLabel : ''
+    providerLabel: data && data.providerLabel ? data.providerLabel : '',
+    extra: extraValue,
+    extraStart: extraStartValue,
+    extraEnd: extraEndValue,
+    cameraLink: data && Object.prototype.hasOwnProperty.call(data, 'cameraLink') ? data.cameraLink : '',
+    cameraLinkLabel: data && Object.prototype.hasOwnProperty.call(data, 'cameraLinkLabel') ? data.cameraLinkLabel : ''
   }, {
     skipPreview: false
   });
@@ -6633,11 +8237,40 @@ function addCustomItemEntry(categoryKey, categoryLabel) {
   }
   return entry;
 }
+function addExtraGearItem() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var container = ensureExtraGearCategory();
+  if (!container) return null;
+  var textsForExtra = getExtraGearUiTexts();
+  var categoryLabel = container.getAttribute('data-gear-custom-category') || textsForExtra.categoryLabel || '';
+  var entry = addCustomItemEntry(EXTRA_GEAR_CATEGORY_KEY, categoryLabel, {
+    quantity: options && Object.prototype.hasOwnProperty.call(options, 'quantity') ? options.quantity : '1',
+    name: options && Object.prototype.hasOwnProperty.call(options, 'name') ? options.name : '',
+    attributes: options && Object.prototype.hasOwnProperty.call(options, 'attributes') ? options.attributes : '',
+    note: options && Object.prototype.hasOwnProperty.call(options, 'note') ? options.note : '',
+    extra: true,
+    extraStart: options && Object.prototype.hasOwnProperty.call(options, 'extraStart') ? options.extraStart : '',
+    extraEnd: options && Object.prototype.hasOwnProperty.call(options, 'extraEnd') ? options.extraEnd : ''
+  }, {
+    skipFocus: Boolean(options && options.skipFocus),
+    skipPersist: Boolean(options && options.skipPersist),
+    skipEditDialog: Boolean(options && options.skipEditDialog)
+  });
+  return entry;
+}
 function handleAddCustomItemRequest(button) {
   if (!button) return;
   var categoryKey = button.getAttribute('data-gear-custom-add') || '';
   if (!categoryKey) return;
   var categoryLabel = button.getAttribute('data-gear-custom-category') || '';
+  if (button.hasAttribute('data-extra-gear') || categoryKey === EXTRA_GEAR_CATEGORY_KEY) {
+    addExtraGearItem({
+      skipFocus: false,
+      skipPersist: false,
+      skipEditDialog: false
+    });
+    return;
+  }
   addCustomItemEntry(categoryKey, categoryLabel, {
     quantity: '1',
     name: ''
@@ -6674,6 +8307,11 @@ function readCustomItemsState() {
       var rentalExcluded = item.getAttribute('data-rental-excluded') === 'true';
       var providedBy = String(item.getAttribute('data-gear-provider') || '');
       var providerLabel = String(item.getAttribute('data-gear-provider-label') || '');
+      var extra = item.getAttribute('data-gear-extra') === 'true';
+      var extraStart = String(item.getAttribute('data-gear-extra-start') || '');
+      var extraEnd = String(item.getAttribute('data-gear-extra-end') || '');
+      var cameraLink = String(item.getAttribute('data-gear-camera-link') || '');
+      var cameraLinkLabel = String(item.getAttribute('data-gear-camera-link-label') || '');
       entries.push({
         quantity: quantity,
         name: name,
@@ -6681,7 +8319,12 @@ function readCustomItemsState() {
         note: note,
         rentalExcluded: rentalExcluded,
         providedBy: providedBy,
-        providerLabel: providerLabel
+        providerLabel: providerLabel,
+        extra: extra,
+        extraStart: extraStart,
+        extraEnd: extraEnd,
+        cameraLink: cameraLink,
+        cameraLinkLabel: cameraLinkLabel
       });
     });
     if (entries.length) {
@@ -6704,10 +8347,10 @@ function applyCustomItemsState(state) {
       });
     }
   });
-  Object.entries(normalizedState).forEach(function (_ref19) {
-    var _ref20 = _slicedToArray(_ref19, 2),
-      key = _ref20[0],
-      entries = _ref20[1];
+  Object.entries(normalizedState).forEach(function (_ref23) {
+    var _ref24 = _slicedToArray(_ref23, 2),
+      key = _ref24[0],
+      entries = _ref24[1];
     var container = getCustomItemsContainer(key);
     if (!container) return;
     container.querySelectorAll('.gear-custom-item').forEach(function (item) {
@@ -6848,9 +8491,7 @@ function gearListGenerateHtmlImpl() {
   }) : []), _toConsumableArray(info.monitoringSettings ? info.monitoringSettings.split(',').map(function (s) {
     return s.trim();
   }) : [])).filter(Boolean);
-  var selectedLensNames = info.lenses ? info.lenses.split(',').map(function (s) {
-    return s.trim();
-  }).filter(Boolean) : [];
+  var selectedLensNames = normalizeLensSelectionNames(info.lenses);
   var maxLensFront = selectedLensNames.reduce(function (max, name) {
     var lens = devices.lenses && devices.lenses[name];
     return Math.max(max, lens && lens.frontDiameterMm || 0);
@@ -6876,10 +8517,7 @@ function gearListGenerateHtmlImpl() {
   if (info.mattebox && !needsSwingAway) {
     var matteboxSelection = info.mattebox.toLowerCase();
     if (matteboxSelection.includes('clamp')) {
-      var lensNames = info.lenses ? info.lenses.split(',').map(function (s) {
-        return s.trim();
-      }).filter(Boolean) : [];
-      var diameters = _toConsumableArray(new Set(lensNames.map(function (n) {
+      var diameters = _toConsumableArray(new Set(selectedLensNames.map(function (n) {
         return devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm;
       }).filter(Boolean)));
       diameters.forEach(function (d) {
@@ -7014,6 +8652,12 @@ function gearListGenerateHtmlImpl() {
           detailLinks.push(safeEmail);
         }
       }
+      var websiteValue = typeof p.website === 'string' ? p.website.trim() : p.website ? String(p.website).trim() : '';
+      if (websiteValue) {
+        var safeWebsite = escapeHtml(websiteValue);
+        detailText.push(websiteValue);
+        detailLinks.push(safeWebsite);
+      }
       var linkDetails = detailLinks.length ? " (".concat(detailLinks.join(', '), ")") : '';
       var plainDetails = detailText.length ? " (".concat(detailText.join(', '), ")") : '';
       var rolePrefixHtml = roleLabel ? "".concat(safeRole, ": ") : '';
@@ -7081,16 +8725,16 @@ function gearListGenerateHtmlImpl() {
   var projectTitle = escapeHtml(projectTitleSource);
   var projectLabels = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2', 'storageRequirements', 'monitorBatteries']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref21) {
-    var _ref22 = _slicedToArray(_ref21, 2),
-      k = _ref22[0],
-      v = _ref22[1];
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref25) {
+    var _ref26 = _slicedToArray(_ref25, 2),
+      k = _ref26[0],
+      v = _ref26[1];
     return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
   });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref23) {
-    var _ref24 = _slicedToArray(_ref23, 2),
-      k = _ref24[0],
-      v = _ref24[1];
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref27) {
+    var _ref28 = _slicedToArray(_ref27, 2),
+      k = _ref28[0],
+      v = _ref28[1];
     var value = formatRequirementValue(v);
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -7127,21 +8771,21 @@ function gearListGenerateHtmlImpl() {
     });
     var rentalTexts = rentalToggleTexts;
     var noteAttr = rentalTexts.noteLabel && rentalTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalTexts.noteLabel), "\"") : '';
-    return Object.entries(counts).sort(function (_ref25, _ref26) {
-      var _ref27 = _slicedToArray(_ref25, 1),
-        a = _ref27[0];
-      var _ref28 = _slicedToArray(_ref26, 1),
-        b = _ref28[0];
+    return Object.entries(counts).sort(function (_ref29, _ref30) {
+      var _ref31 = _slicedToArray(_ref29, 1),
+        a = _ref31[0];
+      var _ref32 = _slicedToArray(_ref30, 1),
+        b = _ref32[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref29) {
+    }).map(function (_ref33) {
       var _gearItemTranslations;
-      var _ref30 = _slicedToArray(_ref29, 2),
-        base = _ref30[0],
-        _ref30$ = _ref30[1],
-        total = _ref30$.total,
-        ctxCounts = _ref30$.ctxCounts;
+      var _ref34 = _slicedToArray(_ref33, 2),
+        base = _ref34[0],
+        _ref34$ = _ref34[1],
+        total = _ref34$.total,
+        ctxCounts = _ref34$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -7149,41 +8793,41 @@ function gearListGenerateHtmlImpl() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref31) {
-            var _ref32 = _slicedToArray(_ref31, 1),
-              c = _ref32[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref35) {
+            var _ref36 = _slicedToArray(_ref35, 1),
+              c = _ref36[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref33, _ref34) {
-            var _ref35 = _slicedToArray(_ref33, 1),
-              a = _ref35[0];
-            var _ref36 = _slicedToArray(_ref34, 1),
-              b = _ref36[0];
+          }).sort(function (_ref37, _ref38) {
+            var _ref39 = _slicedToArray(_ref37, 1),
+              a = _ref39[0];
+            var _ref40 = _slicedToArray(_ref38, 1),
+              b = _ref40[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref37) {
-            var _ref38 = _slicedToArray(_ref37, 2),
-              count = _ref38[1];
+          var usedCount = realEntries.reduce(function (sum, _ref41) {
+            var _ref42 = _slicedToArray(_ref41, 2),
+              count = _ref42[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref39) {
-            var _ref40 = _slicedToArray(_ref39, 2),
-              c = _ref40[0],
-              count = _ref40[1];
+          ctxParts = realEntries.map(function (_ref43) {
+            var _ref44 = _slicedToArray(_ref43, 2),
+              c = _ref44[0],
+              count = _ref44[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref41) {
-            var _ref42 = _slicedToArray(_ref41, 1),
-              c = _ref42[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref45) {
+            var _ref46 = _slicedToArray(_ref45, 1),
+              c = _ref46[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref43) {
-            var _ref44 = _slicedToArray(_ref43, 2),
-              c = _ref44[0],
-              count = _ref44[1];
+          }).map(function (_ref47) {
+            var _ref48 = _slicedToArray(_ref47, 2),
+              c = _ref48[0],
+              count = _ref48[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -7195,72 +8839,72 @@ function gearListGenerateHtmlImpl() {
               }
             }
             return [c, count];
-          }).sort(function (_ref45, _ref46) {
-            var _ref47 = _slicedToArray(_ref45, 1),
-              a = _ref47[0];
-            var _ref48 = _slicedToArray(_ref46, 1),
-              b = _ref48[0];
+          }).sort(function (_ref49, _ref50) {
+            var _ref51 = _slicedToArray(_ref49, 1),
+              a = _ref51[0];
+            var _ref52 = _slicedToArray(_ref50, 1),
+              b = _ref52[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref49) {
-            var _ref50 = _slicedToArray(_ref49, 2),
-              count = _ref50[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref53) {
+            var _ref54 = _slicedToArray(_ref53, 2),
+              count = _ref54[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref51) {
-            var _ref52 = _slicedToArray(_ref51, 2),
-              c = _ref52[0],
-              count = _ref52[1];
+          ctxParts = _realEntries.map(function (_ref55) {
+            var _ref56 = _slicedToArray(_ref55, 2),
+              c = _ref56[0],
+              count = _ref56[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref53) {
-            var _ref54 = _slicedToArray(_ref53, 1),
-              c = _ref54[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref57) {
+            var _ref58 = _slicedToArray(_ref57, 1),
+              c = _ref58[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref55, _ref56) {
-            var _ref57 = _slicedToArray(_ref55, 1),
-              a = _ref57[0];
-            var _ref58 = _slicedToArray(_ref56, 1),
-              b = _ref58[0];
+          }).sort(function (_ref59, _ref60) {
+            var _ref61 = _slicedToArray(_ref59, 1),
+              a = _ref61[0];
+            var _ref62 = _slicedToArray(_ref60, 1),
+              b = _ref62[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount2 = _realEntries2.reduce(function (sum, _ref59) {
-            var _ref60 = _slicedToArray(_ref59, 2),
-              count = _ref60[1];
-            return sum + count;
-          }, 0);
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref61) {
-            var _ref62 = _slicedToArray(_ref61, 1),
-              c = _ref62[0];
-            return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref63) {
+          var _usedCount2 = _realEntries2.reduce(function (sum, _ref63) {
             var _ref64 = _slicedToArray(_ref63, 2),
               count = _ref64[1];
             return sum + count;
           }, 0);
-          var countsUniform = _realEntries2.length > 0 && _realEntries2.every(function (_ref65) {
-            var _ref66 = _slicedToArray(_ref65, 2),
-              count = _ref66[1];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref65) {
+            var _ref66 = _slicedToArray(_ref65, 1),
+              c = _ref66[0];
+            return c && c.toLowerCase() === 'spare';
+          }).reduce(function (sum, _ref67) {
+            var _ref68 = _slicedToArray(_ref67, 2),
+              count = _ref68[1];
+            return sum + count;
+          }, 0);
+          var countsUniform = _realEntries2.length > 0 && _realEntries2.every(function (_ref69) {
+            var _ref70 = _slicedToArray(_ref69, 2),
+              count = _ref70[1];
             return count === _realEntries2[0][1];
           });
           if (countsUniform && _spareCount2 === 0) {
-            ctxParts = _realEntries2.map(function (_ref67) {
-              var _ref68 = _slicedToArray(_ref67, 1),
-                c = _ref68[0];
+            ctxParts = _realEntries2.map(function (_ref71) {
+              var _ref72 = _slicedToArray(_ref71, 1),
+                c = _ref72[0];
               return c;
             });
           } else {
-            ctxParts = _realEntries2.map(function (_ref69) {
-              var _ref70 = _slicedToArray(_ref69, 2),
-                c = _ref70[0],
-                count = _ref70[1];
+            ctxParts = _realEntries2.map(function (_ref73) {
+              var _ref74 = _slicedToArray(_ref73, 2),
+                c = _ref74[0],
+                count = _ref74[1];
               return "".concat(count, "x ").concat(c);
             });
           }
@@ -7435,15 +9079,29 @@ function gearListGenerateHtmlImpl() {
     return Number.isFinite(parsed) ? parsed : null;
   }();
   var lensCoverageWarningText = resolveGearListCustomText('gearListLensCoverageWarning', 'This lens may not cover the full sensor of this camera!');
+  var normalizeFocusScaleValue = function normalizeFocusScaleValue(value) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var normalized = value.trim().toLowerCase();
+    return normalized === 'imperial' || normalized === 'metric' ? normalized : '';
+  };
   var resolveFocusScaleMode = function resolveFocusScaleMode() {
     var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
     var scopePreference = scope && typeof scope.focusScalePreference === 'string' ? scope.focusScalePreference : null;
     var rawPreference = scopePreference || (typeof focusScalePreference === 'string' ? focusScalePreference : null) || 'metric';
-    var normalized = typeof rawPreference === 'string' ? rawPreference.trim().toLowerCase() : '';
-    return normalized === 'imperial' ? 'imperial' : 'metric';
+    var normalized = normalizeFocusScaleValue(rawPreference);
+    return normalized || 'metric';
   };
   var focusScaleMode = resolveFocusScaleMode();
   var useImperialFocusScale = focusScaleMode === 'imperial';
+  var resolveLensFocusScaleMode = function resolveLensFocusScaleMode(lens) {
+    if (!lens || _typeof(lens) !== 'object') {
+      return focusScaleMode;
+    }
+    var override = normalizeFocusScaleValue(lens.focusScale);
+    return override || focusScaleMode;
+  };
   var focusScaleLang = typeof currentLang === 'string' && currentLang.trim() ? currentLang : 'en';
   var formatLensNumber = function formatLensNumber(value) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -7472,11 +9130,13 @@ function gearListGenerateHtmlImpl() {
     return String(numeric);
   };
   var formatLensWeight = function formatLensWeight(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var pounds = numeric / 453.59237;
       var digits = pounds >= 10 ? 1 : 2;
       var _formatted = formatLensNumber(pounds, {
@@ -7492,11 +9152,13 @@ function gearListGenerateHtmlImpl() {
     return formatted ? "".concat(formatted, " g") : '';
   };
   var formatLensDiameter = function formatLensDiameter(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var inches = numeric / 25.4;
       var digits = inches >= 10 ? 1 : 2;
       var _formatted2 = formatLensNumber(inches, {
@@ -7512,11 +9174,13 @@ function gearListGenerateHtmlImpl() {
     return formatted ? "".concat(formatted, " mm") : '';
   };
   var formatLensMinFocus = function formatLensMinFocus(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var feet = numeric * 3.280839895;
       var _digits = feet < 10 ? 2 : 1;
       var _formatted3 = formatLensNumber(feet, {
@@ -7533,11 +9197,13 @@ function gearListGenerateHtmlImpl() {
     return formatted ? "".concat(formatted, " m") : '';
   };
   var formatRodLength = function formatRodLength(value) {
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : focusScaleMode;
     var numeric = typeof value === 'string' ? Number(value) : value;
     if (!Number.isFinite(numeric)) {
       return '';
     }
-    if (useImperialFocusScale) {
+    var useImperial = mode === 'imperial';
+    if (useImperial) {
       var inches = numeric / 2.54;
       var digits = inches >= 10 ? 1 : 2;
       var _formatted4 = formatLensNumber(inches, {
@@ -7553,24 +9219,25 @@ function gearListGenerateHtmlImpl() {
     return formatted ? "".concat(formatted, " cm") : '';
   };
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref71, _lens$minFocusMeters, _lens$imageCircleMm;
+    var _ref75, _lens$minFocusMeters, _lens$imageCircleMm;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
+    var lensFocusScaleMode = resolveLensFocusScaleMode(lens);
     var attrs = [];
-    var formattedWeight = formatLensWeight(lens.weight_g);
+    var formattedWeight = formatLensWeight(lens.weight_g, lensFocusScaleMode);
     if (formattedWeight) attrs.push(formattedWeight);
     if (lens.clampOn) {
       if (lens.frontDiameterMm) {
-        var formattedDiameter = formatLensDiameter(lens.frontDiameterMm);
+        var formattedDiameter = formatLensDiameter(lens.frontDiameterMm, lensFocusScaleMode);
         attrs.push(formattedDiameter ? "".concat(formattedDiameter, " clamp-on") : 'clamp-on');
       } else attrs.push('clamp-on');
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref71 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref71 !== void 0 ? _ref71 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref75 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref75 !== void 0 ? _ref75 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
-      var formattedMinFocus = formatLensMinFocus(minFocus);
+      var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
         attrs.push("".concat(formattedMinFocus, " min focus"));
       }
@@ -7609,7 +9276,7 @@ function gearListGenerateHtmlImpl() {
     var rodLength = lens.rodLengthCm || (baseRodType === '19mm' ? 45 : 30);
     var rodKey = "".concat(baseRodType, "-").concat(rodLength);
     if (!addedRodPairs.has(rodKey)) {
-      var formattedRodLength = formatRodLength(rodLength);
+      var formattedRodLength = formatRodLength(rodLength, resolveLensFocusScaleMode(lens));
       var rodLengthLabel = formattedRodLength || "".concat(rodLength, "cm");
       lensSupportItems.push("".concat(baseRodType, " rods ").concat(rodLengthLabel));
       addedRodPairs.add(rodKey);
@@ -7710,9 +9377,9 @@ function gearListGenerateHtmlImpl() {
       attributes: attributeText
     });
   }
-  handheldPrefs.forEach(function (_ref72) {
-    var role = _ref72.role,
-      size = _ref72.size;
+  handheldPrefs.forEach(function (_ref76) {
+    var role = _ref76.role,
+      size = _ref76.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -7806,9 +9473,9 @@ function gearListGenerateHtmlImpl() {
     });
     if (selectedSize) monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref73) {
+  largeMonitorPrefs.forEach(function (_ref77) {
     var _dirDb$resolvedName, _dirDb$defaultName, _dirDb$candidate;
-    var role = _ref73.role;
+    var role = _ref77.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -7988,10 +9655,10 @@ function gearListGenerateHtmlImpl() {
     var source = info.monitorBatteries;
     if (!source || _typeof(source) !== 'object' || Array.isArray(source)) return {};
     var entries = {};
-    Object.entries(source).forEach(function (_ref74) {
-      var _ref75 = _slicedToArray(_ref74, 2),
-        key = _ref75[0],
-        value = _ref75[1];
+    Object.entries(source).forEach(function (_ref78) {
+      var _ref79 = _slicedToArray(_ref78, 2),
+        key = _ref79[0],
+        value = _ref79[1];
       if (typeof key !== 'string') return;
       if (typeof value !== 'string') return;
       var trimmed = value.trim();
@@ -8339,14 +10006,14 @@ function gearListGenerateHtmlImpl() {
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref76) {
-    var id = _ref76.id,
-      color = _ref76.color,
-      width = _ref76.width;
-    var colorOpts = gaffColors.map(function (_ref77) {
-      var _ref78 = _slicedToArray(_ref77, 2),
-        val = _ref78[0],
-        label = _ref78[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref80) {
+    var id = _ref80.id,
+      color = _ref80.color,
+      width = _ref80.width;
+    var colorOpts = gaffColors.map(function (_ref81) {
+      var _ref82 = _slicedToArray(_ref81, 2),
+        val = _ref82[0],
+        label = _ref82[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -8360,10 +10027,10 @@ function gearListGenerateHtmlImpl() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref79) {
-      var _ref80 = _slicedToArray(_ref79, 2),
-        val = _ref80[0],
-        label = _ref80[1];
+    var _options3 = colors.map(function (_ref83) {
+      var _ref84 = _slicedToArray(_ref83, 2),
+        val = _ref84[0],
+        label = _ref84[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var quantityAttr = " data-gear-quantity=\"".concat(escapeHtml(String(eyeLeatherCount)), "\"");
@@ -8604,10 +10271,10 @@ function cloneGearListSelectors(selectors) {
     }
     if (value && _typeof(value) === 'object') {
       var nested = {};
-      Object.entries(value).forEach(function (_ref81) {
-        var _ref82 = _slicedToArray(_ref81, 2),
-          key = _ref82[0],
-          nestedValue = _ref82[1];
+      Object.entries(value).forEach(function (_ref85) {
+        var _ref86 = _slicedToArray(_ref85, 2),
+          key = _ref86[0],
+          nestedValue = _ref86[1];
         nested[key] = _cloneValue(nestedValue);
       });
       return nested;
@@ -8618,10 +10285,10 @@ function cloneGearListSelectors(selectors) {
     return typeof value === 'string' ? value : String(value);
   };
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref83) {
-    var _ref84 = _slicedToArray(_ref83, 2),
-      id = _ref84[0],
-      value = _ref84[1];
+  Object.entries(selectors).forEach(function (_ref87) {
+    var _ref88 = _slicedToArray(_ref87, 2),
+      id = _ref88[0],
+      value = _ref88[1];
     if (!id || typeof id !== 'string') return;
     clone[id] = _cloneValue(value);
   });
@@ -8661,10 +10328,10 @@ function applyGearListSelectors(selectors) {
       void dispatchError;
     }
   };
-  Object.entries(selectors).forEach(function (_ref85) {
-    var _ref86 = _slicedToArray(_ref85, 2),
-      id = _ref86[0],
-      value = _ref86[1];
+  Object.entries(selectors).forEach(function (_ref89) {
+    var _ref90 = _slicedToArray(_ref89, 2),
+      id = _ref90[0],
+      value = _ref90[1];
     if (id === '__customItems' || id === '__rentalExclusions') return;
     setSelectValue(id, value);
   });
@@ -8706,9 +10373,9 @@ function convertCustomItemsForStaticOutput(root) {
       parent.insertBefore(standardContainer, section);
     }
     if (entriesWithValues.length) {
-      entriesWithValues.forEach(function (_ref87) {
-        var value = _ref87.value,
-          preview = _ref87.preview;
+      entriesWithValues.forEach(function (_ref91) {
+        var value = _ref91.value,
+          preview = _ref91.preview;
         if (standardContainer.childNodes.length) {
           var last = standardContainer.lastChild;
           var isBreak = last && last.nodeType === 1 && last.tagName === 'BR';
@@ -9798,6 +11465,7 @@ function bindGearListCageListener() {
         cageSelect.dispatchEvent(new Event('change'));
       }
       syncGearListCageItem(sel);
+      markProjectFormDataDirty();
       saveCurrentGearList();
     });
     syncGearListCageItem(sel);
@@ -9808,6 +11476,7 @@ function bindGearListEasyrigListener() {
   var sel = gearListOutput.querySelector('#gearListEasyrig');
   if (sel) {
     sel.addEventListener('change', function () {
+      markProjectFormDataDirty();
       saveCurrentGearList();
       saveCurrentSession();
       checkSetupChanged();
@@ -9819,6 +11488,7 @@ function bindGearListSliderBowlListener() {
   var sel = gearListOutput.querySelector('#gearListSliderBowl');
   if (sel) {
     sel.addEventListener('change', function () {
+      markProjectFormDataDirty();
       saveCurrentGearList();
       saveCurrentSession();
       checkSetupChanged();
@@ -9830,6 +11500,7 @@ function bindGearListEyeLeatherListener() {
   var sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
   if (sel) {
     sel.addEventListener('change', function () {
+      markProjectFormDataDirty();
       saveCurrentGearList();
     });
   }
@@ -9842,6 +11513,7 @@ function bindGearListProGaffTapeListener() {
     [colorSel, widthSel].forEach(function (sel) {
       if (sel) {
         sel.addEventListener('change', function () {
+          markProjectFormDataDirty();
           saveCurrentGearList();
         });
       }
@@ -9860,6 +11532,7 @@ function bindGearListDirectorMonitorListener() {
           span.textContent = "".concat(monitorInfo.screenSizeInches, "\"");
         }
         sel.dataset.autoGearManual = 'true';
+        markProjectFormDataDirty();
         saveCurrentGearList();
         saveCurrentSession();
         checkSetupChanged();
@@ -9876,6 +11549,7 @@ function bindGearListDirectorMonitorListener() {
           span.textContent = "".concat(monitorInfo.screenSizeInches, "\"");
         }
         sel.dataset.autoGearManual = 'true';
+        markProjectFormDataDirty();
         saveCurrentGearList();
         saveCurrentSession();
         checkSetupChanged();
@@ -9924,6 +11598,13 @@ function refreshGearListIfVisible() {
   saveCurrentSession();
 }
 if (typeof document !== 'undefined') {
+  document.addEventListener('gearlist:add-extra-gear', function () {
+    try {
+      addExtraGearItem();
+    } catch (error) {
+      console.warn('Failed to add extra gear item from request', error);
+    }
+  });
   document.addEventListener('gear-provider-data-changed', function () {
     refreshGearItemProviderDisplays();
     refreshGearItemEditProviderOptionsIfOpen();
@@ -9933,5 +11614,8 @@ if (typeof document !== 'undefined') {
     refreshGearItemProviderDisplays();
     refreshGearItemEditProviderOptionsIfOpen();
     refreshGearItemOwnedStateIfOpen();
+  });
+  document.addEventListener('camera-selection-changed', function () {
+    refreshGearItemEditCameraLinkOptionsIfOpen();
   });
 }

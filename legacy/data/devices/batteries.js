@@ -475,6 +475,13 @@
       "dtapA": 5,
       "mount_type": "V-Mount"
     },
+    "IDX CUE-J150 (V-Mount)": {
+      "capacity": 146,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 890
+    },
     "IDX HV-160B (B-Mount)": {
       "capacity": 160,
       "pinA": 15,
@@ -486,6 +493,55 @@
       "pinA": 15,
       "dtapA": 10,
       "mount_type": "B-Mount"
+    },
+    "PAG PAGlink HC-PL150T (Gold Mount)": {
+      "capacity": 150,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "Gold-Mount",
+      "weight_g": 735
+    },
+    "PAG PAGlink HC-PL150T (V-Mount)": {
+      "capacity": 150,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 770
+    },
+    "PAG Mini PAGlink MPL50 (Gold Mount)": {
+      "capacity": 50,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "Gold-Mount",
+      "weight_g": 620
+    },
+    "PAG Mini PAGlink MPL50 (V-Mount)": {
+      "capacity": 50,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 620
+    },
+    "PAG L90 Slim (V-Mount)": {
+      "capacity": 90,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 567
+    },
+    "Rolux Dynasty III 150Wh (V-Mount)": {
+      "capacity": 150,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 900
+    },
+    "ZGCINE ZG-S150 (V-Mount)": {
+      "capacity": 150,
+      "pinA": null,
+      "dtapA": null,
+      "mount_type": "V-Mount",
+      "weight_g": 940
     },
     "SmallRig VB50 mini (V-Mount)": {
       "capacity": 50,

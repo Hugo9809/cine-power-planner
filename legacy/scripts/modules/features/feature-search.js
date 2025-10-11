@@ -61,6 +61,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var ELLIPSIS_PATTERN = /[\u2026]/g;
   var TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
   var GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
+  var MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
+  var MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
+  var MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
+  var MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
+  var MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
+  var MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+  function cleanMeasurementValue(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
+  }
+  function normalizeMeasurementUnits(str) {
+    if (typeof str !== 'string' || !str) {
+      return str;
+    }
+    var normalized = str.replace(MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN, '"').replace(MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN, "'");
+    normalized = normalized.replace(MEASUREMENT_FOOT_WORD_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " ft ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_FOOT_PRIME_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " ft ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_INCH_WORD_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " inch ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_INCH_PRIME_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " inch ") : value;
+    });
+    return normalized;
+  }
   var LIGATURE_ENTRIES = [['ß', 'ss'], ['æ', 'ae'], ['œ', 'oe'], ['ø', 'o'], ['þ', 'th'], ['ð', 'd'], ['đ', 'd'], ['ħ', 'h'], ['ı', 'i'], ['ĳ', 'ij'], ['ŋ', 'ng'], ['ł', 'l'], ['ſ', 's']];
   var LIGATURE_PATTERNS = LIGATURE_ENTRIES.map(function (entry) {
     return new RegExp(entry[0], 'g');
@@ -147,8 +183,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
+    normalized = normalized.toLowerCase();
+    normalized = normalizeMeasurementUnits(normalized);
     normalized = normalized.replace(SPACE_VARIANTS_PATTERN, ' ').replace(APOSTROPHE_VARIANTS_PATTERN, ' ').replace(QUOTE_VARIANTS_PATTERN, ' ').replace(DASH_VARIANTS_PATTERN, ' ').replace(SLASH_VARIANTS_PATTERN, ' ').replace(MULTIPLY_VARIANTS_PATTERN, ' x ').replace(DEGREE_VARIANTS_PATTERN, ' deg ').replace(/\bdegrees?\b/gi, ' deg ').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/@/g, ' at ').replace(TRADEMARK_PATTERN, ' ').replace(ELLIPSIS_PATTERN, ' ').replace(GENERAL_PUNCTUATION_PATTERN, ' ');
-    normalized = normalized.toLowerCase().replace(COMBINING_MARKS_PATTERN, '');
+    normalized = normalized.replace(COMBINING_MARKS_PATTERN, '');
     for (var ligatureIndex = 0; ligatureIndex < LIGATURE_ENTRIES.length; ligatureIndex += 1) {
       var entry = LIGATURE_ENTRIES[ligatureIndex];
       var pattern = LIGATURE_PATTERNS[ligatureIndex];

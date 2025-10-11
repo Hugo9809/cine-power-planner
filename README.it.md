@@ -167,7 +167,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Rinominare crea una copia.** Modifica il nome e premi **Invio** per duplicare il progetto, utile per confrontare varianti.
 - **Cambiare progetto è sicuro.** Seleziona un’altra voce: posizione di scroll e campi non salvati si aggiornano senza perdere dati.
 - **I contatti della troupe restano riutilizzabili.** Apri la voce **Contatti** nella barra laterale per mantenere un elenco con
-  ruoli, email, numeri di telefono e foto profilo da inserire in qualsiasi progetto. I contatti vivono nello stesso snapshot di
+  ruoli, email, numeri di telefono, siti web e foto profilo da inserire in qualsiasi progetto. I contatti vivono nello stesso snapshot di
   localStorage dei progetti, rientrano nei backup manuali e possono essere importati offline da file `.vcf` (vCard) per unire
   rubriche. Salvare una riga della troupe nell’elenco evita di riscrivere i dettagli nei progetti futuri.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
 - **Eliminazione con conferma.** L’icona cestino chiede sempre conferma prima di rimuovere elementi.

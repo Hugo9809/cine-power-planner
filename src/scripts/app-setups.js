@@ -2904,7 +2904,7 @@ function getProviderInfo(value, options = {}) {
     if (contact) {
       const label = typeof getContactDisplayLabel === 'function'
         ? getContactDisplayLabel(contact)
-        : (contact.name || contact.email || contact.phone || contact.id || texts.crewHeading);
+        : (contact.name || contact.email || contact.phone || contact.website || contact.id || texts.crewHeading);
       return { value: trimmed, label, type: 'contact', contactId };
     }
     const fallback = (options && options.label) || (typeof getContactsText === 'function'
@@ -2982,7 +2982,7 @@ function updateGearItemEditProviderOptions(context, data = {}) {
     contacts.forEach(contact => {
       const option = doc.createElement('option');
       option.value = `contact:${contact.id}`;
-      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.id;
+      option.textContent = contact.label || contact.name || contact.email || contact.phone || contact.website || contact.id;
       group.appendChild(option);
     });
     select.appendChild(group);
@@ -4097,15 +4097,17 @@ function collectProjectFormData() {
             const nameInput = row.querySelector('.person-name');
             const phoneInput = row.querySelector('.person-phone');
             const emailInput = row.querySelector('.person-email');
+            const websiteInput = row.querySelector('.person-website');
             const role = typeof roleValue === 'string'
                 ? roleValue.trim()
                 : (roleValue == null ? '' : String(roleValue));
             const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
-            return { role, name, phone, email };
+            const website = typeof websiteInput?.value === 'string' ? websiteInput.value.trim() : '';
+            return { role, name, phone, email, website };
         })
-        .filter(person => person.role || person.name || person.phone || person.email);
+        .filter(person => person.role || person.name || person.phone || person.email || person.website);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
@@ -9097,6 +9099,12 @@ function gearListGenerateHtmlImpl(info = {}) {
                     } else {
                         detailLinks.push(safeEmail);
                     }
+                }
+                const websiteValue = typeof p.website === 'string' ? p.website.trim() : (p.website ? String(p.website).trim() : '');
+                if (websiteValue) {
+                    const safeWebsite = escapeHtml(websiteValue);
+                    detailText.push(websiteValue);
+                    detailLinks.push(safeWebsite);
                 }
                 const linkDetails = detailLinks.length ? ` (${detailLinks.join(', ')})` : '';
                 const plainDetails = detailText.length ? ` (${detailText.join(', ')})` : '';

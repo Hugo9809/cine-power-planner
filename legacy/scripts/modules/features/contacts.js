@@ -61,6 +61,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var role = sanitizeContactValue(entry.role);
     var phone = sanitizeContactValue(entry.phone);
     var email = sanitizeContactValue(entry.email);
+    var website = sanitizeContactValue(entry.website || entry.url);
     var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
     var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
     var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
@@ -70,6 +71,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       role: role,
       phone: phone,
       email: email,
+      website: website,
       createdAt: createdAt,
       updatedAt: updatedAt
     };

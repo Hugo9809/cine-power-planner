@@ -13589,7 +13589,8 @@ function setLanguage(lang) {
     const crewPlaceholders = {
       name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
       phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
-      email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
+      email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder,
+      website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
     };
     const crewRoleLabels = texts[lang].crewRoles || (texts.en && texts.en.crewRoles) || {};
     const fallbackContacts = texts.en?.contacts || {};
@@ -13631,6 +13632,30 @@ function setLanguage(lang) {
     }
     if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
       userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
+    }
+    if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+      userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+    }
+    if (userProfileRoleInput && contactsTexts.userProfileRolePlaceholder) {
+      userProfileRoleInput.setAttribute('placeholder', contactsTexts.userProfileRolePlaceholder);
+    }
+    if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+      userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+    }
+    if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+      userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+    }
+    if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+      userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+    }
+    if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+      userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+    }
+    if (userProfileWebsiteLabel && contactsTexts.userProfileWebsiteLabel) {
+      userProfileWebsiteLabel.textContent = contactsTexts.userProfileWebsiteLabel;
+    }
+    if (userProfileWebsiteInput && contactsTexts.userProfileWebsitePlaceholder) {
+      userProfileWebsiteInput.setAttribute('placeholder', contactsTexts.userProfileWebsitePlaceholder);
     }
     if (userProfileHint && contactsTexts.userProfileHint) {
       userProfileHint.textContent = contactsTexts.userProfileHint;
@@ -13720,6 +13745,8 @@ function setLanguage(lang) {
       if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+      const websiteInput = row.querySelector('.person-website');
+      if (websiteInput && crewPlaceholders.website) websiteInput.placeholder = crewPlaceholders.website;
       const contactSelect = row.querySelector('.person-contact-select');
       if (contactSelect) {
         setContactSelectOptions(contactSelect, contactSelect.value);
@@ -13933,6 +13960,14 @@ var userProfileHeading = null;
 var userProfileDescription = null;
 var userProfileNameInput = null;
 var userProfileNameLabel = null;
+var userProfileRoleInput = null;
+var userProfileRoleLabel = null;
+var userProfilePhoneInput = null;
+var userProfilePhoneLabel = null;
+var userProfileEmailInput = null;
+var userProfileEmailLabel = null;
+var userProfileWebsiteInput = null;
+var userProfileWebsiteLabel = null;
 var userProfileHint = null;
 var userProfileAvatarContainer = null;
 var userProfileAvatarButton = null;
@@ -13985,6 +14020,14 @@ function resolveContactsDomRefs() {
   userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
   userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
   userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfileRoleInput = userProfileRoleInput || document.getElementById('userProfileRole');
+  userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
+  userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
+  userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
+  userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
+  userProfileEmailLabel = userProfileEmailLabel || document.getElementById('userProfileEmailLabel');
+  userProfileWebsiteInput = userProfileWebsiteInput || document.getElementById('userProfileWebsite');
+  userProfileWebsiteLabel = userProfileWebsiteLabel || document.getElementById('userProfileWebsiteLabel');
   userProfileHint = userProfileHint || document.getElementById('userProfileHint');
   userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
   userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -15863,7 +15906,7 @@ const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', avatar: '' };
+var userProfileState = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
 var userProfileDirty = false;
 var userProfilePendingAnnouncement = false;
 
@@ -15920,12 +15963,13 @@ function normalizeContactEntry(entry) {
   const role = sanitizeContactValue(entry.role);
   const phone = sanitizeContactValue(entry.phone);
   const email = sanitizeContactValue(entry.email);
+  const website = sanitizeContactValue(entry.website || entry.url);
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
   const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
   const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
-  const normalized = { id, name, role, phone, email, createdAt, updatedAt };
+  const normalized = { id, name, role, phone, email, website, createdAt, updatedAt };
   if (avatar) normalized.avatar = avatar;
   return normalized;
 }
@@ -16008,7 +16052,7 @@ function getContactById(id) {
 function getContactDisplayLabel(contact) {
   if (!contact) return '';
   const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
-  const base = contact.name || contact.email || contact.phone || contact.role || contact.id;
+  const base = contact.name || contact.email || contact.phone || contact.website || contact.role || contact.id;
   const roleLabel = contact.role ? (roleLabels[contact.role] || contact.role) : '';
   if (base && roleLabel && roleLabel !== base) {
     return `${base} — ${roleLabel}`;
@@ -16508,6 +16552,7 @@ function getContactsSnapshot() {
     role: contact.role || '',
     phone: contact.phone || '',
     email: contact.email || '',
+    website: contact.website || '',
     avatar: contact.avatar || '',
     label: getContactDisplayLabel(contact)
   }));
@@ -16515,8 +16560,37 @@ function getContactsSnapshot() {
 
 function getUserProfileSnapshot() {
   const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+  const role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
+  const phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
+  const email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
+  const website = typeof userProfileState.website === 'string' ? userProfileState.website.trim() : '';
   const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-  return { name, avatar };
+  return { name, role, phone, email, website, avatar };
+}
+
+function mergeUserProfileState(partial) {
+  if (!partial || typeof partial !== 'object') {
+    return;
+  }
+  userProfileState = Object.assign({}, userProfileState, partial);
+}
+
+function updateUserProfileField(key, value) {
+  if (!key) {
+    return false;
+  }
+  const normalized = typeof value === 'string' ? value : '';
+  const current = typeof userProfileState[key] === 'string' ? userProfileState[key] : '';
+  if (normalized === current) {
+    return false;
+  }
+  const update = {};
+  update[key] = normalized;
+  mergeUserProfileState(update);
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+  return true;
 }
 
 function applyUserProfileToDom(options = {}) {
@@ -16537,6 +16611,18 @@ function applyUserProfileToDom(options = {}) {
       userProfileNameInput.value = profile.name;
     }
   }
+  if (userProfileRoleInput) {
+    userProfileRoleInput.value = profile.role || '';
+  }
+  if (userProfilePhoneInput) {
+    userProfilePhoneInput.value = profile.phone || '';
+  }
+  if (userProfileEmailInput) {
+    userProfileEmailInput.value = profile.email || '';
+  }
+  if (userProfileWebsiteInput) {
+    userProfileWebsiteInput.value = profile.website || '';
+  }
   if (userProfileAvatarContainer) {
     updateAvatarVisual(userProfileAvatarContainer, profile.avatar || '', profile.name, 'contact-card-avatar-initial');
   }
@@ -16554,15 +16640,19 @@ function loadUserProfileState() {
       if (loaded && typeof loaded === 'object') {
         userProfileState = {
           name: typeof loaded.name === 'string' ? loaded.name : '',
+          role: typeof loaded.role === 'string' ? loaded.role : '',
+          phone: typeof loaded.phone === 'string' ? loaded.phone : '',
+          email: typeof loaded.email === 'string' ? loaded.email : '',
+          website: typeof loaded.website === 'string' ? loaded.website : '',
           avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
         };
       } else {
-        userProfileState = { name: '', avatar: '' };
+        userProfileState = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
       }
     }
   } catch (error) {
     console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', avatar: '' };
+    userProfileState = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
   }
   userProfileDirty = false;
   userProfilePendingAnnouncement = false;
@@ -16593,16 +16683,35 @@ function persistUserProfileState(options = {}) {
 function handleUserProfileNameInput() {
   if (!userProfileNameInput) return;
   const rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
-  if (rawValue.trim() === userProfileState.name.trim()) {
+  const currentName = typeof userProfileState.name === 'string' ? userProfileState.name : '';
+  if (rawValue.trim() === currentName.trim()) {
     return;
   }
-  userProfileState = {
-    name: rawValue,
-    avatar: userProfileState.avatar || ''
-  };
-  userProfileDirty = true;
-  userProfilePendingAnnouncement = true;
-  persistUserProfileState();
+  updateUserProfileField('name', rawValue);
+}
+
+function handleUserProfileRoleInput() {
+  if (!userProfileRoleInput) return;
+  const rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
+  updateUserProfileField('role', rawValue);
+}
+
+function handleUserProfilePhoneInput() {
+  if (!userProfilePhoneInput) return;
+  const rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
+  updateUserProfileField('phone', rawValue);
+}
+
+function handleUserProfileEmailInput() {
+  if (!userProfileEmailInput) return;
+  const rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
+  updateUserProfileField('email', rawValue);
+}
+
+function handleUserProfileWebsiteInput() {
+  if (!userProfileWebsiteInput) return;
+  const rawValue = typeof userProfileWebsiteInput.value === 'string' ? userProfileWebsiteInput.value : '';
+  updateUserProfileField('website', rawValue);
 }
 
 function handleUserProfileNameBlur() {
@@ -16620,10 +16729,7 @@ function handleUserProfileAvatarCleared() {
   if (!userProfileState.avatar) {
     return;
   }
-  userProfileState = {
-    name: userProfileState.name || '',
-    avatar: ''
-  };
+  mergeUserProfileState({ avatar: '' });
   persistUserProfileState();
   announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
   if (isDialogOpen(avatarOptionsDialog)) {
@@ -16645,10 +16751,8 @@ function handleUserProfileAvatarButtonClick() {
     },
     onEditSave: dataUrl => {
       if (!dataUrl) return;
-      userProfileState = {
-        name: userProfileState.name || userProfileNameInput?.value || '',
-        avatar: dataUrl
-      };
+      const nextName = userProfileState.name || userProfileNameInput?.value || '';
+      mergeUserProfileState({ name: nextName, avatar: dataUrl });
       persistUserProfileState();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
       closeAvatarOptionsDialog();
@@ -16663,10 +16767,8 @@ function handleUserProfileAvatarInputChange() {
     return;
   }
   readAvatarFile(file, dataUrl => {
-    userProfileState = {
-      name: userProfileState.name || '',
-      avatar: dataUrl
-    };
+    const nextName = userProfileState.name || userProfileNameInput?.value || '';
+    mergeUserProfileState({ name: nextName, avatar: dataUrl });
     persistUserProfileState();
     announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
     if (isDialogOpen(avatarOptionsDialog)) {
@@ -16926,6 +17028,8 @@ function applyContactToCrewRow(row, contact, options = {}) {
     if (phoneInput) phoneInput.value = contact.phone || '';
     const emailInput = row.querySelector('.person-email');
     if (emailInput) emailInput.value = contact.email || '';
+    const websiteInput = row.querySelector('.person-website');
+    if (websiteInput) websiteInput.value = contact.website || '';
     setRowAvatar(row, contact.avatar || '', { name: contact.name });
     row.dataset.contactId = contact.id;
     const contactSelect = row.querySelector('.person-contact-select');
@@ -16963,12 +17067,14 @@ function getCrewRowSnapshot(row) {
   const nameInput = row.querySelector('.person-name');
   const phoneInput = row.querySelector('.person-phone');
   const emailInput = row.querySelector('.person-email');
+  const websiteInput = row.querySelector('.person-website');
   const avatarInput = row.querySelector('.person-avatar-data');
   return {
     role: sanitizeContactValue(roleSel?.value || ''),
     name: sanitizeContactValue(nameInput?.value || ''),
     phone: sanitizeContactValue(phoneInput?.value || ''),
     email: sanitizeContactValue(emailInput?.value || ''),
+    website: sanitizeContactValue(websiteInput?.value || ''),
     avatar: sanitizeContactValue(avatarInput?.value || ''),
     contactId: sanitizeContactValue(row.dataset.contactId || '')
   };
@@ -16997,8 +17103,8 @@ function deleteContact(contactId) {
 function saveCrewRowAsContact(row) {
   const snapshot = getCrewRowSnapshot(row);
   if (!snapshot) return;
-  if (!snapshot.name && !snapshot.email && !snapshot.phone) {
-    announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email or phone number before saving this contact.'));
+  if (!snapshot.name && !snapshot.email && !snapshot.phone && !snapshot.website) {
+    announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email, phone or website before saving this contact.'));
     return;
   }
   const now = Date.now();
@@ -17009,6 +17115,9 @@ function saveCrewRowAsContact(row) {
       existing.role = snapshot.role || existing.role;
       existing.phone = snapshot.phone || existing.phone;
       existing.email = snapshot.email || existing.email;
+      if (snapshot.website || existing.website) {
+        existing.website = snapshot.website || '';
+      }
       if (snapshot.avatar) {
         existing.avatar = snapshot.avatar;
       } else if (!existing.avatar) {
@@ -17031,6 +17140,7 @@ function saveCrewRowAsContact(row) {
     role: snapshot.role,
     phone: snapshot.phone,
     email: snapshot.email,
+    website: snapshot.website,
     avatar: snapshot.avatar,
     createdAt: now,
     updatedAt: now
@@ -17059,11 +17169,11 @@ function parseVCard(text) {
   let current = null;
   folded.forEach(line => {
     if (/^BEGIN:VCARD/i.test(line)) {
-      current = { name: '', role: '', phone: '', email: '', avatar: '' };
+      current = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
       return;
     }
     if (/^END:VCARD/i.test(line)) {
-      if (current && (current.name || current.email || current.phone)) {
+      if (current && (current.name || current.email || current.phone || current.website)) {
         contacts.push({ ...current });
       }
       current = null;
@@ -17104,6 +17214,10 @@ function parseVCard(text) {
       current.role = sanitizeContactValue(value);
       return;
     }
+    if (baseKey === 'URL') {
+      if (!current.website) current.website = sanitizeContactValue(value);
+      return;
+    }
     if (baseKey === 'PHOTO') {
       let dataValue = value;
       if (!dataValue) return;
@@ -17138,9 +17252,10 @@ function parseVCard(text) {
       role: sanitizeContactValue(entry.role),
       phone: sanitizeContactValue(entry.phone),
       email: sanitizeContactValue(entry.email),
+      website: sanitizeContactValue(entry.website),
       avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
     }))
-    .filter(entry => entry.name || entry.email || entry.phone);
+    .filter(entry => entry.name || entry.email || entry.phone || entry.website);
 }
 
 function mergeImportedContacts(imported) {
@@ -17156,6 +17271,7 @@ function mergeImportedContacts(imported) {
       role: sanitizeContactValue(entry.role || ''),
       phone: sanitizeContactValue(entry.phone || ''),
       email: sanitizeContactValue(entry.email || ''),
+      website: sanitizeContactValue(entry.website || entry.url || ''),
       avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
     };
     const existing = contactsCache.find(contact => {
@@ -17173,6 +17289,7 @@ function mergeImportedContacts(imported) {
       if (candidate.role) existing.role = candidate.role;
       if (candidate.phone) existing.phone = candidate.phone;
       if (candidate.email) existing.email = candidate.email;
+      if (candidate.website) existing.website = candidate.website;
       if (candidate.avatar) existing.avatar = candidate.avatar;
       existing.updatedAt = Date.now();
       updated += 1;
@@ -17184,6 +17301,7 @@ function mergeImportedContacts(imported) {
         role: candidate.role,
         phone: candidate.phone,
         email: candidate.email,
+        website: candidate.website,
         avatar: candidate.avatar,
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -17310,6 +17428,21 @@ function createContactCard(contact) {
   emailWrapper.append(emailLabelElem, emailInput);
   fields.appendChild(emailWrapper);
 
+  const websiteInput = document.createElement('input');
+  websiteInput.type = 'url';
+  websiteInput.inputMode = 'url';
+  websiteInput.autocomplete = 'url';
+  websiteInput.value = contact.website || '';
+  const websiteFieldId = ensureElementId(websiteInput, `${contact.id}-website`);
+  websiteInput.placeholder = getContactsText('websitePlaceholder', 'Website');
+  const websiteLabelElem = document.createElement('label');
+  websiteLabelElem.setAttribute('for', websiteFieldId);
+  websiteLabelElem.textContent = getContactsText('websiteLabel', 'Website');
+  const websiteWrapper = document.createElement('div');
+  websiteWrapper.className = 'contact-field';
+  websiteWrapper.append(websiteLabelElem, websiteInput);
+  fields.appendChild(websiteWrapper);
+
   card.appendChild(fields);
 
   const actions = document.createElement('div');
@@ -17374,6 +17507,10 @@ function createContactCard(contact) {
   });
   emailInput.addEventListener('input', () => {
     contact.email = sanitizeContactValue(emailInput.value);
+    persist();
+  });
+  websiteInput.addEventListener('input', () => {
+    contact.website = sanitizeContactValue(websiteInput.value);
     persist();
   });
 
@@ -17464,6 +17601,22 @@ function initializeContactsModule() {
     userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
     userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
   }
+  if (userProfileRoleInput) {
+    userProfileRoleInput.addEventListener('input', handleUserProfileRoleInput);
+    userProfileRoleInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfilePhoneInput) {
+    userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);
+    userProfilePhoneInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileEmailInput) {
+    userProfileEmailInput.addEventListener('input', handleUserProfileEmailInput);
+    userProfileEmailInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileWebsiteInput) {
+    userProfileWebsiteInput.addEventListener('input', handleUserProfileWebsiteInput);
+    userProfileWebsiteInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
   if (userProfileAvatarButton) {
     userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);
   }
@@ -17482,6 +17635,7 @@ function initializeContactsModule() {
         role: '',
         phone: '',
         email: '',
+        website: '',
         avatar: '',
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -17569,6 +17723,7 @@ function createCrewRow(data = {}) {
   const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
   const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
   const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+  const crewWebsiteLabelText = projectFormTexts.crewWebsiteLabel || fallbackProjectForm.crewWebsiteLabel || 'Crew member website';
   const crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
   const avatarChangeLabel = getContactsText('avatarChange', 'Change photo');
 
@@ -17641,6 +17796,15 @@ function createCrewRow(data = {}) {
   emailInput.value = data.email || '';
   applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
 
+  const websiteInput = document.createElement('input');
+  websiteInput.type = 'url';
+  websiteInput.name = 'crewWebsite';
+  websiteInput.className = 'person-website';
+  websiteInput.placeholder = projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder || 'Website';
+  websiteInput.value = data.website || '';
+  websiteInput.autocomplete = 'url';
+  applyLocaleMetadata(websiteInput, rowLanguage, rowDirection);
+
   const contactSelect = document.createElement('select');
   contactSelect.className = 'person-contact-select';
   applyLocaleMetadata(contactSelect, rowLanguage, rowDirection);
@@ -17650,11 +17814,12 @@ function createCrewRow(data = {}) {
   const nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
   const phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
   const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+  const websiteLabel = createHiddenLabel(ensureElementId(websiteInput, crewWebsiteLabelText), crewWebsiteLabelText);
   const contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
 
   const fieldsWrapper = document.createElement('div');
   fieldsWrapper.className = 'person-fields person-details';
-  fieldsWrapper.append(nameInput, phoneInput, emailInput, contactSelect);
+  fieldsWrapper.append(nameInput, phoneInput, emailInput, websiteInput, contactSelect);
 
   const actions = document.createElement('div');
   actions.className = 'person-actions';
@@ -17706,7 +17871,7 @@ function createCrewRow(data = {}) {
   });
   actions.appendChild(removeBtn);
 
-  [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(label => row.appendChild(label));
+  [roleLabel, nameLabel, phoneLabel, emailLabel, websiteLabel, contactLabel].forEach(label => row.appendChild(label));
   const header = document.createElement('div');
   header.className = 'person-row-header';
   header.append(headerMain, actions);
@@ -17765,6 +17930,7 @@ function createCrewRow(data = {}) {
   });
   phoneInput.addEventListener('input', () => handleCrewRowManualChange(row));
   emailInput.addEventListener('input', () => handleCrewRowManualChange(row));
+  websiteInput.addEventListener('input', () => handleCrewRowManualChange(row));
 
   contactSelect.addEventListener('change', () => {
     const selectedId = contactSelect.value;

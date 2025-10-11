@@ -4872,7 +4872,7 @@
         <section
           data-help-section
           id="contactsHelp"
-          data-help-keywords="contacts crew directory phone email avatar import vcard provider saved reuse"
+          data-help-keywords="contacts crew directory phone email website avatar import vcard provider saved reuse"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE9C6;</span>Contacts</h3>
           <ul>
@@ -4899,7 +4899,7 @@
                 href="#contactsImportButton"
                 data-help-target="#contactsImportButton"
               ><strong>Import vCard</strong></a>
-              to drop .vcf files straight into the list. Names, roles, phones, emails and avatars remain editable after import,
+              to drop .vcf files straight into the list. Names, roles, phones, emails, websites and avatars remain editable after import,
               and the announcement bar confirms every successful merge.
             </li>
             <li>
@@ -4909,8 +4909,7 @@
                 href="#contactsUserProfile"
                 data-help-target="#contactsUserProfile"
               >Your profile</a>
-              with a name and optional photo so gear items marked “User” in the provider dropdown show your branding in gear
-              lists, prints and exports.
+              with your name, role, phone, email and optional website or photo so gear items marked “User” in the provider dropdown show your branding and contact details in gear lists, prints and exports.
             </li>
             <li>
               Crew rows inside
@@ -7353,30 +7352,44 @@
               Add your details so your gear shows as “User”.
             </p>
           </header>
-          <div class="contacts-user-card">
-            <div id="userProfileAvatar" class="contact-card-avatar">
-              <div class="contact-card-avatar-visual"></div>
-              <button type="button" id="userProfileAvatarButton">
-                <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE0E0;</span>
-                <span id="userProfileAvatarButtonLabel" class="visually-hidden">Change photo</span>
-              </button>
-              <input
-                type="file"
-                id="userProfileAvatarInput"
-                accept="image/*"
-                class="visually-hidden"
-                tabindex="-1"
-                aria-hidden="true"
-              />
-            </div>
-            <div class="contacts-user-card-fields">
-              <label id="userProfileNameLabel" for="userProfileName">Display name</label>
-              <input type="text" id="userProfileName" name="userProfileName" autocomplete="name" />
-              <p id="userProfileHint" class="contacts-user-card-hint">
-                Used to show your first name and last initial for the “User” option in the provided by dropdown.
-              </p>
-              <button type="button" id="userProfileAvatarClear" class="contacts-user-avatar-clear">
-                Remove photo
+            <div class="contacts-user-card">
+              <div id="userProfileAvatar" class="contact-card-avatar">
+                <div class="contact-card-avatar-visual"></div>
+                <button type="button" id="userProfileAvatarButton">
+                  <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE0E0;</span>
+                  <span id="userProfileAvatarButtonLabel" class="visually-hidden">Change photo</span>
+                </button>
+                <input
+                  type="file"
+                  id="userProfileAvatarInput"
+                  accept="image/*"
+                  class="visually-hidden"
+                  tabindex="-1"
+                  aria-hidden="true"
+                />
+              </div>
+              <div class="contacts-user-card-fields">
+                <label id="userProfileNameLabel" for="userProfileName">Display name</label>
+                <input type="text" id="userProfileName" name="userProfileName" autocomplete="name" />
+                <label id="userProfileRoleLabel" for="userProfileRole">Role</label>
+                <input type="text" id="userProfileRole" name="userProfileRole" autocomplete="organization-title" />
+                <label id="userProfilePhoneLabel" for="userProfilePhone">Phone</label>
+                <input type="tel" id="userProfilePhone" name="userProfilePhone" autocomplete="tel" />
+                <label id="userProfileEmailLabel" for="userProfileEmail">Email</label>
+                <input type="email" id="userProfileEmail" name="userProfileEmail" autocomplete="email" />
+                <label id="userProfileWebsiteLabel" for="userProfileWebsite">Website</label>
+                <input
+                  type="url"
+                  id="userProfileWebsite"
+                  name="userProfileWebsite"
+                  autocomplete="url"
+                  inputmode="url"
+                />
+                <p id="userProfileHint" class="contacts-user-card-hint">
+                  Shared with the “User” entry so teams see your name, role and contact links in gear lists, exports and backups.
+                </p>
+                <button type="button" id="userProfileAvatarClear" class="contacts-user-avatar-clear">
+                  Remove photo
               </button>
             </div>
           </div>
