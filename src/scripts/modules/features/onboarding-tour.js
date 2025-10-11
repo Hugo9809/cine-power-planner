@@ -1129,6 +1129,7 @@
   let currentIndex = -1;
   let currentStep = null;
   let pendingFrame = null;
+  let scrollStateTimer = null;
   let autoOpenedSettings = false;
   let settingsDialogRef = null;
   let autoOpenedContacts = false;
@@ -1250,6 +1251,52 @@
     pendingFrame = null;
   }
 
+  function clearScrollStateTimer() {
+    if (scrollStateTimer === null) {
+      return;
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearTimeout === 'function') {
+      GLOBAL_SCOPE.clearTimeout(scrollStateTimer);
+    } else {
+      clearTimeout(scrollStateTimer);
+    }
+    scrollStateTimer = null;
+  }
+
+  function clearScrollState() {
+    clearScrollStateTimer();
+    if (overlayRoot && overlayRoot.classList && typeof overlayRoot.classList.remove === 'function') {
+      overlayRoot.classList.remove('onboarding-scroll-active');
+    }
+  }
+
+  function markScrollActive() {
+    if (!overlayRoot || !overlayRoot.classList || typeof overlayRoot.classList.add !== 'function') {
+      return;
+    }
+    overlayRoot.classList.add('onboarding-scroll-active');
+    clearScrollStateTimer();
+    const release = function () {
+      scrollStateTimer = null;
+      if (overlayRoot && overlayRoot.classList && typeof overlayRoot.classList.remove === 'function') {
+        overlayRoot.classList.remove('onboarding-scroll-active');
+      }
+    };
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.setTimeout === 'function') {
+      scrollStateTimer = GLOBAL_SCOPE.setTimeout(release, 150);
+    } else {
+      scrollStateTimer = setTimeout(release, 150);
+    }
+  }
+
+  function handleGlobalScroll() {
+    if (!active) {
+      return;
+    }
+    markScrollActive();
+    schedulePositionUpdate();
+  }
+
   function getOverlayMetrics() {
     const fallbackWidth = (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerWidth === 'number')
       ? GLOBAL_SCOPE.innerWidth
@@ -1313,6 +1360,7 @@
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
+    clearScrollState();
 
     highlightEl = DOCUMENT.createElement('div');
     highlightEl.className = 'onboarding-highlight';
@@ -1426,6 +1474,7 @@
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElements();
+    clearScrollState();
     if (overlayRoot && overlayRoot.parentNode) {
       if (supportsDialogTopLayer && typeof overlayRoot.close === 'function' && overlayRoot.open) {
         try {
@@ -3604,10 +3653,10 @@
   function attachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       GLOBAL_SCOPE.addEventListener('resize', schedulePositionUpdate);
-      GLOBAL_SCOPE.addEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.addEventListener('scroll', handleGlobalScroll, true);
     }
     if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
-      DOCUMENT.addEventListener('scroll', schedulePositionUpdate, true);
+      DOCUMENT.addEventListener('scroll', handleGlobalScroll, true);
       if (supportsDialogTopLayer) {
         DOCUMENT.addEventListener('toggle', handleDialogToggle, true);
       }
@@ -3617,10 +3666,10 @@
   function detachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
       GLOBAL_SCOPE.removeEventListener('resize', schedulePositionUpdate);
-      GLOBAL_SCOPE.removeEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.removeEventListener('scroll', handleGlobalScroll, true);
     }
     if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
-      DOCUMENT.removeEventListener('scroll', schedulePositionUpdate, true);
+      DOCUMENT.removeEventListener('scroll', handleGlobalScroll, true);
       if (supportsDialogTopLayer) {
         DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
       }
