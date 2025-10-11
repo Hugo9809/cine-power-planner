@@ -1955,7 +1955,7 @@ const texts = {
     shareSetupHelp:
       "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access.",
     applySharedLinkHelp:
-      "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly.",
+      "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly. Unnamed imports are saved automatically under an “-imported” title so the data lands even when the bundle omitted a project name.",
     sharedLinkHelp:
       "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import—the planner only reads a copy and logs the attempt in diagnostics for your records.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
@@ -3849,7 +3849,7 @@ const texts = {
     shareSetupHelp:
       "Scarica un pacchetto JSON di sicurezza del progetto corrente—comprende accessori personalizzati, preferiti, feedback di autonomia e dispositivi—pronto da archiviare o condividere offline. Conserva il file insieme ai backup ridondanti della troupe prima di chiudere il planner così ogni postazione può ripristinarlo senza connessione.",
     applySharedLinkHelp:
-      "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante.",
+      "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante. Le importazioni senza nome vengono salvate automaticamente con un titolo “-imported” così i dati arrivano anche quando il bundle non includeva un nome progetto.",
     sharedLinkHelp:
       "Scegli un JSON di progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei backup dopo l’importazione: il planner legge solo una copia e registra il tentativo nei log di diagnostica.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
@@ -5757,7 +5757,7 @@ const texts = {
     shareSetupHelp:
       "Descarga un paquete JSON de seguridad del proyecto actual—incluye equipo personalizado, favoritos, retroalimentación de autonomía y dispositivos—listo para archivarse o compartirse sin conexión. Guarda el archivo junto a las copias de seguridad redundantes del equipo antes de cerrar el planificador para que cualquier estación pueda restaurarlo sin acceso a la red.",
     applySharedLinkHelp:
-      "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante.",
+      "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante. Las importaciones sin nombre se guardan automáticamente con un título “-imported” para que los datos se conserven incluso cuando el paquete no incluía un nombre de proyecto.",
     sharedLinkHelp:
       "Elige un JSON de proyecto exportado desde Guardar y compartir o desde Copia de seguridad y restaurar. Conserva el archivo original en tus respaldos tras la importación: el planificador solo lee una copia y deja constancia del intento en los registros de diagnóstico.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
@@ -7677,7 +7677,7 @@ const texts = {
     shareSetupHelp:
       "Téléchargez un paquet JSON de sécurité du projet en cours—avec accessoires personnalisés, favoris, retours d’autonomie et appareils—prêt à archiver ou à partager hors ligne. Rangez le fichier avec les sauvegardes redondantes de l’équipe avant de fermer le planner afin que chaque poste puisse le restaurer sans connexion.",
     applySharedLinkHelp:
-      "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & partager ou Sauvegarder & restaurer. Vérifiez l’aperçu comparatif avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer, et le planner planifie en amont une nouvelle sauvegarde automatique pour que vous puissiez revenir en arrière immédiatement.",
+      "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & partager ou Sauvegarder & restaurer. Vérifiez l’aperçu comparatif avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer, et le planner planifie en amont une nouvelle sauvegarde automatique pour que vous puissiez revenir en arrière immédiatement. Les imports sans nom sont automatiquement enregistrés avec un titre “-imported” afin que les données arrivent même lorsque le lot n’indiquait aucun nom de projet.",
     sharedLinkHelp:
       "Choisissez un fichier JSON de projet exporté depuis Enregistrer & partager ou Sauvegarder & restaurer. Conservez l’original dans vos sauvegardes après l’import : le planner ne lit qu’une copie et journalise la tentative dans le diagnostic.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
@@ -9602,7 +9602,7 @@ const texts = {
     shareSetupHelp:
       "Lade ein JSON-Sicherheitspaket des aktuellen Projekts—inklusive individuellem Zubehör, Favoriten, Laufzeitrückmeldungen und Geräten—herunter, bereit zum Archivieren oder Offline-Teilen. Lege die Datei vor dem Schließen des Planners zusammen mit den redundanten Team-Backups ab, damit jeder Arbeitsplatz sie ohne Netzwerkzugang wiederherstellen kann.",
     applySharedLinkHelp:
-      "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe den Vergleich in der Vorschau, bevor du fortfährst – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst, und der Planner plant vorher ein frisches automatisches Backup ein, damit du sofort zurückrollen kannst.",
+      "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe den Vergleich in der Vorschau, bevor du fortfährst – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst, und der Planner plant vorher ein frisches automatisches Backup ein, damit du sofort zurückrollen kannst. Unbenannte Importe werden automatisch mit einem “-imported”-Titel gespeichert, damit die Daten auch dann ankommen, wenn das Paket keinen Projektnamen enthielt.",
     sharedLinkHelp:
       "Wähle ein Projekt-JSON, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Bewahre die Originaldatei nach dem Import in deinen Backups auf – der Planner liest nur eine Kopie und protokolliert den Vorgang im Diagnostik-Log.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",

@@ -4183,6 +4183,88 @@ function restoreSessionState() {
   }
 }
 
+function ensureImportedProjectBaseNameSession(rawName) {
+  const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  if (!trimmed) {
+    return 'Project-imported';
+  }
+  if (trimmed.toLowerCase().endsWith('-imported')) {
+    return trimmed;
+  }
+  return `${trimmed}-imported`;
+}
+
+function generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames) {
+  const normalized = normalizedNames
+    || new Set(
+      [...usedNames]
+        .map((name) => (typeof name === 'string' ? name.trim().toLowerCase() : ''))
+        .filter((name) => name),
+    );
+  const base = ensureImportedProjectBaseNameSession(baseName);
+  let candidate = base.trim();
+  if (!candidate) {
+    candidate = 'Project-imported';
+  }
+  let normalizedCandidate = candidate.toLowerCase();
+  let suffix = 2;
+  while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    candidate = `${base}-${suffix++}`;
+    normalizedCandidate = candidate.trim().toLowerCase();
+  }
+  usedNames.add(candidate);
+  if (normalizedCandidate) {
+    normalized.add(normalizedCandidate);
+  }
+  return candidate;
+}
+
+function persistImportedProjectWithFallback(payload, nameCandidates) {
+  if (!payload || typeof saveProject !== 'function') {
+    return '';
+  }
+
+  let usedNames = new Set();
+  let normalizedNames = new Set();
+
+  if (typeof loadProject === 'function') {
+    try {
+      const existingProjects = loadProject();
+      if (existingProjects && typeof existingProjects === 'object') {
+        const entries = Object.keys(existingProjects);
+        usedNames = new Set(entries);
+        normalizedNames = new Set(
+          entries
+            .map((name) => (typeof name === 'string' ? name.trim().toLowerCase() : ''))
+            .filter((name) => name),
+        );
+      }
+    } catch (projectReadError) {
+      console.warn(
+        'Unable to read existing projects while generating fallback name for imported project',
+        projectReadError,
+      );
+    }
+  }
+
+  const candidates = Array.isArray(nameCandidates) ? nameCandidates : [];
+  let baseName = '';
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = typeof candidates[index] === 'string' ? candidates[index].trim() : '';
+    if (candidate) {
+      baseName = candidate;
+      break;
+    }
+  }
+  if (!baseName) {
+    baseName = 'Imported project';
+  }
+
+  const storageKey = generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames);
+  saveProject(storageKey, payload, { skipOverwriteBackup: true });
+  return storageKey;
+}
+
 function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
@@ -4380,6 +4462,41 @@ function applySharedSetup(shared, options = {}) {
           delete payload.autoGearRules;
         }
         saveProject(storageKey, payload, { skipOverwriteBackup: true });
+      } else if (
+        payload
+        && (
+          payload.projectInfo
+          || hasSelectors
+          || payload.gearListAndProjectRequirementsGenerated
+          || hasAutoRules
+          || payload.diagramPositions
+        )
+      ) {
+        if (!hasAutoRules) {
+          delete payload.autoGearRules;
+        }
+        const fallbackNames = [
+          decoded.setupName,
+          decoded.projectInfo && decoded.projectInfo.projectName,
+          payload.projectInfo && payload.projectInfo.projectName,
+        ];
+        const generatedKey = persistImportedProjectWithFallback(payload, fallbackNames);
+        if (generatedKey) {
+          if (setupNameInput && setupNameInput.value !== generatedKey) {
+            setupNameInput.value = generatedKey;
+            setupNameInput.dispatchEvent(new Event('input'));
+          }
+          if (typeof populateSetupSelect === 'function') {
+            try {
+              populateSetupSelect();
+            } catch (refreshError) {
+              console.warn(
+                'Unable to refresh project selector after saving imported project without a provided name',
+                refreshError,
+              );
+            }
+          }
+        }
       }
     }
   } catch (e) {
