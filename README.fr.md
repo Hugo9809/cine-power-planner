@@ -167,7 +167,9 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Renommer crée une branche.** Modifier le nom puis valider duplique le projet — pratique pour comparer des variantes.
 - **Changer de projet n’efface rien.** Sélectionnez un autre élément dans le menu ; la position et les saisies non sauvegardées se propagent.
 - **Les contacts d’équipe restent réutilisables.** Ouvrez l’entrée **Contacts** de la barre latérale pour tenir un annuaire avec
-  rôles, adresses e-mail, numéros et photos prêtes à être injectées dans n’importe quel projet. Les contacts partagent le même
+  rôles, adresses e-mail, numéros et photos prêtes à être injectées dans n’importe quel projet. Votre profil personnel dans ce
+  dialogue conserve aussi votre nom d’affichage, votre rôle et votre photo afin que le matériel marqué « User » reste annoté
+  dans les sauvegardes. Les contacts partagent le même
   snapshot localStorage que vos projets, sont inclus dans les sauvegardes manuelles et peuvent être importés depuis des fichiers
   `.vcf` (vCard) hors ligne afin de fusionner des carnets. Sauvegarder une ligne d’équipe dans l’annuaire évite de ressaisir les
   informations sur les prochains projets.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】

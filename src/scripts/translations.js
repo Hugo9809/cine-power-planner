@@ -189,7 +189,10 @@ const texts = {
       importSummary: "{added} added, {updated} updated.",
       importNone: "No new contacts found in the file.",
       importError: "Could not import the selected file.",
-      rolePlaceholder: "Select role"
+      roleLabel: "Crew role",
+      rolePlaceholder: "Select role",
+      userProfileRoleLabel: "Your role",
+      userProfileRolePlaceholder: "Select role"
     },
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
@@ -2060,7 +2063,10 @@ const texts = {
       importSummary: "{added} aggiunti, {updated} aggiornati.",
       importNone: "Nessun nuovo contatto trovato nel file.",
       importError: "Impossibile importare il file selezionato.",
-      rolePlaceholder: "Seleziona ruolo"
+      roleLabel: "Ruolo troupe",
+      rolePlaceholder: "Seleziona un ruolo",
+      userProfileRoleLabel: "Il tuo ruolo",
+      userProfileRolePlaceholder: "Seleziona un ruolo"
     },
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
@@ -3923,7 +3929,10 @@ const texts = {
       importSummary: "{added} añadidos, {updated} actualizados.",
       importNone: "No se encontraron contactos nuevos en el archivo.",
       importError: "No se pudo importar el archivo seleccionado.",
-      rolePlaceholder: "Selecciona un rol"
+      roleLabel: "Rol del equipo",
+      rolePlaceholder: "Selecciona un rol",
+      userProfileRoleLabel: "Tu rol",
+      userProfileRolePlaceholder: "Selecciona un rol"
     },
     featureSearchPlaceholder: "Buscar funciones, dispositivos o ayuda...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
@@ -5801,7 +5810,10 @@ const texts = {
       importSummary: "{added} ajoutés, {updated} mis à jour.",
       importNone: "Aucun nouveau contact trouvé dans le fichier.",
       importError: "Impossible d'importer le fichier sélectionné.",
-      rolePlaceholder: "Sélectionner un rôle"
+      roleLabel: "Rôle dans l'équipe",
+      rolePlaceholder: "Sélectionner un rôle",
+      userProfileRoleLabel: "Votre rôle",
+      userProfileRolePlaceholder: "Sélectionner un rôle"
     },
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
@@ -7692,7 +7704,10 @@ const texts = {
       importSummary: "{added} hinzugefügt, {updated} aktualisiert.",
       importNone: "Keine neuen Kontakte in der Datei gefunden.",
       importError: "Die ausgewählte Datei konnte nicht importiert werden.",
-      rolePlaceholder: "Rolle auswählen"
+      roleLabel: "Teamrolle",
+      rolePlaceholder: "Rolle auswählen",
+      userProfileRoleLabel: "Deine Rolle",
+      userProfileRolePlaceholder: "Rolle auswählen"
     },
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",

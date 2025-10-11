@@ -10508,15 +10508,16 @@ function normalizeUserProfile(entry) {
   }
 
   const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  const role = typeof entry.role === 'string' ? entry.role.trim() : '';
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
 
-  if (!name && !avatar) {
-    return { name: '', avatar: '' };
+  if (!name && !avatar && !role) {
+    return { name: '', role: '', avatar: '' };
   }
 
-  return { name, avatar };
+  return { name, role, avatar };
 }
 
 function loadUserProfile() {
@@ -10530,9 +10531,9 @@ function loadUserProfile() {
     { validate: (value) => value === null || isPlainObject(value) },
   );
   if (!isPlainObject(parsed)) {
-    return { name: '', avatar: '' };
+    return { name: '', role: '', avatar: '' };
   }
-  return normalizeUserProfile(parsed) || { name: '', avatar: '' };
+  return normalizeUserProfile(parsed) || { name: '', role: '', avatar: '' };
 }
 
 function saveUserProfile(profile) {
@@ -10546,8 +10547,8 @@ function saveUserProfile(profile) {
     return;
   }
 
-  const normalized = normalizeUserProfile(profile) || { name: '', avatar: '' };
-  if (!normalized.name && !normalized.avatar) {
+  const normalized = normalizeUserProfile(profile) || { name: '', role: '', avatar: '' };
+  if (!normalized.name && !normalized.avatar && !normalized.role) {
     deleteFromStorage(
       safeStorage,
       USER_PROFILE_STORAGE_KEY,

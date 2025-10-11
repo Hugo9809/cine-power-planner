@@ -13601,6 +13601,15 @@ function setLanguage(lang) {
     if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
       userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
     }
+    if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+      userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+    }
+    if (userProfileRoleSelect && contactsTexts.userProfileRolePlaceholder) {
+      userProfileRoleSelect.setAttribute('data-placeholder', contactsTexts.userProfileRolePlaceholder);
+      userProfileRoleSelect.setAttribute('aria-label', contactsTexts.userProfileRoleLabel || contactsTexts.userProfileRolePlaceholder);
+      userProfileRoleSelect.setAttribute('data-help', contactsTexts.userProfileRoleLabel || contactsTexts.userProfileRolePlaceholder);
+      setUserProfileRoleOptions(userProfileState.role || '', { preserveSelection: true });
+    }
     if (userProfileHint && contactsTexts.userProfileHint) {
       userProfileHint.textContent = contactsTexts.userProfileHint;
     }
@@ -13840,6 +13849,8 @@ var userProfileHeading = null;
 var userProfileDescription = null;
 var userProfileNameInput = null;
 var userProfileNameLabel = null;
+var userProfileRoleLabel = null;
+var userProfileRoleSelect = null;
 var userProfileHint = null;
 var userProfileAvatarContainer = null;
 var userProfileAvatarButton = null;
@@ -13871,6 +13882,8 @@ function resolveContactsDomRefs() {
   userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
   userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
   userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
+  userProfileRoleSelect = userProfileRoleSelect || document.getElementById('userProfileRole');
   userProfileHint = userProfileHint || document.getElementById('userProfileHint');
   userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
   userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -15729,7 +15742,7 @@ const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', avatar: '' };
+var userProfileState = { name: '', role: '', avatar: '' };
 var userProfileDirty = false;
 var userProfilePendingAnnouncement = false;
 
@@ -15921,6 +15934,61 @@ function setContactSelectOptions(select, selectedId) {
   }
 }
 
+function setUserProfileRoleOptions(selectedValue, options = {}) {
+  if (!userProfileRoleSelect) return;
+  let selectLang = userProfileRoleSelect.lang;
+  if (!selectLang && typeof document !== 'undefined' && document && document.documentElement) {
+    selectLang = document.documentElement.lang || '';
+  }
+  const selectDirection = userProfileRoleSelect.dir
+    || resolveDocumentDirection(selectLang || currentLang || DEFAULT_LANGUAGE);
+  const currentValue = typeof selectedValue === 'string' ? selectedValue : userProfileRoleSelect.value;
+  while (userProfileRoleSelect.firstChild) {
+    userProfileRoleSelect.removeChild(userProfileRoleSelect.firstChild);
+  }
+  const placeholderText = userProfileRoleSelect.getAttribute('data-placeholder')
+    || getContactsText('rolePlaceholder', 'Select role');
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  applyLocaleMetadata(placeholder, selectLang, selectDirection);
+  userProfileRoleSelect.appendChild(placeholder);
+  const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
+  crewRoles.forEach(role => {
+    const option = document.createElement('option');
+    option.value = role;
+    option.textContent = roleLabels[role] || role;
+    applyLocaleMetadata(option, selectLang, selectDirection);
+    userProfileRoleSelect.appendChild(option);
+  });
+  if (currentValue && !crewRoles.includes(currentValue)) {
+    const extra = document.createElement('option');
+    extra.value = currentValue;
+    extra.textContent = roleLabels[currentValue] || currentValue;
+    applyLocaleMetadata(extra, selectLang, selectDirection);
+    userProfileRoleSelect.appendChild(extra);
+  }
+  const preserveSelection = Boolean(options && options.preserveSelection);
+  if (preserveSelection) {
+    try {
+      const active = typeof document !== 'undefined' ? document.activeElement : null;
+      if (active === userProfileRoleSelect) {
+        const selectedIndex = Array.prototype.findIndex.call(
+          userProfileRoleSelect.options,
+          option => option.value === currentValue,
+        );
+        if (selectedIndex >= 0) {
+          userProfileRoleSelect.selectedIndex = selectedIndex;
+          return;
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  userProfileRoleSelect.value = currentValue || '';
+}
+
 function updateContactPickers() {
   if (!crewContainer) return;
   const selects = crewContainer.querySelectorAll('.person-contact-select');
@@ -15995,8 +16063,9 @@ function getContactsSnapshot() {
 
 function getUserProfileSnapshot() {
   const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+  const role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
   const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-  return { name, avatar };
+  return { name, role, avatar };
 }
 
 function applyUserProfileToDom(options = {}) {
@@ -16017,6 +16086,11 @@ function applyUserProfileToDom(options = {}) {
       userProfileNameInput.value = profile.name;
     }
   }
+  if (userProfileRoleSelect) {
+    setUserProfileRoleOptions(profile.role, {
+      preserveSelection: preserveSelection,
+    });
+  }
   if (userProfileAvatarContainer) {
     updateAvatarVisual(userProfileAvatarContainer, profile.avatar || '', profile.name, 'contact-card-avatar-initial');
   }
@@ -16034,15 +16108,16 @@ function loadUserProfileState() {
       if (loaded && typeof loaded === 'object') {
         userProfileState = {
           name: typeof loaded.name === 'string' ? loaded.name : '',
+          role: typeof loaded.role === 'string' ? loaded.role : '',
           avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
         };
       } else {
-        userProfileState = { name: '', avatar: '' };
+        userProfileState = { name: '', role: '', avatar: '' };
       }
     }
   } catch (error) {
     console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', avatar: '' };
+    userProfileState = { name: '', role: '', avatar: '' };
   }
   userProfileDirty = false;
   userProfilePendingAnnouncement = false;
@@ -16061,8 +16136,9 @@ function persistUserProfileState(options = {}) {
     }
   }
   userProfileDirty = false;
-  const isNameActive = typeof document !== 'undefined' && document.activeElement === userProfileNameInput;
-  applyUserProfileToDom({ preserveSelection: isNameActive });
+  const activeElement = typeof document !== 'undefined' ? document.activeElement : null;
+  const preserveSelection = activeElement === userProfileNameInput || activeElement === userProfileRoleSelect;
+  applyUserProfileToDom({ preserveSelection });
   if (options && options.announce) {
     announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
     userProfilePendingAnnouncement = false;
@@ -16078,6 +16154,7 @@ function handleUserProfileNameInput() {
   }
   userProfileState = {
     name: rawValue,
+    role: userProfileState.role || '',
     avatar: userProfileState.avatar || ''
   };
   userProfileDirty = true;
@@ -16096,12 +16173,30 @@ function handleUserProfileNameBlur() {
   }
 }
 
+function handleUserProfileRoleChange() {
+  if (!userProfileRoleSelect) return;
+  const rawValue = typeof userProfileRoleSelect.value === 'string' ? userProfileRoleSelect.value : '';
+  const sanitized = sanitizeContactValue(rawValue);
+  if (sanitized === (typeof userProfileState.role === 'string' ? userProfileState.role : '')) {
+    return;
+  }
+  userProfileState = {
+    name: userProfileState.name || '',
+    role: sanitized,
+    avatar: userProfileState.avatar || ''
+  };
+  userProfileDirty = false;
+  userProfilePendingAnnouncement = false;
+  persistUserProfileState({ announce: true });
+}
+
 function handleUserProfileAvatarCleared() {
   if (!userProfileState.avatar) {
     return;
   }
   userProfileState = {
     name: userProfileState.name || '',
+    role: userProfileState.role || '',
     avatar: ''
   };
   persistUserProfileState();
@@ -16126,6 +16221,7 @@ function handleUserProfileAvatarInputChange() {
   readAvatarFile(file, dataUrl => {
     userProfileState = {
       name: userProfileState.name || '',
+      role: userProfileState.role || '',
       avatar: dataUrl
     };
     persistUserProfileState();
@@ -16899,6 +16995,9 @@ function initializeContactsModule() {
   if (userProfileNameInput) {
     userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
     userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileRoleSelect) {
+    userProfileRoleSelect.addEventListener('change', handleUserProfileRoleChange);
   }
   if (userProfileAvatarButton) {
     userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);

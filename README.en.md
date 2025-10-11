@@ -386,7 +386,9 @@ Use Cine Power Planner end-to-end with the following routine:
   re-entering data.
 - **Crew contacts stay reusable.** Open the **Contacts** entry in the sidebar to
   maintain a dedicated roster with roles, emails, phone numbers and profile
-  photos that you can drop into any project. Contacts live in the same
+  photos that you can drop into any project. Your personal profile in the
+  dialog keeps your display name, crew role and avatar aligned so any gear you
+  tag as “User” stays labelled across backups and restores. Contacts live in the same
   localStorage snapshot as your projects, are included in manual backups and
   can be imported from offline `.vcf` (vCard) files whenever you need to merge
   address books. Saving a crew row back to the roster keeps future projects
