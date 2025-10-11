@@ -68,6 +68,7 @@ describe('onboarding tour manual start', () => {
         </dialog>
         <div id="setup-manager"></div>
         <div id="setup-config"></div>
+        <input id="setupName" />
         <button id="generateGearListBtn"></button>
         <div data-nav-key="gearListNav"></div>
         <h2 data-nav-key="resultsHeading" id="resultsHeading"></h2>
@@ -164,13 +165,8 @@ describe('onboarding tour manual start', () => {
   test('repositions card and highlight when the viewport scrolls', async () => {
     loadModule();
 
-    const settingsDialog = document.createElement('dialog');
-    settingsDialog.id = 'settingsDialog';
-    settingsDialog.setAttribute('open', '');
-    const target = document.createElement('div');
-    target.id = 'settingsPanel-general';
-    settingsDialog.appendChild(target);
-    document.body.appendChild(settingsDialog);
+    const target = document.getElementById('setupName');
+    expect(target).not.toBeNull();
 
     const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
     const targetHeight = 60;
@@ -235,6 +231,8 @@ describe('onboarding tour manual start', () => {
       const nextButton = overlay.querySelector('.onboarding-next-button');
       expect(nextButton).not.toBeNull();
 
+      nextButton.click();
+      await new Promise(resolve => setTimeout(resolve, 70));
       nextButton.click();
       await new Promise(resolve => setTimeout(resolve, 70));
       nextButton.click();
