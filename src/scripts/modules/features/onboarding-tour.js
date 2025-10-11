@@ -292,9 +292,9 @@
         'Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build.',
     },
     selectBattery: {
-      title: 'Choose batteries or DC sources',
+      title: 'Choose batteries',
       body:
-        'Select the battery system or DC input that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.',
+        'Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.',
     },
     results: {
       title: 'Review the results summary',

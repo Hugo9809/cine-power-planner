@@ -1820,9 +1820,9 @@ const texts = {
             "Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build.",
         },
         selectBattery: {
-          title: "Choose batteries or DC sources",
+          title: "Choose batteries",
           body:
-            "Select the battery system or DC input that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.",
+            "Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.",
         },
         results: {
           title: "Review the results summary",
@@ -3830,9 +3830,9 @@ const texts = {
             "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero setup.",
         },
         selectBattery: {
-          title: "Scegli batterie o alimentazioni DC",
+          title: "Scegli batterie",
           body:
-            "Seleziona il sistema batteria o l'ingresso DC che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto.",
+            "Seleziona il sistema batteria che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto.",
         },
         results: {
           title: "Rivedi il riepilogo dei risultati",
@@ -5853,9 +5853,9 @@ const texts = {
             "Añade monitores abordo, transmisores inalámbricos y motores o controladores FIZ. Cada selección alimenta los cálculos de autonomía, los diagramas y las reglas automáticas para que el kit generado represente todo el montaje.",
         },
         selectBattery: {
-          title: "Elige baterías o fuentes de CC",
+          title: "Elige baterías",
           body:
-            "Selecciona el sistema de baterías o la entrada de CC que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto.",
+            "Selecciona el sistema de baterías que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto.",
         },
         results: {
           title: "Revisa el resumen de resultados",
@@ -7888,9 +7888,9 @@ const texts = {
             "Ajoutez moniteurs embarqués, transmetteurs sans fil et moteurs ou contrôleurs FIZ. Chaque sélection alimente les calculs d’autonomie, les diagrammes et les règles automatiques afin que le kit généré reflète l’ensemble du montage.",
         },
         selectBattery: {
-          title: "Choisissez batteries ou alimentations CC",
+          title: "Choisissez les batteries",
           body:
-            "Sélectionnez le système de batteries ou l’entrée CC qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne.",
+            "Sélectionnez le système de batteries qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne.",
         },
         results: {
           title: "Passez en revue le résumé des résultats",
@@ -9928,9 +9928,9 @@ const texts = {
             "Füge Onboard-Monitore, Funkübertrager sowie FIZ-Motoren oder -Controller hinzu. Jede Auswahl speist Laufzeitberechnungen, Diagramme und automatische Regelwerke, damit das generierte Kit den gesamten Aufbau widerspiegelt.",
         },
         selectBattery: {
-          title: "Batterien oder DC-Quellen wählen",
+          title: "Batterien wählen",
           body:
-            "Wähle das Batteriesystem oder den DC-Eingang, der das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert.",
+            "Wähle das Batteriesystem, das das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert.",
         },
         results: {
           title: "Ergebnisse zusammenfassen",
