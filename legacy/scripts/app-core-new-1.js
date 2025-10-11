@@ -12543,16 +12543,54 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return layer;
   }
-  function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
-    if (host && _typeof(host) === 'object') {
-      try {
-        var scrollHeight = host.scrollHeight;
-        if (typeof scrollHeight === 'number' && scrollHeight > 0) {
-          return scrollHeight;
-        }
-      } catch (error) {
-        void error;
+  function resolvePinkModeScrollHeight(host) {
+    if (!host || _typeof(host) !== 'object') {
+      return null;
+    }
+
+    try {
+      var value = host.scrollHeight;
+      if (typeof value === 'number' && value > 0) {
+        return value;
       }
+    } catch (error) {
+      void error;
+    }
+
+    var doc =
+      typeof host.ownerDocument !== 'undefined' && host.ownerDocument
+        ? host.ownerDocument
+        : typeof document !== 'undefined' && document
+          ? document
+          : null;
+    if (!doc || _typeof(doc) !== 'object') {
+      return null;
+    }
+
+    var scrollingElement =
+      typeof doc.scrollingElement !== 'undefined' && doc.scrollingElement
+        ? doc.scrollingElement
+        : doc.documentElement || null;
+
+    if (!scrollingElement || scrollingElement === host) {
+      return null;
+    }
+
+    try {
+      var fallbackValue = scrollingElement.scrollHeight;
+      if (typeof fallbackValue === 'number' && fallbackValue > 0) {
+        return fallbackValue;
+      }
+    } catch (fallbackError) {
+      void fallbackError;
+    }
+
+    return null;
+  }
+  function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
+    var scrollHeight = resolvePinkModeScrollHeight(host);
+    if (typeof scrollHeight === 'number' && scrollHeight > 0) {
+      return scrollHeight;
     }
     if (hostRect && typeof hostRect.height === 'number' && hostRect.height > 0) {
       return hostRect.height;
