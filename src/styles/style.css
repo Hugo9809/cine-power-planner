@@ -2130,51 +2130,6 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   margin: 0;
 }
 
-.gear-item-edit-rental-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--button-icon-gap);
-  padding: 0.55rem 1rem;
-  border-radius: var(--border-radius);
-  border: 1px solid transparent;
-  background: var(--accent-color);
-  color: var(--inverse-text-color);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  white-space: normal;
-  text-align: center;
-}
-
-.gear-item-edit-rental-btn:hover,
-.gear-item-edit-rental-btn:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 82%, #ffffff 18%);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-.gear-item-edit-rental-btn:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent-color) 60%, #ffffff 40%);
-  outline-offset: 2px;
-}
-
-.gear-item-edit-rental-btn.is-active {
-  background: var(--danger-color);
-  color: var(--inverse-text-color);
-}
-
-.gear-item-edit-rental-btn.is-active:hover,
-.gear-item-edit-rental-btn.is-active:focus-visible {
-  background: color-mix(in srgb, var(--danger-color) 82%, #ffffff 18%);
-}
-
-.gear-item-edit-rental-btn[disabled] {
-  background: var(--control-disabled-bg);
-  color: var(--muted-text-color);
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
 .gear-item-edit-rental-description {
   margin: 0;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
@@ -2218,12 +2173,6 @@ body.dark-mode .gear-item-edit-rental,
 .dark-mode .gear-item-edit-rental {
   background: color-mix(in srgb, var(--surface-color) 88%, transparent);
   border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
-}
-
-html.dark-mode .gear-item-edit-rental-btn.is-active,
-body.dark-mode .gear-item-edit-rental-btn.is-active,
-.dark-mode .gear-item-edit-rental-btn.is-active {
-  color: var(--inverse-text-color);
 }
 
 @media (max-width: 640px) {

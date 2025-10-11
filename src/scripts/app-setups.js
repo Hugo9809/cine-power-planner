@@ -1523,13 +1523,6 @@ function refreshRentalProviderNoteDisplays(options = {}) {
                 context.rentalCheckbox.removeAttribute('aria-describedby');
             }
         }
-        if (context.rentalToggleButton) {
-            if (nextLabel) {
-                context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
-            } else {
-                context.rentalToggleButton.removeAttribute('aria-describedby');
-            }
-        }
     }
     return nextLabel;
 }
@@ -7887,10 +7880,8 @@ function buildGearItemEditContext() {
     cameraLinkLabel: resolveElementById('gearItemEditCameraLinkLabel', 'gearItemEditCameraLinkLabel'),
     cameraLinkHelp: resolveElementById('gearItemEditCameraLinkHelp', 'gearItemEditCameraLinkHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
-    rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
     rentalLabel: resolveElementById('gearItemEditRentalLabel', 'gearItemEditRentalLabel'),
-    rentalToggleButton: resolveElementById('gearItemEditRentalToggle', 'gearItemEditRentalToggle'),
     rentalDescription: resolveElementById('gearItemEditRentalDescription', 'gearItemEditRentalDescription'),
     cancelButton: resolveElementById('gearItemEditCancel', 'gearItemEditCancel'),
     saveButton: resolveElementById('gearItemEditSave', 'gearItemEditSave'),
@@ -8087,16 +8078,6 @@ function applyGearItemEditDialogTexts(context) {
       context.resetButton.textContent = resetLabel;
     }
   }
-  if (context.rentalToggleButton) {
-    context.rentalToggleButton.setAttribute('aria-label', baseToggleLabel);
-    context.rentalToggleButton.title = baseToggleLabel;
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-      const toggleGlyph = ICON_GLYPHS.circleX || ICON_GLYPHS.minus;
-      setButtonLabelWithIcon(context.rentalToggleButton, baseToggleLabel, toggleGlyph);
-    } else {
-      context.rentalToggleButton.textContent = baseToggleLabel;
-    }
-  }
   if (context.rentalDescription) {
     context.rentalDescription.textContent = rentalNote;
     context.rentalDescription.hidden = !rentalNote;
@@ -8106,14 +8087,6 @@ function applyGearItemEditDialogTexts(context) {
       context.rentalCheckbox.setAttribute('aria-describedby', context.rentalDescription.id);
     } else {
       context.rentalCheckbox.removeAttribute('aria-describedby');
-    }
-  }
-  if (context.rentalToggleButton) {
-    const hasDescription = context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden;
-    if (hasDescription) {
-      context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
-    } else {
-      context.rentalToggleButton.removeAttribute('aria-describedby');
     }
   }
   if (context.cancelButton) {
@@ -8222,48 +8195,22 @@ function updateGearItemEditResetState(context) {
 
 function updateGearItemEditRentalControls(context, excluded, allowRentalToggle) {
   if (!context) return;
-  const rentalTexts = getGearListRentalToggleTexts();
-  const fallbackTexts = getGearItemEditTexts();
-  const offLabel = rentalTexts.excludeLabel || fallbackTexts.rentalLabel;
-  const onLabel = rentalTexts.includeLabel || offLabel;
   const shouldExclude = Boolean(excluded);
   const canToggle = Boolean(allowRentalToggle);
   if (context.rentalCheckbox) {
     context.rentalCheckbox.checked = shouldExclude;
     context.rentalCheckbox.disabled = !canToggle;
-  }
-  if (context.rentalContainer) {
-    context.rentalContainer.hidden = !canToggle;
+    if (canToggle) {
+      context.rentalCheckbox.removeAttribute('aria-disabled');
+    } else {
+      context.rentalCheckbox.setAttribute('aria-disabled', 'true');
+    }
   }
   if (context.rentalSection) {
     context.rentalSection.hidden = !canToggle;
   }
-  if (context.rentalToggleButton) {
-    context.rentalToggleButton.disabled = !canToggle;
-    context.rentalToggleButton.setAttribute('aria-disabled', canToggle ? 'false' : 'true');
-    context.rentalToggleButton.setAttribute('aria-pressed', shouldExclude ? 'true' : 'false');
-    context.rentalToggleButton.classList.toggle('is-active', shouldExclude);
-    const buttonLabel = shouldExclude ? onLabel : offLabel;
-    context.rentalToggleButton.title = buttonLabel;
-    context.rentalToggleButton.setAttribute('aria-label', buttonLabel);
-    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS) {
-      const glyph = shouldExclude
-        ? (ICON_GLYPHS.circleX || ICON_GLYPHS.minus)
-        : (ICON_GLYPHS.check || ICON_GLYPHS.add);
-      setButtonLabelWithIcon(context.rentalToggleButton, buttonLabel, glyph);
-    } else {
-      context.rentalToggleButton.textContent = buttonLabel;
-    }
-  }
   if (context.rentalDescription) {
     context.rentalDescription.hidden = !context.rentalDescription.textContent;
-  }
-  if (context.rentalToggleButton) {
-    if (context.rentalDescription && context.rentalDescription.textContent && !context.rentalDescription.hidden) {
-      context.rentalToggleButton.setAttribute('aria-describedby', context.rentalDescription.id);
-    } else {
-      context.rentalToggleButton.removeAttribute('aria-describedby');
-    }
   }
 }
 
@@ -8299,24 +8246,6 @@ function handleGearItemEditRentalCheckboxChange() {
   const allowToggle = context.rentalCheckbox ? !context.rentalCheckbox.disabled : true;
   const nextState = context.rentalCheckbox ? context.rentalCheckbox.checked : false;
   updateGearItemEditRentalControls(context, nextState, allowToggle);
-}
-
-function handleGearItemEditRentalButtonClick(event) {
-  if (event) {
-    event.preventDefault();
-  }
-  const context = getGearItemEditContext();
-  if (!context || !context.rentalCheckbox || context.rentalCheckbox.disabled) {
-    return;
-  }
-  const nextState = !context.rentalCheckbox.checked;
-  context.rentalCheckbox.checked = nextState;
-  try {
-    context.rentalCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-  } catch (error) {
-    void error;
-  }
-  updateGearItemEditRentalControls(context, nextState, true);
 }
 
 function handleGearItemEditOwnedChange() {
@@ -8544,10 +8473,6 @@ function handleGearItemEditDialogClose() {
     context.preview.textContent = '';
     context.preview.hidden = true;
   }
-  if (context && context.rentalToggleButton) {
-    context.rentalToggleButton.classList.remove('is-active');
-    context.rentalToggleButton.setAttribute('aria-pressed', 'false');
-  }
   if (context) {
     context.resetDefaults = null;
     context.currentAttributes = '';
@@ -8698,9 +8623,6 @@ function bindGearItemEditDialog(context) {
   if (context.rentalCheckbox) {
     context.rentalCheckbox.addEventListener('change', handleGearItemEditRentalCheckboxChange);
   }
-  if (context.rentalToggleButton) {
-    context.rentalToggleButton.addEventListener('click', handleGearItemEditRentalButtonClick);
-  }
   if (context.ownedCheckbox) {
     context.ownedCheckbox.addEventListener('change', handleGearItemEditOwnedChange);
   }
@@ -8824,9 +8746,6 @@ function openGearItemEditor(element, options = {}) {
   }
   context.currentCameraLinkValue = isCameraItem || cameraLinked ? 'camera' : '';
   updateGearItemEditRentalControls(context, Boolean(data.rentalExcluded), allowRentalToggle);
-  if (context.rentalToggleButton) {
-    context.rentalToggleButton.blur();
-  }
   const fallbackPreview = (() => {
     const textNode = element.querySelector('.gear-item-text');
     if (textNode && textNode.textContent) {
