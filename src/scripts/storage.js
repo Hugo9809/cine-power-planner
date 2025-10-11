@@ -10696,17 +10696,18 @@ function normalizeUserProfile(entry) {
   }
 
   const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  const role = typeof entry.role === 'string' ? entry.role.trim() : '';
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
   const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
   const email = typeof entry.email === 'string' ? entry.email.trim() : '';
 
-  if (!name && !avatar && !phone && !email) {
-    return { name: '', avatar: '', phone: '', email: '' };
+  if (!name && !role && !avatar && !phone && !email) {
+    return { name: '', role: '', avatar: '', phone: '', email: '' };
   }
 
-  return { name, avatar, phone, email };
+  return { name, role, avatar, phone, email };
 }
 
 function loadUserProfile() {
@@ -10720,9 +10721,9 @@ function loadUserProfile() {
     { validate: (value) => value === null || isPlainObject(value) },
   );
   if (!isPlainObject(parsed)) {
-    return { name: '', avatar: '', phone: '', email: '' };
+    return { name: '', role: '', avatar: '', phone: '', email: '' };
   }
-  return normalizeUserProfile(parsed) || { name: '', avatar: '', phone: '', email: '' };
+  return normalizeUserProfile(parsed) || { name: '', role: '', avatar: '', phone: '', email: '' };
 }
 
 function saveUserProfile(profile) {
@@ -10736,8 +10737,8 @@ function saveUserProfile(profile) {
     return;
   }
 
-  const normalized = normalizeUserProfile(profile) || { name: '', avatar: '', phone: '', email: '' };
-  if (!normalized.name && !normalized.avatar && !normalized.phone && !normalized.email) {
+  const normalized = normalizeUserProfile(profile) || { name: '', role: '', avatar: '', phone: '', email: '' };
+  if (!normalized.name && !normalized.role && !normalized.avatar && !normalized.phone && !normalized.email) {
     deleteFromStorage(
       safeStorage,
       USER_PROFILE_STORAGE_KEY,

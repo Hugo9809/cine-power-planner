@@ -11842,6 +11842,24 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
         userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
       }
+      if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+        userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+      }
+      if (userProfileRoleInput && contactsTexts.userProfileRolePlaceholder) {
+        userProfileRoleInput.setAttribute('placeholder', contactsTexts.userProfileRolePlaceholder);
+      }
+      if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+        userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+      }
+      if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+        userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+      }
+      if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+        userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+      }
+      if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+        userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+      }
       if (userProfileHint && contactsTexts.userProfileHint) {
         userProfileHint.textContent = contactsTexts.userProfileHint;
       }
@@ -12131,6 +12149,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var userProfileDescription = null;
   var userProfileNameInput = null;
   var userProfileNameLabel = null;
+  var userProfileRoleInput = null;
+  var userProfileRoleLabel = null;
+  var userProfilePhoneInput = null;
+  var userProfilePhoneLabel = null;
+  var userProfileEmailInput = null;
+  var userProfileEmailLabel = null;
   var userProfileHint = null;
   var userProfileAvatarContainer = null;
   var userProfileAvatarButton = null;
@@ -12180,6 +12204,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
     userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
     userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+    userProfileRoleInput = userProfileRoleInput || document.getElementById('userProfileRole');
+    userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
+    userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
+    userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
+    userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
+    userProfileEmailLabel = userProfileEmailLabel || document.getElementById('userProfileEmailLabel');
     userProfileHint = userProfileHint || document.getElementById('userProfileHint');
     userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
     userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -13785,7 +13815,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var contactsInitialized = false;
   var userProfileState = {
     name: '',
-    avatar: ''
+    role: '',
+    avatar: '',
+    phone: '',
+    email: ''
   };
   var userProfileDirty = false;
   var userProfilePendingAnnouncement = false;
@@ -14396,10 +14429,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function getUserProfileSnapshot() {
     var name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+    var role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
     var avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
+    var phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
+    var email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
     return {
       name: name,
-      avatar: avatar
+      role: role,
+      avatar: avatar,
+      phone: phone,
+      email: email
     };
   }
   function applyUserProfileToDom() {
@@ -14407,8 +14446,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     resolveContactsDomRefs();
     var profile = getUserProfileSnapshot();
     var preserveSelection = Boolean(options && options.preserveSelection);
+    var preserveTarget = options && options.preserveSelectionTarget ? options.preserveSelectionTarget : preserveSelection ? typeof document !== 'undefined' ? document.activeElement : null : null;
     if (userProfileNameInput) {
-      if (preserveSelection && document.activeElement === userProfileNameInput) {
+      if (preserveTarget === userProfileNameInput) {
         var start = userProfileNameInput.selectionStart;
         var end = userProfileNameInput.selectionEnd;
         userProfileNameInput.value = profile.name;
@@ -14419,6 +14459,48 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       } else {
         userProfileNameInput.value = profile.name;
+      }
+    }
+    if (userProfileRoleInput) {
+      if (preserveTarget === userProfileRoleInput) {
+        var roleStart = userProfileRoleInput.selectionStart;
+        var roleEnd = userProfileRoleInput.selectionEnd;
+        userProfileRoleInput.value = profile.role;
+        try {
+          userProfileRoleInput.setSelectionRange(roleStart, roleEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfileRoleInput.value = profile.role;
+      }
+    }
+    if (userProfilePhoneInput) {
+      if (preserveTarget === userProfilePhoneInput) {
+        var phoneStart = userProfilePhoneInput.selectionStart;
+        var phoneEnd = userProfilePhoneInput.selectionEnd;
+        userProfilePhoneInput.value = profile.phone;
+        try {
+          userProfilePhoneInput.setSelectionRange(phoneStart, phoneEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfilePhoneInput.value = profile.phone;
+      }
+    }
+    if (userProfileEmailInput) {
+      if (preserveTarget === userProfileEmailInput) {
+        var emailStart = userProfileEmailInput.selectionStart;
+        var emailEnd = userProfileEmailInput.selectionEnd;
+        userProfileEmailInput.value = profile.email;
+        try {
+          userProfileEmailInput.setSelectionRange(emailStart, emailEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfileEmailInput.value = profile.email;
       }
     }
     if (userProfileAvatarContainer) {
@@ -14437,12 +14519,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (loaded && _typeof(loaded) === 'object') {
           userProfileState = {
             name: typeof loaded.name === 'string' ? loaded.name : '',
-            avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
+            role: typeof loaded.role === 'string' ? loaded.role : '',
+            avatar: typeof loaded.avatar === 'string' ? loaded.avatar : '',
+            phone: typeof loaded.phone === 'string' ? loaded.phone : '',
+            email: typeof loaded.email === 'string' ? loaded.email : ''
           };
         } else {
           userProfileState = {
             name: '',
-            avatar: ''
+            role: '',
+            avatar: '',
+            phone: '',
+            email: ''
           };
         }
       }
@@ -14450,7 +14538,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn('Failed to load user profile', error);
       userProfileState = {
         name: '',
-        avatar: ''
+        role: '',
+        avatar: '',
+        phone: '',
+        email: ''
       };
     }
     userProfileDirty = false;
@@ -14470,9 +14561,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     userProfileDirty = false;
-    var isNameActive = typeof document !== 'undefined' && document.activeElement === userProfileNameInput;
+    var activeElement = typeof document !== 'undefined' ? document.activeElement : null;
+    var shouldPreserve = activeElement === userProfileNameInput || activeElement === userProfileRoleInput || activeElement === userProfilePhoneInput || activeElement === userProfileEmailInput;
     applyUserProfileToDom({
-      preserveSelection: isNameActive
+      preserveSelection: shouldPreserve,
+      preserveSelectionTarget: shouldPreserve ? activeElement : null
     });
     if (options && options.announce) {
       announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
@@ -14488,13 +14581,67 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     userProfileState = {
       name: rawValue,
-      avatar: userProfileState.avatar || ''
+      role: userProfileState.role || '',
+      avatar: userProfileState.avatar || '',
+      phone: userProfileState.phone || '',
+      email: userProfileState.email || ''
     };
     userProfileDirty = true;
     userProfilePendingAnnouncement = true;
     persistUserProfileState();
   }
-  function handleUserProfileNameBlur() {
+  function handleUserProfileRoleInput() {
+    if (!userProfileRoleInput) return;
+    var rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
+    if (rawValue.trim() === userProfileState.role.trim()) {
+      return;
+    }
+    userProfileState = {
+      name: userProfileState.name || '',
+      role: rawValue,
+      avatar: userProfileState.avatar || '',
+      phone: userProfileState.phone || '',
+      email: userProfileState.email || ''
+    };
+    userProfileDirty = true;
+    userProfilePendingAnnouncement = true;
+    persistUserProfileState();
+  }
+  function handleUserProfilePhoneInput() {
+    if (!userProfilePhoneInput) return;
+    var rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
+    if (rawValue.trim() === userProfileState.phone.trim()) {
+      return;
+    }
+    userProfileState = {
+      name: userProfileState.name || '',
+      role: userProfileState.role || '',
+      avatar: userProfileState.avatar || '',
+      phone: rawValue,
+      email: userProfileState.email || ''
+    };
+    userProfileDirty = true;
+    userProfilePendingAnnouncement = true;
+    persistUserProfileState();
+  }
+  function handleUserProfileEmailInput() {
+    if (!userProfileEmailInput) return;
+    var rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
+    if (rawValue.trim() === userProfileState.email.trim()) {
+      return;
+    }
+    userProfileState = {
+      name: userProfileState.name || '',
+      role: userProfileState.role || '',
+      avatar: userProfileState.avatar || '',
+      phone: userProfileState.phone || '',
+      email: rawValue
+    };
+    userProfileDirty = true;
+    userProfilePendingAnnouncement = true;
+    persistUserProfileState();
+  }
+  function handleUserProfileFieldBlur() {
     if (!userProfileDirty && !userProfilePendingAnnouncement) {
       return;
     }
@@ -14510,7 +14657,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     userProfileState = {
       name: userProfileState.name || '',
-      avatar: ''
+      role: userProfileState.role || '',
+      avatar: '',
+      phone: userProfileState.phone || '',
+      email: userProfileState.email || ''
     };
     persistUserProfileState();
     announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
@@ -14540,7 +14690,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (!dataUrl) return;
         userProfileState = {
           name: userProfileState.name || ((_userProfileNameInput2 = userProfileNameInput) === null || _userProfileNameInput2 === void 0 ? void 0 : _userProfileNameInput2.value) || '',
-          avatar: dataUrl
+          role: userProfileState.role || '',
+          avatar: dataUrl,
+          phone: userProfileState.phone || '',
+          email: userProfileState.email || ''
         };
         persistUserProfileState();
         announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
@@ -14559,7 +14712,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     readAvatarFile(file, function (dataUrl) {
       userProfileState = {
         name: userProfileState.name || '',
-        avatar: dataUrl
+        role: userProfileState.role || '',
+        avatar: dataUrl,
+        phone: userProfileState.phone || '',
+        email: userProfileState.email || ''
       };
       persistUserProfileState();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
@@ -15408,7 +15564,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     applyUserProfileToDom();
     if (userProfileNameInput) {
       userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
-      userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+      userProfileNameInput.addEventListener('blur', handleUserProfileFieldBlur);
+    }
+    if (userProfileRoleInput) {
+      userProfileRoleInput.addEventListener('input', handleUserProfileRoleInput);
+      userProfileRoleInput.addEventListener('blur', handleUserProfileFieldBlur);
+    }
+    if (userProfilePhoneInput) {
+      userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);
+      userProfilePhoneInput.addEventListener('blur', handleUserProfileFieldBlur);
+    }
+    if (userProfileEmailInput) {
+      userProfileEmailInput.addEventListener('input', handleUserProfileEmailInput);
+      userProfileEmailInput.addEventListener('blur', handleUserProfileFieldBlur);
     }
     if (userProfileAvatarButton) {
       userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);

@@ -87,7 +87,10 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    Settings → Data & Storage → Quick safeguards flow in every locale so crews always capture a
    fresh offline `planner-backup.json` before the tutorial continues to Backup & Restore, and
    reference the new `quickSafeguards` entry when updating translations or hover help so the
-   offline dialog points to the exact button labels.【F:src/scripts/modules/features/onboarding-tour.js†L151-L204】【F:src/scripts/translations.js†L1748-L1763】
+   offline dialog points to the exact button labels.【F:src/scripts/modules/features/onboarding-tour.js†L188-L237】【F:src/scripts/translations.js†L188-L213】
+   Call out that the user profile tutorial step keeps crews inside the overlay with inline
+   display name, role, phone, email and photo editing that syncs directly to Contacts and saves
+   offline, and mirror the same guidance in help copy and localized docs.【F:src/scripts/modules/features/onboarding-tour.js†L1986-L2296】【F:index.html†L7381-L7417】【F:src/scripts/translations.js†L184-L195】
    Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and
    ARIA reference IDs), so double-check that contextual copy stays accurate for every
    referenced control when you update docs or UI labels.【F:src/scripts/app-session.js†L8896-L8996】
