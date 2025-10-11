@@ -1178,7 +1178,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var MAX_AUTO_BACKUPS = 240;
   var MAX_DELETION_BACKUPS = 20;
   var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
-  var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
+  var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 36;
   var AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
   var AUTO_GEAR_BACKUP_RETENTION_MAX = 120;
   function ensureGlobalAutoGearBackupDefaults() {

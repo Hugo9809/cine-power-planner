@@ -1968,7 +1968,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return fallback;
   }
   function resolveAutoGearBackupRetentionDefault() {
-    var fallback = 12;
+    var fallback = 36;
     var min = AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE || 1;
     var max = 50;
     var normalizedFallback = Math.min(Math.max(Math.round(fallback), min), max);
