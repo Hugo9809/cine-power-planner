@@ -13505,6 +13505,7 @@ function setLanguage(lang) {
     setLabelText(lensSeriesLabel, 'lensSeriesStep');
     setLabelText(lensesLabelElem, 'lensesLabel');
     setLabelText(lensSelectionsHeadingElem, 'lensSelectionsLabel');
+    setLabelText(lensSelectionsHintElem, 'lensSelectionsHint');
     setOptionText(lensManufacturerPlaceholderOption, 'lensManufacturerPlaceholder');
     setOptionText(lensSeriesPlaceholderOption, 'lensSeriesPlaceholder');
     if (lensSeriesEmptyElem) {
@@ -13878,6 +13879,7 @@ const lensOptionsEmptyElem = document.getElementById("lensOptionsEmpty");
 const lensesHeadingElem = document.getElementById("lensesHeading");
 const lensesLabelElem = document.getElementById("lensesLabel");
 const lensSelectionsHeadingElem = document.getElementById("lensSelectionsLabel");
+const lensSelectionsHintElem = document.getElementById("lensSelectionsHint");
 const lensSelectionChipsElem = document.getElementById("lensSelectionChips");
 const riggingHeadingElem = document.getElementById("riggingHeading");
 const requiredScenariosLabel = document.getElementById("requiredScenariosLabel");

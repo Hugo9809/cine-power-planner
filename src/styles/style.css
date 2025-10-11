@@ -9089,24 +9089,88 @@ body.high-contrast .project-field-hint {
 
 #projectDialog .lens-workflow {
   display: grid;
-  gap: clamp(12px, 2vw, 18px);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(16px, 3vw, 24px);
   margin-bottom: clamp(16px, 3vw, 24px);
 }
 
+@media (min-width: 900px) {
+  #projectDialog .lens-workflow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 #projectDialog .lens-step {
+  position: relative;
+}
+
+#projectDialog .lens-step-card {
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 1vw, 10px);
+  gap: clamp(12px, 2vw, 16px);
+  padding: clamp(16px, 3vw, 20px);
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--surface-elevated);
+  box-shadow: var(--panel-shadow);
+  min-height: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+#projectDialog .lens-step:not(.lens-step-disabled) .lens-step-card:hover,
+#projectDialog .lens-step:not(.lens-step-disabled) .lens-step-card:focus-within {
+  border-color: color-mix(in srgb, var(--panel-border) 55%, var(--accent-color) 45%);
+  box-shadow: var(--panel-shadow-hover);
+  transform: translateY(-2px);
+}
+
+#projectDialog .lens-step-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2vw, 16px);
 }
 
 #projectDialog .lens-step label,
 #projectDialog .lens-options-label {
   font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
+  margin: 0;
+}
+
+#projectDialog .lens-step-indicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 4vw, 44px);
+  height: clamp(36px, 4vw, 44px);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-color) 18%, var(--surface-color) 82%);
+  color: var(--accent-color);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+#projectDialog .lens-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 2vw, 12px);
+}
+
+#projectDialog .lens-step .select-wrapper {
+  width: 100%;
+}
+
+#projectDialog .lens-step .select-wrapper select {
+  width: 100%;
 }
 
 #projectDialog .lens-step-disabled {
   opacity: 0.55;
+}
+
+#projectDialog .lens-step-disabled .lens-step-card {
+  box-shadow: none;
 }
 
 #projectDialog .lens-step-disabled select,
@@ -9116,12 +9180,12 @@ body.high-contrast .project-field-hint {
 
 #projectDialog .lens-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: clamp(8px, 2vw, 12px);
-  padding: clamp(8px, 2vw, 12px);
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  background: var(--surface-elevated);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(10px, 2.5vw, 16px);
+  padding: clamp(10px, 2.5vw, 16px);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, var(--accent-color) 30%);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-elevated) 92%, var(--accent-color) 8%);
   max-height: 15rem;
   overflow-y: auto;
 }
@@ -9137,8 +9201,13 @@ body.high-contrast .project-field-hint {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.35rem;
-  border-radius: 8px;
+  padding: 0.35rem 0.45rem;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+#projectDialog .lens-option:hover {
+  background: var(--surface-focus);
 }
 
 #projectDialog .lens-option:focus-within {
@@ -9171,7 +9240,31 @@ body.high-contrast .project-field-hint {
 #projectDialog .lens-selection-summary {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 2vw, 12px);
+}
+
+#projectDialog .lens-selection-card {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
+  padding: clamp(16px, 3vw, 20px);
+  border-radius: 16px;
+  border: 1px solid var(--panel-border);
+  background: var(--surface-elevated);
+  box-shadow: var(--panel-shadow);
+}
+
+#projectDialog .lens-selection-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (min-width: 768px) {
+  #projectDialog .lens-selection-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 #projectDialog .lens-selection-heading {
@@ -9179,6 +9272,11 @@ body.high-contrast .project-field-hint {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
+}
+
+#projectDialog .lens-selection-hint {
+  font-size: var(--font-size-small);
+  color: var(--text-muted);
 }
 
 #projectDialog .lens-selection-chips {
