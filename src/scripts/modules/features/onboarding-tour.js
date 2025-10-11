@@ -2137,6 +2137,7 @@
     active = false;
     clearFrame();
     teardownStepRequirement();
+    teardownStepInteraction();
     detachGlobalListeners();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
