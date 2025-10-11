@@ -954,12 +954,21 @@ main.legal-content {
   border: none;
   cursor: pointer;
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
 }
 
 .person-avatar button:hover,
 .person-avatar button:focus {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+}
+
+.person-avatar button:hover,
+.person-avatar button:focus-visible {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .person-content {
@@ -1248,6 +1257,141 @@ main.legal-content {
   background: transparent;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.contact-card-avatar button:hover,
+.contact-card-avatar button:focus-visible {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.avatar-change-icon {
+  --icon-size: var(--icon-size-lg);
+  pointer-events: none;
+}
+
+.avatar-options-surface {
+  gap: 1.5rem;
+  max-inline-size: min(540px, 90vw);
+}
+
+.avatar-options-header .ghost-button {
+  align-self: flex-start;
+}
+
+.avatar-options-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar-options-preview {
+  width: clamp(160px, 45vw, 220px);
+  height: clamp(160px, 45vw, 220px);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-options-preview .contact-card-avatar-visual {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-options-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-options-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.avatar-edit {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatar-edit-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.avatar-edit-instructions {
+  text-align: center;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.avatar-edit-stage {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.avatar-edit-viewport {
+  width: clamp(180px, 50vw, 260px);
+  height: clamp(180px, 50vw, 260px);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface-2);
+  outline: none;
+  touch-action: none;
+  cursor: grab;
+}
+
+.avatar-edit-viewport img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  user-select: none;
+  pointer-events: none;
+}
+
+.avatar-edit-viewport:active {
+  cursor: grabbing;
+}
+
+.avatar-edit-zoom {
+  width: min(320px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: stretch;
+}
+
+.avatar-edit-zoom input[type="range"] {
+  width: 100%;
+}
+
+.avatar-edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.avatar-edit-actions button {
+  min-inline-size: 140px;
 }
 
 .contact-card-fields {
