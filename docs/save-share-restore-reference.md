@@ -28,6 +28,18 @@ Planner exports simply wrap those identical snapshots with the rest of the works
 
 Maintain both workflows: let the automated snapshots provide continuous protection, and schedule regular planner exports so an offline copy of the same data—and its audit trail—travels with the crew.【F:README.md†L800-L810】【F:docs/offline-readiness.md†L101-L110】【F:docs/verification-log-template.md†L58-L63】 Store each download redundantly so the exported file and its matching auto backup can recover user data even if a browser profile fails.
 
+### End-of-day backup verification drill
+
+Every wrap should close with a documented redundancy check. Follow the same steps listed inside the Help Center’s new “How do I verify my backups before I pack up?” article so the workflow stays aligned between the UI and this reference.【F:index.html†L6314-L6371】
+
+1. Download the active project bundle via **Share → Export project bundle** and confirm the JSON lands in your redundant storage workspace before you leave.【F:index.html†L6326-L6335】
+2. Run **Settings → Backup & Restore → Backup** so the full planner snapshot joins the day’s exports and the timestamp appears in your verification log.【F:index.html†L6336-L6344】
+3. From **Device Database Editor → Export**, capture any custom gear edits you made. If no updates occurred, note the skipped export in the log so the audit trail explains the gap.【F:index.html†L6345-L6351】
+4. Enable **Settings → Data & Storage → Show auto backups in project list** and visually confirm that every touched project shows a matching auto-backup timestamp for the session.【F:index.html†L6352-L6359】
+5. Immediately rehearse a restore in **Settings → Backup & Restore → Restore rehearsal**, applying one of the fresh exports in the sandbox to prove the recovery path remains offline-ready.【F:index.html†L6360-L6367】
+
+Store the resulting files in at least two locations and record the verification outcomes in your incident or wrap report so the redundancy trail stays provable even after the crew relocates.
+
 The loader now also inspects the long-term migration backups that we capture before every normalization. When both the primary slot and its live backup go missing, the recovery routine decompresses the preserved `__legacyMigrationBackup` payload, validates it against the expected schema, rewrites the primary key (compressing the payload again when possible) and logs the recovery so the diagnostics panel documents the intervention without forcing users to re-import data manually.【F:src/scripts/storage.js†L4516-L4756】
 
 When the browser reports a quota error, the persistence layer now runs a compression sweep across existing planner keys before it ever considers downgrading to in-memory storage. The sweep skips the active key and its backup, squeezes long-lived saves down with the same UTF-16 wrapper used for new writes, prioritises the largest reclaimable entries first, and logs how many characters were reclaimed so crews can verify the reclamation in diagnostics without losing a single unique backup snapshot.【F:src/scripts/storage.js†L690-L1004】【F:src/scripts/storage.js†L1541-L1652】【F:src/scripts/storage.js†L2976-L3155】

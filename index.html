@@ -6294,6 +6294,80 @@
           </details>
           <details
             class="faq-item"
+            data-help-keywords="verify backups audit checklist autosave snapshot redundancy data safety integrity"
+          >
+            <summary>How do I verify my backups before I pack up?</summary>
+            <p>
+              Run a quick redundancy drill at the end of every session:
+            </p>
+            <ol>
+              <li>
+                Open
+                <a
+                  class="help-link button-link"
+                  href="#setup-manager"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><em>Export Project</em></a>
+                for the active setup and confirm the download completes. Keep the JSON with today's shoot notes so it travels with
+                the project.
+              </li>
+              <li>
+                Visit
+                <a
+                  class="help-link button-link"
+                  href="#settingsButton"
+                  data-help-target="#settingsButton"
+                  data-help-highlight="#settingsDialog"
+                >Settings</a>
+                → <em>Backup &amp; Restore</em> and trigger a full
+                <a
+                  class="help-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                ><em>Backup</em></a>
+                . The planner logs the timestamp alongside the saved bundle so you can audit that the export finished before you leave.
+              </li>
+              <li>
+                In the Device Database Editor, use
+                <a
+                  class="help-link button-link"
+                  href="#device-manager"
+                  data-help-target="#exportDataBtn"
+                  data-help-highlight="#device-manager"
+                ><em>Export</em></a>
+                to capture custom gear updates. If nothing changed you can skip the upload later by comparing timestamps.
+              </li>
+              <li>
+                Re-open <em>Settings → Data &amp; Storage</em>, enable
+                <a
+                  class="help-link"
+                  href="#settingsDialog"
+                  data-help-target="#settingsShowAutoBackups"
+                  data-help-highlight="#settingsDialog"
+                >Show auto backups in project list</a>
+                and confirm the autosave queue lists a fresh snapshot for every project you touched today.
+              </li>
+              <li>
+                Move every export to two locations (for example a field drive and your workstation) before disconnecting. Test one of
+                the bundles immediately with
+                <a
+                  class="help-link button-link"
+                  href="#restoreSettings"
+                  data-help-target="#restoreSettings"
+                  data-help-highlight="#settingsDialog"
+                ><em>Restore</em></a>
+                in rehearsal mode so you know the recovery flow works offline.
+              </li>
+            </ol>
+            <p>
+              Following the checklist keeps the autosave stream, manual exports and restore rehearsals in sync, eliminating surprises if a
+              workstation fails or travels without connectivity.
+            </p>
+          </details>
+          <details
+            class="faq-item"
             data-help-keywords="offline pwa cached caching service worker airplane mode"
           >
             <summary>Does the planner work offline?</summary>
