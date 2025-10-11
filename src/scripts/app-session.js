@@ -15079,6 +15079,9 @@ function syncGearListFilterSize(storageId, value) {
   if (storageSelect.value !== value) {
     storageSelect.value = value;
   }
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
   storageSelect.dispatchEvent(new Event('change'));
 }
 
@@ -15099,6 +15102,9 @@ function syncGearListFilterValue(storageId, value, isSelected) {
     }
   });
   if (changed) {
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
     storageSelect.dispatchEvent(new Event('change'));
   }
 }
