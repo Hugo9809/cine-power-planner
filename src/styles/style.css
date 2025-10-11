@@ -6655,6 +6655,13 @@ textarea:disabled {
   display: block;
 }
 
+.onboarding-overlay--anchored {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .onboarding-highlight {
   position: absolute;
   border-radius: 16px;

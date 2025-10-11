@@ -61,7 +61,7 @@
       <span class="visually-hidden">Dismiss</span>
     </button>
   </div>
-  <header id="topBar">
+  <header id="topBar" data-onboarding-anchor="top-bar">
     <a class="branding" href="index.html">
       <span id="logo" class="logo-wrapper" aria-hidden="true">
         <img src="./Icon Bluenew.svg" class="logo-img logo-default" alt="" />
@@ -249,7 +249,7 @@
   </nav>
   <div id="menuOverlay" class="hidden"></div>
 
-  <main id="mainContent" tabindex="-1">
+  <main id="mainContent" tabindex="-1" data-onboarding-anchor="main">
 
   <p id="tagline">Plan your film rig and calculate power consumption &amp; battery life.</p>
 
@@ -926,7 +926,7 @@
     <a id="privacyLink" href="legal/datenschutz-en.html">Privacy Policy</a>
   </footer>
 
-  <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden data-onboarding-anchor="settings">
     <div class="modal-surface modal-surface-scrollable settings-content">
       <h2 id="settingsTitle">Settings</h2>
       <div class="settings-layout">
@@ -6594,6 +6594,7 @@
 
   <dialog
     id="ownGearDialog"
+    data-onboarding-anchor="own-gear"
     class="app-modal own-gear-dialog"
     role="dialog"
     aria-modal="true"
@@ -7336,7 +7337,7 @@
     </form>
   </dialog>
 
-  <dialog id="contactsDialog" class="app-modal" aria-labelledby="contactsDialogHeading">
+  <dialog id="contactsDialog" class="app-modal" aria-labelledby="contactsDialogHeading" data-onboarding-anchor="contacts">
     <form id="contactsForm" method="dialog" class="modal-surface modal-surface-scrollable contacts-dialog">
       <header class="modal-header contacts-dialog-header">
         <div class="modal-header-main">
