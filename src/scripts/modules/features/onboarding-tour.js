@@ -911,8 +911,8 @@
       },
       {
         key: 'unitsPreferences',
-        highlight: '#settingsButton',
-        focus: '#settingsButton',
+        highlight: null,
+        forceFloating: true,
         ensureSettings: {
           tabId: 'settingsTab-general',
           autoOpen: false,
