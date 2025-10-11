@@ -6669,6 +6669,12 @@ body.pink-mode:not(.dark-mode) .onboarding-backdrop {
   background: color-mix(in srgb, rgba(35, 7, 22, 0.5) 65%, var(--background-color) 35%);
 }
 
+body.onboarding-tour-active {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
 .onboarding-highlight {
   position: absolute;
   border-radius: 16px;
