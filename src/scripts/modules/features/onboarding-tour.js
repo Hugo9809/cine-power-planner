@@ -159,12 +159,29 @@
 
   const DEFAULT_STEP_KEYS = [
     'intro',
+    'userProfile',
+    'unitsPreferences',
     'nameProject',
     'saveProject',
     'addCamera',
-    'addPower',
-    'generatePlan',
-    'exportBackup',
+    'addMonitoring',
+    'selectBattery',
+    'results',
+    'batteryComparison',
+    'runtimeFeedback',
+    'connectionDiagram',
+    'editDeviceData',
+    'ownGear',
+    'generateGearAndRequirements',
+    'autoGearRules',
+    'projectRequirements',
+    'gearList',
+    'exportImport',
+    'overviewAndPrint',
+    'help',
+    'settingsGeneral',
+    'settingsData',
+    'settingsBackup',
     'completion',
   ];
 
@@ -172,42 +189,127 @@
     intro: {
       title: 'Welcome to Cine Power Planner',
       body:
-        'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.',
+        'This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.',
+    },
+    userProfile: {
+      title: 'Configure your user profile',
+      body:
+        'Open Contacts and fill in the “Your profile” card so projects credit the right owner. The display name, avatar and contact data stay offline, appear in exports and keep crew gear assignments consistent. You can skip for now and return later without losing progress.',
+    },
+    unitsPreferences: {
+      title: 'Tune language, theme and units',
+      body:
+        'Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
       body:
-        'Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.',
+        'Enter a descriptive project name to anchor autosave, history, exports and backups. Every subsequent workflow references this name so your offline library stays organized and easy to restore.',
     },
     saveProject: {
-      title: 'Save immediately',
+      title: 'Capture an immediate save',
       body:
-        'Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.',
+        'Press Save (or use Ctrl+S/⌘S/Enter) to write a complete offline snapshot—devices, runtime math, requirements, notes and diagnostics. The planner confirms completion before enabling the next workflow.',
     },
     addCamera: {
-      title: 'Add your primary camera',
+      title: 'Select the primary camera',
       body:
-        'Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.',
+        'Choose the camera body you are planning for. Offline search is available inside the dropdown. Selecting a body unlocks accessories, power draws and diagrams tailored to that choice.',
     },
-    addPower: {
-      title: 'Choose a power source',
+    addMonitoring: {
+      title: 'Add monitors, wireless video and FIZ',
       body:
-        'Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.',
+        'Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build.',
     },
-    generatePlan: {
-      title: 'Generate your first plan',
+    selectBattery: {
+      title: 'Choose batteries or DC sources',
       body:
-        'Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.',
+        'Select the battery system or DC input that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.',
     },
-    exportBackup: {
-      title: 'Export an offline safety copy',
+    results: {
+      title: 'Review the results summary',
       body:
-        'Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.',
+        'Use the Power Summary to confirm draw totals, estimated runtimes and any warnings. Everything shown here stays synchronized with your saved project and exports.',
+    },
+    batteryComparison: {
+      title: 'Compare battery options',
+      body:
+        'Open Battery Comparison to evaluate alternate packs side by side. The chart keeps calculations offline so you can test scenarios and lock in the safest runtime margin for the day.',
+    },
+    runtimeFeedback: {
+      title: 'Submit runtime feedback',
+      body:
+        'Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits.',
+    },
+    connectionDiagram: {
+      title: 'Inspect the connection diagram',
+      body:
+        'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.',
+    },
+    editDeviceData: {
+      title: 'Edit device data',
+      body:
+        'Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.',
+    },
+    ownGear: {
+      title: 'Document your own gear',
+      body:
+        'Track owned inventory in the Own Gear dialog. Items saved here appear in gear lists, exports and backups so every workstation knows which equipment is already on hand.',
+    },
+    generateGearAndRequirements: {
+      title: 'Generate requirements and gear list',
+      body:
+        'Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.',
+    },
+    autoGearRules: {
+      title: 'Review automatic gear rules',
+      body:
+        'Settings → Automatic Gear Rules lets you define conditions that auto-add monitors, wireless links, FIZ gear and cables. Rules execute offline every time you regenerate the kit, ensuring nothing critical is missed.',
+    },
+    projectRequirements: {
+      title: 'Refine project requirements boxes',
+      body:
+        'Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports.',
+    },
+    gearList: {
+      title: 'Audit the generated gear list',
+      body:
+        'Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs.',
+    },
+    exportImport: {
+      title: 'Export and import projects',
+      body:
+        'Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets.',
+    },
+    overviewAndPrint: {
+      title: 'Generate overview, PDF and printouts',
+      body:
+        'Generate the project overview to access PDF, print and share-ready summaries. The dialog uses saved data only, so you can print or export even while fully offline.',
+    },
+    help: {
+      title: 'Open the Help center',
+      body:
+        'The Help dialog includes searchable documentation, translation notes and onboarding references. Keep it pinned while working—articles stay cached offline and update when new features arrive.',
+    },
+    settingsGeneral: {
+      title: 'Revisit Settings → General',
+      body:
+        'Adjust language, typography, theme, pink mode, focus scale and other presentation options anytime. Preferences save locally, sync across projects and are bundled with backups.',
+    },
+    settingsData: {
+      title: 'Monitor Data & Storage',
+      body:
+        'Use the Data & Storage tab to request persistent storage, watch save timestamps and launch quick safeguards. These controls verify that every project snapshot remains available offline.',
+    },
+    settingsBackup: {
+      title: 'Maintain Backup & Restore',
+      body:
+        'The Backup & Restore tab manages full-app exports, restore rehearsals and diagnostics. Run backups before major changes, archive the files on external media and verify restores regularly.',
     },
     completion: {
-      title: "You're ready to plan",
+      title: 'Tutorial complete',
       body:
-        'Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.',
+        'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.',
     },
   };
 
@@ -284,6 +386,109 @@
           for (let index = 0; index < eventList.length; index += 1) {
             const eventName = eventList[index];
             element.removeEventListener(eventName, handler);
+          }
+        };
+      },
+    };
+  }
+
+  function createAnyFieldCompletionRequirement(selectors, predicate, events) {
+    const normalizedSelectors = Array.isArray(selectors) ? selectors.slice() : [selectors];
+    const eventList = Array.isArray(events) && events.length ? events : ['change', 'input'];
+    const evaluator = typeof predicate === 'function'
+      ? predicate
+      : (value => Boolean(value && value !== 'None'));
+
+    return {
+      check() {
+        let elementFound = false;
+        for (let index = 0; index < normalizedSelectors.length; index += 1) {
+          const selector = normalizedSelectors[index];
+          if (!selector) {
+            continue;
+          }
+          const element = getElement(selector);
+          if (!element) {
+            continue;
+          }
+          elementFound = true;
+          try {
+            if (evaluator(getFieldValue(element), element)) {
+              return true;
+            }
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate multi-field requirement.', error);
+          }
+        }
+        return !elementFound;
+      },
+      attach(context) {
+        const removers = [];
+        let elementFound = false;
+        const evaluate = () => {
+          let matches = false;
+          for (let index = 0; index < normalizedSelectors.length; index += 1) {
+            const selector = normalizedSelectors[index];
+            if (!selector) {
+              continue;
+            }
+            const element = getElement(selector);
+            if (!element) {
+              continue;
+            }
+            elementFound = true;
+            try {
+              if (evaluator(getFieldValue(element), element)) {
+                matches = true;
+                break;
+              }
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not evaluate multi-field change.', error);
+            }
+          }
+          if (!elementFound) {
+            matches = true;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        for (let index = 0; index < normalizedSelectors.length; index += 1) {
+          const selector = normalizedSelectors[index];
+          if (!selector) {
+            continue;
+          }
+          const element = getElement(selector);
+          if (!element) {
+            continue;
+          }
+          elementFound = true;
+          const handler = () => {
+            evaluate();
+          };
+          for (let eventIndex = 0; eventIndex < eventList.length; eventIndex += 1) {
+            const eventName = eventList[eventIndex];
+            element.addEventListener(eventName, handler);
+            removers.push(() => {
+              element.removeEventListener(eventName, handler);
+            });
+          }
+        }
+
+        evaluate();
+
+        return () => {
+          for (let index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach multi-field requirement.', error);
+            }
           }
         };
       },
@@ -459,15 +664,37 @@
       value => value && value !== 'None',
       ['change'],
     ),
-    addPower: createFieldCompletionRequirement(
+    addMonitoring: createAnyFieldCompletionRequirement(
+      [
+        '#monitorSelect',
+        '#videoSelect',
+        '#motor1Select',
+        '#controller1Select',
+      ],
+      (value, element) => {
+        if (!value) {
+          return false;
+        }
+        if (value === 'None' || value === '__none__') {
+          return false;
+        }
+        if (element && element.multiple) {
+          return element.selectedOptions && element.selectedOptions.length > 0;
+        }
+        return true;
+      },
+      ['change'],
+    ),
+    selectBattery: createFieldCompletionRequirement(
       '#batterySelect',
       value => value && value !== 'None',
       ['change'],
     ),
-    generatePlan: createClickCompletionRequirement('#generateGearListBtn'),
-    exportBackup: createClickCompletionRequirement(
-      ['#shareSetupBtn', '#storageBackupNow'],
+    generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
+    exportImport: createClickCompletionRequirement(
+      ['#shareSetupBtn', '#applySharedLinkBtn'],
     ),
+    overviewAndPrint: createClickCompletionRequirement('#generateOverviewBtn'),
   };
 
   const STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
@@ -674,7 +901,23 @@
       {
         key: 'intro',
         highlight: null,
-        autoActions: null,
+        size: 'large',
+      },
+      {
+        key: 'userProfile',
+        highlight: '#contactsUserProfile',
+        focus: '#userProfileName',
+        ensureContacts: true,
+        size: 'large',
+      },
+      {
+        key: 'unitsPreferences',
+        highlight: '#settingsPanel-general',
+        focus: '#settingsLanguage',
+        ensureSettings: {
+          tabId: 'settingsTab-general',
+        },
+        size: 'large',
       },
       {
         key: 'nameProject',
@@ -690,17 +933,94 @@
         highlight: '#cameraSelect',
       },
       {
-        key: 'addPower',
+        key: 'addMonitoring',
+        highlight: '#monitorSelect',
+        alternateHighlight: '#videoSelect',
+        focus: '#monitorSelect',
+      },
+      {
+        key: 'selectBattery',
         highlight: '#batterySelect',
       },
       {
-        key: 'generatePlan',
+        key: 'results',
+        highlight: '#results',
+      },
+      {
+        key: 'batteryComparison',
+        highlight: '#batteryComparison',
+      },
+      {
+        key: 'runtimeFeedback',
+        highlight: '#runtimeFeedbackBtn',
+      },
+      {
+        key: 'connectionDiagram',
+        highlight: '#diagramArea',
+      },
+      {
+        key: 'editDeviceData',
+        highlight: '#toggleDeviceManager',
+      },
+      {
+        key: 'ownGear',
+        highlight: '#ownGearDialog',
+        ensureOwnGear: true,
+        focus: '#ownGearName',
+      },
+      {
+        key: 'generateGearAndRequirements',
         highlight: '#generateGearListBtn',
       },
       {
-        key: 'exportBackup',
+        key: 'autoGearRules',
+        highlight: '#settingsPanel-autoGear',
+        ensureSettings: {
+          tabId: 'settingsTab-autoGear',
+        },
+      },
+      {
+        key: 'projectRequirements',
+        highlight: '#projectRequirementsOutput',
+      },
+      {
+        key: 'gearList',
+        highlight: '#gearListOutput',
+      },
+      {
+        key: 'exportImport',
         highlight: '#shareSetupBtn',
-        alternateHighlight: '#storageBackupNow',
+        alternateHighlight: '#applySharedLinkBtn',
+      },
+      {
+        key: 'overviewAndPrint',
+        highlight: '#generateOverviewBtn',
+      },
+      {
+        key: 'help',
+        highlight: '#helpButton',
+        focus: '#helpButton',
+      },
+      {
+        key: 'settingsGeneral',
+        highlight: '#settingsPanel-general',
+        ensureSettings: {
+          tabId: 'settingsTab-general',
+        },
+      },
+      {
+        key: 'settingsData',
+        highlight: '#settingsPanel-data',
+        ensureSettings: {
+          tabId: 'settingsTab-data',
+        },
+      },
+      {
+        key: 'settingsBackup',
+        highlight: '#settingsPanel-backup',
+        ensureSettings: {
+          tabId: 'settingsTab-backup',
+        },
       },
       {
         key: 'completion',
@@ -736,6 +1056,10 @@
   let pendingFrame = null;
   let autoOpenedSettings = false;
   let settingsDialogRef = null;
+  let autoOpenedContacts = false;
+  let contactsDialogRef = null;
+  let autoOpenedOwnGear = false;
+  let ownGearDialogRef = null;
   let resumeHintVisible = false;
   let resumeStartIndex = null;
 
@@ -743,6 +1067,12 @@
   let activeRequirementCompleted = false;
   let activeInteractionCleanup = null;
   let lastCardPlacement = 'floating';
+  let proxyControlId = 0;
+
+  function getProxyControlId(prefix) {
+    proxyControlId += 1;
+    return `onboarding-${prefix}-${proxyControlId}`;
+  }
 
   function setNextButtonDisabled(disabled) {
     if (!nextButton) {
@@ -1247,6 +1577,186 @@
     }
   }
 
+  function ensureContactsForStep(step) {
+    if (!step || !step.ensureContacts) {
+      return;
+    }
+
+    if (!contactsDialogRef) {
+      contactsDialogRef = DOCUMENT.getElementById('contactsDialog');
+    }
+
+    const dialog = contactsDialogRef;
+    if (!dialog) {
+      return;
+    }
+
+    const isVisible = isContactsDialogVisible();
+    if (isVisible) {
+      return;
+    }
+
+    autoOpenedContacts = true;
+
+    const openButton = DOCUMENT.getElementById('openContactsBtn')
+      || DOCUMENT.querySelector('[data-sidebar-action="open-contacts"]');
+    if (openButton && typeof openButton.click === 'function') {
+      try {
+        openButton.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger contacts button click.', error);
+      }
+    }
+
+    if (isContactsDialogVisible()) {
+      return;
+    }
+
+    dialog.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(dialog);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open contacts dialog.', error);
+      }
+    }
+    if (typeof dialog.showModal === 'function') {
+      try {
+        dialog.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show contacts dialog.', error);
+      }
+    }
+    dialog.setAttribute('open', '');
+  }
+
+  function isContactsDialogVisible() {
+    if (!contactsDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(contactsDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate contacts dialog state.', error);
+      }
+    }
+    return !contactsDialogRef.hasAttribute('hidden');
+  }
+
+  function closeContactsIfNeeded() {
+    if (!contactsDialogRef || !autoOpenedContacts) {
+      autoOpenedContacts = false;
+      return;
+    }
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(contactsDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close contacts dialog via closeDialog.', error);
+      }
+    } else if (typeof contactsDialogRef.close === 'function') {
+      try {
+        contactsDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close contacts dialog.', error);
+      }
+    }
+    contactsDialogRef.setAttribute('hidden', '');
+    autoOpenedContacts = false;
+  }
+
+  function ensureOwnGearForStep(step) {
+    if (!step || !step.ensureOwnGear) {
+      return;
+    }
+
+    if (!ownGearDialogRef) {
+      ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+    }
+
+    const dialog = ownGearDialogRef;
+    if (!dialog) {
+      return;
+    }
+
+    if (isOwnGearDialogVisible()) {
+      return;
+    }
+
+    autoOpenedOwnGear = true;
+
+    const trigger = DOCUMENT.querySelector('[data-sidebar-action="open-own-gear"]');
+    if (trigger && typeof trigger.click === 'function') {
+      try {
+        trigger.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger own gear button click.', error);
+      }
+    }
+
+    if (isOwnGearDialogVisible()) {
+      return;
+    }
+
+    dialog.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(dialog);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open own gear dialog.', error);
+      }
+    }
+    if (typeof dialog.showModal === 'function') {
+      try {
+        dialog.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show own gear dialog.', error);
+      }
+    }
+    dialog.setAttribute('open', '');
+  }
+
+  function isOwnGearDialogVisible() {
+    if (!ownGearDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(ownGearDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate own gear dialog state.', error);
+      }
+    }
+    return !ownGearDialogRef.hasAttribute('hidden');
+  }
+
+  function closeOwnGearIfNeeded() {
+    if (!ownGearDialogRef || !autoOpenedOwnGear) {
+      autoOpenedOwnGear = false;
+      return;
+    }
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(ownGearDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close own gear dialog via closeDialog.', error);
+      }
+    } else if (typeof ownGearDialogRef.close === 'function') {
+      try {
+        ownGearDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close own gear dialog.', error);
+      }
+    }
+    ownGearDialogRef.setAttribute('hidden', '');
+    autoOpenedOwnGear = false;
+  }
+
   function isSettingsDialogVisible() {
     if (!settingsDialogRef) {
       return false;
@@ -1455,6 +1965,393 @@
     return true;
   }
 
+  function dispatchSyntheticEvent(target, type) {
+    if (!target || !type) {
+      return;
+    }
+    try {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      target.dispatchEvent(event);
+    } catch (error) {
+      try {
+        const legacyEvent = DOCUMENT.createEvent('Event');
+        legacyEvent.initEvent(type, true, true);
+        target.dispatchEvent(legacyEvent);
+      } catch (legacyError) {
+        safeWarn('cine.features.onboardingTour could not dispatch synthetic event.', legacyError || error);
+      }
+    }
+  }
+
+  function renderUserProfileInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const profileInput = DOCUMENT.getElementById('userProfileName');
+    const fragment = DOCUMENT.createDocumentFragment();
+
+    const intro = DOCUMENT.createElement('p');
+    intro.className = 'onboarding-resume-hint';
+    intro.textContent = 'Updates here sync instantly with the Contacts dialog and save offline with your projects.';
+    fragment.appendChild(intro);
+
+    const group = DOCUMENT.createElement('div');
+    group.className = 'onboarding-field-group';
+
+    const inputId = getProxyControlId('user-profile-name');
+    const label = DOCUMENT.createElement('label');
+    label.className = 'onboarding-field-label';
+    label.setAttribute('for', inputId);
+    label.textContent = 'Display name';
+    group.appendChild(label);
+
+    const proxyInput = DOCUMENT.createElement('input');
+    proxyInput.type = 'text';
+    proxyInput.id = inputId;
+    proxyInput.className = 'onboarding-field-input';
+    proxyInput.placeholder = 'e.g. Alex Rivera';
+    proxyInput.autocomplete = 'name';
+    proxyInput.value = profileInput && typeof profileInput.value === 'string'
+      ? profileInput.value
+      : '';
+
+    const syncFromTarget = () => {
+      if (!profileInput) {
+        return;
+      }
+      if (proxyInput.value !== profileInput.value) {
+        proxyInput.value = profileInput.value || '';
+      }
+    };
+
+    const syncToTarget = () => {
+      if (!profileInput) {
+        return;
+      }
+      if (profileInput.value !== proxyInput.value) {
+        profileInput.value = proxyInput.value;
+        dispatchSyntheticEvent(profileInput, 'input');
+        dispatchSyntheticEvent(profileInput, 'change');
+      }
+    };
+
+    proxyInput.addEventListener('input', syncToTarget);
+    proxyInput.addEventListener('change', syncToTarget);
+    registerCleanup(() => {
+      proxyInput.removeEventListener('input', syncToTarget);
+      proxyInput.removeEventListener('change', syncToTarget);
+    });
+
+    if (profileInput) {
+      profileInput.addEventListener('input', syncFromTarget);
+      profileInput.addEventListener('change', syncFromTarget);
+      registerCleanup(() => {
+        profileInput.removeEventListener('input', syncFromTarget);
+        profileInput.removeEventListener('change', syncFromTarget);
+      });
+    }
+
+    group.appendChild(proxyInput);
+    fragment.appendChild(group);
+
+    const skipHint = DOCUMENT.createElement('p');
+    skipHint.className = 'onboarding-resume-hint';
+    skipHint.textContent = 'Press Next to revisit this later—Contacts stays available from the sidebar without affecting tutorial progress.';
+    fragment.appendChild(skipHint);
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+    return true;
+  }
+
+  function renderUnitsPreferencesInteraction(registerCleanup, step) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const fragment = DOCUMENT.createDocumentFragment();
+
+    const languageSelect = DOCUMENT.getElementById('settingsLanguage');
+    if (languageSelect) {
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const inputId = getProxyControlId('language');
+      const label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', inputId);
+      label.textContent = 'Language';
+      const proxySelect = DOCUMENT.createElement('select');
+      proxySelect.id = inputId;
+      proxySelect.className = 'onboarding-field-select';
+      const originalOptions = Array.from(languageSelect.options || []);
+      if (originalOptions.length === 0) {
+        const option = DOCUMENT.createElement('option');
+        option.value = languageSelect.value || 'en';
+        option.textContent = languageSelect.value || 'English';
+        proxySelect.appendChild(option);
+      } else {
+        for (let index = 0; index < originalOptions.length; index += 1) {
+          const source = originalOptions[index];
+          const option = DOCUMENT.createElement('option');
+          option.value = source.value;
+          option.textContent = source.textContent || source.value;
+          proxySelect.appendChild(option);
+        }
+      }
+      proxySelect.value = languageSelect.value || proxySelect.value;
+
+      const syncFromTarget = () => {
+        if (proxySelect.value !== languageSelect.value) {
+          proxySelect.value = languageSelect.value;
+        }
+      };
+
+      const syncToTarget = () => {
+        if (languageSelect.value !== proxySelect.value) {
+          languageSelect.value = proxySelect.value;
+          dispatchSyntheticEvent(languageSelect, 'change');
+        }
+      };
+
+      proxySelect.addEventListener('change', syncToTarget);
+      registerCleanup(() => {
+        proxySelect.removeEventListener('change', syncToTarget);
+      });
+      languageSelect.addEventListener('change', syncFromTarget);
+      registerCleanup(() => {
+        languageSelect.removeEventListener('change', syncFromTarget);
+      });
+
+      group.appendChild(label);
+      group.appendChild(proxySelect);
+      fragment.appendChild(group);
+    }
+
+    const darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
+    const themeGroup = DOCUMENT.createElement('div');
+    themeGroup.className = 'onboarding-field-group';
+    const themeId = getProxyControlId('theme');
+    const themeLabel = DOCUMENT.createElement('label');
+    themeLabel.className = 'onboarding-field-label';
+    themeLabel.setAttribute('for', themeId);
+    themeLabel.textContent = 'Theme';
+    const themeSelect = DOCUMENT.createElement('select');
+    themeSelect.id = themeId;
+    themeSelect.className = 'onboarding-field-select';
+    const themeLight = DOCUMENT.createElement('option');
+    themeLight.value = 'light';
+    themeLight.textContent = 'Light';
+    const themeDark = DOCUMENT.createElement('option');
+    themeDark.value = 'dark';
+    themeDark.textContent = 'Dark';
+    themeSelect.appendChild(themeLight);
+    themeSelect.appendChild(themeDark);
+    themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+
+    const syncThemeFromTarget = () => {
+      const expected = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+      if (themeSelect.value !== expected) {
+        themeSelect.value = expected;
+      }
+    };
+
+    const syncThemeToTarget = () => {
+      if (!darkModeToggle) {
+        return;
+      }
+      const shouldEnable = themeSelect.value === 'dark';
+      if (darkModeToggle.checked !== shouldEnable) {
+        darkModeToggle.checked = shouldEnable;
+        dispatchSyntheticEvent(darkModeToggle, 'change');
+      }
+    };
+
+    themeSelect.addEventListener('change', syncThemeToTarget);
+    registerCleanup(() => {
+      themeSelect.removeEventListener('change', syncThemeToTarget);
+    });
+    if (darkModeToggle) {
+      darkModeToggle.addEventListener('change', syncThemeFromTarget);
+      registerCleanup(() => {
+        darkModeToggle.removeEventListener('change', syncThemeFromTarget);
+      });
+    }
+
+    themeGroup.appendChild(themeLabel);
+    themeGroup.appendChild(themeSelect);
+    fragment.appendChild(themeGroup);
+
+    const pinkToggle = DOCUMENT.getElementById('settingsPinkMode');
+    if (pinkToggle) {
+      const pinkGroup = DOCUMENT.createElement('div');
+      pinkGroup.className = 'onboarding-field-group';
+      const pinkId = getProxyControlId('pink');
+      const pinkLabel = DOCUMENT.createElement('label');
+      pinkLabel.className = 'onboarding-field-label';
+      pinkLabel.setAttribute('for', pinkId);
+      pinkLabel.textContent = 'Pink mode accents';
+      const pinkSelect = DOCUMENT.createElement('select');
+      pinkSelect.id = pinkId;
+      pinkSelect.className = 'onboarding-field-select';
+      const pinkOff = DOCUMENT.createElement('option');
+      pinkOff.value = 'off';
+      pinkOff.textContent = 'Disabled';
+      const pinkOn = DOCUMENT.createElement('option');
+      pinkOn.value = 'on';
+      pinkOn.textContent = 'Enabled';
+      pinkSelect.appendChild(pinkOff);
+      pinkSelect.appendChild(pinkOn);
+      pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
+
+      const syncPinkToTarget = () => {
+        const shouldEnable = pinkSelect.value === 'on';
+        if (pinkToggle.checked !== shouldEnable) {
+          pinkToggle.checked = shouldEnable;
+          dispatchSyntheticEvent(pinkToggle, 'change');
+        }
+      };
+
+      const syncPinkFromTarget = () => {
+        const expected = pinkToggle.checked ? 'on' : 'off';
+        if (pinkSelect.value !== expected) {
+          pinkSelect.value = expected;
+        }
+      };
+
+      pinkSelect.addEventListener('change', syncPinkToTarget);
+      registerCleanup(() => {
+        pinkSelect.removeEventListener('change', syncPinkToTarget);
+      });
+      pinkToggle.addEventListener('change', syncPinkFromTarget);
+      registerCleanup(() => {
+        pinkToggle.removeEventListener('change', syncPinkFromTarget);
+      });
+
+      pinkGroup.appendChild(pinkLabel);
+      pinkGroup.appendChild(pinkSelect);
+      fragment.appendChild(pinkGroup);
+    }
+
+    const tempUnitSelect = DOCUMENT.getElementById('settingsTemperatureUnit');
+    if (tempUnitSelect) {
+      const unitsGroup = DOCUMENT.createElement('div');
+      unitsGroup.className = 'onboarding-field-group';
+      const unitsId = getProxyControlId('units');
+      const unitsLabel = DOCUMENT.createElement('label');
+      unitsLabel.className = 'onboarding-field-label';
+      unitsLabel.setAttribute('for', unitsId);
+      unitsLabel.textContent = 'Temperature units';
+      const proxyUnits = DOCUMENT.createElement('select');
+      proxyUnits.id = unitsId;
+      proxyUnits.className = 'onboarding-field-select';
+      const unitOptions = Array.from(tempUnitSelect.options || []);
+      if (unitOptions.length === 0) {
+        const option = DOCUMENT.createElement('option');
+        option.value = tempUnitSelect.value || 'celsius';
+        option.textContent = tempUnitSelect.value || 'Celsius';
+        proxyUnits.appendChild(option);
+      } else {
+        for (let index = 0; index < unitOptions.length; index += 1) {
+          const source = unitOptions[index];
+          const option = DOCUMENT.createElement('option');
+          option.value = source.value;
+          option.textContent = source.textContent || source.value;
+          proxyUnits.appendChild(option);
+        }
+      }
+      proxyUnits.value = tempUnitSelect.value || proxyUnits.value;
+
+      const syncUnitsFromTarget = () => {
+        if (proxyUnits.value !== tempUnitSelect.value) {
+          proxyUnits.value = tempUnitSelect.value;
+        }
+      };
+
+      const syncUnitsToTarget = () => {
+        if (tempUnitSelect.value !== proxyUnits.value) {
+          tempUnitSelect.value = proxyUnits.value;
+          dispatchSyntheticEvent(tempUnitSelect, 'change');
+        }
+      };
+
+      proxyUnits.addEventListener('change', syncUnitsToTarget);
+      registerCleanup(() => {
+        proxyUnits.removeEventListener('change', syncUnitsToTarget);
+      });
+      tempUnitSelect.addEventListener('change', syncUnitsFromTarget);
+      registerCleanup(() => {
+        tempUnitSelect.removeEventListener('change', syncUnitsFromTarget);
+      });
+
+      unitsGroup.appendChild(unitsLabel);
+      unitsGroup.appendChild(proxyUnits);
+      fragment.appendChild(unitsGroup);
+    }
+
+    const persistenceButton = DOCUMENT.getElementById('storagePersistenceRequest');
+    const persistenceHint = DOCUMENT.createElement('p');
+    persistenceHint.className = 'onboarding-resume-hint';
+    persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
+    fragment.appendChild(persistenceHint);
+
+    const actions = DOCUMENT.createElement('div');
+    actions.className = 'onboarding-interaction-actions';
+    const requestButton = DOCUMENT.createElement('button');
+    requestButton.type = 'button';
+    requestButton.className = 'onboarding-interaction-button';
+    requestButton.textContent = 'Request storage protection';
+    requestButton.disabled = !persistenceButton;
+
+    const handleRequest = () => {
+      if (!persistenceButton) {
+        return;
+      }
+      const originalTab = step && step.ensureSettings && step.ensureSettings.tabId
+        ? step.ensureSettings.tabId
+        : 'settingsTab-general';
+      if (typeof activateSettingsTab === 'function') {
+        try {
+          activateSettingsTab('settingsTab-data');
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not activate Data & Storage tab.', error);
+        }
+      }
+      try {
+        persistenceButton.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not request persistent storage.', error);
+      }
+      if (typeof activateSettingsTab === 'function') {
+        setTimeout(() => {
+          try {
+            activateSettingsTab(originalTab);
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not restore settings tab.', error);
+          }
+        }, 300);
+      }
+    };
+
+    requestButton.addEventListener('click', handleRequest);
+    registerCleanup(() => {
+      requestButton.removeEventListener('click', handleRequest);
+    });
+
+    actions.appendChild(requestButton);
+    fragment.appendChild(actions);
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+    return true;
+  }
+
   function renderStepInteraction(step) {
     if (!interactionContainerEl) {
       return;
@@ -1468,6 +2365,39 @@
     );
 
     interactionContainerEl.hidden = true;
+
+    const cleanupCallbacks = [];
+    const registerCleanup = callback => {
+      if (typeof callback === 'function') {
+        cleanupCallbacks.push(callback);
+      }
+    };
+
+    const customRendered = (() => {
+      if (key === 'userProfile') {
+        return renderUserProfileInteraction(registerCleanup);
+      }
+      if (key === 'unitsPreferences') {
+        return renderUnitsPreferencesInteraction(registerCleanup, step);
+      }
+      return false;
+    })();
+
+    if (customRendered) {
+      focusHighlightedElement(step);
+      schedulePositionUpdate();
+      activeInteractionCleanup = () => {
+        for (let index = 0; index < cleanupCallbacks.length; index += 1) {
+          try {
+            cleanupCallbacks[index]();
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not detach custom interaction.', error);
+          }
+        }
+        cleanupCallbacks.length = 0;
+      };
+      return;
+    }
 
     if (requiresDirectInteraction) {
       focusHighlightedElement(step);
@@ -1506,6 +2436,11 @@
     const totalSteps = stepConfig.length;
     const textPack = getStepTexts(step);
     const stepText = textPack.body;
+
+    const size = step && typeof step.size === 'string' && step.size
+      ? step.size
+      : 'standard';
+    cardEl.setAttribute('data-size', size);
 
     cardEl.setAttribute('aria-labelledby', titleEl.id);
     cardEl.setAttribute('aria-describedby', bodyEl.id);
@@ -1587,6 +2522,12 @@
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
       closeSettingsIfNeeded();
     }
+    if (previousStep && previousStep.ensureContacts && !step.ensureContacts) {
+      closeContactsIfNeeded();
+    }
+    if (previousStep && previousStep.ensureOwnGear && !step.ensureOwnGear) {
+      closeOwnGearIfNeeded();
+    }
 
     currentStep = step;
     currentIndex = index;
@@ -1596,6 +2537,20 @@
       ensureSettingsForStep(step);
     } else if (previousStep && previousStep.ensureSettings) {
       closeSettingsIfNeeded();
+    }
+    if (step.ensureContacts) {
+      ensureContactsForStep(step);
+    } else if (previousStep && previousStep.ensureContacts) {
+      closeContactsIfNeeded();
+    } else {
+      autoOpenedContacts = false;
+    }
+    if (step.ensureOwnGear) {
+      ensureOwnGearForStep(step);
+    } else if (previousStep && previousStep.ensureOwnGear) {
+      closeOwnGearIfNeeded();
+    } else {
+      autoOpenedOwnGear = false;
     }
 
     if (typeof step.focus === 'string' && step.focus) {
@@ -1728,6 +2683,8 @@
 
   function skipTutorial() {
     closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
     endTutorial();
     const nextState = {
       ...storedState,
@@ -1742,6 +2699,8 @@
 
   function completeTutorial() {
     closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
     endTutorial();
     const allStepKeys = stepConfig.map(step => step.key);
     const timestamp = getTimestamp();
@@ -1876,6 +2835,9 @@
     clearFrame();
     teardownStepRequirement();
     detachGlobalListeners();
+    closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');
