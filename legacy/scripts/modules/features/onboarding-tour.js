@@ -1333,7 +1333,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Add your display name, role, phone, email and photo here once. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = 'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
     var avatarGroup = DOCUMENT.createElement('div');
     avatarGroup.className = 'onboarding-avatar-group';
