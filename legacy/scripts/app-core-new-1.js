@@ -6118,12 +6118,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       uniqueNames.set(key, trimmed);
     };
     var _traverseDevices = function traverseDevices(value, seen) {
-      if (!value) return;
-      if (typeof value === 'string') {
-        addName(value);
-        return;
-      }
-      if (_typeof(value) !== 'object') {
+      if (!value || _typeof(value) !== 'object') {
         return;
       }
       if (seen.has(value)) {
@@ -6148,6 +6143,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       Object.keys(value).forEach(function (key) {
         if (key === 'name' || key === 'label' || key === 'brand' || key === 'model') {
           return;
+        }
+        if (key.includes(' ') && looksLikeGearName(key)) {
+          addName(key);
         }
         _traverseDevices(value[key], seen);
       });
