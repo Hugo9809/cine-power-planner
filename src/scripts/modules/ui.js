@@ -506,9 +506,81 @@
     return fallbackRegisterOrQueue;
   })();
 
+
+
+  function isNodeProcessReference(value) {
+    if (!value) {
+      return false;
+    }
+
+    if (typeof process === 'undefined' || !process) {
+      return false;
+    }
+
+    if (value === process) {
+      return true;
+    }
+
+    if (typeof value === 'object') {
+      try {
+        if (value.constructor && value.constructor.name === 'process') {
+          return true;
+        }
+      } catch (processInspectionError) {
+        void processInspectionError;
+      }
+
+      if (
+        typeof value.pid === 'number' &&
+        typeof value.nextTick === 'function' &&
+        typeof value.emit === 'function' &&
+        typeof value.binding === 'function'
+      ) {
+        return true;
+      }
+    }
+
+    if (typeof value === 'function') {
+      if (
+        value === process.binding ||
+        value === process._linkedBinding ||
+        value === process.dlopen
+      ) {
+        return true;
+      }
+
+      try {
+        const functionName = value.name || '';
+        if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
+          const source = Function.prototype.toString.call(value);
+          if (source && source.indexOf('[native code]') !== -1) {
+            return true;
+          }
+        }
+      } catch (functionInspectionError) {
+        void functionInspectionError;
+      }
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
+    }
+
+    if (isNodeProcessReference(value)) {
+      return true;
+    }
+
+    if (
+      typeof process !== 'undefined' &&
+      process &&
+      process.release &&
+      process.release.name === 'node'
+    ) {
+      return true;
     }
 
     try {

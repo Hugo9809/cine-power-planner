@@ -7273,6 +7273,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (email) {
         result.email = email;
       }
+      var websiteValue = typeof entry.website === 'string' ? entry.website.trim() : typeof entry.url === 'string' ? entry.url.trim() : '';
+      if (websiteValue) {
+        result.website = websiteValue;
+      }
       var note = typeof entry.text === 'string' ? entry.text.trim() : '';
       if (note) {
         result.text = note;

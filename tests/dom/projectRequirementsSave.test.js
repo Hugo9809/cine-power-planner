@@ -103,6 +103,8 @@ describe('project requirements persistence to project storage', () => {
     crewRow.querySelector('.person-phone').dispatchEvent(new Event('input', { bubbles: true }));
     crewRow.querySelector('.person-email').value = 'sam@example.com';
     crewRow.querySelector('.person-email').dispatchEvent(new Event('input', { bubbles: true }));
+    crewRow.querySelector('.person-website').value = 'https://samcrew.example';
+    crewRow.querySelector('.person-website').dispatchEvent(new Event('input', { bubbles: true }));
 
     document.getElementById('addPrepBtn').click();
     const prepRow = projectForm.querySelector('#prepContainer .period-row:last-child');
@@ -232,6 +234,7 @@ describe('project requirements persistence to project storage', () => {
         name: 'Sam',
         phone: '555-0100',
         email: 'sam@example.com',
+        website: 'https://samcrew.example',
       },
     ]);
 

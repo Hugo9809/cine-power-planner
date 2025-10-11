@@ -3831,18 +3831,21 @@ function collectProjectFormData() {
     var nameInput = row.querySelector('.person-name');
     var phoneInput = row.querySelector('.person-phone');
     var emailInput = row.querySelector('.person-email');
+    var websiteInput = row.querySelector('.person-website');
     var role = typeof roleValue === 'string' ? roleValue.trim() : roleValue == null ? '' : String(roleValue);
     var name = typeof (nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) === 'string' ? nameInput.value.trim() : '';
     var phone = typeof (phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) === 'string' ? phoneInput.value.trim() : '';
     var email = typeof (emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) === 'string' ? emailInput.value.trim() : '';
+    var website = typeof (websiteInput === null || websiteInput === void 0 ? void 0 : websiteInput.value) === 'string' ? websiteInput.value.trim() : '';
     return {
       role: role,
       name: name,
       phone: phone,
-      email: email
+      email: email,
+      website: website
     };
   }).filter(function (person) {
-    return person.role || person.name || person.phone || person.email;
+    return person.role || person.name || person.phone || person.email || person.website;
   });
   var collectRanges = function collectRanges(container, startSel, endSel) {
     return Array.from((container === null || container === void 0 ? void 0 : container.querySelectorAll('.period-row')) || []).map(function (row) {

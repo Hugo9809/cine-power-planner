@@ -4097,15 +4097,17 @@ function collectProjectFormData() {
             const nameInput = row.querySelector('.person-name');
             const phoneInput = row.querySelector('.person-phone');
             const emailInput = row.querySelector('.person-email');
+            const websiteInput = row.querySelector('.person-website');
             const role = typeof roleValue === 'string'
                 ? roleValue.trim()
                 : (roleValue == null ? '' : String(roleValue));
             const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
-            return { role, name, phone, email };
+            const website = typeof websiteInput?.value === 'string' ? websiteInput.value.trim() : '';
+            return { role, name, phone, email, website };
         })
-        .filter(person => person.role || person.name || person.phone || person.email);
+        .filter(person => person.role || person.name || person.phone || person.email || person.website);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {

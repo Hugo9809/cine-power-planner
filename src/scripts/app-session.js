@@ -1988,14 +1988,16 @@ function countCrewEntries(value) {
       || typeof value.role === 'string'
       || typeof value.phone === 'string'
       || typeof value.email === 'string'
+      || typeof value.website === 'string'
       || typeof value.text === 'string'
     ) {
       const name = typeof value.name === 'string' ? value.name.trim() : '';
       const role = typeof value.role === 'string' ? value.role.trim() : '';
       const phone = typeof value.phone === 'string' ? value.phone.trim() : '';
       const email = typeof value.email === 'string' ? value.email.trim() : '';
+      const website = typeof value.website === 'string' ? value.website.trim() : '';
       const text = typeof value.text === 'string' ? value.text.trim() : '';
-      return name || role || phone || email || text ? 1 : 0;
+      return name || role || phone || email || website || text ? 1 : 0;
     }
     const nestedKeys = Object.keys(value).filter((key) => key !== '__html');
     if (nestedKeys.length) {

@@ -11798,7 +11798,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var crewPlaceholders = {
         name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
         phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
-        email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
+        email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder,
+        website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
       };
       var crewRoleLabels = texts[lang].crewRoles || texts.en && texts.en.crewRoles || {};
       var fallbackContacts = ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.contacts) || {};
@@ -11929,6 +11930,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
         var emailInput = row.querySelector('.person-email');
         if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+        var websiteInput = row.querySelector('.person-website');
+        if (websiteInput && crewPlaceholders.website) websiteInput.placeholder = crewPlaceholders.website;
         var contactSelect = row.querySelector('.person-contact-select');
         if (contactSelect) {
           setContactSelectOptions(contactSelect, contactSelect.value);
@@ -13885,7 +13888,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var _texts7, _texts8;
     if (!contact) return '';
     var roleLabels = ((_texts7 = texts) === null || _texts7 === void 0 || (_texts7 = _texts7[currentLang]) === null || _texts7 === void 0 ? void 0 : _texts7.crewRoles) || ((_texts8 = texts) === null || _texts8 === void 0 || (_texts8 = _texts8.en) === null || _texts8 === void 0 ? void 0 : _texts8.crewRoles) || {};
-    var base = contact.name || contact.email || contact.phone || contact.role || contact.id;
+    var base = contact.name || contact.email || contact.phone || contact.website || contact.role || contact.id;
     var roleLabel = contact.role ? roleLabels[contact.role] || contact.role : '';
     if (base && roleLabel && roleLabel !== base) {
       return "".concat(base, " \u2014 ").concat(roleLabel);
@@ -14778,6 +14781,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (phoneInput) phoneInput.value = contact.phone || '';
       var emailInput = row.querySelector('.person-email');
       if (emailInput) emailInput.value = contact.email || '';
+      var websiteInput = row.querySelector('.person-website');
+      if (websiteInput) websiteInput.value = contact.website || '';
       setRowAvatar(row, contact.avatar || '', {
         name: contact.name
       });
@@ -14817,12 +14822,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var nameInput = row.querySelector('.person-name');
     var phoneInput = row.querySelector('.person-phone');
     var emailInput = row.querySelector('.person-email');
+    var websiteInput = row.querySelector('.person-website');
     var avatarInput = row.querySelector('.person-avatar-data');
     return {
       role: sanitizeContactValue((roleSel === null || roleSel === void 0 ? void 0 : roleSel.value) || ''),
       name: sanitizeContactValue((nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) || ''),
       phone: sanitizeContactValue((phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) || ''),
       email: sanitizeContactValue((emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) || ''),
+      website: sanitizeContactValue((websiteInput === null || websiteInput === void 0 ? void 0 : websiteInput.value) || ''),
       avatar: sanitizeContactValue((avatarInput === null || avatarInput === void 0 ? void 0 : avatarInput.value) || ''),
       contactId: sanitizeContactValue(row.dataset.contactId || '')
     };
@@ -14851,8 +14858,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function saveCrewRowAsContact(row) {
     var snapshot = getCrewRowSnapshot(row);
     if (!snapshot) return;
-    if (!snapshot.name && !snapshot.email && !snapshot.phone) {
-      announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email or phone number before saving this contact.'));
+    if (!snapshot.name && !snapshot.email && !snapshot.phone && !snapshot.website) {
+      announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email, phone number or website before saving this contact.'));
       return;
     }
     var now = Date.now();
@@ -14863,6 +14870,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         existing.role = snapshot.role || existing.role;
         existing.phone = snapshot.phone || existing.phone;
         existing.email = snapshot.email || existing.email;
+        existing.website = snapshot.website || existing.website;
         if (snapshot.avatar) {
           existing.avatar = snapshot.avatar;
         } else if (!existing.avatar) {
@@ -14886,6 +14894,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       role: snapshot.role,
       phone: snapshot.phone,
       email: snapshot.email,
+      website: snapshot.website,
       avatar: snapshot.avatar,
       createdAt: now,
       updatedAt: now
@@ -14923,12 +14932,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           role: '',
           phone: '',
           email: '',
+          website: '',
           avatar: ''
         };
         return;
       }
       if (/^END:VCARD/i.test(line)) {
-        if (current && (current.name || current.email || current.phone)) {
+        if (current && (current.name || current.email || current.phone || current.website)) {
           contacts.push(_objectSpread({}, current));
         }
         current = null;
@@ -14958,6 +14968,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       if (baseKey === 'EMAIL') {
         if (!current.email) current.email = sanitizeContactValue(value);
+        return;
+      }
+      if (baseKey === 'URL' || /\.URL$/.test(baseKey)) {
+        if (!current.website) current.website = sanitizeContactValue(value);
         return;
       }
       if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
@@ -15005,10 +15019,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         role: sanitizeContactValue(entry.role),
         phone: sanitizeContactValue(entry.phone),
         email: sanitizeContactValue(entry.email),
+        website: sanitizeContactValue(entry.website),
         avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
       };
     }).filter(function (entry) {
-      return entry.name || entry.email || entry.phone;
+      return entry.name || entry.email || entry.phone || entry.website;
     });
   }
   function mergeImportedContacts(imported) {
@@ -15027,6 +15042,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         role: sanitizeContactValue(entry.role || ''),
         phone: sanitizeContactValue(entry.phone || ''),
         email: sanitizeContactValue(entry.email || ''),
+        website: sanitizeContactValue(entry.website || entry.url || ''),
         avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
       };
       var existing = contactsCache.find(function (contact) {
@@ -15037,6 +15053,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
         }
         if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
+        if (candidate.website && contact.website && candidate.website.toLowerCase() === contact.website.toLowerCase()) return true;
         return false;
       });
       if (existing) {
@@ -15044,6 +15061,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (candidate.role) existing.role = candidate.role;
         if (candidate.phone) existing.phone = candidate.phone;
         if (candidate.email) existing.email = candidate.email;
+        if (candidate.website) existing.website = candidate.website;
         if (candidate.avatar) existing.avatar = candidate.avatar;
         existing.updatedAt = Date.now();
         updated += 1;
@@ -15055,6 +15073,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           role: candidate.role,
           phone: candidate.phone,
           email: candidate.email,
+          website: candidate.website,
           avatar: candidate.avatar,
           createdAt: Date.now(),
           updatedAt: Date.now()
@@ -15173,6 +15192,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     emailWrapper.className = 'contact-field';
     emailWrapper.append(emailLabelElem, emailInput);
     fields.appendChild(emailWrapper);
+    var websiteInput = document.createElement('input');
+    websiteInput.type = 'url';
+    websiteInput.inputMode = 'url';
+    websiteInput.autocomplete = 'url';
+    websiteInput.value = contact.website || '';
+    websiteInput.placeholder = getContactsText('websitePlaceholder', 'https://example.com');
+    var websiteFieldId = ensureElementId(websiteInput, "".concat(contact.id, "-website"));
+    var websiteLabelElem = document.createElement('label');
+    websiteLabelElem.setAttribute('for', websiteFieldId);
+    websiteLabelElem.textContent = getContactsText('websiteLabel', 'Website');
+    var websiteWrapper = document.createElement('div');
+    websiteWrapper.className = 'contact-field';
+    websiteWrapper.append(websiteLabelElem, websiteInput);
+    fields.appendChild(websiteWrapper);
     card.appendChild(fields);
     var actions = document.createElement('div');
     actions.className = 'contact-card-actions';
@@ -15234,6 +15267,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     emailInput.addEventListener('input', function () {
       contact.email = sanitizeContactValue(emailInput.value);
+      persist();
+    });
+    websiteInput.addEventListener('input', function () {
+      contact.website = sanitizeContactValue(websiteInput.value);
       persist();
     });
     avatarButton.addEventListener('click', function () {
@@ -15442,6 +15479,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
     var crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
     var crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+    var crewWebsiteLabelText = projectFormTexts.crewWebsiteLabel || fallbackProjectForm.crewWebsiteLabel || 'Crew member website';
     var crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
     var avatarChangeLabel = getContactsText('avatarChange', 'Change photo');
     var avatarDataInput = document.createElement('input');
@@ -15507,6 +15545,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
     emailInput.value = data.email || '';
     applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
+    var websiteInput = document.createElement('input');
+    websiteInput.type = 'url';
+    websiteInput.name = 'crewWebsite';
+    websiteInput.className = 'person-website';
+    websiteInput.placeholder = projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder || 'Website';
+    websiteInput.value = data.website || '';
+    applyLocaleMetadata(websiteInput, rowLanguage, rowDirection);
     var contactSelect = document.createElement('select');
     contactSelect.className = 'person-contact-select';
     applyLocaleMetadata(contactSelect, rowLanguage, rowDirection);
@@ -15515,6 +15560,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
     var phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
     var emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+    var websiteLabel = createHiddenLabel(ensureElementId(websiteInput, crewWebsiteLabelText), crewWebsiteLabelText);
     var contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
     var linkedBadge = document.createElement('span');
     linkedBadge.className = 'person-linked-badge';
@@ -15554,7 +15600,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var actions = document.createElement('div');
     actions.className = 'person-actions';
     actions.append(saveContactBtn, manageContactsBtn, removeBtn);
-    [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(function (label) {
+    [roleLabel, nameLabel, phoneLabel, emailLabel, websiteLabel, contactLabel].forEach(function (label) {
       return row.appendChild(label);
     });
     row.appendChild(avatarContainer);
@@ -15564,6 +15610,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     row.appendChild(nameInput);
     row.appendChild(phoneInput);
     row.appendChild(emailInput);
+    row.appendChild(websiteInput);
     row.appendChild(actions);
     if (data.contactId) {
       row.dataset.contactId = data.contactId;
@@ -15622,6 +15669,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return handleCrewRowManualChange(row);
     });
     emailInput.addEventListener('input', function () {
+      return handleCrewRowManualChange(row);
+    });
+    websiteInput.addEventListener('input', function () {
       return handleCrewRowManualChange(row);
     });
     contactSelect.addEventListener('change', function () {

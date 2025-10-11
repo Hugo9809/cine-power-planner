@@ -161,7 +161,9 @@ const texts = {
       saveContact: "Save to contacts",
       openManager: "Open contacts",
       linkedBadge: "Linked to contact",
-      contactMissingDetails: "Enter a name, email or phone number before saving this contact.",
+      contactMissingDetails: "Enter a name, email, phone number or website before saving this contact.",
+      websiteLabel: "Website",
+      websitePlaceholder: "https://example.com",
       avatarOptionsTitle: "Photo options",
       avatarOptionsDescription: "Preview this photo and choose how to update it.",
       avatarOptionsClose: "Close",
@@ -1473,10 +1475,12 @@ const texts = {
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Phone",
       crewEmailPlaceholder: "Email",
+      crewWebsitePlaceholder: "Website",
       crewRoleLabel: "Crew role",
       crewNameLabel: "Crew member name",
       crewPhoneLabel: "Crew member phone",
-      crewEmailLabel: "Crew member email"
+      crewEmailLabel: "Crew member email",
+      crewWebsiteLabel: "Crew member website"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -2054,7 +2058,9 @@ const texts = {
       saveContact: "Salva nei contatti",
       openManager: "Apri contatti",
       linkedBadge: "Collegato al contatto",
-      contactMissingDetails: "Inserisci nome, e-mail o numero di telefono prima di salvare questo contatto.",
+      contactMissingDetails: "Inserisci nome, e-mail, numero di telefono o sito web prima di salvare questo contatto.",
+      websiteLabel: "Sito web",
+      websitePlaceholder: "https://esempio.com",
       avatarOptionsTitle: "Opzioni foto",
       avatarOptionsDescription: "Visualizza l'anteprima della foto e scegli come aggiornarla.",
       avatarOptionsClose: "Chiudi",
@@ -2534,10 +2540,12 @@ const texts = {
       crewNamePlaceholder: "Nome",
       crewPhonePlaceholder: "Telefono",
       crewEmailPlaceholder: "Email",
+      crewWebsitePlaceholder: "Sito web",
       crewRoleLabel: "Ruolo della troupe",
       crewNameLabel: "Nome membro della troupe",
       crewPhoneLabel: "Telefono membro della troupe",
-      crewEmailLabel: "Email membro della troupe"
+      crewEmailLabel: "Email membro della troupe",
+      crewWebsiteLabel: "Sito web membro della troupe"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -3939,7 +3947,9 @@ const texts = {
       saveContact: "Guardar en contactos",
       openManager: "Abrir contactos",
       linkedBadge: "Vinculado a un contacto",
-      contactMissingDetails: "Introduce un nombre, correo electrónico o teléfono antes de guardar este contacto.",
+      contactMissingDetails: "Introduce un nombre, correo electrónico, teléfono o sitio web antes de guardar este contacto.",
+      websiteLabel: "Sitio web",
+      websitePlaceholder: "https://ejemplo.com",
       avatarOptionsTitle: "Opciones de foto",
       avatarOptionsDescription: "Previsualiza esta foto y decide cómo actualizarla.",
       avatarOptionsClose: "Cerrar",
@@ -4432,10 +4442,12 @@ const texts = {
       crewNamePlaceholder: "Nombre",
       crewPhonePlaceholder: "Teléfono",
       crewEmailPlaceholder: "Correo",
+      crewWebsitePlaceholder: "Sitio web",
       crewRoleLabel: "Rol del equipo",
       crewNameLabel: "Nombre del miembro del equipo",
       crewPhoneLabel: "Teléfono del miembro del equipo",
-      crewEmailLabel: "Correo del miembro del equipo"
+      crewEmailLabel: "Correo del miembro del equipo",
+      crewWebsiteLabel: "Sitio web del miembro del equipo"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -5839,7 +5851,9 @@ const texts = {
       saveContact: "Enregistrer dans les contacts",
       openManager: "Ouvrir les contacts",
       linkedBadge: "Lié au contact",
-      contactMissingDetails: "Saisissez un nom, un e-mail ou un numéro de téléphone avant d'enregistrer ce contact.",
+      contactMissingDetails: "Saisissez un nom, un e-mail, un numéro de téléphone ou un site web avant d'enregistrer ce contact.",
+      websiteLabel: "Site web",
+      websitePlaceholder: "https://exemple.com",
       avatarOptionsTitle: "Options de photo",
       avatarOptionsDescription: "Prévisualisez cette photo et choisissez comment la mettre à jour.",
       avatarOptionsClose: "Fermer",
@@ -6332,10 +6346,12 @@ const texts = {
       crewNamePlaceholder: "Nom",
       crewPhonePlaceholder: "Téléphone",
       crewEmailPlaceholder: "Courriel",
+      crewWebsitePlaceholder: "Site web",
       crewRoleLabel: "Rôle de l'équipe",
       crewNameLabel: "Nom du membre de l'équipe",
       crewPhoneLabel: "Téléphone du membre de l'équipe",
-      crewEmailLabel: "Courriel du membre de l'équipe"
+      crewEmailLabel: "Courriel du membre de l'équipe",
+      crewWebsiteLabel: "Site web du membre de l'équipe"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -7752,7 +7768,9 @@ const texts = {
       saveContact: "In Kontakten speichern",
       openManager: "Kontakte öffnen",
       linkedBadge: "Mit Kontakt verknüpft",
-      contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse oder eine Telefonnummer an, bevor du diesen Kontakt speicherst.",
+      contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse, eine Telefonnummer oder eine Website an, bevor du diesen Kontakt speicherst.",
+      websiteLabel: "Website",
+      websitePlaceholder: "https://beispiel.de",
       avatarOptionsTitle: "Fotooptionen",
       avatarOptionsDescription: "Zeige eine Vorschau des Fotos und wähle eine Aktion.",
       avatarOptionsClose: "Schließen",
@@ -8246,10 +8264,12 @@ const texts = {
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Telefon",
       crewEmailPlaceholder: "E-Mail",
+      crewWebsitePlaceholder: "Website",
       crewRoleLabel: "Rolle im Team",
       crewNameLabel: "Name des Crewmitglieds",
       crewPhoneLabel: "Telefon des Crewmitglieds",
-      crewEmailLabel: "E-Mail des Crewmitglieds"
+      crewEmailLabel: "E-Mail des Crewmitglieds",
+      crewWebsiteLabel: "Website des Crewmitglieds"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",

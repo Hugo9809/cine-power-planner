@@ -8658,6 +8658,14 @@ function sanitizeImportedCrewEntries(entries) {
     if (email) {
       result.email = email;
     }
+    const websiteValue =
+      typeof entry.website === 'string'
+        ? entry.website.trim()
+        : (typeof entry.url === 'string' ? entry.url.trim() : '');
+    const website = websiteValue;
+    if (website) {
+      result.website = website;
+    }
     const note = typeof entry.text === 'string' ? entry.text.trim() : '';
     if (note) {
       result.text = note;

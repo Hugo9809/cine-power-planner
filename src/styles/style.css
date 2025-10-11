@@ -917,7 +917,7 @@ main.legal-content {
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  grid-row: 1 / span 4;
+  grid-row: 1 / span 6;
   grid-column: 1;
   justify-self: center;
 }
