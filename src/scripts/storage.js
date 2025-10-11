@@ -330,11 +330,16 @@ function cloneAutoBackupCompressionValue(value) {
     return value;
   }
 
+  if (Array.isArray(value)) {
+    return value.slice();
+  }
+
   var clone = {};
   var keys = Object.keys(value);
   for (var index = 0; index < keys.length; index += 1) {
     var key = keys[index];
-    clone[key] = value[key];
+    var original = value[key];
+    clone[key] = Array.isArray(original) ? original.slice() : original;
   }
 
   return clone;
@@ -410,6 +415,18 @@ function writeAutoBackupCompressionCache(signature, payload, compression) {
       void cacheDeleteError;
     }
   }
+}
+
+function resetAutoBackupCompressionCache() {
+  if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
+    try {
+      AUTO_BACKUP_COMPRESSION_CACHE.clear();
+    } catch (cacheClearError) {
+      void cacheClearError;
+    }
+  }
+
+  AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
 }
 
 // Allow unlimited compression warnings so diagnostics are never suppressed.
@@ -13167,6 +13184,25 @@ var STORAGE_API = {
   setActiveProjectCompressionHold,
   clearActiveProjectCompressionHold,
 };
+
+var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {
+  flag: AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG,
+  read: readAutoBackupCompressionCache,
+  write: writeAutoBackupCompressionCache,
+  clear: resetAutoBackupCompressionCache,
+};
+
+try {
+  Object.defineProperty(STORAGE_API, '__testAutoBackupCompressionCache', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE,
+  });
+} catch (testHelperDefinitionError) {
+  STORAGE_API.__testAutoBackupCompressionCache = TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE;
+  void testHelperDefinitionError;
+}
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = STORAGE_API;

@@ -215,15 +215,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var AUTO_BACKUP_COMPRESSION_CACHE = typeof Map === 'function' ? new Map() : null;
   var AUTO_BACKUP_COMPRESSION_CACHE_KEYS = [];
   var AUTO_BACKUP_COMPRESSION_CACHE_LIMIT = 16;
-  function cloneAutoBackupCompressionValue(value) {
-    if (!value || _typeof(value) !== 'object') {
-      return value;
-    }
+    function cloneAutoBackupCompressionValue(value) {
+      if (!value || _typeof(value) !== 'object') {
+        return value;
+      }
+
+      if (Array.isArray(value)) {
+        return value.slice();
+      }
+
     var clone = {};
     var keys = Object.keys(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      clone[key] = value[key];
+      var original = value[key];
+      clone[key] = Array.isArray(original) ? original.slice() : original;
     }
     return clone;
   }
@@ -277,6 +283,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
+}
+
+function resetAutoBackupCompressionCache() {
+  if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
+    try {
+      AUTO_BACKUP_COMPRESSION_CACHE.clear();
+    } catch (cacheClearError) {
+      void cacheClearError;
+    }
+  }
+
+  AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
+}
   var COMPRESSION_WARNING_LIMIT = Number.POSITIVE_INFINITY;
   var COMPRESSION_WARNING_BATCH_SIZE = 8;
   var COMPRESSION_LOG_SUMMARY_WINDOW_MS = 60 * 1000;
@@ -11078,6 +11097,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     setActiveProjectCompressionHold: setActiveProjectCompressionHold,
     clearActiveProjectCompressionHold: clearActiveProjectCompressionHold
   };
+
+    var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {
+      flag: AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG,
+      read: readAutoBackupCompressionCache,
+      write: writeAutoBackupCompressionCache,
+      clear: resetAutoBackupCompressionCache
+    };
+
+    try {
+      Object.defineProperty(STORAGE_API, '__testAutoBackupCompressionCache', {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE
+      });
+    } catch (testHelperDefinitionError) {
+      STORAGE_API.__testAutoBackupCompressionCache = TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE;
+      void testHelperDefinitionError;
+    }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = STORAGE_API;
   }
