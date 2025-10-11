@@ -11679,10 +11679,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (userProfileAvatarButtonLabel && contactsTexts.userProfileAvatarButton) {
         userProfileAvatarButtonLabel.textContent = contactsTexts.userProfileAvatarButton;
       }
-      if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
-        userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
-        userProfileAvatarButton.setAttribute('data-help', contactsTexts.userProfileAvatarButton);
-      }
+    if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
+      userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
+      userProfileAvatarButton.removeAttribute('data-help');
+      userProfileAvatarButton.removeAttribute('title');
+    }
       if (userProfileAvatarClearButton && contactsTexts.userProfileAvatarRemove) {
         userProfileAvatarClearButton.textContent = contactsTexts.userProfileAvatarRemove;
         userProfileAvatarClearButton.setAttribute('aria-label', contactsTexts.userProfileAvatarRemove);
@@ -14436,7 +14437,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     avatarButton.type = 'button';
     var avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
     avatarButton.setAttribute('aria-label', avatarLabel);
-    avatarButton.setAttribute('title', avatarLabel);
+    avatarButton.removeAttribute('title');
+    avatarButton.removeAttribute('data-help');
     avatarContainer.appendChild(avatarButton);
     var avatarInput = document.createElement('input');
     avatarInput.type = 'file';
@@ -14752,8 +14754,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var avatarButton = document.createElement('button');
     avatarButton.type = 'button';
     avatarButton.setAttribute('aria-label', avatarChangeLabel);
-    avatarButton.setAttribute('title', avatarChangeLabel);
-    avatarButton.setAttribute('data-help', avatarChangeLabel);
+    avatarButton.removeAttribute('title');
+    avatarButton.removeAttribute('data-help');
     avatarContainer.appendChild(avatarButton);
     var avatarFileInput = document.createElement('input');
     avatarFileInput.type = 'file';

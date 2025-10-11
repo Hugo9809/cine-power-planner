@@ -13609,11 +13609,65 @@ function setLanguage(lang) {
     }
     if (userProfileAvatarButton && contactsTexts.userProfileAvatarButton) {
       userProfileAvatarButton.setAttribute('aria-label', contactsTexts.userProfileAvatarButton);
-      userProfileAvatarButton.setAttribute('data-help', contactsTexts.userProfileAvatarButton);
+      userProfileAvatarButton.removeAttribute('data-help');
+      userProfileAvatarButton.removeAttribute('title');
     }
     if (userProfileAvatarClearButton && contactsTexts.userProfileAvatarRemove) {
       userProfileAvatarClearButton.textContent = contactsTexts.userProfileAvatarRemove;
       userProfileAvatarClearButton.setAttribute('aria-label', contactsTexts.userProfileAvatarRemove);
+    }
+    if (avatarOptionsTitleElem && contactsTexts.avatarOptionsTitle) {
+      avatarOptionsTitleElem.textContent = contactsTexts.avatarOptionsTitle;
+    }
+    if (avatarOptionsDescriptionElem && contactsTexts.avatarOptionsDescription) {
+      avatarOptionsDescriptionElem.textContent = contactsTexts.avatarOptionsDescription;
+    }
+    if (avatarOptionsCloseLabel && contactsTexts.avatarOptionsClose) {
+      avatarOptionsCloseLabel.textContent = contactsTexts.avatarOptionsClose;
+    }
+    if (avatarOptionsCloseButton && contactsTexts.avatarOptionsClose) {
+      avatarOptionsCloseButton.setAttribute('aria-label', contactsTexts.avatarOptionsClose);
+      avatarOptionsCloseButton.setAttribute('title', contactsTexts.avatarOptionsClose);
+      avatarOptionsCloseButton.setAttribute('data-help', contactsTexts.avatarOptionsClose);
+    }
+    if (avatarOptionsDeleteButton && contactsTexts.avatarDelete) {
+      setButtonLabelWithIcon(avatarOptionsDeleteButton, contactsTexts.avatarDelete, ICON_GLYPHS.trash);
+      avatarOptionsDeleteButton.setAttribute('aria-label', contactsTexts.avatarDelete);
+      avatarOptionsDeleteButton.setAttribute('title', contactsTexts.avatarDelete);
+      avatarOptionsDeleteButton.setAttribute('data-help', contactsTexts.avatarDelete);
+    }
+    if (avatarOptionsEditButton && contactsTexts.avatarEditAction) {
+      setButtonLabelWithIcon(avatarOptionsEditButton, contactsTexts.avatarEditAction, ICON_GLYPHS.sliders);
+      avatarOptionsEditButton.setAttribute('aria-label', contactsTexts.avatarEditAction);
+      avatarOptionsEditButton.setAttribute('title', contactsTexts.avatarEditAction);
+      avatarOptionsEditButton.setAttribute('data-help', contactsTexts.avatarEditAction);
+    }
+    if (avatarOptionsChangeButton && contactsTexts.avatarChange) {
+      setButtonLabelWithIcon(avatarOptionsChangeButton, contactsTexts.avatarChange, ICON_GLYPHS.camera);
+      avatarOptionsChangeButton.setAttribute('aria-label', contactsTexts.avatarChange);
+      avatarOptionsChangeButton.setAttribute('title', contactsTexts.avatarChange);
+      avatarOptionsChangeButton.setAttribute('data-help', contactsTexts.avatarChange);
+    }
+    if (avatarEditTitle && contactsTexts.avatarEditAction) {
+      avatarEditTitle.textContent = contactsTexts.avatarEditAction;
+    }
+    if (avatarEditInstructions && contactsTexts.avatarEditInstructions) {
+      avatarEditInstructions.textContent = contactsTexts.avatarEditInstructions;
+    }
+    if (avatarEditZoomLabelElem && contactsTexts.avatarEditZoomLabel) {
+      avatarEditZoomLabelElem.textContent = contactsTexts.avatarEditZoomLabel;
+    }
+    if (avatarEditCancelButton && contactsTexts.avatarEditCancel) {
+      setButtonLabelWithIcon(avatarEditCancelButton, contactsTexts.avatarEditCancel, ICON_GLYPHS.circleX);
+      avatarEditCancelButton.setAttribute('aria-label', contactsTexts.avatarEditCancel);
+      avatarEditCancelButton.setAttribute('title', contactsTexts.avatarEditCancel);
+      avatarEditCancelButton.setAttribute('data-help', contactsTexts.avatarEditCancel);
+    }
+    if (avatarEditApplyButton && contactsTexts.avatarEditApply) {
+      setButtonLabelWithIcon(avatarEditApplyButton, contactsTexts.avatarEditApply, ICON_GLYPHS.check);
+      avatarEditApplyButton.setAttribute('aria-label', contactsTexts.avatarEditApply);
+      avatarEditApplyButton.setAttribute('title', contactsTexts.avatarEditApply);
+      avatarEditApplyButton.setAttribute('data-help', contactsTexts.avatarEditApply);
     }
     if (contactsCloseButton && contactsTexts.close) {
       contactsCloseButton.textContent = contactsTexts.close;
@@ -13846,6 +13900,27 @@ var userProfileAvatarButton = null;
 var userProfileAvatarButtonLabel = null;
 var userProfileAvatarInput = null;
 var userProfileAvatarClearButton = null;
+var avatarOptionsDialog = null;
+var avatarOptionsForm = null;
+var avatarOptionsTitleElem = null;
+var avatarOptionsDescriptionElem = null;
+var avatarOptionsCloseButton = null;
+var avatarOptionsCloseLabel = null;
+var avatarOptionsPreview = null;
+var avatarOptionsDeleteButton = null;
+var avatarOptionsEditButton = null;
+var avatarOptionsChangeButton = null;
+var avatarEditSection = null;
+var avatarEditTitle = null;
+var avatarEditInstructions = null;
+var avatarEditViewport = null;
+var avatarEditImage = null;
+var avatarEditZoomInput = null;
+var avatarEditZoomLabelElem = null;
+var avatarEditCancelButton = null;
+var avatarEditApplyButton = null;
+var avatarOptionsContext = null;
+var avatarEditState = null;
 
 function resolveContactsDomRefs() {
   if (typeof document === 'undefined') return;
@@ -13877,6 +13952,26 @@ function resolveContactsDomRefs() {
   userProfileAvatarButtonLabel = userProfileAvatarButtonLabel || document.getElementById('userProfileAvatarButtonLabel');
   userProfileAvatarInput = userProfileAvatarInput || document.getElementById('userProfileAvatarInput');
   userProfileAvatarClearButton = userProfileAvatarClearButton || document.getElementById('userProfileAvatarClear');
+  avatarOptionsDialog = avatarOptionsDialog || document.getElementById('avatarOptionsDialog');
+  avatarOptionsForm = avatarOptionsForm || document.getElementById('avatarOptionsForm');
+  avatarOptionsTitleElem = avatarOptionsTitleElem || document.getElementById('avatarOptionsTitle');
+  avatarOptionsDescriptionElem =
+    avatarOptionsDescriptionElem || document.getElementById('avatarOptionsDescription');
+  avatarOptionsCloseButton = avatarOptionsCloseButton || document.getElementById('avatarOptionsClose');
+  avatarOptionsCloseLabel = avatarOptionsCloseLabel || document.getElementById('avatarOptionsCloseLabel');
+  avatarOptionsPreview = avatarOptionsPreview || document.getElementById('avatarOptionsPreview');
+  avatarOptionsDeleteButton = avatarOptionsDeleteButton || document.getElementById('avatarDeleteButton');
+  avatarOptionsEditButton = avatarOptionsEditButton || document.getElementById('avatarEditButton');
+  avatarOptionsChangeButton = avatarOptionsChangeButton || document.getElementById('avatarChangeButton');
+  avatarEditSection = avatarEditSection || document.getElementById('avatarEditSection');
+  avatarEditTitle = avatarEditTitle || document.getElementById('avatarEditTitle');
+  avatarEditInstructions = avatarEditInstructions || document.getElementById('avatarEditInstructions');
+  avatarEditViewport = avatarEditViewport || document.getElementById('avatarEditViewport');
+  avatarEditImage = avatarEditImage || document.getElementById('avatarEditImage');
+  avatarEditZoomInput = avatarEditZoomInput || document.getElementById('avatarEditZoom');
+  avatarEditZoomLabelElem = avatarEditZoomLabelElem || document.getElementById('avatarEditZoomLabel');
+  avatarEditCancelButton = avatarEditCancelButton || document.getElementById('avatarEditCancel');
+  avatarEditApplyButton = avatarEditApplyButton || document.getElementById('avatarEditApply');
 }
 
 var monitoringConfigurationUserChanged = false;
@@ -15970,6 +16065,392 @@ function setRowAvatar(row, avatarValue, options = {}) {
   updateAvatarVisual(avatarContainer, avatarValue, fallbackName, 'person-avatar-initial');
 }
 
+function parseDataUrlMimeType(dataUrl) {
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return '';
+  const separatorIndex = dataUrl.indexOf(';');
+  if (separatorIndex === -1) return '';
+  return dataUrl.slice('data:'.length, separatorIndex).trim();
+}
+
+function updateAvatarOptionsPreview(avatarValue, fallbackName) {
+  resolveContactsDomRefs();
+  if (!avatarOptionsPreview) return;
+  updateAvatarVisual(avatarOptionsPreview, avatarValue || '', fallbackName || '', 'contact-card-avatar-initial');
+}
+
+function refreshAvatarOptionsActions() {
+  const avatarValue = typeof avatarOptionsContext?.getAvatar === 'function'
+    ? avatarOptionsContext.getAvatar()
+    : '';
+  const hasAvatar = Boolean(avatarValue);
+  const editingActive = Boolean(avatarEditState && avatarEditState.active);
+  const setState = (button, disabled) => {
+    if (!button) return;
+    button.disabled = disabled;
+    button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+  };
+  setState(avatarOptionsDeleteButton, !hasAvatar || editingActive);
+  setState(avatarOptionsEditButton, !hasAvatar || editingActive);
+  setState(avatarOptionsChangeButton, editingActive);
+}
+
+function stopAvatarEditing(options = {}) {
+  const { restoreFocus = false } = options || {};
+  if (avatarEditSection) {
+    avatarEditSection.classList.add('hidden');
+  }
+  if (avatarEditViewport) {
+    try {
+      avatarEditViewport.releasePointerCapture(avatarEditState?.pointerId ?? -1);
+    } catch (error) {
+      void error;
+    }
+    if (restoreFocus) {
+      avatarEditViewport.blur();
+    }
+  }
+  if (avatarEditImage) {
+    avatarEditImage.removeAttribute('style');
+  }
+  avatarEditState = null;
+  const currentAvatar = typeof avatarOptionsContext?.getAvatar === 'function'
+    ? avatarOptionsContext.getAvatar()
+    : '';
+  const fallbackName = typeof avatarOptionsContext?.getName === 'function'
+    ? avatarOptionsContext.getName()
+    : '';
+  updateAvatarOptionsPreview(currentAvatar, fallbackName);
+  refreshAvatarOptionsActions();
+}
+
+function closeAvatarOptionsDialog() {
+  if (!avatarOptionsDialog) return;
+  stopAvatarEditing();
+  avatarOptionsContext = null;
+  closeDialog(avatarOptionsDialog);
+}
+
+function handleAvatarOptionsDialogClosed() {
+  stopAvatarEditing();
+  avatarOptionsContext = null;
+}
+
+function openAvatarOptionsDialog(context = null) {
+  resolveContactsDomRefs();
+  if (!avatarOptionsDialog) return;
+  avatarOptionsContext = context || null;
+  const avatarValue = typeof context?.getAvatar === 'function' ? context.getAvatar() : '';
+  const fallbackName = typeof context?.getName === 'function' ? context.getName() : '';
+  updateAvatarOptionsPreview(avatarValue, fallbackName);
+  stopAvatarEditing();
+  refreshAvatarOptionsActions();
+  openDialog(avatarOptionsDialog);
+  if (avatarOptionsChangeButton && !avatarOptionsChangeButton.disabled) {
+    try {
+      avatarOptionsChangeButton.focus();
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+function clampAvatarEditOffsets(state) {
+  if (!state) return;
+  const minX = Math.min(0, state.viewportSize - state.displayWidth);
+  const minY = Math.min(0, state.viewportSize - state.displayHeight);
+  state.offsetX = Math.max(minX, Math.min(0, state.offsetX));
+  state.offsetY = Math.max(minY, Math.min(0, state.offsetY));
+}
+
+function updateAvatarEditMetrics(state) {
+  if (!state || !state.image) return;
+  const width = state.image.naturalWidth || state.image.width || 0;
+  const height = state.image.naturalHeight || state.image.height || 0;
+  const displayWidth = width * state.baseScale * state.zoom;
+  const displayHeight = height * state.baseScale * state.zoom;
+  state.displayWidth = displayWidth;
+  state.displayHeight = displayHeight;
+  clampAvatarEditOffsets(state);
+  if (avatarEditImage) {
+    avatarEditImage.style.width = `${displayWidth}px`;
+    avatarEditImage.style.height = `${displayHeight}px`;
+    avatarEditImage.style.transform = `translate(${state.offsetX}px, ${state.offsetY}px)`;
+  }
+}
+
+function initializeAvatarEditState(dataUrl) {
+  resolveContactsDomRefs();
+  if (!avatarEditViewport || !avatarEditImage) return;
+  if (!dataUrl) {
+    announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
+    return;
+  }
+  const viewportRect = avatarEditViewport.getBoundingClientRect();
+  const viewportSize = Math.round(
+    Math.max(avatarEditViewport.offsetWidth || 0, viewportRect.width || 0, viewportRect.height || 0)
+  );
+  if (!viewportSize) {
+    announceContactsMessage(getContactsText('avatarEditUnavailable', 'Photo editor unavailable.'));
+    return;
+  }
+  const image = new Image();
+  image.decoding = 'async';
+  const mime = parseDataUrlMimeType(dataUrl);
+  image.onload = () => {
+    if (!image.naturalWidth || !image.naturalHeight) {
+      announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+      return;
+    }
+    const baseScale = Math.max(
+      viewportSize / image.naturalWidth,
+      viewportSize / image.naturalHeight
+    );
+    avatarEditState = {
+      active: true,
+      dataUrl,
+      image,
+      mime,
+      viewportSize,
+      baseScale,
+      zoom: 1,
+      offsetX: (viewportSize - image.naturalWidth * baseScale) / 2,
+      offsetY: (viewportSize - image.naturalHeight * baseScale) / 2,
+      pointerId: null,
+      pointerStartX: 0,
+      pointerStartY: 0,
+      offsetStartX: 0,
+      offsetStartY: 0,
+      displayWidth: 0,
+      displayHeight: 0
+    };
+    avatarEditImage.src = dataUrl;
+    avatarEditSection?.classList.remove('hidden');
+    if (avatarEditZoomInput) {
+      avatarEditZoomInput.value = '100';
+    }
+    updateAvatarEditMetrics(avatarEditState);
+    refreshAvatarOptionsActions();
+    try {
+      avatarEditViewport.focus();
+    } catch (error) {
+      void error;
+    }
+  };
+  image.onerror = () => {
+    announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
+  };
+  image.src = dataUrl;
+}
+
+function startAvatarEditing() {
+  const avatarValue = typeof avatarOptionsContext?.getAvatar === 'function' ? avatarOptionsContext.getAvatar() : '';
+  if (!avatarValue) {
+    announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
+    return;
+  }
+  initializeAvatarEditState(avatarValue);
+}
+
+function handleAvatarEditZoomInputChange(event) {
+  if (!avatarEditState || !avatarEditState.active) return;
+  const value = Number(event?.target?.value) || 100;
+  const normalized = Math.max(50, value) / 100;
+  const prevWidth = avatarEditState.displayWidth || 1;
+  const prevHeight = avatarEditState.displayHeight || 1;
+  const centerX = -avatarEditState.offsetX + avatarEditState.viewportSize / 2;
+  const centerY = -avatarEditState.offsetY + avatarEditState.viewportSize / 2;
+  const ratioX = centerX / prevWidth;
+  const ratioY = centerY / prevHeight;
+  avatarEditState.zoom = normalized;
+  updateAvatarEditMetrics(avatarEditState);
+  const targetCenterX = avatarEditState.displayWidth * ratioX;
+  const targetCenterY = avatarEditState.displayHeight * ratioY;
+  avatarEditState.offsetX = -(targetCenterX - avatarEditState.viewportSize / 2);
+  avatarEditState.offsetY = -(targetCenterY - avatarEditState.viewportSize / 2);
+  clampAvatarEditOffsets(avatarEditState);
+  updateAvatarEditMetrics(avatarEditState);
+}
+
+function handleAvatarEditPointerDown(event) {
+  if (!avatarEditState || !avatarEditState.active || !avatarEditViewport) return;
+  if (avatarEditState.pointerId !== null) return;
+  avatarEditState.pointerId = event.pointerId;
+  avatarEditState.pointerStartX = event.clientX;
+  avatarEditState.pointerStartY = event.clientY;
+  avatarEditState.offsetStartX = avatarEditState.offsetX;
+  avatarEditState.offsetStartY = avatarEditState.offsetY;
+  try {
+    avatarEditViewport.setPointerCapture(event.pointerId);
+  } catch (error) {
+    void error;
+  }
+  event.preventDefault();
+}
+
+function handleAvatarEditPointerMove(event) {
+  if (!avatarEditState || !avatarEditState.active) return;
+  if (avatarEditState.pointerId !== event.pointerId) return;
+  const deltaX = event.clientX - avatarEditState.pointerStartX;
+  const deltaY = event.clientY - avatarEditState.pointerStartY;
+  avatarEditState.offsetX = avatarEditState.offsetStartX + deltaX;
+  avatarEditState.offsetY = avatarEditState.offsetStartY + deltaY;
+  clampAvatarEditOffsets(avatarEditState);
+  updateAvatarEditMetrics(avatarEditState);
+  event.preventDefault();
+}
+
+function clearAvatarEditPointerState() {
+  if (!avatarEditState) return;
+  avatarEditState.pointerId = null;
+}
+
+function handleAvatarEditPointerUp(event) {
+  if (!avatarEditState || !avatarEditState.active) return;
+  if (avatarEditState.pointerId !== event.pointerId) return;
+  clearAvatarEditPointerState();
+  if (avatarEditViewport) {
+    try {
+      avatarEditViewport.releasePointerCapture(event.pointerId);
+    } catch (error) {
+      void error;
+    }
+  }
+  event.preventDefault();
+}
+
+function handleAvatarEditPointerCancel(event) {
+  if (!avatarEditState || !avatarEditState.active) return;
+  if (avatarEditState.pointerId !== event.pointerId) return;
+  clearAvatarEditPointerState();
+  if (avatarEditViewport) {
+    try {
+      avatarEditViewport.releasePointerCapture(event.pointerId);
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+function handleAvatarEditKeyDown(event) {
+  if (!avatarEditState || !avatarEditState.active) return;
+  const step = event.shiftKey ? 10 : 2;
+  let moved = false;
+  switch (event.key) {
+    case 'ArrowUp':
+      avatarEditState.offsetY -= step;
+      moved = true;
+      break;
+    case 'ArrowDown':
+      avatarEditState.offsetY += step;
+      moved = true;
+      break;
+    case 'ArrowLeft':
+      avatarEditState.offsetX -= step;
+      moved = true;
+      break;
+    case 'ArrowRight':
+      avatarEditState.offsetX += step;
+      moved = true;
+      break;
+    default:
+      break;
+  }
+  if (moved) {
+    clampAvatarEditOffsets(avatarEditState);
+    updateAvatarEditMetrics(avatarEditState);
+    event.preventDefault();
+  }
+}
+
+function exportAvatarEditResult() {
+  if (!avatarEditState || !avatarEditState.image) return '';
+  const scale = avatarEditState.baseScale * avatarEditState.zoom;
+  if (!scale) return '';
+  const cropSize = avatarEditState.viewportSize / scale;
+  const sourceX = Math.max(0, Math.min(
+    avatarEditState.image.naturalWidth - cropSize,
+    (-avatarEditState.offsetX) / scale
+  ));
+  const sourceY = Math.max(0, Math.min(
+    avatarEditState.image.naturalHeight - cropSize,
+    (-avatarEditState.offsetY) / scale
+  ));
+  const canvas = document.createElement('canvas');
+  canvas.width = CONTACT_AVATAR_MAX_DIMENSION;
+  canvas.height = CONTACT_AVATAR_MAX_DIMENSION;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    avatarEditState.image,
+    sourceX,
+    sourceY,
+    cropSize,
+    cropSize,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+  const mime = avatarEditState.mime && avatarEditState.mime.startsWith('image/')
+    ? avatarEditState.mime
+    : 'image/png';
+  try {
+    return canvas.toDataURL(mime);
+  } catch (error) {
+    void error;
+    try {
+      return canvas.toDataURL('image/png');
+    } catch (fallbackError) {
+      void fallbackError;
+      return '';
+    }
+  }
+}
+
+function applyAvatarEditChanges() {
+  if (!avatarEditState || !avatarEditState.active) return;
+  const dataUrl = exportAvatarEditResult();
+  if (!dataUrl) {
+    announceContactsMessage(getContactsText('avatarEditFailed', 'Could not update the photo framing.'));
+    return;
+  }
+  if (typeof avatarOptionsContext?.onEditSave === 'function') {
+    avatarOptionsContext.onEditSave(dataUrl);
+  }
+  const fallbackName = typeof avatarOptionsContext?.getName === 'function' ? avatarOptionsContext.getName() : '';
+  updateAvatarOptionsPreview(dataUrl, fallbackName);
+  stopAvatarEditing({ restoreFocus: true });
+  closeAvatarOptionsDialog();
+}
+
+function handleAvatarDeleteAction() {
+  if (typeof avatarOptionsContext?.onDelete === 'function') {
+    avatarOptionsContext.onDelete();
+  }
+  const avatarValue = typeof avatarOptionsContext?.getAvatar === 'function' ? avatarOptionsContext.getAvatar() : '';
+  const fallbackName = typeof avatarOptionsContext?.getName === 'function' ? avatarOptionsContext.getName() : '';
+  updateAvatarOptionsPreview(avatarValue, fallbackName);
+  refreshAvatarOptionsActions();
+  if (!avatarValue) {
+    closeAvatarOptionsDialog();
+  }
+}
+
+function handleAvatarChangeAction() {
+  if (typeof avatarOptionsContext?.onChange === 'function') {
+    avatarOptionsContext.onChange();
+  }
+}
+
+function handleAvatarEditAction() {
+  startAvatarEditing();
+}
+
+function handleAvatarEditCancel() {
+  stopAvatarEditing({ restoreFocus: true });
+}
+
 function dispatchGearProviderDataChanged(reason) {
   if (typeof document === 'undefined') return;
   try {
@@ -16106,15 +16587,34 @@ function handleUserProfileAvatarCleared() {
   };
   persistUserProfileState();
   announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+  if (isDialogOpen(avatarOptionsDialog)) {
+    closeAvatarOptionsDialog();
+  }
 }
 
-function handleUserProfileAvatarButtonClick(event) {
-  if (!userProfileAvatarInput) return;
-  if (event && event.shiftKey) {
-    handleUserProfileAvatarCleared();
-    return;
-  }
-  userProfileAvatarInput.click();
+function handleUserProfileAvatarButtonClick() {
+  openAvatarOptionsDialog({
+    getAvatar: () => userProfileState.avatar || '',
+    getName: () => userProfileState.name || userProfileNameInput?.value || '',
+    onDelete: () => {
+      handleUserProfileAvatarCleared();
+    },
+    onChange: () => {
+      if (userProfileAvatarInput) {
+        userProfileAvatarInput.click();
+      }
+    },
+    onEditSave: dataUrl => {
+      if (!dataUrl) return;
+      userProfileState = {
+        name: userProfileState.name || userProfileNameInput?.value || '',
+        avatar: dataUrl
+      };
+      persistUserProfileState();
+      announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      closeAvatarOptionsDialog();
+    }
+  });
 }
 
 function handleUserProfileAvatarInputChange() {
@@ -16130,6 +16630,9 @@ function handleUserProfileAvatarInputChange() {
     };
     persistUserProfileState();
     announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+    if (isDialogOpen(avatarOptionsDialog)) {
+      closeAvatarOptionsDialog();
+    }
   }, reason => {
     if (reason === 'tooLarge') {
       announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
@@ -16339,6 +16842,10 @@ function handleAvatarFileSelection(row, file) {
         markProjectFormDataDirty();
       }
       scheduleProjectAutoSave(true);
+      announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      if (isDialogOpen(avatarOptionsDialog)) {
+        closeAvatarOptionsDialog();
+      }
     },
     reason => {
       if (reason === 'tooLarge') {
@@ -16676,9 +17183,11 @@ function createContactCard(contact) {
   updateAvatarVisual(avatarContainer, contact.avatar || '', contact.name, 'contact-card-avatar-initial');
   const avatarButton = document.createElement('button');
   avatarButton.type = 'button';
-  const avatarLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+  const avatarLabel = getContactsText('avatarChange', 'Change photo');
   avatarButton.setAttribute('aria-label', avatarLabel);
-  avatarButton.setAttribute('title', avatarLabel);
+  avatarButton.removeAttribute('title');
+  avatarButton.removeAttribute('data-help');
+  avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
   avatarContainer.appendChild(avatarButton);
   const avatarInput = document.createElement('input');
   avatarInput.type = 'file';
@@ -16829,15 +17338,28 @@ function createContactCard(contact) {
     persist();
   });
 
-  avatarButton.addEventListener('click', event => {
-    if (event.shiftKey) {
-      contact.avatar = '';
-      updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
-      persist();
-      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
-      return;
-    }
-    avatarInput.click();
+  avatarButton.addEventListener('click', () => {
+    openAvatarOptionsDialog({
+      getAvatar: () => contact.avatar || '',
+      getName: () => contact.name || '',
+      onDelete: () => {
+        if (!contact.avatar) return;
+        contact.avatar = '';
+        updateAvatarVisual(avatarContainer, '', contact.name, 'contact-card-avatar-initial');
+        persist();
+        announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+      },
+      onChange: () => {
+        avatarInput.click();
+      },
+      onEditSave: dataUrl => {
+        if (!dataUrl) return;
+        contact.avatar = dataUrl;
+        updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
+        persist();
+        announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      }
+    });
   });
 
   avatarInput.addEventListener('change', () => {
@@ -16848,6 +17370,9 @@ function createContactCard(contact) {
       updateAvatarVisual(avatarContainer, dataUrl, contact.name, 'contact-card-avatar-initial');
       persist();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      if (isDialogOpen(avatarOptionsDialog)) {
+        closeAvatarOptionsDialog();
+      }
     }, reason => {
       if (reason === 'tooLarge') {
         announceContactsMessage(getContactsText('avatarTooLarge', 'Choose an image under 300 KB.'));
@@ -16946,6 +17471,26 @@ function initializeContactsModule() {
     });
   }
 
+  avatarOptionsCloseButton?.addEventListener('click', () => closeAvatarOptionsDialog());
+  avatarOptionsForm?.addEventListener('submit', event => event.preventDefault());
+  avatarOptionsDialog?.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeAvatarOptionsDialog();
+  });
+  avatarOptionsDialog?.addEventListener('close', handleAvatarOptionsDialogClosed);
+  avatarOptionsDeleteButton?.addEventListener('click', handleAvatarDeleteAction);
+  avatarOptionsChangeButton?.addEventListener('click', handleAvatarChangeAction);
+  avatarOptionsEditButton?.addEventListener('click', handleAvatarEditAction);
+  avatarEditCancelButton?.addEventListener('click', handleAvatarEditCancel);
+  avatarEditApplyButton?.addEventListener('click', applyAvatarEditChanges);
+  avatarEditZoomInput?.addEventListener('input', handleAvatarEditZoomInputChange);
+  avatarEditZoomInput?.addEventListener('change', handleAvatarEditZoomInputChange);
+  avatarEditViewport?.addEventListener('pointerdown', handleAvatarEditPointerDown);
+  avatarEditViewport?.addEventListener('pointermove', handleAvatarEditPointerMove);
+  avatarEditViewport?.addEventListener('pointerup', handleAvatarEditPointerUp);
+  avatarEditViewport?.addEventListener('pointercancel', handleAvatarEditPointerCancel);
+  avatarEditViewport?.addEventListener('keydown', handleAvatarEditKeyDown);
+
   contactsCloseButton?.addEventListener('click', () => closeDialog(contactsDialog));
 
   contactsForm?.addEventListener('submit', event => {
@@ -16986,7 +17531,7 @@ function createCrewRow(data = {}) {
   const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
   const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
   const crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
-  const avatarChangeLabel = getContactsText('avatarChange', 'Change photo (Shift-click to remove)');
+  const avatarChangeLabel = getContactsText('avatarChange', 'Change photo');
 
   const avatarDataInput = document.createElement('input');
   avatarDataInput.type = 'hidden';
@@ -17002,8 +17547,9 @@ function createCrewRow(data = {}) {
   const avatarButton = document.createElement('button');
   avatarButton.type = 'button';
   avatarButton.setAttribute('aria-label', avatarChangeLabel);
-  avatarButton.setAttribute('title', avatarChangeLabel);
-  avatarButton.setAttribute('data-help', avatarChangeLabel);
+  avatarButton.removeAttribute('title');
+  avatarButton.removeAttribute('data-help');
+  avatarButton.innerHTML = iconMarkup(ICON_GLYPHS.camera, 'btn-icon avatar-change-icon');
   avatarContainer.appendChild(avatarButton);
   const avatarFileInput = document.createElement('input');
   avatarFileInput.type = 'file';
@@ -17140,14 +17686,29 @@ function createCrewRow(data = {}) {
   setRowAvatar(row, avatarDataInput.value, { name: data.name });
   updateRowLinkedBadge(row);
 
-  avatarButton.addEventListener('click', event => {
-    if (event.shiftKey) {
-      setRowAvatar(row, '');
-      handleCrewRowManualChange(row);
-      announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
-      return;
-    }
-    avatarFileInput.click();
+  avatarButton.addEventListener('click', () => {
+    openAvatarOptionsDialog({
+      getAvatar: () => avatarDataInput.value || '',
+      getName: () => nameInput.value || '',
+      onDelete: () => {
+        if (!avatarDataInput.value) return;
+        setRowAvatar(row, '');
+        handleCrewRowManualChange(row);
+        announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
+      },
+      onChange: () => {
+        avatarFileInput.click();
+      },
+      onEditSave: dataUrl => {
+        if (!dataUrl) return;
+        setRowAvatar(row, dataUrl, { name: nameInput.value });
+        if (row.dataset.contactId) {
+          detachCrewRowContact(row);
+        }
+        handleCrewRowManualChange(row);
+        announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
+      }
+    });
   });
 
   avatarFileInput.addEventListener('change', () => {
