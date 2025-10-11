@@ -116,6 +116,7 @@
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
+  const BODY_LOCK_CLASS = 'onboarding-tour-active';
 
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -743,14 +744,7 @@
   let activeRequirementCleanup = null;
   let activeRequirementCompleted = false;
   let activeInteractionCleanup = null;
-  let interactionIdCounter = 0;
   let lastCardPlacement = 'floating';
-
-  function nextInteractionId(suffix) {
-    interactionIdCounter += 1;
-    const safeSuffix = typeof suffix === 'string' && suffix ? suffix : 'field';
-    return `onboarding-${safeSuffix}-${interactionIdCounter}`;
-  }
 
   function setNextButtonDisabled(disabled) {
     if (!nextButton) {
@@ -881,8 +875,6 @@
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
 
-    interactionIdCounter = 0;
-
     backdropEl = DOCUMENT.createElement('div');
     backdropEl.className = 'onboarding-backdrop';
     overlayRoot.appendChild(backdropEl);
@@ -1009,7 +1001,6 @@
     resumeHintVisible = false;
     resumeStartIndex = null;
     activeInteractionCleanup = null;
-    interactionIdCounter = 0;
     lastCardPlacement = 'floating';
   }
 
@@ -1345,388 +1336,70 @@
     }
   }
 
-  function resolveLabelText(selector, fallback) {
-    if (typeof selector === 'string' && selector) {
-      const labelElement = DOCUMENT.querySelector(selector);
-      if (labelElement && typeof labelElement.textContent === 'string') {
-        const trimmed = labelElement.textContent.trim();
-        if (trimmed) {
-          return trimmed;
-        }
-      }
-    }
-    return typeof fallback === 'string' ? fallback : '';
-  }
-
-  function resolveButtonLabel(element, fallback) {
-    if (element && typeof element.textContent === 'string') {
-      const trimmed = element.textContent.trim();
-      if (trimmed) {
-        return trimmed;
-      }
-    }
-    return typeof fallback === 'string' ? fallback : '';
-  }
-
-  function dispatchEventSafe(target, type) {
-    if (!target || typeof target.dispatchEvent !== 'function') {
-      return;
-    }
-    try {
-      const event = new Event(type, { bubbles: true });
-      target.dispatchEvent(event);
-    } catch (error) {
-      safeWarn('cine.features.onboardingTour could not dispatch guided event.', error);
-    }
-  }
-
-  function renderNameProjectInteraction(registerCleanup) {
-    if (!interactionContainerEl) {
+  function focusHighlightedElement(step) {
+    if (!step) {
       return false;
     }
-    const realInput = getElement('#setupName');
-    const group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
-
-    const inputId = nextInteractionId('project-name');
-    const label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', inputId);
-    label.textContent = resolveLabelText("label[for='setupName']", 'Project name');
-
-    const input = DOCUMENT.createElement('input');
-    input.type = 'text';
-    input.id = inputId;
-    input.className = 'onboarding-field-input';
-    if (realInput && typeof realInput.placeholder === 'string') {
-      input.placeholder = realInput.placeholder;
+    const selectors = [];
+    if (typeof step.focus === 'string' && step.focus) {
+      selectors.push(step.focus);
     }
-    if (realInput && typeof realInput.maxLength === 'number' && realInput.maxLength > 0) {
-      input.maxLength = realInput.maxLength;
+    if (typeof step.highlight === 'string' && step.highlight) {
+      selectors.push(step.highlight);
     }
-    if (realInput && typeof realInput.autocomplete === 'string') {
-      input.setAttribute('autocomplete', realInput.autocomplete);
-    }
-    if (realInput && realInput.required) {
-      input.required = true;
-    }
-    input.value = typeof realInput?.value === 'string' ? realInput.value : '';
-
-    group.appendChild(label);
-    group.appendChild(input);
-    interactionContainerEl.appendChild(group);
-    interactionContainerEl.hidden = false;
-
-    if (!realInput) {
-      input.disabled = true;
-      input.setAttribute('aria-disabled', 'true');
-      return true;
-    }
-
-    const syncFromReal = () => {
-      if (typeof realInput.value === 'string' && input.value !== realInput.value) {
-        input.value = realInput.value;
+    let target = null;
+    for (let index = 0; index < selectors.length; index += 1) {
+      const selector = selectors[index];
+      if (!selector) {
+        continue;
       }
-      if (realInput.disabled && !input.disabled) {
-        input.disabled = true;
-        input.setAttribute('aria-disabled', 'true');
-      } else if (!realInput.disabled && input.disabled) {
-        input.disabled = false;
-        input.removeAttribute('aria-disabled');
+      const element = DOCUMENT.querySelector(selector);
+      if (!element) {
+        continue;
       }
-    };
-
-    const syncToReal = () => {
-      if (realInput.value !== input.value) {
-        realInput.value = input.value;
+      if (typeof element.focus === 'function') {
+        target = element;
+        break;
       }
-      dispatchEventSafe(realInput, 'input');
-      dispatchEventSafe(realInput, 'change');
-    };
+    }
+    if (!target) {
+      return false;
+    }
 
-    input.addEventListener('input', syncToReal);
-    registerCleanup(() => {
-      input.removeEventListener('input', syncToReal);
-    });
-
-    realInput.addEventListener('input', syncFromReal);
-    realInput.addEventListener('change', syncFromReal);
-    registerCleanup(() => {
-      realInput.removeEventListener('input', syncFromReal);
-      realInput.removeEventListener('change', syncFromReal);
-    });
-
-    syncFromReal();
-
-    const focusInput = () => {
+    const applyFocus = () => {
       try {
-        if (!input.disabled) {
-          input.focus();
-          if (input.value && typeof input.setSelectionRange === 'function') {
-            input.setSelectionRange(0, input.value.length);
-          }
-        }
+        target.focus({ preventScroll: true });
       } catch (error) {
         void error;
+        try {
+          target.focus();
+        } catch (focusError) {
+          void focusError;
+        }
+      }
+      const view = target.ownerDocument && target.ownerDocument.defaultView;
+      const isTextInput = Boolean(
+        view
+        && (
+          target instanceof view.HTMLInputElement
+          || target instanceof view.HTMLTextAreaElement
+        ),
+      );
+      if (isTextInput && typeof target.select === 'function' && target.value) {
+        try {
+          target.select();
+        } catch (selectError) {
+          void selectError;
+        }
       }
     };
 
     if (typeof queueMicrotask === 'function') {
-      queueMicrotask(focusInput);
+      queueMicrotask(applyFocus);
     } else {
-      setTimeout(focusInput, 0);
+      setTimeout(applyFocus, 0);
     }
-
     return true;
-  }
-
-  function renderSelectInteraction(config, registerCleanup) {
-    if (!interactionContainerEl) {
-      return false;
-    }
-    const realSelect = getElement(config.selector);
-    if (!realSelect) {
-      return false;
-    }
-
-    const group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
-
-    const selectId = nextInteractionId(config.suffix || 'select');
-    const label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', selectId);
-    label.textContent = resolveLabelText(config.labelSelector, config.fallbackLabel);
-
-    const select = DOCUMENT.createElement('select');
-    select.id = selectId;
-    select.className = 'onboarding-field-select';
-    if (realSelect && realSelect.multiple) {
-      select.multiple = true;
-    }
-    if (realSelect && typeof realSelect.size === 'number' && realSelect.size > 0) {
-      select.size = realSelect.size;
-    }
-
-    const syncFromReal = () => {
-      if (!realSelect) {
-        return;
-      }
-      const referenceHTML = realSelect.innerHTML;
-      if (select.innerHTML !== referenceHTML) {
-        select.innerHTML = referenceHTML;
-      }
-      if (select.value !== realSelect.value) {
-        select.value = realSelect.value;
-      }
-      if (select.disabled !== realSelect.disabled) {
-        select.disabled = realSelect.disabled;
-        if (select.disabled) {
-          select.setAttribute('aria-disabled', 'true');
-        } else {
-          select.removeAttribute('aria-disabled');
-        }
-      }
-    };
-
-    syncFromReal();
-
-    const syncToReal = () => {
-      if (!realSelect) {
-        return;
-      }
-      if (realSelect.value !== select.value) {
-        realSelect.value = select.value;
-      }
-      dispatchEventSafe(realSelect, 'input');
-      dispatchEventSafe(realSelect, 'change');
-    };
-
-    select.addEventListener('change', syncToReal);
-    select.addEventListener('input', syncToReal);
-    registerCleanup(() => {
-      select.removeEventListener('change', syncToReal);
-      select.removeEventListener('input', syncToReal);
-    });
-
-    realSelect.addEventListener('change', syncFromReal);
-    realSelect.addEventListener('input', syncFromReal);
-    registerCleanup(() => {
-      realSelect.removeEventListener('change', syncFromReal);
-      realSelect.removeEventListener('input', syncFromReal);
-    });
-
-    let observer = null;
-    if (typeof MutationObserver === 'function') {
-      try {
-        observer = new MutationObserver(() => {
-          syncFromReal();
-        });
-        observer.observe(realSelect, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-        });
-        registerCleanup(() => {
-          observer.disconnect();
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not observe select changes.', error);
-        if (observer) {
-          observer.disconnect();
-        }
-      }
-    }
-
-    group.appendChild(label);
-    group.appendChild(select);
-    interactionContainerEl.appendChild(group);
-    interactionContainerEl.hidden = false;
-
-    const focusSelect = () => {
-      try {
-        if (!select.disabled) {
-          select.focus();
-        }
-      } catch (error) {
-        void error;
-      }
-    };
-
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(focusSelect);
-    } else {
-      setTimeout(focusSelect, 0);
-    }
-
-    return true;
-  }
-
-  function createGuidedButton(selector, fallbackLabel, registerCleanup) {
-    const realButton = getElement(selector);
-    if (!realButton) {
-      return null;
-    }
-    const button = DOCUMENT.createElement('button');
-    button.type = 'button';
-    button.className = 'onboarding-interaction-button';
-    button.textContent = resolveButtonLabel(realButton, fallbackLabel);
-    const realAriaLabel = typeof realButton.getAttribute === 'function'
-      ? realButton.getAttribute('aria-label')
-      : null;
-    if (realAriaLabel) {
-      button.setAttribute('aria-label', realAriaLabel);
-    }
-
-    const handleClick = () => {
-      try {
-        if (typeof realButton.focus === 'function') {
-          realButton.focus({ preventScroll: true });
-        }
-      } catch (error) {
-        void error;
-      }
-      try {
-        realButton.click();
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not activate guided button.', error);
-      }
-    };
-
-    button.addEventListener('click', handleClick);
-    registerCleanup(() => {
-      button.removeEventListener('click', handleClick);
-    });
-
-    const syncDisabled = () => {
-      const ariaDisabled = typeof realButton.getAttribute === 'function'
-        ? realButton.getAttribute('aria-disabled')
-        : null;
-      const disabled = !!realButton.disabled || ariaDisabled === 'true';
-      button.disabled = disabled;
-      if (disabled) {
-        button.setAttribute('aria-disabled', 'true');
-      } else {
-        button.removeAttribute('aria-disabled');
-      }
-    };
-
-    syncDisabled();
-
-    let observer = null;
-    if (typeof MutationObserver === 'function') {
-      try {
-        observer = new MutationObserver(syncDisabled);
-        observer.observe(realButton, {
-          attributes: true,
-          attributeFilter: ['disabled', 'aria-disabled'],
-        });
-        registerCleanup(() => {
-          observer.disconnect();
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not observe guided button state.', error);
-        if (observer) {
-          observer.disconnect();
-        }
-      }
-    }
-
-    return button;
-  }
-
-  function appendActionRow(buttons) {
-    if (!interactionContainerEl || !Array.isArray(buttons)) {
-      return false;
-    }
-    const row = DOCUMENT.createElement('div');
-    row.className = 'onboarding-interaction-actions';
-    let appended = false;
-    for (let index = 0; index < buttons.length; index += 1) {
-      const button = buttons[index];
-      if (button) {
-        row.appendChild(button);
-        appended = true;
-      }
-    }
-    if (!appended) {
-      return false;
-    }
-    interactionContainerEl.appendChild(row);
-    interactionContainerEl.hidden = false;
-    return true;
-  }
-
-  function renderSaveProjectInteraction(registerCleanup) {
-    const saveButton = createGuidedButton('#saveSetupBtn', 'Save project', registerCleanup);
-    if (!saveButton) {
-      return false;
-    }
-    return appendActionRow([saveButton]);
-  }
-
-  function renderGeneratePlanInteraction(registerCleanup) {
-    const generateButton = createGuidedButton('#generateGearListBtn', 'Generate plan', registerCleanup);
-    if (!generateButton) {
-      return false;
-    }
-    return appendActionRow([generateButton]);
-  }
-
-  function renderExportBackupInteraction(registerCleanup) {
-    const exportButton = createGuidedButton('#shareSetupBtn', 'Export project', registerCleanup);
-    const backupButton = createGuidedButton('#storageBackupNow', 'Quick safeguard', registerCleanup);
-    if (!exportButton && !backupButton) {
-      return false;
-    }
-    const buttons = [];
-    if (exportButton) {
-      buttons.push(exportButton);
-    }
-    if (backupButton) {
-      buttons.push(backupButton);
-    }
-    return appendActionRow(buttons);
   }
 
   function renderStepInteraction(step) {
@@ -1736,52 +1409,19 @@
 
     teardownStepInteraction();
 
-    const cleanupFns = [];
-    const registerCleanup = (fn) => {
-      if (typeof fn === 'function') {
-        cleanupFns.push(fn);
-      }
-    };
-
-    let hasContent = false;
     const key = step && step.key;
-    if (key === 'nameProject') {
-      hasContent = renderNameProjectInteraction(registerCleanup) || hasContent;
-    } else if (key === 'saveProject') {
-      hasContent = renderSaveProjectInteraction(registerCleanup) || hasContent;
-    } else if (key === 'addCamera') {
-      hasContent = renderSelectInteraction({
-        selector: '#cameraSelect',
-        labelSelector: "label[for='cameraSelect']",
-        fallbackLabel: 'Camera body',
-        suffix: 'camera',
-      }, registerCleanup) || hasContent;
-    } else if (key === 'addPower') {
-      hasContent = renderSelectInteraction({
-        selector: '#batterySelect',
-        labelSelector: "label[for='batterySelect']",
-        fallbackLabel: 'Power source',
-        suffix: 'power',
-      }, registerCleanup) || hasContent;
-    } else if (key === 'generatePlan') {
-      hasContent = renderGeneratePlanInteraction(registerCleanup) || hasContent;
-    } else if (key === 'exportBackup') {
-      hasContent = renderExportBackupInteraction(registerCleanup) || hasContent;
+    const requiresDirectInteraction = Boolean(
+      key && key !== 'intro' && key !== 'completion'
+    );
+
+    interactionContainerEl.hidden = true;
+
+    if (requiresDirectInteraction) {
+      focusHighlightedElement(step);
+      schedulePositionUpdate();
     }
 
-    if (hasContent) {
-      activeInteractionCleanup = () => {
-        for (let index = 0; index < cleanupFns.length; index += 1) {
-          try {
-            cleanupFns[index]();
-          } catch (error) {
-            safeWarn('cine.features.onboardingTour could not clean up guided interaction.', error);
-          }
-        }
-      };
-    } else {
-      activeInteractionCleanup = null;
-    }
+    activeInteractionCleanup = null;
   }
 
   function handleStepListClick(event) {
@@ -2154,6 +1794,10 @@
       overlayRoot.setAttribute('aria-hidden', 'false');
     }
 
+    if (DOCUMENT && DOCUMENT.body && DOCUMENT.body.classList) {
+      DOCUMENT.body.classList.add(BODY_LOCK_CLASS);
+    }
+
     active = true;
     currentIndex = -1;
     currentStep = null;
@@ -2180,6 +1824,9 @@
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');
+    }
+    if (DOCUMENT && DOCUMENT.body && DOCUMENT.body.classList) {
+      DOCUMENT.body.classList.remove(BODY_LOCK_CLASS);
     }
     teardownOverlayElements();
   }
