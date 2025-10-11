@@ -1039,6 +1039,7 @@
   let progressEl = null;
   let progressMeterEl = null;
   let progressMeterFillEl = null;
+  let cardContentEl = null;
   let stepListContainerEl = null;
   let stepListEl = null;
   let resumeHintEl = null;
@@ -1248,23 +1249,27 @@
     });
     header.appendChild(skipButton);
 
+    cardContentEl = DOCUMENT.createElement('div');
+    cardContentEl.className = 'onboarding-card-content';
+    cardEl.appendChild(cardContentEl);
+
     resumeHintEl = DOCUMENT.createElement('p');
     resumeHintEl.className = 'onboarding-resume-hint';
     resumeHintEl.hidden = true;
-    cardEl.appendChild(resumeHintEl);
+    cardContentEl.appendChild(resumeHintEl);
 
     titleEl = DOCUMENT.createElement('h2');
     titleEl.id = 'onboardingCardTitle';
-    cardEl.appendChild(titleEl);
+    cardContentEl.appendChild(titleEl);
 
     bodyEl = DOCUMENT.createElement('p');
     bodyEl.id = 'onboardingCardBody';
-    cardEl.appendChild(bodyEl);
+    cardContentEl.appendChild(bodyEl);
 
     interactionContainerEl = DOCUMENT.createElement('div');
     interactionContainerEl.className = 'onboarding-interaction';
     interactionContainerEl.hidden = true;
-    cardEl.appendChild(interactionContainerEl);
+    cardContentEl.appendChild(interactionContainerEl);
 
     stepListContainerEl = DOCUMENT.createElement('div');
     stepListContainerEl.className = 'onboarding-step-list-container';
@@ -1319,6 +1324,7 @@
     progressEl = null;
     progressMeterEl = null;
     progressMeterFillEl = null;
+    cardContentEl = null;
     stepListContainerEl = null;
     stepListEl = null;
     resumeHintEl = null;
@@ -2664,6 +2670,10 @@
   function updateCardForStep(step, index) {
     if (!cardEl) {
       return;
+    }
+
+    if (cardContentEl) {
+      cardContentEl.scrollTop = 0;
     }
 
     const totalSteps = stepConfig.length;

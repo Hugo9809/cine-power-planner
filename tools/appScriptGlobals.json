@@ -253,6 +253,8 @@
     "wattFieldDiv"
   ],
   "app-setups": [
+    "ACTIVE_APP_VERSION",
+    "APP_VERSION",
     "AUTO_GEAR_CUSTOM_CATEGORY",
     "DIAGRAM_MONITOR_ICON",
     "ICON_GLYPHS",
