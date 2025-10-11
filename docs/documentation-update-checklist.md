@@ -35,6 +35,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 ## 5. Archive evidence
 
 - [ ] Update the verification log (using `docs/verification-log-template.md`) with the version, browser, workstation and command outputs collected during testing.
+- [ ] Complete the [Documentation Status Report](documentation-status-report-template.md) so the release packet records which surfaces changed and which offline rehearsals proved them safe.
 - [ ] Store the verified planner backup, project bundle, automatic gear rules export and a ZIP of the repository alongside the updated documentation so crews can prove parity later.
 - [ ] Attach rendered PDFs or screenshots of modified help pages if the change affected visual layout or iconography.
 - [ ] Assemble the release documentation packet following `docs/documentation-verification-packet.md` and record where redundant offline copies live.

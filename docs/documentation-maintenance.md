@@ -182,9 +182,14 @@ instructions even years later when internet access is unavailable.
    Checklist](documentation-update-checklist.md) with boxes ticked and initials or signatures.
    Attach the verification log entry that lists the workstation, browser build and timestamp so
    auditors can trace the rehearsal lineage.
-4. **Store redundantly.** Zip the packet and copy it to at least two offline drives that travel
-   separately with the release media. Note the storage locations in `docs/verification-log`
-   entries or your change log so teams know where to find the canonical documentation bundle.
+4. **Capture the status snapshot.** Fill out the
+   [Documentation Status Report](documentation-status-report-template.md) while the rehearsal is
+   fresh. Note which surfaces changed, summarize the offline drills you ran and point to the
+   stored backups, bundles and console captures so future auditors can replay the release without
+   risking user data.
+5. **Store redundantly.** Zip the packet and copy it to at least two offline drives that travel
+    separately with the release media. Note the storage locations in `docs/verification-log`
+    entries or your change log so teams know where to find the canonical documentation bundle.
 
 Maintaining this cadence guarantees the planner’s guidance, translations and offline-first
 workflows stay in sync, keeping user data safe even in the most isolated production
