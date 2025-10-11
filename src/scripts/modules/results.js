@@ -1876,18 +1876,25 @@
       hasPinLimit = hasPinLimit && Number.isFinite(maxPinA) && maxPinA > 0;
       hasDtapRating = hasDtapRating && Number.isFinite(maxDtapA) && maxDtapA > 0;
       if (hotswapData && typeof hotswapData.pinA === 'number') {
-        if (!hasPinLimit || hotswapData.pinA < maxPinA) {
-          var hotswapMessage = resolveText('warnHotswapLower')
-            .replace('{max}', String(hotswapData.pinA))
-            .replace('{batt}', String(maxPinA));
-          setStatusMessageFn(hotswapWarnTarget, hotswapMessage);
-          setStatusLevelFn(hotswapWarnTarget, 'warning');
-        } else {
+        var hotswapPinA = hotswapData.pinA;
+        var hotswapHasLimit = Number.isFinite(hotswapPinA) && hotswapPinA > 0;
+        if (!hasPinLimit || (hotswapHasLimit && hotswapPinA < maxPinA)) {
+          if (hasPinLimit) {
+            var hotswapMessage = resolveText('warnHotswapLower')
+              .replace('{max}', String(hotswapPinA))
+              .replace('{batt}', String(maxPinA));
+            setStatusMessageFn(hotswapWarnTarget, hotswapMessage);
+            setStatusLevelFn(hotswapWarnTarget, 'warning');
+          } else if (hotswapWarnTarget) {
+            setStatusMessageFn(hotswapWarnTarget, '');
+            setStatusLevelFn(hotswapWarnTarget, null);
+          }
+          maxPinA = hotswapPinA;
+          hasPinLimit = hotswapHasLimit;
+        } else if (hotswapWarnTarget) {
           setStatusMessageFn(hotswapWarnTarget, '');
           setStatusLevelFn(hotswapWarnTarget, null);
         }
-        maxPinA = hotswapData.pinA;
-        hasPinLimit = Number.isFinite(maxPinA) && maxPinA > 0;
       } else if (hotswapWarnTarget) {
         setStatusMessageFn(hotswapWarnTarget, '');
         setStatusLevelFn(hotswapWarnTarget, null);
