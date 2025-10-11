@@ -9400,6 +9400,39 @@ const gearItems = {
   de: { 'Tennis ball': 'Tennisball', 'Clapper Stick': 'Klappenstab' }
 };
 
+function ensureEnglishFallbackForKey(dataset, key, { referenceLang = 'en' } = {}) {
+  if (!dataset || typeof dataset !== 'object') {
+    return;
+  }
+
+  const reference = dataset[referenceLang];
+  if (!reference || typeof reference !== 'object') {
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(reference, key)) {
+    return;
+  }
+
+  Object.keys(dataset).forEach(lang => {
+    if (lang === referenceLang) {
+      return;
+    }
+
+    const translations = dataset[lang];
+    if (!translations || typeof translations !== 'object') {
+      dataset[lang] = { [key]: reference[key] };
+      return;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(translations, key)) {
+      translations[key] = reference[key];
+    }
+  });
+}
+
+ensureEnglishFallbackForKey(texts, 'alertSetupSavedNoDevices');
+
 // Mapping for category values to display names (singular for form dropdown)
 const categoryNames = {
   en: {
