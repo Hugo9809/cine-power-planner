@@ -21,7 +21,15 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         : '__any__';
 
 const CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
-const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+const CAMERA_COLOR_STORAGE_KEY_REFERENCE = (() => {
+    if (typeof globalThis !== 'undefined') {
+        const globalCameraColorKey = globalThis.CAMERA_COLOR_STORAGE_KEY;
+        if (typeof globalCameraColorKey === 'string' && globalCameraColorKey) {
+            return globalCameraColorKey;
+        }
+    }
+    return 'cameraPowerPlanner_cameraColors';
+})();
 
 const PRODUCTION_COMPANY_FIELD_ORDER = [
     'productionCompanyAddress',
@@ -7267,7 +7275,7 @@ function getCameraLetterColorDefaults() {
   let storedPalette = null;
   try {
     if (typeof localStorage !== 'undefined') {
-      const raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY);
+      const raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY_REFERENCE);
       if (raw) {
         storedPalette = JSON.parse(raw);
       }
@@ -7291,7 +7299,7 @@ function getCameraLetterColorDefaults() {
     }
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(CAMERA_COLOR_STORAGE_KEY, JSON.stringify(defaults));
+        localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_REFERENCE, JSON.stringify(defaults));
       }
     } catch (persistError) {
       console.warn('Unable to persist default camera colors', persistError);

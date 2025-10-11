@@ -5056,6 +5056,24 @@ const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
 
 const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+if (typeof globalThis !== 'undefined'
+  && typeof globalThis.CAMERA_COLOR_STORAGE_KEY === 'undefined') {
+  try {
+    Object.defineProperty(globalThis, 'CAMERA_COLOR_STORAGE_KEY', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: CAMERA_COLOR_STORAGE_KEY,
+    });
+  } catch (defineCameraColorStorageKeyError) {
+    console.warn('Unable to expose CAMERA_COLOR_STORAGE_KEY globally', defineCameraColorStorageKeyError);
+    try {
+      globalThis.CAMERA_COLOR_STORAGE_KEY = CAMERA_COLOR_STORAGE_KEY;
+    } catch (assignCameraColorStorageKeyError) {
+      console.warn('Unable to assign CAMERA_COLOR_STORAGE_KEY fallback', assignCameraColorStorageKeyError);
+    }
+  }
+}
 
 function normalizeCameraColorValue(value) {
   if (typeof value !== 'string') {
