@@ -1868,6 +1868,12 @@
       const texts = getStepTexts(step);
       const item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
+      if (index < 3) {
+        item.classList.add('onboarding-step-item--pinned');
+        if (item && item.style && typeof item.style.setProperty === 'function') {
+          item.style.setProperty('--onboarding-step-pinned-index', String(index));
+        }
+      }
 
       let status;
       if (step && step.key === activeKey) {
