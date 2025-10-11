@@ -116,7 +116,6 @@
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
-  const BODY_LOCK_CLASS = 'onboarding-tour-active';
 
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
@@ -713,7 +712,6 @@
   let stepConfig = getStepConfig();
 
   let overlayRoot = null;
-  let backdropEl = null;
   let highlightEl = null;
   let activeTargetElement = null;
   let cardEl = null;
@@ -875,10 +873,6 @@
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
 
-    backdropEl = DOCUMENT.createElement('div');
-    backdropEl.className = 'onboarding-backdrop';
-    overlayRoot.appendChild(backdropEl);
-
     highlightEl = DOCUMENT.createElement('div');
     highlightEl.className = 'onboarding-highlight';
     highlightEl.setAttribute('aria-hidden', 'true');
@@ -888,7 +882,7 @@
     cardEl.className = 'onboarding-card';
     cardEl.setAttribute('data-placement', 'floating');
     cardEl.setAttribute('role', 'dialog');
-    cardEl.setAttribute('aria-modal', 'true');
+    cardEl.setAttribute('aria-modal', 'false');
     cardEl.tabIndex = -1;
 
     const header = DOCUMENT.createElement('div');
@@ -984,7 +978,6 @@
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
     overlayRoot = null;
-    backdropEl = null;
     highlightEl = null;
     cardEl = null;
     titleEl = null;
@@ -1015,6 +1008,22 @@
   }
 
   function focusCard() {
+    const target = getTargetElement(currentStep);
+    if (target && typeof target.focus === 'function' && !target.hasAttribute('disabled')) {
+      try {
+        target.focus({ preventScroll: true });
+        return;
+      } catch (error) {
+        void error;
+        try {
+          target.focus();
+          return;
+        } catch (focusError) {
+          void focusError;
+        }
+      }
+    }
+
     if (!cardEl) {
       return;
     }
@@ -1100,42 +1109,86 @@
     const targetElement = target || getTargetElement(currentStep);
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const cardRect = cardEl.getBoundingClientRect();
-    let top = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + Math.max(24, (viewportHeight - cardRect.height) / 2);
-    let left = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + Math.max(24, (viewportWidth - cardRect.width) / 2);
+    const scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
+    const scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
+    const margin = 16;
+    const viewportRight = scrollX + viewportWidth;
+    const viewportBottom = scrollY + viewportHeight;
+    const minLeft = scrollX + margin;
+    const minTop = scrollY + margin;
+    const maxLeft = Math.max(minLeft, viewportRight - cardRect.width - margin);
+    const maxTop = Math.max(minTop, viewportBottom - cardRect.height - margin);
+
+    let top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
+    let left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     let placement = 'floating';
 
     if (targetElement && resolvedRect) {
       const rect = resolvedRect;
-      const targetTop = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0);
-      const targetLeft = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0);
-      const spaceBelow = (GLOBAL_SCOPE.innerHeight || viewportHeight) - rect.bottom;
-      const spaceAbove = rect.top;
-      const spaceRight = (GLOBAL_SCOPE.innerWidth || viewportWidth) - rect.right;
-      if (spaceBelow > cardRect.height + 40) {
-        top = targetTop + rect.height + 24;
-        placement = 'bottom';
-      } else if (spaceAbove > cardRect.height + 40) {
-        top = targetTop - cardRect.height - 24;
-        placement = 'top';
+      const targetTop = rect.top + scrollY;
+      const targetLeft = rect.left + scrollX;
+      const targetCenterX = targetLeft + rect.width / 2;
+      const targetCenterY = targetTop + rect.height / 2;
+
+      const options = [
+        {
+          name: 'bottom',
+          top: targetTop + rect.height + margin,
+          left: targetCenterX - cardRect.width / 2,
+          fits:
+            targetTop + rect.height + margin + cardRect.height <= viewportBottom - margin,
+        },
+        {
+          name: 'top',
+          top: targetTop - cardRect.height - margin,
+          left: targetCenterX - cardRect.width / 2,
+          fits: targetTop - cardRect.height - margin >= minTop,
+        },
+        {
+          name: 'right',
+          top: targetCenterY - cardRect.height / 2,
+          left: targetLeft + rect.width + margin,
+          fits: targetLeft + rect.width + margin + cardRect.width <= viewportRight - margin,
+        },
+        {
+          name: 'left',
+          top: targetCenterY - cardRect.height / 2,
+          left: targetLeft - cardRect.width - margin,
+          fits: targetLeft - cardRect.width - margin >= minLeft,
+        },
+      ];
+
+      const resolvedOptions = options.map(option => {
+        const clampedTop = Math.min(Math.max(option.top, minTop), maxTop);
+        const clampedLeft = Math.min(Math.max(option.left, minLeft), maxLeft);
+        const overflow = Math.abs(clampedTop - option.top) + Math.abs(clampedLeft - option.left);
+        return {
+          ...option,
+          clampedTop,
+          clampedLeft,
+          overflow,
+        };
+      });
+
+      let chosen = resolvedOptions.find(option => option.fits);
+      if (!chosen) {
+        chosen = resolvedOptions.reduce((best, option) => {
+          if (!best || option.overflow < best.overflow) {
+            return option;
+          }
+          return best;
+        }, null);
       }
-      if (spaceRight > cardRect.width + 40) {
-        left = targetLeft + rect.width + 24;
-        placement = placement === 'floating' ? 'right' : `${placement}-right`;
-      } else if (targetLeft - cardRect.width - 24 > 0) {
-        left = targetLeft - cardRect.width - 24;
-        placement = placement === 'floating' ? 'left' : `${placement}-left`;
-      } else if (placement === 'floating') {
-        placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+
+      if (chosen) {
+        top = chosen.clampedTop;
+        left = chosen.clampedLeft;
+        placement = chosen.name;
       }
-    } else {
-      placement = 'floating';
     }
 
-    const maxTop = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + viewportHeight - cardRect.height - 24;
-    const maxLeft = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + viewportWidth - cardRect.width - 24;
-
-    cardEl.style.top = `${Math.max(24 + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0), Math.min(top, maxTop))}px`;
-    cardEl.style.left = `${Math.max(24 + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0), Math.min(left, maxLeft))}px`;
+    cardEl.style.top = `${Math.min(Math.max(top, minTop), maxTop)}px`;
+    cardEl.style.left = `${Math.min(Math.max(left, minLeft), maxLeft)}px`;
     if (placement !== lastCardPlacement) {
       lastCardPlacement = placement;
       cardEl.setAttribute('data-placement', placement);
@@ -1794,10 +1847,6 @@
       overlayRoot.setAttribute('aria-hidden', 'false');
     }
 
-    if (DOCUMENT && DOCUMENT.body && DOCUMENT.body.classList) {
-      DOCUMENT.body.classList.add(BODY_LOCK_CLASS);
-    }
-
     active = true;
     currentIndex = -1;
     currentStep = null;
@@ -1824,9 +1873,6 @@
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');
-    }
-    if (DOCUMENT && DOCUMENT.body && DOCUMENT.body.classList) {
-      DOCUMENT.body.classList.remove(BODY_LOCK_CLASS);
     }
     teardownOverlayElements();
   }

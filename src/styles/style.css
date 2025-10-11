@@ -6653,33 +6653,12 @@ textarea:disabled {
   display: block;
 }
 
-.onboarding-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12, 18, 28, 0.35);
-  backdrop-filter: blur(1.5px);
-  pointer-events: none;
-}
-
-body.dark-mode .onboarding-backdrop {
-  background: rgba(8, 10, 14, 0.4);
-}
-
-body.pink-mode:not(.dark-mode) .onboarding-backdrop {
-  background: color-mix(in srgb, rgba(35, 7, 22, 0.5) 65%, var(--background-color) 35%);
-}
-
-body.onboarding-tour-active {
-  overflow: hidden;
-  overscroll-behavior: contain;
-  touch-action: none;
-}
-
 .onboarding-highlight {
   position: absolute;
   border-radius: 16px;
   border: 2px solid var(--accent-color);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28), 0 0 0 12px rgba(12, 18, 28, 0.2);
+  box-shadow: 0 12px 32px rgba(12, 18, 28, 0.18);
+  background: transparent;
   transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
   pointer-events: none;
   opacity: 0;
