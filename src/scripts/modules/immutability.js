@@ -185,6 +185,56 @@
       return true;
     }
 
+    if (
+      typeof process !== 'undefined' &&
+      process &&
+      process.release &&
+      process.release.name === 'node'
+    ) {
+      if (typeof globalThis !== 'undefined' && value === globalThis) {
+        return true;
+      }
+
+      if (typeof global !== 'undefined' && value === global) {
+        return true;
+      }
+
+      try {
+        const runtimeCandidates = [];
+
+        const enqueueCandidate = function enqueueCandidate(candidate) {
+          if (!candidate) {
+            return;
+          }
+
+          const candidateType = typeof candidate;
+          if (candidateType === 'object' || candidateType === 'function') {
+            runtimeCandidates[runtimeCandidates.length] = candidate;
+          }
+        };
+
+        enqueueCandidate(process.env);
+        enqueueCandidate(process.argv);
+        enqueueCandidate(process.execArgv);
+        enqueueCandidate(process.stdin);
+        enqueueCandidate(process.stdout);
+        enqueueCandidate(process.stderr);
+        enqueueCandidate(process.versions);
+        enqueueCandidate(process.config);
+        enqueueCandidate(process.release);
+        enqueueCandidate(process.features);
+        enqueueCandidate(process.mainModule);
+
+        for (let index = 0; index < runtimeCandidates.length; index += 1) {
+          if (runtimeCandidates[index] === value) {
+            return true;
+          }
+        }
+      } catch (nodeRuntimeInspectionError) {
+        void nodeRuntimeInspectionError;
+      }
+    }
+
     try {
       if (
         typeof module !== 'undefined' &&
