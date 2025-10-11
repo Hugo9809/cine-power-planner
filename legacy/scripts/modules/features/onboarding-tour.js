@@ -642,6 +642,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var currentIndex = -1;
   var currentStep = null;
   var pendingFrame = null;
+  var scrollStateTimer = null;
   var autoOpenedSettings = false;
   var settingsDialogRef = null;
   var resumeHintVisible = false;
@@ -747,6 +748,48 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     pendingFrame = null;
   }
+  function clearScrollStateTimer() {
+    if (scrollStateTimer === null) {
+      return;
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearTimeout === 'function') {
+      GLOBAL_SCOPE.clearTimeout(scrollStateTimer);
+    } else {
+      clearTimeout(scrollStateTimer);
+    }
+    scrollStateTimer = null;
+  }
+  function clearScrollState() {
+    clearScrollStateTimer();
+    if (overlayRoot && overlayRoot.classList && typeof overlayRoot.classList.remove === 'function') {
+      overlayRoot.classList.remove('onboarding-scroll-active');
+    }
+  }
+  function markScrollActive() {
+    if (!overlayRoot || !overlayRoot.classList || typeof overlayRoot.classList.add !== 'function') {
+      return;
+    }
+    overlayRoot.classList.add('onboarding-scroll-active');
+    clearScrollStateTimer();
+    var release = function release() {
+      scrollStateTimer = null;
+      if (overlayRoot && overlayRoot.classList && typeof overlayRoot.classList.remove === 'function') {
+        overlayRoot.classList.remove('onboarding-scroll-active');
+      }
+    };
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.setTimeout === 'function') {
+      scrollStateTimer = GLOBAL_SCOPE.setTimeout(release, 150);
+    } else {
+      scrollStateTimer = setTimeout(release, 150);
+    }
+  }
+  function handleGlobalScroll() {
+    if (!active) {
+      return;
+    }
+    markScrollActive();
+    schedulePositionUpdate();
+  }
   function schedulePositionUpdate() {
     if (!active) {
       return;
@@ -772,6 +815,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
+    clearScrollState();
     interactionIdCounter = 0;
     highlightEl = DOCUMENT.createElement('div');
     highlightEl.className = 'onboarding-highlight';
@@ -855,6 +899,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function teardownOverlayElements() {
     clearFrame();
+    clearScrollState();
     clearActiveTargetElement();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
@@ -2176,13 +2221,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function attachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       GLOBAL_SCOPE.addEventListener('resize', schedulePositionUpdate);
-      GLOBAL_SCOPE.addEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.addEventListener('scroll', handleGlobalScroll, true);
     }
   }
   function detachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
       GLOBAL_SCOPE.removeEventListener('resize', schedulePositionUpdate);
-      GLOBAL_SCOPE.removeEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.removeEventListener('scroll', handleGlobalScroll, true);
     }
   }
   function startTutorial() {

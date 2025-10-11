@@ -6666,6 +6666,10 @@ textarea:disabled {
   opacity: 0;
 }
 
+.onboarding-overlay.onboarding-scroll-active .onboarding-highlight {
+  transition: none;
+}
+
 .onboarding-card {
   position: absolute;
   --onboarding-card-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
