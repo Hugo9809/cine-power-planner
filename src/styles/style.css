@@ -9721,11 +9721,11 @@ body.high-contrast .project-field-hint {
   gap: clamp(8px, 2vw, 12px);
 }
 
-#projectDialog .lens-step .select-wrapper {
+.lens-step .select-wrapper {
   width: 100%;
 }
 
-#projectDialog .lens-step .select-wrapper select {
+.lens-step .select-wrapper select {
   width: 100%;
 }
 
