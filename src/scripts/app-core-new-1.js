@@ -14457,16 +14457,53 @@ function ensurePinkModeAnimationLayer(options) {
   return layer;
 }
 
-function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
-  if (host && typeof host === 'object') {
-    try {
-      const scrollHeight = host.scrollHeight;
-      if (typeof scrollHeight === 'number' && scrollHeight > 0) {
-        return scrollHeight;
-      }
-    } catch (error) {
-      void error;
+function resolvePinkModeScrollHeight(host) {
+  if (!host || typeof host !== 'object') {
+    return null;
+  }
+
+  try {
+    const value = host.scrollHeight;
+    if (typeof value === 'number' && value > 0) {
+      return value;
     }
+  } catch (error) {
+    void error;
+  }
+
+  const doc =
+    (typeof host.ownerDocument !== 'undefined' && host.ownerDocument) ||
+    (typeof document !== 'undefined' && document) ||
+    null;
+  if (!doc || typeof doc !== 'object') {
+    return null;
+  }
+
+  const scrollingElement =
+    (typeof doc.scrollingElement !== 'undefined' && doc.scrollingElement) ||
+    doc.documentElement ||
+    null;
+
+  if (!scrollingElement || scrollingElement === host) {
+    return null;
+  }
+
+  try {
+    const fallbackValue = scrollingElement.scrollHeight;
+    if (typeof fallbackValue === 'number' && fallbackValue > 0) {
+      return fallbackValue;
+    }
+  } catch (fallbackError) {
+    void fallbackError;
+  }
+
+  return null;
+}
+
+function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
+  const scrollHeight = resolvePinkModeScrollHeight(host);
+  if (typeof scrollHeight === 'number' && scrollHeight > 0) {
+    return scrollHeight;
   }
 
   if (hostRect && typeof hostRect.height === 'number' && hostRect.height > 0) {
