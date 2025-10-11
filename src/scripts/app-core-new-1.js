@@ -9475,14 +9475,47 @@ function checkArriCompatibility() {
 var gearItemTranslations = {};
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
-  try {
-    const translations = require('./translations.js');
-    window.texts = translations.texts;
-    window.categoryNames = translations.categoryNames;
-    window.gearItems = translations.gearItems;
+  let translations = null;
+  const globalScope =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+  if (globalScope && globalScope.texts && globalScope.categoryNames && globalScope.gearItems) {
+    translations = {
+      texts: globalScope.texts,
+      categoryNames: globalScope.categoryNames,
+      gearItems: globalScope.gearItems,
+    };
+  } else if (typeof require === 'function') {
+    try {
+      translations = require('./translations.js');
+    } catch (e) {
+      console.warn('Failed to load translations via require', e);
+    }
+  }
+
+  if (translations) {
+    if (globalScope) {
+      if (!globalScope.texts && translations.texts) {
+        globalScope.texts = translations.texts;
+      }
+      if (!globalScope.categoryNames && translations.categoryNames) {
+        globalScope.categoryNames = translations.categoryNames;
+      }
+      if (!globalScope.gearItems && translations.gearItems) {
+        globalScope.gearItems = translations.gearItems;
+      }
+    }
     gearItemTranslations = translations.gearItems || {};
-  } catch (e) {
-    console.warn('Failed to load translations', e);
+  } else {
+    gearItemTranslations = {};
   }
 } else {
   gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
