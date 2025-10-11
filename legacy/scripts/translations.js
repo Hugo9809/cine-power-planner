@@ -7939,6 +7939,42 @@ var gearItems = {
     'Clapper Stick': 'Klappenstab'
   }
 };
+function ensureEnglishFallbackForKey(dataset, key, options) {
+  if (!dataset || _typeof(dataset) !== 'object') {
+    return;
+  }
+
+  var opts = options && _typeof(options) === 'object' ? options : {};
+  var referenceLang = typeof opts.referenceLang === 'string' ? opts.referenceLang : 'en';
+  var reference = dataset[referenceLang];
+
+  if (!reference || _typeof(reference) !== 'object') {
+    return;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(reference, key)) {
+    return;
+  }
+
+  Object.keys(dataset).forEach(function (lang) {
+    if (lang === referenceLang) {
+      return;
+    }
+
+    var translations = dataset[lang];
+    if (!translations || _typeof(translations) !== 'object') {
+      dataset[lang] = {};
+      translations = dataset[lang];
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(translations, key)) {
+      translations[key] = reference[key];
+    }
+  });
+}
+
+ensureEnglishFallbackForKey(texts, 'alertSetupSavedNoDevices');
+
 var categoryNames = {
   en: {
     "cameras": "Camera",
