@@ -2172,12 +2172,26 @@
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
+    const fallbackLabelSource =
+      typeof tourTexts.startLabel === 'string' && tourTexts.startLabel.trim()
+        ? tourTexts.startLabel.trim()
+        : 'Start guided tutorial';
+    const normalizedLabel =
+      typeof label === 'string' && label.trim() ? label.trim() : fallbackLabelSource;
+
     for (let index = 0; index < buttons.length; index += 1) {
       const button = buttons[index];
       if (!button) {
         continue;
       }
-      button.textContent = label;
+      button.textContent = normalizedLabel;
+      if (typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('aria-label', normalizedLabel);
+        } catch (error) {
+          void error;
+        }
+      }
     }
 
     applyHelpStatus(state, steps);

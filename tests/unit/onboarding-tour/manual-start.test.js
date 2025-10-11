@@ -7,10 +7,12 @@ const path = require('path');
 describe('onboarding tour manual start', () => {
   const modulePath = path.resolve(__dirname, '../../../src/scripts/modules/features/onboarding-tour.js');
 
-  function loadModule() {
+  function loadModule(options = {}) {
     jest.resetModules();
     delete global.cineModuleBase;
     delete global.cineFeaturesOnboardingTour;
+    delete global.currentLang;
+    delete global.texts;
     const storage = (() => {
       let store = new Map();
       return {
@@ -20,6 +22,13 @@ describe('onboarding tour manual start', () => {
         }),
       };
     })();
+
+    if (options.currentLang) {
+      global.currentLang = options.currentLang;
+    }
+    if (options.texts) {
+      global.texts = options.texts;
+    }
 
     global.getSafeLocalStorage = () => storage;
     global.SAFE_LOCAL_STORAGE = storage;
@@ -121,5 +130,26 @@ describe('onboarding tour manual start', () => {
     expect(overlay.classList.contains('active')).toBe(true);
     expect(overlay.getAttribute('aria-hidden')).toBe('false');
     expect(helpDialog.hidden).toBe(true);
+  });
+
+  test('restores default label when translations omit onboarding label', () => {
+    loadModule({
+      currentLang: 'zz',
+      texts: {
+        zz: {
+          onboardingTour: {
+            startLabel: '   ',
+            resumeLabelWithProgress: '',
+            resumeLabel: '',
+            restartLabel: '',
+          },
+        },
+      },
+    });
+
+    const button = document.getElementById('helpOnboardingTutorialButton');
+    expect(button).not.toBeNull();
+    expect(button.textContent.trim()).toBe('Start guided tutorial');
+    expect(button.getAttribute('aria-label')).toBe('Start guided tutorial');
   });
 });
