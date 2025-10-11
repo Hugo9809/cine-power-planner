@@ -238,6 +238,7 @@ const texts = {
       "Adjust language, theme, typography and branding preferences.",
     generalSectionLanguageHeading: "Language & units",
     generalSectionAppearanceHeading: "Appearance",
+    generalSectionCameraColorsHeading: "Camera designations",
     generalSectionTypographyHeading: "Typography",
     generalSectionBrandingHeading: "Branding",
     languageSetting: "Language",
@@ -252,6 +253,14 @@ const texts = {
     accentColorSetting: "Accent color",
     accentColorHelp:
       "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
+    cameraColorSettingDescription:
+      "Assign a highlight color to each camera letter so linked gear stays coordinated across your lists.",
+    cameraColorInputHelp: "Choose the highlight color for camera %s.",
+    cameraColorALabel: "Camera A color",
+    cameraColorBLabel: "Camera B color",
+    cameraColorCLabel: "Camera C color",
+    cameraColorDLabel: "Camera D color",
+    cameraColorELabel: "Camera E color",
     accentColorReset: "Reset to default",
     accentColorResetHelp:
       "Revert the accent color to the original theme color while keeping other preferences intact.",
@@ -1595,10 +1604,15 @@ const texts = {
     gearListEditOwnedLabel: "Owned",
     gearListEditOwnedHelp: "Add or remove this line from your Own Gear list to keep your inventory in sync.",
     gearListEditCameraLinkLabel: "Camera link",
-    gearListEditCameraLinkHelp: "Highlight items that should follow the selected camera everywhere.",
+    gearListEditCameraAssignmentLabel: "Camera designation",
+    gearListEditCameraAssignmentHelp:
+      "Pick the letter for this camera body. Linked accessories will share its color.",
+    gearListEditCameraLinkHelp:
+      "Highlight items that should follow a specific camera letter so crews know which kit moves together.",
     gearListEditCameraLinkNoneOption: "No camera link",
-    gearListEditCameraLinkCameraOption: "Link to camera (%s)",
-    gearListEditCameraLinkUnavailableOption: "Link to camera",
+    gearListEditCameraLinkCameraOption: "Camera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Camera %s (unassigned)",
+    gearListEditCameraLinkDefaultLabel: "Camera %s",
     gearListCameraLinkBadgeLabel: "Linked to camera",
     gearListEditDialogTitle: "Edit gear item",
     gearListEditQuantityLabel: "Quantity",
@@ -2758,10 +2772,15 @@ const texts = {
     gearListEditOwnedHelp:
       "Aggiungi o rimuovi questa voce dalla tua lista di Attrezzatura personale per mantenerla sincronizzata.",
     gearListEditCameraLinkLabel: "Collegamento fotocamera",
-    gearListEditCameraLinkHelp: "Contrassegna gli elementi che seguono la fotocamera selezionata.",
+    gearListEditCameraAssignmentLabel: "Designazione camera",
+    gearListEditCameraAssignmentHelp:
+      "Scegli la lettera associata a questo corpo macchina. Gli accessori collegati useranno lo stesso colore.",
+    gearListEditCameraLinkHelp:
+      "Contrassegna gli elementi che seguono una specifica lettera di camera.",
     gearListEditCameraLinkNoneOption: "Nessun collegamento alla fotocamera",
-    gearListEditCameraLinkCameraOption: "Collega alla fotocamera (%s)",
-    gearListEditCameraLinkUnavailableOption: "Collega alla fotocamera",
+    gearListEditCameraLinkCameraOption: "Camera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Camera %s (non assegnata)",
+    gearListEditCameraLinkDefaultLabel: "Camera %s",
     gearListCameraLinkBadgeLabel: "Collegato alla fotocamera",
     gearListEditDialogTitle: "Modifica elemento della lista",
     gearListEditQuantityLabel: "Quantità",
@@ -2862,6 +2881,7 @@ const texts = {
       "Regola lingua, tema, tipografia e branding.",
     generalSectionLanguageHeading: "Lingua e unità",
     generalSectionAppearanceHeading: "Aspetto",
+    generalSectionCameraColorsHeading: "Designazioni camera",
     generalSectionTypographyHeading: "Tipografia",
     generalSectionBrandingHeading: "Branding e logo",
     languageSetting: "Lingua",
@@ -2876,6 +2896,14 @@ const texts = {
     accentColorSetting: "Colore evidenza",
     accentColorHelp:
       "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+    cameraColorSettingDescription:
+      "Assegna un colore evidenziatore a ogni lettera di camera così gli accessori collegati restano coordinati.",
+    cameraColorInputHelp: "Scegli il colore di evidenziazione per la camera %s.",
+    cameraColorALabel: "Colore camera A",
+    cameraColorBLabel: "Colore camera B",
+    cameraColorCLabel: "Colore camera C",
+    cameraColorDLabel: "Colore camera D",
+    cameraColorELabel: "Colore camera E",
     accentColorReset: "Ripristina predefinito",
     accentColorResetHelp:
       "Ripristina il colore d'accento originale del tema senza modificare le altre preferenze.",
@@ -4757,10 +4785,14 @@ const texts = {
     gearListEditOwnedHelp:
       "Añade o elimina esta línea de tu lista de Equipo propio para mantenerla sincronizada.",
     gearListEditCameraLinkLabel: "Vínculo con la cámara",
-    gearListEditCameraLinkHelp: "Marca los elementos que dependen de la cámara seleccionada.",
+    gearListEditCameraAssignmentLabel: "Identificación de cámara",
+    gearListEditCameraAssignmentHelp:
+      "Elige la letra asociada a este cuerpo de cámara. Los accesorios vinculados usarán el mismo color.",
+    gearListEditCameraLinkHelp: "Marca los elementos que siguen a una letra de cámara concreta.",
     gearListEditCameraLinkNoneOption: "Sin vínculo con la cámara",
-    gearListEditCameraLinkCameraOption: "Vincular a la cámara (%s)",
-    gearListEditCameraLinkUnavailableOption: "Vincular a la cámara",
+    gearListEditCameraLinkCameraOption: "Cámara %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Cámara %s (sin asignar)",
+    gearListEditCameraLinkDefaultLabel: "Cámara %s",
     gearListCameraLinkBadgeLabel: "Vinculado a la cámara",
     gearListEditDialogTitle: "Editar elemento del equipo",
     gearListEditQuantityLabel: "Cantidad",
@@ -4863,6 +4895,7 @@ const texts = {
       "Ajusta idioma, tema, tipografía y opciones de marca.",
     generalSectionLanguageHeading: "Idioma y unidades",
     generalSectionAppearanceHeading: "Apariencia",
+    generalSectionCameraColorsHeading: "Identificación de cámaras",
     generalSectionTypographyHeading: "Tipografía",
     generalSectionBrandingHeading: "Marca y logotipo",
     languageSetting: "Idioma",
@@ -4877,6 +4910,14 @@ const texts = {
     accentColorSetting: "Color de acento",
     accentColorHelp:
       "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
+    cameraColorSettingDescription:
+      "Asigna un color de realce a cada letra de cámara para mantener coordinados los accesorios vinculados.",
+    cameraColorInputHelp: "Elige el color de realce para la cámara %s.",
+    cameraColorALabel: "Color cámara A",
+    cameraColorBLabel: "Color cámara B",
+    cameraColorCLabel: "Color cámara C",
+    cameraColorDLabel: "Color cámara D",
+    cameraColorELabel: "Color cámara E",
     accentColorReset: "Restablecer predeterminado",
     accentColorResetHelp:
       "Restaura el color de acento original del tema sin cambiar otras preferencias.",
@@ -6758,10 +6799,14 @@ const texts = {
     gearListEditOwnedHelp:
       "Ajoutez ou retirez cette ligne de votre liste de Matériel personnel pour garder l’inventaire synchronisé.",
     gearListEditCameraLinkLabel: "Lien caméra",
-    gearListEditCameraLinkHelp: "Identifie les éléments attachés à la caméra sélectionnée.",
+    gearListEditCameraAssignmentLabel: "Désignation caméra",
+    gearListEditCameraAssignmentHelp:
+      "Choisissez la lettre associée à ce boîtier. Les accessoires liés partageront sa couleur.",
+    gearListEditCameraLinkHelp: "Identifie les éléments attachés à une lettre de caméra précise.",
     gearListEditCameraLinkNoneOption: "Aucun lien caméra",
-    gearListEditCameraLinkCameraOption: "Lier à la caméra (%s)",
-    gearListEditCameraLinkUnavailableOption: "Lier à la caméra",
+    gearListEditCameraLinkCameraOption: "Caméra %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Caméra %s (non assignée)",
+    gearListEditCameraLinkDefaultLabel: "Caméra %s",
     gearListCameraLinkBadgeLabel: "Lié à la caméra",
     gearListEditDialogTitle: "Modifier l’élément de matériel",
     gearListEditQuantityLabel: "Quantité",
@@ -6865,6 +6910,7 @@ const texts = {
       "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
     generalSectionLanguageHeading: "Langue et unités",
     generalSectionAppearanceHeading: "Apparence",
+    generalSectionCameraColorsHeading: "Désignations caméra",
     generalSectionTypographyHeading: "Typographie",
     generalSectionBrandingHeading: "Image de marque",
     languageSetting: "Langue",
@@ -6879,6 +6925,14 @@ const texts = {
     accentColorSetting: "Couleur d’accent",
     accentColorHelp:
       "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
+    cameraColorSettingDescription:
+      "Attribuez une couleur de surbrillance à chaque lettre de caméra pour garder les accessoires liés parfaitement coordonnés.",
+    cameraColorInputHelp: "Choisissez la couleur de surbrillance pour la caméra %s.",
+    cameraColorALabel: "Couleur caméra A",
+    cameraColorBLabel: "Couleur caméra B",
+    cameraColorCLabel: "Couleur caméra C",
+    cameraColorDLabel: "Couleur caméra D",
+    cameraColorELabel: "Couleur caméra E",
     accentColorReset: "Réinitialiser par défaut",
     accentColorResetHelp:
       "Rétablit la couleur d’accent d’origine du thème sans modifier les autres préférences.",
@@ -8773,10 +8827,14 @@ const texts = {
     gearListEditOwnedHelp:
       "Füge diese Zeile deiner Eigengear-Liste hinzu oder entferne sie, damit dein Bestand synchron bleibt.",
     gearListEditCameraLinkLabel: "Kamera-Verknüpfung",
-    gearListEditCameraLinkHelp: "Kennzeichnet Artikel, die an der ausgewählten Kamera hängen.",
+    gearListEditCameraAssignmentLabel: "Kamera-Kennung",
+    gearListEditCameraAssignmentHelp:
+      "Wähle den Buchstaben für dieses Kameragehäuse. Verknüpfte Zubehörteile verwenden dieselbe Farbe.",
+    gearListEditCameraLinkHelp: "Kennzeichnet Artikel, die einem bestimmten Kamerabuchstaben folgen.",
     gearListEditCameraLinkNoneOption: "Keine Kameraverknüpfung",
-    gearListEditCameraLinkCameraOption: "Mit Kamera verknüpfen (%s)",
-    gearListEditCameraLinkUnavailableOption: "Mit Kamera verknüpfen",
+    gearListEditCameraLinkCameraOption: "Kamera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Kamera %s (nicht zugewiesen)",
+    gearListEditCameraLinkDefaultLabel: "Kamera %s",
     gearListCameraLinkBadgeLabel: "Mit Kamera verknüpft",
     gearListEditDialogTitle: "Gear-Element bearbeiten",
     gearListEditQuantityLabel: "Menge",
@@ -8880,6 +8938,7 @@ const texts = {
       "Sprache, Erscheinungsbild, Typografie und Branding anpassen.",
     generalSectionLanguageHeading: "Sprache & Einheiten",
     generalSectionAppearanceHeading: "Darstellung & Farben",
+    generalSectionCameraColorsHeading: "Kamera-Kennungen",
     generalSectionTypographyHeading: "Typografie",
     generalSectionBrandingHeading: "Branding & Logo",
     languageSetting: "Sprache",
@@ -8894,6 +8953,14 @@ const texts = {
     accentColorSetting: "Akzentfarbe",
     accentColorHelp:
       "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",
+    cameraColorSettingDescription:
+      "Vergib eine Hervorhebungsfarbe für jeden Kamerabuchstaben, damit verknüpftes Zubehör farblich abgestimmt bleibt.",
+    cameraColorInputHelp: "Wähle die Hervorhebungsfarbe für Kamera %s.",
+    cameraColorALabel: "Farbe Kamera A",
+    cameraColorBLabel: "Farbe Kamera B",
+    cameraColorCLabel: "Farbe Kamera C",
+    cameraColorDLabel: "Farbe Kamera D",
+    cameraColorELabel: "Farbe Kamera E",
     accentColorReset: "Auf Standard zurücksetzen",
     accentColorResetHelp:
       "Stellt die ursprüngliche Akzentfarbe des Designs wieder her, ohne andere Einstellungen zu ändern.",

@@ -3917,6 +3917,20 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   min-width: 0;
 }
 
+.camera-color-settings {
+  gap: 18px;
+}
+
+.camera-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.camera-color-field label {
+  font-weight: var(--font-weight-medium);
+}
+
 .settings-card-wide {
   grid-column: 1 / -1;
 }
@@ -10010,6 +10024,8 @@ body.dark-mode .requirement-box,
   margin-inline-start: 0.35rem;
   font-size: 0.8rem;
   line-height: 1;
+  --camera-link-color: var(--danger-color);
+  --camera-link-text-color: var(--inverse-text-color);
 }
 
 .gear-item-camera-link[hidden] {
@@ -10024,8 +10040,8 @@ body.dark-mode .requirement-box,
   min-height: 1.25em;
   padding-inline: 0.25em;
   border-radius: 0.35em;
-  background: var(--danger-color);
-  color: var(--inverse-text-color);
+  background: var(--camera-link-color, var(--danger-color));
+  color: var(--camera-link-text-color, var(--inverse-text-color));
   font-weight: var(--font-weight-bold);
   font-size: 0.95em;
   letter-spacing: 0.02em;

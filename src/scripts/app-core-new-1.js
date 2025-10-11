@@ -11305,6 +11305,49 @@ function setLanguage(lang) {
     accentColorInput.setAttribute("data-help", accentHelp);
     accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
   }
+  if (cameraColorsDescription) {
+    const description =
+      texts[lang].cameraColorSettingDescription ||
+      texts.en?.cameraColorSettingDescription ||
+      cameraColorsDescription.textContent;
+    cameraColorsDescription.textContent = description;
+  }
+  const cameraColorHelpTemplate =
+    texts[lang].cameraColorInputHelp ||
+    texts.en?.cameraColorInputHelp ||
+    '';
+  const cameraColorLabelEntries = [
+    ['A', cameraColorALabel, cameraColorA],
+    ['B', cameraColorBLabel, cameraColorB],
+    ['C', cameraColorCLabel, cameraColorC],
+    ['D', cameraColorDLabel, cameraColorD],
+    ['E', cameraColorELabel, cameraColorE],
+  ];
+  cameraColorLabelEntries.forEach(([letter, labelElement, inputElement]) => {
+    if (!labelElement) {
+      return;
+    }
+    const key = `cameraColor${letter}Label`;
+    const labelText = texts[lang][key]
+      || texts.en?.[key]
+      || labelElement.textContent;
+    labelElement.textContent = labelText;
+    const helpText = cameraColorHelpTemplate ? cameraColorHelpTemplate.replace('%s', letter) : '';
+    if (helpText) {
+      labelElement.setAttribute('data-help', helpText);
+    } else {
+      labelElement.removeAttribute('data-help');
+    }
+    if (inputElement) {
+      if (helpText) {
+        inputElement.setAttribute('data-help', helpText);
+        inputElement.setAttribute('aria-label', helpText);
+      } else {
+        inputElement.removeAttribute('data-help');
+        inputElement.setAttribute('aria-label', labelText);
+      }
+    }
+  });
   if (accentColorResetButton) {
     const accentResetLabel =
       (texts[lang] && texts[lang].accentColorReset) ||
@@ -21629,6 +21672,18 @@ const generalLanguageHeading = document.getElementById('generalLanguageHeading')
 const generalAppearanceHeading = document.getElementById('generalAppearanceHeading');
 const generalTypographyHeading = document.getElementById('generalTypographyHeading');
 const generalBrandingHeading = document.getElementById('generalBrandingHeading');
+const generalCameraColorsHeading = document.getElementById('generalCameraColorsHeading');
+const cameraColorsDescription = document.getElementById('cameraColorsDescription');
+const cameraColorALabel = document.getElementById('cameraColorALabel');
+const cameraColorBLabel = document.getElementById('cameraColorBLabel');
+const cameraColorCLabel = document.getElementById('cameraColorCLabel');
+const cameraColorDLabel = document.getElementById('cameraColorDLabel');
+const cameraColorELabel = document.getElementById('cameraColorELabel');
+var cameraColorA = document.getElementById('cameraColorA');
+var cameraColorB = document.getElementById('cameraColorB');
+var cameraColorC = document.getElementById('cameraColorC');
+var cameraColorD = document.getElementById('cameraColorD');
+var cameraColorE = document.getElementById('cameraColorE');
 var settingsLanguage = document.getElementById("settingsLanguage");
 var settingsDarkMode = document.getElementById("settingsDarkMode");
 var settingsPinkMode = document.getElementById("settingsPinkMode");
