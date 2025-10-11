@@ -138,6 +138,9 @@
     );
   }
 
+  let dialogObserver = null;
+  let dialogObserverAttached = false;
+
   function bringOverlayToTopLayer() {
     if (!overlayRoot) {
       return;
@@ -179,6 +182,70 @@
     if (isDialogElement(target) && target.open) {
       bringOverlayToTopLayer();
     }
+  }
+
+  function ensureDialogObserver() {
+    if (!supportsDialogTopLayer || dialogObserver || typeof MutationObserver !== 'function') {
+      return;
+    }
+    try {
+      dialogObserver = new MutationObserver(mutations => {
+        if (!mutations || mutations.length === 0) {
+          return;
+        }
+        for (let index = 0; index < mutations.length; index += 1) {
+          const mutation = mutations[index];
+          if (!mutation || mutation.type !== 'attributes' || mutation.attributeName !== 'open') {
+            continue;
+          }
+          const target = mutation.target;
+          if (target) {
+            handleDialogToggle({ target });
+          }
+        }
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not observe dialog attribute changes.', error);
+      dialogObserver = null;
+    }
+  }
+
+  function attachDialogObserver() {
+    if (!supportsDialogTopLayer || dialogObserverAttached) {
+      return;
+    }
+    ensureDialogObserver();
+    if (!dialogObserver || typeof dialogObserver.observe !== 'function') {
+      return;
+    }
+    const target = DOCUMENT.body || DOCUMENT.documentElement || DOCUMENT;
+    if (!target) {
+      return;
+    }
+    try {
+      dialogObserver.observe(target, {
+        attributes: true,
+        attributeFilter: ['open'],
+        subtree: true,
+      });
+      dialogObserverAttached = true;
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not attach dialog observer.', error);
+    }
+  }
+
+  function detachDialogObserver() {
+    if (!dialogObserverAttached || !dialogObserver) {
+      return;
+    }
+    if (typeof dialogObserver.disconnect === 'function') {
+      try {
+        dialogObserver.disconnect();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach dialog observer.', error);
+      }
+    }
+    dialogObserverAttached = false;
   }
 
   function resolveStorage() {
@@ -3397,7 +3464,7 @@
     if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
       DOCUMENT.addEventListener('scroll', schedulePositionUpdate, true);
       if (supportsDialogTopLayer) {
-        DOCUMENT.addEventListener('toggle', handleDialogToggle, true);
+        attachDialogObserver();
       }
     }
   }
@@ -3410,7 +3477,7 @@
     if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
       DOCUMENT.removeEventListener('scroll', schedulePositionUpdate, true);
       if (supportsDialogTopLayer) {
-        DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
+        detachDialogObserver();
       }
     }
   }
