@@ -2863,12 +2863,15 @@ function updateGearItemEditCameraLinkOptions(context) {
   noneOption.textContent = texts.cameraLinkNoneOption || 'No camera link';
   select.appendChild(noneOption);
   var cameraName = getActiveCameraDisplayName();
+  var identityInfo = findCameraIdentityForLabel(cameraName);
   var cameraOption = doc.createElement('option');
   cameraOption.value = 'camera';
   var optionLabel = texts.cameraLinkCameraOption || 'Link to camera';
   if (optionLabel.includes('%s')) {
-    if (cameraName) {
-      optionLabel = optionLabel.replace('%s', cameraName);
+    var identityLabel = identityInfo ? identityInfo.label : '';
+    var combinedLabel = identityLabel && cameraName ? "".concat(identityLabel, " — ").concat(cameraName) : identityLabel || cameraName;
+    if (combinedLabel) {
+      optionLabel = optionLabel.replace('%s', combinedLabel);
     } else {
       optionLabel = optionLabel.replace(/\s*\(\s*%s\s*\)/g, '').replace('%s', '').trim();
       if (!optionLabel) {
@@ -2886,6 +2889,13 @@ function updateGearItemEditCameraLinkOptions(context) {
   } else if (storedCameraLabel) {
     cameraOption.dataset.cameraLabel = storedCameraLabel;
   }
+  if (identityInfo) {
+    cameraOption.dataset.cameraIdentity = identityInfo.id;
+    cameraOption.dataset.cameraLetter = identityInfo.letter;
+    if (identityInfo.color) {
+      cameraOption.dataset.cameraColor = identityInfo.color;
+    }
+  }
   select.appendChild(cameraOption);
   var desiredValue = typeof data.cameraLink === 'string' && data.cameraLink.trim() === 'camera' ? 'camera' : '';
   if (desiredValue) {
@@ -2893,6 +2903,35 @@ function updateGearItemEditCameraLinkOptions(context) {
   } else {
     select.value = '';
   }
+}
+
+function updateGearItemEditCameraIdentityOptions(context) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!context || !context.cameraIdentitySelect) return;
+  var select = context.cameraIdentitySelect;
+  while (select.firstChild) {
+    select.removeChild(select.firstChild);
+  }
+  var doc = select.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var texts = getGearItemEditTexts();
+  CAMERA_IDENTITY_PRESETS.forEach(function (preset) {
+    var option = doc.createElement('option');
+    option.value = preset.id;
+    var labelKey = CAMERA_IDENTITY_TRANSLATION_KEYS[preset.id];
+    var labelText = labelKey && texts[labelKey] ? texts[labelKey] : 'Camera ' + preset.letter;
+    option.textContent = labelText;
+    if (!preset.random && preset.color) {
+      option.dataset.identityColor = preset.color;
+    }
+    select.appendChild(option);
+  });
+  var rawValue = data && Object.prototype.hasOwnProperty.call(data, 'cameraIdentity') ? data.cameraIdentity : context.currentCameraIdentity;
+  var desired = typeof rawValue === 'string' && rawValue.trim() ? rawValue.trim() : 'camera-a';
+  var hasDesired = Array.prototype.some.call(select.options, function (option) {
+    return option.value === desired;
+  });
+  select.value = hasDesired ? desired : 'camera-a';
 }
 function refreshGearItemProviderDisplays(scope) {
   var root = scope || gearListOutput;
@@ -6431,6 +6470,207 @@ function getActiveCameraDisplayName() {
   var label = typeof selectedOption.text === 'string' ? selectedOption.text : selectedOption.textContent || '';
   return typeof label === 'string' ? label.trim() : '';
 }
+var CAMERA_IDENTITY_PRESETS = [
+  { id: 'camera-a', letter: 'A', color: '#d13438', translationKey: 'cameraIdentityOptionA' },
+  { id: 'camera-b', letter: 'B', color: '#2563eb', translationKey: 'cameraIdentityOptionB' },
+  { id: 'camera-c', letter: 'C', color: '#f4c430', translationKey: 'cameraIdentityOptionC' },
+  { id: 'camera-d', letter: 'D', color: '#2ca66f', translationKey: 'cameraIdentityOptionD' },
+  { id: 'camera-e', letter: 'E', translationKey: 'cameraIdentityOptionE', random: true }
+];
+var CAMERA_IDENTITY_TRANSLATION_KEYS = {};
+CAMERA_IDENTITY_PRESETS.forEach(function (preset) {
+  CAMERA_IDENTITY_TRANSLATION_KEYS[preset.id] = preset.translationKey;
+});
+function getCameraIdentityPresetById(identityId) {
+  var normalized = typeof identityId === 'string' ? identityId.trim().toLowerCase() : '';
+  for (var i = 0; i < CAMERA_IDENTITY_PRESETS.length; i += 1) {
+    if (CAMERA_IDENTITY_PRESETS[i].id === normalized) {
+      return CAMERA_IDENTITY_PRESETS[i];
+    }
+  }
+  return CAMERA_IDENTITY_PRESETS[0];
+}
+function getCameraIdentityLabel(identityId) {
+  var preset = getCameraIdentityPresetById(identityId);
+  var textsForDialog = getGearItemEditTexts();
+  var key = CAMERA_IDENTITY_TRANSLATION_KEYS[preset.id];
+  if (key && Object.prototype.hasOwnProperty.call(textsForDialog, key)) {
+    var textValue = textsForDialog[key];
+    if (typeof textValue === 'string' && textValue.trim()) {
+      return textValue.trim();
+    }
+  }
+  return 'Camera ' + preset.letter;
+}
+function normalizeHexColor(value) {
+  var trimmed = typeof value === 'string' ? value.trim() : '';
+  if (!trimmed) {
+    return '';
+  }
+  var hexMatch = trimmed.match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (!hexMatch) {
+    return '';
+  }
+  var hex = hexMatch[1];
+  if (hex.length === 3) {
+    hex = hex.split('').map(function (ch) { return ch + ch; }).join('');
+  }
+  return '#' + hex.toLowerCase();
+}
+function hueToRgb(p, q, t) {
+  var temp = t;
+  if (temp < 0) temp += 1;
+  if (temp > 1) temp -= 1;
+  if (temp < 1 / 6) return p + (q - p) * 6 * temp;
+  if (temp < 1 / 2) return q;
+  if (temp < 2 / 3) return p + (q - p) * (2 / 3 - temp) * 6;
+  return p;
+}
+function hslToHex(h, s, l) {
+  var hue = ((Number(h) % 360) + 360) % 360 / 360;
+  var saturation = Number.isFinite(s) ? Math.max(0, Math.min(1, s)) : 0;
+  var lightness = Number.isFinite(l) ? Math.max(0, Math.min(1, l)) : 0;
+  if (saturation === 0) {
+    var gray = Math.round(lightness * 255);
+    var hex = gray.toString(16).padStart(2, '0');
+    return '#' + hex + hex + hex;
+  }
+  var q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+  var p = 2 * lightness - q;
+  var r = Math.round(hueToRgb(p, q, hue + 1 / 3) * 255);
+  var g = Math.round(hueToRgb(p, q, hue) * 255);
+  var b = Math.round(hueToRgb(p, q, hue - 1 / 3) * 255);
+  return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+}
+function generateCameraIdentityColor() {
+  var hue = Math.floor(Math.random() * 360);
+  var saturation = 0.7;
+  var lightness = 0.52;
+  return hslToHex(hue, saturation, lightness);
+}
+function getReadableCameraTextColor(color) {
+  var normalized = normalizeHexColor(color);
+  if (!normalized) {
+    return '';
+  }
+  var r = parseInt(normalized.slice(1, 3), 16);
+  var g = parseInt(normalized.slice(3, 5), 16);
+  var b = parseInt(normalized.slice(5, 7), 16);
+  var toLinear = function toLinear(value) {
+    var srgb = value / 255;
+    return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4);
+  };
+  var luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return luminance > 0.54 ? '#101418' : '#ffffff';
+}
+function getCameraIdentityInfo(identityId, options) {
+  var opts = options || {};
+  var preset = getCameraIdentityPresetById(identityId);
+  var overrideColor = normalizeHexColor(opts.colorOverride);
+  var fallbackColor = normalizeHexColor(opts.fallbackColor);
+  var color = overrideColor;
+  if (!color) {
+    if (preset.random) {
+      color = fallbackColor;
+      if (!color && opts.generateRandom) {
+        color = normalizeHexColor(generateCameraIdentityColor());
+      }
+    } else {
+      color = normalizeHexColor(preset.color);
+    }
+  }
+  var label = getCameraIdentityLabel(preset.id);
+  var textColor = color ? getReadableCameraTextColor(color) : '';
+  return {
+    id: preset.id,
+    letter: preset.letter,
+    label: label,
+    color: color,
+    random: Boolean(preset.random),
+    textColor: textColor
+  };
+}
+function getCameraItemElements() {
+  if (!gearListOutput) {
+    return [];
+  }
+  var selector = '.gear-item[data-gear-camera-identity], .gear-custom-item[data-gear-camera-identity]';
+  return Array.prototype.slice.call(gearListOutput.querySelectorAll(selector));
+}
+function findCameraIdentityForLabel(label) {
+  var normalizedLabel = typeof label === 'string' ? label.trim().toLowerCase() : '';
+  var items = getCameraItemElements();
+  if (!items.length) {
+    return getCameraIdentityInfo('camera-a');
+  }
+  var fallbackInfo = null;
+  items.forEach(function (item) {
+    var identityAttr = item.getAttribute('data-gear-camera-identity') || '';
+    var colorAttr = item.getAttribute('data-gear-camera-color') || '';
+    var info = getCameraIdentityInfo(identityAttr || 'camera-a', {
+      colorOverride: colorAttr,
+      fallbackColor: colorAttr
+    });
+    if (!fallbackInfo) {
+      fallbackInfo = info;
+    }
+    if (!normalizedLabel) {
+      return;
+    }
+    var linkLabel = (item.getAttribute('data-gear-camera-link-label') || '').trim().toLowerCase();
+    if (linkLabel && linkLabel === normalizedLabel) {
+      fallbackInfo = info;
+    }
+  });
+  return fallbackInfo || getCameraIdentityInfo('camera-a');
+}
+function refreshLinkedCameraItems(changedCameraElement) {
+  if (!gearListOutput) return;
+  var cameraLabel = changedCameraElement ? String(changedCameraElement.getAttribute('data-gear-camera-link-label') || '') : '';
+  var identityInfo = findCameraIdentityForLabel(cameraLabel);
+  var items = gearListOutput.querySelectorAll('.gear-item[data-gear-camera-link="camera"], .gear-custom-item[data-gear-camera-link="camera"]');
+  Array.prototype.forEach.call(items, function (item) {
+    if (item === changedCameraElement) {
+      return;
+    }
+    var linkedLabel = String(item.getAttribute('data-gear-camera-link-label') || '');
+    if (cameraLabel && linkedLabel && linkedLabel !== cameraLabel) {
+      return;
+    }
+    if (identityInfo) {
+      item.setAttribute('data-gear-camera-link-identity', identityInfo.id);
+      item.setAttribute('data-gear-camera-link-letter', identityInfo.letter);
+      if (identityInfo.color) {
+        item.setAttribute('data-gear-camera-link-color', identityInfo.color);
+      } else {
+        item.removeAttribute('data-gear-camera-link-color');
+      }
+      if (item.style) {
+        if (identityInfo.color) {
+          item.style.setProperty('--gear-item-camera-color', identityInfo.color);
+          if (identityInfo.textColor) {
+            item.style.setProperty('--gear-item-camera-contrast', identityInfo.textColor);
+          } else {
+            item.style.removeProperty('--gear-item-camera-contrast');
+          }
+        } else {
+          item.style.removeProperty('--gear-item-camera-color');
+          item.style.removeProperty('--gear-item-camera-contrast');
+        }
+      }
+    }
+    var textsForDialog = getGearItemEditTexts();
+    var baseLabel = textsForDialog.cameraLinkBadgeLabel || 'Linked to camera';
+    var badgeLabel = linkedLabel ? baseLabel + ' — ' + linkedLabel : baseLabel;
+    updateGearItemCameraLinkIndicator(item, true, {
+      isPrimary: isPrimaryCameraItem(item),
+      badgeLabel: badgeLabel,
+      iconText: identityInfo ? identityInfo.letter : '',
+      identityColor: identityInfo ? identityInfo.color : '',
+      identityTextColor: identityInfo ? identityInfo.textColor : ''
+    });
+  });
+}
 function ensureGearItemCameraLinkIndicator(element) {
   if (!element) return null;
   var indicator = element.querySelector('.gear-item-camera-link');
@@ -6471,6 +6711,14 @@ function updateGearItemCameraLinkIndicator(element, active) {
     indicator.hidden = true;
     indicator.setAttribute('hidden', '');
     indicator.classList.remove('gear-item-camera-link--primary');
+    if (indicator.style) {
+      indicator.style.removeProperty('--gear-item-camera-color');
+      indicator.style.removeProperty('--gear-item-camera-contrast');
+    }
+    if (element && element.style) {
+      element.style.removeProperty('--gear-item-camera-color');
+      element.style.removeProperty('--gear-item-camera-contrast');
+    }
     return;
   }
   var textsForDialog = getGearItemEditTexts();
@@ -6480,6 +6728,34 @@ function updateGearItemCameraLinkIndicator(element, active) {
   var icon = indicator.querySelector('.gear-item-camera-link__icon');
   if (icon) {
     icon.textContent = options.iconText && options.iconText.trim() || 'A';
+  }
+  var colorValue = normalizeHexColor(options.identityColor);
+  var contrastValue = options.identityTextColor || (colorValue ? getReadableCameraTextColor(colorValue) : '');
+  if (element && element.style) {
+    if (colorValue) {
+      element.style.setProperty('--gear-item-camera-color', colorValue);
+      if (contrastValue) {
+        element.style.setProperty('--gear-item-camera-contrast', contrastValue);
+      } else {
+        element.style.removeProperty('--gear-item-camera-contrast');
+      }
+    } else {
+      element.style.removeProperty('--gear-item-camera-color');
+      element.style.removeProperty('--gear-item-camera-contrast');
+    }
+  }
+  if (indicator.style) {
+    if (colorValue) {
+      indicator.style.setProperty('--gear-item-camera-color', colorValue);
+      if (contrastValue) {
+        indicator.style.setProperty('--gear-item-camera-contrast', contrastValue);
+      } else {
+        indicator.style.removeProperty('--gear-item-camera-contrast');
+      }
+    } else {
+      indicator.style.removeProperty('--gear-item-camera-color');
+      indicator.style.removeProperty('--gear-item-camera-contrast');
+    }
   }
   var assist = indicator.querySelector('[data-camera-link-assist]');
   if (assist) {
@@ -6673,6 +6949,10 @@ function getGearItemData(element) {
   var providerLabel = providerLabelAttr.trim();
   var cameraLinkAttr = element.getAttribute('data-gear-camera-link') || '';
   var cameraLinkLabelAttr = element.getAttribute('data-gear-camera-link-label') || '';
+  var cameraIdentityAttr = element.getAttribute('data-gear-camera-identity') || '';
+  var cameraIdentityColorAttr = element.getAttribute('data-gear-camera-color') || '';
+  var cameraLinkIdentityAttr = element.getAttribute('data-gear-camera-link-identity') || '';
+  var cameraLinkColorAttr = element.getAttribute('data-gear-camera-link-color') || '';
   var cameraItem = isPrimaryCameraItem(element);
   var cameraLinkValue = cameraLinkAttr && cameraLinkAttr !== 'none' || cameraItem ? 'camera' : '';
   var cameraLinkLabel = cameraLinkLabelAttr.trim() || (cameraItem ? getActiveCameraDisplayName() : '');
@@ -6689,7 +6969,11 @@ function getGearItemData(element) {
     extraEnd: extraEndAttr.trim(),
     extraLabel: extraLabelAttr.trim(),
     cameraLink: cameraLinkValue,
-    cameraLinkLabel: cameraLinkLabel
+    cameraLinkLabel: cameraLinkLabel,
+    cameraIdentity: cameraIdentityAttr.trim(),
+    cameraIdentityColor: cameraIdentityColorAttr.trim(),
+    cameraLinkIdentity: cameraLinkIdentityAttr.trim(),
+    cameraLinkColor: cameraLinkColorAttr.trim()
   };
 }
 function getGearItemResetDefaults(element) {
@@ -6882,9 +7166,14 @@ function applyGearItemData(element) {
   });
   var cameraLinkRaw = typeof data.cameraLink === 'string' ? data.cameraLink.trim() : '';
   var cameraLabelRaw = typeof data.cameraLinkLabel === 'string' ? data.cameraLinkLabel.trim() : '';
+  var cameraIdentityRaw = typeof data.cameraIdentity === 'string' ? data.cameraIdentity.trim() : '';
+  var cameraIdentityColorRaw = typeof data.cameraIdentityColor === 'string' ? data.cameraIdentityColor.trim() : '';
+  var cameraLinkIdentityRaw = typeof data.cameraLinkIdentity === 'string' ? data.cameraLinkIdentity.trim() : '';
+  var cameraLinkColorRaw = typeof data.cameraLinkColor === 'string' ? data.cameraLinkColor.trim() : '';
   var cameraItem = isPrimaryCameraItem(element);
   var wantsCameraLink = cameraItem || cameraLinkRaw === 'camera';
   var effectiveCameraLabel = cameraLabelRaw || (cameraItem ? getActiveCameraDisplayName() : '');
+  var identityInfo = null;
   if (wantsCameraLink) {
     element.setAttribute('data-gear-camera-link', 'camera');
     if (effectiveCameraLabel) {
@@ -6896,6 +7185,56 @@ function applyGearItemData(element) {
     element.removeAttribute('data-gear-camera-link');
     element.removeAttribute('data-gear-camera-link-label');
   }
+  if (cameraItem) {
+    var previousIdentity = element.getAttribute('data-gear-camera-identity') || '';
+    var previousColor = element.getAttribute('data-gear-camera-color') || '';
+    var identityId = cameraIdentityRaw || previousIdentity || 'camera-a';
+    identityInfo = getCameraIdentityInfo(identityId, {
+      colorOverride: cameraIdentityColorRaw || previousColor,
+      fallbackColor: cameraIdentityColorRaw || previousColor,
+      generateRandom: true
+    });
+    element.setAttribute('data-gear-camera-identity', identityInfo.id);
+    element.setAttribute('data-gear-camera-letter', identityInfo.letter);
+    element.setAttribute('data-gear-camera-identity-label', identityInfo.label);
+    if (identityInfo.color) {
+      element.setAttribute('data-gear-camera-color', identityInfo.color);
+    } else {
+      element.removeAttribute('data-gear-camera-color');
+    }
+    data.cameraIdentity = identityInfo.id;
+    if (identityInfo.random) {
+      data.cameraIdentityColor = identityInfo.color || cameraIdentityColorRaw || '';
+    } else {
+      data.cameraIdentityColor = identityInfo.color || '';
+    }
+  } else if (wantsCameraLink) {
+    identityInfo = findCameraIdentityForLabel(effectiveCameraLabel);
+    if ((!identityInfo || !identityInfo.color) && (cameraLinkIdentityRaw || cameraLinkColorRaw)) {
+      identityInfo = getCameraIdentityInfo(cameraLinkIdentityRaw || 'camera-a', {
+        colorOverride: cameraLinkColorRaw,
+        fallbackColor: cameraLinkColorRaw
+      });
+    }
+    if (identityInfo) {
+      element.setAttribute('data-gear-camera-link-identity', identityInfo.id);
+      element.setAttribute('data-gear-camera-link-letter', identityInfo.letter);
+      if (identityInfo.color) {
+        element.setAttribute('data-gear-camera-link-color', identityInfo.color);
+      } else {
+        element.removeAttribute('data-gear-camera-link-color');
+      }
+      data.cameraLinkIdentity = identityInfo.id;
+      data.cameraLinkColor = identityInfo.color || '';
+    }
+  }
+  if (!cameraItem && !wantsCameraLink) {
+    element.removeAttribute('data-gear-camera-link-identity');
+    element.removeAttribute('data-gear-camera-link-letter');
+    element.removeAttribute('data-gear-camera-link-color');
+    data.cameraLinkIdentity = '';
+    data.cameraLinkColor = '';
+  }
   if (element.classList) {
     element.classList.toggle('gear-item-camera-linked', wantsCameraLink);
   }
@@ -6904,8 +7243,14 @@ function applyGearItemData(element) {
   var badgeLabel = effectiveCameraLabel ? "".concat(badgeBase, " \u2014 ").concat(effectiveCameraLabel) : badgeBase;
   updateGearItemCameraLinkIndicator(element, wantsCameraLink, {
     isPrimary: cameraItem,
-    badgeLabel: badgeLabel
+    badgeLabel: badgeLabel,
+    iconText: identityInfo ? identityInfo.letter : '',
+    identityColor: identityInfo ? identityInfo.color : '',
+    identityTextColor: identityInfo ? identityInfo.textColor : ''
   });
+  if (cameraItem) {
+    refreshLinkedCameraItems(element);
+  }
   if (!element.getAttribute('data-gear-original-name')) {
     var originalName = element.getAttribute('data-gear-name');
     if (originalName) {
@@ -7269,6 +7614,10 @@ function buildGearItemEditContext() {
     cameraLinkSelect: resolveElementById('gearItemEditCameraLink', 'gearItemEditCameraLink'),
     cameraLinkLabel: resolveElementById('gearItemEditCameraLinkLabel', 'gearItemEditCameraLinkLabel'),
     cameraLinkHelp: resolveElementById('gearItemEditCameraLinkHelp', 'gearItemEditCameraLinkHelp'),
+    cameraIdentityContainer: resolveElementById('gearItemEditCameraIdentityContainer', 'gearItemEditCameraIdentityContainer'),
+    cameraIdentitySelect: resolveElementById('gearItemEditCameraIdentity', 'gearItemEditCameraIdentity'),
+    cameraIdentityLabel: resolveElementById('gearItemEditCameraIdentityLabel', 'gearItemEditCameraIdentityLabel'),
+    cameraIdentityHelp: resolveElementById('gearItemEditCameraIdentityHelp', 'gearItemEditCameraIdentityHelp'),
     rentalCheckbox: resolveElementById('gearItemEditRental', 'gearItemEditRental'),
     rentalContainer: resolveElementById('gearItemEditRentalContainer', 'gearItemEditRentalContainer'),
     rentalSection: resolveElementById('gearItemEditRentalSection', 'gearItemEditRentalSection'),
@@ -7282,6 +7631,7 @@ function buildGearItemEditContext() {
     currentAttributes: '',
     currentOwnedEntryId: '',
     currentCameraLinkValue: '',
+    currentCameraIdentity: '',
     isCameraItem: false
   };
 }
@@ -7322,6 +7672,13 @@ function getGearItemEditTexts() {
     cameraLinkCameraOption: langTexts.gearListEditCameraLinkCameraOption || fallbackTexts.gearListEditCameraLinkCameraOption || 'Link to camera (%s)',
     cameraLinkUnavailableOption: langTexts.gearListEditCameraLinkUnavailableOption || fallbackTexts.gearListEditCameraLinkUnavailableOption || 'Link to camera',
     cameraLinkBadgeLabel: langTexts.gearListCameraLinkBadgeLabel || fallbackTexts.gearListCameraLinkBadgeLabel || 'Linked to camera',
+    cameraIdentityLabel: langTexts.gearListEditCameraIdentityLabel || fallbackTexts.gearListEditCameraIdentityLabel || 'Camera identity',
+    cameraIdentityHelp: langTexts.gearListEditCameraIdentityHelp || fallbackTexts.gearListEditCameraIdentityHelp || '',
+    cameraIdentityOptionA: langTexts.gearListEditCameraIdentityOptionA || fallbackTexts.gearListEditCameraIdentityOptionA || 'Camera A — Red',
+    cameraIdentityOptionB: langTexts.gearListEditCameraIdentityOptionB || fallbackTexts.gearListEditCameraIdentityOptionB || 'Camera B — Blue',
+    cameraIdentityOptionC: langTexts.gearListEditCameraIdentityOptionC || fallbackTexts.gearListEditCameraIdentityOptionC || 'Camera C — Yellow',
+    cameraIdentityOptionD: langTexts.gearListEditCameraIdentityOptionD || fallbackTexts.gearListEditCameraIdentityOptionD || 'Camera D — Green',
+    cameraIdentityOptionE: langTexts.gearListEditCameraIdentityOptionE || fallbackTexts.gearListEditCameraIdentityOptionE || 'Camera E — Z Cam (random color)',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item'
@@ -7426,6 +7783,28 @@ function applyGearItemEditDialogTexts(context) {
       context.cameraLinkSelect.removeAttribute('aria-describedby');
     }
     context.cameraLinkSelect.setAttribute('aria-label', textsForDialog.cameraLinkLabel);
+  }
+  if (context.cameraIdentityLabel) {
+    context.cameraIdentityLabel.textContent = textsForDialog.cameraIdentityLabel;
+  }
+  if (context.cameraIdentityHelp) {
+    var identityHelp = textsForDialog.cameraIdentityHelp || '';
+    context.cameraIdentityHelp.textContent = identityHelp;
+    if (identityHelp) {
+      context.cameraIdentityHelp.hidden = false;
+      context.cameraIdentityHelp.removeAttribute('hidden');
+    } else {
+      context.cameraIdentityHelp.hidden = true;
+      context.cameraIdentityHelp.setAttribute('hidden', '');
+    }
+  }
+  if (context.cameraIdentitySelect) {
+    if (context.cameraIdentityHelp && context.cameraIdentityHelp.textContent) {
+      context.cameraIdentitySelect.setAttribute('aria-describedby', context.cameraIdentityHelp.id);
+    } else {
+      context.cameraIdentitySelect.removeAttribute('aria-describedby');
+    }
+    context.cameraIdentitySelect.setAttribute('aria-label', textsForDialog.cameraIdentityLabel);
   }
   if (context.ownedLabel) {
     var ownedLabelSpan = context.ownedLabel.querySelector('span');
@@ -7654,6 +8033,10 @@ function handleGearItemEditFieldInput() {
       context.ownedCheckbox.removeAttribute('aria-disabled');
     }
   }
+  if (context.cameraIdentitySelect) {
+    var _context$cameraIdentit;
+    context.currentCameraIdentity = ((_context$cameraIdentit = context.cameraIdentitySelect.value) !== null && _context$cameraIdentit !== void 0 ? _context$cameraIdentit : '').trim();
+  }
   updateGearItemEditResetState(context);
 }
 function handleGearItemEditRentalCheckboxChange() {
@@ -7813,11 +8196,15 @@ function handleGearItemEditFormSubmit(event) {
   var isCameraItem = Boolean(context.isCameraItem);
   var cameraLinkSelection = '';
   var cameraLinkLabel = '';
+  var cameraLinkIdentity = '';
+  var cameraLinkColor = '';
   if (context.cameraLinkSelect) {
     cameraLinkSelection = context.cameraLinkSelect.value || '';
     var selectedOption = context.cameraLinkSelect.selectedOptions && context.cameraLinkSelect.selectedOptions[0];
     if (selectedOption) {
       cameraLinkLabel = selectedOption.getAttribute('data-camera-label') || (selectedOption.dataset ? selectedOption.dataset.cameraLabel : '') || '';
+      cameraLinkIdentity = selectedOption.dataset ? selectedOption.dataset.cameraIdentity || '' : selectedOption.getAttribute('data-camera-identity') || '';
+      cameraLinkColor = selectedOption.dataset ? selectedOption.dataset.cameraColor || '' : selectedOption.getAttribute('data-camera-color') || '';
       if (!cameraLinkLabel) {
         var optionText = selectedOption.textContent || '';
         if (optionText) {
@@ -7826,13 +8213,36 @@ function handleGearItemEditFormSubmit(event) {
       }
     }
   }
+  if (!isCameraItem) {
+    data.cameraIdentity = '';
+    data.cameraIdentityColor = '';
+  }
+  var identitySelect = context.cameraIdentitySelect;
+  if (isCameraItem && identitySelect) {
+    var identityOption = identitySelect.selectedOptions && identitySelect.selectedOptions[0];
+    var optionColor = identityOption ? identityOption.dataset && identityOption.dataset.identityColor || identityOption.getAttribute('data-identity-color') || '' : '';
+    var previousIdentity = targetEntry ? targetEntry.getAttribute('data-gear-camera-identity') || '' : '';
+    var previousColor = targetEntry ? targetEntry.getAttribute('data-gear-camera-color') || '' : '';
+    var desiredIdentity = identitySelect.value || previousIdentity || 'camera-a';
+    var identityInfo = getCameraIdentityInfo(desiredIdentity, {
+      colorOverride: optionColor || data.cameraIdentityColor || '',
+      fallbackColor: optionColor || previousColor,
+      generateRandom: true
+    });
+    data.cameraIdentity = identityInfo.id;
+    data.cameraIdentityColor = identityInfo.random ? identityInfo.color || previousColor || '' : identityInfo.color || '';
+  }
   var wantsCameraLink = isCameraItem || cameraLinkSelection === 'camera';
   if (wantsCameraLink) {
     data.cameraLink = 'camera';
     data.cameraLinkLabel = cameraLinkLabel || getActiveCameraDisplayName() || '';
+    data.cameraLinkIdentity = cameraLinkIdentity || (isCameraItem ? data.cameraIdentity : data.cameraLinkIdentity || '');
+    data.cameraLinkColor = cameraLinkColor || (isCameraItem ? data.cameraIdentityColor : data.cameraLinkColor || '');
   } else {
     data.cameraLink = '';
     data.cameraLinkLabel = '';
+    data.cameraLinkIdentity = '';
+    data.cameraLinkColor = '';
   }
   context.currentCameraLinkValue = data.cameraLink;
   applyGearItemData(targetEntry, data);
@@ -8062,6 +8472,9 @@ function bindGearItemEditDialog(context) {
   if (context.cameraLinkSelect) {
     context.cameraLinkSelect.addEventListener('change', handleGearItemEditFieldInput);
   }
+  if (context.cameraIdentitySelect) {
+    context.cameraIdentitySelect.addEventListener('change', handleGearItemEditFieldInput);
+  }
   gearItemEditDialogBound = true;
 }
 function openGearItemEditor(element) {
@@ -8155,9 +8568,38 @@ function openGearItemEditor(element) {
   var cameraLinked = data.cameraLink === 'camera';
   var isCameraItem = isPrimaryCameraItem(element);
   context.isCameraItem = isCameraItem;
+  if (context.cameraIdentityContainer) {
+    if (isCameraItem) {
+      context.cameraIdentityContainer.hidden = false;
+      context.cameraIdentityContainer.removeAttribute('hidden');
+      updateGearItemEditCameraIdentityOptions(context, data);
+      if (context.cameraIdentitySelect) {
+        var identityAttr = element.getAttribute('data-gear-camera-identity') || '';
+        var desiredIdentity = data.cameraIdentity && data.cameraIdentity.trim() ? data.cameraIdentity.trim() : identityAttr || 'camera-a';
+        var hasOption = Array.prototype.some.call(context.cameraIdentitySelect.options, function (option) {
+          return option.value === desiredIdentity;
+        });
+        context.cameraIdentitySelect.value = hasOption ? desiredIdentity : 'camera-a';
+        context.cameraIdentitySelect.disabled = false;
+        context.cameraIdentitySelect.removeAttribute('aria-disabled');
+        context.currentCameraIdentity = context.cameraIdentitySelect.value;
+      } else {
+        context.currentCameraIdentity = data.cameraIdentity || '';
+      }
+    } else {
+      context.cameraIdentityContainer.hidden = true;
+      context.cameraIdentityContainer.setAttribute('hidden', '');
+      context.currentCameraIdentity = '';
+    }
+  }
   if (context.cameraLinkContainer) {
-    context.cameraLinkContainer.hidden = false;
-    context.cameraLinkContainer.removeAttribute('hidden');
+    if (isCameraItem) {
+      context.cameraLinkContainer.hidden = true;
+      context.cameraLinkContainer.setAttribute('hidden', '');
+    } else {
+      context.cameraLinkContainer.hidden = false;
+      context.cameraLinkContainer.removeAttribute('hidden');
+    }
   }
   if (context.cameraLinkSelect) {
     updateGearItemEditCameraLinkOptions(context, data);

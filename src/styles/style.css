@@ -9935,6 +9935,12 @@ body.dark-mode .requirement-box,
   box-shadow: none;
 }
 
+
+.gear-item-camera-linked {
+  box-shadow: inset 0.35rem 0 0 var(--gear-item-camera-color, var(--danger-color));
+  border-radius: calc(var(--border-radius-sm) + 0.05rem);
+}
+
 .gear-item-camera-link {
   display: inline-flex;
   align-items: center;
@@ -9956,8 +9962,8 @@ body.dark-mode .requirement-box,
   min-height: 1.25em;
   padding-inline: 0.25em;
   border-radius: 0.35em;
-  background: var(--danger-color);
-  color: var(--inverse-text-color);
+  background: var(--gear-item-camera-color, var(--danger-color));
+  color: var(--gear-item-camera-contrast, var(--inverse-text-color));
   font-weight: var(--font-weight-bold);
   font-size: 0.95em;
   letter-spacing: 0.02em;
