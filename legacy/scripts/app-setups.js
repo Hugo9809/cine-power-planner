@@ -60,6 +60,80 @@ function getProductionCompanyLabelSets(projectLabels) {
   });
   return labelSets;
 }
+function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+  if (typeof rawText !== 'string') {
+    return null;
+  }
+  var normalizedText = rawText.replace(/\r\n?/g, '\n').split('\n').map(function (segment) {
+    return segment.trim();
+  }).filter(function (segment) {
+    return segment;
+  });
+  if (!normalizedText.length) {
+    return null;
+  }
+  var labelSets = getProductionCompanyLabelSets(projectLabels);
+  var result = {};
+  var firstLine = normalizedText[0];
+  var rest = normalizedText.slice(1);
+  if (firstLine) {
+    result.productionCompany = firstLine;
+  }
+  var collected = {};
+  var activeField = null;
+  rest.forEach(function (line) {
+    var normalizedLine = normalizeProjectFieldLabel(line);
+    var matchedField = null;
+    PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (field) {
+      if (matchedField || !labelSets[field]) return;
+      if (labelSets[field].has(normalizedLine)) {
+        matchedField = field;
+      }
+    });
+    if (matchedField) {
+      activeField = matchedField;
+      if (!collected[activeField]) {
+        collected[activeField] = [];
+      }
+      return;
+    }
+    if (!activeField) {
+      if (result.productionCompany) {
+        result.productionCompany += '\n' + line;
+      } else {
+        result.productionCompany = line;
+      }
+      return;
+    }
+    if (!collected[activeField]) {
+      collected[activeField] = [];
+    }
+    collected[activeField].push(line);
+  });
+  if (collected.productionCompanyAddress && collected.productionCompanyAddress.length) {
+    result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
+  }
+  if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
+    var streetParts = collected.productionCompanyStreet;
+    result.productionCompanyStreet = streetParts[0];
+    if (streetParts.length > 1) {
+      result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+    }
+  }
+  if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
+    result.productionCompanyCity = collected.productionCompanyCity.join(' ');
+  }
+  if (collected.productionCompanyRegion && collected.productionCompanyRegion.length) {
+    result.productionCompanyRegion = collected.productionCompanyRegion.join(' ');
+  }
+  if (collected.productionCompanyPostalCode && collected.productionCompanyPostalCode.length) {
+    result.productionCompanyPostalCode = collected.productionCompanyPostalCode.join(' ');
+  }
+  if (collected.productionCompanyCountry && collected.productionCompanyCountry.length) {
+    result.productionCompanyCountry = collected.productionCompanyCountry.join(' ');
+  }
+  return result;
+}
 function getProjectInfoFieldLines(source, fieldKey) {
   if (!source || typeof source !== 'object') {
     return [];
