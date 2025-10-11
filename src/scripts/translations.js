@@ -1624,6 +1624,10 @@ const texts = {
     gearListEditButton: "Edit gear item",
     gearListEditCustomItem: "Edit custom item",
     gearListEditReset: "Reset name",
+    gearListEditDeviceHeading: "Device attributes",
+    gearListEditDeviceEdit: "Edit device attributes",
+    gearListEditDeviceEmpty: "No device attributes recorded yet. Update the device to add details.",
+    gearListEditDeviceCategory: "Device library: %s",
     gearListLensCoverageWarning: "This lens may not cover the full sensor of this camera!",
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp:
@@ -2792,6 +2796,11 @@ const texts = {
     gearListEditButton: "Modifica elemento della lista",
     gearListEditCustomItem: "Modifica elemento personalizzato",
     gearListEditReset: "Ripristina nome",
+    gearListEditDeviceHeading: "Attributi dispositivo",
+    gearListEditDeviceEdit: "Modifica attributi dispositivo",
+    gearListEditDeviceEmpty:
+      "Nessun attributo del dispositivo registrato. Aggiorna il dispositivo per aggiungere dettagli.",
+    gearListEditDeviceCategory: "Libreria dispositivi: %s",
     gearListLensCoverageWarning: "Questo obiettivo potrebbe non coprire interamente il sensore di questa camera!",
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp:
@@ -4795,7 +4804,12 @@ const texts = {
     gearListEditCancel: "Cancelar",
     gearListEditButton: "Editar elemento del equipo",
     gearListEditCustomItem: "Editar elemento personalizado",
-    gearListEditReset: "Restablecer nombre",
+   gearListEditReset: "Restablecer nombre",
+    gearListEditDeviceHeading: "Atributos del dispositivo",
+    gearListEditDeviceEdit: "Editar atributos del dispositivo",
+    gearListEditDeviceEmpty:
+      "Sin atributos del dispositivo registrados. Actualiza el dispositivo para añadir detalles.",
+    gearListEditDeviceCategory: "Biblioteca de dispositivos: %s",
     gearListLensCoverageWarning: "¡Este objetivo puede que no cubra por completo el sensor de esta cámara!",
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp:
@@ -6803,6 +6817,11 @@ const texts = {
     gearListEditButton: "Modifier l’élément de matériel",
     gearListEditCustomItem: "Modifier l’élément personnalisé",
     gearListEditReset: "Réinitialiser le nom",
+    gearListEditDeviceHeading: "Attributs de l’appareil",
+    gearListEditDeviceEdit: "Modifier les attributs de l’appareil",
+    gearListEditDeviceEmpty:
+      "Aucun attribut de l’appareil enregistré. Mettez à jour l’appareil pour ajouter des détails.",
+    gearListEditDeviceCategory: "Bibliothèque d’appareils : %s",
     gearListLensCoverageWarning: "Cet objectif pourrait ne pas couvrir entièrement le capteur de cette caméra !",
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp:
@@ -8823,6 +8842,11 @@ const texts = {
     gearListEditButton: "Gear-Element bearbeiten",
     gearListEditCustomItem: "Benutzerdefinierten Eintrag bearbeiten",
     gearListEditReset: "Name zurücksetzen",
+    gearListEditDeviceHeading: "Geräteattribute",
+    gearListEditDeviceEdit: "Geräteattribute bearbeiten",
+    gearListEditDeviceEmpty:
+      "Keine Geräteattribute gespeichert. Gerät aktualisieren, um Details hinzuzufügen.",
+    gearListEditDeviceCategory: "Gerätebibliothek: %s",
     gearListLensCoverageWarning: "Dieses Objektiv deckt den Sensor dieser Kamera möglicherweise nicht vollständig ab!",
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp:

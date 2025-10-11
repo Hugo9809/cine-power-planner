@@ -8,7 +8,8 @@
           focusScalePreference, loadOwnGear, getUserProfileSnapshot, getContactsSnapshot, getContactById,
           getContactDisplayLabel, getContactsText, getAutoGearOwnGearItems, normalizeAutoGearConditionLogic,
           resolveOwnGearModule, cineFeaturesOwnGear, generateOwnGearId, normalizeOwnGearRecord, saveOwnGear,
-          OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM */
+          OWN_GEAR_SOURCE_CATALOG, OWN_GEAR_SOURCE_CUSTOM, generateSafeConnectorSummary,
+          showDeviceManagerSection, toggleDeviceManagerSection, refreshDeviceLists */
 
 // Setups orchestrates saving and restoring complex project forms. A gentle
 // reminder: every helper here feeds into autosave, backup and sharing flows, so
@@ -8025,6 +8026,12 @@ function buildGearItemEditContext() {
     nameLabel: resolveElementById('gearItemEditNameLabel', 'gearItemEditNameLabel'),
     noteInput: resolveElementById('gearItemEditNote', 'gearItemEditNote'),
     noteLabel: resolveElementById('gearItemEditNoteLabel', 'gearItemEditNoteLabel'),
+    deviceSection: resolveElementById('gearItemEditDeviceSection', 'gearItemEditDeviceSection'),
+    deviceHeading: resolveElementById('gearItemEditDeviceHeading', 'gearItemEditDeviceHeading'),
+    deviceCategory: resolveElementById('gearItemEditDeviceCategory', 'gearItemEditDeviceCategory'),
+    deviceSummary: resolveElementById('gearItemEditDeviceSummary', 'gearItemEditDeviceSummary'),
+    deviceEmpty: resolveElementById('gearItemEditDeviceEmpty', 'gearItemEditDeviceEmpty'),
+    deviceButton: resolveElementById('gearItemEditDeviceButton', 'gearItemEditDeviceButton'),
     extraContainer: resolveElementById('gearItemEditExtraContainer', 'gearItemEditExtraContainer'),
     extraCheckbox: resolveElementById('gearItemEditExtra', 'gearItemEditExtra'),
     extraLabel: resolveElementById('gearItemEditExtraLabel', 'gearItemEditExtraLabel'),
@@ -8058,6 +8065,7 @@ function buildGearItemEditContext() {
     currentOwnedEntryId: '',
     currentCameraLinkValue: '',
     isCameraItem: false,
+    deviceEditData: null,
   };
 }
 
@@ -8108,6 +8116,10 @@ function getGearItemEditTexts() {
     cancelLabel: langTexts.gearListEditCancel || fallbackTexts.gearListEditCancel || 'Cancel',
     editButtonLabel: langTexts.gearListEditButton || fallbackTexts.gearListEditButton || 'Edit gear item',
     resetLabel: langTexts.gearListEditReset || fallbackTexts.gearListEditReset || 'Reset name',
+    deviceHeading: langTexts.gearListEditDeviceHeading || fallbackTexts.gearListEditDeviceHeading || 'Device attributes',
+    deviceEditButton: langTexts.gearListEditDeviceEdit || fallbackTexts.gearListEditDeviceEdit || 'Edit device attributes',
+    deviceEmpty: langTexts.gearListEditDeviceEmpty || fallbackTexts.gearListEditDeviceEmpty || 'No device attributes recorded yet. Update the device to add details.',
+    deviceCategoryLabel: langTexts.gearListEditDeviceCategory || fallbackTexts.gearListEditDeviceCategory || 'Device library: %s',
   };
 }
 
@@ -8121,6 +8133,7 @@ function applyGearItemEditDialogTexts(context) {
     context.preview.textContent = '';
     context.preview.hidden = true;
   }
+  hideGearItemEditDeviceInfo(context);
   if (context.quantityLabel) {
     context.quantityLabel.textContent = textsForDialog.quantityLabel;
   }
@@ -8205,6 +8218,18 @@ function applyGearItemEditDialogTexts(context) {
       context.cameraLinkSelect.removeAttribute('aria-describedby');
     }
     context.cameraLinkSelect.setAttribute('aria-label', textsForDialog.cameraLinkLabel);
+  }
+  if (context.deviceHeading) {
+    context.deviceHeading.textContent = textsForDialog.deviceHeading;
+  }
+  if (context.deviceButton) {
+    context.deviceButton.textContent = textsForDialog.deviceEditButton;
+    context.deviceButton.setAttribute('aria-label', textsForDialog.deviceEditButton);
+    context.deviceButton.disabled = true;
+    context.deviceButton.setAttribute('aria-disabled', 'true');
+  }
+  if (context.deviceEmpty) {
+    context.deviceEmpty.textContent = textsForDialog.deviceEmpty || '';
   }
   if (context.ownedLabel) {
     const ownedLabelSpan = context.ownedLabel.querySelector('span');
@@ -8306,6 +8331,307 @@ function updateGearItemEditPreview(context) {
   return previewText;
 }
 
+function isPlainObjectValue(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function cssEscapeValue(value) {
+  if (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function') {
+    return CSS.escape(value);
+  }
+  return String(value ?? '')
+    .replace(/\r?\n/g, '')
+    .replace(/[^a-zA-Z0-9_-]/g, match => `\\${match}`);
+}
+
+function formatDeviceCategoryLabel(category) {
+  if (typeof category !== 'string' || !category.trim()) {
+    return '';
+  }
+  return category
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function formatDeviceCategoryPathForEdit(path) {
+  if (!Array.isArray(path) || !path.length) {
+    return '';
+  }
+  return path
+    .map(formatDeviceCategoryLabel)
+    .filter(Boolean)
+    .join(' › ');
+}
+
+function findDeviceRecordByName(rawName) {
+  const trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  if (!trimmed) {
+    return null;
+  }
+  if (!devices || typeof devices !== 'object') {
+    return null;
+  }
+  const visited = new Set();
+  const search = (node, path) => {
+    if (!isPlainObjectValue(node) || visited.has(node)) {
+      return null;
+    }
+    visited.add(node);
+    if (
+      Object.prototype.hasOwnProperty.call(node, trimmed)
+      && isPlainObjectValue(node[trimmed])
+    ) {
+      return { info: node[trimmed], categoryPath: path.slice() };
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (!isPlainObjectValue(value)) {
+        continue;
+      }
+      const result = search(value, path.concat(key));
+      if (result) {
+        return result;
+      }
+    }
+    return null;
+  };
+  const result = search(devices, []);
+  if (!result) {
+    return null;
+  }
+  const categoryPath = Array.isArray(result.categoryPath)
+    ? result.categoryPath.slice()
+    : [];
+  let categoryKey = '';
+  let subcategory = '';
+  if (categoryPath.length >= 2 && categoryPath[0] === 'accessories') {
+    categoryKey = `accessories.${categoryPath[1]}`;
+    if (categoryPath[1] === 'cables' && categoryPath.length >= 3) {
+      subcategory = categoryPath[2];
+    }
+  } else if (categoryPath.length >= 2 && categoryPath[0] === 'fiz') {
+    categoryKey = `fiz.${categoryPath[1]}`;
+  } else if (categoryPath.length >= 2) {
+    categoryKey = `${categoryPath[0]}.${categoryPath[1]}`;
+  } else if (categoryPath.length === 1) {
+    categoryKey = categoryPath[0];
+  }
+  return {
+    info: result.info,
+    categoryPath,
+    categoryKey,
+    subcategory,
+  };
+}
+
+function generateGearItemDeviceSummary(deviceInfo) {
+  if (!deviceInfo || typeof deviceInfo !== 'object') {
+    return '';
+  }
+  const generator = typeof generateSafeConnectorSummary === 'function'
+    ? generateSafeConnectorSummary
+    : (typeof generateConnectorSummary === 'function' ? generateConnectorSummary : null);
+  if (!generator) {
+    return '';
+  }
+  try {
+    const summary = generator(deviceInfo);
+    return typeof summary === 'string' ? summary : '';
+  } catch (error) {
+    void error;
+    return '';
+  }
+}
+
+function hideGearItemEditDeviceInfo(context) {
+  if (!context) {
+    return;
+  }
+  if (context.deviceSummary) {
+    context.deviceSummary.innerHTML = '';
+    context.deviceSummary.hidden = true;
+    context.deviceSummary.setAttribute('hidden', '');
+  }
+  if (context.deviceCategory) {
+    context.deviceCategory.textContent = '';
+    context.deviceCategory.hidden = true;
+    context.deviceCategory.setAttribute('hidden', '');
+  }
+  if (context.deviceEmpty) {
+    context.deviceEmpty.hidden = true;
+    context.deviceEmpty.setAttribute('hidden', '');
+  }
+  if (context.deviceButton) {
+    context.deviceButton.disabled = true;
+    context.deviceButton.setAttribute('aria-disabled', 'true');
+  }
+  if (context.deviceSection) {
+    context.deviceSection.hidden = true;
+    context.deviceSection.setAttribute('hidden', '');
+  }
+  context.deviceEditData = null;
+}
+
+function updateGearItemEditDeviceInfo(context, options = {}) {
+  if (!context || !context.deviceSection) {
+    return;
+  }
+  const textsForDialog = getGearItemEditTexts();
+  const overrideName = typeof options.name === 'string' ? options.name : null;
+  const fallbackName = typeof options.fallbackName === 'string' ? options.fallbackName : '';
+  const lookupName = overrideName && overrideName.trim()
+    ? overrideName.trim()
+    : fallbackName.trim();
+  if (!lookupName) {
+    hideGearItemEditDeviceInfo(context);
+    return;
+  }
+  const record = findDeviceRecordByName(lookupName);
+  if (!record || !record.info) {
+    hideGearItemEditDeviceInfo(context);
+    return;
+  }
+  const summaryHtml = generateGearItemDeviceSummary(record.info);
+  if (context.deviceSummary) {
+    context.deviceSummary.innerHTML = summaryHtml || '';
+    if (summaryHtml) {
+      context.deviceSummary.hidden = false;
+      context.deviceSummary.removeAttribute('hidden');
+    } else {
+      context.deviceSummary.hidden = true;
+      context.deviceSummary.setAttribute('hidden', '');
+    }
+  }
+  if (context.deviceCategory) {
+    const categoryLabel = formatDeviceCategoryPathForEdit(record.categoryPath || []);
+    if (categoryLabel) {
+      const template = textsForDialog.deviceCategoryLabel || 'Device library: %s';
+      const labelText = template.includes('%s')
+        ? template.replace('%s', categoryLabel)
+        : `${template} ${categoryLabel}`.trim();
+      context.deviceCategory.textContent = labelText;
+      context.deviceCategory.hidden = false;
+      context.deviceCategory.removeAttribute('hidden');
+    } else {
+      context.deviceCategory.textContent = '';
+      context.deviceCategory.hidden = true;
+      context.deviceCategory.setAttribute('hidden', '');
+    }
+  }
+  if (context.deviceEmpty) {
+    const emptyMessage = textsForDialog.deviceEmpty || '';
+    if (emptyMessage && !summaryHtml) {
+      context.deviceEmpty.textContent = emptyMessage;
+      context.deviceEmpty.hidden = false;
+      context.deviceEmpty.removeAttribute('hidden');
+    } else {
+      context.deviceEmpty.textContent = emptyMessage;
+      context.deviceEmpty.hidden = true;
+      context.deviceEmpty.setAttribute('hidden', '');
+    }
+  }
+  if (context.deviceButton) {
+    context.deviceButton.disabled = false;
+    context.deviceButton.setAttribute('aria-disabled', 'false');
+  }
+  if (context.deviceSection) {
+    context.deviceSection.hidden = false;
+    context.deviceSection.removeAttribute('hidden');
+  }
+  context.deviceEditData = {
+    name: lookupName,
+    categoryKey: record.categoryKey,
+    subcategory: record.subcategory || '',
+  };
+}
+
+function openDeviceManagerForDevice(target) {
+  if (!target || !target.name || !target.categoryKey) {
+    return;
+  }
+  try {
+    if (typeof showDeviceManagerSection === 'function') {
+      showDeviceManagerSection();
+    } else if (typeof toggleDeviceManagerSection === 'function') {
+      toggleDeviceManagerSection();
+    }
+  } catch (error) {
+    void error;
+  }
+  try {
+    if (typeof refreshDeviceLists === 'function') {
+      refreshDeviceLists();
+    }
+  } catch (error) {
+    void error;
+  }
+  const maxAttempts = 4;
+  let attempt = 0;
+  const locateButton = () => {
+    attempt += 1;
+    let selector = `#device-manager .edit-btn[data-category="${cssEscapeValue(target.categoryKey)}"][data-name="${cssEscapeValue(target.name)}"]`;
+    if (target.subcategory) {
+      selector += `[data-subcategory="${cssEscapeValue(target.subcategory)}"]`;
+    } else {
+      selector += ':not([data-subcategory])';
+    }
+    let button = null;
+    try {
+      button = document.querySelector(selector);
+    } catch (error) {
+      void error;
+      button = null;
+    }
+    if (button) {
+      try {
+        if (button.scrollIntoView) {
+          button.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        button.focus({ preventScroll: true });
+      } catch (focusError) {
+        void focusError;
+      }
+      try {
+        button.click();
+      } catch (clickError) {
+        void clickError;
+      }
+      return;
+    }
+    if (attempt < maxAttempts) {
+      setTimeout(locateButton, 120 * attempt);
+    } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('Could not locate device edit button for gear item', target);
+    }
+  };
+  setTimeout(locateButton, 60);
+}
+
+function handleGearItemEditDeviceButtonClick(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  const context = getGearItemEditContext();
+  if (!context || !context.deviceEditData) {
+    return;
+  }
+  if (context.dialog) {
+    try {
+      if (typeof context.dialog.close === 'function') {
+        context.dialog.close('device-edit');
+      } else {
+        context.dialog.removeAttribute('open');
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  openDeviceManagerForDevice(context.deviceEditData);
+}
+
 function updateGearItemEditExtraControls(context, active) {
   if (!context) return;
   const enabled = Boolean(active);
@@ -8405,6 +8731,11 @@ function handleGearItemEditFieldInput() {
     }
   }
   updateGearItemEditResetState(context);
+  const fallbackName = context.resetDefaults && typeof context.resetDefaults.name === 'string'
+    ? context.resetDefaults.name
+    : '';
+  const currentName = context.nameInput ? context.nameInput.value : '';
+  updateGearItemEditDeviceInfo(context, { name: currentName, fallbackName });
 }
 
 function handleGearItemEditRentalCheckboxChange() {
@@ -8626,6 +8957,9 @@ function handleGearItemEditDialogClose() {
   const context = getGearItemEditContext();
   const targetEntry = activeGearItemEditTarget && activeGearItemEditTarget.element;
   const returnValue = context && context.dialog ? context.dialog.returnValue : '';
+  if (context) {
+    hideGearItemEditDeviceInfo(context);
+  }
   if (context && context.form) {
     try {
       context.form.reset();
@@ -8804,6 +9138,9 @@ function bindGearItemEditDialog(context) {
   if (context.cameraLinkSelect) {
     context.cameraLinkSelect.addEventListener('change', handleGearItemEditFieldInput);
   }
+  if (context.deviceButton) {
+    context.deviceButton.addEventListener('click', handleGearItemEditDeviceButtonClick);
+  }
   gearItemEditDialogBound = true;
 }
 
@@ -8933,6 +9270,9 @@ function openGearItemEditor(element, options = {}) {
       : textsForDialog.dialogTitle;
   }
   updateGearItemEditResetState(context);
+  const deviceFallbackName = typeof data.name === 'string' ? data.name : '';
+  const deviceCurrentName = context.nameInput ? context.nameInput.value : deviceFallbackName;
+  updateGearItemEditDeviceInfo(context, { name: deviceCurrentName, fallbackName: deviceFallbackName });
   try {
     if (typeof context.dialog.showModal === 'function') {
       context.dialog.showModal();

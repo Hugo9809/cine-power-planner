@@ -39,6 +39,9 @@
           applyFocusScalePreference: true, updateLensWorkflowCatalog */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
+/* global getUserProfileSnapshot, formatUserProfileProviderName,
+          ensureContactForImportedOwner, setGearItemProvider,
+          dispatchGearProviderDataChanged */
 // Keep a baseline set of match types so that the session search feature
 // continues to work even when globals have not been initialised yet (for
 // example during unit tests or offline restore flows).

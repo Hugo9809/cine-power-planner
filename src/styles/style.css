@@ -2053,6 +2053,95 @@ body.pink-mode .own-gear-item-action-danger:focus-visible {
   font-size: 0.85rem;
 }
 
+.gear-item-edit-device {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.65rem, 1.6vw, 0.9rem);
+  padding: clamp(0.75rem, 1.8vw, 1rem) clamp(0.6rem, 1.5vw, 0.85rem);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--surface-color) 96%, transparent);
+}
+
+.gear-item-edit-device-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gear-item-edit-device-title {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color);
+}
+
+.gear-item-edit-device-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.35rem, 1vw, 0.55rem);
+}
+
+.gear-item-edit-device-summary .info-box,
+.gear-item-edit-device-summary .connector-block {
+  margin: 0;
+}
+
+.gear-item-edit-device-summary .info-box {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.gear-item-edit-device-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gear-item-edit-device-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--button-icon-gap);
+  padding: 0.55rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--panel-border) 55%);
+  background: color-mix(in srgb, var(--accent-color) 12%, var(--surface-color) 88%);
+  color: var(--text-color);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.gear-item-edit-device-button:hover,
+.gear-item-edit-device-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 22%, var(--surface-color) 78%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.gear-item-edit-device-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 60%, #ffffff 40%);
+  outline-offset: 2px;
+}
+
+.gear-item-edit-device-button[disabled],
+.gear-item-edit-device-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.gear-item-edit-device-button[disabled]:hover,
+.gear-item-edit-device-button[disabled]:focus-visible,
+.gear-item-edit-device-button[aria-disabled="true"]:hover,
+.gear-item-edit-device-button[aria-disabled="true"]:focus-visible {
+  background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+  box-shadow: none;
+}
+
 .gear-item-edit-extra {
   display: flex;
   flex-direction: column;
