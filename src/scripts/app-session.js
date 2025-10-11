@@ -4265,6 +4265,124 @@ function persistImportedProjectWithFallback(payload, nameCandidates) {
   return storageKey;
 }
 
+function clearOwnedGearExportArtifacts(element) {
+  if (!element || typeof element.querySelectorAll !== 'function') {
+    return;
+  }
+  element.removeAttribute('data-gear-owned-export-label');
+  const badges = element.querySelectorAll('[data-gear-owned-export]');
+  badges.forEach(badge => {
+    if (badge && badge.parentElement) {
+      badge.parentElement.removeChild(badge);
+    }
+  });
+}
+
+function applyImportedOwnedGearMarkers(markers, options = {}) {
+  if (!Array.isArray(markers) || !markers.length) {
+    return false;
+  }
+  const root = options && options.root ? options.root : gearListOutput;
+  if (!root || typeof root.querySelector !== 'function') {
+    return false;
+  }
+
+  const userProfile = typeof getUserProfileSnapshot === 'function'
+    ? getUserProfileSnapshot()
+    : null;
+  const importerProfileName = userProfile && typeof userProfile.name === 'string'
+    ? userProfile.name.trim()
+    : '';
+  const importerProfileNameLower = importerProfileName ? importerProfileName.toLowerCase() : '';
+  const importerDisplayName = typeof formatUserProfileProviderName === 'function'
+    ? formatUserProfileProviderName(importerProfileName)
+    : importerProfileName;
+  const importerDisplayNameLower = importerDisplayName ? importerDisplayName.toLowerCase() : '';
+
+  let applied = false;
+
+  markers.forEach(marker => {
+    if (!marker || !marker.ownedId) {
+      return;
+    }
+    const selectorId = (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function')
+      ? CSS.escape(marker.ownedId)
+      : String(marker.ownedId).replace(/"/g, '\\"');
+    const element = root.querySelector(`[data-gear-own-gear-id="${selectorId}"]`);
+    if (!element) {
+      return;
+    }
+
+    clearOwnedGearExportArtifacts(element);
+
+    const ownerDisplayName = typeof marker.ownerDisplayName === 'string'
+      ? marker.ownerDisplayName.trim()
+      : '';
+    const ownerDisplayLower = ownerDisplayName ? ownerDisplayName.toLowerCase() : '';
+    const ownerProfileName = typeof marker.ownerProfileName === 'string'
+      ? marker.ownerProfileName.trim()
+      : '';
+    const ownerProfileLower = ownerProfileName ? ownerProfileName.toLowerCase() : '';
+    const providerLabelFallback = typeof marker.providerLabel === 'string'
+      ? marker.providerLabel.trim()
+      : ownerDisplayName;
+
+    const matchesImporter = Boolean(
+      (importerProfileNameLower && ownerProfileLower && importerProfileNameLower === ownerProfileLower)
+      || (importerDisplayNameLower && ownerDisplayLower && importerDisplayNameLower === ownerDisplayLower)
+      || (importerProfileNameLower && ownerDisplayLower && importerProfileNameLower === ownerDisplayLower)
+    );
+
+    let providerValue = '';
+    let providerLabel = providerLabelFallback;
+
+    if (matchesImporter) {
+      providerValue = 'user';
+      providerLabel = '';
+    } else if (marker.ownerType === 'contact' || ownerDisplayName) {
+      const ensuredContact = typeof ensureContactForImportedOwner === 'function'
+        ? ensureContactForImportedOwner(ownerDisplayName || providerLabelFallback, {
+          contactId: marker.contactId,
+          fallbackLabel: providerLabelFallback,
+        })
+        : null;
+      if (ensuredContact && ensuredContact.value) {
+        providerValue = ensuredContact.value;
+        providerLabel = ensuredContact.label || providerLabelFallback;
+      } else if (typeof marker.providerValue === 'string' && marker.providerValue.startsWith('contact:')) {
+        providerValue = marker.providerValue;
+      } else if (marker.providerValue && marker.providerValue !== 'user') {
+        providerValue = marker.providerValue;
+      }
+    } else if (typeof marker.providerValue === 'string' && marker.providerValue) {
+      providerValue = marker.providerValue;
+    }
+
+    if (typeof setGearItemProvider === 'function') {
+      setGearItemProvider(element, providerValue, { label: providerLabel });
+    } else {
+      if (providerValue) {
+        element.setAttribute('data-gear-provider', providerValue);
+      } else {
+        element.removeAttribute('data-gear-provider');
+      }
+      if (providerLabel) {
+        element.setAttribute('data-gear-provider-label', providerLabel);
+      } else {
+        element.removeAttribute('data-gear-provider-label');
+      }
+    }
+
+    applied = true;
+  });
+
+  if (applied && typeof dispatchGearProviderDataChanged === 'function') {
+    dispatchGearProviderDataChanged('owned-gear-import');
+  }
+
+  return applied;
+}
+
 function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
@@ -4414,6 +4532,9 @@ function applySharedSetup(shared, options = {}) {
     }
     if (decoded.gearSelectors && gearDisplayed) {
       applyGearListSelectors(decoded.gearSelectors);
+    }
+    if (gearDisplayed && Array.isArray(decoded.ownedGearMarkers) && decoded.ownedGearMarkers.length) {
+      applyImportedOwnedGearMarkers(decoded.ownedGearMarkers, { root: gearListOutput });
     }
     if (
       decoded.projectInfo
