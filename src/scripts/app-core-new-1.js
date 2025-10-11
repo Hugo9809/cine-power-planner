@@ -18762,6 +18762,7 @@ var sharedImportDialog = document.getElementById("sharedImportDialog");
 var sharedImportForm = document.getElementById("sharedImportForm");
 const sharedImportDialogHeading = document.getElementById("sharedImportDialogHeading");
 const sharedImportDialogMessage = document.getElementById("sharedImportDialogMessage");
+const sharedImportMetadata = document.getElementById("sharedImportMetadata");
 const sharedImportOptions = document.getElementById("sharedImportOptions");
 const sharedImportLegend = document.getElementById("sharedImportLegend");
 var sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
@@ -18801,7 +18802,8 @@ const sharedKeyMap = {
   feedback: "f",
   autoGearRules: "a",
   autoGearCoverage: "z",
-  diagramPositions: "y"
+  diagramPositions: "y",
+  metadata: "t",
 };
 const sharedKeyMapKeys = Object.keys(sharedKeyMap);
 const sharedHasOwn = Object.prototype.hasOwnProperty;
@@ -18811,6 +18813,109 @@ var lastSharedAutoGearRules = null;
 var sharedImportPreviousPresetId = '';
 var sharedImportProjectPresetActive = false;
 let sharedImportPreparedForImport = false;
+
+function resolveSharedImportLocalVersion() {
+  if (typeof ACTIVE_APP_VERSION === 'string') {
+    const trimmedActive = ACTIVE_APP_VERSION.trim();
+    if (trimmedActive) {
+      return trimmedActive;
+    }
+  }
+  if (typeof APP_VERSION === 'string') {
+    const trimmed = APP_VERSION.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return '';
+}
+
+function formatSharedImportTimestamp(timestamp) {
+  if (typeof timestamp !== 'string') {
+    return '';
+  }
+  const normalized = timestamp.trim();
+  if (!normalized) {
+    return '';
+  }
+  const parsed = new Date(normalized);
+  if (Number.isNaN(parsed.valueOf())) {
+    return normalized;
+  }
+  try {
+    return parsed.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch (error) {
+    console.warn('Unable to format shared import timestamp.', error);
+    return normalized;
+  }
+}
+
+function formatSharedImportMetadataSummary(metadata) {
+  if (!metadata || typeof metadata !== 'object') {
+    return '';
+  }
+
+  const localeTexts = texts[currentLang] || texts.en || {};
+  const englishTexts = texts.en || {};
+  const parts = [];
+
+  if (typeof metadata.exportedAt === 'string' && metadata.exportedAt.trim()) {
+    const formattedTimestamp = formatSharedImportTimestamp(metadata.exportedAt);
+    const timestampTemplate = localeTexts.sharedImportMetadataTimestamp
+      || englishTexts.sharedImportMetadataTimestamp
+      || 'Exported {timestamp}';
+    parts.push(timestampTemplate.replace('{timestamp}', formattedTimestamp));
+  }
+
+  const metadataVersion = typeof metadata.version === 'string' ? metadata.version.trim() : '';
+  if (metadataVersion) {
+    const localVersion = resolveSharedImportLocalVersion();
+    if (localVersion && localVersion !== metadataVersion) {
+      const mismatchTemplate = localeTexts.sharedImportMetadataVersionMismatch
+        || englishTexts.sharedImportMetadataVersionMismatch
+        || 'Planner version {importVersion} (current build {appVersion})';
+      parts.push(
+        mismatchTemplate
+          .replace('{importVersion}', metadataVersion)
+          .replace('{appVersion}', localVersion),
+      );
+    } else {
+      const versionTemplate = localeTexts.sharedImportMetadataVersion
+        || englishTexts.sharedImportMetadataVersion
+        || 'Planner version {version}';
+      parts.push(versionTemplate.replace('{version}', metadataVersion));
+    }
+  }
+
+  if (metadata.includesAutoGearRules) {
+    const autoGearText = localeTexts.sharedImportMetadataIncludesAutoGear
+      || englishTexts.sharedImportMetadataIncludesAutoGear
+      || 'Includes automatic gear rules';
+    parts.push(autoGearText);
+  }
+
+  return parts.join(' • ');
+}
+
+function updateSharedImportMetadataSummary(metadata) {
+  if (!sharedImportMetadata) {
+    return;
+  }
+  const summary = formatSharedImportMetadataSummary(metadata);
+  if (summary) {
+    sharedImportMetadata.textContent = summary;
+    sharedImportMetadata.classList.remove('hidden');
+  } else {
+    sharedImportMetadata.textContent = '';
+    sharedImportMetadata.classList.add('hidden');
+  }
+}
 
 function cloneSharedImportValue(value) {
   if (value == null) return null;
@@ -18831,6 +18936,7 @@ function clearStoredSharedImportData() {
   lastSharedSetupData = null;
   lastSharedAutoGearRules = null;
   sharedImportPreparedForImport = false;
+  updateSharedImportMetadataSummary(null);
 }
 
 function resetSharedImportStateForFactoryReset() {
@@ -19013,6 +19119,7 @@ function processSharedProjectData(data) {
     sharedImportPreparedForImport = false;
     prepareSharedImportContext();
     storeSharedImportData(parsed, sharedRules);
+    updateSharedImportMetadataSummary(parsed && parsed.metadata);
     const hasRules = configureSharedImportOptions(sharedRules);
     const shouldPrompt = hasRules && sharedImportRulesDiffer(sharedRules) && !!sharedImportDialog;
     if (shouldPrompt) {

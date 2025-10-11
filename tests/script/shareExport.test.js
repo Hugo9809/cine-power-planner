@@ -311,6 +311,14 @@ describe('project sharing helpers', () => {
     expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
     const [payload] = downloadPayloadMock.mock.calls[0];
     const parsed = JSON.parse(payload);
+    const expectedVersion = env.utils.APP_VERSION || require('../../package.json').version;
+    expect(parsed.metadata).toEqual(expect.objectContaining({
+      type: 'camera-power-planner/project-bundle',
+      version: expectedVersion,
+      includesAutoGearRules: false,
+    }));
+    expect(typeof parsed.metadata.exportedAt).toBe('string');
+    expect(Number.isNaN(Date.parse(parsed.metadata.exportedAt))).toBe(false);
     expect(parsed).not.toHaveProperty('projectInfo');
     expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
     expect(loadProjectMock).toHaveBeenCalled();
@@ -416,6 +424,38 @@ describe('project sharing helpers', () => {
     expect(parsed).not.toHaveProperty('projectHtml');
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
+  });
+
+  test('downloadSharedProject metadata marks auto gear inclusion', () => {
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+    const rules = [{ id: 'rule-1', label: 'Example', scenarios: [], add: [], remove: [] }];
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        downloadBackupPayload: downloadPayloadMock,
+        getAutoGearRules: jest.fn(() => rules),
+        getAutoGearRuleCoverageSummary: jest.fn(() => ({ coverage: 'ok' })),
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'Auto Gear Project',
+          typedName: 'Auto Gear Project',
+          storageKey: 'Auto Gear Project',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const { downloadSharedProject } = env.utils;
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Auto Gear Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    downloadSharedProject('auto.json', true);
+
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const payload = JSON.parse(downloadPayloadMock.mock.calls[0][0]);
+    expect(payload.metadata.includesAutoGearRules).toBe(true);
   });
 
   test('downloadSharedProject includes split project and gear HTML when available', () => {

@@ -2279,6 +2279,47 @@ if (projectForm) {
     });
 }
 
+function resolveLocalAppVersionForShare() {
+  if (typeof ACTIVE_APP_VERSION === 'string') {
+    const trimmedActive = ACTIVE_APP_VERSION.trim();
+    if (trimmedActive) {
+      return trimmedActive;
+    }
+  }
+  if (typeof APP_VERSION === 'string') {
+    const trimmed = APP_VERSION.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return '';
+}
+
+function createSharedProjectMetadata({ includeAutoGear, hasAutoGearRules }) {
+  const metadata = {
+    type: 'camera-power-planner/project-bundle',
+    includesAutoGearRules: Boolean(includeAutoGear && hasAutoGearRules),
+  };
+
+  const version = resolveLocalAppVersionForShare();
+  if (version) {
+    metadata.version = version;
+  }
+
+  try {
+    const timestamp = new Date();
+    if (!Number.isNaN(timestamp.valueOf())) {
+      metadata.exportedAt = timestamp.toISOString();
+    }
+  } catch (error) {
+    console.warn('Unable to capture export timestamp for shared project metadata.', error);
+  }
+
+  metadata.generator = 'Camera Power Planner';
+
+  return metadata;
+}
+
 function downloadSharedProject(shareFileName, includeAutoGear) {
   if (!shareFileName) return;
   const shareContext = getShareUiContext(this);
@@ -2412,6 +2453,11 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     if (coverage) {
       currentSetup.autoGearCoverage = coverage;
     }
+  }
+
+  const metadata = createSharedProjectMetadata({ includeAutoGear, hasAutoGearRules });
+  if (metadata && typeof metadata === 'object') {
+    currentSetup.metadata = metadata;
   }
   const notifyShareFailure = error => {
     if (error) {
