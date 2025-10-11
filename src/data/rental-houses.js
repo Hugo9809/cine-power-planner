@@ -1,3 +1,68 @@
+function resolveGlobalScope() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  if (typeof window !== 'undefined') return window;
+  if (typeof self !== 'undefined') return self;
+  if (typeof global !== 'undefined') return global;
+  return null;
+}
+
+function commitRentalCatalogToTarget(target, catalog) {
+  if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+    return;
+  }
+
+  const existing = (() => {
+    try {
+      return target.rentalHouses;
+    } catch (readError) {
+      void readError;
+      return undefined;
+    }
+  })();
+
+  if (Array.isArray(existing) && existing.length) {
+    return;
+  }
+
+  try {
+    Object.defineProperty(target, 'rentalHouses', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: catalog,
+    });
+    return;
+  } catch (defineError) {
+    void defineError;
+  }
+
+  try {
+    target.rentalHouses = catalog;
+  } catch (assignError) {
+    void assignError;
+  }
+}
+
+function commitRentalCatalogToGlobal(catalog) {
+  const scope = resolveGlobalScope();
+  if (!scope) {
+    return catalog;
+  }
+
+  commitRentalCatalogToTarget(scope, catalog);
+  commitRentalCatalogToTarget(scope && scope.devices, catalog);
+
+  if (!Array.isArray(scope.__cineRentalHouseCatalog)) {
+    try {
+      scope.__cineRentalHouseCatalog = catalog;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return catalog;
+}
+
 const rentalHouses = Object.freeze([
   Object.freeze({
     name: '711rent – Amsterdam',
@@ -1483,5 +1548,17 @@ const rentalHouses = Object.freeze([
   })
 ]);
 
-module.exports = rentalHouses;
+const shouldExposeGlobally =
+  typeof module === 'undefined'
+  || !module
+  || !module.exports;
+
+if (shouldExposeGlobally) {
+  commitRentalCatalogToGlobal(rentalHouses);
+}
+
+if (typeof module !== 'undefined' && module && module.exports) {
+  module.exports = rentalHouses;
+}
+
 

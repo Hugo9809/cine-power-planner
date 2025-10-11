@@ -2015,6 +2015,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     core: [
       'src/scripts/globalthis-polyfill.js',
       'src/data/devices/index.js',
+      'src/data/rental-houses.js',
       { parallel: [
         'src/data/devices/cameras.js',
         'src/data/devices/monitors.js',
@@ -2075,6 +2076,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/vendor/regenerator-runtime-fallback.js',
       'legacy/scripts/globalthis-polyfill.js',
       'legacy/data/devices/index.js',
+      'legacy/data/rental-houses.js',
       { parallel: [
         'legacy/data/devices/cameras.js',
         'legacy/data/devices/monitors.js',
