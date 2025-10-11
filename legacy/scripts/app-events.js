@@ -315,8 +315,26 @@ function hasAnyDeviceSelectionSafe(state) {
     if (!normalized) {
       return false;
     }
-    if (typeof normalized === 'string' && normalized.toLowerCase() === 'none') {
-      return false;
+    if (typeof normalized === 'string') {
+      var lower = normalized.toLowerCase();
+      if (lower === 'none') {
+        return false;
+      }
+      if (
+        lower === '--'
+        || lower === '—'
+        || lower === 'n/a'
+        || lower === 'tbd'
+        || lower === 'pending'
+        || lower.startsWith('-- ')
+        || lower.startsWith('— ')
+        || lower.startsWith('select ')
+        || lower.startsWith('choose ')
+        || lower.startsWith('pick ')
+        || lower.startsWith('add ')
+      ) {
+        return false;
+      }
     }
     return true;
   };
