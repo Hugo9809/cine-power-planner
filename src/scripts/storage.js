@@ -279,6 +279,7 @@ var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
 var USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -3858,6 +3859,30 @@ function registerActiveSetupStorageSkipKeys(skipSet) {
   }
 }
 
+function registerProtectedCompressionSkipKeys(skipSet) {
+  if (!skipSet || typeof skipSet.add !== 'function') {
+    return;
+  }
+
+  const keysToProtect = [
+    CONTACTS_STORAGE_KEY,
+    OWN_GEAR_STORAGE_KEY,
+  ];
+
+  for (let index = 0; index < keysToProtect.length; index += 1) {
+    const key = keysToProtect[index];
+    if (typeof key !== 'string' || !key) {
+      continue;
+    }
+
+    skipSet.add(key);
+
+    if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
+      skipSet.add(`${key}${STORAGE_BACKUP_SUFFIX}`);
+    }
+  }
+}
+
 function maybeDecompressStoredString(raw, options) {
   if (typeof raw !== 'string') {
     return raw;
@@ -3904,6 +3929,7 @@ function attemptStorageCompressionSweep(storage, options) {
   if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
     registerActiveSetupStorageSkipKeys(skipSet);
   }
+  registerProtectedCompressionSkipKeys(skipSet);
   if (Array.isArray(skipKeys)) {
     for (let i = 0; i < skipKeys.length; i += 1) {
       const key = skipKeys[i];
@@ -10934,6 +10960,7 @@ function saveOwnGear(items) {
     OWN_GEAR_STORAGE_KEY,
     normalized,
     'Error saving own gear to localStorage:',
+    { disableCompression: true },
   );
 }
 
