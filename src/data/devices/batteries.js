@@ -179,31 +179,36 @@ const batteryData = {
     "capacity": 196,
     "pinA": 10,
     "dtapA": 10.4,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1578
   },
   "Swit CIMO-98S (V-Mount)": {
     "capacity": 98,
     "pinA": 12,
     "dtapA": 12,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 642
   },
   "Swit CIMO-160S (V-Mount)": {
     "capacity": 160,
     "pinA": 16,
     "dtapA": 16,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 950
   },
   "Swit CIMO-200S (V-Mount)": {
     "capacity": 196,
     "pinA": 16,
     "dtapA": 16,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1085
   },
   "Swit CIMO-290S (V-Mount)": {
     "capacity": 290,
     "pinA": 20,
     "dtapA": 20,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1509
   },
   "Anton/Bauer Titon 90 (V-Mount)": {
     "capacity": 92,
@@ -251,13 +256,15 @@ const batteryData = {
     "capacity": 98,
     "pinA": 12,
     "dtapA": 0,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 930
   },
   "Anton/Bauer Dionic 26V 240Wh (B-Mount)": {
     "capacity": 240,
     "pinA": 12,
     "dtapA": 0,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1360
   },
   "Core SWX NANO Micro 98Wh (V-Mount)": {
     "capacity": 98,
@@ -284,7 +291,8 @@ const batteryData = {
     "capacity": 98,
     "pinA": 20,
     "dtapA": 7.14,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 800
   },
   "Core SWX Helix Max 150Wh (V-Mount)": {
     "capacity": 147,
@@ -304,13 +312,15 @@ const batteryData = {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 0,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 800
   },
   "Core SWX Helix Max 150Wh (B-Mount)": {
     "capacity": 147,
     "pinA": 10,
     "dtapA": 0,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1000
   },
   "Core SWX Apex 150 (V-Mount)": {
     "capacity": 150,
@@ -322,7 +332,8 @@ const batteryData = {
     "capacity": 360,
     "pinA": 16,
     "dtapA": 12,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1633
   },
   "FXLion Nano One (V-Mount)": {
     "capacity": 50,
@@ -489,13 +500,15 @@ const batteryData = {
     "capacity": 160,
     "pinA": 15,
     "dtapA": 10,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1030
   },
   "IDX HV-320B (B-Mount)": {
     "capacity": 320,
     "pinA": 15,
     "dtapA": 10,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1600
   },
   "PAG PAGlink HC-PL150T (Gold Mount)": {
     "capacity": 150,
@@ -661,7 +674,8 @@ const batteryData = {
     "capacity": 92,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 800
   },
   "Anton/Bauer Titon 240 (Gold-Mount)": {
     "capacity": 238,
@@ -674,19 +688,29 @@ const batteryData = {
     "capacity": 99,
     "pinA": 12,
     "dtapA": 12,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 800
+  },
+  "Anton/Bauer Dionic 26V 98Wh (Gold-Mount)": {
+    "capacity": 98,
+    "pinA": 12,
+    "dtapA": 0,
+    "mount_type": "Gold-Mount",
+    "weight_g": 930
   },
   "Anton/Bauer Dionic 26V 240 (Gold-Mount)": {
     "capacity": 240,
     "pinA": 12,
     "dtapA": 0,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 1360
   },
   "Anton/Bauer Titon Micro 90 (Gold-Mount)": {
     "capacity": 94,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 570
   },
   "Core SWX Hypercore NEO 150 Mini (Gold-Mount)": {
     "capacity": 147,
@@ -699,7 +723,15 @@ const batteryData = {
     "capacity": 98,
     "pinA": 20,
     "dtapA": 20,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 800
+  },
+  "Core SWX Helix Max 150 (Gold-Mount)": {
+    "capacity": 147,
+    "pinA": 20,
+    "dtapA": 20,
+    "mount_type": "Gold-Mount",
+    "weight_g": 1000
   },
   "Core SWX NANO Micro 98Wh (Gold-Mount)": {
     "capacity": 98,
@@ -724,13 +756,22 @@ const batteryData = {
     "capacity": 95,
     "pinA": 12,
     "dtapA": 10,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 700
+  },
+  "BLUESHAPE BV190HDplus (V-Mount)": {
+    "capacity": 190,
+    "pinA": 20,
+    "dtapA": 12,
+    "mount_type": "V-Mount",
+    "weight_g": 1190
   },
   "BLUESHAPE BV190HDplus (Gold-Mount)": {
     "capacity": 190,
     "pinA": 20,
     "dtapA": 12,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 1190
   },
   "bebob A98micro (Gold-Mount)": {
     "capacity": 95,
