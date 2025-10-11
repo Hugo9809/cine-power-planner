@@ -7103,7 +7103,7 @@ body.dark-mode .onboarding-overlay[data-step-list='visible'] .onboarding-step-li
 
 .onboarding-overlay[data-step-list='visible'] .onboarding-step-item--pinned {
   position: sticky;
-  top: calc(
+  --onboarding-step-pinned-offset: calc(
     var(--onboarding-step-list-padding)
       + var(--onboarding-step-pinned-index, 0)
         * (
@@ -7111,6 +7111,7 @@ body.dark-mode .onboarding-overlay[data-step-list='visible'] .onboarding-step-li
           + (var(--onboarding-step-list-gap) * 1.15)
         )
   );
+  top: var(--onboarding-step-pinned-offset);
   z-index: 1;
 }
 
