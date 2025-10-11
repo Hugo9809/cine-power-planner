@@ -10630,6 +10630,7 @@ function collectProjectInfoFromRequirementsGrid() {
     return null;
   }
   var info = {};
+  var projectLabels = typeof texts !== 'undefined' && texts && typeof currentLang === 'string' && texts[currentLang] && texts[currentLang].projectFields ? texts[currentLang].projectFields : texts && texts.en && texts.en.projectFields ? texts.en.projectFields : {};
   boxes.forEach(function (box) {
     if (!box || typeof box.getAttribute !== 'function') return;
     var field = box.getAttribute('data-field');
@@ -10646,6 +10647,21 @@ function collectProjectInfoFromRequirementsGrid() {
     var text = normalized.join('\n');
     if (!Object.prototype.hasOwnProperty.call(info, field)) {
       info[field] = text;
+    }
+    if (field === 'productionCompany') {
+      var expanded = expandCombinedProductionCompanyInfo(text, projectLabels);
+      if (expanded && _typeof(expanded) === 'object') {
+        Object.keys(expanded).forEach(function (expandedField) {
+          var expandedValue = expanded[expandedField];
+          if (expandedField === 'productionCompany') {
+            info.productionCompany = expandedValue;
+            return;
+          }
+          if (!Object.prototype.hasOwnProperty.call(info, expandedField)) {
+            info[expandedField] = expandedValue;
+          }
+        });
+      }
     }
   });
   return Object.keys(info).length ? info : null;
