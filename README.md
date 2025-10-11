@@ -39,6 +39,11 @@ drive without phoning home.
 - **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md)
   with the [Operational Checklist](docs/operations-checklist.md) so documented
   rehearsals stay synchronized with the app and bundled assets.
+- **Re-certify cached bundles.** Follow the new
+  [Offline Cache & Safeguard Verification Drill](docs/offline-cache-verification-drill.md)
+  whenever you regenerate service-worker assets, ship new icons or touch
+  persistence code so cached builds keep matching the repository and user data
+  remains fully protected offline.
 - **Protect user data deliberately.** Follow the new
   [Data Protection Playbook](docs/data-protection-playbook.md) when you scope
   changes, rehearse daily guardrails, prepare releases and respond to
@@ -319,6 +324,10 @@ same online or offline.
    Rehearsing the full save → share → import loop keeps crews confident that
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
+1. Run the [Offline Cache & Safeguard Verification Drill](docs/offline-cache-verification-drill.md)
+   to confirm cached assets, autosave safeguards and forced pre-restore backups
+   match repository expectations. File the verification log so each workstation
+   proves its offline bundle before it leaves for set.
 1. Archive the verified backup and project bundle alongside the repository copy
    you opened. Log the verification date, machine name and operator in the same
    folder (mirroring the recommendations in `docs/backup-rotation-guide.md`) so

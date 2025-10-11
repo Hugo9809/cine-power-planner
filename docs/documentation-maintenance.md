@@ -143,6 +143,12 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 3. **Archive verification artifacts.** Store the validated backup, bundle and a ZIP of the
    repository alongside a short verification log. Note which documentation changes shipped
    so crews can trace when instructions last matched the product.
+4. **Re-run the offline cache drill.** Follow the
+   [Offline Cache & Safeguard Verification Drill](offline-cache-verification-drill.md) to
+   confirm cached assets, autosave safeguards and forced pre-restore backups match the
+   documentation updates you just recorded. File the resulting verification log with the
+   rest of the packet so offline operators can prove their cached bundle aligns with the
+   instructions.
 
 ## 4. Testing checklist before release
 
