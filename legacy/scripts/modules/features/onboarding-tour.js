@@ -614,7 +614,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var stepConfig = getStepConfig();
   var overlayRoot = null;
-  var backdropEl = null;
   var highlightEl = null;
   var activeTargetElement = null;
   var cardEl = null;
@@ -767,9 +766,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
     interactionIdCounter = 0;
-    backdropEl = DOCUMENT.createElement('div');
-    backdropEl.className = 'onboarding-backdrop';
-    overlayRoot.appendChild(backdropEl);
     highlightEl = DOCUMENT.createElement('div');
     highlightEl.className = 'onboarding-highlight';
     highlightEl.setAttribute('aria-hidden', 'true');
@@ -778,7 +774,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     cardEl.className = 'onboarding-card';
     cardEl.setAttribute('data-placement', 'floating');
     cardEl.setAttribute('role', 'dialog');
-    cardEl.setAttribute('aria-modal', 'true');
+    cardEl.setAttribute('aria-modal', 'false');
     cardEl.tabIndex = -1;
     var header = DOCUMENT.createElement('div');
     header.className = 'onboarding-card-header';
@@ -857,7 +853,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
     overlayRoot = null;
-    backdropEl = null;
     highlightEl = null;
     cardEl = null;
     titleEl = null;
@@ -883,6 +878,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return template.replace('{current}', current).replace('{total}', total);
   }
   function focusCard() {
+    var target = getTargetElement(currentStep);
+    if (target && typeof target.focus === 'function' && !target.hasAttribute('disabled')) {
+      try {
+        target.focus({
+          preventScroll: true
+        });
+        return;
+      } catch (error) {
+        void error;
+        try {
+          target.focus();
+          return;
+        } catch (focusError) {
+          void focusError;
+        }
+      }
+    }
     if (!cardEl) {
       return;
     }
@@ -965,39 +977,85 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var targetElement = target || getTargetElement(currentStep);
     var resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     var cardRect = cardEl.getBoundingClientRect();
-    var top = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + Math.max(24, (viewportHeight - cardRect.height) / 2);
-    var left = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + Math.max(24, (viewportWidth - cardRect.width) / 2);
+    var scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
+    var scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
+    var margin = 16;
+    var viewportRight = scrollX + viewportWidth;
+    var viewportBottom = scrollY + viewportHeight;
+    var minLeft = scrollX + margin;
+    var minTop = scrollY + margin;
+    var maxLeft = Math.max(minLeft, viewportRight - cardRect.width - margin);
+    var maxTop = Math.max(minTop, viewportBottom - cardRect.height - margin);
+    var top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
+    var left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     var placement = 'floating';
     if (targetElement && resolvedRect) {
       var rect = resolvedRect;
-      var targetTop = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0);
-      var targetLeft = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0);
-      var spaceBelow = (GLOBAL_SCOPE.innerHeight || viewportHeight) - rect.bottom;
-      var spaceAbove = rect.top;
-      var spaceRight = (GLOBAL_SCOPE.innerWidth || viewportWidth) - rect.right;
-      if (spaceBelow > cardRect.height + 40) {
-        top = targetTop + rect.height + 24;
-        placement = 'bottom';
-      } else if (spaceAbove > cardRect.height + 40) {
-        top = targetTop - cardRect.height - 24;
-        placement = 'top';
+      var targetTop = rect.top + scrollY;
+      var targetLeft = rect.left + scrollX;
+      var targetCenterX = targetLeft + rect.width / 2;
+      var targetCenterY = targetTop + rect.height / 2;
+      var options = [{
+        name: 'bottom',
+        top: targetTop + rect.height + margin,
+        left: targetCenterX - cardRect.width / 2,
+        fits: targetTop + rect.height + margin + cardRect.height <= viewportBottom - margin
+      }, {
+        name: 'top',
+        top: targetTop - cardRect.height - margin,
+        left: targetCenterX - cardRect.width / 2,
+        fits: targetTop - cardRect.height - margin >= minTop
+      }, {
+        name: 'right',
+        top: targetCenterY - cardRect.height / 2,
+        left: targetLeft + rect.width + margin,
+        fits: targetLeft + rect.width + margin + cardRect.width <= viewportRight - margin
+      }, {
+        name: 'left',
+        top: targetCenterY - cardRect.height / 2,
+        left: targetLeft - cardRect.width - margin,
+        fits: targetLeft - cardRect.width - margin >= minLeft
+      }];
+      var resolvedOptions = [];
+      for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+        var option = options[optionIndex];
+        var clampedTop = Math.min(Math.max(option.top, minTop), maxTop);
+        var clampedLeft = Math.min(Math.max(option.left, minLeft), maxLeft);
+        resolvedOptions.push({
+          name: option.name,
+          top: option.top,
+          left: option.left,
+          fits: option.fits,
+          clampedTop: clampedTop,
+          clampedLeft: clampedLeft,
+          overflow: Math.abs(clampedTop - option.top) + Math.abs(clampedLeft - option.left)
+        });
       }
-      if (spaceRight > cardRect.width + 40) {
-        left = targetLeft + rect.width + 24;
-        placement = placement === 'floating' ? 'right' : "".concat(placement, "-right");
-      } else if (targetLeft - cardRect.width - 24 > 0) {
-        left = targetLeft - cardRect.width - 24;
-        placement = placement === 'floating' ? 'left' : "".concat(placement, "-left");
-      } else if (placement === 'floating') {
-        placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+      var chosen = null;
+      for (var resolvedIndex = 0; resolvedIndex < resolvedOptions.length; resolvedIndex += 1) {
+        if (resolvedOptions[resolvedIndex].fits) {
+          chosen = resolvedOptions[resolvedIndex];
+          break;
+        }
       }
-    } else {
-      placement = 'floating';
+      if (!chosen) {
+        for (var fallbackIndex = 0; fallbackIndex < resolvedOptions.length; fallbackIndex += 1) {
+          var candidate = resolvedOptions[fallbackIndex];
+          if (!chosen || candidate.overflow < chosen.overflow) {
+            chosen = candidate;
+          }
+        }
+      }
+      if (chosen) {
+        top = chosen.clampedTop;
+        left = chosen.clampedLeft;
+        placement = chosen.name;
+      }
     }
-    var maxTop = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + viewportHeight - cardRect.height - 24;
-    var maxLeft = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + viewportWidth - cardRect.width - 24;
-    cardEl.style.top = "".concat(Math.max(24 + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0), Math.min(top, maxTop)), "px");
-    cardEl.style.left = "".concat(Math.max(24 + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0), Math.min(left, maxLeft)), "px");
+    top = Math.min(Math.max(top, minTop), maxTop);
+    left = Math.min(Math.max(left, minLeft), maxLeft);
+    cardEl.style.top = "".concat(top, "px");
+    cardEl.style.left = "".concat(left, "px");
     if (placement !== lastCardPlacement) {
       lastCardPlacement = placement;
       cardEl.setAttribute('data-placement', placement);
