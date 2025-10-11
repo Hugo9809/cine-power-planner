@@ -440,7 +440,8 @@ const batteryData = {
     "capacity": 97,
     "pinA": 10,
     "dtapA": 5.56,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 640
   },
   "IDX DUO-C150 (V-Mount)": {
     "capacity": 143,
@@ -474,7 +475,8 @@ const batteryData = {
     "capacity": 146,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1000
   },
   "IDX CUE-J150 (V-Mount)": {
     "capacity": 146,
@@ -575,7 +577,8 @@ const batteryData = {
     "capacity": 99,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 570
   },
   "SmallRig VB212 mini (V-Mount)": {
     "capacity": 212,
