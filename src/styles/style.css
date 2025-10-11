@@ -6701,6 +6701,12 @@ textarea:disabled {
   z-index: -1;
 }
 
+.onboarding-card[data-size='large'] {
+  max-width: min(38rem, calc(100vw - 2rem));
+  padding: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
+  gap: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
+}
+
 body.dark-mode .onboarding-card {
   --onboarding-card-border: color-mix(in srgb, var(--accent-color) 55%, rgba(255, 255, 255, 0.16));
   background: rgba(18, 22, 28, 0.95);

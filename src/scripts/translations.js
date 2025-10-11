@@ -1749,42 +1749,127 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.",
+            "This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.",
+        },
+        userProfile: {
+          title: "Configure your user profile",
+          body:
+            "Open Contacts and fill in the “Your profile” card so projects credit the right owner. The display name, avatar and contact data stay offline, appear in exports and keep crew gear assignments consistent. You can skip for now and return later without losing progress.",
+        },
+        unitsPreferences: {
+          title: "Tune language, theme and units",
+          body:
+            "Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
         },
         nameProject: {
           title: "Name your first project",
           body:
-            "Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.",
+            "Enter a descriptive project name to anchor autosave, history, exports and backups. Every subsequent workflow references this name so your offline library stays organized and easy to restore.",
         },
         saveProject: {
-          title: "Save immediately",
+          title: "Capture an immediate save",
           body:
-            "Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.",
+            "Press Save (or use Ctrl+S/⌘S/Enter) to write a complete offline snapshot—devices, runtime math, requirements, notes and diagnostics. The planner confirms completion before enabling the next workflow.",
         },
         addCamera: {
-          title: "Add your primary camera",
+          title: "Select the primary camera",
           body:
-            "Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.",
+            "Choose the camera body you are planning for. Offline search is available inside the dropdown. Selecting a body unlocks accessories, power draws and diagrams tailored to that choice.",
         },
-        addPower: {
-          title: "Choose a power source",
+        addMonitoring: {
+          title: "Add monitors, wireless video and FIZ",
           body:
-            "Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.",
+            "Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build.",
         },
-        generatePlan: {
-          title: "Generate your first plan",
+        selectBattery: {
+          title: "Choose batteries or DC sources",
           body:
-            "Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.",
+            "Select the battery system or DC input that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.",
         },
-        exportBackup: {
-          title: "Export an offline safety copy",
+        results: {
+          title: "Review the results summary",
           body:
-            "Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.",
+            "Use the Power Summary to confirm draw totals, estimated runtimes and any warnings. Everything shown here stays synchronized with your saved project and exports.",
+        },
+        batteryComparison: {
+          title: "Compare battery options",
+          body:
+            "Open Battery Comparison to evaluate alternate packs side by side. The chart keeps calculations offline so you can test scenarios and lock in the safest runtime margin for the day.",
+        },
+        runtimeFeedback: {
+          title: "Submit runtime feedback",
+          body:
+            "Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits.",
+        },
+        connectionDiagram: {
+          title: "Inspect the connection diagram",
+          body:
+            "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.",
+        },
+        editDeviceData: {
+          title: "Edit device data",
+          body:
+            "Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.",
+        },
+        ownGear: {
+          title: "Document your own gear",
+          body:
+            "Track owned inventory in the Own Gear dialog. Items saved here appear in gear lists, exports and backups so every workstation knows which equipment is already on hand.",
+        },
+        generateGearAndRequirements: {
+          title: "Generate requirements and gear list",
+          body:
+            "Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.",
+        },
+        autoGearRules: {
+          title: "Review automatic gear rules",
+          body:
+            "Settings → Automatic Gear Rules lets you define conditions that auto-add monitors, wireless links, FIZ gear and cables. Rules execute offline every time you regenerate the kit, ensuring nothing critical is missed.",
+        },
+        projectRequirements: {
+          title: "Refine project requirements boxes",
+          body:
+            "Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports.",
+        },
+        gearList: {
+          title: "Audit the generated gear list",
+          body:
+            "Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs.",
+        },
+        exportImport: {
+          title: "Export and import projects",
+          body:
+            "Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets.",
+        },
+        overviewAndPrint: {
+          title: "Generate overview, PDF and printouts",
+          body:
+            "Generate the project overview to access PDF, print and share-ready summaries. The dialog uses saved data only, so you can print or export even while fully offline.",
+        },
+        help: {
+          title: "Open the Help center",
+          body:
+            "The Help dialog includes searchable documentation, translation notes and onboarding references. Keep it pinned while working—articles stay cached offline and update when new features arrive.",
+        },
+        settingsGeneral: {
+          title: "Revisit Settings → General",
+          body:
+            "Adjust language, typography, theme, pink mode, focus scale and other presentation options anytime. Preferences save locally, sync across projects and are bundled with backups.",
+        },
+        settingsData: {
+          title: "Monitor Data & Storage",
+          body:
+            "Use the Data & Storage tab to request persistent storage, watch save timestamps and launch quick safeguards. These controls verify that every project snapshot remains available offline.",
+        },
+        settingsBackup: {
+          title: "Maintain Backup & Restore",
+          body:
+            "The Backup & Restore tab manages full-app exports, restore rehearsals and diagnostics. Run backups before major changes, archive the files on external media and verify restores regularly.",
         },
         completion: {
-          title: "You're ready to plan",
+          title: "Tutorial complete",
           body:
-            "Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.",
+            "You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.",
         },
       },
     },
