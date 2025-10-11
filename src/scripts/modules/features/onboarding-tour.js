@@ -264,7 +264,7 @@
     userProfile: {
       title: 'Configure your user profile',
       body:
-        'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
+        'Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays with your offline saves and keeps exports credited to the correct owner.',
     },
     unitsPreferences: {
       title: 'Tune language, theme and units',
@@ -2439,7 +2439,7 @@
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Add your display name, role, phone, email and photo right here. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = 'Add your display name, role, phone, email and photo here once. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');

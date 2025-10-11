@@ -1518,7 +1518,7 @@ var texts = {
         },
         userProfile: {
           title: "Configure your user profile",
-          body: "Fill in your display name, role, phone, email and photo right in this step. Changes sync to Contacts instantly, stay offline with your saves and ensure exports credit the right owner."
+          body: "Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stores with your offline saves and keeps exports credited to the correct owner."
         },
         nameProject: {
           title: "Name your first project",
