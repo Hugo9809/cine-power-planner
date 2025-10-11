@@ -1049,6 +1049,8 @@
   let skipButton = null;
   let helpButtonListenerAttached = false;
   let delegatedHelpListener = null;
+  let pendingPinnedOffsetUpdate = false;
+  let pinnedOffsetObserver = null;
 
   let active = false;
   let currentIndex = -1;
@@ -1308,6 +1310,7 @@
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElement();
+    teardownPinnedStepOffsets();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -1836,6 +1839,116 @@
     resumeHintEl.textContent = hint;
   }
 
+  function measurePinnedStepOffsets() {
+    if (!stepListEl || !DOCUMENT) {
+      return;
+    }
+
+    const view = DOCUMENT.defaultView || GLOBAL_SCOPE;
+    const pinnedItems = stepListEl.querySelectorAll('.onboarding-step-item--pinned');
+    if (!pinnedItems || pinnedItems.length === 0) {
+      return;
+    }
+
+    const getStyles = view && typeof view.getComputedStyle === 'function'
+      ? view.getComputedStyle.bind(view)
+      : null;
+
+    const parseSize = value => {
+      if (typeof value !== 'string') {
+        return 0;
+      }
+      const parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    const listStyles = getStyles ? getStyles(stepListEl) : null;
+    const paddingTop = listStyles ? parseSize(listStyles.getPropertyValue('padding-top')) : 0;
+    const gapValue = listStyles
+      ? parseSize(listStyles.getPropertyValue('row-gap'))
+        || parseSize(listStyles.getPropertyValue('gap'))
+      : 0;
+    const spacing = gapValue * 1.15;
+
+    let offset = paddingTop;
+    Array.prototype.forEach.call(pinnedItems, (item, index) => {
+      if (!item || !item.style || typeof item.style.setProperty !== 'function') {
+        return;
+      }
+
+      item.style.setProperty('--onboarding-step-pinned-offset', `${offset}px`);
+
+      let height = 0;
+      if (typeof item.getBoundingClientRect === 'function') {
+        const rect = item.getBoundingClientRect();
+        if (rect && typeof rect.height === 'number') {
+          height = rect.height;
+        }
+      }
+      if (!height && typeof item.offsetHeight === 'number') {
+        height = item.offsetHeight;
+      }
+
+      offset += height;
+      if (index < pinnedItems.length - 1) {
+        offset += spacing;
+      }
+    });
+  }
+
+  function schedulePinnedStepOffsetUpdate() {
+    if (!stepListEl || pendingPinnedOffsetUpdate) {
+      return;
+    }
+
+    pendingPinnedOffsetUpdate = true;
+    const view = (DOCUMENT && (DOCUMENT.defaultView || GLOBAL_SCOPE)) || GLOBAL_SCOPE;
+    const runner = () => {
+      pendingPinnedOffsetUpdate = false;
+      measurePinnedStepOffsets();
+    };
+
+    if (view && typeof view.requestAnimationFrame === 'function') {
+      view.requestAnimationFrame(runner);
+    } else {
+      runner();
+    }
+  }
+
+  function resetPinnedStepOffsetObserver() {
+    if (pinnedOffsetObserver && typeof pinnedOffsetObserver.disconnect === 'function') {
+      pinnedOffsetObserver.disconnect();
+    }
+    pinnedOffsetObserver = null;
+
+    if (!stepListEl || !DOCUMENT) {
+      return;
+    }
+
+    const view = DOCUMENT.defaultView || GLOBAL_SCOPE;
+    if (!view || typeof view.ResizeObserver !== 'function') {
+      return;
+    }
+
+    try {
+      pinnedOffsetObserver = new view.ResizeObserver(() => {
+        schedulePinnedStepOffsetUpdate();
+      });
+      pinnedOffsetObserver.observe(stepListEl);
+    } catch (error) {
+      pinnedOffsetObserver = null;
+      safeWarn('cine.features.onboardingTour could not observe pinned step sizes.', error);
+    }
+  }
+
+  function teardownPinnedStepOffsets() {
+    if (pinnedOffsetObserver && typeof pinnedOffsetObserver.disconnect === 'function') {
+      pinnedOffsetObserver.disconnect();
+    }
+    pinnedOffsetObserver = null;
+    pendingPinnedOffsetUpdate = false;
+  }
+
   function updateStepList(activeIndex) {
     if (!stepListEl) {
       return;
@@ -1909,6 +2022,9 @@
       item.appendChild(button);
       stepListEl.appendChild(item);
     }
+
+    resetPinnedStepOffsetObserver();
+    schedulePinnedStepOffsetUpdate();
   }
 
   function focusHighlightedElement(step) {
@@ -3011,6 +3127,7 @@
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       GLOBAL_SCOPE.addEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.addEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.addEventListener('resize', schedulePinnedStepOffsetUpdate);
     }
     if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
       DOCUMENT.addEventListener('scroll', schedulePositionUpdate, true);
@@ -3021,6 +3138,7 @@
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
       GLOBAL_SCOPE.removeEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.removeEventListener('scroll', schedulePositionUpdate, true);
+      GLOBAL_SCOPE.removeEventListener('resize', schedulePinnedStepOffsetUpdate);
     }
     if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
       DOCUMENT.removeEventListener('scroll', schedulePositionUpdate, true);
