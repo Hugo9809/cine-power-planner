@@ -863,6 +863,30 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   },
 });
 
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getCurrentSetupState',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackGetCurrentSetupState() {
+      return {};
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'currentProjectInfo',
+  validator: function (value) {
+    return (
+      typeof value === 'undefined' ||
+      value === null ||
+      typeof value === 'object'
+    );
+  },
+  fallback: null,
+});
+
 (function initialiseCriticalGlobals() {
   var scope = resolveCriticalGlobalScope();
   if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
