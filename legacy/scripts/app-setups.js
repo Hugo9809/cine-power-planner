@@ -15,6 +15,131 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var PRODUCTION_COMPANY_FIELD_ORDER = ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'];
+var LEGACY_PROJECT_FIELD_LABELS = {
+  productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
+  productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
+  productionCompanyStreet: ['Street address', 'Straße und Hausnummer', 'Adresse', 'Dirección', 'Indirizzo'],
+  productionCompanyStreet2: ['Address line 2', 'Adresszusatz', "Complément d'adresse", 'Línea 2 de dirección', 'Seconda linea indirizzo'],
+  productionCompanyCity: ['City', 'Stadt', 'Ville', 'Ciudad', 'Città'],
+  productionCompanyRegion: ['State / Province / Region', 'Bundesland / Region', 'État / Région / Département', 'Estado / Provincia / Región', 'Regione / Provincia / Stato'],
+  productionCompanyPostalCode: ['Postal code', 'Postleitzahl', 'Code postal', 'Código postal', 'CAP'],
+  productionCompanyCountry: ['Country', 'Land', 'Pays', 'País', 'Paese']
+};
+function normalizeProjectFieldLabel(label) {
+  if (typeof label !== 'string') {
+    return '';
+  }
+  return label.trim().replace(/[:：]\s*$/, '').trim();
+}
+function getProductionCompanyLabelSets(projectLabels) {
+  var textsObj = typeof texts !== 'undefined' ? texts : null;
+  var labelSets = {};
+  var fallbackProjectLabels = textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
+  var allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
+  allKeys.forEach(function (key) {
+    var set = new Set();
+    var addLabel = function addLabel(value) {
+      if (typeof value !== 'string') return;
+      var normalized = normalizeProjectFieldLabel(value);
+      if (normalized) {
+        set.add(normalized);
+      }
+    };
+    if (projectLabels && projectLabels[key]) {
+      addLabel(projectLabels[key]);
+    }
+    if (fallbackProjectLabels && fallbackProjectLabels[key]) {
+      addLabel(fallbackProjectLabels[key]);
+    }
+    var legacyLabels = LEGACY_PROJECT_FIELD_LABELS[key];
+    if (Array.isArray(legacyLabels)) {
+      legacyLabels.forEach(addLabel);
+    }
+    labelSets[key] = set;
+  });
+  return labelSets;
+}
+function getProjectInfoFieldLines(source, fieldKey) {
+  if (!source || typeof source !== 'object') {
+    return [];
+  }
+  var rawValue = source[fieldKey];
+  if (rawValue === null || rawValue === undefined) {
+    return [];
+  }
+  if (Array.isArray(rawValue)) {
+    var parts = [];
+    rawValue.forEach(function (item) {
+      if (item === null || item === undefined) return;
+      var str = typeof item === 'string' ? item : String(item);
+      str.split(/\r?\n/).forEach(function (segment) {
+        var trimmed = segment.trim();
+        if (trimmed) {
+          parts.push(trimmed);
+        }
+      });
+    });
+    return parts;
+  }
+  if (typeof rawValue === 'string') {
+    return rawValue.split(/\r?\n/).map(function (segment) {
+      return segment.trim();
+    }).filter(function (segment) {
+      return segment;
+    });
+  }
+  return [String(rawValue)].map(function (segment) {
+    return segment.trim();
+  }).filter(function (segment) {
+    return segment;
+  });
+}
+function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
+  var htmlLines = [];
+  var textLines = [];
+  var addLine = function addLine(value, className) {
+    if (typeof value !== 'string') return;
+    var trimmed = value.trim();
+    if (!trimmed) return;
+    var safe = escapeHtml(trimmed);
+    htmlLines.push(className ? "<span class=\"".concat(className, "\">").concat(safe, "</span>") : safe);
+    textLines.push(trimmed);
+  };
+  var textsObj = typeof texts !== 'undefined' ? texts : null;
+  var addSection = function addSection(fieldKey, lines) {
+    var labelClass = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'req-sub-label';
+    if (!Array.isArray(lines) || !lines.length) return;
+    var label = projectLabels && projectLabels[fieldKey] || textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields[fieldKey] || fieldKey;
+    addLine(label, labelClass);
+    lines.forEach(function (line) {
+      return addLine(line, 'req-sub-line');
+    });
+  };
+  var companyLines = getProjectInfoFieldLines(sourceInfo, 'productionCompany');
+  companyLines.forEach(function (line) {
+    return addLine(line, 'req-primary-line');
+  });
+  var addressLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyAddress');
+  if (addressLines.length) {
+    addSection('productionCompanyAddress', addressLines);
+  }
+  var streetLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet').concat(getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet2'));
+  if (streetLines.length) {
+    addSection('productionCompanyStreet', streetLines);
+  }
+  addSection('productionCompanyCity', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCity'));
+  addSection('productionCompanyRegion', getProjectInfoFieldLines(sourceInfo, 'productionCompanyRegion'));
+  addSection('productionCompanyPostalCode', getProjectInfoFieldLines(sourceInfo, 'productionCompanyPostalCode'));
+  addSection('productionCompanyCountry', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCountry'));
+  if (!htmlLines.length) {
+    return null;
+  }
+  return {
+    __html: htmlLines.join('<br>'),
+    text: textLines.join('\n')
+  };
+}
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
 var EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
 var projectPersistenceSuspendedCount = 0;
@@ -8602,7 +8727,17 @@ function gearListGenerateHtmlImpl() {
     supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
   }
   var projectInfo = _objectSpread({}, info);
+  var projectLabels = typeof texts !== 'undefined' && texts && typeof currentLang === 'string' && texts[currentLang] && texts[currentLang].projectFields ? texts[currentLang].projectFields : texts && texts.en && texts.en.projectFields ? texts.en.projectFields : {};
   var projectFormTexts = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectForm) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectForm) || {};
+  var combinedProductionCompany = buildCombinedProductionCompanyDisplay(info, projectLabels);
+  if (combinedProductionCompany) {
+    projectInfo.productionCompany = combinedProductionCompany;
+    ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'].forEach(function (key) {
+      if (Object.prototype.hasOwnProperty.call(projectInfo, key)) {
+        delete projectInfo[key];
+      }
+    });
+  }
   var storageFallbackLabel = projectFormTexts.storageSummaryFallback || projectFormTexts.storageTypeLabel || 'Media';
   var crewRoleLabels = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewRoles) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.crewRoles) || {};
   if (Array.isArray(info.people)) {
@@ -8707,7 +8842,7 @@ function gearListGenerateHtmlImpl() {
   delete projectInfo.aspectMaskOpacity;
   var projectTitleSource = getCurrentProjectName() || info.projectName || '';
   var projectTitle = escapeHtml(projectTitleSource);
-  var projectLabels = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
+  projectLabels = projectLabels && Object.keys(projectLabels).length ? projectLabels : ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.projectFields) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.projectFields) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2', 'storageRequirements', 'monitorBatteries', 'lensSelections']);
   var infoEntries = Object.entries(projectInfo).filter(function (_ref25) {
     var _ref26 = _slicedToArray(_ref25, 2),

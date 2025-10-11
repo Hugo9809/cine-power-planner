@@ -9511,6 +9511,16 @@ body.high-contrast .project-field-hint {
   display: block;
   margin-top: 4px;
 }
+.requirement-box .req-value .req-primary-line {
+  font-weight: var(--font-weight-medium);
+}
+.requirement-box .req-value .req-sub-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+}
+.requirement-box .req-value .req-sub-line {
+  font-weight: var(--font-weight-regular);
+}
 
 body:not(.dark-mode) .requirement-box,
 #overviewDialogContent:not(.dark-mode) .requirement-box,

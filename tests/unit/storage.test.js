@@ -1241,6 +1241,34 @@ describe('project storage', () => {
     });
   });
 
+  test('loadProject parses combined production company requirement box', () => {
+    const combinedHtml = [
+      '<h2>Combined Project</h2>',
+      '<div class="requirements-grid">',
+      '  <div class="requirement-box" data-field="productionCompany">',
+      '    <span class="req-label">Production Company</span>',
+      '    <span class="req-value"><span class="req-primary-line">Studio X</span><br><span class="req-sub-label">Production Company Address</span><br><span class="req-sub-line">123 Stage Rd</span><br><span class="req-sub-label">Street address</span><br><span class="req-sub-line">123 Production Way</span><br><span class="req-sub-line">Suite 4</span><br><span class="req-sub-label">City</span><br><span class="req-sub-line">Film City</span><br><span class="req-sub-label">State / Province / Region</span><br><span class="req-sub-line">CA</span><br><span class="req-sub-label">Postal code</span><br><span class="req-sub-line">90001</span><br><span class="req-sub-label">Country</span><br><span class="req-sub-line">USA</span></span>',
+      '  </div>',
+      '</div>',
+    ].join('');
+
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Combined: { gearList: combinedHtml } }));
+
+    const project = loadProject('Combined');
+    expect(project).not.toBeNull();
+    expect(project.projectInfo).toEqual({
+      projectName: 'Combined Project',
+      productionCompany: 'Studio X',
+      productionCompanyAddress: '123 Stage Rd',
+      productionCompanyStreet: '123 Production Way',
+      productionCompanyStreet2: 'Suite 4',
+      productionCompanyCity: 'Film City',
+      productionCompanyRegion: 'CA',
+      productionCompanyPostalCode: '90001',
+      productionCompanyCountry: 'USA',
+    });
+  });
+
   test('loadProject maps localized requirement labels when data-field is missing', () => {
     const html = [
       '<h2>Projekt Archiv</h2>',

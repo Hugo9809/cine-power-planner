@@ -19,6 +19,268 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+const PRODUCTION_COMPANY_FIELD_ORDER = [
+    'productionCompanyAddress',
+    'productionCompanyStreet',
+    'productionCompanyStreet2',
+    'productionCompanyCity',
+    'productionCompanyRegion',
+    'productionCompanyPostalCode',
+    'productionCompanyCountry'
+];
+
+const LEGACY_PROJECT_FIELD_LABELS = {
+    productionCompany: [
+        'Production Company',
+        'Produktionsfirma',
+        'Société de production',
+        'Productora',
+        'Casa di produzione',
+    ],
+    productionCompanyAddress: [
+        'Production Company Address',
+        'Adresse der Produktionsfirma',
+        'Adresse de la société de production',
+        'Dirección de la productora',
+        'Indirizzo della casa di produzione',
+    ],
+    productionCompanyStreet: [
+        'Street address',
+        'Straße und Hausnummer',
+        'Adresse',
+        'Dirección',
+        'Indirizzo',
+    ],
+    productionCompanyStreet2: [
+        'Address line 2',
+        'Adresszusatz',
+        "Complément d'adresse",
+        'Línea 2 de dirección',
+        'Seconda linea indirizzo',
+    ],
+    productionCompanyCity: [
+        'City',
+        'Stadt',
+        'Ville',
+        'Ciudad',
+        'Città',
+    ],
+    productionCompanyRegion: [
+        'State / Province / Region',
+        'Bundesland / Region',
+        'État / Région / Département',
+        'Estado / Provincia / Región',
+        'Regione / Provincia / Stato',
+    ],
+    productionCompanyPostalCode: [
+        'Postal code',
+        'Postleitzahl',
+        'Code postal',
+        'Código postal',
+        'CAP',
+    ],
+    productionCompanyCountry: [
+        'Country',
+        'Land',
+        'Pays',
+        'País',
+        'Paese',
+    ],
+};
+
+function normalizeProjectFieldLabel(label) {
+    if (typeof label !== 'string') {
+        return '';
+    }
+    return label.trim().replace(/[:：]\s*$/, '').trim();
+}
+
+function getProductionCompanyLabelSets(projectLabels) {
+    const textsObj = typeof texts !== 'undefined' ? texts : null;
+    const labelSets = {};
+    const fallbackProjectLabels = (textsObj && textsObj.en && textsObj.en.projectFields) || {};
+    const allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
+    allKeys.forEach((key) => {
+        const set = new Set();
+        const addLabel = (value) => {
+            if (typeof value !== 'string') return;
+            const normalized = normalizeProjectFieldLabel(value);
+            if (normalized) {
+                set.add(normalized);
+            }
+        };
+        if (projectLabels && projectLabels[key]) {
+            addLabel(projectLabels[key]);
+        }
+        if (fallbackProjectLabels && fallbackProjectLabels[key]) {
+            addLabel(fallbackProjectLabels[key]);
+        }
+        const legacyLabels = LEGACY_PROJECT_FIELD_LABELS[key];
+        if (Array.isArray(legacyLabels)) {
+            legacyLabels.forEach(addLabel);
+        }
+        labelSets[key] = set;
+    });
+    return labelSets;
+}
+
+function getProjectInfoFieldLines(source, fieldKey) {
+    if (!source || typeof source !== 'object') {
+        return [];
+    }
+    const rawValue = source[fieldKey];
+    if (rawValue === null || rawValue === undefined) {
+        return [];
+    }
+    if (Array.isArray(rawValue)) {
+        const parts = [];
+        rawValue.forEach((item) => {
+            if (item === null || item === undefined) return;
+            const str = typeof item === 'string' ? item : String(item);
+            str.split(/\r?\n/).forEach((segment) => {
+                const trimmed = segment.trim();
+                if (trimmed) {
+                    parts.push(trimmed);
+                }
+            });
+        });
+        return parts;
+    }
+    if (typeof rawValue === 'string') {
+        return rawValue
+            .split(/\r?\n/)
+            .map((segment) => segment.trim())
+            .filter((segment) => segment);
+    }
+    return [String(rawValue)].map((segment) => segment.trim()).filter((segment) => segment);
+}
+
+function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
+    const htmlLines = [];
+    const textLines = [];
+    const addLine = (value, className) => {
+        if (typeof value !== 'string') return;
+        const trimmed = value.trim();
+        if (!trimmed) return;
+        const safe = escapeHtml(trimmed);
+        htmlLines.push(className ? `<span class="${className}">${safe}</span>` : safe);
+        textLines.push(trimmed);
+    };
+    const textsObj = typeof texts !== 'undefined' ? texts : null;
+    const addSection = (fieldKey, lines, labelClass = 'req-sub-label') => {
+        if (!Array.isArray(lines) || !lines.length) return;
+        const label = (projectLabels && projectLabels[fieldKey])
+            || (textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields[fieldKey])
+            || fieldKey;
+        addLine(label, labelClass);
+        lines.forEach((line) => addLine(line, 'req-sub-line'));
+    };
+
+    const companyLines = getProjectInfoFieldLines(sourceInfo, 'productionCompany');
+    companyLines.forEach((line) => addLine(line, 'req-primary-line'));
+
+    const addressLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyAddress');
+    if (addressLines.length) {
+        addSection('productionCompanyAddress', addressLines);
+    }
+
+    const streetLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet')
+        .concat(getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet2'));
+    if (streetLines.length) {
+        addSection('productionCompanyStreet', streetLines);
+    }
+
+    addSection('productionCompanyCity', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCity'));
+    addSection('productionCompanyRegion', getProjectInfoFieldLines(sourceInfo, 'productionCompanyRegion'));
+    addSection('productionCompanyPostalCode', getProjectInfoFieldLines(sourceInfo, 'productionCompanyPostalCode'));
+    addSection('productionCompanyCountry', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCountry'));
+
+    if (!htmlLines.length) {
+        return null;
+    }
+
+    return {
+        __html: htmlLines.join('<br>'),
+        text: textLines.join('\n')
+    };
+}
+
+function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+    if (typeof rawText !== 'string') {
+        return null;
+    }
+    const normalizedText = rawText
+        .replace(/\r\n?/g, '\n')
+        .split('\n')
+        .map((segment) => segment.trim())
+        .filter((segment) => segment);
+    if (!normalizedText.length) {
+        return null;
+    }
+    const labelSets = getProductionCompanyLabelSets(projectLabels);
+    const result = {};
+    const [firstLine, ...rest] = normalizedText;
+    if (firstLine) {
+        result.productionCompany = firstLine;
+    }
+    const collected = {};
+    let activeField = null;
+    rest.forEach((line) => {
+        const normalizedLine = normalizeProjectFieldLabel(line);
+        let matchedField = null;
+        PRODUCTION_COMPANY_FIELD_ORDER.forEach((field) => {
+            if (matchedField || !labelSets[field]) return;
+            if (labelSets[field].has(normalizedLine)) {
+                matchedField = field;
+            }
+        });
+        if (matchedField) {
+            activeField = matchedField;
+            if (!collected[activeField]) {
+                collected[activeField] = [];
+            }
+            return;
+        }
+        if (!activeField) {
+            if (result.productionCompany) {
+                result.productionCompany += `\n${line}`;
+            } else {
+                result.productionCompany = line;
+            }
+            return;
+        }
+        if (!collected[activeField]) {
+            collected[activeField] = [];
+        }
+        collected[activeField].push(line);
+    });
+
+    if (collected.productionCompanyAddress && collected.productionCompanyAddress.length) {
+        result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
+    }
+    if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
+        const streetParts = collected.productionCompanyStreet;
+        result.productionCompanyStreet = streetParts[0];
+        if (streetParts.length > 1) {
+            result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+        }
+    }
+    if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
+        result.productionCompanyCity = collected.productionCompanyCity.join(' ');
+    }
+    if (collected.productionCompanyRegion && collected.productionCompanyRegion.length) {
+        result.productionCompanyRegion = collected.productionCompanyRegion.join(' ');
+    }
+    if (collected.productionCompanyPostalCode && collected.productionCompanyPostalCode.length) {
+        result.productionCompanyPostalCode = collected.productionCompanyPostalCode.join(' ');
+    }
+    if (collected.productionCompanyCountry && collected.productionCompanyCountry.length) {
+        result.productionCompanyCountry = collected.productionCompanyCountry.join(' ');
+    }
+
+    return result;
+}
+
 const EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
 
 let projectPersistenceSuspendedCount = 0;
@@ -9047,8 +9309,27 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (handleSelections.includes('L-Handle')) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
+
     const projectInfo = { ...info };
     const projectFormTexts = texts[currentLang]?.projectForm || texts.en?.projectForm || {};
+    const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
+    const combinedProductionCompany = buildCombinedProductionCompanyDisplay(info, projectLabels);
+    if (combinedProductionCompany) {
+        projectInfo.productionCompany = combinedProductionCompany;
+        [
+            'productionCompanyAddress',
+            'productionCompanyStreet',
+            'productionCompanyStreet2',
+            'productionCompanyCity',
+            'productionCompanyRegion',
+            'productionCompanyPostalCode',
+            'productionCompanyCountry'
+        ].forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(projectInfo, key)) {
+                delete projectInfo[key];
+            }
+        });
+    }
     const storageFallbackLabel = projectFormTexts.storageSummaryFallback
         || projectFormTexts.storageTypeLabel
         || 'Media';
@@ -9155,7 +9436,6 @@ function gearListGenerateHtmlImpl(info = {}) {
     delete projectInfo.aspectMaskOpacity;
     const projectTitleSource = getCurrentProjectName() || info.projectName || '';
     const projectTitle = escapeHtml(projectTitleSource);
-    const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
     const excludedFields = new Set([
         'cameraHandle',
         'viewfinderExtension',
@@ -10889,6 +11169,7 @@ function collectProjectInfoFromRequirementsGrid() {
         return null;
     }
     const info = {};
+    const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
     boxes.forEach((box) => {
         if (!box || typeof box.getAttribute !== 'function') return;
         const field = box.getAttribute('data-field');
@@ -10907,6 +11188,20 @@ function collectProjectInfoFromRequirementsGrid() {
         const text = normalized.join('\n');
         if (!Object.prototype.hasOwnProperty.call(info, field)) {
             info[field] = text;
+        }
+        if (field === 'productionCompany') {
+            const expanded = expandCombinedProductionCompanyInfo(text, projectLabels);
+            if (expanded && typeof expanded === 'object') {
+                Object.entries(expanded).forEach(([expandedField, expandedValue]) => {
+                    if (expandedField === 'productionCompany') {
+                        info.productionCompany = expandedValue;
+                        return;
+                    }
+                    if (!Object.prototype.hasOwnProperty.call(info, expandedField)) {
+                        info[expandedField] = expandedValue;
+                    }
+                });
+            }
         }
     });
     return Object.keys(info).length ? info : null;
