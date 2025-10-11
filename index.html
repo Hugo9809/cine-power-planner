@@ -7052,12 +7052,47 @@
         <section class="project-dialog-section" aria-labelledby="lensesHeading">
           <h3 id="lensesHeading" class="project-section-title">Lenses</h3>
           <div class="project-section-content">
-            <div class="form-row lens-selector-row">
-              <label for="lenses" id="lensesLabel">Lenses:</label>
-              <div class="select-wrapper lens-selector">
-                <select id="lenses" name="lenses" multiple size="10" aria-labelledby="lensesLabel"></select>
+            <div class="lens-workflow" role="group" aria-labelledby="lensesHeading">
+              <div class="lens-step" id="lensManufacturerStep">
+                <label for="lensManufacturer" id="lensManufacturerLabel">Step 1: Select manufacturer</label>
+                <div class="select-wrapper">
+                  <select
+                    id="lensManufacturer"
+                    name="lensManufacturer"
+                    required
+                    aria-required="true"
+                  >
+                    <option value="" id="lensManufacturerPlaceholder">Choose a manufacturer</option>
+                  </select>
+                </div>
+              </div>
+              <div class="lens-step lens-step-disabled" id="lensSeriesStep" aria-disabled="true">
+                <label for="lensSeries" id="lensSeriesLabel">Step 2: Select series</label>
+                <div class="select-wrapper">
+                  <select
+                    id="lensSeries"
+                    name="lensSeries"
+                    disabled
+                    aria-describedby="lensSeriesEmpty"
+                  >
+                    <option value="" id="lensSeriesPlaceholder">Choose a series</option>
+                  </select>
+                </div>
+                <p id="lensSeriesEmpty" class="lens-series-empty" hidden>No series available for this manufacturer.</p>
+              </div>
+              <div class="lens-step lens-step-disabled" id="lensOptionsStep" aria-disabled="true">
+                <span id="lensesLabel" class="lens-options-label">Step 3: Choose lenses</span>
+                <div id="lensOptions" class="lens-options" role="group" aria-labelledby="lensesLabel"></div>
+                <p id="lensOptionsEmpty" class="lens-options-empty" hidden>No lenses available for this series.</p>
               </div>
             </div>
+            <div class="lens-selection-summary">
+              <h4 id="lensSelectionsLabel" class="lens-selection-heading">Selected lenses</h4>
+              <div id="lensSelectionChips" class="lens-selection-chips" role="list" aria-live="polite"></div>
+            </div>
+            <input type="hidden" id="lensSelectionsValue" name="lenses" value="" />
+            <input type="hidden" id="lensSelectionsData" name="lensSelections" value="" />
+            <select id="lenses" multiple hidden aria-hidden="true" tabindex="-1"></select>
           </div>
         </section>
         <section class="project-dialog-section" aria-labelledby="riggingHeading">

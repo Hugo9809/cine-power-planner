@@ -36,7 +36,7 @@
           markProjectFormDataDirty, loadAutoGearMonitorDefaults,
           enhanceGearItemElement,
           settingsFocusScale, focusScalePreference, normalizeFocusScale,
-          applyFocusScalePreference: true */
+          applyFocusScalePreference: true, updateLensWorkflowCatalog */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 // Keep a baseline set of match types so that the session search feature
@@ -14076,6 +14076,14 @@ function populateLensDropdown() {
 
   lensSelect.innerHTML = '';
   lensSelect.appendChild(fragment);
+
+  if (typeof updateLensWorkflowCatalog === 'function') {
+    try {
+      updateLensWorkflowCatalog({ preserveSelections: true, skipEvent: true, skipDirty: true });
+    } catch (catalogError) {
+      void catalogError;
+    }
+  }
 }
 
 function populateCameraPropertyDropdown(selectId, property, selected = '') {

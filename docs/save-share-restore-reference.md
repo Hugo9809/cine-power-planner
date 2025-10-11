@@ -14,6 +14,8 @@ A silent guard now also captures unnamed in-progress sessions: autosave writes t
 
 Custom gear rows added from the new per-category controls live inside that same gear selector map, so downloads, share bundles, backups and restores replay every custom quantity and label even when crews leave a placeholder blank while drafting lists.【F:src/scripts/app-setups.js†L5042-L5082】【F:src/scripts/app-setups.js†L5084-L5098】
 
+The guided lens workflow now records selections as structured `lensSelections` entries alongside the legacy comma-separated `lenses` string. Autosaves, manual saves, share bundles, backups and restores persist each lens chip with its saved mount so reloading the planner rebuilds the manufacturer/series context and mount selectors without losing historical data. The hidden compatibility `<select id="lenses">` stays synchronised for overview exports and other legacy readers while the new JSON payload protects mount assignments across offline sessions and imports.【F:src/scripts/app-setups.js†L4191-L4241】【F:src/scripts/app-setups.js†L5538-L5559】【F:src/scripts/app-session.js†L14072-L14110】
+
 A dedicated storage guardian runs on every launch to mirror each critical key into its backup slot before the UI touches data, ensuring that even legacy entries have a redundant copy ready before rehearsals or imports begin.【F:src/scripts/storage.js†L247-L376】【F:src/scripts/app-session.js†L10017-L10024】 The latest guard report is exposed globally so you can confirm the mirroring state from diagnostics panels.【F:src/scripts/storage.js†L347-L358】【F:src/scripts/app-core-new-2.js†L6266-L6349】
 
 ### Auto backups versus planner exports

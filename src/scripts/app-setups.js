@@ -31,6 +31,825 @@ const PROJECT_FORM_FREEZE =
 let projectFormDataCache = null;
 let projectFormDataCacheDirty = true;
 
+const lensSelectionManager = (() => {
+    const doc = typeof document !== 'undefined' ? document : null;
+
+    const stub = {
+        snapshot() {
+            return { names: [], lensSelections: [], legacyValue: '' };
+        },
+        applyInfo() {},
+        refreshCatalog() {},
+        getSelections() {
+            return [];
+        }
+    };
+
+    if (!doc) {
+        return stub;
+    }
+
+    const manufacturerSelect = doc.getElementById('lensManufacturer');
+    const seriesSelect = doc.getElementById('lensSeries');
+    const manufacturerStep = doc.getElementById('lensManufacturerStep');
+    const seriesStep = doc.getElementById('lensSeriesStep');
+    const optionsStep = doc.getElementById('lensOptionsStep');
+    const optionsContainer = doc.getElementById('lensOptions');
+    const optionsEmptyMessage = doc.getElementById('lensOptionsEmpty');
+    const seriesEmptyMessage = doc.getElementById('lensSeriesEmpty');
+    const selectionChips = doc.getElementById('lensSelectionChips');
+    const hiddenLegacyValue = doc.getElementById('lensSelectionsValue');
+    const hiddenDetailedValue = doc.getElementById('lensSelectionsData');
+    const legacySelect = doc.getElementById('lenses');
+    const manufacturerPlaceholder = doc.getElementById('lensManufacturerPlaceholder');
+    const seriesPlaceholder = doc.getElementById('lensSeriesPlaceholder');
+
+    if (
+        !manufacturerSelect
+        || !seriesSelect
+        || !optionsContainer
+        || !selectionChips
+        || !hiddenLegacyValue
+        || !hiddenDetailedValue
+        || !legacySelect
+    ) {
+        return stub;
+    }
+
+    const REMOVE_TEMPLATE_ATTR = 'data-remove-template';
+    const MOUNT_LABEL_ATTR = 'data-mount-label';
+    const STEP_DISABLED_CLASS = 'lens-step-disabled';
+
+    const IGNORED_MOUNT_TOKENS = new Set(['LDS']);
+    const MOUNT_TOKEN_MAP = new Map([
+        ['B4', 'B4'],
+        ['DJI DL', 'DJI DL'],
+        ['DJI DL-S', 'DJI DL-S'],
+        ['DL', 'DJI DL'],
+        ['E', 'E-mount'],
+        ['E-mount', 'E-mount'],
+        ['Sony E', 'E-mount'],
+        ['EF', 'EF'],
+        ['F', 'F'],
+        ['Hasselblad', 'Hasselblad'],
+        ['L', 'L-Mount'],
+        ['L-Mount', 'L-Mount'],
+        ['Leica L', 'L-Mount'],
+        ['Leica M', 'Leica M'],
+        ['Leitz M Mount for ARRI', 'Leica M'],
+        ['M', 'Leica M'],
+        ['MFT', 'MFT'],
+        ['PL', 'PL'],
+        ['PV', 'PV'],
+        ['PV70', 'PV70'],
+        ['RF', 'RF'],
+        ['X', 'X-mount'],
+        ['X-mount', 'X-mount'],
+        ['XPL52', 'XPL52'],
+        ['Z', 'Z-mount'],
+        ['Z-mount', 'Z-mount']
+    ]);
+
+    const sortComparator = typeof localeSort === 'function' ? localeSort : undefined;
+
+    const state = {
+        manufacturer: '',
+        series: '',
+        selections: []
+    };
+
+    let catalog = {
+        manufacturers: new Map(),
+        lensIndex: new Map()
+    };
+
+    let mountOptions = [];
+    const optionInputs = new Map();
+
+    const placeholderToggle = (select, isEmpty) => {
+        if (!select) return;
+        if (isEmpty) {
+            select.classList.add('select-placeholder');
+        } else {
+            select.classList.remove('select-placeholder');
+        }
+    };
+
+    const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    const stripPrefix = (text, prefix) => {
+        if (!text || !prefix) return text;
+        const pattern = new RegExp(`^${escapeRegExp(prefix)}\\s+`, 'i');
+        return text.replace(pattern, '').trim();
+    };
+
+    const isSpecToken = (token) => {
+        if (!token) return false;
+        const value = token.trim();
+        if (!value) return false;
+        if (/^T\d+/i.test(value)) return true;
+        if (/^f\//i.test(value)) return true;
+        if (/\d/.test(value)) {
+            if (/(?:mm|cm|m|°|ft)$/i.test(value)) return true;
+            if (/^\d+(?:\.\d+)?x$/i.test(value)) return true;
+            if (/^\d+-\d+/.test(value)) return true;
+        }
+        return false;
+    };
+
+    const deriveManufacturer = (lensData, lensName) => {
+        if (lensData && typeof lensData.brand === 'string' && lensData.brand.trim()) {
+            return lensData.brand.trim();
+        }
+        const firstToken = typeof lensName === 'string'
+            ? lensName.trim().split(/\s+/)[0]
+            : '';
+        return firstToken || 'Other';
+    };
+
+    const deriveSeriesName = (lensName, manufacturer) => {
+        if (typeof lensName !== 'string' || !lensName.trim()) {
+            return 'General';
+        }
+        let remainder = lensName.trim();
+        if (manufacturer && remainder.toLowerCase().startsWith(manufacturer.toLowerCase())) {
+            remainder = remainder.slice(manufacturer.length).trim();
+        }
+        if (!remainder) return 'General';
+        const tokens = remainder.split(/\s+/);
+        const seriesTokens = [];
+        for (let index = 0; index < tokens.length; index += 1) {
+            const token = tokens[index];
+            if (isSpecToken(token)) {
+                break;
+            }
+            seriesTokens.push(token);
+        }
+        const series = seriesTokens.join(' ').trim();
+        return series || 'General';
+    };
+
+    const extractMountLabels = (rawValue) => {
+        const labels = [];
+        const seen = new Set();
+        const addLabel = (label) => {
+            if (!label || seen.has(label)) return;
+            seen.add(label);
+            labels.push(label);
+        };
+        const processString = (value) => {
+            if (!value || typeof value !== 'string') return;
+            const sanitized = value
+                .replace(/\([^)]*\)/g, ' ')
+                .replace(/ or /gi, '/')
+                .replace(/\\/g, '/');
+            sanitized.split('/').forEach(segment => {
+                segment.split(',').forEach(part => {
+                    const token = part.trim();
+                    if (!token || IGNORED_MOUNT_TOKENS.has(token)) {
+                        return;
+                    }
+                    const mapped = MOUNT_TOKEN_MAP.has(token) ? MOUNT_TOKEN_MAP.get(token) : token;
+                    if (mapped) addLabel(mapped);
+                });
+            });
+        };
+
+        if (Array.isArray(rawValue)) {
+            rawValue.forEach(value => processString(value));
+        } else {
+            processString(rawValue);
+        }
+
+        return labels;
+    };
+
+    const resolveLensDataset = () => {
+        const primary =
+            (typeof devices === 'object'
+                && devices
+                && devices.lenses
+                && Object.keys(devices.lenses).length
+                ? devices.lenses
+                : null);
+        if (primary) return primary;
+        if (typeof devices === 'object' && devices && devices.accessories && devices.accessories.lenses) {
+            return devices.accessories.lenses;
+        }
+        return {};
+    };
+
+    const buildCatalog = () => {
+        const lensDb = resolveLensDataset();
+        const manufacturerMap = new Map();
+        const lensIndex = new Map();
+        const mountSet = new Set();
+        const lensNames = Object.keys(lensDb || {});
+        if (lensNames.length && sortComparator) {
+            lensNames.sort(sortComparator);
+        } else {
+            lensNames.sort();
+        }
+
+        lensNames.forEach(name => {
+            const lensData = lensDb[name] || {};
+            const manufacturer = deriveManufacturer(lensData, name);
+            const series = deriveSeriesName(name, manufacturer);
+            const focalLabel = stripPrefix(stripPrefix(name, manufacturer), series);
+            const mountLabels = extractMountLabels(lensData.mount);
+            mountLabels.forEach(label => mountSet.add(label));
+
+            const record = {
+                name,
+                data: lensData,
+                manufacturer,
+                series,
+                displayName: name,
+                focalLabel,
+                mountLabels,
+                optionMeta: mountLabels[0] ? `Mount: ${mountLabels[0]}` : ''
+            };
+
+            if (!manufacturerMap.has(manufacturer)) {
+                manufacturerMap.set(manufacturer, new Map());
+            }
+            const seriesMap = manufacturerMap.get(manufacturer);
+            if (!seriesMap.has(series)) {
+                seriesMap.set(series, []);
+            }
+            seriesMap.get(series).push(record);
+            lensIndex.set(name, record);
+        });
+
+        manufacturerMap.forEach(seriesMap => {
+            seriesMap.forEach(list => {
+                if (list.length && sortComparator) {
+                    list.sort((a, b) => sortComparator(a.displayName, b.displayName));
+                } else {
+                    list.sort((a, b) => a.displayName.localeCompare(b.displayName));
+                }
+            });
+        });
+
+        const ensuredMounts = new Set(mountSet);
+        ['PL', 'EF', 'LPL', 'E-mount'].forEach(label => ensuredMounts.add(label));
+        const sortedMounts = Array.from(ensuredMounts);
+        const mountPriority = new Map([
+            ['PL', 0],
+            ['EF', 1],
+            ['LPL', 2],
+            ['E-mount', 3]
+        ]);
+        sortedMounts.sort((a, b) => {
+            const rankA = mountPriority.has(a) ? mountPriority.get(a) : 100;
+            const rankB = mountPriority.has(b) ? mountPriority.get(b) : 100;
+            if (rankA !== rankB) return rankA - rankB;
+            if (sortComparator) {
+                return sortComparator(a, b);
+            }
+            return a.localeCompare(b);
+        });
+
+        mountOptions = sortedMounts;
+
+        return {
+            manufacturers: manufacturerMap,
+            lensIndex
+        };
+    };
+
+    const getMountLabelFromCameraEntry = (entry) => {
+        if (!entry || typeof entry.type !== 'string') return '';
+        const labels = extractMountLabels(entry.type);
+        return labels[0] || '';
+    };
+
+    const getCameraNativeMount = () => {
+        const cameraElement = doc.getElementById('cameraSelect');
+        const cameraName = cameraElement && typeof cameraElement.value === 'string'
+            ? cameraElement.value
+            : '';
+        if (!cameraName || typeof devices !== 'object' || !devices || !devices.cameras) {
+            return '';
+        }
+        const camera = devices.cameras[cameraName];
+        if (!camera || !Array.isArray(camera.lensMount)) return '';
+        for (let index = 0; index < camera.lensMount.length; index += 1) {
+            const entry = camera.lensMount[index];
+            if (!entry) continue;
+            const normalizedType = getMountLabelFromCameraEntry(entry);
+            if (normalizedType && String(entry.mount || '').toLowerCase() === 'native') {
+                return normalizedType;
+            }
+        }
+        for (let index = 0; index < camera.lensMount.length; index += 1) {
+            const entry = camera.lensMount[index];
+            const normalizedType = getMountLabelFromCameraEntry(entry);
+            if (normalizedType) return normalizedType;
+        }
+        return '';
+    };
+
+    const buildMountOptionsForSelection = (currentMount, lensName) => {
+        const options = [];
+        const seen = new Set();
+        const addOption = (label) => {
+            if (!label || seen.has(label)) return;
+            seen.add(label);
+            options.push(label);
+        };
+        if (currentMount) addOption(currentMount);
+        const lensRecord = catalog.lensIndex.get(lensName);
+        if (lensRecord && Array.isArray(lensRecord.mountLabels)) {
+            lensRecord.mountLabels.forEach(addOption);
+        }
+        const cameraMount = getCameraNativeMount();
+        if (cameraMount) addOption(cameraMount);
+        ['PL', 'EF', 'LPL'].forEach(addOption);
+        mountOptions.forEach(addOption);
+        return options;
+    };
+
+    const resolveDefaultMount = (lensName) => {
+        const cameraMount = getCameraNativeMount();
+        if (cameraMount) {
+            return cameraMount;
+        }
+        const lensRecord = catalog.lensIndex.get(lensName);
+        if (lensRecord && lensRecord.mountLabels && lensRecord.mountLabels.length) {
+            return lensRecord.mountLabels[0];
+        }
+        if (mountOptions.includes('PL')) return 'PL';
+        if (mountOptions.includes('EF')) return 'EF';
+        if (mountOptions.includes('LPL')) return 'LPL';
+        return mountOptions[0] || '';
+    };
+
+    const normalizeSelectionName = (value) => {
+        if (typeof value !== 'string') return '';
+        return value.trim();
+    };
+
+    const updateStepState = () => {
+        const hasManufacturer = Boolean(state.manufacturer);
+        const hasSeries = Boolean(state.series);
+
+        if (manufacturerStep) {
+            manufacturerStep.classList.toggle(STEP_DISABLED_CLASS, false);
+        }
+        if (seriesStep) {
+            seriesStep.classList.toggle(STEP_DISABLED_CLASS, !hasManufacturer);
+            seriesStep.setAttribute('aria-disabled', hasManufacturer ? 'false' : 'true');
+        }
+        if (optionsStep) {
+            optionsStep.classList.toggle(STEP_DISABLED_CLASS, !hasSeries);
+            optionsStep.setAttribute('aria-disabled', hasSeries ? 'false' : 'true');
+        }
+        seriesSelect.disabled = !hasManufacturer;
+        placeholderToggle(seriesSelect, !state.series);
+        placeholderToggle(manufacturerSelect, !state.manufacturer);
+    };
+
+    const syncLegacySelect = () => {
+        const names = new Set(state.selections.map(selection => selection.name));
+        Array.from(legacySelect.options || []).forEach(option => {
+            if (!option || typeof option.value !== 'string') return;
+            option.selected = names.has(option.value);
+        });
+    };
+
+    const updateHiddenInputs = ({ skipEvent = false, skipDirty = false } = {}) => {
+        const names = state.selections.map(selection => selection.name);
+        const legacyValue = names.join(', ');
+        const detailedValue = JSON.stringify(state.selections.map(selection => ({
+            name: selection.name,
+            mount: selection.mount || ''
+        })));
+        const legacyChanged = hiddenLegacyValue.value !== legacyValue;
+        const detailedChanged = hiddenDetailedValue.value !== detailedValue;
+        if (legacyChanged) hiddenLegacyValue.value = legacyValue;
+        if (detailedChanged) hiddenDetailedValue.value = detailedValue;
+        if (!skipEvent && (legacyChanged || detailedChanged)) {
+            try {
+                hiddenLegacyValue.dispatchEvent(new Event('change', { bubbles: true }));
+                hiddenDetailedValue.dispatchEvent(new Event('change', { bubbles: true }));
+            } catch (eventError) {
+                void eventError;
+            }
+        }
+        if (!skipDirty && (legacyChanged || detailedChanged)) {
+            try {
+                markProjectFormDataDirty();
+            } catch (markError) {
+                void markError;
+            }
+        }
+        syncLegacySelect();
+    };
+
+    const renderSelectionChips = ({ skipEvent = false, skipDirty = false } = {}) => {
+        selectionChips.innerHTML = '';
+        if (!state.selections.length) {
+            updateHiddenInputs({ skipEvent, skipDirty });
+            return;
+        }
+        const removeTemplate = selectionChips.getAttribute(REMOVE_TEMPLATE_ATTR) || '';
+        const mountLabel = selectionChips.getAttribute(MOUNT_LABEL_ATTR) || 'Mount';
+        state.selections.forEach((selection, index) => {
+            const lensRecord = catalog.lensIndex.get(selection.name);
+            const displayName = lensRecord ? lensRecord.displayName : selection.name;
+            const focalLabel = lensRecord && lensRecord.focalLabel ? lensRecord.focalLabel : '';
+            const chip = doc.createElement('div');
+            chip.className = 'lens-chip';
+            chip.setAttribute('role', 'listitem');
+
+            const labelContainer = doc.createElement('div');
+            labelContainer.className = 'lens-chip-label';
+
+            const nameSpan = doc.createElement('span');
+            nameSpan.className = 'lens-chip-name';
+            nameSpan.textContent = displayName;
+            labelContainer.appendChild(nameSpan);
+
+            if (focalLabel) {
+                const focalSpan = doc.createElement('span');
+                focalSpan.className = 'lens-chip-focal';
+                focalSpan.textContent = focalLabel;
+                labelContainer.appendChild(focalSpan);
+            }
+
+            chip.appendChild(labelContainer);
+
+            const mountId = `lensMount-${index}`;
+            const mountWrapper = doc.createElement('div');
+            const mountLabelElem = doc.createElement('label');
+            mountLabelElem.className = 'visually-hidden';
+            mountLabelElem.setAttribute('for', mountId);
+            mountLabelElem.textContent = `${mountLabel}: ${displayName}`;
+            mountWrapper.appendChild(mountLabelElem);
+
+            const mountSelect = doc.createElement('select');
+            mountSelect.id = mountId;
+            mountSelect.dataset.lensName = selection.name;
+            const mountOptionsForSelect = buildMountOptionsForSelection(selection.mount, selection.name);
+            mountOptionsForSelect.forEach(label => {
+                const option = doc.createElement('option');
+                option.value = label;
+                option.textContent = label;
+                if (selection.mount === label) {
+                    option.selected = true;
+                }
+                mountSelect.appendChild(option);
+            });
+            if (!mountSelect.value && mountOptionsForSelect.length) {
+                mountSelect.value = mountOptionsForSelect[0];
+                selection.mount = mountSelect.value;
+            }
+            mountSelect.setAttribute('aria-label', `${mountLabel}: ${displayName}`);
+            mountSelect.addEventListener('change', (event) => {
+                const lensName = event.target.dataset.lensName;
+                const newMount = typeof event.target.value === 'string' ? event.target.value : '';
+                const record = state.selections.find(sel => sel.name === lensName);
+                if (!record || record.mount === newMount) {
+                    return;
+                }
+                record.mount = newMount;
+                updateHiddenInputs();
+            });
+            mountWrapper.appendChild(mountSelect);
+            chip.appendChild(mountWrapper);
+
+            const removeBtn = doc.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'lens-chip-remove';
+            removeBtn.dataset.lensName = selection.name;
+            const removeLabel = removeTemplate.includes('{lens}')
+                ? removeTemplate.replace('{lens}', displayName)
+                : removeTemplate || displayName;
+            removeBtn.setAttribute('aria-label', removeLabel);
+            removeBtn.setAttribute('title', removeLabel);
+            if (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object' && ICON_GLYPHS && ICON_GLYPHS.circleX) {
+                removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+            } else {
+                removeBtn.textContent = '×';
+            }
+            removeBtn.addEventListener('click', () => {
+                removeSelection(selection.name, { focus: true });
+            });
+            chip.appendChild(removeBtn);
+
+            selectionChips.appendChild(chip);
+        });
+
+        updateHiddenInputs({ skipEvent, skipDirty });
+    };
+
+    const renderLensOptions = () => {
+        optionsContainer.innerHTML = '';
+        optionInputs.clear();
+        if (!state.series) {
+            if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+            return;
+        }
+        const manufacturerMap = catalog.manufacturers.get(state.manufacturer);
+        const lensList = manufacturerMap ? manufacturerMap.get(state.series) : null;
+        if (!lensList || !lensList.length) {
+            if (optionsEmptyMessage) optionsEmptyMessage.hidden = false;
+            return;
+        }
+        if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+        lensList.forEach((lens, index) => {
+            const wrapper = doc.createElement('div');
+            wrapper.className = 'lens-option';
+            const optionId = `lensOption-${index}`;
+            const checkbox = doc.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = optionId;
+            checkbox.dataset.lensName = lens.name;
+            checkbox.checked = state.selections.some(sel => sel.name === lens.name);
+            checkbox.addEventListener('change', (event) => {
+                const checked = Boolean(event.target.checked);
+                handleLensToggle(lens.name, checked);
+            });
+            wrapper.appendChild(checkbox);
+
+            const label = doc.createElement('label');
+            label.className = 'lens-option-label';
+            label.setAttribute('for', optionId);
+
+            const nameSpan = doc.createElement('span');
+            nameSpan.className = 'lens-option-name';
+            nameSpan.textContent = lens.displayName;
+            label.appendChild(nameSpan);
+
+            if (lens.optionMeta) {
+                const metaSpan = doc.createElement('span');
+                metaSpan.className = 'lens-option-meta';
+                metaSpan.textContent = lens.optionMeta;
+                label.appendChild(metaSpan);
+            }
+
+            wrapper.appendChild(label);
+            optionsContainer.appendChild(wrapper);
+            optionInputs.set(lens.name, checkbox);
+        });
+    };
+
+    const renderSeries = () => {
+        seriesSelect.innerHTML = '';
+        seriesSelect.appendChild(seriesPlaceholder);
+        const manufacturerMap = state.manufacturer ? catalog.manufacturers.get(state.manufacturer) : null;
+        if (!manufacturerMap || manufacturerMap.size === 0) {
+            state.series = '';
+            if (seriesEmptyMessage) seriesEmptyMessage.hidden = Boolean(!state.manufacturer);
+            if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+            seriesPlaceholder.selected = true;
+            updateStepState();
+            return;
+        }
+        const seriesNames = Array.from(manufacturerMap.keys());
+        if (!seriesNames.length) {
+            state.series = '';
+            if (seriesEmptyMessage) seriesEmptyMessage.hidden = false;
+            if (optionsEmptyMessage) optionsEmptyMessage.hidden = true;
+            seriesPlaceholder.selected = true;
+            updateStepState();
+            return;
+        }
+        if (seriesEmptyMessage) seriesEmptyMessage.hidden = true;
+        if (sortComparator) {
+            seriesNames.sort(sortComparator);
+        } else {
+            seriesNames.sort();
+        }
+        seriesNames.forEach(name => {
+            const option = doc.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            if (state.series === name) {
+                option.selected = true;
+            }
+            seriesSelect.appendChild(option);
+        });
+        if (!manufacturerMap.has(state.series)) {
+            state.series = '';
+            seriesPlaceholder.selected = true;
+        } else {
+            seriesSelect.value = state.series;
+        }
+        updateStepState();
+    };
+
+    const renderManufacturers = () => {
+        manufacturerSelect.innerHTML = '';
+        manufacturerSelect.appendChild(manufacturerPlaceholder);
+        const manufacturerNames = Array.from(catalog.manufacturers.keys());
+        if (manufacturerNames.length) {
+            if (sortComparator) {
+                manufacturerNames.sort(sortComparator);
+            } else {
+                manufacturerNames.sort();
+            }
+            manufacturerNames.forEach(name => {
+                const option = doc.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                if (state.manufacturer === name) {
+                    option.selected = true;
+                }
+                manufacturerSelect.appendChild(option);
+            });
+        }
+        if (!catalog.manufacturers.has(state.manufacturer)) {
+            state.manufacturer = '';
+            manufacturerPlaceholder.selected = true;
+        } else {
+            manufacturerSelect.value = state.manufacturer;
+        }
+        updateStepState();
+    };
+
+    const handleLensToggle = (lensName, checked) => {
+        if (checked) {
+            if (state.selections.some(sel => sel.name === lensName)) {
+                return;
+            }
+            const selection = {
+                name: lensName,
+                mount: resolveDefaultMount(lensName)
+            };
+            state.selections.push(selection);
+            renderSelectionChips();
+        } else {
+            removeSelection(lensName);
+        }
+    };
+
+    const removeSelection = (lensName, { focus = false, skipEvent = false, skipDirty = false } = {}) => {
+        const index = state.selections.findIndex(sel => sel.name === lensName);
+        if (index === -1) return;
+        state.selections.splice(index, 1);
+        const input = optionInputs.get(lensName);
+        if (input) {
+            input.checked = false;
+            if (focus) {
+                input.focus();
+            }
+        }
+        renderSelectionChips({ skipEvent, skipDirty });
+    };
+
+    const handleManufacturerChange = () => {
+        const newValue = normalizeSelectionName(manufacturerSelect.value);
+        if (newValue === state.manufacturer) {
+            return;
+        }
+        state.manufacturer = newValue;
+        state.series = '';
+        renderManufacturers();
+        renderSeries();
+        renderLensOptions();
+    };
+
+    const handleSeriesChange = () => {
+        const newValue = normalizeSelectionName(seriesSelect.value);
+        if (newValue === state.series) {
+            return;
+        }
+        state.series = newValue;
+        renderSeries();
+        renderLensOptions();
+    };
+
+    const applyInfo = (info = {}) => {
+        catalog = buildCatalog();
+        const validNames = new Set(catalog.lensIndex.keys());
+        const prepared = [];
+        const seen = new Set();
+        if (Array.isArray(info.lensSelections)) {
+            info.lensSelections.forEach(entry => {
+                if (!entry || typeof entry !== 'object') return;
+                const name = normalizeSelectionName(entry.name);
+                if (!name || seen.has(name) || !validNames.has(name)) return;
+                const mount = typeof entry.mount === 'string' ? entry.mount.trim() : '';
+                prepared.push({ name, mount });
+                seen.add(name);
+            });
+        }
+        if (!prepared.length) {
+            normalizeLensSelectionNames(info.lenses).forEach(name => {
+                const normalized = normalizeSelectionName(name);
+                if (!normalized || seen.has(normalized) || !validNames.has(normalized)) return;
+                prepared.push({ name: normalized, mount: '' });
+                seen.add(normalized);
+            });
+        }
+        state.selections = prepared.map(entry => ({
+            name: entry.name,
+            mount: entry.mount || resolveDefaultMount(entry.name)
+        }));
+        if (state.selections.length) {
+            const firstRecord = catalog.lensIndex.get(state.selections[0].name);
+            state.manufacturer = firstRecord ? firstRecord.manufacturer : '';
+            state.series = firstRecord ? firstRecord.series : '';
+        } else {
+            state.manufacturer = '';
+            state.series = '';
+        }
+        renderManufacturers();
+        renderSeries();
+        renderLensOptions();
+        renderSelectionChips({ skipEvent: true, skipDirty: true });
+    };
+
+    const snapshot = () => ({
+        names: state.selections.map(selection => selection.name),
+        lensSelections: state.selections.map(selection => ({
+            name: selection.name,
+            mount: selection.mount || ''
+        })),
+        legacyValue: state.selections.map(selection => selection.name).join(', ')
+    });
+
+    const refreshCatalog = ({ preserveSelections = true, skipEvent = false, skipDirty = false } = {}) => {
+        const previousSelections = preserveSelections
+            ? state.selections.map(selection => ({ ...selection }))
+            : [];
+        const previousManufacturer = preserveSelections ? state.manufacturer : '';
+        const previousSeries = preserveSelections ? state.series : '';
+        catalog = buildCatalog();
+        const validNames = new Set(catalog.lensIndex.keys());
+        state.selections = preserveSelections
+            ? previousSelections.filter(selection => validNames.has(selection.name))
+            : [];
+        state.manufacturer = preserveSelections && catalog.manufacturers.has(previousManufacturer)
+            ? previousManufacturer
+            : '';
+        if (state.manufacturer) {
+            const seriesMap = catalog.manufacturers.get(state.manufacturer);
+            state.series = seriesMap && seriesMap.has(previousSeries) ? previousSeries : '';
+        } else {
+            state.series = '';
+        }
+        renderManufacturers();
+        renderSeries();
+        renderLensOptions();
+        renderSelectionChips({
+            skipEvent: skipEvent || preserveSelections,
+            skipDirty: skipDirty || preserveSelections
+        });
+    };
+
+    manufacturerSelect.addEventListener('change', handleManufacturerChange);
+    seriesSelect.addEventListener('change', handleSeriesChange);
+
+    catalog = buildCatalog();
+    renderManufacturers();
+    renderSeries();
+    renderLensOptions();
+    renderSelectionChips({ skipEvent: true, skipDirty: true });
+
+    return {
+        snapshot,
+        applyInfo,
+        refreshCatalog,
+        getSelections() {
+            return state.selections.map(selection => ({ ...selection }));
+        }
+    };
+})();
+
+if (typeof globalThis !== 'undefined' && globalThis) {
+    if (typeof globalThis.updateLensWorkflowCatalog !== 'function') {
+        globalThis.updateLensWorkflowCatalog = function updateLensWorkflowCatalog(options) {
+            try {
+                lensSelectionManager.refreshCatalog(options || { preserveSelections: true, skipEvent: true, skipDirty: true });
+            } catch (refreshError) {
+                void refreshError;
+            }
+        };
+    }
+    if (!globalThis.lensSelectionManager) {
+        globalThis.lensSelectionManager = lensSelectionManager;
+    }
+}
+
+function normalizeLensSelectionNames(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map(name => (typeof name === 'string' ? name.trim() : ''))
+            .filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map(name => name.trim())
+            .filter(Boolean);
+    }
+    return [];
+}
+
+
 function markProjectFormDataDirty() {
     projectFormDataCacheDirty = true;
     projectFormDataCache = null;
@@ -3206,6 +4025,9 @@ function cloneProjectFormDataSnapshot(snapshot) {
     if (snapshot.monitorBatteries && typeof snapshot.monitorBatteries === 'object') {
         clone.monitorBatteries = { ...snapshot.monitorBatteries };
     }
+    if (Array.isArray(snapshot.lensSelections)) {
+        clone.lensSelections = snapshot.lensSelections.map(entry => ({ ...entry }));
+    }
 
     return clone;
 }
@@ -3232,6 +4054,11 @@ function freezeProjectFormDataSnapshot(info) {
     }
     if (info.monitorBatteries && typeof info.monitorBatteries === 'object') {
         snapshot.monitorBatteries = PROJECT_FORM_FREEZE({ ...info.monitorBatteries });
+    }
+    if (Array.isArray(info.lensSelections)) {
+        snapshot.lensSelections = PROJECT_FORM_FREEZE(
+            info.lensSelections.map(entry => PROJECT_FORM_FREEZE({ ...entry }))
+        );
     }
 
     return PROJECT_FORM_FREEZE(snapshot);
@@ -3360,6 +4187,21 @@ function collectProjectFormData() {
         addressLines.push(addressFields.country);
     }
 
+    const lensSnapshot = lensSelectionManager && typeof lensSelectionManager.snapshot === 'function'
+        ? lensSelectionManager.snapshot()
+        : { names: normalizeLensSelectionNames(getMultiValue('lenses')), lensSelections: [] };
+    const lensNames = Array.isArray(lensSnapshot.names)
+        ? lensSnapshot.names.map(name => (typeof name === 'string' ? name.trim() : '')).filter(Boolean)
+        : normalizeLensSelectionNames(lensSnapshot.names);
+    const lensSelectionsDetailed = Array.isArray(lensSnapshot.lensSelections)
+        ? lensSnapshot.lensSelections
+            .map(entry => ({
+                name: typeof entry?.name === 'string' ? entry.name.trim() : '',
+                mount: typeof entry?.mount === 'string' ? entry.mount.trim() : ''
+            }))
+            .filter(entry => entry.name)
+        : [];
+
     const info = {
         productionCompany: getValue('productionCompany'),
         productionCompanyAddress: addressLines.join('\n'),
@@ -3381,7 +4223,7 @@ function collectProjectFormData() {
         baseFrameRate: getValue('baseFrameRate'),
         recordingFrameRate: getValue('recordingFrameRate'),
         sensorMode: getValue('sensorMode'),
-        lenses: getMultiValue('lenses'),
+        lenses: lensNames,
         requiredScenarios: getMultiValue('requiredScenarios'),
         cameraHandle: getMultiValue('cameraHandle'),
         viewfinderExtension: getValue('viewfinderExtension'),
@@ -3404,6 +4246,8 @@ function collectProjectFormData() {
         easyrig: getSetupsCoreValue('getEasyrigValue'),
         filter: filterStr
     };
+
+    info.lensSelections = lensSelectionsDetailed;
 
     if (monitorBatteryMap && Object.keys(monitorBatteryMap).length) {
         info.monitorBatteries = monitorBatteryMap;
@@ -3632,7 +4476,9 @@ function populateProjectForm(info = {}) {
     setVal('baseFrameRate', info.baseFrameRate);
     setVal('recordingFrameRate', info.recordingFrameRate);
     setVal('sensorMode', info.sensorMode);
-    setMulti('lenses', info.lenses);
+    if (lensSelectionManager && typeof lensSelectionManager.applyInfo === 'function') {
+        lensSelectionManager.applyInfo(info || {});
+    }
     setMulti('requiredScenarios', info.requiredScenarios);
     setMulti('cameraHandle', info.cameraHandle);
     setVal('viewfinderExtension', info.viewfinderExtension);
@@ -4692,16 +5538,7 @@ function shouldAugmentClampOnRule(rule) {
 }
 
 function buildClampOnBackingAdditionsFromInfo(info) {
-    const lensValue = info ? info.lenses : '';
-    let lensNames = [];
-    if (Array.isArray(lensValue)) {
-        lensNames = lensValue.filter(name => typeof name === 'string' && name.trim());
-    } else if (typeof lensValue === 'string') {
-        lensNames = lensValue
-            .split(',')
-            .map(name => name.trim())
-            .filter(Boolean);
-    }
+    const lensNames = normalizeLensSelectionNames(info ? info.lenses : null);
     if (!lensNames.length) return [];
     const lensDb = devices && devices.lenses ? devices.lenses : null;
     if (!lensDb || typeof lensDb !== 'object') return [];
@@ -8104,9 +8941,7 @@ function gearListGenerateHtmlImpl(info = {}) {
         ...(info.aspectMaskOpacity ? info.aspectMaskOpacity.split(',').map(s => s.trim()) : []),
         ...(info.monitoringSettings ? info.monitoringSettings.split(',').map(s => s.trim()) : []),
     ].filter(Boolean);
-    const selectedLensNames = info.lenses
-        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
+    const selectedLensNames = normalizeLensSelectionNames(info.lenses);
     const maxLensFront = selectedLensNames.reduce((max, name) => {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
@@ -8128,10 +8963,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (info.mattebox && !needsSwingAway) {
         const matteboxSelection = info.mattebox.toLowerCase();
         if (matteboxSelection.includes('clamp')) {
-            const lensNames = info.lenses
-                ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
-                : [];
-            const diameters = [...new Set(lensNames
+            const diameters = [...new Set(selectedLensNames
                 .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
                 .filter(Boolean))];
             diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));

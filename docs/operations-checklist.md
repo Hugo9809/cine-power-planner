@@ -33,6 +33,10 @@ update the repository or hand off a project at the end of the day.
    still display their coloured date badges and stay grouped under **Extras
    temporaires/Temporäre Extras/Temporary Extras** so schedulers know which
    lines only apply for the specified period.
+   - Confirm the guided lens workflow reloads the saved manufacturer, series
+     and mount for every chip, allows selecting a new lens without dropping
+     existing chips, and keeps the hidden legacy select in sync so overview
+     exports still list the chosen lenses.
 2. **Exercise manual save.** Make a harmless edit, press `Enter` or
    `Ctrl+S`/`⌘S`, then confirm the timestamp updates in the project selector.
 3. **Export safety snapshots.** Download both a `planner-backup.json` file and a

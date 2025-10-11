@@ -319,10 +319,10 @@
 
   const DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
   const SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
-  const MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
-  const MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
-  const MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,\/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
-  const MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,\/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+  const MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
+  const MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
+  const MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
+  const MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
 
   function cleanMeasurementValue(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;

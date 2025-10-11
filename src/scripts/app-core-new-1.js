@@ -13437,6 +13437,11 @@ function setLanguage(lang) {
       const value = projectFormTexts[key] || fallbackProjectForm[key];
       if (value) element.setAttribute('placeholder', value);
     };
+    const setOptionText = (element, key) => {
+      if (!element) return;
+      const value = projectFormTexts[key] || fallbackProjectForm[key];
+      if (value) element.textContent = value;
+    };
     setLabelText(projectDialogHeading, 'heading');
     setLabelText(projectNameLabel, 'projectName');
     setLabelText(productionCompanyLabel, 'productionCompany');
@@ -13496,7 +13501,33 @@ function setLanguage(lang) {
       }
     }
     setLabelText(lensesHeadingElem, 'lensesHeading');
+    setLabelText(lensManufacturerLabel, 'lensManufacturerStep');
+    setLabelText(lensSeriesLabel, 'lensSeriesStep');
     setLabelText(lensesLabelElem, 'lensesLabel');
+    setLabelText(lensSelectionsHeadingElem, 'lensSelectionsLabel');
+    setOptionText(lensManufacturerPlaceholderOption, 'lensManufacturerPlaceholder');
+    setOptionText(lensSeriesPlaceholderOption, 'lensSeriesPlaceholder');
+    if (lensSeriesEmptyElem) {
+      const seriesEmptyText = projectFormTexts.lensSeriesEmpty || fallbackProjectForm.lensSeriesEmpty;
+      if (seriesEmptyText) lensSeriesEmptyElem.textContent = seriesEmptyText;
+    }
+    if (lensOptionsEmptyElem) {
+      const optionsEmptyText = projectFormTexts.lensOptionsEmpty || fallbackProjectForm.lensOptionsEmpty;
+      if (optionsEmptyText) lensOptionsEmptyElem.textContent = optionsEmptyText;
+    }
+    if (lensSelectionChipsElem) {
+      const removeTemplate = projectFormTexts.lensRemoveLabel || fallbackProjectForm.lensRemoveLabel;
+      const mountLabelText = projectFormTexts.lensMountLabel || fallbackProjectForm.lensMountLabel;
+      if (removeTemplate) lensSelectionChipsElem.setAttribute('data-remove-template', removeTemplate);
+      if (mountLabelText) lensSelectionChipsElem.setAttribute('data-mount-label', mountLabelText);
+    }
+    if (lensSelectionManager && typeof lensSelectionManager.refreshCatalog === 'function') {
+      try {
+        lensSelectionManager.refreshCatalog({ preserveSelections: true, skipEvent: true, skipDirty: true });
+      } catch (catalogRefreshError) {
+        void catalogRefreshError;
+      }
+    }
     setLabelText(riggingHeadingElem, 'riggingHeading');
     setLabelText(requiredScenariosLabel, 'requiredScenarios');
     setLabelText(cameraHandleLabel, 'cameraHandle');
@@ -13784,8 +13815,16 @@ const sensorModeLabel = document.getElementById("sensorModeLabel");
 const aspectRatioLabel = document.getElementById("aspectRatioLabel");
 const codecLabel = document.getElementById("codecLabel");
 const baseFrameRateLabel = document.getElementById("baseFrameRateLabel");
+const lensManufacturerLabel = document.getElementById("lensManufacturerLabel");
+const lensManufacturerPlaceholderOption = document.getElementById("lensManufacturerPlaceholder");
+const lensSeriesLabel = document.getElementById("lensSeriesLabel");
+const lensSeriesPlaceholderOption = document.getElementById("lensSeriesPlaceholder");
+const lensSeriesEmptyElem = document.getElementById("lensSeriesEmpty");
+const lensOptionsEmptyElem = document.getElementById("lensOptionsEmpty");
 const lensesHeadingElem = document.getElementById("lensesHeading");
 const lensesLabelElem = document.getElementById("lensesLabel");
+const lensSelectionsHeadingElem = document.getElementById("lensSelectionsLabel");
+const lensSelectionChipsElem = document.getElementById("lensSelectionChips");
 const riggingHeadingElem = document.getElementById("riggingHeading");
 const requiredScenariosLabel = document.getElementById("requiredScenariosLabel");
 const cameraHandleLabel = document.getElementById("cameraHandleLabel");
