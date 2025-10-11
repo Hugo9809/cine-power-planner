@@ -65,6 +65,7 @@
   "./legacy/scripts/modules/features/connection-diagram.js",
   "./legacy/scripts/modules/features/feature-search.js",
   "./legacy/scripts/modules/features/help.js",
+  "./legacy/scripts/modules/features/onboarding-tour.js",
   "./legacy/scripts/modules/features/print-workflow.js",
   "./legacy/scripts/modules/gear-list.js",
   "./legacy/scripts/modules/globals.js",
