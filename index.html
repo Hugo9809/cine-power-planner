@@ -4872,7 +4872,7 @@
         <section
           data-help-section
           id="contactsHelp"
-          data-help-keywords="contacts crew directory phone email avatar import vcard provider saved reuse"
+          data-help-keywords="contacts crew directory phone email website avatar import vcard provider saved reuse"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE9C6;</span>Contacts</h3>
           <ul>
@@ -4909,8 +4909,8 @@
                 href="#contactsUserProfile"
                 data-help-target="#contactsUserProfile"
               >Your profile</a>
-              with a name and optional photo so gear items marked “User” in the provider dropdown show your branding in gear
-              lists, prints and exports.
+              with your role and contact details so gear items marked “User” in the provider dropdown show the right phone,
+              email and website on gear lists, prints and exports.
             </li>
             <li>
               Crew rows inside
@@ -7339,8 +7339,15 @@
                 <input type="text" id="userProfileName" name="userProfileName" autocomplete="name" />
                 <label id="userProfileRoleLabel" for="userProfileRole">Crew role</label>
                 <select id="userProfileRole" name="userProfileRole" autocomplete="organization-title"></select>
+                <label id="userProfilePhoneLabel" for="userProfilePhone">Phone number</label>
+                <input type="tel" id="userProfilePhone" name="userProfilePhone" inputmode="tel" autocomplete="tel" />
+                <label id="userProfileEmailLabel" for="userProfileEmail">Email address</label>
+                <input type="email" id="userProfileEmail" name="userProfileEmail" autocomplete="email" />
+                <label id="userProfileWebsiteLabel" for="userProfileWebsite">Website</label>
+                <input type="url" id="userProfileWebsite" name="userProfileWebsite" autocomplete="url" />
                 <p id="userProfileHint" class="contacts-user-card-hint">
-                  Used to show your first name and last initial for the “User” option in the provided by dropdown.
+                  Used to show your name, role and contact info for the “User” option in provided by menus, crew lists and
+                  exports.
                 </p>
                 <button type="button" id="userProfileAvatarClear" class="contacts-user-avatar-clear">
                   Remove photo

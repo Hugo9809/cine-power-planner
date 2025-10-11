@@ -11673,6 +11673,33 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
         userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
       }
+      if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+        userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+      }
+      if (userProfileRoleSelect && contactsTexts.userProfileRolePlaceholder) {
+        userProfileRoleSelect.setAttribute('data-placeholder', contactsTexts.userProfileRolePlaceholder);
+        userProfileRoleSelect.setAttribute('aria-label', contactsTexts.userProfileRoleLabel || contactsTexts.userProfileRolePlaceholder);
+        userProfileRoleSelect.setAttribute('data-help', contactsTexts.userProfileRoleLabel || contactsTexts.userProfileRolePlaceholder);
+        setUserProfileRoleOptions(userProfileState.role || '', { preserveSelection: true });
+      }
+      if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+        userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+      }
+      if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+        userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+      }
+      if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+        userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+      }
+      if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+        userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+      }
+      if (userProfileWebsiteLabel && contactsTexts.userProfileWebsiteLabel) {
+        userProfileWebsiteLabel.textContent = contactsTexts.userProfileWebsiteLabel;
+      }
+      if (userProfileWebsiteInput && contactsTexts.userProfileWebsitePlaceholder) {
+        userProfileWebsiteInput.setAttribute('placeholder', contactsTexts.userProfileWebsitePlaceholder);
+      }
       if (userProfileHint && contactsTexts.userProfileHint) {
         userProfileHint.textContent = contactsTexts.userProfileHint;
       }
@@ -11897,6 +11924,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var userProfileDescription = null;
   var userProfileNameInput = null;
   var userProfileNameLabel = null;
+  var userProfileRoleLabel = null;
+  var userProfileRoleSelect = null;
+  var userProfilePhoneLabel = null;
+  var userProfilePhoneInput = null;
+  var userProfileEmailLabel = null;
+  var userProfileEmailInput = null;
+  var userProfileWebsiteLabel = null;
+  var userProfileWebsiteInput = null;
   var userProfileHint = null;
   var userProfileAvatarContainer = null;
   var userProfileAvatarButton = null;
@@ -11925,6 +11960,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
     userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
     userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+    userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
+    userProfileRoleSelect = userProfileRoleSelect || document.getElementById('userProfileRole');
+    userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
+    userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
+    userProfileEmailLabel = userProfileEmailLabel || document.getElementById('userProfileEmailLabel');
+    userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
+    userProfileWebsiteLabel = userProfileWebsiteLabel || document.getElementById('userProfileWebsiteLabel');
+    userProfileWebsiteInput = userProfileWebsiteInput || document.getElementById('userProfileWebsite');
     userProfileHint = userProfileHint || document.getElementById('userProfileHint');
     userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
     userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -13468,6 +13511,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var contactsInitialized = false;
   var userProfileState = {
     name: '',
+    role: '',
+    phone: '',
+    email: '',
+    website: '',
     avatar: ''
   };
   var userProfileDirty = false;
@@ -13654,6 +13701,61 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       select.appendChild(fallback);
     }
   }
+
+  function setUserProfileRoleOptions(selectedValue, options) {
+    if (!userProfileRoleSelect) return;
+    var opts = options || {};
+    var selectLang = userProfileRoleSelect.lang;
+    if (!selectLang && typeof document !== 'undefined' && document && document.documentElement) {
+      selectLang = document.documentElement.lang || '';
+    }
+    if (!selectLang) {
+      selectLang = currentLang || DEFAULT_LANGUAGE;
+    }
+    var selectDirection = userProfileRoleSelect.dir || resolveDocumentDirection(selectLang || currentLang || DEFAULT_LANGUAGE);
+    var currentValue = typeof selectedValue === 'string' ? selectedValue : userProfileRoleSelect.value;
+    while (userProfileRoleSelect.firstChild) {
+      userProfileRoleSelect.removeChild(userProfileRoleSelect.firstChild);
+    }
+    var placeholderText = userProfileRoleSelect.getAttribute('data-placeholder') || getContactsText('rolePlaceholder', 'Select role');
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = placeholderText;
+    applyLocaleMetadata(placeholder, selectLang, selectDirection);
+    userProfileRoleSelect.appendChild(placeholder);
+    var roleLabels = texts && texts[currentLang] && texts[currentLang].crewRoles || texts && texts.en && texts.en.crewRoles || {};
+    crewRoles.forEach(function (role) {
+      var option = document.createElement('option');
+      option.value = role;
+      option.textContent = roleLabels[role] || role;
+      applyLocaleMetadata(option, selectLang, selectDirection);
+      userProfileRoleSelect.appendChild(option);
+    });
+    if (currentValue && crewRoles.indexOf(currentValue) === -1) {
+      var extra = document.createElement('option');
+      extra.value = currentValue;
+      extra.textContent = roleLabels[currentValue] || currentValue;
+      applyLocaleMetadata(extra, selectLang, selectDirection);
+      userProfileRoleSelect.appendChild(extra);
+    }
+    if (opts && opts.preserveSelection) {
+      try {
+        var active = typeof document !== 'undefined' ? document.activeElement : null;
+        if (active === userProfileRoleSelect) {
+          var selectedIndex = Array.prototype.findIndex.call(userProfileRoleSelect.options, function (option) {
+            return option.value === currentValue;
+          });
+          if (selectedIndex >= 0) {
+            userProfileRoleSelect.selectedIndex = selectedIndex;
+            return;
+          }
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    userProfileRoleSelect.value = currentValue || '';
+  }
   function updateContactPickers() {
     if (!crewContainer) return;
     var selects = crewContainer.querySelectorAll('.person-contact-select');
@@ -13726,10 +13828,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function getUserProfileSnapshot() {
-    var name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+    var name = sanitizeContactValue(userProfileState && userProfileState.name);
+    var role = sanitizeContactValue(userProfileState && userProfileState.role);
+    var phone = sanitizeContactValue(userProfileState && userProfileState.phone);
+    var email = sanitizeContactValue(userProfileState && userProfileState.email);
+    var website = sanitizeContactValue(userProfileState && userProfileState.website);
     var avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
     return {
       name: name,
+      role: role,
+      phone: phone,
+      email: email,
+      website: website,
       avatar: avatar
     };
   }
@@ -13752,6 +13862,53 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         userProfileNameInput.value = profile.name;
       }
     }
+    if (userProfileRoleSelect) {
+      setUserProfileRoleOptions(profile.role, {
+        preserveSelection: preserveSelection
+      });
+    }
+    if (userProfilePhoneInput) {
+      if (preserveSelection && document.activeElement === userProfilePhoneInput) {
+        var phoneStart = userProfilePhoneInput.selectionStart;
+        var phoneEnd = userProfilePhoneInput.selectionEnd;
+        userProfilePhoneInput.value = profile.phone;
+        try {
+          userProfilePhoneInput.setSelectionRange(phoneStart, phoneEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfilePhoneInput.value = profile.phone;
+      }
+    }
+    if (userProfileEmailInput) {
+      if (preserveSelection && document.activeElement === userProfileEmailInput) {
+        var emailStart = userProfileEmailInput.selectionStart;
+        var emailEnd = userProfileEmailInput.selectionEnd;
+        userProfileEmailInput.value = profile.email;
+        try {
+          userProfileEmailInput.setSelectionRange(emailStart, emailEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfileEmailInput.value = profile.email;
+      }
+    }
+    if (userProfileWebsiteInput) {
+      if (preserveSelection && document.activeElement === userProfileWebsiteInput) {
+        var webStart = userProfileWebsiteInput.selectionStart;
+        var webEnd = userProfileWebsiteInput.selectionEnd;
+        userProfileWebsiteInput.value = profile.website;
+        try {
+          userProfileWebsiteInput.setSelectionRange(webStart, webEnd);
+        } catch (error) {
+          void error;
+        }
+      } else {
+        userProfileWebsiteInput.value = profile.website;
+      }
+    }
     if (userProfileAvatarContainer) {
       updateAvatarVisual(userProfileAvatarContainer, profile.avatar || '', profile.name, 'contact-card-avatar-initial');
     }
@@ -13768,11 +13925,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (loaded && _typeof(loaded) === 'object') {
           userProfileState = {
             name: typeof loaded.name === 'string' ? loaded.name : '',
+            role: typeof loaded.role === 'string' ? loaded.role : '',
+            phone: typeof loaded.phone === 'string' ? loaded.phone : '',
+            email: typeof loaded.email === 'string' ? loaded.email : '',
+            website: typeof loaded.website === 'string' ? loaded.website : '',
             avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
           };
         } else {
           userProfileState = {
             name: '',
+            role: '',
+            phone: '',
+            email: '',
+            website: '',
             avatar: ''
           };
         }
@@ -13781,6 +13946,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn('Failed to load user profile', error);
       userProfileState = {
         name: '',
+        role: '',
+        phone: '',
+        email: '',
+        website: '',
         avatar: ''
       };
     }
@@ -13801,9 +13970,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     userProfileDirty = false;
-    var isNameActive = typeof document !== 'undefined' && document.activeElement === userProfileNameInput;
+    var activeElement = typeof document !== 'undefined' ? document.activeElement : null;
+    var preserveSelection = activeElement === userProfileNameInput || activeElement === userProfileRoleSelect || activeElement === userProfilePhoneInput || activeElement === userProfileEmailInput || activeElement === userProfileWebsiteInput;
     applyUserProfileToDom({
-      preserveSelection: isNameActive
+      preserveSelection: preserveSelection
     });
     if (options && options.announce) {
       announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
@@ -13811,21 +13981,35 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     dispatchGearProviderDataChanged('user-profile');
   }
-  function handleUserProfileNameInput() {
-    if (!userProfileNameInput) return;
-    var rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
-    if (rawValue.trim() === userProfileState.name.trim()) {
-      return;
-    }
-    userProfileState = {
-      name: rawValue,
-      avatar: userProfileState.avatar || ''
+
+  function cloneCurrentUserProfileState() {
+    return {
+      name: typeof userProfileState.name === 'string' ? userProfileState.name : '',
+      role: typeof userProfileState.role === 'string' ? userProfileState.role : '',
+      phone: typeof userProfileState.phone === 'string' ? userProfileState.phone : '',
+      email: typeof userProfileState.email === 'string' ? userProfileState.email : '',
+      website: typeof userProfileState.website === 'string' ? userProfileState.website : '',
+      avatar: typeof userProfileState.avatar === 'string' ? userProfileState.avatar : ''
     };
+  }
+
+  function commitUserProfileFieldChange(field, value) {
+    var sanitized = sanitizeContactValue(value);
+    var state = cloneCurrentUserProfileState();
+    var currentValue = typeof state[field] === 'string' ? state[field] : '';
+    var currentSanitized = sanitizeContactValue(currentValue);
+    if (sanitized === currentSanitized && sanitized === currentValue) {
+      return false;
+    }
+    state[field] = sanitized;
+    userProfileState = state;
     userProfileDirty = true;
     userProfilePendingAnnouncement = true;
     persistUserProfileState();
+    return true;
   }
-  function handleUserProfileNameBlur() {
+
+  function flushPendingUserProfileAnnouncement() {
     if (!userProfileDirty && !userProfilePendingAnnouncement) {
       return;
     }
@@ -13835,14 +14019,63 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
     }
   }
+  function handleUserProfileNameInput() {
+    if (!userProfileNameInput) return;
+    var rawValue = typeof userProfileNameInput.value === 'string' ? userProfileNameInput.value : '';
+    commitUserProfileFieldChange('name', rawValue);
+  }
+  function handleUserProfileNameBlur() {
+    flushPendingUserProfileAnnouncement();
+  }
+  function handleUserProfilePhoneInput() {
+    if (!userProfilePhoneInput) return;
+    var rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
+    commitUserProfileFieldChange('phone', rawValue);
+  }
+  function handleUserProfilePhoneBlur() {
+    flushPendingUserProfileAnnouncement();
+  }
+  function handleUserProfileEmailInput() {
+    if (!userProfileEmailInput) return;
+    var rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
+    commitUserProfileFieldChange('email', rawValue);
+  }
+  function handleUserProfileEmailBlur() {
+    flushPendingUserProfileAnnouncement();
+  }
+  function handleUserProfileWebsiteInput() {
+    if (!userProfileWebsiteInput) return;
+    var rawValue = typeof userProfileWebsiteInput.value === 'string' ? userProfileWebsiteInput.value : '';
+    commitUserProfileFieldChange('website', rawValue);
+  }
+  function handleUserProfileWebsiteBlur() {
+    flushPendingUserProfileAnnouncement();
+  }
+  function handleUserProfileRoleChange() {
+    if (!userProfileRoleSelect) return;
+    var rawValue = typeof userProfileRoleSelect.value === 'string' ? userProfileRoleSelect.value : '';
+    var sanitized = sanitizeContactValue(rawValue);
+    var currentRole = typeof userProfileState.role === 'string' ? userProfileState.role : '';
+    var currentSanitized = sanitizeContactValue(currentRole);
+    if (sanitized === currentSanitized && sanitized === currentRole) {
+      return;
+    }
+    var state = cloneCurrentUserProfileState();
+    state.role = sanitized;
+    userProfileState = state;
+    userProfileDirty = false;
+    userProfilePendingAnnouncement = false;
+    persistUserProfileState({
+      announce: true
+    });
+  }
   function handleUserProfileAvatarCleared() {
     if (!userProfileState.avatar) {
       return;
     }
-    userProfileState = {
-      name: userProfileState.name || '',
-      avatar: ''
-    };
+    var state = cloneCurrentUserProfileState();
+    state.avatar = '';
+    userProfileState = state;
     persistUserProfileState();
     announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
   }
@@ -13863,10 +14096,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return;
     }
     readAvatarFile(file, function (dataUrl) {
-      userProfileState = {
-        name: userProfileState.name || '',
-        avatar: dataUrl
-      };
+      var state = cloneCurrentUserProfileState();
+      state.avatar = dataUrl;
+      userProfileState = state;
       persistUserProfileState();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
     }, function (reason) {
@@ -14652,6 +14884,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (userProfileNameInput) {
       userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
       userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+    }
+    if (userProfilePhoneInput) {
+      userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);
+      userProfilePhoneInput.addEventListener('blur', handleUserProfilePhoneBlur);
+    }
+    if (userProfileEmailInput) {
+      userProfileEmailInput.addEventListener('input', handleUserProfileEmailInput);
+      userProfileEmailInput.addEventListener('blur', handleUserProfileEmailBlur);
+    }
+    if (userProfileWebsiteInput) {
+      userProfileWebsiteInput.addEventListener('input', handleUserProfileWebsiteInput);
+      userProfileWebsiteInput.addEventListener('blur', handleUserProfileWebsiteBlur);
+    }
+    if (userProfileRoleSelect) {
+      userProfileRoleSelect.addEventListener('change', handleUserProfileRoleChange);
     }
     if (userProfileAvatarButton) {
       userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);

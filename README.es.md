@@ -167,9 +167,9 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Renombrar crea bifurcaciones.** Cambia el nombre y pulsa **Enter** para duplicar la versión. Útil para comparar variantes.
 - **Cambiar de proyecto no destruye datos.** Selecciona otro elemento en el menú; la app conserva la posición de scroll y campos no guardados.
 - **Los contactos del equipo quedan reutilizables.** Abre la entrada **Contactos** de la barra lateral para mantener un padrón con
-  roles, correos, teléfonos y fotos de perfil listo para insertarlo en cualquier proyecto. Tu perfil personal dentro del diálogo
-  también guarda tu nombre visible, rol y foto para que el equipo marcado como “User” conserve la etiqueta en las copias de
-  seguridad. Los contactos viven en el mismo
+  roles, correos, teléfonos, sitios web y fotos de perfil listo para insertarlo en cualquier proyecto. Tu perfil personal dentro
+  del diálogo también guarda tu nombre visible, rol, teléfono, correo y sitio web para que el equipo marcado como “User” conserve
+  la etiqueta en las copias de seguridad. Los contactos viven en el mismo
   snapshot de localStorage que tus proyectos, se incluyen en las copias de seguridad manuales y pueden importarse desde archivos
   `.vcf` (vCard) sin conexión para fusionar agendas. Guardar una fila del equipo en la libreta evita volver a escribir datos en
   los próximos proyectos.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
