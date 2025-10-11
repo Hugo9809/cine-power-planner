@@ -379,6 +379,10 @@ Los tiempos aportados por usuarios alimentan un modelo ponderado para aproximars
 
 Puedes previsualizar nuevas traducciones sin build:
 
+- **Usa el rastreador de actualizaciones de documentación.** Registra el progreso en el rastreador integrado (**Configuración →
+  General**) para que las notas de la versión indiquen qué traducciones, temas de ayuda y guías imprimibles se actualizaron
+  antes de enviar paquetes sin conexión.
+
 1. Duplica el README más cercano como `README.<lang>.md` y tradúcelo.
 2. Añade cadenas en `translations.js`, manteniendo los marcadores como `%s`.
 3. Copia y traduce las páginas estáticas (privacidad, aviso legal).

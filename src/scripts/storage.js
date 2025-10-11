@@ -282,6 +282,7 @@ var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
 var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
 var USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
+var DOCUMENTATION_TRACKER_STORAGE_KEY = 'cameraPowerPlanner_documentationTracker';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -2531,6 +2532,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   OWN_GEAR_STORAGE_KEY,
+  DOCUMENTATION_TRACKER_STORAGE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
   FOCUS_SCALE_STORAGE_KEY_NAME,
 ]);
@@ -2551,6 +2553,7 @@ var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: PROJECT_STORAGE_KEY }),
   () => ({ key: FAVORITES_STORAGE_KEY }),
   () => ({ key: OWN_GEAR_STORAGE_KEY }),
+  () => ({ key: DOCUMENTATION_TRACKER_STORAGE_KEY }),
   () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
   () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
   () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
@@ -11227,6 +11230,353 @@ function normalizeImportedFullBackupHistory(value) {
   return [];
 }
 
+// --- Documentation Tracker Storage ---
+var DOCUMENTATION_TRACKER_SCHEMA_VERSION = 1;
+
+function generateDocumentationTrackerId() {
+  var now = 0;
+  if (typeof Date !== 'undefined' && Date && typeof Date.now === 'function') {
+    now = Date.now();
+  } else {
+    try {
+      now = new Date().getTime();
+    } catch (timeError) {
+      now = Math.floor(Math.random() * 1e9);
+      void timeError;
+    }
+  }
+  var random = 0;
+  try {
+    random = Math.floor(Math.random() * 1e6);
+  } catch (randomError) {
+    random = now % 1e6;
+    void randomError;
+  }
+  return 'doc-tracker-' + now.toString(36) + '-' + random.toString(36);
+}
+
+function normalizeDocumentationTrackerStatusEntry(entry) {
+  var completed = false;
+  var updatedAt = null;
+
+  if (entry && typeof entry === 'object') {
+    if (typeof entry.completed === 'boolean') {
+      completed = entry.completed;
+    } else if (typeof entry.checked === 'boolean') {
+      completed = entry.checked;
+    } else if (typeof entry.value === 'boolean') {
+      completed = entry.value;
+    } else if (entry.done === true) {
+      completed = true;
+    }
+
+    var timestampCandidate = null;
+    if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
+      timestampCandidate = entry.updatedAt.trim();
+    } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
+      timestampCandidate = entry.timestamp.trim();
+    } else if (typeof entry.completedAt === 'string' && entry.completedAt.trim()) {
+      timestampCandidate = entry.completedAt.trim();
+    }
+    if (timestampCandidate) {
+      updatedAt = timestampCandidate;
+    }
+  } else if (typeof entry === 'boolean') {
+    completed = entry;
+  } else if (typeof entry === 'string') {
+    var normalized = entry.trim().toLowerCase();
+    if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'done') {
+      completed = true;
+    }
+  }
+
+  return {
+    completed: completed === true,
+    updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+  };
+}
+
+function normalizeDocumentationTrackerStatusMap(map) {
+  var normalized = {};
+
+  if (Array.isArray(map)) {
+    for (var index = 0; index < map.length; index += 1) {
+      var item = map[index];
+      if (item === null || item === undefined) {
+        continue;
+      }
+      if (typeof item === 'string' && item.trim()) {
+        normalized[item.trim()] = { completed: true, updatedAt: null };
+        continue;
+      }
+      if (typeof item === 'object') {
+        var key = null;
+        if (typeof item.id === 'string' && item.id.trim()) {
+          key = item.id.trim();
+        } else if (typeof item.key === 'string' && item.key.trim()) {
+          key = item.key.trim();
+        } else if (typeof item.name === 'string' && item.name.trim()) {
+          key = item.name.trim();
+        }
+        if (!key) {
+          continue;
+        }
+        normalized[key] = normalizeDocumentationTrackerStatusEntry(item);
+      }
+    }
+    return normalized;
+  }
+
+  if (map && (typeof map === 'object' || typeof map === 'function')) {
+    var keys = Object.keys(map);
+    for (var i = 0; i < keys.length; i += 1) {
+      var rawKey = keys[i];
+      if (rawKey === null || rawKey === undefined) {
+        continue;
+      }
+      var keyString = typeof rawKey === 'string' ? rawKey : String(rawKey);
+      if (!keyString) {
+        continue;
+      }
+      var trimmedKey = keyString.trim();
+      if (!trimmedKey) {
+        continue;
+      }
+      normalized[trimmedKey] = normalizeDocumentationTrackerStatusEntry(map[rawKey]);
+    }
+  }
+
+  return normalized;
+}
+
+function normalizeDocumentationTrackerStatuses(value) {
+  var normalized = {};
+  if (value && (typeof value === 'object' || typeof value === 'function')) {
+    var keys = Object.keys(value);
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      if (!key) continue;
+      normalized[key] = normalizeDocumentationTrackerStatusMap(value[key]);
+    }
+  }
+  if (!normalized.locales) {
+    normalized.locales = {};
+  }
+  if (!normalized.helpTopics) {
+    normalized.helpTopics = {};
+  }
+  if (!normalized.printGuides) {
+    normalized.printGuides = {};
+  }
+  return normalized;
+}
+
+function normalizeDocumentationTrackerRelease(entry) {
+  if (!entry || (typeof entry !== 'object' && typeof entry !== 'function')) {
+    return null;
+  }
+
+  var id = null;
+  if (typeof entry.id === 'string' && entry.id.trim()) {
+    id = entry.id.trim();
+  }
+  if (!id && typeof entry.key === 'string' && entry.key.trim()) {
+    id = entry.key.trim();
+  }
+  if (!id) {
+    id = generateDocumentationTrackerId();
+  }
+
+  var name = '';
+  if (typeof entry.name === 'string') {
+    name = entry.name.trim();
+  } else if (typeof entry.title === 'string') {
+    name = entry.title.trim();
+  }
+
+  var targetDate = '';
+  if (typeof entry.targetDate === 'string' && entry.targetDate.trim()) {
+    targetDate = entry.targetDate.trim();
+  } else if (typeof entry.releaseDate === 'string' && entry.releaseDate.trim()) {
+    targetDate = entry.releaseDate.trim();
+  }
+
+  var createdAt = '';
+  if (typeof entry.createdAt === 'string' && entry.createdAt.trim()) {
+    createdAt = entry.createdAt.trim();
+  } else if (typeof entry.generatedAt === 'string' && entry.generatedAt.trim()) {
+    createdAt = entry.generatedAt.trim();
+  }
+  if (!createdAt) {
+    try {
+      createdAt = new Date().toISOString();
+    } catch (isoError) {
+      createdAt = '';
+      void isoError;
+    }
+  }
+
+  var updatedAt = null;
+  if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
+    updatedAt = entry.updatedAt.trim();
+  } else if (typeof entry.modifiedAt === 'string' && entry.modifiedAt.trim()) {
+    updatedAt = entry.modifiedAt.trim();
+  } else if (typeof entry.lastUpdated === 'string' && entry.lastUpdated.trim()) {
+    updatedAt = entry.lastUpdated.trim();
+  } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
+    updatedAt = entry.timestamp.trim();
+  }
+  if (!updatedAt) {
+    updatedAt = createdAt || null;
+  }
+
+  var notes = '';
+  if (typeof entry.notes === 'string') {
+    notes = entry.notes.trim();
+  } else if (typeof entry.summary === 'string') {
+    notes = entry.summary.trim();
+  }
+  if (notes && notes.length > 8000) {
+    notes = notes.slice(0, 8000);
+  }
+
+  var archived = false;
+  if (typeof entry.archived === 'boolean') {
+    archived = entry.archived;
+  } else if (typeof entry.status === 'string') {
+    var normalizedStatus = entry.status.trim().toLowerCase();
+    if (normalizedStatus === 'archived' || normalizedStatus === 'closed' || normalizedStatus === 'complete') {
+      archived = true;
+    }
+  }
+
+  var statuses = normalizeDocumentationTrackerStatuses(entry.statuses);
+
+  return {
+    id: id,
+    name: name,
+    targetDate: targetDate,
+    createdAt: typeof createdAt === 'string' ? createdAt : '',
+    updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+    statuses: statuses,
+    notes: notes,
+    archived: archived === true,
+  };
+}
+
+function normalizeDocumentationTrackerState(state) {
+  var normalized = {
+    version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+    releases: [],
+  };
+
+  if (state === null || state === undefined) {
+    return normalized;
+  }
+
+  var rawState = state;
+  if (Array.isArray(rawState)) {
+    normalized.releases = rawState
+      .map(normalizeDocumentationTrackerRelease)
+      .filter(Boolean);
+    return normalized;
+  }
+
+  if (typeof rawState !== 'object' && typeof rawState !== 'function') {
+    return normalized;
+  }
+
+  if (typeof rawState.version === 'number' && Number.isFinite(rawState.version)) {
+    normalized.version = rawState.version;
+  }
+
+  var sourceList = null;
+  if (Array.isArray(rawState.releases)) {
+    sourceList = rawState.releases;
+  } else if (Array.isArray(rawState.entries)) {
+    sourceList = rawState.entries;
+  } else if (Array.isArray(rawState.logs)) {
+    sourceList = rawState.logs;
+  }
+
+  if (!sourceList && rawState && typeof rawState === 'object') {
+    var values = Object.values(rawState);
+    if (values.length && values.every(function (value) { return value && typeof value === 'object' && !Array.isArray(value); })) {
+      sourceList = values;
+    }
+  }
+
+  if (!sourceList || !Array.isArray(sourceList)) {
+    normalized.releases = [];
+  } else {
+    normalized.releases = sourceList
+      .map(normalizeDocumentationTrackerRelease)
+      .filter(Boolean);
+  }
+
+  return normalized;
+}
+
+function loadDocumentationTracker() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    DOCUMENTATION_TRACKER_STORAGE_KEY,
+    'Error loading documentation tracker from localStorage:',
+    null,
+    { validate: value => value === null || isPlainObject(value) || Array.isArray(value) },
+  );
+  if (!parsed) {
+    return {
+      version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+      releases: [],
+    };
+  }
+  const normalized = normalizeDocumentationTrackerState(parsed);
+  if (!normalized || !Array.isArray(normalized.releases)) {
+    return {
+      version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+      releases: [],
+    };
+  }
+  return normalized;
+}
+
+function saveDocumentationTracker(state) {
+  const safeStorage = getSafeLocalStorage();
+  if (state === null || state === undefined) {
+    deleteFromStorage(
+      safeStorage,
+      DOCUMENTATION_TRACKER_STORAGE_KEY,
+      'Error deleting documentation tracker from localStorage:',
+    );
+    return;
+  }
+
+  const normalized = normalizeDocumentationTrackerState(state);
+  if (!normalized.releases.length) {
+    deleteFromStorage(
+      safeStorage,
+      DOCUMENTATION_TRACKER_STORAGE_KEY,
+      'Error deleting documentation tracker from localStorage:',
+    );
+    return;
+  }
+
+  ensurePreWriteMigrationBackup(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY);
+  saveJSONToStorage(
+    safeStorage,
+    DOCUMENTATION_TRACKER_STORAGE_KEY,
+    {
+      version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+      releases: normalized.releases,
+    },
+    'Error saving documentation tracker to localStorage:',
+    { disableCompression: true },
+  );
+}
+
 // --- Automatic Gear Rules Storage ---
 function loadAutoGearRules() {
   applyLegacyStorageMigrations();
@@ -12208,6 +12558,15 @@ function clearAllData() {
       fullBackupHistory: loadFullBackupHistory(),
     };
 
+    const documentationTracker = loadDocumentationTracker();
+    if (
+      documentationTracker &&
+      Array.isArray(documentationTracker.releases) &&
+      documentationTracker.releases.length
+    ) {
+      payload.documentationTracker = documentationTracker;
+    }
+
     const preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;
@@ -12766,6 +13125,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
   assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
   assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
+  assignJSONValue(DOCUMENTATION_TRACKER_STORAGE_KEY, 'documentationTracker');
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -13075,6 +13435,16 @@ function importAllData(allData, options = {}) {
       }
     }
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'documentationTracker')) {
+    const trackerState = normalizeDocumentationTrackerState(allData.documentationTracker);
+    saveDocumentationTracker(trackerState);
+  } else if (Object.prototype.hasOwnProperty.call(allData, 'documentationLogs')) {
+    const trackerFromLogs = normalizeDocumentationTrackerState({ releases: allData.documentationLogs });
+    saveDocumentationTracker(trackerFromLogs);
+  } else if (Object.prototype.hasOwnProperty.call(allData, 'documentationUpdateLog')) {
+    const trackerFromLegacy = normalizeDocumentationTrackerState(allData.documentationUpdateLog);
+    saveDocumentationTracker(trackerFromLegacy);
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
     const rules = normalizeImportedAutoGearRules(allData.autoGearRules);
     saveAutoGearRules(rules);
@@ -13175,6 +13545,8 @@ var STORAGE_API = {
   saveOwnGear,
   loadUserProfile,
   saveUserProfile,
+  loadDocumentationTracker,
+  saveDocumentationTracker,
   loadAutoGearBackups,
   saveAutoGearBackups,
   loadFeedback,

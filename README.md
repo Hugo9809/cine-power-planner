@@ -1194,6 +1194,9 @@ coverage and recovery instructions. Each update should:
 - Keep the [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md)
   aligned with UI labels, keyboard shortcuts and verification drills so crews rehearse the
   exact workflows enforced in code when they validate documentation changes.
+- Log progress in the in-app **Documentation update tracker** (Settings → General) so release
+  notes show which translations, help topics and printable guides were refreshed before shipping
+  offline bundles.
 - Use the checklist to log which UI surfaces changed, which modules they depend on and which
   translations need attention so verification logs always prove that the documentation and
   offline behavior match.

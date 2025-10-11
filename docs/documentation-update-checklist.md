@@ -11,6 +11,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 ## 2. Update primary documentation
 
 - [ ] Edit `README.md` and every localized README to reflect the new workflows, especially the **Key Workflow Reference**, **Save, Share & Import Drill**, **Backup & Recovery** and **Emergency Recovery Playbook** sections.
+- [ ] Log which locales, help topics and printable guides you refreshed in the in-app **Documentation update tracker** (**Settings → General**) so the release notes document parity before distributing offline bundles.
 - [ ] Revise contextual help topics, hover help strings and FAQ answers in `src/scripts/modules/help.js` and `index.html` so offline crews see accurate instructions, noting any runtime bridge impacts called out in `src/scripts/modules/environment-bridge.js`.
 - [ ] Refresh `tools/cliHelp.js` so `npm run help` includes any new scripts and calls out offline maintenance steps like regenerating service worker assets after documentation updates.
 - [ ] Synchronize printable manuals and runbooks in `docs/` (save/share reference, offline readiness, operations checklist, backup rotation guide, testing plan) with the change.
