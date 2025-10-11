@@ -8643,31 +8643,39 @@ function renderStoragePersistenceStatus() {
   if (!storagePersistenceStatusEl) return;
   const { lang, langTexts, fallbackTexts } = getStoragePersistenceLangInfo();
   let message = '';
+  let state = 'idle';
   if (storagePersistenceState.requestInFlight) {
+    state = 'requesting';
     message = langTexts.storagePersistenceStatusRequesting
       || fallbackTexts.storagePersistenceStatusRequesting
       || '';
   } else if (storagePersistenceState.checking) {
+    state = 'checking';
     message = langTexts.storagePersistenceStatusChecking
       || fallbackTexts.storagePersistenceStatusChecking
       || '';
   } else if (storagePersistenceState.supported === false) {
+    state = 'unsupported';
     message = langTexts.storagePersistenceStatusUnsupported
       || fallbackTexts.storagePersistenceStatusUnsupported
       || '';
   } else if (storagePersistenceState.persisted) {
+    state = 'granted';
     message = langTexts.storagePersistenceStatusGranted
       || fallbackTexts.storagePersistenceStatusGranted
       || '';
   } else if (storagePersistenceState.lastError) {
+    state = 'error';
     message = langTexts.storagePersistenceStatusError
       || fallbackTexts.storagePersistenceStatusError
       || '';
   } else if (storagePersistenceState.requestAttempted && storagePersistenceState.lastRequestDenied) {
+    state = 'denied';
     message = langTexts.storagePersistenceStatusDenied
       || fallbackTexts.storagePersistenceStatusDenied
       || '';
   } else {
+    state = 'idle';
     message = langTexts.storagePersistenceStatusIdle
       || fallbackTexts.storagePersistenceStatusIdle
       || '';
@@ -8705,6 +8713,8 @@ function renderStoragePersistenceStatus() {
   const combined = parts.filter(Boolean).join(' ').trim();
   const output = combined || message || '';
   storagePersistenceStatusEl.textContent = output;
+  storagePersistenceStatusEl.dataset.state = state;
+  storagePersistenceStatusEl.setAttribute('data-state', state);
   if (output) {
     storagePersistenceStatusEl.setAttribute('data-help', output);
   } else {
@@ -8730,6 +8740,24 @@ function renderStoragePersistenceStatus() {
       storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
       storagePersistenceRequestButton.setAttribute('title', requestHelp);
       storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+    }
+  }
+
+  if (typeof storagePersistenceStatusEl.dispatchEvent === 'function') {
+    try {
+      let event;
+      const detail = { state, message: output, rawMessage: message };
+      if (typeof CustomEvent === 'function') {
+        event = new CustomEvent('storagepersistencechange', { detail });
+      } else if (storagePersistenceStatusEl.ownerDocument && typeof storagePersistenceStatusEl.ownerDocument.createEvent === 'function') {
+        event = storagePersistenceStatusEl.ownerDocument.createEvent('CustomEvent');
+        event.initCustomEvent('storagepersistencechange', false, false, detail);
+      }
+      if (event) {
+        storagePersistenceStatusEl.dispatchEvent(event);
+      }
+    } catch (eventError) {
+      console.warn('Unable to broadcast storage persistence status change', eventError);
     }
   }
 }

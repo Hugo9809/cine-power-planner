@@ -2591,6 +2591,116 @@
     persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
     fragment.appendChild(persistenceHint);
 
+    const statusGroup = DOCUMENT.createElement('div');
+    statusGroup.className = 'onboarding-storage-status';
+    statusGroup.setAttribute('role', 'status');
+    statusGroup.setAttribute('aria-live', 'polite');
+    statusGroup.setAttribute('data-state', 'checking');
+    const statusIcon = DOCUMENT.createElement('span');
+    statusIcon.className = 'onboarding-storage-icon';
+    statusIcon.setAttribute('aria-hidden', 'true');
+    const statusText = DOCUMENT.createElement('span');
+    statusText.className = 'onboarding-storage-text';
+    statusGroup.appendChild(statusIcon);
+    statusGroup.appendChild(statusText);
+    fragment.appendChild(statusGroup);
+
+    const statusSource = DOCUMENT.getElementById('storagePersistenceStatus');
+    const getPersistenceStatusText = key => {
+      if (!key || !GLOBAL_SCOPE || typeof GLOBAL_SCOPE.texts !== 'object') {
+        return '';
+      }
+      const lang = resolveLanguage();
+      const texts = GLOBAL_SCOPE.texts || {};
+      const langPack = texts[lang] && typeof texts[lang] === 'object' ? texts[lang] : null;
+      const fallbackPack = texts.en && typeof texts.en === 'object' ? texts.en : null;
+      const primary = langPack && typeof langPack[key] === 'string' ? langPack[key] : null;
+      if (primary && primary.trim()) {
+        return primary;
+      }
+      const fallback = fallbackPack && typeof fallbackPack[key] === 'string' ? fallbackPack[key] : null;
+      return fallback && fallback.trim() ? fallback : '';
+    };
+
+    const defaultStatusText = getPersistenceStatusText('storagePersistenceStatusIdle')
+      || persistenceHint.textContent
+      || '';
+
+    const applyStatus = (state, message) => {
+      const normalizedState = typeof state === 'string' && state ? state : 'checking';
+      statusGroup.setAttribute('data-state', normalizedState);
+      statusGroup.dataset.state = normalizedState;
+      const resolved = typeof message === 'string' && message.trim()
+        ? message.trim()
+        : (normalizedState === 'checking'
+          ? (getPersistenceStatusText('storagePersistenceStatusChecking') || defaultStatusText)
+          : defaultStatusText);
+      statusText.textContent = resolved;
+      if (resolved) {
+        statusGroup.removeAttribute('data-empty');
+      } else {
+        statusGroup.setAttribute('data-empty', 'true');
+      }
+    };
+
+    const updateStatus = detail => {
+      let nextState = detail && typeof detail.state === 'string' ? detail.state : null;
+      let nextMessage = detail && typeof detail.message === 'string' ? detail.message : null;
+      if (statusSource) {
+        if (!nextState && typeof statusSource.getAttribute === 'function') {
+          nextState = statusSource.getAttribute('data-state');
+        }
+        if (!nextMessage && typeof statusSource.textContent === 'string') {
+          nextMessage = statusSource.textContent.trim();
+        }
+      }
+      if (!statusSource && !nextMessage) {
+        nextMessage = getPersistenceStatusText('storagePersistenceStatusChecking') || defaultStatusText;
+      }
+      if (!statusSource && !nextState) {
+        nextState = 'checking';
+      }
+      applyStatus(nextState, nextMessage);
+    };
+
+    updateStatus();
+
+    if (statusSource && typeof statusSource.addEventListener === 'function') {
+      const handleStatusChange = event => {
+        updateStatus(event && event.detail ? event.detail : null);
+      };
+      statusSource.addEventListener('storagepersistencechange', handleStatusChange);
+      registerCleanup(() => {
+        statusSource.removeEventListener('storagepersistencechange', handleStatusChange);
+      });
+      const Observer = GLOBAL_SCOPE && (GLOBAL_SCOPE.MutationObserver || GLOBAL_SCOPE.WebKitMutationObserver || GLOBAL_SCOPE.MozMutationObserver);
+      if (Observer) {
+        let observer = null;
+        try {
+          observer = new Observer(() => {
+            updateStatus();
+          });
+          observer.observe(statusSource, {
+            characterData: true,
+            childList: true,
+            subtree: true,
+            attributes: true,
+          });
+          const disconnectObserver = () => {
+            if (observer && typeof observer.disconnect === 'function') {
+              observer.disconnect();
+            }
+          };
+          registerCleanup(disconnectObserver);
+        } catch (observerError) {
+          safeWarn('cine.features.onboardingTour could not observe persistent storage status.', observerError);
+          if (observer && typeof observer.disconnect === 'function') {
+            observer.disconnect();
+          }
+        }
+      }
+    }
+
     const actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-interaction-actions';
     const requestButton = DOCUMENT.createElement('button');
