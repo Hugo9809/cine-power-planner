@@ -9270,7 +9270,11 @@ function openGearItemEditor(element, options = {}) {
       : textsForDialog.dialogTitle;
   }
   updateGearItemEditResetState(context);
-  const deviceFallbackName = typeof data.name === 'string' ? data.name : '';
+  const deviceFallbackName = context.resetDefaults && typeof context.resetDefaults.name === 'string'
+    ? context.resetDefaults.name
+    : typeof data.name === 'string'
+      ? data.name
+      : '';
   const deviceCurrentName = context.nameInput ? context.nameInput.value : deviceFallbackName;
   updateGearItemEditDeviceInfo(context, { name: deviceCurrentName, fallbackName: deviceFallbackName });
   try {
