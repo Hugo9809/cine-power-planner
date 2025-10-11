@@ -8954,7 +8954,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       console.warn("Unsupported language preference \"".concat(requested, "\". Falling back to ").concat(DEFAULT_LANGUAGE, "."));
     }
     lang = normalizedLang;
+    var previousLang = currentLang;
     currentLang = lang;
+    var shouldDispatchLanguageChange = previousLang !== lang;
+    var dispatchLanguageChange = function dispatchLanguageChange() {
+      if (typeof window !== "undefined" && typeof window.dispatchEvent === "function" && typeof Event === "function") {
+        try {
+          window.dispatchEvent(new Event("languagechange"));
+        } catch (dispatchError) {
+          console.warn("Failed to dispatch languagechange event", dispatchError);
+        }
+      }
+    };
+    if (shouldDispatchLanguageChange) {
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(dispatchLanguageChange);
+      } else if (typeof setTimeout === "function") {
+        setTimeout(dispatchLanguageChange, 0);
+      } else {
+        dispatchLanguageChange();
+      }
+    }
     try {
       localStorage.setItem("language", lang);
     } catch (e) {
