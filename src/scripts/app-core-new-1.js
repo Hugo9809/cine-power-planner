@@ -13670,8 +13670,10 @@ function setLanguage(lang) {
     if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
       userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
     }
-    if (userProfileRoleInput && contactsTexts.userProfileRolePlaceholder) {
-      userProfileRoleInput.setAttribute('placeholder', contactsTexts.userProfileRolePlaceholder);
+    if (userProfileRoleInput) {
+      populateUserProfileRoleSelect({
+        selected: typeof userProfileState?.role === 'string' ? userProfileState.role : ''
+      });
     }
     if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
       userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
@@ -14116,6 +14118,67 @@ var crewRoles = [
   'Dolly Grip',
   'Rigging Grip'
 ];
+
+function getCrewRoleLabels() {
+  const lang = typeof currentLang === 'string' ? currentLang : 'en';
+  return texts?.[lang]?.crewRoles || texts?.en?.crewRoles || {};
+}
+
+function populateUserProfileRoleSelect(options = {}) {
+  resolveContactsDomRefs();
+  if (!userProfileRoleInput) return;
+  const doc = userProfileRoleInput.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  const roleLabels = getCrewRoleLabels();
+  const placeholderDefault = getContactsText('rolePlaceholder', 'Select role');
+  const placeholderText = getContactsText('userProfileRolePlaceholder', placeholderDefault) || placeholderDefault;
+  const selectedValue =
+    options && typeof options.selected === 'string'
+      ? options.selected
+      : (typeof userProfileState?.role === 'string' ? userProfileState.role : '');
+
+  const previousScrollTop = userProfileRoleInput.scrollTop;
+  userProfileRoleInput.textContent = '';
+
+  const placeholderOption = doc.createElement('option');
+  placeholderOption.value = '';
+  placeholderOption.textContent = placeholderText;
+  userProfileRoleInput.appendChild(placeholderOption);
+
+  crewRoles.forEach(roleKey => {
+    const opt = doc.createElement('option');
+    opt.value = roleKey;
+    opt.textContent = roleLabels[roleKey] || roleKey;
+    userProfileRoleInput.appendChild(opt);
+  });
+
+  const normalizedValue = typeof selectedValue === 'string' ? selectedValue.trim() : '';
+  if (normalizedValue && !crewRoles.includes(normalizedValue)) {
+    const extraOption = doc.createElement('option');
+    extraOption.value = normalizedValue;
+    extraOption.textContent = roleLabels[normalizedValue] || normalizedValue;
+    userProfileRoleInput.appendChild(extraOption);
+  }
+
+  userProfileRoleInput.value = normalizedValue || '';
+  userProfileRoleInput.scrollTop = previousScrollTop;
+}
+
+function ensureUserProfileRoleOption(roleValue) {
+  resolveContactsDomRefs();
+  if (!userProfileRoleInput) return;
+  const normalized = typeof roleValue === 'string' ? roleValue.trim() : '';
+  if (!normalized) return;
+  const hasOption = Array.from(userProfileRoleInput.options || []).some(opt => opt.value === normalized);
+  if (hasOption) return;
+  const doc = userProfileRoleInput.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  const roleLabels = getCrewRoleLabels();
+  const opt = doc.createElement('option');
+  opt.value = normalized;
+  opt.textContent = roleLabels[normalized] || normalized;
+  userProfileRoleInput.appendChild(opt);
+}
 
 const HORSE_ICON_SVG = `
   <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -16659,17 +16722,9 @@ function applyUserProfileToDom(options = {}) {
     }
   }
   if (userProfileRoleInput) {
-    if (preserveTarget === userProfileRoleInput) {
-      const start = userProfileRoleInput.selectionStart;
-      const end = userProfileRoleInput.selectionEnd;
-      userProfileRoleInput.value = profile.role;
-      try {
-        userProfileRoleInput.setSelectionRange(start, end);
-      } catch (error) {
-        void error;
-      }
-    } else {
-      userProfileRoleInput.value = profile.role;
+    ensureUserProfileRoleOption(profile.role);
+    if (preserveTarget !== userProfileRoleInput) {
+      userProfileRoleInput.value = profile.role || '';
     }
   }
   if (userProfilePhoneInput) {
@@ -16750,6 +16805,7 @@ function persistUserProfileState(options = {}) {
   const activeElement = typeof document !== 'undefined' ? document.activeElement : null;
   const preserveTarget =
     activeElement === userProfileNameInput
+      || activeElement === userProfileRoleInput
       || activeElement === userProfilePhoneInput
       || activeElement === userProfileEmailInput
       ? activeElement
@@ -16777,10 +16833,12 @@ function handleUserProfileNameInput() {
 function handleUserProfileRoleInput() {
   if (!userProfileRoleInput) return;
   const rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
-  if (rawValue.trim() === userProfileState.role.trim()) {
+  const normalizedValue = rawValue.trim();
+  if (normalizedValue === userProfileState.role.trim()) {
     return;
   }
-  assignUserProfileState({ role: rawValue });
+  ensureUserProfileRoleOption(normalizedValue);
+  assignUserProfileState({ role: normalizedValue });
   userProfileDirty = true;
   userProfilePendingAnnouncement = true;
   persistUserProfileState();
@@ -17692,6 +17750,7 @@ function initializeContactsModule() {
   contactsInitialized = true;
   contactsCache = loadStoredContacts();
   loadUserProfileState();
+  populateUserProfileRoleSelect();
   renderContactsList();
   updateContactPickers();
   applyUserProfileToDom();
@@ -17702,6 +17761,7 @@ function initializeContactsModule() {
   }
   if (userProfileRoleInput) {
     userProfileRoleInput.addEventListener('input', handleUserProfileRoleInput);
+    userProfileRoleInput.addEventListener('change', handleUserProfileRoleInput);
     userProfileRoleInput.addEventListener('blur', handleUserProfileFieldBlur);
   }
   if (userProfilePhoneInput) {

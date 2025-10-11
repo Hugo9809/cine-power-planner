@@ -2133,24 +2133,57 @@
       label.textContent = labelText;
       group.appendChild(label);
 
-      const proxyInput = DOCUMENT.createElement('input');
-      proxyInput.type = type || 'text';
-      proxyInput.id = proxyId;
-      proxyInput.className = 'onboarding-field-input';
-      if (typeof placeholder === 'string' && placeholder) {
-        proxyInput.placeholder = placeholder;
+      const isSelectField = type === 'select';
+      const proxyControl = isSelectField
+        ? DOCUMENT.createElement('select')
+        : DOCUMENT.createElement('input');
+      proxyControl.id = proxyId;
+      proxyControl.className = 'onboarding-field-input';
+      if (isSelectField) {
+        proxyControl.classList.add('onboarding-field-select');
+      } else {
+        proxyControl.type = type || 'text';
+        if (typeof placeholder === 'string' && placeholder) {
+          proxyControl.placeholder = placeholder;
+        }
+        if (typeof autocomplete === 'string' && autocomplete) {
+          proxyControl.autocomplete = autocomplete;
+        }
       }
-      if (typeof autocomplete === 'string' && autocomplete) {
-        proxyInput.autocomplete = autocomplete;
+
+      const copySelectOptions = () => {
+        if (!isSelectField) {
+          return;
+        }
+        const targetOptions = target && target.options ? Array.from(target.options) : [];
+        proxyControl.textContent = '';
+        if (targetOptions.length) {
+          targetOptions.forEach(option => {
+            proxyControl.appendChild(option.cloneNode(true));
+          });
+        } else if (typeof placeholder === 'string' && placeholder) {
+          const placeholderOption = DOCUMENT.createElement('option');
+          placeholderOption.value = '';
+          placeholderOption.textContent = placeholder;
+          proxyControl.appendChild(placeholderOption);
+        }
+        proxyControl.value = target && typeof target.value === 'string' ? target.value : '';
+      };
+
+      if (isSelectField) {
+        copySelectOptions();
+      } else {
+        proxyControl.value = target && typeof target.value === 'string' ? target.value : '';
       }
-      proxyInput.value = target && typeof target.value === 'string' ? target.value : '';
 
       const syncFromTarget = () => {
         if (!target) {
           return;
         }
-        if (proxyInput.value !== target.value) {
-          proxyInput.value = target.value || '';
+        if (isSelectField) {
+          copySelectOptions();
+        } else if (proxyControl.value !== target.value) {
+          proxyControl.value = target.value || '';
         }
         if (typeof onAfterSync === 'function') {
           onAfterSync('from');
@@ -2161,21 +2194,26 @@
         if (!target) {
           return;
         }
-        if (target.value !== proxyInput.value) {
-          target.value = proxyInput.value;
-          dispatchSyntheticEvent(target, 'input');
-          dispatchSyntheticEvent(target, 'change');
+        if (isSelectField) {
+          const nextValue = proxyControl.value;
+          if (target.value !== nextValue) {
+            target.value = nextValue;
+          }
+        } else if (target.value !== proxyControl.value) {
+          target.value = proxyControl.value;
         }
+        dispatchSyntheticEvent(target, 'input');
+        dispatchSyntheticEvent(target, 'change');
         if (typeof onAfterSync === 'function') {
           onAfterSync('to');
         }
       };
 
-      proxyInput.addEventListener('input', syncToTarget);
-      proxyInput.addEventListener('change', syncToTarget);
+      proxyControl.addEventListener('input', syncToTarget);
+      proxyControl.addEventListener('change', syncToTarget);
       registerCleanup(() => {
-        proxyInput.removeEventListener('input', syncToTarget);
-        proxyInput.removeEventListener('change', syncToTarget);
+        proxyControl.removeEventListener('input', syncToTarget);
+        proxyControl.removeEventListener('change', syncToTarget);
       });
 
       if (target) {
@@ -2185,17 +2223,22 @@
           target.removeEventListener('input', syncFromTarget);
           target.removeEventListener('change', syncFromTarget);
         });
+        if (isSelectField && typeof MutationObserver === 'function') {
+          const observer = new MutationObserver(syncFromTarget);
+          observer.observe(target, { childList: true });
+          registerCleanup(() => observer.disconnect());
+        }
       } else {
-        proxyInput.disabled = true;
-        proxyInput.setAttribute('aria-disabled', 'true');
+        proxyControl.disabled = true;
+        proxyControl.setAttribute('aria-disabled', 'true');
       }
 
-      group.appendChild(proxyInput);
+      group.appendChild(proxyControl);
       fragment.appendChild(group);
       if (!firstProxyField) {
-        firstProxyField = proxyInput;
+        firstProxyField = proxyControl;
       }
-      return proxyInput;
+      return proxyControl;
     };
 
     const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
@@ -2222,11 +2265,11 @@
     const resolvedRoleLabel = roleLabel && typeof roleLabel.textContent === 'string'
       ? roleLabel.textContent
       : 'Role or title';
-    let resolvedRolePlaceholder = 'e.g. 1st AC';
-    if (roleInput && typeof roleInput.getAttribute === 'function') {
-      const rolePlaceholder = roleInput.getAttribute('placeholder');
-      if (typeof rolePlaceholder === 'string' && rolePlaceholder) {
-        resolvedRolePlaceholder = rolePlaceholder;
+    let resolvedRolePlaceholder = 'Select role';
+    if (roleInput && roleInput.options && roleInput.options.length) {
+      const placeholderOption = roleInput.options[0];
+      if (placeholderOption && placeholderOption.textContent) {
+        resolvedRolePlaceholder = placeholderOption.textContent;
       }
     }
 
@@ -2235,8 +2278,7 @@
       labelText: resolvedRoleLabel,
       placeholder: resolvedRolePlaceholder,
       target: roleInput,
-      type: 'text',
-      autocomplete: 'organization-title',
+      type: 'select',
     });
 
     const resolvedPhoneLabel = phoneLabel && typeof phoneLabel.textContent === 'string'
