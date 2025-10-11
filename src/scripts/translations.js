@@ -1918,7 +1918,7 @@ const texts = {
         projectRequirements: {
           title: "Refine project requirements boxes",
           body:
-            "Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports.",
+            "Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear.",
         },
         gearList: {
           title: "Audit the generated gear list",
@@ -3979,7 +3979,7 @@ const texts = {
         projectRequirements: {
           title: "Raffina i riquadri dei requisiti di progetto",
           body:
-            "Modifica l'output Requisiti del progetto per registrare note troupe, deliverable e promemoria di sicurezza. Ogni riquadro viene salvato con il progetto, stampato nei riepiloghi e incluso nelle esportazioni.",
+            "Modifica l'output Requisiti del progetto per registrare note troupe, deliverable e promemoria di sicurezza. Ogni riquadro viene salvato con il progetto, stampato nei riepiloghi e incluso nelle esportazioni. Segui tre sottopassi rapidi per non dimenticare nulla: 15A compila il briefing di progetto—casa di produzione, preferenze del rental, calendario e specifiche di consegna; 15B collega le righe della troupe ai contatti salvati segnando copertura di preparazione/riprese/resa e note di emergenza; 15C raccoglie logistica come supporti di archiviazione, preferenze di monitoraggio e richiami di sicurezza, quindi rigenera il riepilogo per confermare le nuove informazioni.",
         },
         gearList: {
           title: "Verifica l'elenco attrezzatura generato",
@@ -6053,7 +6053,7 @@ const texts = {
         projectRequirements: {
           title: "Refina los recuadros de requisitos",
           body:
-            "Ajusta la salida de Requisitos del proyecto para capturar notas del equipo, entregables y recordatorios de seguridad. Cada recuadro se guarda con el proyecto, se imprime en los resúmenes y fluye hacia las exportaciones.",
+            "Ajusta la salida de Requisitos del proyecto para capturar notas del equipo, entregables y recordatorios de seguridad. Cada recuadro se guarda con el proyecto, se imprime en los resúmenes y fluye hacia las exportaciones. Recorre tres subpasos rápidos para no olvidar nada: 15A documenta el briefing del proyecto—productora, preferencias del rental, calendario y especificaciones de entrega; 15B vincula las filas del equipo con los contactos guardados señalando la cobertura de preparación/rodaje/devolución y las notas de emergencia; 15C captura la logística como soportes de almacenamiento, preferencias de monitorización y avisos de seguridad, luego regenera el resumen para confirmar que aparezcan los nuevos detalles.",
         },
         gearList: {
           title: "Audita la lista de equipo generada",
@@ -8140,7 +8140,7 @@ const texts = {
         projectRequirements: {
           title: "Affinez les encarts d’exigences du projet",
           body:
-            "Ajustez la sortie Exigences du projet pour capturer notes d’équipe, livrables et rappels de sécurité. Chaque encart est enregistré avec le projet, imprimé dans les aperçus et intégré aux exports.",
+            "Ajustez la sortie Exigences du projet pour consigner notes d’équipe, livrables et rappels de sécurité. Chaque encart est enregistré avec le projet, imprimé dans les aperçus et intégré aux exports. Parcourez trois sous-étapes rapides pour ne rien oublier : 15A renseigne le brief de projet—société de production, préférences du loueur, calendrier et spécifications de livraison ; 15B relie les lignes d’équipe aux contacts enregistrés en indiquant la couverture préparation/tournage/retour ainsi que les notes d’urgence ; 15C capture la logistique comme les supports de stockage, les préférences de monitoring et les rappels de sécurité, puis régénérez le résumé pour confirmer l’apparition des nouveaux détails.",
         },
         gearList: {
           title: "Auditez la liste du matériel générée",
@@ -10231,7 +10231,7 @@ const texts = {
         projectRequirements: {
           title: "Projektanforderungs-Boxen verfeinern",
           body:
-            "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen.",
+            "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing—Produktionsfirma, Verleihpräferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen.",
         },
         gearList: {
           title: "Generierte Gear-Liste prüfen",
