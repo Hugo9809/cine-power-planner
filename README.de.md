@@ -154,7 +154,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 1. **Projekt laden oder erstellen.** Namen eingeben, **Enter** oder **Speichern** drücken – der aktive Name taucht in Listen und Exporten auf.
 2. **Geräte hinzufügen.** Kameras, Strom und Zubehör aus kategorisierten Dropdowns wählen. Tippen zum Filtern, Favoriten und der Shortcut `/` (`Strg+K`/`⌘K`) beschleunigen die Auswahl.
 3. **Strom & Laufzeit prüfen.** Warnungen beobachten, Akkus vergleichen und das Laufzeit-Dashboard analysieren.
-4. **Anforderungen erfassen.** Crew, Szenarien, Handles, Matteboxen und Monitoring eintragen. Fork-Buttons duplizieren Einträge. **Einstellungen → Automatische Gear-Regeln** ergänzen Szenario-spezifische Anpassungen.
+4. **Anforderungen erfassen.** Crew, Szenarien, Handles, Matteboxen und Monitoring eintragen. Das gespeicherte Benutzerprofil landet automatisch in der Crew-Liste – Rolle oder Kontaktangaben lassen sich projektweise anpassen. Fork-Buttons duplizieren Einträge. **Einstellungen → Automatische Gear-Regeln** ergänzen Szenario-spezifische Anpassungen.
 5. **Plan exportieren.** Geräteliste generieren, Backup oder Projekt-Bundle herunterladen, bevor es ans Set geht. Backups enthalten eigene Geräte, Laufzeitdaten und Favoriten.
 6. **Offline-Bereitschaft bestätigen.** Netzwerk trennen, App neu laden und sicherstellen, dass alles erreichbar bleibt. Bei Abweichungen aus dem letzten Backup wiederherstellen.
 

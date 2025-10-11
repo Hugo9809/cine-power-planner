@@ -4730,7 +4730,78 @@ function populateProjectForm(info = {}) {
     setVal('rentalHouse', info.rentalHouse);
     if (crewContainer) {
         crewContainer.innerHTML = '';
-        (info.people || []).forEach(p => createCrewRow(p));
+
+        const crewEntries = Array.isArray(info.people)
+            ? info.people.map(person => (person && typeof person === 'object' ? { ...person } : {}))
+            : [];
+
+        const profile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+        if (profile && typeof profile === 'object') {
+            const profileName = typeof profile.name === 'string' ? profile.name.trim() : '';
+            const profileEmail = typeof profile.email === 'string' ? profile.email.trim() : '';
+            const profilePhone = typeof profile.phone === 'string' ? profile.phone.trim() : '';
+            const profileRole = typeof profile.role === 'string' ? profile.role.trim() : '';
+            const profileAvatar = typeof profile.avatar === 'string' ? profile.avatar : '';
+            const hasProfileDetails = Boolean(
+                profileName
+                || profileEmail
+                || profilePhone
+                || profileRole
+                || profileAvatar,
+            );
+
+            if (hasProfileDetails) {
+                const normalizeToken = (value) => {
+                    if (!value) return '';
+                    const trimmed = value.trim();
+                    if (!trimmed) return '';
+                    try {
+                        return typeof trimmed.toLocaleLowerCase === 'function'
+                            ? trimmed.toLocaleLowerCase()
+                            : trimmed.toLowerCase();
+                    } catch (error) {
+                        void error;
+                        return trimmed.toLowerCase();
+                    }
+                };
+
+                const profileNameToken = normalizeToken(profileName);
+                const profileEmailToken = normalizeToken(profileEmail);
+                const profilePhoneToken = profilePhone || '';
+
+                const alreadyPresent = crewEntries.some(person => {
+                    if (!person || typeof person !== 'object') {
+                        return false;
+                    }
+                    const personNameToken = normalizeToken(typeof person.name === 'string' ? person.name : '');
+                    const personEmailToken = normalizeToken(typeof person.email === 'string' ? person.email : '');
+                    const personPhoneToken = typeof person.phone === 'string' ? person.phone.trim() : '';
+
+                    if (profileEmailToken && personEmailToken && personEmailToken === profileEmailToken) {
+                        return true;
+                    }
+                    if (profilePhoneToken && personPhoneToken && personPhoneToken === profilePhoneToken) {
+                        return true;
+                    }
+                    if (profileNameToken && personNameToken && personNameToken === profileNameToken) {
+                        return true;
+                    }
+                    return false;
+                });
+
+                if (!alreadyPresent) {
+                    crewEntries.unshift({
+                        role: profileRole || '',
+                        name: profileName || '',
+                        phone: profilePhone || '',
+                        email: profileEmail || '',
+                        avatar: profileAvatar || '',
+                    });
+                }
+            }
+        }
+
+        crewEntries.forEach(p => createCrewRow(p));
     }
     if (prepContainer) {
         prepContainer.innerHTML = '';
