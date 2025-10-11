@@ -380,6 +380,10 @@ Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetes Modell:
 
 Neue Sprachen lassen sich sofort testen – kein Build nötig:
 
+- **Dokumentations-Update-Tracker nutzen.** Fortschritt im In-App-Tracker (**Einstellungen → Allgemein**) protokollieren, damit
+  Release-Notizen zeigen, welche Übersetzungen, Hilfethemen und Druckanleitungen vor dem Versand der Offline-Bundles
+  aktualisiert wurden.
+
 1. README duplizieren und übersetzen (`README.<lang>.md`).
 2. UI-Strings in `translations.js` ergänzen; Platzhalter wie `%s` erhalten.
 3. Statische Seiten (Privacy, Impressum) kopieren und übersetzen.

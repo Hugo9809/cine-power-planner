@@ -382,6 +382,10 @@ Les autonomies remontées par les utilisateurs alimentent un modèle pondéré r
 
 Prévisualisez immédiatement de nouvelles langues :
 
+- **Utilisez le suivi des mises à jour de la documentation.** Notez l'avancement dans le suivi intégré (**Paramètres → Général**)
+  afin que les notes de version indiquent quelles traductions, rubriques d'aide et guides imprimables ont été actualisés avant
+  de livrer les lots hors ligne.
+
 1. Dupliquez le README le plus proche en `README.<lang>.md` et traduisez-le.
 2. Ajoutez les chaînes dans `translations.js` en conservant les placeholders (`%s`).
 3. Copiez et traduisez les pages statiques (confidentialité, mentions légales).

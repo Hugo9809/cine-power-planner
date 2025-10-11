@@ -1216,6 +1216,34 @@
                 </div>
               </section>
               <section
+                id="documentationTrackerCard"
+                class="settings-card settings-card-wide documentation-tracker-card"
+                aria-labelledby="documentationTrackerHeading"
+              >
+                <div class="documentation-tracker-header">
+                  <h4 id="documentationTrackerHeading">Documentation update tracker</h4>
+                  <button type="button" id="documentationTrackerAddRelease">New release log</button>
+                </div>
+                <p id="documentationTrackerDescription" class="settings-hint">
+                  Use this log to mark translation, help and print guide refreshes before distributing offline bundles.
+                </p>
+                <p
+                  id="documentationTrackerSummary"
+                  class="documentation-tracker-summary"
+                  aria-live="polite"
+                  hidden
+                ></p>
+                <div
+                  id="documentationTrackerList"
+                  class="documentation-tracker-list"
+                  role="list"
+                  aria-labelledby="documentationTrackerHeading"
+                ></div>
+                <p id="documentationTrackerEmpty" class="settings-empty-state">
+                  No releases tracked yet. Add one before packaging an update.
+                </p>
+              </section>
+              <section
                 id="mountVoltageSettings"
                 class="settings-card settings-card-wide mount-voltage-settings"
                 aria-labelledby="mountVoltageHeading"

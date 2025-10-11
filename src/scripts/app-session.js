@@ -33,7 +33,7 @@
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty, loadAutoGearMonitorDefaults,
+          markProjectFormDataDirty, loadAutoGearMonitorDefaults, loadDocumentationTracker,
           enhanceGearItemElement,
           settingsFocusScale, focusScalePreference, normalizeFocusScale,
           applyFocusScalePreference: true, updateLensWorkflowCatalog */
@@ -7888,6 +7888,18 @@ const backupFallbackLoaders = [
     loaderName: 'loadFavorites',
     isValid: value => isPlainObject(value),
     loader: () => (typeof loadFavorites === 'function' ? loadFavorites() : undefined),
+  },
+  {
+    key: 'documentationTracker',
+    loaderName: 'loadDocumentationTracker',
+    isValid: value =>
+      value === null
+      || (isPlainObject(value) && Array.isArray(value.releases))
+      || Array.isArray(value),
+    loader: () =>
+      (typeof loadDocumentationTracker === 'function'
+        ? loadDocumentationTracker()
+        : undefined),
   },
   {
     key: 'autoGearBackups',

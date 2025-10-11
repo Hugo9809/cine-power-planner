@@ -380,6 +380,10 @@ Le autonomie fornite dagli utenti alimentano un modello ponderato per riflettere
 
 Puoi provare subito una nuova lingua senza build:
 
+- **Usa il tracker degli aggiornamenti della documentazione.** Registra l'avanzamento nel tracker in-app (**Impostazioni →
+  Generale**) così le note di rilascio mostrano quali traduzioni, argomenti di aiuto e guide stampabili sono stati aggiornati
+  prima di distribuire i pacchetti offline.
+
 1. Duplica il README più simile come `README.<lang>.md` e traducilo.
 2. Aggiungi le stringhe in `translations.js`, mantenendo i placeholder come `%s`.
 3. Copia e traduci le pagine statiche (privacy, note legali).

@@ -97,7 +97,9 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 2. **README family.** Revise the primary `README.md` plus each localized README under the
    project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
    Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
-   safety routines.
+   safety routines. Record which locales, help topics and printable guides you just updated in
+   the in-app **Documentation update tracker** (**Settings → General**) so the release history
+   shows translation parity before offline bundles ship.
 3. **Save, Share, Import, Backup & Restore Reference.** Keep `docs/save-share-restore-reference.md`
    synchronized with UI labels, keyboard shortcuts and verification logging guidance so crews
    rehearse the exact workflows the code exposes through `cinePersistence`, `cineUi` and the
