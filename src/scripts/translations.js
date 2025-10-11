@@ -1910,10 +1910,20 @@ const texts = {
           body:
             "Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.",
         },
-        autoGearRules: {
-          title: "Review automatic gear rules",
+        autoGearRulesAccess: {
+          title: "Open Automatic Gear Rules",
           body:
-            "Settings → Automatic Gear Rules lets you define conditions that auto-add monitors, wireless links, FIZ gear and cables. Rules execute offline every time you regenerate the kit, ensuring nothing critical is missed.",
+            "Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves.",
+        },
+        autoGearRulesEdit: {
+          title: "Edit stock automatic gear rules",
+          body:
+            "Use the rules list to inspect factory additions. Select a stock rule to open it in the editor, adjust items or conditions, then save so the updated automation stays cached with backups and share bundles.",
+        },
+        autoGearRulesCreate: {
+          title: "Add a new automatic gear rule",
+          body:
+            "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups.",
         },
         projectRequirements: {
           title: "Refine project requirements boxes",
@@ -3971,10 +3981,20 @@ const texts = {
           body:
             "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte.",
         },
-        autoGearRules: {
-          title: "Rivedi le regole automatiche dell'attrezzatura",
+        autoGearRulesAccess: {
+          title: "Apri Regole gear automatiche",
           body:
-            "Impostazioni → Regole gear automatiche ti permette di definire condizioni che aggiungono automaticamente monitor, collegamenti wireless, gear FIZ e cavi. Le regole operano offline ogni volta che rigeneri il kit assicurando che nulla di critico manchi.",
+            "Apri Impostazioni → Regole gear automatiche per controllare le automazioni. La scheda mostra preset, regole di fabbrica e backup di sicurezza archiviati con i tuoi salvataggi offline.",
+        },
+        autoGearRulesEdit: {
+          title: "Modifica le regole automatiche predefinite",
+          body:
+            "Usa l'elenco regole per esaminare le aggiunte di fabbrica. Seleziona una regola predefinita per aprirla nell'editor, aggiorna elementi o condizioni e salva così l'automazione aggiornata resta nella cache insieme a backup ed export condivisi.",
+        },
+        autoGearRulesCreate: {
+          title: "Aggiungi una nuova regola automatica",
+          body:
+            "Premi Aggiungi regola per creare un'automazione personalizzata. Dai un nome, aggiungi condizioni e l'attrezzatura richiesta, quindi salva. Il planner applica la nuova regola offline ogni volta che rigeneri il kit e la include in esportazioni, condivisioni e backup.",
         },
         projectRequirements: {
           title: "Raffina i riquadri dei requisiti di progetto",
@@ -6045,10 +6065,20 @@ const texts = {
           body:
             "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes.",
         },
-        autoGearRules: {
-          title: "Revisa reglas automáticas de equipo",
+        autoGearRulesAccess: {
+          title: "Abre las reglas automáticas de equipo",
           body:
-            "Configuración → Reglas automáticas de equipo te permite definir condiciones que añaden automáticamente monitores, enlaces inalámbricos, equipo FIZ y cables. Las reglas se ejecutan offline cada vez que regeneras el kit, garantizando que nada crítico falte.",
+            "Ve a Ajustes → Reglas automáticas de equipo para revisar los controles de automatización. La pestaña muestra los preajustes, las reglas de fábrica y las copias de seguridad almacenadas con tus guardados sin conexión.",
+        },
+        autoGearRulesEdit: {
+          title: "Edita las reglas automáticas de fábrica",
+          body:
+            "Usa la lista de reglas para examinar las incorporaciones de fábrica. Selecciona una regla estándar para abrirla en el editor, ajusta elementos o condiciones y guarda para que la automatización actualizada permanezca en caché junto con las copias de seguridad y paquetes compartidos.",
+        },
+        autoGearRulesCreate: {
+          title: "Añade una nueva regla automática",
+          body:
+            "Pulsa Añadir regla para crear una automatización personalizada. Ponle nombre, agrega condiciones y el equipo necesario y guarda. El planificador ejecuta la nueva regla sin conexión cada vez que regeneras el kit y la incluye en exportaciones, compartidos y copias de seguridad.",
         },
         projectRequirements: {
           title: "Refina los recuadros de requisitos",
@@ -8132,10 +8162,20 @@ const texts = {
           body:
             "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections.",
         },
-        autoGearRules: {
-          title: "Révisez les règles automatiques d’équipement",
+        autoGearRulesAccess: {
+          title: "Ouvrir les règles d’équipement automatiques",
           body:
-            "Paramètres → Règles automatiques d’équipement vous permet de définir des conditions qui ajoutent automatiquement moniteurs, liaisons sans fil, matériel FIZ et câbles. Les règles s’exécutent hors ligne à chaque régénération du kit afin de ne rien oublier de critique.",
+            "Ouvrez Paramètres → Règles d’équipement automatiques pour vérifier les automatismes. L’onglet affiche les préréglages, les règles d’usine et les sauvegardes de sécurité stockés avec vos enregistrements hors ligne.",
+        },
+        autoGearRulesEdit: {
+          title: "Modifier les règles automatiques d’origine",
+          body:
+            "Utilisez la liste des règles pour examiner les ajouts d’usine. Sélectionnez une règle d’origine pour l’ouvrir dans l’éditeur, ajustez les éléments ou conditions puis enregistrez afin que l’automatisation mise à jour reste en cache avec les sauvegardes et ensembles partagés.",
+        },
+        autoGearRulesCreate: {
+          title: "Ajouter une nouvelle règle automatique",
+          body:
+            "Cliquez sur Ajouter une règle pour créer une automatisation personnalisée. Nommez-la, ajoutez des conditions et le matériel requis, puis enregistrez. Le planificateur applique la nouvelle règle hors ligne à chaque régénération du kit et l’inclut dans les exports, partages et sauvegardes.",
         },
         projectRequirements: {
           title: "Affinez les encarts d’exigences du projet",
@@ -10223,10 +10263,20 @@ const texts = {
           body:
             "Nutze Gear-Liste und Projektanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden.",
         },
-        autoGearRules: {
-          title: "Automatische Gear-Regeln prüfen",
+        autoGearRulesAccess: {
+          title: "Automatische Gear-Regeln öffnen",
           body:
-            "Unter Einstellungen → Automatische Gear-Regeln definierst du Bedingungen, die Monitore, Funkverbindungen, FIZ-Geräte und Kabel automatisch hinzufügen. Die Regeln laufen offline bei jeder Neuerstellung des Kits und verhindern, dass wichtige Komponenten fehlen.",
+            "Öffne Einstellungen → Automatische Gear-Regeln, um die Automatisierungen zu prüfen. Der Tab zeigt Presets, werksseitige Regeln sowie Sicherungsstände, die mit deinen Offline-Speichern abgelegt sind.",
+        },
+        autoGearRulesEdit: {
+          title: "Werksregeln bearbeiten",
+          body:
+            "Nutze die Regel-Liste, um die werkseitigen Ergänzungen zu sichten. Wähle eine Standardregel aus, öffne sie im Editor, passe Elemente oder Bedingungen an und speichere, damit die aktualisierte Automatisierung zusammen mit Backups und geteilten Paketen zwischengespeichert bleibt.",
+        },
+        autoGearRulesCreate: {
+          title: "Neue automatische Regel hinzufügen",
+          body:
+            "Klicke auf Regel hinzufügen, um eine eigene Automatisierung zu erstellen. Vergib einen Namen, ergänze Bedingungen und benötigtes Equipment und speichere. Der Planner führt die neue Regel offline bei jedem Neuaufbau des Kits aus und nimmt sie in Exporte, Freigaben und Sicherungen auf.",
         },
         projectRequirements: {
           title: "Projektanforderungs-Boxen verfeinern",
