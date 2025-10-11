@@ -1794,8 +1794,8 @@
     if (key !== 'Tab') {
       return;
     }
-    const target = event.target;
-    const targetInOverlay = overlayRoot && (target === overlayRoot || overlayRoot.contains(target));
+    const eventTarget = event.target;
+    const targetInOverlay = overlayRoot && (eventTarget === overlayRoot || overlayRoot.contains(eventTarget));
     if (!targetInOverlay) {
       return;
     }
