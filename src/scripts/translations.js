@@ -1827,7 +1827,7 @@ const texts = {
         results: {
           title: "Review the results summary",
           body:
-            "Power Summary gathers total draw, per-pack runtime projections, reserve margins and changeover countdowns in one view so you can confirm the build before locking it.",
+            "Treat Step 9 as three quick passes through Power Summary: 9A confirms the Total Draw card and peak load, 9B drills into each battery pack for runtime projections and reserve margin highlights, and 9C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3837,7 +3837,7 @@ const texts = {
         results: {
           title: "Rivedi il riepilogo dei risultati",
           body:
-            "Power Summary riunisce consumo totale, proiezioni di autonomia per batteria, margini di riserva e countdown dei cambi in un'unica vista così puoi confermare il setup prima di fissarlo.",
+            "Tratta il passaggio 9 come tre rapide revisioni in Power Summary: 9A conferma la scheda Carico totale e il picco previsto, 9B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 9C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -5860,7 +5860,7 @@ const texts = {
         results: {
           title: "Revisa el resumen de resultados",
           body:
-            "Power Summary reúne el consumo total, las proyecciones de autonomía por batería, los márgenes de reserva y las cuentas regresivas de cambio en una sola vista para confirmar el montaje antes de fijarlo.",
+            "Trata el paso 9 como tres pasadas rápidas en Power Summary: 9A confirma la tarjeta de Consumo total y el pico previsto, 9B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 9C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -7895,7 +7895,7 @@ const texts = {
         results: {
           title: "Passez en revue le résumé des résultats",
           body:
-            "Power Summary rassemble la consommation totale, les estimations d’autonomie par batterie, les marges de réserve et les comptes à rebours de changement dans une seule vue pour valider la configuration avant de la figer.",
+            "Traitez l’étape 9 comme trois passages rapides dans Power Summary : 9A confirme la carte Consommation totale et le pic prévu, 9B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 9C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -9935,7 +9935,7 @@ const texts = {
         results: {
           title: "Ergebnisse zusammenfassen",
           body:
-            "Die Power Summary bündelt Gesamtverbrauch, Laufzeitprognosen pro Akku, Reservemargen und Countdown bis zum Wechsel in einer Ansicht, damit du den Aufbau vor dem Fixieren bestätigen kannst.",
+            "Behandle Schritt 9 als drei kurze Durchläufe in Power Summary: 9A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 9B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 9C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",

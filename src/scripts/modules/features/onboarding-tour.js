@@ -299,7 +299,7 @@
     results: {
       title: 'Review the results summary',
       body:
-        'Use the Power Summary to verify total draw, per-pack runtime projections, reserve margins and changeover countdowns before locking the build. Expand each battery group for device-by-device contribution details, charger requirements and status notes. Download the offline report for redundant backups, document any warnings that need action ahead of call time and confirm the autosave banner shows the latest timestamp so shares and exports capture the same data.',
+        'Work through Step 9 in three passes inside Power Summary: 9A confirms Total Draw and peak load, 9B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 9C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.',
     },
     batteryComparison: {
       title: 'Compare battery options',
