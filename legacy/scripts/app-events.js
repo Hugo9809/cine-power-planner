@@ -446,11 +446,7 @@ function handleSaveSetupClick() {
   var currentSetup = _objectSpread({}, getCurrentSetupState());
   var langTexts = texts[currentLang] || {};
   var fallbackTexts = texts.en || {};
-  if (!hasAnyDeviceSelectionSafe(currentSetup)) {
-    var message = langTexts.alertSetupNeedsDevice || fallbackTexts.alertSetupNeedsDevice || 'Please select at least one device before saving a project.';
-    alert(message);
-    return;
-  }
+  var hasDeviceSelection = hasAnyDeviceSelectionSafe(currentSetup);
   var gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
     currentSetup.gearList = gearListHtml;
@@ -537,7 +533,10 @@ function handleSaveSetupClick() {
   if (saveSetupBtn) {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
   }
-  alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
+  var saveAlertTemplate = hasDeviceSelection ? langTexts.alertSetupSaved || fallbackTexts.alertSetupSaved : langTexts.alertSetupSavedNoDevices || fallbackTexts.alertSetupSavedNoDevices || langTexts.alertSetupSaved || fallbackTexts.alertSetupSaved;
+  if (typeof saveAlertTemplate === 'string' && saveAlertTemplate) {
+    alert(saveAlertTemplate.replace("{name}", finalName));
+  }
 }
 addSafeEventListener(saveSetupBtn, "click", handleSaveSetupClick);
 function handleDeleteSetupClick() {

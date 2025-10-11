@@ -1329,9 +1329,11 @@ const texts = {
     noBatterySupports: "No battery can supply this load.",
 
     alertSetupName: "Please enter a name for the project.",
-    alertSetupNeedsDevice: "Please select at least one device before saving a project.",
+    alertSetupNeedsDevice: "You can save a project even if no devices are selected yet.",
     alertSetupSaved:
       "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
+    alertSetupSavedNoDevices:
+      "Project \"{name}\" saved in this browser with no devices yet. Add gear and requirements whenever you're ready—we'll keep everything protected.",
     alertNoSetupSelected: "Please select a saved project to delete.",
     alertSetupDeleted: "Project \"{name}\" deleted.",
     confirmDeleteSetup: "Really delete project \"{name}\"?",
@@ -2368,9 +2370,11 @@ const texts = {
     batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
-    alertSetupNeedsDevice: "Seleziona almeno un dispositivo prima di salvare un progetto.",
+    alertSetupNeedsDevice: "Puoi salvare un progetto anche se non hai ancora selezionato dispositivi.",
     alertSetupSaved:
       "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
+    alertSetupSavedNoDevices:
+      "Setup \"{name}\" salvato nel browser senza dispositivi per ora. Potrai aggiungere l'attrezzatura e i requisiti in seguito: manterremo tutto al sicuro.",
     alertNoSetupSelected: "Selezionare una configurazione salvata da eliminare.",
     alertSetupDeleted: "Setup \"{name}\" eliminato.",
     confirmDeleteSetup: "Elimina davvero setup \"{name}\"?",
@@ -4241,9 +4245,11 @@ const texts = {
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
 
     alertSetupName: "Ingresa un nombre para el proyecto.",
-    alertSetupNeedsDevice: "Selecciona al menos un dispositivo antes de guardar un proyecto.",
+    alertSetupNeedsDevice: "Puedes guardar un proyecto aunque todavía no hayas seleccionado dispositivos.",
     alertSetupSaved:
       "Proyecto \"{name}\" guardado en este navegador. Permanece disponible al cerrar o volver a abrir pestañas mientras no borres la caché del navegador.",
+    alertSetupSavedNoDevices:
+      "Proyecto \"{name}\" guardado en este navegador sin dispositivos por ahora. Podrás añadir el equipo y los requisitos más tarde; mantendremos todo protegido.",
     alertNoSetupSelected: "Selecciona un proyecto para eliminar.",
     alertSetupDeleted: "Proyecto \"{name}\" eliminado.",
     confirmDeleteSetup: "¿Eliminar el proyecto \"{name}\"?",
@@ -6117,9 +6123,11 @@ const texts = {
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
 
     alertSetupName: "Veuillez saisir un nom pour la configuration.",
-    alertSetupNeedsDevice: "Veuillez sélectionner au moins un appareil avant d'enregistrer un projet.",
+    alertSetupNeedsDevice: "Vous pouvez enregistrer un projet même si aucun appareil n’est encore sélectionné.",
     alertSetupSaved:
       "Configuration \"{name}\" enregistrée dans ce navigateur. Elle reste disponible après avoir fermé ou rouvert des onglets tant que vous ne videz pas le cache du navigateur.",
+    alertSetupSavedNoDevices:
+      "Configuration \"{name}\" enregistrée dans ce navigateur sans appareils pour l’instant. Vous pourrez ajouter le matériel et les exigences plus tard ; nous garderons tout en sécurité.",
     alertNoSetupSelected: "Sélectionnez une configuration à supprimer.",
     alertSetupDeleted: "Configuration \"{name}\" supprimée.",
     confirmDeleteSetup: "Supprimer la configuration \"{name}\" ?",
@@ -8007,9 +8015,11 @@ const texts = {
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
     alertSetupName: "Bitte einen Namen für das Projekt eingeben.",
-    alertSetupNeedsDevice: "Bitte mindestens ein Gerät auswählen, bevor du ein Projekt speicherst.",
+    alertSetupNeedsDevice: "Du kannst ein Projekt speichern, auch wenn noch keine Geräte ausgewählt sind.",
     alertSetupSaved:
       "Projekt \"{name}\" in diesem Browser gespeichert. Es bleibt verfügbar, wenn Sie Tabs oder den Browser schließen und erneut öffnen, solange Sie den Browsercache nicht löschen.",
+    alertSetupSavedNoDevices:
+      "Projekt \"{name}\" wurde in diesem Browser ohne Geräte gespeichert. Du kannst Ausrüstung und Anforderungen später ergänzen – wir sichern weiterhin alle Daten.",
     alertNoSetupSelected: "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
     alertSetupDeleted: "Projekt \"{name}\" gelöscht.",
     confirmDeleteSetup: "Projekt \"{name}\" wirklich löschen?",
