@@ -39,6 +39,12 @@ drive without phoning home.
 - **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md)
   with the [Operational Checklist](docs/operations-checklist.md) so documented
   rehearsals stay synchronized with the app and bundled assets.
+- **Protect user data deliberately.** Follow the new
+  [Data Protection Playbook](docs/data-protection-playbook.md) when you scope
+  changes, rehearse daily guardrails, prepare releases and respond to
+  incidents. It consolidates the save/share/import/backup/restore routines,
+  guard outputs and archival expectations so offline crews always preserve
+  every project.
 - **Update documentation deliberately.** Use the
   [Documentation Update Checklist](docs/documentation-update-checklist.md) and
   [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every

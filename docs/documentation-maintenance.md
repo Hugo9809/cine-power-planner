@@ -19,6 +19,11 @@ cycles to spot-check localized READMEs, printable manuals, help topics and Quick
 against the runtime safeguards described below. The audit keeps long-lived releases aligned with
 the current code even when no new features ship for several weeks.
 
+When features touch save/share/import/backup/restore logic or runtime safeguards,
+coordinate updates with the [Data Protection Playbook](data-protection-playbook.md).
+It captures the rehearsal cadence, guard outputs and archival artefacts that crews
+expect documentation to reinforce while they operate offline.
+
 All persistence-facing documentation should now reference the consolidated
 `cinePersistence` module so that future refactors maintain a single, lossless contract for
 saving, sharing, backups and restores.【F:src/scripts/modules/persistence.js†L1-L125】
