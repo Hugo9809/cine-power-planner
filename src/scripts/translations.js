@@ -1684,7 +1684,7 @@ const texts = {
       nextLabel: "Next",
       doneLabel: "Finish tutorial",
       stepIndicator: "Step {current} of {total}",
-      completionIndicator: "You're ready to build projects",
+      completionIndicator: "First project secured offline",
       stepListAriaLabel: "Tutorial steps",
       stepStatusCurrent: "Current step",
       stepStatusComplete: "Completed",
@@ -1727,70 +1727,35 @@ const texts = {
           body:
             "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.",
         },
-        projectOverview: {
-          title: "Create and save your project",
+        nameProject: {
+          title: "Name your first project",
           body:
-            "Start in Project Overview: enter a Project Name, pick -- New Project -- when you need a clean slate and press Save (or use Ctrl+S/⌘S) to capture snapshots as you experiment.",
+            "Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.",
         },
-        deviceSelection: {
-          title: "Select cameras and devices",
+        saveProject: {
+          title: "Save immediately",
           body:
-            "Open Configure Devices to choose cameras, monitors, power accessories and filters. Search boxes inside every dropdown help you find the right model quickly while offline.",
+            "Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.",
         },
-        gearGeneration: {
-          title: "Generate requirements and gear lists",
+        addCamera: {
+          title: "Add your primary camera",
           body:
-            "When the build looks right, select Generate Gear List and Project Requirements to capture crew roles, scenarios and automatically suggested items for the printable outputs.",
+            "Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.",
         },
-        gearCustomization: {
-          title: "Customise the gear list",
+        addPower: {
+          title: "Choose a power source",
           body:
-            "Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project.",
+            "Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.",
         },
-        resultsReview: {
-          title: "Verify power results",
+        generatePlan: {
+          title: "Generate your first plan",
           body:
-            "Open Power Summary to confirm draw totals, battery coverage and runtime predictions. The quick summary, charts and printable report all reflect your latest offline saves.",
+            "Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.",
         },
-        powerSummary: {
-          title: "Review the Power Summary checkpoint",
+        exportBackup: {
+          title: "Export an offline safety copy",
           body:
-            "Scan the Quick summary card to validate runtime estimates, battery counts and safety warnings at a glance. Confirming this checkpoint keeps charts, exports and offline reports aligned before you continue.",
-        },
-        contactsOwnGear: {
-          title: "Reuse contacts and personal gear",
-          body:
-            "Use the sidebar buttons for Contacts and Own Gear to capture crew roles, phone/email details and the kit you already own. Both managers import vCards, save instantly to local storage, flow into backups and exports, and stay available offline for every project.",
-        },
-        autoGear: {
-          title: "Refine automatic gear rules",
-          body:
-            "Open Settings → Automatic Gear Rules to set default monitors, create scenario-based additions and manage backups for the automation engine. Every change stays offline in your browser.",
-        },
-        overviewPrint: {
-          title: "Generate overview & print",
-          body:
-            "Use Generate Overview to build the print-ready summary. From there you can review totals, print directly, or export a PDF for on-set binders and distribution.",
-        },
-        exportImport: {
-          title: "Export and import safely",
-          body:
-            "Export Project downloads a JSON safety bundle for sharing or archiving. Use the Import Project field beside it to restore shared configurations without leaving the planner offline.",
-        },
-        quickSafeguards: {
-          title: "Capture quick safeguards backup",
-          body:
-            "Open Settings → Data & Storage → Quick safeguards and press Download full backup before making major changes. The button stores a fresh planner-backup.json offline, logs the action in Latest activity and keeps a restore copy ready even if you stay on this tab.",
-        },
-        backupRestore: {
-          title: "Back up and rehearse restores",
-          body:
-            "In Settings → Backup & Restore, capture full-app backups, compare auto-backups, rehearse restores and trigger factory resets after saving a safety copy.",
-        },
-        safetyNet: {
-          title: "Confirm offline safety nets",
-          body:
-            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
+            "Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.",
         },
         completion: {
           title: "You're ready to plan",
@@ -3580,7 +3545,7 @@ const texts = {
       nextLabel: "Avanti",
       doneLabel: "Termina tutorial",
       stepIndicator: "Passo {current} di {total}",
-      completionIndicator: "Ora puoi creare progetti",
+      completionIndicator: "Primo progetto salvato offline",
       stepListAriaLabel: "Passaggi del tutorial",
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
@@ -3623,70 +3588,35 @@ const texts = {
           body:
             "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente.",
         },
-        projectOverview: {
-          title: "Crea e salva il progetto",
+        nameProject: {
+          title: "Dai un nome al primo progetto",
           body:
-            "Inizia da Panoramica progetto: inserisci un nome, scegli -- Nuovo progetto -- quando serve un foglio bianco e premi Salva (o usa Ctrl+S/⌘S) per catturare gli stati mentre sperimenti.",
+            "Scrivi un nome progetto per attivare salvataggi automatici, backup ed esportazioni. Il pulsante Avanti si sblocca solo quando è presente un nome così ogni passaggio protegge subito il progetto offline.",
         },
-        deviceSelection: {
-          title: "Seleziona camere e dispositivi",
+        saveProject: {
+          title: "Salva subito",
           body:
-            "Apri Configura dispositivi per scegliere camere, monitor, accessori di alimentazione e filtri. I campi di ricerca in ogni menu aiutano a trovare rapidamente il modello giusto anche offline.",
+            "Premi Salva (o usa Ctrl+S/⌘S/Invio) per registrare una copia offline del progetto nominato. Se un setup già salvato è selezionato il passaggio viene completato automaticamente, altrimenti fai clic su Salva per proseguire.",
         },
-        gearGeneration: {
-          title: "Genera requisiti e gear list",
+        addCamera: {
+          title: "Aggiungi la camera principale",
           body:
-            "Quando la configurazione è pronta, seleziona Genera elenco attrezzatura e requisiti del progetto per raccogliere ruoli, scenari e suggerimenti automatici nei report stampabili.",
+            "Apri il menu Camera e scegli il corpo che stai pianificando. La ricerca funziona anche offline all'interno dell'elenco. Avanti si attiva quando selezioni un modello specifico.",
         },
-        gearCustomization: {
-          title: "Personalizza la gear list",
+        addPower: {
+          title: "Scegli l'alimentazione",
           body:
-            "Usa la sezione Gear List dopo la generazione per regolare quantità, sostituire accessori, applicare filtri o aggiungere voci personalizzate. Le modifiche vengono salvate subito nel progetto.",
+            "Seleziona una batteria o una fonte DC adatta alla configurazione. La scelta aggiorna subito i calcoli di autonomia e viene salvata insieme allo snapshot del progetto.",
         },
-        resultsReview: {
-          title: "Verifica i risultati energetici",
+        generatePlan: {
+          title: "Genera il primo piano",
           body:
-            "Apri Riepilogo alimentazione per confermare assorbimenti, copertura delle batterie e previsioni di autonomia. Il riepilogo rapido, i grafici e il report stampabile riflettono sempre l'ultimo salvataggio offline.",
+            "Usa Genera elenco attrezzatura e requisiti del progetto per creare la checklist stampabile. Si apre la finestra del progetto così puoi verificare assorbimenti, autonomia e note della troupe nello stesso posto.",
         },
-        powerSummary: {
-          title: "Controlla il checkpoint Power Summary",
+        exportBackup: {
+          title: "Esporta una copia di sicurezza offline",
           body:
-            "Analizza la scheda Riepilogo rapido per confermare autonomia, conteggio batterie e avvisi di sicurezza in un colpo d'occhio. Questo controllo mantiene grafici, esportazioni e report offline allineati prima di proseguire.",
-        },
-        contactsOwnGear: {
-          title: "Riutilizza contatti e attrezzatura personale",
-          body:
-            "Usa i pulsanti della barra laterale per aprire Contatti e Attrezzatura personale, salvare ruoli di troupe, telefono/email e il kit che possiedi già. Entrambi i pannelli importano vCard, si salvano subito nello storage locale, rientrano in backup ed esportazioni e restano disponibili offline per ogni progetto.",
-        },
-        autoGear: {
-          title: "Affina le regole automatiche",
-          body:
-            "Apri Impostazioni → Regole automatiche per definire i monitor predefiniti, creare aggiunte basate sugli scenari e gestire i backup del motore automatico. Tutto resta archiviato offline nel browser.",
-        },
-        overviewPrint: {
-          title: "Genera panoramica e stampa",
-          body:
-            "Usa Genera panoramica per costruire il riepilogo pronto per la stampa. Da qui puoi rivedere i totali, stampare subito oppure esportare un PDF per i raccoglitori di set.",
-        },
-        exportImport: {
-          title: "Esporta e importa in sicurezza",
-          body:
-            "Esporta progetto scarica un pacchetto JSON da archiviare o condividere. Il campo Importa progetto accanto permette di ripristinare configurazioni condivise senza lasciare il planner offline.",
-        },
-        quickSafeguards: {
-          title: "Acquisisci backup con Quick safeguards",
-          body:
-            "Apri Impostazioni → Dati e archiviazione → Quick safeguards e premi Scarica backup completo prima di apportare modifiche importanti. Il pulsante salva offline un nuovo planner-backup.json, registra l'azione in Attività recente e mantiene pronta una copia per il ripristino anche se resti in questa scheda.",
-        },
-        backupRestore: {
-          title: "Esegui backup e prove di ripristino",
-          body:
-            "In Impostazioni → Backup & Restore acquisisci backup completi dell'app, confronta gli auto-backup, prova i ripristini e avvia il ripristino di fabbrica dopo aver salvato una copia di sicurezza.",
-        },
-        safetyNet: {
-          title: "Confirm offline safety nets",
-          body:
-            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
+            "Fai clic su Esporta progetto o su Quick safeguards per scaricare un backup JSON. Conservare una copia fuori dal browser protegge la nuova configurazione da reset e cambi di dispositivo.",
         },
         completion: {
           title: "Tutto pronto per pianificare",
@@ -5490,7 +5420,7 @@ const texts = {
       nextLabel: "Siguiente",
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
-      completionIndicator: "Listo para crear proyectos",
+      completionIndicator: "Primer proyecto guardado sin conexión",
       stepListAriaLabel: "Pasos del tutorial",
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
@@ -5533,70 +5463,35 @@ const texts = {
           body:
             "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta.",
         },
-        projectOverview: {
-          title: "Crea y guarda tu proyecto",
+        nameProject: {
+          title: "Pon nombre a tu primer proyecto",
           body:
-            "Empieza en Panorama del proyecto: escribe un nombre, elige -- Nuevo proyecto -- cuando necesites un lienzo en blanco y pulsa Guardar (o usa Ctrl+S/⌘S) para capturar instantáneas mientras pruebas.",
+            "Escribe un nombre de proyecto para activar el guardado automático, las copias y las exportaciones. El botón Siguiente se desbloquea en cuanto haya un nombre, así cada paso protege el proyecto sin conexión.",
         },
-        deviceSelection: {
-          title: "Selecciona cámaras y dispositivos",
+        saveProject: {
+          title: "Guarda de inmediato",
           body:
-            "Abre Configurar dispositivos para elegir cámaras, monitores, accesorios de alimentación y filtros. Los cuadros de búsqueda en cada menú te ayudan a encontrar el modelo adecuado sin conexión.",
+            "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para capturar una instantánea sin conexión del proyecto con nombre. Si ya tienes seleccionado un proyecto guardado el paso se completa automáticamente; si no, haz clic en Guardar para continuar.",
         },
-        gearGeneration: {
-          title: "Genera requisitos y lista de equipo",
+        addCamera: {
+          title: "Añade la cámara principal",
           body:
-            "Cuando la configuración esté lista, selecciona Generar lista de equipo y requisitos del proyecto para reunir roles, escenarios y sugerencias automáticas en los informes imprimibles.",
+            "Abre la lista Cámara y elige el cuerpo para tu plan. La búsqueda funciona sin conexión dentro del desplegable. Siguiente se activa cuando seleccionas un modelo específico.",
         },
-        gearCustomization: {
-          title: "Personaliza la lista de equipo",
+        addPower: {
+          title: "Elige una fuente de energía",
           body:
-            "Usa la sección Lista de equipo después de generarla para ajustar cantidades, cambiar accesorios, aplicar filtros o añadir elementos personalizados. Los cambios se guardan al instante con el proyecto.",
+            "Selecciona una batería o fuente de CC que encaje con el montaje. La selección actualiza al instante los cálculos de autonomía y se guarda con la instantánea del proyecto.",
         },
-        resultsReview: {
-          title: "Verifica los resultados de energía",
+        generatePlan: {
+          title: "Genera tu primer plan",
           body:
-            "Abre Resumen de energía para confirmar consumos, cobertura de baterías y estimaciones de autonomía. El resumen rápido, los gráficos y el informe imprimible reflejan siempre tu último guardado sin conexión.",
+            "Usa Generar lista de equipo y requisitos del proyecto para crear la lista imprimible. Se abrirá el cuadro del proyecto para que revises consumos, autonomía y notas del equipo en un mismo lugar.",
         },
-        powerSummary: {
-          title: "Revisa el punto de control del Resumen de energía",
+        exportBackup: {
+          title: "Exporta una copia de seguridad sin conexión",
           body:
-            "Examina la tarjeta de Resumen rápido para confirmar estimaciones de autonomía, conteos de baterías y alertas de seguridad de un vistazo. Validar este punto de control mantiene alineados los gráficos, exportaciones e informes sin conexión antes de continuar.",
-        },
-        contactsOwnGear: {
-          title: "Reutiliza contactos y tu propio equipo",
-          body:
-            "Usa los botones de la barra lateral para abrir Contactos y Equipo propio, guardar funciones del equipo, teléfonos/correos y el material que ya tienes. Ambos gestores importan vCards, se guardan al instante en el almacenamiento local, se incluyen en copias de seguridad y exportaciones y permanecen disponibles sin conexión para cada proyecto.",
-        },
-        autoGear: {
-          title: "Perfecciona las reglas automáticas",
-          body:
-            "Abre Configuración → Reglas automáticas para definir monitores predeterminados, crear añadidos por escenario y gestionar las copias de seguridad del motor automático. Todo queda almacenado sin conexión en tu navegador.",
-        },
-        overviewPrint: {
-          title: "Genera resumen y listo para imprimir",
-          body:
-            "Usa Generar resumen para construir el informe listo para impresión. Desde ahí puedes revisar totales, imprimir directamente o exportar un PDF para carpetas y equipos.",
-        },
-        exportImport: {
-          title: "Exporta e importa con seguridad",
-          body:
-            "Exportar proyecto descarga un paquete JSON para archivar o compartir. El campo Importar proyecto junto a él restaura configuraciones compartidas sin salir del planner sin conexión.",
-        },
-        quickSafeguards: {
-          title: "Captura una copia con Quick safeguards",
-          body:
-            "Abre Configuración → Datos y almacenamiento → Quick safeguards y pulsa Descargar copia completa antes de realizar cambios importantes. El botón guarda un planner-backup.json nuevo sin conexión, registra la acción en Actividad reciente y mantiene una copia lista para restaurar aunque sigas en esta pestaña.",
-        },
-        backupRestore: {
-          title: "Realiza copias y ensayos de restauración",
-          body:
-            "En Configuración → Copia de seguridad y restaurar puedes capturar copias completas, comparar copias automáticas, ensayar restauraciones y ejecutar el restablecimiento de fábrica tras guardar una copia de seguridad.",
-        },
-        safetyNet: {
-          title: "Confirm offline safety nets",
-          body:
-            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
+            "Haz clic en Exportar proyecto o en Quick safeguards para descargar una copia JSON. Guardar un archivo fuera del navegador protege el montaje frente a reinicios o cambios de dispositivo.",
         },
         completion: {
           title: "Todo listo para planificar",
@@ -7412,7 +7307,7 @@ const texts = {
       nextLabel: "Suivant",
       doneLabel: "Terminer le tutoriel",
       stepIndicator: "Étape {current} sur {total}",
-      completionIndicator: "Prêt à créer des projets",
+      completionIndicator: "Premier projet sauvegardé hors ligne",
       stepListAriaLabel: "Étapes du tutoriel",
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
@@ -7455,70 +7350,35 @@ const texts = {
           body:
             "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement.",
         },
-        projectOverview: {
-          title: "Créez et enregistrez votre projet",
+        nameProject: {
+          title: "Nommez votre premier projet",
           body:
-            "Commencez par Vue d’ensemble du projet : saisissez un nom, choisissez -- Nouveau projet -- pour repartir de zéro et cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S) afin de capturer des instantanés pendant vos essais.",
+            "Saisissez un nom de projet pour activer l’enregistrement automatique, les sauvegardes et les exports. Le bouton Suivant se déverrouille dès qu’un nom est défini afin que chaque étape sécurise immédiatement le projet hors ligne.",
         },
-        deviceSelection: {
-          title: "Sélectionnez caméras et équipements",
+        saveProject: {
+          title: "Enregistrez immédiatement",
           body:
-            "Ouvrez Configurer les appareils pour choisir caméras, moniteurs, accessoires d’alimentation et filtres. Les zones de recherche intégrées à chaque menu vous aident à trouver rapidement le bon modèle hors connexion.",
+            "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour capturer une copie hors ligne du projet nommé. Si une configuration déjà sauvegardée est sélectionnée, l’étape se valide automatiquement ; sinon, appuyez sur Enregistrer pour continuer.",
         },
-        gearGeneration: {
-          title: "Générez exigences et liste de matériel",
+        addCamera: {
+          title: "Ajoutez la caméra principale",
           body:
-            "Lorsque la configuration vous convient, sélectionnez Générer la liste du matériel et les exigences du projet pour rassembler rôles, scénarios et suggestions automatiques dans les exports imprimables.",
+            "Ouvrez la liste Caméra et choisissez le boîtier que vous planifiez. La recherche est disponible hors connexion dans la liste. Suivant s’active lorsque vous sélectionnez un modèle précis.",
         },
-        gearCustomization: {
-          title: "Personnalisez la liste de matériel",
+        addPower: {
+          title: "Choisissez une source d’alimentation",
           body:
-            "Dans la section Liste du matériel, ajustez les quantités, remplacez des accessoires, appliquez des filtres ou ajoutez vos propres lignes. Chaque modification est enregistrée immédiatement dans le projet.",
+            "Sélectionnez une batterie ou une source CC adaptée à la configuration. Le choix met instantanément à jour les calculs d’autonomie et est enregistré avec l’instantané du projet.",
         },
-        resultsReview: {
-          title: "Vérifiez les résultats d'alimentation",
+        generatePlan: {
+          title: "Générez votre premier plan",
           body:
-            "Ouvrez Résumé d'alimentation pour confirmer les consommations, la couverture batterie et les estimations d'autonomie. Le résumé rapide, les graphiques et le rapport imprimable reflètent toujours votre dernier enregistrement hors ligne.",
+            "Utilisez Générer la liste du matériel et exigences du projet pour créer la checklist imprimable. La fenêtre du projet s’ouvre afin de vérifier ensemble consommations, autonomie et notes d’équipe.",
         },
-        powerSummary: {
-          title: "Vérifiez le point de contrôle Résumé d'alimentation",
+        exportBackup: {
+          title: "Exportez une copie de sécurité hors ligne",
           body:
-            "Parcourez la carte Résumé rapide pour confirmer d'un coup d'œil les autonomies, le nombre de batteries et les alertes de sécurité. Valider ce point de contrôle garde graphiques, exports et rapports hors ligne alignés avant de poursuivre.",
-        },
-        contactsOwnGear: {
-          title: "Réutiliser les contacts et votre propre matériel",
-          body:
-            "Utilisez les boutons de la barre latérale pour ouvrir Contacts et Matériel personnel, enregistrer les membres d'équipe, leurs coordonnées et l'équipement que vous possédez déjà. Les deux gestionnaires importent les vCards, s'enregistrent immédiatement en local, s'intègrent aux sauvegardes et exports et restent disponibles hors ligne pour chaque projet.",
-        },
-        autoGear: {
-          title: "Affinez les règles automatiques",
-          body:
-            "Ouvrez Paramètres → Règles de matériel automatique pour définir les moniteurs par défaut, créer des ajouts dépendant des scénarios et gérer les sauvegardes du moteur automatique. Tout reste stocké hors ligne dans votre navigateur.",
-        },
-        overviewPrint: {
-          title: "Générez le résumé à imprimer",
-          body:
-            "Utilisez Générer le résumé pour obtenir la synthèse prête à être imprimée. Vous pouvez y vérifier les totaux, lancer l'impression ou exporter un PDF pour vos dossiers de tournage.",
-        },
-        exportImport: {
-          title: "Exportez et importez en toute sécurité",
-          body:
-            "Exporter le projet télécharge un paquet JSON à archiver ou à partager. Le champ Importer un projet juste à côté restaure une configuration partagée sans quitter l’application hors ligne.",
-        },
-        quickSafeguards: {
-          title: "Capturer une sauvegarde Quick safeguards",
-          body:
-            "Ouvrez Paramètres → Données et stockage → Quick safeguards et appuyez sur Télécharger la sauvegarde complète avant d’apporter des changements majeurs. Le bouton enregistre un nouveau planner-backup.json hors ligne, consigne l’action dans Activité récente et garde une copie de restauration prête même si vous restez sur cet onglet.",
-        },
-        backupRestore: {
-          title: "Sauvegardez et répétez les restaurations",
-          body:
-            "Dans Paramètres → Sauvegarde et restauration, capturez des sauvegardes complètes, comparez les copies automatiques, répétez des restaurations et lancez la réinitialisation d'usine après avoir enregistré une copie de sécurité.",
-        },
-        safetyNet: {
-          title: "Confirm offline safety nets",
-          body:
-            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
+            "Cliquez sur Exporter le projet ou Quick safeguards pour télécharger une sauvegarde JSON. Conserver un fichier en dehors du navigateur protège la nouvelle configuration lors des réinitialisations ou changements d’appareil.",
         },
         completion: {
           title: "Vous êtes prêt à planifier",
@@ -9339,7 +9199,7 @@ const texts = {
       nextLabel: "Weiter",
       doneLabel: "Tutorial abschließen",
       stepIndicator: "Schritt {current} von {total}",
-      completionIndicator: "Bereit für neue Projekte",
+      completionIndicator: "Erstes Projekt offline gesichert",
       stepListAriaLabel: "Tutorial-Schritte",
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
@@ -9382,70 +9242,35 @@ const texts = {
           body:
             "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst.",
         },
-        projectOverview: {
-          title: "Projekt anlegen und speichern",
+        nameProject: {
+          title: "Benenne dein erstes Projekt",
           body:
-            "Beginne im Projektüberblick: Vergib einen Namen, wähle -- Neues Projekt -- für einen leeren Start und klicke auf Speichern (oder nutze Strg+S/⌘S), um deinen Fortschritt festzuhalten.",
+            "Trage einen Projektnamen ein, damit Autosave, Backups und Exporte aktiviert werden. Der Button Weiter wird erst freigeschaltet, wenn ein Name gesetzt ist – so schützt jeder Schritt dein Projekt sofort offline.",
         },
-        deviceSelection: {
-          title: "Geräte auswählen",
+        saveProject: {
+          title: "Speichere sofort",
           body:
-            "Öffne Geräte konfigurieren, um Kameras, Monitore, Stromzubehör und Filter auszuwählen. Suchfelder in jedem Dropdown helfen, offline schnell das passende Modell zu finden.",
+            "Klicke auf Speichern (oder nutze Strg+S/Cmd+S/Eingabe), um eine Offline-Kopie des benannten Projekts festzuhalten. Ist bereits ein gespeichertes Projekt ausgewählt, gilt der Schritt automatisch als erledigt – sonst speichere, um fortzufahren.",
         },
-        gearGeneration: {
-          title: "Anforderungen und Liste erzeugen",
+        addCamera: {
+          title: "Füge die Hauptkamera hinzu",
           body:
-            "Wenn der Aufbau passt, wähle Gear-Liste und Projektanforderungen erstellen, um Crew-Rollen, Szenarien und automatische Vorschläge für die Ausdrucke zu sammeln.",
+            "Öffne die Liste Kamera und wähle das Gehäuse, das du planst. Die Suche funktioniert offline direkt im Dropdown. Weiter wird aktiviert, sobald du ein konkretes Modell auswählst.",
         },
-        gearCustomization: {
-          title: "Gear-Liste anpassen",
+        addPower: {
+          title: "Wähle eine Stromquelle",
           body:
-            "In der Gear-Liste kannst du Mengen anpassen, Zubehör tauschen, Filter anwenden oder eigene Positionen hinzufügen. Änderungen werden sofort mit dem Projekt gespeichert.",
+            "Wähle einen Akku oder eine DC-Quelle, die zur Konfiguration passt. Die Auswahl aktualisiert sofort die Laufzeitberechnungen und wird zusammen mit dem Projektschnappschuss gespeichert.",
         },
-        resultsReview: {
-          title: "Stromergebnisse prüfen",
+        generatePlan: {
+          title: "Erstelle deinen ersten Plan",
           body:
-            "Öffne die Stromübersicht, um Leistungsbedarf, Batterieabdeckung und Laufzeitprognosen zu kontrollieren. Kurzfassung, Diagramme und der druckbare Bericht spiegeln immer deinen letzten Offline-Speicherstand wider.",
+            "Nutze Liste & Anforderungen generieren, um die druckbare Checkliste zu erstellen. Der Projektdialog öffnet sich, damit du Verbrauch, Laufzeiten und Teamnotizen an einem Ort prüfen kannst.",
         },
-        powerSummary: {
-          title: "Power-Summary-Checkpoint prüfen",
+        exportBackup: {
+          title: "Exportiere eine Offline-Sicherheitskopie",
           body:
-            "Sieh dir die Karte Schnellübersicht an, um Laufzeitprognosen, Batterieanzahlen und Sicherheitswarnungen auf einen Blick zu bestätigen. So bleiben Diagramme, Exporte und Offline-Berichte abgestimmt, bevor du weitergehst.",
-        },
-        contactsOwnGear: {
-          title: "Kontakte und eigenes Equipment wiederverwenden",
-          body:
-            "Nutze die Schaltflächen in der Seitenleiste für Kontakte und Eigenes Equipment, um Crew-Rollen, Telefon/E-Mail-Daten und dein vorhandenes Kit zu sichern. Beide Verwalter importieren vCards, speichern sofort lokal, fließen in Backups und Exporte ein und bleiben offline für jedes Projekt verfügbar.",
-        },
-        autoGear: {
-          title: "Automatische Regeln verfeinern",
-          body:
-            "Unter Einstellungen → Automatische Gear-Regeln legst du Standardmonitore fest, erstellst Szenario-Zusätze und verwaltest die Sicherungen der Automatik. Alles bleibt lokal im Browser gespeichert.",
-        },
-        overviewPrint: {
-          title: "Übersicht erzeugen und drucken",
-          body:
-            "Mit Übersicht generieren erhältst du den druckfertigen Bericht. Prüfe dort die Summen, drucke direkt oder exportiere ein PDF für den Set-Ordner.",
-        },
-        exportImport: {
-          title: "Sicher exportieren und importieren",
-          body:
-            "Projekt exportieren lädt ein JSON-Sicherungsbundle zum Archivieren oder Teilen. Das Feld Projekt importieren daneben stellt geteilte Konfigurationen offline wieder her.",
-        },
-        quickSafeguards: {
-          title: "Quick-Safeguards-Backup erfassen",
-          body:
-            "Öffne Einstellungen → Daten & Speicherung → Quick safeguards und drücke „Vollständiges Backup herunterladen“, bevor du größere Änderungen machst. Die Schaltfläche speichert eine frische planner-backup.json offline, protokolliert die Aktion unter Neueste Aktivität und hält eine Wiederherstellungskopie bereit, selbst wenn du in diesem Tab bleibst.",
-        },
-        backupRestore: {
-          title: "Backups und Wiederherstellungen",
-          body:
-            "In Einstellungen → Backup & Restore erstellst du Vollbackups, vergleichst Auto-Sicherungen, probst Wiederherstellungen und setzt bei Bedarf nach einer Sicherung alles zurück.",
-        },
-        safetyNet: {
-          title: "Confirm offline safety nets",
-          body:
-            "Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.",
+            "Klicke auf Projekt exportieren oder Quick safeguards, um ein JSON-Backup herunterzuladen. Eine Kopie außerhalb des Browsers schützt den Aufbau vor Zurücksetzungen oder Gerätewechseln.",
         },
         completion: {
           title: "Alles bereit zum Planen",
