@@ -10636,12 +10636,14 @@ function normalizeUserProfile(entry) {
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
+  const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+  const email = typeof entry.email === 'string' ? entry.email.trim() : '';
 
-  if (!name && !avatar) {
-    return { name: '', avatar: '' };
+  if (!name && !avatar && !phone && !email) {
+    return { name: '', avatar: '', phone: '', email: '' };
   }
 
-  return { name, avatar };
+  return { name, avatar, phone, email };
 }
 
 function loadUserProfile() {
@@ -10655,9 +10657,9 @@ function loadUserProfile() {
     { validate: (value) => value === null || isPlainObject(value) },
   );
   if (!isPlainObject(parsed)) {
-    return { name: '', avatar: '' };
+    return { name: '', avatar: '', phone: '', email: '' };
   }
-  return normalizeUserProfile(parsed) || { name: '', avatar: '' };
+  return normalizeUserProfile(parsed) || { name: '', avatar: '', phone: '', email: '' };
 }
 
 function saveUserProfile(profile) {
@@ -10671,8 +10673,8 @@ function saveUserProfile(profile) {
     return;
   }
 
-  const normalized = normalizeUserProfile(profile) || { name: '', avatar: '' };
-  if (!normalized.name && !normalized.avatar) {
+  const normalized = normalizeUserProfile(profile) || { name: '', avatar: '', phone: '', email: '' };
+  if (!normalized.name && !normalized.avatar && !normalized.phone && !normalized.email) {
     deleteFromStorage(
       safeStorage,
       USER_PROFILE_STORAGE_KEY,

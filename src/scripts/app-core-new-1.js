@@ -13634,6 +13634,18 @@ function setLanguage(lang) {
     if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
       userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
     }
+    if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+      userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+    }
+    if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+      userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+    }
+    if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+      userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+    }
+    if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+      userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+    }
     if (userProfileHint && contactsTexts.userProfileHint) {
       userProfileHint.textContent = contactsTexts.userProfileHint;
     }
@@ -13938,6 +13950,10 @@ var userProfileHeading = null;
 var userProfileDescription = null;
 var userProfileNameInput = null;
 var userProfileNameLabel = null;
+var userProfilePhoneInput = null;
+var userProfilePhoneLabel = null;
+var userProfileEmailInput = null;
+var userProfileEmailLabel = null;
 var userProfileHint = null;
 var userProfileAvatarContainer = null;
 var userProfileAvatarButton = null;
@@ -13990,6 +14006,10 @@ function resolveContactsDomRefs() {
   userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
   userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
   userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
+  userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
+  userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
+  userProfileEmailLabel = userProfileEmailLabel || document.getElementById('userProfileEmailLabel');
   userProfileHint = userProfileHint || document.getElementById('userProfileHint');
   userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
   userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -15905,7 +15925,7 @@ const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', avatar: '' };
+var userProfileState = { name: '', avatar: '', phone: '', email: '' };
 var userProfileDirty = false;
 var userProfilePendingAnnouncement = false;
 
@@ -16555,18 +16575,32 @@ function getContactsSnapshot() {
   }));
 }
 
+function assignUserProfileState(updates = {}) {
+  const nextState = {
+    name: typeof updates.name === 'string' ? updates.name : (userProfileState.name || ''),
+    avatar: typeof updates.avatar === 'string' ? updates.avatar : (userProfileState.avatar || ''),
+    phone: typeof updates.phone === 'string' ? updates.phone : (userProfileState.phone || ''),
+    email: typeof updates.email === 'string' ? updates.email : (userProfileState.email || '')
+  };
+  userProfileState = nextState;
+}
+
 function getUserProfileSnapshot() {
   const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
   const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-  return { name, avatar };
+  const phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
+  const email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
+  return { name, avatar, phone, email };
 }
 
 function applyUserProfileToDom(options = {}) {
   resolveContactsDomRefs();
   const profile = getUserProfileSnapshot();
-  const preserveSelection = Boolean(options && options.preserveSelection);
+  const preserveTarget = options && options.preserveSelectionTarget
+    ? options.preserveSelectionTarget
+    : (options && options.preserveSelection ? document.activeElement : null);
   if (userProfileNameInput) {
-    if (preserveSelection && document.activeElement === userProfileNameInput) {
+    if (preserveTarget === userProfileNameInput) {
       const start = userProfileNameInput.selectionStart;
       const end = userProfileNameInput.selectionEnd;
       userProfileNameInput.value = profile.name;
@@ -16577,6 +16611,34 @@ function applyUserProfileToDom(options = {}) {
       }
     } else {
       userProfileNameInput.value = profile.name;
+    }
+  }
+  if (userProfilePhoneInput) {
+    if (preserveTarget === userProfilePhoneInput) {
+      const start = userProfilePhoneInput.selectionStart;
+      const end = userProfilePhoneInput.selectionEnd;
+      userProfilePhoneInput.value = profile.phone;
+      try {
+        userProfilePhoneInput.setSelectionRange(start, end);
+      } catch (error) {
+        void error;
+      }
+    } else {
+      userProfilePhoneInput.value = profile.phone;
+    }
+  }
+  if (userProfileEmailInput) {
+    if (preserveTarget === userProfileEmailInput) {
+      const start = userProfileEmailInput.selectionStart;
+      const end = userProfileEmailInput.selectionEnd;
+      userProfileEmailInput.value = profile.email;
+      try {
+        userProfileEmailInput.setSelectionRange(start, end);
+      } catch (error) {
+        void error;
+      }
+    } else {
+      userProfileEmailInput.value = profile.email;
     }
   }
   if (userProfileAvatarContainer) {
@@ -16596,15 +16658,17 @@ function loadUserProfileState() {
       if (loaded && typeof loaded === 'object') {
         userProfileState = {
           name: typeof loaded.name === 'string' ? loaded.name : '',
-          avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
+          avatar: typeof loaded.avatar === 'string' ? loaded.avatar : '',
+          phone: typeof loaded.phone === 'string' ? loaded.phone : '',
+          email: typeof loaded.email === 'string' ? loaded.email : ''
         };
       } else {
-        userProfileState = { name: '', avatar: '' };
+        userProfileState = { name: '', avatar: '', phone: '', email: '' };
       }
     }
   } catch (error) {
     console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', avatar: '' };
+    userProfileState = { name: '', avatar: '', phone: '', email: '' };
   }
   userProfileDirty = false;
   userProfilePendingAnnouncement = false;
@@ -16623,8 +16687,14 @@ function persistUserProfileState(options = {}) {
     }
   }
   userProfileDirty = false;
-  const isNameActive = typeof document !== 'undefined' && document.activeElement === userProfileNameInput;
-  applyUserProfileToDom({ preserveSelection: isNameActive });
+  const activeElement = typeof document !== 'undefined' ? document.activeElement : null;
+  const preserveTarget =
+    activeElement === userProfileNameInput
+      || activeElement === userProfilePhoneInput
+      || activeElement === userProfileEmailInput
+      ? activeElement
+      : null;
+  applyUserProfileToDom({ preserveSelectionTarget: preserveTarget });
   if (options && options.announce) {
     announceContactsMessage(getContactsText('userProfileSaved', 'Profile saved.'));
     userProfilePendingAnnouncement = false;
@@ -16638,16 +16708,37 @@ function handleUserProfileNameInput() {
   if (rawValue.trim() === userProfileState.name.trim()) {
     return;
   }
-  userProfileState = {
-    name: rawValue,
-    avatar: userProfileState.avatar || ''
-  };
+  assignUserProfileState({ name: rawValue });
   userProfileDirty = true;
   userProfilePendingAnnouncement = true;
   persistUserProfileState();
 }
 
-function handleUserProfileNameBlur() {
+function handleUserProfilePhoneInput() {
+  if (!userProfilePhoneInput) return;
+  const rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
+  if (rawValue.trim() === userProfileState.phone.trim()) {
+    return;
+  }
+  assignUserProfileState({ phone: rawValue });
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileEmailInput() {
+  if (!userProfileEmailInput) return;
+  const rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
+  if (rawValue.trim() === userProfileState.email.trim()) {
+    return;
+  }
+  assignUserProfileState({ email: rawValue });
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileFieldBlur() {
   if (!userProfileDirty && !userProfilePendingAnnouncement) {
     return;
   }
@@ -16662,10 +16753,7 @@ function handleUserProfileAvatarCleared() {
   if (!userProfileState.avatar) {
     return;
   }
-  userProfileState = {
-    name: userProfileState.name || '',
-    avatar: ''
-  };
+  assignUserProfileState({ avatar: '' });
   persistUserProfileState();
   announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
   if (isDialogOpen(avatarOptionsDialog)) {
@@ -16687,10 +16775,10 @@ function handleUserProfileAvatarButtonClick() {
     },
     onEditSave: dataUrl => {
       if (!dataUrl) return;
-      userProfileState = {
+      assignUserProfileState({
         name: userProfileState.name || userProfileNameInput?.value || '',
         avatar: dataUrl
-      };
+      });
       persistUserProfileState();
       announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
       closeAvatarOptionsDialog();
@@ -16705,10 +16793,10 @@ function handleUserProfileAvatarInputChange() {
     return;
   }
   readAvatarFile(file, dataUrl => {
-    userProfileState = {
+    assignUserProfileState({
       name: userProfileState.name || '',
       avatar: dataUrl
-    };
+    });
     persistUserProfileState();
     announceContactsMessage(getContactsText('avatarUpdated', 'Profile photo updated.'));
     if (isDialogOpen(avatarOptionsDialog)) {
@@ -17538,7 +17626,15 @@ function initializeContactsModule() {
 
   if (userProfileNameInput) {
     userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
-    userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+    userProfileNameInput.addEventListener('blur', handleUserProfileFieldBlur);
+  }
+  if (userProfilePhoneInput) {
+    userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);
+    userProfilePhoneInput.addEventListener('blur', handleUserProfileFieldBlur);
+  }
+  if (userProfileEmailInput) {
+    userProfileEmailInput.addEventListener('input', handleUserProfileEmailInput);
+    userProfileEmailInput.addEventListener('blur', handleUserProfileFieldBlur);
   }
   if (userProfileAvatarButton) {
     userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);

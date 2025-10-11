@@ -908,6 +908,7 @@
         highlight: '#contactsUserProfile',
         focus: '#userProfileName',
         ensureContacts: true,
+        forceFloating: true,
         size: 'large',
       },
       {
@@ -1438,6 +1439,7 @@
     const viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
     const targetElement = target || getTargetElement(currentStep);
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
+    const forceFloating = Boolean(currentStep && currentStep.forceFloating);
     const cardRect = cardEl.getBoundingClientRect();
     const scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
     const scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
@@ -1453,7 +1455,7 @@
     let left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     let placement = 'floating';
 
-    if (targetElement && resolvedRect) {
+    if (!forceFloating && targetElement && resolvedRect) {
       const rect = resolvedRect;
       const targetTop = rect.top + scrollY;
       const targetLeft = rect.left + scrollX;
@@ -1989,71 +1991,249 @@
     }
 
     const profileInput = DOCUMENT.getElementById('userProfileName');
+    const profileLabel = DOCUMENT.getElementById('userProfileNameLabel');
+    const phoneInput = DOCUMENT.getElementById('userProfilePhone');
+    const phoneLabel = DOCUMENT.getElementById('userProfilePhoneLabel');
+    const emailInput = DOCUMENT.getElementById('userProfileEmail');
+    const emailLabel = DOCUMENT.getElementById('userProfileEmailLabel');
+    const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
+    const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
+    const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Updates here sync instantly with the Contacts dialog and save offline with your projects.';
+    intro.textContent = 'Updates here sync instantly with the Contacts dialog and save offline with your projects. Add your display name, photo, phone and email so exports credit the right owner.';
     fragment.appendChild(intro);
 
-    const group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
+    const avatarGroup = DOCUMENT.createElement('div');
+    avatarGroup.className = 'onboarding-avatar-group';
+    const avatarPreview = DOCUMENT.createElement('div');
+    avatarPreview.className = 'onboarding-avatar-preview';
+    avatarGroup.appendChild(avatarPreview);
 
-    const inputId = getProxyControlId('user-profile-name');
-    const label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', inputId);
-    label.textContent = 'Display name';
-    group.appendChild(label);
-
-    const proxyInput = DOCUMENT.createElement('input');
-    proxyInput.type = 'text';
-    proxyInput.id = inputId;
-    proxyInput.className = 'onboarding-field-input';
-    proxyInput.placeholder = 'e.g. Alex Rivera';
-    proxyInput.autocomplete = 'name';
-    proxyInput.value = profileInput && typeof profileInput.value === 'string'
-      ? profileInput.value
-      : '';
-
-    const syncFromTarget = () => {
-      if (!profileInput) {
-        return;
-      }
-      if (proxyInput.value !== profileInput.value) {
-        proxyInput.value = profileInput.value || '';
-      }
+    const renderAvatarInitial = (value) => {
+      const span = DOCUMENT.createElement('span');
+      span.className = 'contact-card-avatar-initial';
+      span.textContent = value || '•';
+      avatarPreview.appendChild(span);
     };
 
-    const syncToTarget = () => {
-      if (!profileInput) {
-        return;
-      }
-      if (profileInput.value !== proxyInput.value) {
-        profileInput.value = proxyInput.value;
-        dispatchSyntheticEvent(profileInput, 'input');
-        dispatchSyntheticEvent(profileInput, 'change');
-      }
+    const getNameInitial = () => {
+      const raw = profileInput && typeof profileInput.value === 'string'
+        ? profileInput.value.trim()
+        : '';
+      return raw ? raw.charAt(0).toUpperCase() : '•';
     };
 
-    proxyInput.addEventListener('input', syncToTarget);
-    proxyInput.addEventListener('change', syncToTarget);
-    registerCleanup(() => {
-      proxyInput.removeEventListener('input', syncToTarget);
-      proxyInput.removeEventListener('change', syncToTarget);
-    });
+    const updateAvatarPreview = () => {
+      while (avatarPreview.firstChild) {
+        avatarPreview.removeChild(avatarPreview.firstChild);
+      }
+      if (avatarContainer) {
+        const visual = avatarContainer.querySelector('.contact-card-avatar-visual');
+        if (visual) {
+          const currentImage = visual.querySelector('img');
+          if (currentImage && currentImage.src) {
+            const img = DOCUMENT.createElement('img');
+            img.src = currentImage.src;
+            img.alt = '';
+            avatarPreview.appendChild(img);
+            return;
+          }
+          const text = visual.textContent ? visual.textContent.trim() : '';
+          if (text) {
+            renderAvatarInitial(text.charAt(0).toUpperCase());
+            return;
+          }
+        }
+      }
+      renderAvatarInitial(getNameInitial());
+    };
 
-    if (profileInput) {
-      profileInput.addEventListener('input', syncFromTarget);
-      profileInput.addEventListener('change', syncFromTarget);
-      registerCleanup(() => {
-        profileInput.removeEventListener('input', syncFromTarget);
-        profileInput.removeEventListener('change', syncFromTarget);
-      });
+    updateAvatarPreview();
+
+    let avatarObserver = null;
+    if (GLOBAL_SCOPE.MutationObserver && avatarContainer) {
+      try {
+        avatarObserver = new GLOBAL_SCOPE.MutationObserver(() => updateAvatarPreview());
+        avatarObserver.observe(avatarContainer, { childList: true, subtree: true, attributes: true });
+        registerCleanup(() => {
+          try {
+            avatarObserver.disconnect();
+          } catch (error) {
+            void error;
+          }
+        });
+      } catch (error) {
+        void error;
+      }
     }
 
-    group.appendChild(proxyInput);
-    fragment.appendChild(group);
+    const avatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
+      ? avatarButtonLabel.textContent
+      : 'Update profile photo';
+    const avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
+    avatarAction.textContent = avatarActionLabel;
+    const handleAvatarActionClick = () => {
+      if (avatarButton && typeof avatarButton.click === 'function') {
+        try {
+          avatarButton.click();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not open avatar options.', error);
+        }
+      }
+    };
+    avatarAction.addEventListener('click', handleAvatarActionClick);
+    registerCleanup(() => {
+      avatarAction.removeEventListener('click', handleAvatarActionClick);
+    });
+    avatarGroup.appendChild(avatarAction);
+    fragment.appendChild(avatarGroup);
+
+    const createProxyField = (options) => {
+      const {
+        fieldKey,
+        labelText,
+        placeholder,
+        target,
+        type,
+        autocomplete,
+        onAfterSync,
+      } = options || {};
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const proxyId = getProxyControlId(fieldKey);
+      const label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', proxyId);
+      label.textContent = labelText;
+      group.appendChild(label);
+
+      const proxyInput = DOCUMENT.createElement('input');
+      proxyInput.type = type || 'text';
+      proxyInput.id = proxyId;
+      proxyInput.className = 'onboarding-field-input';
+      if (typeof placeholder === 'string' && placeholder) {
+        proxyInput.placeholder = placeholder;
+      }
+      if (typeof autocomplete === 'string' && autocomplete) {
+        proxyInput.autocomplete = autocomplete;
+      }
+      proxyInput.value = target && typeof target.value === 'string' ? target.value : '';
+
+      const syncFromTarget = () => {
+        if (!target) {
+          return;
+        }
+        if (proxyInput.value !== target.value) {
+          proxyInput.value = target.value || '';
+        }
+        if (typeof onAfterSync === 'function') {
+          onAfterSync('from');
+        }
+      };
+
+      const syncToTarget = () => {
+        if (!target) {
+          return;
+        }
+        if (target.value !== proxyInput.value) {
+          target.value = proxyInput.value;
+          dispatchSyntheticEvent(target, 'input');
+          dispatchSyntheticEvent(target, 'change');
+        }
+        if (typeof onAfterSync === 'function') {
+          onAfterSync('to');
+        }
+      };
+
+      proxyInput.addEventListener('input', syncToTarget);
+      proxyInput.addEventListener('change', syncToTarget);
+      registerCleanup(() => {
+        proxyInput.removeEventListener('input', syncToTarget);
+        proxyInput.removeEventListener('change', syncToTarget);
+      });
+
+      if (target) {
+        target.addEventListener('input', syncFromTarget);
+        target.addEventListener('change', syncFromTarget);
+        registerCleanup(() => {
+          target.removeEventListener('input', syncFromTarget);
+          target.removeEventListener('change', syncFromTarget);
+        });
+      } else {
+        proxyInput.disabled = true;
+        proxyInput.setAttribute('aria-disabled', 'true');
+      }
+
+      group.appendChild(proxyInput);
+      fragment.appendChild(group);
+    };
+
+    const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
+      ? profileLabel.textContent
+      : 'Display name';
+    let resolvedNamePlaceholder = 'e.g. Alex Rivera';
+    if (profileInput && typeof profileInput.getAttribute === 'function') {
+      const placeholderValue = profileInput.getAttribute('placeholder');
+      if (typeof placeholderValue === 'string' && placeholderValue) {
+        resolvedNamePlaceholder = placeholderValue;
+      }
+    }
+
+    createProxyField({
+      fieldKey: 'user-profile-name',
+      labelText: resolvedNameLabel,
+      placeholder: resolvedNamePlaceholder,
+      target: profileInput,
+      type: 'text',
+      autocomplete: 'name',
+      onAfterSync: () => updateAvatarPreview(),
+    });
+
+    const resolvedPhoneLabel = phoneLabel && typeof phoneLabel.textContent === 'string'
+      ? phoneLabel.textContent
+      : 'Phone number';
+    let resolvedPhonePlaceholder = '';
+    if (phoneInput && typeof phoneInput.getAttribute === 'function') {
+      const phonePlaceholder = phoneInput.getAttribute('placeholder');
+      if (typeof phonePlaceholder === 'string' && phonePlaceholder) {
+        resolvedPhonePlaceholder = phonePlaceholder;
+      }
+    }
+
+    createProxyField({
+      fieldKey: 'user-profile-phone',
+      labelText: resolvedPhoneLabel,
+      placeholder: resolvedPhonePlaceholder,
+      target: phoneInput,
+      type: 'tel',
+      autocomplete: 'tel',
+    });
+
+    const resolvedEmailLabel = emailLabel && typeof emailLabel.textContent === 'string'
+      ? emailLabel.textContent
+      : 'Email address';
+    let resolvedEmailPlaceholder = '';
+    if (emailInput && typeof emailInput.getAttribute === 'function') {
+      const emailPlaceholder = emailInput.getAttribute('placeholder');
+      if (typeof emailPlaceholder === 'string' && emailPlaceholder) {
+        resolvedEmailPlaceholder = emailPlaceholder;
+      }
+    }
+
+    createProxyField({
+      fieldKey: 'user-profile-email',
+      labelText: resolvedEmailLabel,
+      placeholder: resolvedEmailPlaceholder,
+      target: emailInput,
+      type: 'email',
+      autocomplete: 'email',
+    });
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
