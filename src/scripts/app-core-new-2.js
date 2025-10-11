@@ -9718,6 +9718,101 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const FEATURE_SEARCH_SMART_QUOTE_PATTERN = /[“”„«»]/g;
 
+    const FEATURE_SEARCH_STOP_WORDS = new Set([
+      'how',
+      'do',
+      'does',
+      'did',
+      'done',
+      'doing',
+      'can',
+      'cant',
+      'cannot',
+      'should',
+      'could',
+      'would',
+      'please',
+      'need',
+      'needs',
+      'needing',
+      'want',
+      'wants',
+      'wanting',
+      'i',
+      'im',
+      'ive',
+      'ill',
+      'id',
+      'we',
+      'were',
+      'weve',
+      'well',
+      'you',
+      'youre',
+      'youve',
+      'youll',
+      'they',
+      'theyre',
+      'theyve',
+      'them',
+      'us',
+      'me',
+      'my',
+      'mine',
+      'our',
+      'ours',
+      'your',
+      'yours',
+      'their',
+      'theirs',
+      'the',
+      'and',
+      'for',
+      'with',
+      'about',
+      'what',
+      'where',
+      'when',
+      'why',
+      'which',
+      'who',
+      'whom',
+      'whose',
+      'this',
+      'that',
+      'these',
+      'those',
+      'also',
+      'still',
+      'really',
+      'very',
+      'just',
+      'maybe',
+      'perhaps',
+      'again',
+      'back'
+    ]);
+
+    const FEATURE_SEARCH_STOP_WORD_MIN_LENGTH = 3;
+
+    const filterFeatureSearchQueryTokens = tokens => {
+      if (!Array.isArray(tokens) || tokens.length === 0) {
+        return [];
+      }
+
+      const filtered = tokens.filter(token => {
+        if (!token) {
+          return false;
+        }
+        if (token.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
+          return true;
+        }
+        return !FEATURE_SEARCH_STOP_WORDS.has(token);
+      });
+
+      return filtered.length > 0 ? filtered : tokens.filter(Boolean);
+    };
+
     const normalizeFeatureSearchQuotes = value =>
       typeof value === 'string'
         ? value.replace(FEATURE_SEARCH_SMART_QUOTE_PATTERN, '"')
@@ -10024,7 +10119,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? trimmed.split(/[^a-z0-9]+/i).filter(Boolean)
         : [];
       const queryKey = trimmed ? searchKey(trimmed) : '';
-      const queryTokens = trimmed ? searchTokens(trimmed) : [];
+      const rawQueryTokens = trimmed ? searchTokens(trimmed) : [];
+      const queryTokens = filterFeatureSearchQueryTokens(rawQueryTokens);
       const highlightTokens = [
         ...highlightSegments,
         ...queryTokens,

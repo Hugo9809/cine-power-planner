@@ -73,9 +73,11 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    and anything crews used recently before keyword-only hits, that starting with `recent` or
    `history` searches just the usage history before expanding to the full catalog, that wrapping a phrase in double
    quotes forces an exact match, and that quoted phrases rise to the top so crews know the full
-   control name they typed will surface first even when synonyms exist. Call out the expanded
-   typo recovery so near-miss queries up to two characters off (for example, `backpu` or `savf`)
-   still land on the intended command without losing the operator's place.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
+   control name they typed will surface first even when synonyms exist. Note that conversational
+   filler words such as “how do I” are ignored automatically so natural questions still surface
+   the critical keywords. Call out the expanded typo recovery so near-miss queries up to two
+   characters off (for example, `backpu` or `savf`) still land on the intended command without
+   losing the operator's place.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
    The guided tutorial now includes a dedicated Quick safeguards backup step. Document the
    Settings → Data & Storage → Quick safeguards flow in every locale so crews always capture a
    fresh offline `planner-backup.json` before the tutorial continues to Backup & Restore, and
