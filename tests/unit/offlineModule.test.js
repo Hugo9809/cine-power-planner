@@ -108,7 +108,7 @@ describe('cineOffline module', () => {
     expect(register).toHaveBeenCalledTimes(2);
   });
 
-  test('reloadApp clears UI caches, unregisters service workers, clears caches and triggers reload', async () => {
+  test('reloadApp clears UI caches, unregisters service workers, clears caches, warms reload navigation and triggers reload', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
 
@@ -119,16 +119,38 @@ describe('cineOffline module', () => {
       },
     };
 
+    const cacheKey = 'cine-power-planner-primary';
     const cachesMock = {
-      keys: jest.fn(() => Promise.resolve(['primary-cache'])),
+      keys: jest.fn(() => Promise.resolve([cacheKey])),
       delete: jest.fn(() => Promise.resolve(true)),
     };
 
+    const responseClone = { bodyUsed: false, text: jest.fn(() => Promise.resolve('<html></html>')) };
+    const fetchMock = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      }),
+    );
+
     const reloadWindow = jest.fn(() => true);
+
+    const windowMock = {
+      location: {
+        href: 'https://example.test/app?foo=bar',
+        replace: jest.fn(),
+        assign: jest.fn(),
+        reload: jest.fn(),
+      },
+    };
 
     const result = await offline.reloadApp({
       navigator: navigatorMock,
       caches: cachesMock,
+      fetch: fetchMock,
+      window: windowMock,
       reloadWindow,
     });
 
@@ -136,8 +158,23 @@ describe('cineOffline module', () => {
     expect(navigatorMock.serviceWorker.getRegistrations).toHaveBeenCalledTimes(1);
     expect(unregister).toHaveBeenCalledTimes(1);
     expect(cachesMock.keys).toHaveBeenCalledTimes(1);
-    expect(cachesMock.delete).toHaveBeenCalledWith('primary-cache');
+    expect(cachesMock.delete).toHaveBeenCalledWith(cacheKey);
     expect(reloadWindow).toHaveBeenCalledTimes(1);
+
+    await new Promise(resolve => setTimeout(resolve, 250));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const warmupUrl = fetchMock.mock.calls[0][0];
+    expect(warmupUrl).toMatch(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/);
+
+    const reloadArgs = reloadWindow.mock.calls[0];
+    expect(reloadArgs[1]).toEqual(
+      expect.objectContaining({
+        nextHref: expect.stringMatching(/^https:\/\/example\.test\/app\?foo=bar&forceReload=/),
+      }),
+    );
+
     expect(result).toEqual({
       uiCacheCleared: true,
       serviceWorkersUnregistered: true,
