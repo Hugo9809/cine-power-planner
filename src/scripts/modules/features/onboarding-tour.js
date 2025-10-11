@@ -641,6 +641,12 @@
   }
 
   function evaluateOwnGearOpenState() {
+    if (!ownGearDialogRef) {
+      const dialog = getElement('#ownGearDialog');
+      if (dialog) {
+        ownGearDialogRef = dialog;
+      }
+    }
     try {
       return isOwnGearDialogVisible();
     } catch (error) {
