@@ -905,9 +905,8 @@
       },
       {
         key: 'userProfile',
-        highlight: '#contactsUserProfile',
-        focus: '#userProfileName',
-        ensureContacts: true,
+        highlight: '[data-onboarding-proxy="user-profile-name"]',
+        focus: '[data-onboarding-proxy="user-profile-name"]',
         size: 'large',
       },
       {
@@ -1988,76 +1987,251 @@
       return false;
     }
 
-    const profileInput = DOCUMENT.getElementById('userProfileName');
+    interactionContainerEl.setAttribute('data-onboarding-interaction', 'user-profile');
+    registerCleanup(() => {
+      if (interactionContainerEl) {
+        interactionContainerEl.removeAttribute('data-onboarding-interaction');
+      }
+    });
+
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Updates here sync instantly with the Contacts dialog and save offline with your projects.';
+    intro.textContent = 'Add your contact details here. Everything stays synced with Contacts and is stored safely offline.';
     fragment.appendChild(intro);
 
-    const group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
+    const avatarGroup = DOCUMENT.createElement('div');
+    avatarGroup.className = 'onboarding-field-group onboarding-profile-avatar-group';
 
-    const inputId = getProxyControlId('user-profile-name');
-    const label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', inputId);
-    label.textContent = 'Display name';
-    group.appendChild(label);
+    const avatarPreview = DOCUMENT.createElement('div');
+    avatarPreview.className = 'contact-card-avatar onboarding-avatar-preview';
+    const avatarPreviewVisual = DOCUMENT.createElement('div');
+    avatarPreviewVisual.className = 'contact-card-avatar-visual';
+    avatarPreview.appendChild(avatarPreviewVisual);
+    avatarGroup.appendChild(avatarPreview);
 
-    const proxyInput = DOCUMENT.createElement('input');
-    proxyInput.type = 'text';
-    proxyInput.id = inputId;
-    proxyInput.className = 'onboarding-field-input';
-    proxyInput.placeholder = 'e.g. Alex Rivera';
-    proxyInput.autocomplete = 'name';
-    proxyInput.value = profileInput && typeof profileInput.value === 'string'
-      ? profileInput.value
-      : '';
+    const avatarActions = DOCUMENT.createElement('div');
+    avatarActions.className = 'onboarding-avatar-actions';
 
-    const syncFromTarget = () => {
-      if (!profileInput) {
-        return;
-      }
-      if (proxyInput.value !== profileInput.value) {
-        proxyInput.value = profileInput.value || '';
+    const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
+    const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    const changeButton = DOCUMENT.createElement('button');
+    changeButton.type = 'button';
+    changeButton.className = 'onboarding-interaction-button onboarding-avatar-change';
+    changeButton.textContent = avatarButtonLabel && avatarButtonLabel.textContent
+      ? avatarButtonLabel.textContent
+      : 'Change photo';
+    const handleChangeClick = () => {
+      if (avatarButton) {
+        dispatchSyntheticEvent(avatarButton, 'click');
       }
     };
-
-    const syncToTarget = () => {
-      if (!profileInput) {
-        return;
-      }
-      if (profileInput.value !== proxyInput.value) {
-        profileInput.value = proxyInput.value;
-        dispatchSyntheticEvent(profileInput, 'input');
-        dispatchSyntheticEvent(profileInput, 'change');
-      }
-    };
-
-    proxyInput.addEventListener('input', syncToTarget);
-    proxyInput.addEventListener('change', syncToTarget);
+    changeButton.addEventListener('click', handleChangeClick);
     registerCleanup(() => {
-      proxyInput.removeEventListener('input', syncToTarget);
-      proxyInput.removeEventListener('change', syncToTarget);
+      changeButton.removeEventListener('click', handleChangeClick);
     });
+    avatarActions.appendChild(changeButton);
 
-    if (profileInput) {
-      profileInput.addEventListener('input', syncFromTarget);
-      profileInput.addEventListener('change', syncFromTarget);
-      registerCleanup(() => {
-        profileInput.removeEventListener('input', syncFromTarget);
-        profileInput.removeEventListener('change', syncFromTarget);
-      });
+    const avatarClearButton = DOCUMENT.getElementById('userProfileAvatarClear');
+    const removeButton = DOCUMENT.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'onboarding-interaction-button onboarding-avatar-remove';
+    const clearLabel = avatarClearButton && avatarClearButton.textContent
+      ? avatarClearButton.textContent
+      : (avatarClearButton && avatarClearButton.getAttribute('aria-label')) || 'Remove photo';
+    removeButton.textContent = clearLabel;
+    const handleRemoveClick = () => {
+      if (avatarClearButton) {
+        dispatchSyntheticEvent(avatarClearButton, 'click');
+      }
+    };
+    removeButton.addEventListener('click', handleRemoveClick);
+    registerCleanup(() => {
+      removeButton.removeEventListener('click', handleRemoveClick);
+    });
+    avatarActions.appendChild(removeButton);
+
+    avatarGroup.appendChild(avatarActions);
+    fragment.appendChild(avatarGroup);
+
+    const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
+    const avatarVisual = avatarContainer
+      ? avatarContainer.querySelector('.contact-card-avatar-visual')
+      : null;
+
+    const syncAvatarPreview = () => {
+      if (!avatarVisual) {
+        avatarPreviewVisual.removeAttribute('style');
+        avatarPreviewVisual.textContent = '';
+        avatarPreviewVisual.removeAttribute('data-initial');
+        return;
+      }
+      const inlineStyle = avatarVisual.getAttribute('style');
+      if (inlineStyle) {
+        avatarPreviewVisual.setAttribute('style', inlineStyle);
+      } else {
+        avatarPreviewVisual.removeAttribute('style');
+      }
+      const initial = avatarVisual.getAttribute('data-initial');
+      if (initial) {
+        avatarPreviewVisual.setAttribute('data-initial', initial);
+      } else {
+        avatarPreviewVisual.removeAttribute('data-initial');
+      }
+      avatarPreviewVisual.textContent = avatarVisual.textContent || '';
+
+      if (avatarClearButton) {
+        const disabled = avatarClearButton.disabled
+          || avatarClearButton.getAttribute('aria-disabled') === 'true';
+        if (disabled) {
+          removeButton.setAttribute('disabled', '');
+          removeButton.setAttribute('aria-disabled', 'true');
+        } else {
+          removeButton.removeAttribute('disabled');
+          removeButton.setAttribute('aria-disabled', 'false');
+        }
+      }
+    };
+
+    syncAvatarPreview();
+
+    if (typeof MutationObserver === 'function') {
+      if (avatarVisual) {
+        const observer = new MutationObserver(syncAvatarPreview);
+        observer.observe(avatarVisual, {
+          attributes: true,
+          attributeFilter: ['style', 'data-initial'],
+          characterData: true,
+          childList: true,
+          subtree: true,
+        });
+        registerCleanup(() => observer.disconnect());
+      }
+      if (avatarClearButton) {
+        const clearObserver = new MutationObserver(syncAvatarPreview);
+        clearObserver.observe(avatarClearButton, {
+          attributes: true,
+          attributeFilter: ['disabled', 'aria-disabled'],
+        });
+        registerCleanup(() => clearObserver.disconnect());
+      }
     }
 
-    group.appendChild(proxyInput);
-    fragment.appendChild(group);
+    const createProxyField = (config) => {
+      const target = DOCUMENT.getElementById(config.targetId);
+      if (!target) {
+        return null;
+      }
+      const labelSource = config.labelId ? DOCUMENT.getElementById(config.labelId) : null;
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const proxyId = getProxyControlId(config.proxyKey);
+      const proxyLabel = DOCUMENT.createElement('label');
+      proxyLabel.className = 'onboarding-field-label';
+      proxyLabel.setAttribute('for', proxyId);
+      proxyLabel.textContent = labelSource && labelSource.textContent
+        ? labelSource.textContent
+        : config.fallbackLabel;
+      group.appendChild(proxyLabel);
+
+      const proxyInput = DOCUMENT.createElement('input');
+      proxyInput.type = config.type || 'text';
+      proxyInput.id = proxyId;
+      proxyInput.className = 'onboarding-field-input';
+      if (config.autocomplete) {
+        proxyInput.setAttribute('autocomplete', config.autocomplete);
+      }
+      if (config.inputmode) {
+        proxyInput.setAttribute('inputmode', config.inputmode);
+      }
+      proxyInput.placeholder = target.getAttribute('placeholder') || config.placeholder || '';
+      proxyInput.value = typeof target.value === 'string' ? target.value : '';
+      if (config.datasetKey) {
+        proxyInput.setAttribute('data-onboarding-proxy', config.datasetKey);
+      }
+
+      const syncFromTarget = () => {
+        if (proxyInput.value !== target.value) {
+          proxyInput.value = target.value || '';
+        }
+      };
+
+      const syncToTarget = () => {
+        if (target.value !== proxyInput.value) {
+          target.value = proxyInput.value;
+          dispatchSyntheticEvent(target, 'input');
+          dispatchSyntheticEvent(target, 'change');
+        }
+      };
+
+      proxyInput.addEventListener('input', syncToTarget);
+      proxyInput.addEventListener('change', syncToTarget);
+      registerCleanup(() => {
+        proxyInput.removeEventListener('input', syncToTarget);
+        proxyInput.removeEventListener('change', syncToTarget);
+      });
+
+      target.addEventListener('input', syncFromTarget);
+      target.addEventListener('change', syncFromTarget);
+      registerCleanup(() => {
+        target.removeEventListener('input', syncFromTarget);
+        target.removeEventListener('change', syncFromTarget);
+      });
+
+      group.appendChild(proxyInput);
+      fragment.appendChild(group);
+      return proxyInput;
+    };
+
+    createProxyField({
+      targetId: 'userProfileName',
+      labelId: 'userProfileNameLabel',
+      fallbackLabel: 'Display name',
+      placeholder: 'e.g. Alex Rivera',
+      type: 'text',
+      autocomplete: 'name',
+      proxyKey: 'user-profile-name',
+      datasetKey: 'user-profile-name',
+    });
+
+    createProxyField({
+      targetId: 'userProfileRole',
+      labelId: 'userProfileRoleLabel',
+      fallbackLabel: 'Role or title',
+      placeholder: 'Producer, 1st AC…',
+      type: 'text',
+      autocomplete: 'organization-title',
+      proxyKey: 'user-profile-role',
+      datasetKey: 'user-profile-role',
+    });
+
+    createProxyField({
+      targetId: 'userProfilePhone',
+      labelId: 'userProfilePhoneLabel',
+      fallbackLabel: 'Phone number',
+      placeholder: 'Mobile or desk',
+      type: 'tel',
+      autocomplete: 'tel',
+      inputmode: 'tel',
+      proxyKey: 'user-profile-phone',
+      datasetKey: 'user-profile-phone',
+    });
+
+    createProxyField({
+      targetId: 'userProfileEmail',
+      labelId: 'userProfileEmailLabel',
+      fallbackLabel: 'Email address',
+      placeholder: 'name@example.com',
+      type: 'email',
+      autocomplete: 'email',
+      proxyKey: 'user-profile-email',
+      datasetKey: 'user-profile-email',
+    });
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next to revisit this later—Contacts stays available from the sidebar without affecting tutorial progress.';
+    skipHint.textContent = 'You can update these anytime from Contacts in the sidebar without interrupting the tutorial.';
     fragment.appendChild(skipHint);
 
     while (interactionContainerEl.firstChild) {

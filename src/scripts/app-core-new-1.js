@@ -13634,6 +13634,24 @@ function setLanguage(lang) {
     if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
       userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
     }
+    if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+      userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+    }
+    if (userProfileRoleInput && contactsTexts.userProfileRolePlaceholder) {
+      userProfileRoleInput.setAttribute('placeholder', contactsTexts.userProfileRolePlaceholder);
+    }
+    if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
+      userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
+    }
+    if (userProfilePhoneInput && contactsTexts.userProfilePhonePlaceholder) {
+      userProfilePhoneInput.setAttribute('placeholder', contactsTexts.userProfilePhonePlaceholder);
+    }
+    if (userProfileEmailLabel && contactsTexts.userProfileEmailLabel) {
+      userProfileEmailLabel.textContent = contactsTexts.userProfileEmailLabel;
+    }
+    if (userProfileEmailInput && contactsTexts.userProfileEmailPlaceholder) {
+      userProfileEmailInput.setAttribute('placeholder', contactsTexts.userProfileEmailPlaceholder);
+    }
     if (userProfileHint && contactsTexts.userProfileHint) {
       userProfileHint.textContent = contactsTexts.userProfileHint;
     }
@@ -13938,6 +13956,12 @@ var userProfileHeading = null;
 var userProfileDescription = null;
 var userProfileNameInput = null;
 var userProfileNameLabel = null;
+var userProfileRoleInput = null;
+var userProfileRoleLabel = null;
+var userProfilePhoneInput = null;
+var userProfilePhoneLabel = null;
+var userProfileEmailInput = null;
+var userProfileEmailLabel = null;
 var userProfileHint = null;
 var userProfileAvatarContainer = null;
 var userProfileAvatarButton = null;
@@ -13990,6 +14014,12 @@ function resolveContactsDomRefs() {
   userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
   userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
   userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfileRoleInput = userProfileRoleInput || document.getElementById('userProfileRole');
+  userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
+  userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
+  userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
+  userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
+  userProfileEmailLabel = userProfileEmailLabel || document.getElementById('userProfileEmailLabel');
   userProfileHint = userProfileHint || document.getElementById('userProfileHint');
   userProfileAvatarContainer = userProfileAvatarContainer || document.getElementById('userProfileAvatar');
   userProfileAvatarButton = userProfileAvatarButton || document.getElementById('userProfileAvatarButton');
@@ -15905,7 +15935,7 @@ const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', avatar: '' };
+var userProfileState = { name: '', role: '', phone: '', email: '', avatar: '' };
 var userProfileDirty = false;
 var userProfilePendingAnnouncement = false;
 
@@ -16557,8 +16587,11 @@ function getContactsSnapshot() {
 
 function getUserProfileSnapshot() {
   const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+  const role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
+  const phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
+  const email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
   const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
-  return { name, avatar };
+  return { name, role, phone, email, avatar };
 }
 
 function applyUserProfileToDom(options = {}) {
@@ -16579,6 +16612,15 @@ function applyUserProfileToDom(options = {}) {
       userProfileNameInput.value = profile.name;
     }
   }
+  if (userProfileRoleInput) {
+    userProfileRoleInput.value = profile.role || '';
+  }
+  if (userProfilePhoneInput) {
+    userProfilePhoneInput.value = profile.phone || '';
+  }
+  if (userProfileEmailInput) {
+    userProfileEmailInput.value = profile.email || '';
+  }
   if (userProfileAvatarContainer) {
     updateAvatarVisual(userProfileAvatarContainer, profile.avatar || '', profile.name, 'contact-card-avatar-initial');
   }
@@ -16596,15 +16638,18 @@ function loadUserProfileState() {
       if (loaded && typeof loaded === 'object') {
         userProfileState = {
           name: typeof loaded.name === 'string' ? loaded.name : '',
+          role: typeof loaded.role === 'string' ? loaded.role : '',
+          phone: typeof loaded.phone === 'string' ? loaded.phone : '',
+          email: typeof loaded.email === 'string' ? loaded.email : '',
           avatar: typeof loaded.avatar === 'string' ? loaded.avatar : ''
         };
       } else {
-        userProfileState = { name: '', avatar: '' };
+        userProfileState = { name: '', role: '', phone: '', email: '', avatar: '' };
       }
     }
   } catch (error) {
     console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', avatar: '' };
+    userProfileState = { name: '', role: '', phone: '', email: '', avatar: '' };
   }
   userProfileDirty = false;
   userProfilePendingAnnouncement = false;
@@ -16639,8 +16684,53 @@ function handleUserProfileNameInput() {
     return;
   }
   userProfileState = {
-    name: rawValue,
-    avatar: userProfileState.avatar || ''
+    ...userProfileState,
+    name: rawValue
+  };
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileRoleInput() {
+  if (!userProfileRoleInput) return;
+  const rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
+  if (rawValue.trim() === (userProfileState.role || '').trim()) {
+    return;
+  }
+  userProfileState = {
+    ...userProfileState,
+    role: rawValue
+  };
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfilePhoneInput() {
+  if (!userProfilePhoneInput) return;
+  const rawValue = typeof userProfilePhoneInput.value === 'string' ? userProfilePhoneInput.value : '';
+  if (rawValue.trim() === (userProfileState.phone || '').trim()) {
+    return;
+  }
+  userProfileState = {
+    ...userProfileState,
+    phone: rawValue
+  };
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileEmailInput() {
+  if (!userProfileEmailInput) return;
+  const rawValue = typeof userProfileEmailInput.value === 'string' ? userProfileEmailInput.value : '';
+  if (rawValue.trim() === (userProfileState.email || '').trim()) {
+    return;
+  }
+  userProfileState = {
+    ...userProfileState,
+    email: rawValue
   };
   userProfileDirty = true;
   userProfilePendingAnnouncement = true;
@@ -16663,7 +16753,7 @@ function handleUserProfileAvatarCleared() {
     return;
   }
   userProfileState = {
-    name: userProfileState.name || '',
+    ...userProfileState,
     avatar: ''
   };
   persistUserProfileState();
@@ -16688,7 +16778,7 @@ function handleUserProfileAvatarButtonClick() {
     onEditSave: dataUrl => {
       if (!dataUrl) return;
       userProfileState = {
-        name: userProfileState.name || userProfileNameInput?.value || '',
+        ...userProfileState,
         avatar: dataUrl
       };
       persistUserProfileState();
@@ -16706,7 +16796,7 @@ function handleUserProfileAvatarInputChange() {
   }
   readAvatarFile(file, dataUrl => {
     userProfileState = {
-      name: userProfileState.name || '',
+      ...userProfileState,
       avatar: dataUrl
     };
     persistUserProfileState();
@@ -17539,6 +17629,18 @@ function initializeContactsModule() {
   if (userProfileNameInput) {
     userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
     userProfileNameInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileRoleInput) {
+    userProfileRoleInput.addEventListener('input', handleUserProfileRoleInput);
+    userProfileRoleInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfilePhoneInput) {
+    userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);
+    userProfilePhoneInput.addEventListener('blur', handleUserProfileNameBlur);
+  }
+  if (userProfileEmailInput) {
+    userProfileEmailInput.addEventListener('input', handleUserProfileEmailInput);
+    userProfileEmailInput.addEventListener('blur', handleUserProfileNameBlur);
   }
   if (userProfileAvatarButton) {
     userProfileAvatarButton.addEventListener('click', handleUserProfileAvatarButtonClick);

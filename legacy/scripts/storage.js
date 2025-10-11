@@ -9061,15 +9061,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var name = typeof entry.name === 'string' ? entry.name.trim() : '';
+    var role = typeof entry.role === 'string' ? entry.role.trim() : '';
+    var phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+    var email = typeof entry.email === 'string' ? entry.email.trim() : '';
     var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
-    if (!name && !avatar) {
+    if (!name && !role && !phone && !email && !avatar) {
       return {
         name: '',
+        role: '',
+        phone: '',
+        email: '',
         avatar: ''
       };
     }
     return {
       name: name,
+      role: role,
+      phone: phone,
+      email: email,
       avatar: avatar
     };
   }
@@ -9084,11 +9093,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(parsed)) {
       return {
         name: '',
+        role: '',
+        phone: '',
+        email: '',
         avatar: ''
       };
     }
     return normalizeUserProfile(parsed) || {
       name: '',
+      role: '',
+      phone: '',
+      email: '',
       avatar: ''
     };
   }
@@ -9100,9 +9115,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var normalized = normalizeUserProfile(profile) || {
       name: '',
+      role: '',
+      phone: '',
+      email: '',
       avatar: ''
     };
-    if (!normalized.name && !normalized.avatar) {
+    if (!normalized.name && !normalized.role && !normalized.phone && !normalized.email && !normalized.avatar) {
       deleteFromStorage(safeStorage, USER_PROFILE_STORAGE_KEY, 'Error deleting user profile from localStorage:');
       return;
     }
