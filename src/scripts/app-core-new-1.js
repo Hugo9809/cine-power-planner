@@ -10002,7 +10002,31 @@ function setLanguage(lang) {
   }
 
   lang = normalizedLang;
+  const previousLang = currentLang;
   currentLang = lang;
+  const shouldDispatchLanguageChange = previousLang !== lang;
+  const dispatchLanguageChange = () => {
+    if (
+      typeof window !== "undefined" &&
+      typeof window.dispatchEvent === "function" &&
+      typeof Event === "function"
+    ) {
+      try {
+        window.dispatchEvent(new Event("languagechange"));
+      } catch (dispatchError) {
+        console.warn("Failed to dispatch languagechange event", dispatchError);
+      }
+    }
+  };
+  if (shouldDispatchLanguageChange) {
+    if (typeof queueMicrotask === "function") {
+      queueMicrotask(dispatchLanguageChange);
+    } else if (typeof setTimeout === "function") {
+      setTimeout(dispatchLanguageChange, 0);
+    } else {
+      dispatchLanguageChange();
+    }
+  }
   // persist selected language
   try {
     localStorage.setItem("language", lang);
