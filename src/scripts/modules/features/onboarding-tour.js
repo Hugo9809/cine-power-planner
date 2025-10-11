@@ -1010,6 +1010,9 @@
       {
         key: 'selectBattery',
         highlight: '#batterySelect',
+        cardOverlap: {
+          right: 1 / 3,
+        },
       },
       {
         key: 'results',
@@ -1797,31 +1800,55 @@
       const targetCenterX = targetLeft + rect.width / 2;
       const targetCenterY = targetTop + rect.height / 2;
 
+      const overlapConfig = currentStep && currentStep.cardOverlap ? currentStep.cardOverlap : null;
+      const clampOverlap = (value) => {
+        if (typeof value !== 'number' || Number.isNaN(value)) {
+          return 0;
+        }
+        return Math.min(Math.max(value, 0), 0.95);
+      };
+      const overlapTopFraction = overlapConfig ? clampOverlap(overlapConfig.top) : 0;
+      const overlapRightFraction = overlapConfig ? clampOverlap(overlapConfig.right) : 0;
+      const overlapBottomFraction = overlapConfig ? clampOverlap(overlapConfig.bottom) : 0;
+      const overlapLeftFraction = overlapConfig ? clampOverlap(overlapConfig.left) : 0;
+      const topOverlapOffset = rect.height * overlapTopFraction;
+      const rightOverlapOffset = rect.width * overlapRightFraction;
+      const bottomOverlapOffset = rect.height * overlapBottomFraction;
+      const leftOverlapOffset = rect.width * overlapLeftFraction;
+      const topMarginOffset = overlapTopFraction > 0 ? margin : 0;
+      const rightMarginOffset = overlapRightFraction > 0 ? margin : 0;
+      const bottomMarginOffset = overlapBottomFraction > 0 ? margin : 0;
+      const leftMarginOffset = overlapLeftFraction > 0 ? margin : 0;
+
       const options = [
         {
           name: 'bottom',
-          top: targetTop + rect.height + margin,
+          top: targetTop + rect.height + margin - bottomOverlapOffset - bottomMarginOffset,
           left: targetCenterX - cardRect.width / 2,
           fits:
-            targetTop + rect.height + margin + cardRect.height <= viewportBottom - margin,
+            targetTop + rect.height + margin + cardRect.height
+              - bottomOverlapOffset - bottomMarginOffset <= viewportBottom - margin,
         },
         {
           name: 'top',
-          top: targetTop - cardRect.height - margin,
+          top: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset,
           left: targetCenterX - cardRect.width / 2,
-          fits: targetTop - cardRect.height - margin >= minTop,
+          fits: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset >= minTop,
         },
         {
           name: 'right',
           top: targetCenterY - cardRect.height / 2,
-          left: targetLeft + rect.width + margin,
-          fits: targetLeft + rect.width + margin + cardRect.width <= viewportRight - margin,
+          left: targetLeft + rect.width + margin - rightOverlapOffset - rightMarginOffset,
+          fits:
+            targetLeft + rect.width + margin + cardRect.width
+              - rightOverlapOffset - rightMarginOffset <= viewportRight - margin,
         },
         {
           name: 'left',
           top: targetCenterY - cardRect.height / 2,
-          left: targetLeft - cardRect.width - margin,
-          fits: targetLeft - cardRect.width - margin >= minLeft,
+          left: targetLeft - cardRect.width - margin + leftOverlapOffset + leftMarginOffset,
+          fits:
+            targetLeft - cardRect.width - margin + leftOverlapOffset + leftMarginOffset >= minLeft,
         },
       ];
 
