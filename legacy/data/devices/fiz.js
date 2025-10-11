@@ -125,6 +125,7 @@
         "powerDrawWatts": 32.4,
         "internalController": false,
         "torqueNm": null,
+        "weight_g": 465,
         "gearTypes": ["0.8 mod", "0.5 mod", "0.6 mod"],
         "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
         "fizConnectors": [{

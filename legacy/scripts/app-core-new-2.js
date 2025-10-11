@@ -8762,6 +8762,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var FEATURE_SEARCH_FILTER_ALIASES = new Map([['feature', 'feature'], ['features', 'feature'], ['setting', 'feature'], ['settings', 'feature'], ['action', 'action'], ['actions', 'action'], ['command', 'action'], ['commands', 'action'], ['device', 'device'], ['devices', 'device'], ['gear', 'device'], ['equipment', 'device'], ['help', 'help'], ['doc', 'help'], ['docs', 'help'], ['guide', 'help'], ['guides', 'help'], ['support', 'help'], ['recent', 'recent'], ['recents', 'recent'], ['recently', 'recent'], ['history', 'recent'], ['histories', 'recent'], ['frequent', 'recent'], ['frequently', 'recent']]);
     var FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
     var FEATURE_SEARCH_SMART_QUOTE_PATTERN = /[“”„«»]/g;
+    var FEATURE_SEARCH_STOP_WORDS = new Set(['how', 'do', 'does', 'did', 'done', 'doing', 'can', 'cant', 'cannot', 'should', 'could', 'would', 'please', 'need', 'needs', 'needing', 'want', 'wants', 'wanting', 'i', 'im', 'ive', 'ill', 'id', 'we', 'were', 'weve', 'well', 'you', 'youre', 'youve', 'youll', 'they', 'theyre', 'theyve', 'them', 'us', 'me', 'my', 'mine', 'our', 'ours', 'your', 'yours', 'their', 'theirs', 'the', 'and', 'for', 'with', 'about', 'what', 'where', 'when', 'why', 'which', 'who', 'whom', 'whose', 'this', 'that', 'these', 'those', 'also', 'still', 'really', 'very', 'just', 'maybe', 'perhaps', 'again', 'back']);
+    var FEATURE_SEARCH_STOP_WORD_MIN_LENGTH = 3;
+    var filterFeatureSearchQueryTokens = function filterFeatureSearchQueryTokens(tokens) {
+      if (!Array.isArray(tokens) || tokens.length === 0) {
+        return [];
+      }
+      var filtered = tokens.filter(function (token) {
+        if (!token) {
+          return false;
+        }
+        if (token.length < FEATURE_SEARCH_STOP_WORD_MIN_LENGTH) {
+          return true;
+        }
+        return !FEATURE_SEARCH_STOP_WORDS.has(token);
+      });
+      return filtered.length > 0 ? filtered : tokens.filter(Boolean);
+    };
     var normalizeFeatureSearchQuotes = function normalizeFeatureSearchQuotes(value) {
       return typeof value === 'string' ? value.replace(FEATURE_SEARCH_SMART_QUOTE_PATTERN, '"') : '';
     };
@@ -9086,7 +9103,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var highlightSegments = trimmed ? trimmed.split(/[^a-z0-9]+/i).filter(Boolean) : [];
       var queryKey = trimmed ? searchKey(trimmed) : '';
-      var queryTokens = trimmed ? searchTokens(trimmed) : [];
+      var rawQueryTokens = trimmed ? searchTokens(trimmed) : [];
+      var queryTokens = filterFeatureSearchQueryTokens(rawQueryTokens);
       var highlightTokens = [].concat(_toConsumableArray(highlightSegments), _toConsumableArray(queryTokens), _toConsumableArray(normalizedQuotedPhrases));
       updateFeatureSearchHighlightTokens(highlightTokens);
       var isRecentFilter = filterType === 'recent';
@@ -11298,22 +11316,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         updateFeatureSearchSuggestions(featureSearch.value);
       }
     }
-    function setEditProjectBtnText() {
-      var btn = document.getElementById('editProjectBtn');
-      if (btn) {
-        btn.textContent = texts[currentLang].editProjectBtn;
-        btn.setAttribute('title', texts[currentLang].editProjectBtn);
-        btn.setAttribute('data-help', texts[currentLang].editProjectBtn);
+    function setProjectRequirementButtonsText() {
+      var langTexts = texts[currentLang] || texts.en || {};
+      var fallbackTexts = texts.en || {};
+      var editLabel = langTexts.editProjectBtn || fallbackTexts.editProjectBtn || 'Edit Project requirements';
+      var extraLabel = langTexts.addExtraGearBtn || fallbackTexts.addExtraGearBtn || 'Add temporary extra gear';
+      var editBtn = document.getElementById('editProjectBtn');
+      if (editBtn) {
+        editBtn.textContent = editLabel;
+        editBtn.setAttribute('title', editLabel);
+        editBtn.setAttribute('data-help', editLabel);
+      }
+      var extraBtn = document.getElementById('addExtraGearBtn');
+      if (extraBtn) {
+        extraBtn.textContent = extraLabel;
+        extraBtn.setAttribute('title', extraLabel);
+        extraBtn.setAttribute('data-help', extraLabel);
       }
     }
-    function ensureEditProjectButton() {
+    function ensureProjectRequirementButtons() {
       var container = null;
       if (projectRequirementsOutput && !projectRequirementsOutput.classList.contains('hidden')) {
         container = projectRequirementsOutput;
       } else if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
         container = gearListOutput;
       }
-      if (!container) return;
+      if (!container) {
+        var editBtnExisting = document.getElementById('editProjectBtn');
+        if (editBtnExisting) editBtnExisting.remove();
+        var extraBtnExisting = document.getElementById('addExtraGearBtn');
+        if (extraBtnExisting) extraBtnExisting.remove();
+        return;
+      }
       var btn = document.getElementById('editProjectBtn');
       if (!btn) {
         btn = document.createElement('button');
@@ -11338,14 +11372,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
         btn.dataset.editProjectBound = 'true';
       }
+      var extraBtn = document.getElementById('addExtraGearBtn');
+      if (!extraBtn) {
+        extraBtn = document.createElement('button');
+        extraBtn.id = 'addExtraGearBtn';
+      }
+      if (!extraBtn.dataset.extraGearBound) {
+        extraBtn.type = 'button';
+        extraBtn.addEventListener('click', function () {
+          try {
+            if (typeof document !== 'undefined') {
+              document.dispatchEvent(new CustomEvent('gearlist:add-extra-gear'));
+            }
+          } catch (error) {
+            console.warn('Unable to request extra gear addition', error);
+          }
+        });
+        extraBtn.dataset.extraGearBound = 'true';
+      }
       var title = container.querySelector('h2');
       if (title && btn.parentElement !== container) {
         title.insertAdjacentElement('afterend', btn);
-      } else if (!title && btn.parentElement !== container) {
-        container.prepend(btn);
+        if (extraBtn.parentElement !== container) {
+          btn.insertAdjacentElement('afterend', extraBtn);
+        }
+      } else if (!title) {
+        if (extraBtn.parentElement !== container) {
+          container.prepend(extraBtn);
+        }
+        if (btn.parentElement !== container) {
+          container.prepend(btn);
+        }
+      } else if (btn.parentElement === container && extraBtn.parentElement !== container) {
+        btn.insertAdjacentElement('afterend', extraBtn);
       }
       btn.type = 'button';
-      setEditProjectBtnText();
+      extraBtn.type = 'button';
+      setProjectRequirementButtonsText();
     }
     function updateGearListButtonVisibility() {
       var hasGear = gearListOutput && !gearListOutput.classList.contains('hidden') && gearListOutput.innerHTML.trim() !== '';
@@ -11354,7 +11417,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (deleteGearListProjectBtn) {
           deleteGearListProjectBtn.classList.remove('hidden');
         }
-        ensureEditProjectButton();
+        ensureProjectRequirementButtons();
       } else {
         generateGearListBtn.classList.remove('hidden');
         if (deleteGearListProjectBtn) {
@@ -11362,6 +11425,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         var btn = document.getElementById('editProjectBtn');
         if (btn) btn.remove();
+        var extraBtn = document.getElementById('addExtraGearBtn');
+        if (extraBtn) extraBtn.remove();
       }
     }
     function annotateGearTableCategoryGroups(table) {
@@ -12783,7 +12848,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var ensureElementIdResolver = null;
     var ensureElementIdFallbackCounter = 0;
-
     function fallbackEnsureElementId(element, baseText) {
       if (!element) {
         return '';
@@ -12807,12 +12871,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       element.id = candidate;
       return candidate;
     }
-
     function getEnsureElementId() {
       if (ensureElementIdResolver && typeof ensureElementIdResolver === 'function') {
         return ensureElementIdResolver;
       }
-
       var directEnsure = typeof ensureElementId === 'function' ? ensureElementId : null;
       if (!directEnsure && typeof globalThis !== 'undefined' && globalThis) {
         var globalEnsure = globalThis.ensureElementId;
@@ -12820,12 +12882,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           directEnsure = globalEnsure;
         }
       }
-
       if (typeof directEnsure === 'function') {
         ensureElementIdResolver = directEnsure;
         return ensureElementIdResolver;
       }
-
       ensureElementIdResolver = fallbackEnsureElementId;
       if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.ensureElementId !== 'function') {
         try {
@@ -12834,10 +12894,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           void assignError;
         }
       }
-
       return ensureElementIdResolver;
     }
-
     function getHiddenLabelFactory() {
       if (typeof createHiddenLabel === 'function') {
         return createHiddenLabel;
@@ -12855,7 +12913,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return label;
       };
     }
-
     function createFieldWithLabel(el, label) {
       var wrapper = document.createElement('div');
       wrapper.className = 'field-with-label';
@@ -13943,6 +14000,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
         }
       });
+      Object.values(devices.lenses || {}).forEach(function (lens) {
+        if (!lens) return;
+        if (Array.isArray(lens.mountOptions)) {
+          lens.mountOptions.forEach(function (option) {
+            if (option && option.type) types.add(option.type);
+          });
+        }
+        var baseMount = typeof lens.mount === 'string' ? lens.mount.trim() : '';
+        if (baseMount) types.add(baseMount);
+      });
       return Array.from(types).sort(localeSort);
     }
     var mountTypeOptions = getAllMountTypes();
@@ -13964,6 +14031,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function createLensMountRow() {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       var mount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'native';
+      var context = arguments.length > 2 ? arguments[2] : undefined;
       var row = document.createElement('div');
       row.className = 'form-row';
       var typeSelect = document.createElement('select');
@@ -13982,7 +14050,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         opt.textContent = type;
         typeSelect.appendChild(opt);
       }
-      typeSelect.value = type;
+      typeSelect.value = type || '';
       row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
       var mountSelect = document.createElement('select');
       addEmptyOption(mountSelect);
@@ -13993,28 +14061,47 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         opt.textContent = m;
         mountSelect.appendChild(opt);
       });
-      mountSelect.value = mount || '';
+      mountSelect.value = mount || 'native';
       row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
+      var headingId = (context === null || context === void 0 ? void 0 : context.headingId) || 'lensMountHeading';
+      var labelId = (context === null || context === void 0 ? void 0 : context.labelId) || 'cameraLensMountLabel';
+      var fallbackContext = (context === null || context === void 0 ? void 0 : context.fallbackContext) || 'Lens Mount';
+      var targetContainer = (context === null || context === void 0 ? void 0 : context.container) || lensMountContainer;
+      var minRows = Number.isFinite(context === null || context === void 0 ? void 0 : context.minRows) ? context.minRows : 1;
       configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
-        contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
-        fallbackContext: 'Lens Mount',
+        contextPaths: [headingId, [labelId]],
+        fallbackContext: fallbackContext,
         actionKey: 'addEntry'
       });
       addBtn.addEventListener('click', function () {
-        row.after(createLensMountRow());
+        var newRow = createLensMountRow('', 'native', context);
+        if (targetContainer) {
+          if (row.nextSibling) {
+            targetContainer.insertBefore(newRow, row.nextSibling);
+          } else {
+            targetContainer.appendChild(newRow);
+          }
+        } else {
+          row.after(newRow);
+        }
       });
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
-        contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
-        fallbackContext: 'Lens Mount',
+        contextPaths: [headingId, [labelId]],
+        fallbackContext: fallbackContext,
         actionKey: 'removeEntry'
       });
       removeBtn.addEventListener('click', function () {
-        if (lensMountContainer.children.length > 1) row.remove();
+        var container = targetContainer || row.parentElement;
+        if (!container) return;
+        var min = minRows < 1 ? 1 : minRows;
+        if (container.children.length > min) {
+          row.remove();
+        }
       });
       row.appendChild(removeBtn);
       return row;
@@ -14051,6 +14138,59 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function clearLensMounts() {
       setLensMounts([]);
+    }
+    function getLensDeviceMountContext() {
+      return {
+        container: lensMountOptionsContainer,
+        headingId: 'lensDeviceMountHeading',
+        labelId: 'lensDeviceMountLabel',
+        fallbackContext: 'Lens Mount',
+        minRows: 1
+      };
+    }
+    function setLensDeviceMountOptions(list) {
+      var fallbackType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      if (!lensMountOptionsContainer) return;
+      lensMountOptionsContainer.innerHTML = '';
+      var filtered = Array.isArray(list) ? filterNoneEntries(list) : [];
+      var mounts = filtered.length ? filtered.slice() : [];
+      var normalizedFallback = typeof fallbackType === 'string' ? fallbackType.trim() : '';
+      if (!mounts.length && normalizedFallback) {
+        mounts.push({
+          type: normalizedFallback,
+          mount: 'native'
+        });
+      }
+      if (!mounts.length) {
+        mounts.push({
+          type: '',
+          mount: 'native'
+        });
+      }
+      var context = getLensDeviceMountContext();
+      mounts.forEach(function (entry) {
+        var type = entry && typeof entry.type === 'string' ? entry.type : '';
+        var mount = entry && typeof entry.mount === 'string' ? entry.mount : 'native';
+        lensMountOptionsContainer.appendChild(createLensMountRow(type, mount, context));
+      });
+      updateMountTypeOptions();
+    }
+    function getLensDeviceMountOptions() {
+      if (!lensMountOptionsContainer) return [];
+      return Array.from(lensMountOptionsContainer.querySelectorAll('.form-row')).map(function (row) {
+        var selects = row ? row.querySelectorAll('select') : null;
+        if (!selects || selects.length < 2) return null;
+        var type = (selects[0].value || '').trim();
+        if (!type) return null;
+        var mount = (selects[1].value || '').trim().toLowerCase();
+        return {
+          type: type,
+          mount: mount === 'adapted' ? 'adapted' : 'native'
+        };
+      }).filter(Boolean);
+    }
+    function clearLensDeviceMountOptions() {
+      setLensDeviceMountOptions([]);
     }
     function getAllPowerDistTypes() {
       var types = new Set();
@@ -14895,6 +15035,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (cameraSelect) {
       cameraSelect.addEventListener('change', function () {
         updateRecordingMediaOptions();
+        if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+          try {
+            document.dispatchEvent(new CustomEvent('camera-selection-changed'));
+          } catch (error) {
+            void error;
+          }
+        }
       });
     }
     applyFilters();
@@ -15379,6 +15526,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       unifyDevices(devices);
       storeDevices(devices);
       refreshDeviceLists();
+      updateMountTypeOptions();
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
       populateSelect(videoSelect, devices.video, true);
@@ -15872,6 +16020,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return clearRecordingMedia;
     }], ['clearLensMounts', function () {
       return clearLensMounts;
+    }], ['setLensDeviceMountOptions', function () {
+      return setLensDeviceMountOptions;
+    }], ['getLensDeviceMountOptions', function () {
+      return getLensDeviceMountOptions;
+    }], ['clearLensDeviceMountOptions', function () {
+      return clearLensDeviceMountOptions;
     }], ['clearPowerDistribution', function () {
       return clearPowerDistribution;
     }], ['clearVideoOutputs', function () {

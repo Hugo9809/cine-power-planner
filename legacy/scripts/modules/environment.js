@@ -284,7 +284,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
-
     try {
       var globalConsole = null;
       try {
@@ -294,7 +293,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (accessError) {
         void accessError;
       }
-
       if (globalConsole) {
         if (value === globalConsole) {
           return true;
@@ -307,7 +305,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void proxyCheckError;
         }
       }
-
       try {
         if (typeof value.log === 'function' && typeof value.warn === 'function' && typeof value.error === 'function') {
           var ctorName = value.constructor && value.constructor.name;
@@ -328,15 +325,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       return false;
     }
-
     return false;
   }
-
   function isNodeModuleCandidate(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
-
     try {
       if (typeof value.require === 'function' && typeof value.loaded === 'boolean') {
         if (Array.isArray ? Array.isArray(value.children) : Object.prototype.toString.call(value.children) === '[object Array]') {
@@ -349,10 +343,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (inspectionError) {
       void inspectionError;
     }
-
     return false;
   }
-
   function isEthereumProviderCandidate(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;

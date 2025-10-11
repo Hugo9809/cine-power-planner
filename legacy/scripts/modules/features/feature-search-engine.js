@@ -171,6 +171,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return SPELLING_VARIANTS.get(match) || match;
     });
   }
+  var DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
+  var SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
+  var MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
+  var MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
+  var MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
+  var MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+  function cleanMeasurementValue(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
+  }
+  function normalizeMeasurementUnits(str) {
+    if (typeof str !== 'string' || !str) {
+      return str;
+    }
+    var normalized = str.replace(DOUBLE_PRIME_VARIANTS_PATTERN, '"').replace(SINGLE_PRIME_VARIANTS_PATTERN, "'");
+    normalized = normalized.replace(MEASUREMENT_FOOT_WORD_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " ft ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_FOOT_PRIME_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " ft ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_INCH_WORD_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " inch ") : value;
+    });
+    normalized = normalized.replace(MEASUREMENT_INCH_PRIME_PATTERN, function (match, value) {
+      void match;
+      var cleaned = cleanMeasurementValue(value);
+      return cleaned ? "".concat(cleaned, " inch ") : value;
+    });
+    return normalized;
+  }
   function applySearchTokenSynonyms(tokens, addToken) {
     if (!tokens || typeof addToken !== 'function') {
       return;
@@ -229,6 +265,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (hasAny(['cm', 'centimeter', 'centimeters'])) {
       addAll(['cm', 'centimeter', 'centimeters']);
+    }
+    if (hasAny(['inch', 'inches'])) {
+      addAll(['inch', 'inches', 'in']);
+    }
+    if (hasAny(['ft', 'foot', 'feet'])) {
+      addAll(['ft', 'foot', 'feet']);
     }
     if (hasAny(['ev', 'exposurevalue'])) {
       addAll(['ev', 'exposurevalue', 'exposure', 'value']);
@@ -393,6 +435,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
       normalized = normalizeUnicodeFractions(normalized);
       normalized = normalizeNumberWords(normalized);
+      normalized = normalizeMeasurementUnits(normalized);
       normalized = normalizeSpellingVariants(normalized);
       normalized = normaliseMarkVariants(normalized);
       var simplified = normalized.replace(/[^a-z0-9]+/g, '');
@@ -411,7 +454,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x by ');
       normalized = normalizeUnicodeFractions(normalized);
+      normalized = normalizeMeasurementUnits(normalized);
       var numberNormalized = normalizeNumberWords(normalized);
+      var measurementNormalized = normalizeMeasurementUnits(numberNormalized);
       var tokens = new Set();
       var initialWords = [];
       var addToken = function addToken(token) {
@@ -471,8 +516,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (numberNormalized !== normalized) {
         processParts(numberNormalized);
       }
-      var spellingNormalized = normalizeSpellingVariants(numberNormalized);
-      if (spellingNormalized !== numberNormalized) {
+      if (measurementNormalized !== numberNormalized) {
+        processParts(measurementNormalized);
+      }
+      var spellingNormalized = normalizeSpellingVariants(measurementNormalized);
+      if (spellingNormalized !== measurementNormalized) {
         processParts(spellingNormalized);
       }
       var markNormalized = normaliseMarkVariants(spellingNormalized);
@@ -711,6 +759,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       normaliseMarkVariants: normaliseMarkVariants,
       normalizeUnicodeFractions: normalizeUnicodeFractions,
       normalizeNumberWords: normalizeNumberWords,
+      normalizeMeasurementUnits: normalizeMeasurementUnits,
       normalizeSpellingVariants: normalizeSpellingVariants,
       applySearchTokenSynonyms: applySearchTokenSynonyms
     });
@@ -722,6 +771,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     normaliseMarkVariants: normaliseMarkVariants,
     normalizeUnicodeFractions: normalizeUnicodeFractions,
     normalizeNumberWords: normalizeNumberWords,
+    normalizeMeasurementUnits: normalizeMeasurementUnits,
     normalizeSpellingVariants: normalizeSpellingVariants,
     applySearchTokenSynonyms: applySearchTokenSynonyms
   });
@@ -747,6 +797,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       normaliseMarkVariants: normaliseMarkVariants,
       normalizeUnicodeFractions: normalizeUnicodeFractions,
       normalizeNumberWords: normalizeNumberWords,
+      normalizeMeasurementUnits: normalizeMeasurementUnits,
       normalizeSpellingVariants: normalizeSpellingVariants,
       applySearchTokenSynonyms: applySearchTokenSynonyms
     });

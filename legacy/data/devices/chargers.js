@@ -144,6 +144,12 @@
       slots: 4,
       chargingSpeedAmps: 2
     },
+    "PAG PL16+ (Gold Mount) Charger": {
+      mount: "Gold-Mount",
+      slots: 2,
+      chargeModes: ["Simultaneous"],
+      weight_g: 1600
+    },
     "Anton/Bauer LP4 Gold Mount Charger": {
       mount: "Gold-Mount",
       slots: 4,

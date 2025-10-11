@@ -1,11 +1,11 @@
-function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
-function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -531,6 +531,168 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return fallbackSafeWarn;
   }();
   var FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+  var RELOAD_WARMUP_MAX_WAIT_MS = 180;
+  var reloadWarmupFailureLogged = false;
+  function createDelay(ms) {
+    var waitMs = typeof ms === 'number' && ms >= 0 ? ms : 0;
+    if (typeof setTimeout !== 'function') {
+      return Promise.resolve();
+    }
+    return new Promise(function (resolve) {
+      try {
+        setTimeout(resolve, waitMs);
+      } catch (error) {
+        void error;
+        resolve();
+      }
+    });
+  }
+  function settlePromise(promise) {
+    if (!promise || typeof promise.then !== 'function') {
+      return Promise.resolve(false);
+    }
+    return promise.then(function () {
+      return true;
+    }).catch(function () {
+      return false;
+    });
+  }
+  function scheduleReloadWarmup() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
+    if (!nextHref) {
+      return null;
+    }
+    var win = resolveWindow(options.window);
+    var fetchFn = resolveFetch(options.fetch, win);
+    if (typeof fetchFn !== 'function') {
+      return null;
+    }
+    var nav = resolveNavigator(options.navigator);
+    if (nav && nav.onLine === false) {
+      return null;
+    }
+    var controller = null;
+    if (typeof AbortController === 'function') {
+      try {
+        controller = new AbortController();
+      } catch (abortError) {
+        void abortError;
+        controller = null;
+      }
+    }
+    var serviceWorkerSettled = false;
+    var cachesSettled = false;
+    var serviceWorkerPromise = settlePromise(options.serviceWorkerPromise).then(function (result) {
+      serviceWorkerSettled = true;
+      return result;
+    });
+    var cachePromise = settlePromise(options.cachePromise).then(function (result) {
+      cachesSettled = true;
+      return result;
+    });
+    var shouldAllowCache = options.allowCache === true;
+    var executeWarmup = function () {
+      var _ref = _asyncToGenerator(_regenerator().m(function _callee() {
+        var allowCachePopulation, requestInit, response, aborted, body, _t, _t2, _t3, _t4;
+        return _regenerator().w(function (_context) {
+          while (1) switch (_context.p = _context.n) {
+            case 0:
+              _context.p = 0;
+              _context.n = 1;
+              return Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+            case 1:
+              _context.n = 3;
+              break;
+            case 2:
+              _context.p = 2;
+              _t = _context.v;
+              void _t;
+            case 3:
+              _context.p = 3;
+              _context.n = 4;
+              return Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+            case 4:
+              _context.n = 6;
+              break;
+            case 5:
+              _context.p = 5;
+              _t2 = _context.v;
+              void _t2;
+            case 6:
+              allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
+              requestInit = {
+                cache: allowCachePopulation ? 'reload' : 'no-store',
+                credentials: 'same-origin',
+                redirect: 'follow'
+              };
+              if (controller && controller.signal) {
+                requestInit.signal = controller.signal;
+              }
+              response = null;
+              _context.p = 7;
+              _context.n = 8;
+              return fetchFn.call(win || undefined, nextHref, requestInit);
+            case 8:
+              response = _context.v;
+              _context.n = 10;
+              break;
+            case 9:
+              _context.p = 9;
+              _t3 = _context.v;
+              aborted = controller && controller.signal && controller.signal.aborted;
+              if (!aborted && !reloadWarmupFailureLogged) {
+                reloadWarmupFailureLogged = true;
+                safeWarn('Reload warmup fetch failed', _t3);
+              }
+              return _context.a(2, false);
+            case 10:
+              if (response) {
+                _context.n = 11;
+                break;
+              }
+              return _context.a(2, false);
+            case 11:
+              _context.p = 11;
+              body = typeof response.clone === 'function' ? response.clone() : response;
+              if (!(body && typeof body.text === 'function' && body.bodyUsed !== true)) {
+                _context.n = 12;
+                break;
+              }
+              _context.n = 12;
+              return body.text();
+            case 12:
+              _context.n = 14;
+              break;
+            case 13:
+              _context.p = 13;
+              _t4 = _context.v;
+              void _t4;
+            case 14:
+              return _context.a(2, true);
+          }
+        }, _callee, null, [[11, 13], [7, 9], [3, 5], [0, 2]]);
+      }));
+      return function executeWarmup() {
+        return _ref.apply(this, arguments);
+      };
+    }();
+    var warmupTask = executeWarmup();
+    if (warmupTask && typeof warmupTask.catch === 'function') {
+      warmupTask.catch(function () {});
+    }
+    return {
+      cancel: function cancel() {
+        if (controller && typeof controller.abort === 'function') {
+          try {
+            controller.abort();
+          } catch (abortError) {
+            void abortError;
+          }
+        }
+      }
+    };
+  }
   function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
     if (!promise || typeof promise.then !== 'function') {
       return Promise.resolve({
@@ -711,6 +873,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return resolveGlobal('caches');
   }
+  function resolveLocation(explicitLocation) {
+    if (explicitLocation && _typeof(explicitLocation) === 'object') {
+      return explicitLocation;
+    }
+    var win = resolveWindow();
+    if (win && win.location && _typeof(win.location) === 'object') {
+      return win.location;
+    }
+    return resolveGlobal('location');
+  }
+  function resolveFetch(explicitFetch, windowLike) {
+    if (typeof explicitFetch === 'function') {
+      return explicitFetch;
+    }
+    if (typeof fetch === 'function') {
+      return fetch;
+    }
+    var win = windowLike || resolveWindow();
+    if (win && typeof win.fetch === 'function') {
+      try {
+        return win.fetch.bind(win);
+      } catch (error) {
+        void error;
+        return win.fetch;
+      }
+    }
+    var globalFetch = resolveGlobal('fetch');
+    return typeof globalFetch === 'function' ? globalFetch : null;
+  }
   function registerFallbackStorage(storages, candidate, label) {
     void label;
     if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
@@ -810,9 +1001,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         label: '__cineGlobal'
       });
     }
-    candidates.forEach(function (_ref) {
-      var scope = _ref.scope,
-        label = _ref.label;
+    candidates.forEach(function (_ref2) {
+      var scope = _ref2.scope,
+        label = _ref2.label;
       inspectScopeForStorages(storages, scope, label);
     });
     var win = resolveWindow(options.window);
@@ -875,29 +1066,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return _unregisterServiceWorkers.apply(this, arguments);
   }
   function _unregisterServiceWorkers() {
-    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee(navigatorOverride) {
-      var nav, registrations, serviceWorker, regs, reg, readyReg, _t, _t2;
-      return _regenerator().w(function (_context) {
-        while (1) switch (_context.p = _context.n) {
+    _unregisterServiceWorkers = _asyncToGenerator(_regenerator().m(function _callee2(navigatorOverride) {
+      var nav, registrations, serviceWorker, regs, reg, readyReg, _t5, _t6;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.p = _context2.n) {
           case 0:
             nav = resolveNavigator(navigatorOverride);
             if (!(!nav || !nav.serviceWorker)) {
-              _context.n = 1;
+              _context2.n = 1;
               break;
             }
-            return _context.a(2, false);
+            return _context2.a(2, false);
           case 1:
             registrations = [];
             serviceWorker = nav.serviceWorker;
-            _context.p = 2;
+            _context2.p = 2;
             if (!(typeof serviceWorker.getRegistrations === 'function')) {
-              _context.n = 4;
+              _context2.n = 4;
               break;
             }
-            _context.n = 3;
+            _context2.n = 3;
             return serviceWorker.getRegistrations();
           case 3:
-            regs = _context.v;
+            regs = _context2.v;
             if (Array.isArray(regs)) {
               regs.forEach(function (reg) {
                 if (reg) {
@@ -905,56 +1096,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               });
             }
-            _context.n = 10;
+            _context2.n = 10;
             break;
           case 4:
             if (!(typeof serviceWorker.getRegistration === 'function')) {
-              _context.n = 6;
+              _context2.n = 6;
               break;
             }
-            _context.n = 5;
+            _context2.n = 5;
             return serviceWorker.getRegistration();
           case 5:
-            reg = _context.v;
+            reg = _context2.v;
             if (reg) {
               registrations.push(reg);
             }
-            _context.n = 10;
+            _context2.n = 10;
             break;
           case 6:
             if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-              _context.n = 10;
+              _context2.n = 10;
               break;
             }
-            _context.p = 7;
-            _context.n = 8;
+            _context2.p = 7;
+            _context2.n = 8;
             return serviceWorker.ready;
           case 8:
-            readyReg = _context.v;
+            readyReg = _context2.v;
             if (readyReg) {
               registrations.push(readyReg);
             }
-            _context.n = 10;
+            _context2.n = 10;
             break;
           case 9:
-            _context.p = 9;
-            _t = _context.v;
-            safeWarn('Failed to await active service worker', _t);
+            _context2.p = 9;
+            _t5 = _context2.v;
+            safeWarn('Failed to await active service worker', _t5);
           case 10:
-            _context.n = 12;
+            _context2.n = 12;
             break;
           case 11:
-            _context.p = 11;
-            _t2 = _context.v;
-            safeWarn('Failed to query service worker registrations', _t2);
+            _context2.p = 11;
+            _t6 = _context2.v;
+            safeWarn('Failed to query service worker registrations', _t6);
           case 12:
             if (registrations.length) {
-              _context.n = 13;
+              _context2.n = 13;
               break;
             }
-            return _context.a(2, false);
+            return _context2.a(2, false);
           case 13:
-            _context.n = 14;
+            _context2.n = 14;
             return Promise.all(registrations.map(function (registration) {
               if (!registration || typeof registration.unregister !== 'function') {
                 return Promise.resolve(false);
@@ -965,9 +1156,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 14:
-            return _context.a(2, true);
+            return _context2.a(2, true);
         }
-      }, _callee, null, [[7, 9], [2, 11]]);
+      }, _callee2, null, [[7, 9], [2, 11]]);
     }));
     return _unregisterServiceWorkers.apply(this, arguments);
   }
@@ -998,42 +1189,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return _clearCacheStorage.apply(this, arguments);
   }
   function _clearCacheStorage() {
-    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee2(cachesOverride) {
-      var cachesInstance, exposedName, lowerExplicit, keys, relevantKeys, removedAny, _t3;
-      return _regenerator().w(function (_context2) {
-        while (1) switch (_context2.p = _context2.n) {
+    _clearCacheStorage = _asyncToGenerator(_regenerator().m(function _callee3(cachesOverride) {
+      var cachesInstance, exposedName, lowerExplicit, keys, relevantKeys, removedAny, _t7;
+      return _regenerator().w(function (_context3) {
+        while (1) switch (_context3.p = _context3.n) {
           case 0:
             cachesInstance = resolveCaches(cachesOverride);
             if (!(!cachesInstance || typeof cachesInstance.keys !== 'function')) {
-              _context2.n = 1;
+              _context3.n = 1;
               break;
             }
-            return _context2.a(2, false);
+            return _context3.a(2, false);
           case 1:
             exposedName = resolveExposedCacheName();
             lowerExplicit = exposedName ? exposedName.toLowerCase() : null;
-            _context2.p = 2;
-            _context2.n = 3;
+            _context3.p = 2;
+            _context3.n = 3;
             return cachesInstance.keys();
           case 3:
-            keys = _context2.v;
+            keys = _context3.v;
             if (!(!Array.isArray(keys) || !keys.length)) {
-              _context2.n = 4;
+              _context3.n = 4;
               break;
             }
-            return _context2.a(2, false);
+            return _context3.a(2, false);
           case 4:
             relevantKeys = keys.filter(function (key) {
               return isRelevantCacheKey(key, exposedName, lowerExplicit);
             });
             if (relevantKeys.length) {
-              _context2.n = 5;
+              _context3.n = 5;
               break;
             }
-            return _context2.a(2, false);
+            return _context3.a(2, false);
           case 5:
             removedAny = false;
-            _context2.n = 6;
+            _context3.n = 6;
             return Promise.all(relevantKeys.map(function (key) {
               if (!key || typeof cachesInstance.delete !== 'function') {
                 return Promise.resolve(false);
@@ -1050,14 +1241,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               });
             }));
           case 6:
-            return _context2.a(2, removedAny);
+            return _context3.a(2, removedAny);
           case 7:
-            _context2.p = 7;
-            _t3 = _context2.v;
-            safeWarn('Cache clear failed', _t3);
-            return _context2.a(2, false);
+            _context3.p = 7;
+            _t7 = _context3.v;
+            safeWarn('Cache clear failed', _t7);
+            return _context3.a(2, false);
         }
-      }, _callee2, null, [[2, 7]]);
+      }, _callee3, null, [[2, 7]]);
     }));
     return _clearCacheStorage.apply(this, arguments);
   }
@@ -1632,7 +1823,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
   }
-  function triggerReload(windowOverride) {
+  function triggerReload(windowOverride, precomputedForceReloadUrl) {
     var win = resolveWindow(windowOverride);
     if (!win || !win.location) {
       return false;
@@ -1642,9 +1833,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hasAssign = location && typeof location.assign === 'function';
     var hasReload = location && typeof location.reload === 'function';
     var navigationTriggered = false;
-    var forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
-    var nextHref = forceReloadUrl.nextHref;
-    var originalHref = forceReloadUrl.originalHref;
+    var forceReloadUrl = precomputedForceReloadUrl && _typeof(precomputedForceReloadUrl) === 'object' ? precomputedForceReloadUrl : buildForceReloadUrl(location, 'forceReload');
+    var originalHrefCandidate = typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref ? forceReloadUrl.originalHref : readLocationHrefSafe(location);
+    var originalHref = originalHrefCandidate || readLocationHrefSafe(location);
+    var nextHref = typeof forceReloadUrl.nextHref === 'string' ? forceReloadUrl.nextHref : '';
     var timestamp = forceReloadUrl.timestamp;
     var baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
     if (hasReplace && nextHref) {
@@ -1689,8 +1881,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return _reloadApp.apply(this, arguments);
   }
   function _reloadApp() {
-    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee5() {
+    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee6() {
       var options,
+        win,
+        location,
+        forceReloadUrl,
         uiCacheCleared,
         clearUiCacheStorageEntriesFn,
         serviceWorkerCleanupPromise,
@@ -1699,15 +1894,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         serviceWorkerAwaitResult,
         reloadTriggered,
         reloadFn,
-        win,
         cachesCleared,
-        _args5 = arguments,
-        _t6,
-        _t7;
-      return _regenerator().w(function (_context5) {
-        while (1) switch (_context5.p = _context5.n) {
+        _args6 = arguments,
+        _t0,
+        _t1;
+      return _regenerator().w(function (_context6) {
+        while (1) switch (_context6.p = _context6.n) {
           case 0:
-            options = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : {};
+            options = _args6.length > 0 && _args6[0] !== undefined ? _args6[0] : {};
+            win = resolveWindow(options.window);
+            location = resolveLocation(options.location || win && win.location);
+            forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
             uiCacheCleared = false;
             clearUiCacheStorageEntriesFn = typeof options.clearUiCacheStorageEntries === 'function' ? options.clearUiCacheStorageEntries : typeof resolveGlobal('clearUiCacheStorageEntries') === 'function' ? resolveGlobal('clearUiCacheStorageEntries') : null;
             if (clearUiCacheStorageEntriesFn) {
@@ -1725,45 +1922,54 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee3() {
-              var _t4;
-              return _regenerator().w(function (_context3) {
-                while (1) switch (_context3.p = _context3.n) {
-                  case 0:
-                    _context3.p = 0;
-                    _context3.n = 1;
-                    return unregisterServiceWorkers(options.navigator);
-                  case 1:
-                    return _context3.a(2, _context3.v);
-                  case 2:
-                    _context3.p = 2;
-                    _t4 = _context3.v;
-                    safeWarn('Service worker cleanup failed', _t4);
-                    return _context3.a(2, false);
-                }
-              }, _callee3, null, [[0, 2]]);
-            }))();
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
-              var _t5;
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
+              var _t8;
               return _regenerator().w(function (_context4) {
                 while (1) switch (_context4.p = _context4.n) {
                   case 0:
                     _context4.p = 0;
                     _context4.n = 1;
-                    return clearCacheStorage(options.caches);
+                    return unregisterServiceWorkers(options.navigator);
                   case 1:
                     return _context4.a(2, _context4.v);
                   case 2:
                     _context4.p = 2;
-                    _t5 = _context4.v;
-                    safeWarn('Cache clear failed', _t5);
+                    _t8 = _context4.v;
+                    safeWarn('Service worker cleanup failed', _t8);
                     return _context4.a(2, false);
                 }
               }, _callee4, null, [[0, 2]]);
             }))();
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
+              var _t9;
+              return _regenerator().w(function (_context5) {
+                while (1) switch (_context5.p = _context5.n) {
+                  case 0:
+                    _context5.p = 0;
+                    _context5.n = 1;
+                    return clearCacheStorage(options.caches);
+                  case 1:
+                    return _context5.a(2, _context5.v);
+                  case 2:
+                    _context5.p = 2;
+                    _t9 = _context5.v;
+                    safeWarn('Cache clear failed', _t9);
+                    return _context5.a(2, false);
+                }
+              }, _callee5, null, [[0, 2]]);
+            }))();
+            scheduleReloadWarmup({
+              window: win,
+              navigator: options.navigator,
+              fetch: options.fetch,
+              nextHref: forceReloadUrl.nextHref,
+              serviceWorkerPromise: serviceWorkerCleanupPromise,
+              cachePromise: cacheCleanupPromise,
+              allowCache: true
+            });
             serviceWorkersUnregistered = false;
-            _context5.p = 1;
-            _context5.n = 2;
+            _context6.p = 1;
+            _context6.n = 2;
             return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
               safeWarn('Service worker cleanup timed out before reload, continuing anyway.', {
                 timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -1772,28 +1978,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               safeWarn('Service worker cleanup failed after reload triggered', lateError);
             });
           case 2:
-            serviceWorkerAwaitResult = _context5.v;
+            serviceWorkerAwaitResult = _context6.v;
             if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
               serviceWorkersUnregistered = !!serviceWorkerAwaitResult.result;
             }
-            _context5.n = 4;
+            _context6.n = 4;
             break;
           case 3:
-            _context5.p = 3;
-            _t6 = _context5.v;
-            safeWarn('Service worker cleanup promise rejected', _t6);
+            _context6.p = 3;
+            _t0 = _context6.v;
+            safeWarn('Service worker cleanup promise rejected', _t0);
             serviceWorkersUnregistered = false;
           case 4:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
             try {
-              reloadTriggered = reloadFn(options.window);
+              reloadTriggered = reloadFn(options.window, forceReloadUrl);
             } catch (error) {
               safeWarn('Forced reload handler failed', error);
-              reloadTriggered = triggerReload(options.window);
+              reloadTriggered = triggerReload(options.window, forceReloadUrl);
             }
             if (!reloadTriggered) {
-              win = resolveWindow(options.window);
               if (win && win.location && typeof win.location.reload === 'function') {
                 try {
                   win.location.reload();
@@ -1804,20 +2009,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               }
             }
             cachesCleared = false;
-            _context5.p = 5;
-            _context5.n = 6;
+            _context6.p = 5;
+            _context6.n = 6;
             return cacheCleanupPromise;
           case 6:
-            cachesCleared = _context5.v;
-            _context5.n = 8;
+            cachesCleared = _context6.v;
+            _context6.n = 8;
             break;
           case 7:
-            _context5.p = 7;
-            _t7 = _context5.v;
-            safeWarn('Cache cleanup promise rejected', _t7);
+            _context6.p = 7;
+            _t1 = _context6.v;
+            safeWarn('Cache cleanup promise rejected', _t1);
             cachesCleared = false;
           case 8:
-            return _context5.a(2, {
+            return _context6.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
               cachesCleared: cachesCleared,
@@ -1825,7 +2030,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               navigationTriggered: reloadTriggered
             });
         }
-      }, _callee5, null, [[5, 7], [1, 3]]);
+      }, _callee6, null, [[5, 7], [1, 3]]);
     }));
     return _reloadApp.apply(this, arguments);
   }

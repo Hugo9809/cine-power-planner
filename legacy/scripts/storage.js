@@ -3015,6 +3015,81 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return container;
   }
+  function forceCompressAllProjectEntries(container) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (!isPlainObject(container)) {
+      return {
+        changed: false,
+        keys: []
+      };
+    }
+    var context = options || {};
+    var compressedKeys = [];
+    Object.keys(container).forEach(function (key) {
+      var currentValue = container[key];
+      var compressedValue = ensureProjectEntryCompressed(currentValue, key);
+      if (compressedValue !== currentValue) {
+        container[key] = compressedValue;
+        compressedKeys.push(key);
+      }
+    });
+    if (compressedKeys.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      var reason = typeof context.reason === 'string' ? context.reason : 'quota-recovery';
+      console.warn("Forced compression for ".concat(compressedKeys.length, " project entr").concat(compressedKeys.length === 1 ? 'y' : 'ies', " while recovering storage quota."), {
+        keys: compressedKeys,
+        reason: reason
+      });
+    }
+    return {
+      changed: compressedKeys.length > 0,
+      keys: compressedKeys
+    };
+  }
+  function clearDerivedProjectCachesForQuota(storage) {
+    var target = storage && typeof storage.removeItem === 'function' ? storage : getSafeLocalStorage();
+    if (!target || typeof target.removeItem !== 'function') {
+      return {
+        cleared: false,
+        keys: []
+      };
+    }
+    var cacheKeys = [DEVICE_SCHEMA_CACHE_KEY, LEGACY_SCHEMA_CACHE_KEY].filter(function (key) {
+      return typeof key === 'string' && key;
+    });
+    var removalCandidates = [];
+    cacheKeys.forEach(function (key) {
+      getStorageKeyVariants(key).forEach(function (variant) {
+        if (typeof variant === 'string' && variant) {
+          removalCandidates.push(variant);
+          if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
+            removalCandidates.push("".concat(variant).concat(STORAGE_BACKUP_SUFFIX));
+          }
+        }
+      });
+    });
+    var removedKeys = [];
+    removalCandidates.forEach(function (key) {
+      try {
+        var existing = target.getItem(key);
+        if (existing !== null && existing !== undefined) {
+          target.removeItem(key);
+          removedKeys.push(key);
+        }
+      } catch (error) {
+        console.warn('Unable to clear derived planner cache entry while recovering storage quota.', {
+          key: key,
+          error: error
+        });
+      }
+    });
+    if (removedKeys.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn("Cleared ".concat(removedKeys.length, " derived planner cache entr").concat(removedKeys.length === 1 ? 'y' : 'ies', " to free storage before saving projects."), removedKeys);
+    }
+    return {
+      cleared: removedKeys.length > 0,
+      keys: removedKeys
+    };
+  }
   function registerActiveSetupStorageSkipKeys(skipSet) {
     if (!skipSet || typeof skipSet.add !== 'function') {
       return;
@@ -8360,16 +8435,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     invalidateProjectReadCache();
     ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
     var disableCompression = skipCompression || shouldDisableProjectCompressionDuringPersist();
+    var forcedProjectCompressionAttempted = false;
+    var derivedCachesClearedForQuota = false;
     saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, serializedProjects, "Error saving project to localStorage:", {
       forceCompressionOnQuota: true,
       disableCompression: disableCompression,
-      onQuotaExceeded: function onQuotaExceeded() {
-        var removedKey = removeOldestAutoBackupEntry(serializedProjects);
-        if (!removedKey) {
-          return false;
+      onQuotaExceeded: function onQuotaExceeded(error, context) {
+        if (!forcedProjectCompressionAttempted) {
+          forcedProjectCompressionAttempted = true;
+          var forcedCompression = forceCompressAllProjectEntries(serializedProjects, {
+            reason: 'project-storage-quota'
+          });
+          if (forcedCompression.changed) {
+            return true;
+          }
         }
-        console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
-        return true;
+        if (!derivedCachesClearedForQuota) {
+          var cleared = clearDerivedProjectCachesForQuota(safeStorage);
+          derivedCachesClearedForQuota = Boolean(cleared && cleared.cleared);
+          if (derivedCachesClearedForQuota) {
+            return true;
+          }
+        }
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.', {
+            error: error,
+            context: context
+          });
+        }
+        return false;
       }
     });
   }

@@ -137,8 +137,290 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'projectOverview', 'deviceSelection', 'gearGeneration', 'gearCustomization', 'resultsReview', 'powerSummary', 'contactsOwnGear', 'autoGear', 'overviewPrint', 'exportImport', 'backupRestore', 'safetyNet', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'nameProject', 'saveProject', 'addCamera', 'addPower', 'generatePlan', 'exportBackup', 'completion'];
+  var DEFAULT_STEP_TEXTS = {
+    intro: {
+      title: 'Welcome to Cine Power Planner',
+      body: 'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.'
+    },
+    nameProject: {
+      title: 'Name your first project',
+      body: 'Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.'
+    },
+    saveProject: {
+      title: 'Save immediately',
+      body: 'Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.'
+    },
+    addCamera: {
+      title: 'Add your primary camera',
+      body: 'Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.'
+    },
+    addPower: {
+      title: 'Choose a power source',
+      body: 'Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.'
+    },
+    generatePlan: {
+      title: 'Generate your first plan',
+      body: 'Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.'
+    },
+    exportBackup: {
+      title: 'Export an offline safety copy',
+      body: 'Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.'
+    },
+    completion: {
+      title: "You're ready to plan",
+      body: 'Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.'
+    }
+  };
+  function getElement(selector) {
+    if (typeof selector !== 'string' || !selector) {
+      return null;
+    }
+    try {
+      return DOCUMENT.querySelector(selector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not query selector.', error);
+      return null;
+    }
+  }
+  function getFieldValue(element) {
+    if (!element) {
+      return '';
+    }
+    if (typeof element.value === 'string') {
+      return element.value;
+    }
+    if (typeof element.textContent === 'string') {
+      return element.textContent;
+    }
+    return '';
+  }
+  function createFieldCompletionRequirement(selector, predicate, events) {
+    var eventList = Array.isArray(events) && events.length ? events : ['input', 'change'];
+    return {
+      check: function check() {
+        var element = getElement(selector);
+        if (!element) {
+          return false;
+        }
+        try {
+          return Boolean(predicate(getFieldValue(element), element));
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate field requirement.', error);
+          return false;
+        }
+      },
+      attach: function attach(context) {
+        var element = getElement(selector);
+        if (!element) {
+          if (typeof context.complete === 'function') {
+            context.complete();
+          }
+          return function () {};
+        }
+        var handler = function handler() {
+          var matches = false;
+          try {
+            matches = Boolean(predicate(getFieldValue(element), element));
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate field change.', error);
+            matches = false;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        for (var index = 0; index < eventList.length; index += 1) {
+          var eventName = eventList[index];
+          element.addEventListener(eventName, handler);
+        }
+        handler();
+        return function () {
+          for (var _index = 0; _index < eventList.length; _index += 1) {
+            var _eventName = eventList[_index];
+            element.removeEventListener(_eventName, handler);
+          }
+        };
+      }
+    };
+  }
+  function createClickCompletionRequirement(selectors, options) {
+    var normalized = Array.isArray(selectors) ? selectors.slice() : [selectors];
+    var eventName = options && typeof options.eventName === 'string' && options.eventName ? options.eventName : 'click';
+    var evaluate = typeof (options === null || options === void 0 ? void 0 : options.check) === 'function' ? options.check : null;
+    return {
+      check: function check() {
+        if (!evaluate) {
+          return false;
+        }
+        try {
+          return Boolean(evaluate());
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate click requirement.', error);
+          return false;
+        }
+      },
+      attach: function attach(context) {
+        var removers = [];
+        var elementFound = false;
+        var _loop = function _loop() {
+          var selector = normalized[index];
+          var node = getElement(selector);
+          if (!node) {
+            return 1;
+          }
+          elementFound = true;
+          var listener = function listener() {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          };
+          node.addEventListener(eventName, listener);
+          removers.push(function () {
+            node.removeEventListener(eventName, listener);
+          });
+        };
+        for (var index = 0; index < normalized.length; index += 1) {
+          if (_loop()) continue;
+        }
+        if (evaluate) {
+          var matches = false;
+          try {
+            matches = Boolean(evaluate());
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate click requirement after attach.', error);
+            matches = false;
+          }
+          if (matches && typeof context.complete === 'function') {
+            context.complete();
+          } else if (!matches && typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        } else if (!elementFound && typeof context.complete === 'function') {
+          context.complete();
+        }
+        return function () {
+          for (var _index2 = 0; _index2 < removers.length; _index2 += 1) {
+            try {
+              removers[_index2]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  function getProjectNameValue() {
+    var input = getElement('#setupName');
+    return typeof (input === null || input === void 0 ? void 0 : input.value) === 'string' ? input.value.trim() : '';
+  }
+  function hasSavedSetupForName(name) {
+    if (!name) {
+      return false;
+    }
+    var select = getElement('#setupSelect');
+    if (!select || !select.options) {
+      return false;
+    }
+    for (var index = 0; index < select.options.length; index += 1) {
+      var option = select.options[index];
+      if (option && typeof option.value === 'string' && option.value === name) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function createSaveProjectRequirement() {
+    return {
+      check: function check() {
+        return hasSavedSetupForName(getProjectNameValue());
+      },
+      attach: function attach(context) {
+        var removers = [];
+        var evaluate = function evaluate() {
+          var saved = hasSavedSetupForName(getProjectNameValue());
+          if (saved) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        var saveButton = getElement('#saveSetupBtn');
+        if (saveButton) {
+          var handleClick = function handleClick() {
+            setTimeout(evaluate, 50);
+          };
+          saveButton.addEventListener('click', handleClick);
+          removers.push(function () {
+            saveButton.removeEventListener('click', handleClick);
+          });
+        }
+        var setupSelect = getElement('#setupSelect');
+        if (setupSelect) {
+          var handleChange = function handleChange() {
+            evaluate();
+          };
+          setupSelect.addEventListener('change', handleChange);
+          removers.push(function () {
+            setupSelect.removeEventListener('change', handleChange);
+          });
+        }
+        var nameInput = getElement('#setupName');
+        if (nameInput) {
+          var handleInput = function handleInput() {
+            evaluate();
+          };
+          nameInput.addEventListener('input', handleInput);
+          removers.push(function () {
+            nameInput.removeEventListener('input', handleInput);
+          });
+        }
+        evaluate();
+        return function () {
+          for (var index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach save requirement.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  var STEP_COMPLETION_REQUIREMENTS = {
+    nameProject: createFieldCompletionRequirement('#setupName', function (value) {
+      return value.trim().length > 0;
+    }, ['input', 'change']),
+    saveProject: createSaveProjectRequirement(),
+    addCamera: createFieldCompletionRequirement('#cameraSelect', function (value) {
+      return value && value !== 'None';
+    }, ['change']),
+    addPower: createFieldCompletionRequirement('#batterySelect', function (value) {
+      return value && value !== 'None';
+    }, ['change']),
+    generatePlan: createClickCompletionRequirement('#generateGearListBtn'),
+    exportBackup: createClickCompletionRequirement(['#shareSetupBtn', '#storageBackupNow'])
+  };
   var STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
+  function getTimestamp() {
+    if (typeof Date !== 'undefined' && typeof Date.now === 'function') {
+      return Date.now();
+    }
+    try {
+      return new Date().getTime();
+    } catch (error) {
+      void error;
+    }
+    return 0;
+  }
   function normalizeCompletedSteps(value, allowedKeys) {
     if (!Array.isArray(value)) {
       return [];
@@ -190,7 +472,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       snapshot.completed = false;
     }
     if (typeof snapshot.timestamp !== 'number' || Number.isNaN(snapshot.timestamp)) {
-      snapshot.timestamp = Date.now ? Date.now() : new Date().getTime();
+      snapshot.timestamp = getTimestamp();
+    }
+    snapshot.lastCompletedStep = typeof snapshot.lastCompletedStep === 'string' && snapshot.lastCompletedStep ? snapshot.lastCompletedStep : null;
+    if (snapshot.lastCompletedStep && allowedKeys.indexOf(snapshot.lastCompletedStep) === -1) {
+      snapshot.lastCompletedStep = null;
+    }
+    snapshot.lastCompletedAt = typeof snapshot.lastCompletedAt === 'number' && !Number.isNaN(snapshot.lastCompletedAt) ? snapshot.lastCompletedAt : null;
+    if (signature !== STEP_SIGNATURE) {
+      snapshot.lastCompletedStep = null;
+      snapshot.lastCompletedAt = snapshot.timestamp;
     }
     return snapshot;
   }
@@ -244,7 +535,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       version: STORAGE_VERSION
     }));
     var payload = _objectSpread(_objectSpread({}, sanitized), {}, {
-      timestamp: Date.now ? Date.now() : new Date().getTime()
+      timestamp: getTimestamp()
     });
     try {
       SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -273,11 +564,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var steps = {};
     for (var index = 0; index < DEFAULT_STEP_KEYS.length; index += 1) {
       var key = DEFAULT_STEP_KEYS[index];
-      var localEntry = localized.steps && localized.steps[key];
-      var fallbackEntry = fallback.steps && fallback.steps[key];
-      steps[key] = localEntry || fallbackEntry || {
+      var defaultEntry = DEFAULT_STEP_TEXTS[key] || {
         title: key,
         body: ''
+      };
+      var fallbackEntry = fallback.steps && fallback.steps[key];
+      var localEntry = localized.steps && localized.steps[key];
+      var resolvedTitle = localEntry && typeof localEntry.title === 'string' && localEntry.title || fallbackEntry && typeof fallbackEntry.title === 'string' && fallbackEntry.title || (typeof defaultEntry.title === 'string' ? defaultEntry.title : key);
+      var resolvedBody = localEntry && typeof localEntry.body === 'string' && localEntry.body || fallbackEntry && typeof fallbackEntry.body === 'string' && fallbackEntry.body || (typeof defaultEntry.body === 'string' ? defaultEntry.body : '');
+      steps[key] = {
+        title: resolvedTitle,
+        body: resolvedBody
       };
     }
     return _objectSpread(_objectSpread(_objectSpread({}, fallback), localized), {}, {
@@ -291,55 +588,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: null,
       autoActions: null
     }, {
-      key: 'projectOverview',
-      highlight: '#setup-manager',
+      key: 'nameProject',
+      highlight: '#setupName',
       focus: '#setupName'
     }, {
-      key: 'deviceSelection',
-      highlight: '#setup-config'
+      key: 'saveProject',
+      highlight: '#saveSetupBtn'
     }, {
-      key: 'gearGeneration',
+      key: 'addCamera',
+      highlight: '#cameraSelect'
+    }, {
+      key: 'addPower',
+      highlight: '#batterySelect'
+    }, {
+      key: 'generatePlan',
       highlight: '#generateGearListBtn'
     }, {
-      key: 'gearCustomization',
-      highlight: '[data-nav-key="gearListNav"]'
-    }, {
-      key: 'resultsReview',
-      highlight: '[data-nav-key="resultsHeading"]',
-      alternateHighlight: '#resultsHeading',
-      focus: '#resultsHeading'
-    }, {
-      key: 'powerSummary',
-      highlight: '#resultsPlainSummary',
-      alternateHighlight: '#resultsHeading',
-      focus: '#resultsPlainSummaryTitle'
-    }, {
-      key: 'contactsOwnGear',
-      highlight: '#openContactsBtn',
-      alternateHighlight: '[data-nav-key="ownGearNav"]'
-    }, {
-      key: 'autoGear',
-      highlight: '#autoGearHeading',
-      ensureSettings: {
-        tabId: 'settingsTab-autoGear'
-      }
-    }, {
-      key: 'overviewPrint',
-      highlight: '#generateOverviewBtn'
-    }, {
-      key: 'exportImport',
+      key: 'exportBackup',
       highlight: '#shareSetupBtn',
-      alternateHighlight: '#applySharedLinkBtn'
-    }, {
-      key: 'backupRestore',
-      highlight: '#backupSettings',
-      ensureSettings: {
-        tabId: 'settingsTab-backup'
-      }
-    }, {
-      key: 'safetyNet',
-      highlight: '#offlineIndicator',
-      alternateHighlight: '#saveSetupBtn'
+      alternateHighlight: '#storageBackupNow'
     }, {
       key: 'completion',
       highlight: null
@@ -349,6 +616,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var overlayRoot = null;
   var backdropEl = null;
   var highlightEl = null;
+  var activeTargetElement = null;
   var cardEl = null;
   var titleEl = null;
   var bodyEl = null;
@@ -357,6 +625,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var progressMeterFillEl = null;
   var stepListEl = null;
   var resumeHintEl = null;
+  var interactionContainerEl = null;
   var helpStatusEl = null;
   var backButton = null;
   var nextButton = null;
@@ -371,6 +640,96 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var settingsDialogRef = null;
   var resumeHintVisible = false;
   var resumeStartIndex = null;
+  var activeRequirementCleanup = null;
+  var activeRequirementCompleted = false;
+  var activeInteractionCleanup = null;
+  var interactionIdCounter = 0;
+  var lastCardPlacement = 'floating';
+  function nextInteractionId(suffix) {
+    interactionIdCounter += 1;
+    var safeSuffix = typeof suffix === 'string' && suffix ? suffix : 'field';
+    return "onboarding-".concat(safeSuffix, "-").concat(interactionIdCounter);
+  }
+  function setNextButtonDisabled(disabled) {
+    if (!nextButton) {
+      return;
+    }
+    nextButton.disabled = !!disabled;
+    if (disabled) {
+      nextButton.setAttribute('aria-disabled', 'true');
+      nextButton.classList.add('onboarding-next-disabled');
+    } else {
+      nextButton.setAttribute('aria-disabled', 'false');
+      nextButton.classList.remove('onboarding-next-disabled');
+    }
+  }
+  function teardownStepRequirement() {
+    if (typeof activeRequirementCleanup === 'function') {
+      try {
+        activeRequirementCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach active requirement.', error);
+      }
+    }
+    activeRequirementCleanup = null;
+    activeRequirementCompleted = false;
+    setNextButtonDisabled(false);
+  }
+  function teardownStepInteraction() {
+    if (typeof activeInteractionCleanup === 'function') {
+      try {
+        activeInteractionCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach active interaction.', error);
+      }
+    }
+    activeInteractionCleanup = null;
+    if (interactionContainerEl) {
+      while (interactionContainerEl.firstChild) {
+        interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+      }
+      interactionContainerEl.hidden = true;
+    }
+  }
+  function applyStepRequirement(step) {
+    if (!nextButton) {
+      return;
+    }
+    var requirement = step ? STEP_COMPLETION_REQUIREMENTS[step.key] : null;
+    if (!requirement) {
+      activeRequirementCompleted = true;
+      setNextButtonDisabled(false);
+      activeRequirementCleanup = null;
+      return;
+    }
+    var initialComplete = typeof requirement.check === 'function' ? requirement.check() : false;
+    activeRequirementCompleted = initialComplete;
+    setNextButtonDisabled(!initialComplete);
+    if (typeof requirement.attach !== 'function') {
+      return;
+    }
+    var cleanup = requirement.attach({
+      complete: function complete() {
+        if (!active || currentStep !== step) {
+          return;
+        }
+        if (!activeRequirementCompleted) {
+          activeRequirementCompleted = true;
+          setNextButtonDisabled(false);
+        }
+      },
+      incomplete: function incomplete() {
+        if (!active || currentStep !== step) {
+          return;
+        }
+        if (activeRequirementCompleted) {
+          activeRequirementCompleted = false;
+        }
+        setNextButtonDisabled(true);
+      }
+    });
+    activeRequirementCleanup = typeof cleanup === 'function' ? cleanup : null;
+  }
   function clearFrame() {
     if (pendingFrame === null) {
       return;
@@ -407,6 +766,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
+    interactionIdCounter = 0;
     backdropEl = DOCUMENT.createElement('div');
     backdropEl.className = 'onboarding-backdrop';
     overlayRoot.appendChild(backdropEl);
@@ -416,6 +776,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     overlayRoot.appendChild(highlightEl);
     cardEl = DOCUMENT.createElement('section');
     cardEl.className = 'onboarding-card';
+    cardEl.setAttribute('data-placement', 'floating');
     cardEl.setAttribute('role', 'dialog');
     cardEl.setAttribute('aria-modal', 'true');
     cardEl.tabIndex = -1;
@@ -457,6 +818,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     bodyEl = DOCUMENT.createElement('p');
     bodyEl.id = 'onboardingCardBody';
     cardEl.appendChild(bodyEl);
+    interactionContainerEl = DOCUMENT.createElement('div');
+    interactionContainerEl.className = 'onboarding-interaction';
+    interactionContainerEl.hidden = true;
+    cardEl.appendChild(interactionContainerEl);
     stepListEl = DOCUMENT.createElement('ol');
     stepListEl.className = 'onboarding-step-list';
     stepListEl.setAttribute('role', 'list');
@@ -487,6 +852,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function teardownOverlayElements() {
     clearFrame();
+    clearActiveTargetElement();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -501,11 +867,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     progressMeterFillEl = null;
     stepListEl = null;
     resumeHintEl = null;
+    interactionContainerEl = null;
     backButton = null;
     nextButton = null;
     skipButton = null;
     resumeHintVisible = false;
     resumeStartIndex = null;
+    activeInteractionCleanup = null;
+    interactionIdCounter = 0;
+    lastCardPlacement = 'floating';
   }
   function formatStepIndicator(index, total) {
     var template = typeof tourTexts.stepIndicator === 'string' ? tourTexts.stepIndicator : 'Step {current} of {total}';
@@ -547,15 +917,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function clearActiveTargetElement() {
+    if (activeTargetElement && _typeof(activeTargetElement.classList) === 'object') {
+      activeTargetElement.classList.remove('onboarding-active-target');
+    }
+    activeTargetElement = null;
+  }
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
     }
     var target = getTargetElement(currentStep);
     if (!target) {
+      if (activeTargetElement) {
+        clearActiveTargetElement();
+      }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
+      positionCard(null, null);
       return;
+    }
+    if (target !== activeTargetElement) {
+      clearActiveTargetElement();
+      activeTargetElement = target;
+      if (_typeof(target.classList) === 'object') {
+        target.classList.add('onboarding-active-target');
+      }
     }
     var rect = target.getBoundingClientRect();
     var padding = 12;
@@ -567,38 +954,54 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     highlightEl.style.height = "".concat(height, "px");
     highlightEl.style.transform = "translate(".concat(Math.max(0, left), "px, ").concat(Math.max(0, top), "px)");
     highlightEl.style.opacity = '1';
+    positionCard(target, rect);
   }
-  function positionCard() {
+  function positionCard(target, targetRect) {
     if (!cardEl) {
       return;
     }
     var viewportWidth = GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
     var viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
-    var target = getTargetElement(currentStep);
+    var targetElement = target || getTargetElement(currentStep);
+    var resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     var cardRect = cardEl.getBoundingClientRect();
     var top = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + Math.max(24, (viewportHeight - cardRect.height) / 2);
     var left = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + Math.max(24, (viewportWidth - cardRect.width) / 2);
-    if (target) {
-      var rect = target.getBoundingClientRect();
+    var placement = 'floating';
+    if (targetElement && resolvedRect) {
+      var rect = resolvedRect;
       var targetTop = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0);
       var targetLeft = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0);
       var spaceBelow = (GLOBAL_SCOPE.innerHeight || viewportHeight) - rect.bottom;
       var spaceAbove = rect.top;
+      var spaceRight = (GLOBAL_SCOPE.innerWidth || viewportWidth) - rect.right;
       if (spaceBelow > cardRect.height + 40) {
         top = targetTop + rect.height + 24;
+        placement = 'bottom';
       } else if (spaceAbove > cardRect.height + 40) {
         top = targetTop - cardRect.height - 24;
+        placement = 'top';
       }
-      if (targetLeft + rect.width + cardRect.width + 32 < (GLOBAL_SCOPE.scrollX || 0) + viewportWidth) {
+      if (spaceRight > cardRect.width + 40) {
         left = targetLeft + rect.width + 24;
+        placement = placement === 'floating' ? 'right' : "".concat(placement, "-right");
       } else if (targetLeft - cardRect.width - 24 > 0) {
         left = targetLeft - cardRect.width - 24;
+        placement = placement === 'floating' ? 'left' : "".concat(placement, "-left");
+      } else if (placement === 'floating') {
+        placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
       }
+    } else {
+      placement = 'floating';
     }
     var maxTop = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + viewportHeight - cardRect.height - 24;
     var maxLeft = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + viewportWidth - cardRect.width - 24;
     cardEl.style.top = "".concat(Math.max(24 + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0), Math.min(top, maxTop)), "px");
     cardEl.style.left = "".concat(Math.max(24 + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0), Math.min(left, maxLeft)), "px");
+    if (placement !== lastCardPlacement) {
+      lastCardPlacement = placement;
+      cardEl.setAttribute('data-placement', placement);
+    }
   }
   function ensureSettingsForStep(step) {
     if (!step || !step.ensureSettings) {
@@ -768,6 +1171,399 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       stepListEl.appendChild(item);
     }
   }
+  function resolveLabelText(selector, fallback) {
+    if (typeof selector === 'string' && selector) {
+      var labelElement = DOCUMENT.querySelector(selector);
+      if (labelElement && typeof labelElement.textContent === 'string') {
+        var trimmed = labelElement.textContent.trim();
+        if (trimmed) {
+          return trimmed;
+        }
+      }
+    }
+    return typeof fallback === 'string' ? fallback : '';
+  }
+  function resolveButtonLabel(element, fallback) {
+    if (element && typeof element.textContent === 'string') {
+      var trimmed = element.textContent.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+    return typeof fallback === 'string' ? fallback : '';
+  }
+  function dispatchEventSafe(target, type) {
+    if (!target || typeof target.dispatchEvent !== 'function') {
+      return;
+    }
+    try {
+      var event = new Event(type, {
+        bubbles: true
+      });
+      target.dispatchEvent(event);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not dispatch guided event.', error);
+    }
+  }
+  function renderNameProjectInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+    var realInput = getElement('#setupName');
+    var group = DOCUMENT.createElement('div');
+    group.className = 'onboarding-field-group';
+    var inputId = nextInteractionId('project-name');
+    var label = DOCUMENT.createElement('label');
+    label.className = 'onboarding-field-label';
+    label.setAttribute('for', inputId);
+    label.textContent = resolveLabelText("label[for='setupName']", 'Project name');
+    var input = DOCUMENT.createElement('input');
+    input.type = 'text';
+    input.id = inputId;
+    input.className = 'onboarding-field-input';
+    if (realInput && typeof realInput.placeholder === 'string') {
+      input.placeholder = realInput.placeholder;
+    }
+    if (realInput && typeof realInput.maxLength === 'number' && realInput.maxLength > 0) {
+      input.maxLength = realInput.maxLength;
+    }
+    if (realInput && typeof realInput.autocomplete === 'string') {
+      input.setAttribute('autocomplete', realInput.autocomplete);
+    }
+    if (realInput && realInput.required) {
+      input.required = true;
+    }
+    input.value = typeof (realInput === null || realInput === void 0 ? void 0 : realInput.value) === 'string' ? realInput.value : '';
+    group.appendChild(label);
+    group.appendChild(input);
+    interactionContainerEl.appendChild(group);
+    interactionContainerEl.hidden = false;
+    if (!realInput) {
+      input.disabled = true;
+      input.setAttribute('aria-disabled', 'true');
+      return true;
+    }
+    var syncFromReal = function syncFromReal() {
+      if (typeof realInput.value === 'string' && input.value !== realInput.value) {
+        input.value = realInput.value;
+      }
+      if (realInput.disabled && !input.disabled) {
+        input.disabled = true;
+        input.setAttribute('aria-disabled', 'true');
+      } else if (!realInput.disabled && input.disabled) {
+        input.disabled = false;
+        input.removeAttribute('aria-disabled');
+      }
+    };
+    var syncToReal = function syncToReal() {
+      if (realInput.value !== input.value) {
+        realInput.value = input.value;
+      }
+      dispatchEventSafe(realInput, 'input');
+      dispatchEventSafe(realInput, 'change');
+    };
+    input.addEventListener('input', syncToReal);
+    registerCleanup(function () {
+      input.removeEventListener('input', syncToReal);
+    });
+    realInput.addEventListener('input', syncFromReal);
+    realInput.addEventListener('change', syncFromReal);
+    registerCleanup(function () {
+      realInput.removeEventListener('input', syncFromReal);
+      realInput.removeEventListener('change', syncFromReal);
+    });
+    syncFromReal();
+    var focusInput = function focusInput() {
+      try {
+        if (!input.disabled) {
+          input.focus();
+          if (input.value && typeof input.setSelectionRange === 'function') {
+            input.setSelectionRange(0, input.value.length);
+          }
+        }
+      } catch (error) {
+        void error;
+      }
+    };
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(focusInput);
+    } else {
+      setTimeout(focusInput, 0);
+    }
+    return true;
+  }
+  function renderSelectInteraction(config, registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+    var realSelect = getElement(config.selector);
+    if (!realSelect) {
+      return false;
+    }
+    var group = DOCUMENT.createElement('div');
+    group.className = 'onboarding-field-group';
+    var selectId = nextInteractionId(config.suffix || 'select');
+    var label = DOCUMENT.createElement('label');
+    label.className = 'onboarding-field-label';
+    label.setAttribute('for', selectId);
+    label.textContent = resolveLabelText(config.labelSelector, config.fallbackLabel);
+    var select = DOCUMENT.createElement('select');
+    select.id = selectId;
+    select.className = 'onboarding-field-select';
+    if (realSelect && realSelect.multiple) {
+      select.multiple = true;
+    }
+    if (realSelect && typeof realSelect.size === 'number' && realSelect.size > 0) {
+      select.size = realSelect.size;
+    }
+    var syncFromReal = function syncFromReal() {
+      if (!realSelect) {
+        return;
+      }
+      var referenceHTML = realSelect.innerHTML;
+      if (select.innerHTML !== referenceHTML) {
+        select.innerHTML = referenceHTML;
+      }
+      if (select.value !== realSelect.value) {
+        select.value = realSelect.value;
+      }
+      if (select.disabled !== realSelect.disabled) {
+        select.disabled = realSelect.disabled;
+        if (select.disabled) {
+          select.setAttribute('aria-disabled', 'true');
+        } else {
+          select.removeAttribute('aria-disabled');
+        }
+      }
+    };
+    syncFromReal();
+    var syncToReal = function syncToReal() {
+      if (!realSelect) {
+        return;
+      }
+      if (realSelect.value !== select.value) {
+        realSelect.value = select.value;
+      }
+      dispatchEventSafe(realSelect, 'input');
+      dispatchEventSafe(realSelect, 'change');
+    };
+    select.addEventListener('change', syncToReal);
+    select.addEventListener('input', syncToReal);
+    registerCleanup(function () {
+      select.removeEventListener('change', syncToReal);
+      select.removeEventListener('input', syncToReal);
+    });
+    realSelect.addEventListener('change', syncFromReal);
+    realSelect.addEventListener('input', syncFromReal);
+    registerCleanup(function () {
+      realSelect.removeEventListener('change', syncFromReal);
+      realSelect.removeEventListener('input', syncFromReal);
+    });
+    var observer = null;
+    if (typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(function () {
+          syncFromReal();
+        });
+        observer.observe(realSelect, {
+          childList: true,
+          subtree: true,
+          attributes: true
+        });
+        registerCleanup(function () {
+          observer.disconnect();
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe select changes.', error);
+        if (observer) {
+          observer.disconnect();
+        }
+      }
+    }
+    group.appendChild(label);
+    group.appendChild(select);
+    interactionContainerEl.appendChild(group);
+    interactionContainerEl.hidden = false;
+    var focusSelect = function focusSelect() {
+      try {
+        if (!select.disabled) {
+          select.focus();
+        }
+      } catch (error) {
+        void error;
+      }
+    };
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(focusSelect);
+    } else {
+      setTimeout(focusSelect, 0);
+    }
+    return true;
+  }
+  function createGuidedButton(selector, fallbackLabel, registerCleanup) {
+    var realButton = getElement(selector);
+    if (!realButton) {
+      return null;
+    }
+    var button = DOCUMENT.createElement('button');
+    button.type = 'button';
+    button.className = 'onboarding-interaction-button';
+    button.textContent = resolveButtonLabel(realButton, fallbackLabel);
+    var realAriaLabel = typeof realButton.getAttribute === 'function' ? realButton.getAttribute('aria-label') : null;
+    if (realAriaLabel) {
+      button.setAttribute('aria-label', realAriaLabel);
+    }
+    var handleClick = function handleClick() {
+      try {
+        if (typeof realButton.focus === 'function') {
+          realButton.focus({
+            preventScroll: true
+          });
+        }
+      } catch (error) {
+        void error;
+      }
+      try {
+        realButton.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not activate guided button.', error);
+      }
+    };
+    button.addEventListener('click', handleClick);
+    registerCleanup(function () {
+      button.removeEventListener('click', handleClick);
+    });
+    var syncDisabled = function syncDisabled() {
+      var ariaDisabled = typeof realButton.getAttribute === 'function' ? realButton.getAttribute('aria-disabled') : null;
+      var disabled = !!realButton.disabled || ariaDisabled === 'true';
+      button.disabled = disabled;
+      if (disabled) {
+        button.setAttribute('aria-disabled', 'true');
+      } else {
+        button.removeAttribute('aria-disabled');
+      }
+    };
+    syncDisabled();
+    var observer = null;
+    if (typeof MutationObserver === 'function') {
+      try {
+        observer = new MutationObserver(syncDisabled);
+        observer.observe(realButton, {
+          attributes: true,
+          attributeFilter: ['disabled', 'aria-disabled']
+        });
+        registerCleanup(function () {
+          observer.disconnect();
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe guided button state.', error);
+        if (observer) {
+          observer.disconnect();
+        }
+      }
+    }
+    return button;
+  }
+  function appendActionRow(buttons) {
+    if (!interactionContainerEl || !Array.isArray(buttons)) {
+      return false;
+    }
+    var row = DOCUMENT.createElement('div');
+    row.className = 'onboarding-interaction-actions';
+    var appended = false;
+    for (var index = 0; index < buttons.length; index += 1) {
+      var button = buttons[index];
+      if (button) {
+        row.appendChild(button);
+        appended = true;
+      }
+    }
+    if (!appended) {
+      return false;
+    }
+    interactionContainerEl.appendChild(row);
+    interactionContainerEl.hidden = false;
+    return true;
+  }
+  function renderSaveProjectInteraction(registerCleanup) {
+    var saveButton = createGuidedButton('#saveSetupBtn', 'Save project', registerCleanup);
+    if (!saveButton) {
+      return false;
+    }
+    return appendActionRow([saveButton]);
+  }
+  function renderGeneratePlanInteraction(registerCleanup) {
+    var generateButton = createGuidedButton('#generateGearListBtn', 'Generate plan', registerCleanup);
+    if (!generateButton) {
+      return false;
+    }
+    return appendActionRow([generateButton]);
+  }
+  function renderExportBackupInteraction(registerCleanup) {
+    var exportButton = createGuidedButton('#shareSetupBtn', 'Export project', registerCleanup);
+    var backupButton = createGuidedButton('#storageBackupNow', 'Quick safeguard', registerCleanup);
+    if (!exportButton && !backupButton) {
+      return false;
+    }
+    var buttons = [];
+    if (exportButton) {
+      buttons.push(exportButton);
+    }
+    if (backupButton) {
+      buttons.push(backupButton);
+    }
+    return appendActionRow(buttons);
+  }
+  function renderStepInteraction(step) {
+    if (!interactionContainerEl) {
+      return;
+    }
+    teardownStepInteraction();
+    var cleanupFns = [];
+    var registerCleanup = function registerCleanup(fn) {
+      if (typeof fn === 'function') {
+        cleanupFns.push(fn);
+      }
+    };
+    var hasContent = false;
+    var key = step && step.key;
+    if (key === 'nameProject') {
+      hasContent = renderNameProjectInteraction(registerCleanup) || hasContent;
+    } else if (key === 'saveProject') {
+      hasContent = renderSaveProjectInteraction(registerCleanup) || hasContent;
+    } else if (key === 'addCamera') {
+      hasContent = renderSelectInteraction({
+        selector: '#cameraSelect',
+        labelSelector: "label[for='cameraSelect']",
+        fallbackLabel: 'Camera body',
+        suffix: 'camera'
+      }, registerCleanup) || hasContent;
+    } else if (key === 'addPower') {
+      hasContent = renderSelectInteraction({
+        selector: '#batterySelect',
+        labelSelector: "label[for='batterySelect']",
+        fallbackLabel: 'Power source',
+        suffix: 'power'
+      }, registerCleanup) || hasContent;
+    } else if (key === 'generatePlan') {
+      hasContent = renderGeneratePlanInteraction(registerCleanup) || hasContent;
+    } else if (key === 'exportBackup') {
+      hasContent = renderExportBackupInteraction(registerCleanup) || hasContent;
+    }
+    if (hasContent) {
+      activeInteractionCleanup = function activeInteractionCleanup() {
+        for (var index = 0; index < cleanupFns.length; index += 1) {
+          try {
+            cleanupFns[index]();
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not clean up guided interaction.', error);
+          }
+        }
+      };
+    } else {
+      activeInteractionCleanup = null;
+    }
+  }
   function handleStepListClick(event) {
     if (!active) {
       return;
@@ -821,6 +1617,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     updateResumeHint(index);
     updateStepList(index);
+    renderStepInteraction(step);
   }
   function updateProgressMeter(step, index) {
     if (!progressMeterEl || !progressMeterFillEl) {
@@ -845,8 +1642,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (index < 0 || index >= stepConfig.length) {
       return;
     }
-    var step = stepConfig[index];
     var previousStep = currentStep;
+    teardownStepRequirement();
+    teardownStepInteraction();
+    var step = stepConfig[index];
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
       closeSettingsIfNeeded();
     }
@@ -884,6 +1683,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     updateCardForStep(step, index);
+    applyStepRequirement(step);
     if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
       resumeHintVisible = false;
       updateResumeHint(index);
@@ -938,8 +1738,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     completed.push(stepKey);
+    var timestamp = getTimestamp();
     var nextState = _objectSpread(_objectSpread({}, storedState), {}, {
-      completedSteps: completed
+      completedSteps: completed,
+      lastCompletedStep: stepKey,
+      lastCompletedAt: timestamp
     });
     var persisted = saveState(nextState);
     storedState = persisted || normalizeStateSnapshot(nextState);
@@ -990,11 +1793,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var allStepKeys = stepConfig.map(function (step) {
       return step.key;
     });
+    var timestamp = getTimestamp();
+    var finalStep = allStepKeys.length ? allStepKeys[allStepKeys.length - 1] : null;
     var nextState = _objectSpread(_objectSpread({}, storedState), {}, {
       completed: true,
       skipped: false,
       activeStep: null,
-      completedSteps: allStepKeys
+      completedSteps: allStepKeys,
+      lastCompletedStep: finalStep,
+      lastCompletedAt: timestamp
     });
     var persisted = saveState(nextState);
     storedState = persisted || normalizeStateSnapshot(nextState);
@@ -1104,6 +1911,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function endTutorial() {
     active = false;
     clearFrame();
+    teardownStepRequirement();
     detachGlobalListeners();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
@@ -1190,6 +1998,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return stepKey;
   }
+  function formatTimeAgo(timestamp) {
+    if (typeof timestamp !== 'number' || Number.isNaN(timestamp) || timestamp <= 0) {
+      return '';
+    }
+    var now = getTimestamp();
+    if (!now) {
+      return '';
+    }
+    var diff = Math.max(0, now - timestamp);
+    var minute = 60 * 1000;
+    var hour = 60 * minute;
+    var day = 24 * hour;
+    if (diff < 45 * 1000) {
+      return tourTexts.helpStatusTimeJustNow || 'just now';
+    }
+    if (diff < 90 * 1000) {
+      return tourTexts.helpStatusTimeMinute || '1 minute ago';
+    }
+    if (diff < 45 * minute) {
+      var _count = Math.round(diff / minute);
+      var _template = tourTexts.helpStatusTimeMinutes || '{count} minutes ago';
+      return _template.replace('{count}', String(_count));
+    }
+    if (diff < 90 * minute) {
+      return tourTexts.helpStatusTimeHour || '1 hour ago';
+    }
+    if (diff < 22 * hour) {
+      var _count2 = Math.round(diff / hour);
+      var _template2 = tourTexts.helpStatusTimeHours || '{count} hours ago';
+      return _template2.replace('{count}', String(_count2));
+    }
+    if (diff < 36 * hour) {
+      return tourTexts.helpStatusTimeDay || '1 day ago';
+    }
+    var count = Math.round(diff / day);
+    var template = tourTexts.helpStatusTimeDays || '{count} days ago';
+    return template.replace('{count}', String(count));
+  }
+  function formatProgressUpdate(stepTitle, timestamp) {
+    var timeAgo = formatTimeAgo(timestamp);
+    if (!timeAgo) {
+      return '';
+    }
+    if (stepTitle) {
+      var template = tourTexts.helpStatusLastCompleted || 'Last completed: {step} ({timeAgo}).';
+      return template.replace('{step}', stepTitle).replace('{timeAgo}', timeAgo);
+    }
+    var fallbackTemplate = tourTexts.helpStatusLastUpdated || 'Last update: {timeAgo}.';
+    return fallbackTemplate.replace('{timeAgo}', timeAgo);
+  }
   function applyHelpStatus(state, steps) {
     var statusElement = resolveHelpStatusElement();
     if (!statusElement) {
@@ -1213,16 +2071,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var activeKey = stored && typeof stored.activeStep === 'string' ? stored.activeStep : null;
     var activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
     var nextIndex = -1;
-    for (var _index = 0; _index < allowedKeys.length; _index += 1) {
-      var _key = allowedKeys[_index];
+    for (var _index3 = 0; _index3 < allowedKeys.length; _index3 += 1) {
+      var _key = allowedKeys[_index3];
       if (!completedSet.has(_key)) {
-        nextIndex = _index;
+        nextIndex = _index3;
         break;
       }
     }
     var nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
     var nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
     var activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
+    var lastCompletedKey = stored && typeof stored.lastCompletedStep === 'string' ? stored.lastCompletedStep : null;
+    var lastCompletedTitle = lastCompletedKey && allowedKeys.indexOf(lastCompletedKey) !== -1 ? resolveStepTitle(lastCompletedKey) : '';
+    var lastCompletedAt = stored && typeof stored.lastCompletedAt === 'number' ? stored.lastCompletedAt : null;
     var statusType = 'notStarted';
     if (stored && stored.completed) {
       statusType = 'completed';
@@ -1269,9 +2130,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var message = template;
     var tokens = Object.keys(replacements);
-    for (var _index2 = 0; _index2 < tokens.length; _index2 += 1) {
-      var token = tokens[_index2];
+    for (var _index4 = 0; _index4 < tokens.length; _index4 += 1) {
+      var token = tokens[_index4];
       message = message.split(token).join(replacements[token]);
+    }
+    var progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);
+    if (progressUpdate) {
+      message = "".concat(message, " ").concat(progressUpdate).trim();
     }
     statusElement.textContent = message;
     statusElement.hidden = !message;
@@ -1354,7 +2219,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function attachHelpButton() {
     if (!helpButtonListenerAttached && DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
       if (!delegatedHelpListener) {
-        delegatedHelpListener = function (event) {
+        delegatedHelpListener = function delegatedHelpListener(event) {
           var trigger = resolveHelpTrigger(event && event.target);
           if (!trigger) {
             return;
