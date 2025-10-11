@@ -1068,6 +1068,8 @@ const texts = {
       "Include automatic gear rules in the exported file? Select OK to include them or Cancel to skip.",
     shareIncludeAutoGearLabel: "Include automatic gear rules",
     shareIncludeAutoGearHelp: "Add your automatic gear rules to the exported project file.",
+    shareIncludeOwnedGearLabel: "Mark owned gear in export",
+    shareIncludeOwnedGearHelp: "Add ownership badges for gear you marked as yours when exporting.",
     shareDialogTitle: "Export Project",
     shareFilenameLabel: "Export file name",
     shareDialogConfirm: "Download",
@@ -1094,6 +1096,7 @@ const texts = {
     sharedImportMetadataVersionMismatch:
       "Planner version {importVersion} (current build {appVersion})",
     sharedImportMetadataIncludesAutoGear: "Includes automatic gear rules",
+    sharedImportMetadataIncludesOwnedGear: "Marks owned gear items",
     sharedImportMetadataUnavailable: "Export details unavailable.",
     sharedImportDialogConfirm: "Apply",
     sharedImportDialogCancel: "Cancel",
@@ -1594,6 +1597,7 @@ const texts = {
     gearListProviderUnknown: "Custom provider",
     gearListEditOwnedLabel: "Owned",
     gearListEditOwnedHelp: "Add or remove this line from your Own Gear list to keep your inventory in sync.",
+    gearListOwnedExportLabel: "Owned by %s",
     gearListEditCameraLinkLabel: "Camera link",
     gearListEditCameraLinkHelp: "Highlight items that should follow the selected camera everywhere.",
     gearListEditCameraLinkNoneOption: "No camera link",
@@ -2247,6 +2251,9 @@ const texts = {
       "Vuoi includere le regole automatiche per l'attrezzatura nel file esportato? Seleziona OK per includerle o Annulla per saltarle.",
     shareIncludeAutoGearLabel: "Includi le regole automatiche per l'attrezzatura",
     shareIncludeAutoGearHelp: "Aggiunge le tue regole automatiche per l'attrezzatura al file di progetto esportato.",
+    shareIncludeOwnedGearLabel: "Contrassegna l'attrezzatura personale nell'esportazione",
+    shareIncludeOwnedGearHelp:
+      "Aggiungi badge di proprietà per l'attrezzatura che hai contrassegnato come tua durante l'esportazione.",
     shareDialogTitle: "Esporta progetto",
     shareFilenameLabel: "Nome del file di esportazione",
     shareDialogConfirm: "Scarica",
@@ -2272,6 +2279,7 @@ const texts = {
     sharedImportMetadataVersionMismatch:
       "Versione planner {importVersion} (build attuale {appVersion})",
     sharedImportMetadataIncludesAutoGear: "Include regole automatiche",
+    sharedImportMetadataIncludesOwnedGear: "Contrassegna gli elementi di attrezzatura personale",
     sharedImportMetadataUnavailable: "Dettagli esportazione non disponibili.",
     sharedImportDialogConfirm: "Applica",
     sharedImportDialogCancel: "Annulla",
@@ -2757,6 +2765,7 @@ const texts = {
     gearListEditOwnedLabel: "Di proprietà",
     gearListEditOwnedHelp:
       "Aggiungi o rimuovi questa voce dalla tua lista di Attrezzatura personale per mantenerla sincronizzata.",
+    gearListOwnedExportLabel: "Di proprietà di %s",
     gearListEditCameraLinkLabel: "Collegamento fotocamera",
     gearListEditCameraLinkHelp: "Contrassegna gli elementi che seguono la fotocamera selezionata.",
     gearListEditCameraLinkNoneOption: "Nessun collegamento alla fotocamera",
@@ -4233,6 +4242,9 @@ const texts = {
       "¿Quieres incluir las reglas automáticas de equipo en el archivo exportado? Pulsa Aceptar para añadirlas o Cancelar para omitirlas.",
     shareIncludeAutoGearLabel: "Incluir reglas automáticas de equipo",
     shareIncludeAutoGearHelp: "Agrega tus reglas automáticas de equipo al archivo de proyecto exportado.",
+    shareIncludeOwnedGearLabel: "Marcar equipo propio en la exportación",
+    shareIncludeOwnedGearHelp:
+      "Añade insignias de propiedad para el equipo que marcaste como tuyo al exportar.",
     shareDialogTitle: "Exportar proyecto",
     shareFilenameLabel: "Nombre del archivo de exportación",
     shareDialogConfirm: "Descargar",
@@ -4258,6 +4270,7 @@ const texts = {
     sharedImportMetadataVersionMismatch:
       "Versión del planificador {importVersion} (compilación actual {appVersion})",
     sharedImportMetadataIncludesAutoGear: "Incluye reglas automáticas",
+    sharedImportMetadataIncludesOwnedGear: "Marca los elementos de equipo propio",
     sharedImportMetadataUnavailable: "Detalles de exportación no disponibles.",
     sharedImportDialogConfirm: "Aplicar",
     sharedImportDialogCancel: "Cancelar",
@@ -4756,6 +4769,7 @@ const texts = {
     gearListEditOwnedLabel: "Propio",
     gearListEditOwnedHelp:
       "Añade o elimina esta línea de tu lista de Equipo propio para mantenerla sincronizada.",
+    gearListOwnedExportLabel: "Propiedad de %s",
     gearListEditCameraLinkLabel: "Vínculo con la cámara",
     gearListEditCameraLinkHelp: "Marca los elementos que dependen de la cámara seleccionada.",
     gearListEditCameraLinkNoneOption: "Sin vínculo con la cámara",
@@ -6234,6 +6248,9 @@ const texts = {
       "Souhaitez-vous inclure les règles automatiques d’équipement dans le fichier exporté ? Cliquez sur OK pour les ajouter ou sur Annuler pour les ignorer.",
     shareIncludeAutoGearLabel: "Inclure les règles automatiques d’équipement",
     shareIncludeAutoGearHelp: "Ajoute vos règles automatiques d’équipement au fichier projet exporté.",
+    shareIncludeOwnedGearLabel: "Marquer le matériel personnel à l’export",
+    shareIncludeOwnedGearHelp:
+      "Ajoutez des badges de propriété pour le matériel que vous avez indiqué comme vous appartenant lors de l’export.",
     shareDialogTitle: "Exporter le projet",
     shareFilenameLabel: "Nom du fichier d’export",
     shareDialogConfirm: "Télécharger",
@@ -6259,6 +6276,7 @@ const texts = {
     sharedImportMetadataVersionMismatch:
       "Version du planificateur {importVersion} (version actuelle {appVersion})",
     sharedImportMetadataIncludesAutoGear: "Inclut des règles automatiques",
+    sharedImportMetadataIncludesOwnedGear: "Marque le matériel personnel",
     sharedImportMetadataUnavailable: "Détails d’exportation indisponibles.",
     sharedImportDialogConfirm: "Appliquer",
     sharedImportDialogCancel: "Annuler",
@@ -6757,6 +6775,7 @@ const texts = {
     gearListEditOwnedLabel: "Possédé",
     gearListEditOwnedHelp:
       "Ajoutez ou retirez cette ligne de votre liste de Matériel personnel pour garder l’inventaire synchronisé.",
+    gearListOwnedExportLabel: "Possédé par %s",
     gearListEditCameraLinkLabel: "Lien caméra",
     gearListEditCameraLinkHelp: "Identifie les éléments attachés à la caméra sélectionnée.",
     gearListEditCameraLinkNoneOption: "Aucun lien caméra",
@@ -8248,6 +8267,9 @@ const texts = {
       "Möchtest du die automatischen Gear-Regeln in die exportierte Datei aufnehmen? Wähle OK, um sie einzuschließen, oder Abbrechen, um sie auszulassen.",
     shareIncludeAutoGearLabel: "Automatische Gear-Regeln einschließen",
     shareIncludeAutoGearHelp: "Fügt deine automatischen Gear-Regeln der exportierten Projektdatei hinzu.",
+    shareIncludeOwnedGearLabel: "Eigenes Equipment im Export markieren",
+    shareIncludeOwnedGearHelp:
+      "Füge Besitzkennzeichnungen für Equipment hinzu, das du als dein eigenes markiert hast.",
     shareDialogTitle: "Projekt exportieren",
     shareFilenameLabel: "Name der Exportdatei",
     shareDialogConfirm: "Herunterladen",
@@ -8273,6 +8295,7 @@ const texts = {
     sharedImportMetadataVersionMismatch:
       "Planerversion {importVersion} (aktuelle Version {appVersion})",
     sharedImportMetadataIncludesAutoGear: "Enthält automatische Gear-Regeln",
+    sharedImportMetadataIncludesOwnedGear: "Kennzeichnet eigenes Equipment",
     sharedImportMetadataUnavailable: "Exportdetails nicht verfügbar.",
     sharedImportDialogConfirm: "Übernehmen",
     sharedImportDialogCancel: "Abbrechen",
@@ -8772,6 +8795,7 @@ const texts = {
     gearListEditOwnedLabel: "Eigen",
     gearListEditOwnedHelp:
       "Füge diese Zeile deiner Eigengear-Liste hinzu oder entferne sie, damit dein Bestand synchron bleibt.",
+    gearListOwnedExportLabel: "Im Besitz von %s",
     gearListEditCameraLinkLabel: "Kamera-Verknüpfung",
     gearListEditCameraLinkHelp: "Kennzeichnet Artikel, die an der ausgewählten Kamera hängen.",
     gearListEditCameraLinkNoneOption: "Keine Kameraverknüpfung",

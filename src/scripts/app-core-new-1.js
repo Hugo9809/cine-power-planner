@@ -10516,6 +10516,22 @@ function setLanguage(lang) {
     }
   }
 
+  if (shareIncludeOwnedGearText) {
+    const label = texts[lang].shareIncludeOwnedGearLabel
+      || texts.en?.shareIncludeOwnedGearLabel
+      || shareIncludeOwnedGearText.textContent;
+    shareIncludeOwnedGearText.textContent = label;
+    const help = texts[lang].shareIncludeOwnedGearHelp
+      || texts.en?.shareIncludeOwnedGearHelp
+      || label;
+    if (shareIncludeOwnedGearLabelElem) {
+      shareIncludeOwnedGearLabelElem.setAttribute('data-help', help);
+    }
+    if (shareIncludeOwnedGearCheckbox) {
+      shareIncludeOwnedGearCheckbox.setAttribute('aria-label', label);
+    }
+  }
+
   let sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
   if (sharedImportDialogHeading) {
     const title = texts[lang].sharedImportDialogTitle
@@ -16184,6 +16200,78 @@ function getContactDisplayLabel(contact) {
   return base || roleLabel || contact.id;
 }
 
+function ensureContactForImportedOwner(ownerName, options = {}) {
+  const contactOptions = options && typeof options === 'object' ? options : {};
+  const primaryName = typeof sanitizeContactValue === 'function'
+    ? sanitizeContactValue(ownerName)
+    : (typeof ownerName === 'string' ? ownerName.trim() : '');
+  const fallbackLabel = typeof sanitizeContactValue === 'function'
+    ? sanitizeContactValue(contactOptions.fallbackLabel)
+    : (typeof contactOptions.fallbackLabel === 'string' ? contactOptions.fallbackLabel.trim() : '');
+  const roleValue = typeof sanitizeContactValue === 'function'
+    ? sanitizeContactValue(contactOptions.role)
+    : (typeof contactOptions.role === 'string' ? contactOptions.role.trim() : '');
+  const baseName = primaryName || fallbackLabel;
+  if (!baseName) {
+    return null;
+  }
+
+  let existing = null;
+  if (contactOptions.contactId) {
+    existing = getContactById(contactOptions.contactId);
+  }
+  if (!existing) {
+    const targetName = baseName.toLowerCase();
+    existing = contactsCache.find(contact => {
+      if (!contact) return false;
+      const contactName = (contact.name || '').trim().toLowerCase();
+      if (contactName && contactName === targetName) {
+        return true;
+      }
+      if (typeof getContactDisplayLabel === 'function') {
+        const display = (getContactDisplayLabel(contact) || '').trim().toLowerCase();
+        if (display && display === targetName) {
+          return true;
+        }
+      }
+      return false;
+    }) || null;
+  }
+
+  if (existing) {
+    const label = typeof getContactDisplayLabel === 'function'
+      ? getContactDisplayLabel(existing) || baseName
+      : (existing.name || baseName);
+    return { value: `contact:${existing.id}`, label, contact: existing };
+  }
+
+  const now = Date.now();
+  const contact = normalizeContactEntry({
+    id: generateContactId(),
+    name: baseName,
+    role: roleValue,
+    phone: '',
+    email: '',
+    website: '',
+    avatar: '',
+    createdAt: now,
+    updatedAt: now,
+  });
+  contactsCache.push(contact);
+  contactsCache = sortContacts(contactsCache);
+  saveContactsToStorage(contactsCache);
+  if (typeof renderContactsList === 'function') {
+    renderContactsList();
+  }
+  if (typeof updateContactPickers === 'function') {
+    updateContactPickers();
+  }
+  const label = typeof getContactDisplayLabel === 'function'
+    ? getContactDisplayLabel(contact) || baseName
+    : baseName;
+  return { value: `contact:${contact.id}`, label, contact };
+}
+
 function setContactSelectOptions(select, selectedId) {
   if (!select) return;
   const currentValue = typeof selectedId === 'string' ? selectedId : select.value;
@@ -18821,7 +18909,6 @@ var shareSetupBtn   = document.getElementById("shareSetupBtn");
 var sharedLinkRow   = document.getElementById("sharedLinkRow");
 var sharedLinkInput = document.getElementById("sharedLinkInput");
 var shareLinkMessage = document.getElementById("shareLinkMessage");
-var shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
 
 function sanitizeShareFilename(name) {
   if (!name) return '';
@@ -18891,6 +18978,10 @@ var shareCancelBtn = document.getElementById("shareCancelBtn");
 const shareConfirmBtn = document.getElementById("shareConfirmBtn");
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
 var shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
+const shareIncludeOwnedGearText = document.getElementById("shareIncludeOwnedGearText");
+var shareIncludeOwnedGearLabelElem = document.getElementById("shareIncludeOwnedGearLabel");
+var shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
+var shareIncludeOwnedGearCheckbox = document.getElementById("shareIncludeOwnedGear");
 if (shareFilenameInput && shareFilenameMessage) {
   shareFilenameInput.setAttribute('aria-describedby', 'shareFilenameMessage');
 }
@@ -18934,6 +19025,7 @@ const sharedKeyMap = {
   projectHtml: "q",
   gearSelectors: "e",
   gearList: "l",
+  ownedGearMarkers: "u",
   changedDevices: "x",
   feedback: "f",
   autoGearRules: "a",
@@ -19034,6 +19126,13 @@ function formatSharedImportMetadataSummary(metadata) {
       || englishTexts.sharedImportMetadataIncludesAutoGear
       || 'Includes automatic gear rules';
     parts.push(autoGearText);
+  }
+
+  if (metadata.includesOwnedGearMarkers) {
+    const ownedGearText = localeTexts.sharedImportMetadataIncludesOwnedGear
+      || englishTexts.sharedImportMetadataIncludesOwnedGear
+      || 'Marks owned gear items';
+    parts.push(ownedGearText);
   }
 
   return parts.join(' • ');

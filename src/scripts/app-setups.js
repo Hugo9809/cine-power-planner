@@ -1968,6 +1968,8 @@ function buildShareUiContext() {
         linkMessage: resolveElementById('shareLinkMessage', 'shareLinkMessage'),
         includeAutoGearCheckbox: resolveElementById('shareIncludeAutoGear', 'shareIncludeAutoGearCheckbox'),
         includeAutoGearLabel: resolveElementById('shareIncludeAutoGearLabel', 'shareIncludeAutoGearLabelElem'),
+        includeOwnedGearCheckbox: resolveElementById('shareIncludeOwnedGear', 'shareIncludeOwnedGearCheckbox'),
+        includeOwnedGearLabel: resolveElementById('shareIncludeOwnedGearLabel', 'shareIncludeOwnedGearLabelElem'),
         cancelButton: resolveElementById('shareCancelBtn', 'shareCancelBtn'),
         sharedLinkInput: resolveElementById('sharedLinkInput', 'sharedLinkInput'),
         applySharedLinkButton: resolveElementById('applySharedLinkBtn', 'applySharedLinkBtn'),
@@ -2557,11 +2559,18 @@ function resolveLocalAppVersionForShare() {
   return '';
 }
 
-function createSharedProjectMetadata({ includeAutoGear, hasAutoGearRules }) {
+function createSharedProjectMetadata({
+  includeAutoGear,
+  hasAutoGearRules,
+  includeOwnedGearMarks,
+  hasOwnedGearMarkers,
+}) {
   const metadata = {
     type: 'camera-power-planner/project-bundle',
     includesAutoGearRules: Boolean(includeAutoGear && hasAutoGearRules),
   };
+
+  metadata.includesOwnedGearMarkers = Boolean(includeOwnedGearMarks && hasOwnedGearMarkers);
 
   const version = resolveLocalAppVersionForShare();
   if (version) {
@@ -2582,7 +2591,127 @@ function createSharedProjectMetadata({ includeAutoGear, hasAutoGearRules }) {
   return metadata;
 }
 
-function downloadSharedProject(shareFileName, includeAutoGear) {
+function hasOwnedGearItemsForExport(root) {
+  const scope = root || gearListOutput;
+  if (!scope || typeof scope.querySelector !== 'function') {
+    return false;
+  }
+  return Boolean(scope.querySelector('[data-gear-own-gear-id]'));
+}
+
+function formatOwnedGearExportLabel(ownerName) {
+  const template = typeof getLocalizedText === 'function'
+    ? getLocalizedText('gearListOwnedExportLabel')
+    : '';
+  const fallback = texts?.en?.gearListOwnedExportLabel || 'Owned by %s';
+  const base = template && template.trim() ? template : fallback;
+  if (!base.includes('%s')) {
+    return `${base} ${ownerName}`.trim();
+  }
+  return base.replace('%s', ownerName);
+}
+
+function collectOwnedGearMarkersForExport(root) {
+  const scope = root || gearListOutput;
+  if (!scope || typeof scope.querySelectorAll !== 'function') {
+    return [];
+  }
+  const items = scope.querySelectorAll('[data-gear-own-gear-id]');
+  const markers = [];
+  items.forEach((element) => {
+    if (!element) return;
+    const ownedId = element.getAttribute('data-gear-own-gear-id');
+    if (!ownedId) return;
+    const providerValue = element.getAttribute('data-gear-provider') || '';
+    const providerLabel = element.getAttribute('data-gear-provider-label') || '';
+    const info = getProviderInfo(providerValue, { label: providerLabel });
+    const ownerDisplayName = (() => {
+      if (info.type === 'user') {
+        return info.profileDisplayName
+          || info.label
+          || providerLabel
+          || getGearProviderTexts().user
+          || 'User';
+      }
+      if (info.type === 'contact') {
+        return info.label || providerLabel;
+      }
+      return providerLabel || info.label || '';
+    })().trim();
+    const marker = {
+      ownedId,
+      providerValue: info.value || providerValue,
+      providerLabel: info.label || providerLabel,
+      ownerDisplayName,
+      ownerProfileName: info.profileName || '',
+      ownerType: info.type || '',
+      contactId: info.contactId || '',
+      gearName: element.getAttribute('data-gear-name') || '',
+    };
+    markers.push(marker);
+  });
+  return markers;
+}
+
+function applyOwnedGearMarkersToHtml(html, markers, options = {}) {
+  if (!html || !markers || !markers.length) {
+    return html;
+  }
+  let doc;
+  try {
+    doc = document.implementation.createHTMLDocument('');
+  } catch (error) {
+    void error;
+  }
+  if (!doc || !doc.body) {
+    return html;
+  }
+  doc.body.innerHTML = html;
+  const ownerLabelFallback = options.ownerLabelFallback || 'Owned';
+  markers.forEach((marker) => {
+    if (!marker || !marker.ownedId) {
+      return;
+    }
+    const selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
+      ? CSS.escape(marker.ownedId)
+      : marker.ownedId.replace(/"/g, '\\"');
+    const selector = `[data-gear-own-gear-id="${selectorId}"]`;
+    const element = doc.body.querySelector(selector);
+    if (!element) {
+      return;
+    }
+    if (marker.ownerDisplayName) {
+      element.setAttribute('data-gear-owned-export-label', marker.ownerDisplayName);
+    } else {
+      element.removeAttribute('data-gear-owned-export-label');
+    }
+    const previousBadges = element.querySelectorAll('[data-gear-owned-export]');
+    previousBadges.forEach((badge) => {
+      if (badge && badge.parentElement) {
+        badge.parentElement.removeChild(badge);
+      }
+    });
+    const ownerName = marker.ownerDisplayName || ownerLabelFallback;
+    const label = formatOwnedGearExportLabel(ownerName);
+    const badge = doc.createElement('span');
+    badge.className = 'gear-item-provider gear-item-owned-export';
+    badge.setAttribute('data-gear-owned-export', 'true');
+    badge.textContent = label;
+    const isCustom = element.classList?.contains('gear-custom-item');
+    const insertionRoot = isCustom
+      ? (element.querySelector('.gear-custom-item-summary') || element)
+      : element;
+    const note = insertionRoot.querySelector('.gear-item-note');
+    if (note && note.parentElement === insertionRoot) {
+      insertionRoot.insertBefore(badge, note);
+    } else {
+      insertionRoot.appendChild(badge);
+    }
+  });
+  return doc.body.innerHTML;
+}
+
+function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear) {
   if (!shareFileName) return;
   const shareContext = getShareUiContext(this);
   const shareLinkMessage = shareContext.linkMessage;
@@ -2688,6 +2817,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
+  const ownedGearMarkers = includeOwnedGear ? collectOwnedGearMarkersForExport(gearListOutput) : [];
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
   if (currentSetup.gearListAndProjectRequirementsGenerated) {
@@ -2696,7 +2826,13 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       currentSetup.projectHtml = projectHtml;
     }
     if (gearHtml) {
-      currentSetup.gearList = gearHtml;
+      const exportHtml = includeOwnedGear && ownedGearMarkers.length
+        ? applyOwnedGearMarkersToHtml(gearHtml, ownedGearMarkers)
+        : gearHtml;
+      currentSetup.gearList = exportHtml;
+      if (includeOwnedGear && ownedGearMarkers.length) {
+        currentSetup.ownedGearMarkers = ownedGearMarkers.map((entry) => ({ ...entry }));
+      }
     }
   }
   if (currentSetup.gearListAndProjectRequirementsGenerated && projectInfoSnapshotForExport) {
@@ -2717,7 +2853,12 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     }
   }
 
-  const metadata = createSharedProjectMetadata({ includeAutoGear, hasAutoGearRules });
+  const metadata = createSharedProjectMetadata({
+    includeAutoGear,
+    hasAutoGearRules,
+    includeOwnedGearMarks: includeOwnedGear,
+    hasOwnedGearMarkers: ownedGearMarkers.length > 0,
+  });
   if (metadata && typeof metadata === 'object') {
     currentSetup.metadata = metadata;
   }
@@ -2753,6 +2894,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
 
   if (shareIncludeAutoGearCheckbox) {
     shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
+  }
+  if (shareContext.includeOwnedGearCheckbox) {
+    shareContext.includeOwnedGearCheckbox.checked = includeOwnedGear && ownedGearMarkers.length > 0;
   }
 
   if (!downloadResult || !downloadResult.success) {
@@ -3401,7 +3545,12 @@ function handleShareSetupClick() {
     if (shareIncludeAutoGearCheckbox) {
       shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
     }
-    downloadSharedProject(shareFileName, includeAutoGear);
+    const hasOwnedGearForExport = hasOwnedGearItemsForExport(gearListOutput);
+    const includeOwnedGear = hasOwnedGearForExport;
+    if (shareContext.includeOwnedGearCheckbox) {
+      shareContext.includeOwnedGearCheckbox.checked = includeOwnedGear && hasOwnedGearForExport;
+    }
+    downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
     return;
   }
 
@@ -3417,6 +3566,7 @@ function handleShareSetupClick() {
 
   const rulesForShare = getAutoGearRules();
   const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
+  const hasOwnedGearForExport = hasOwnedGearItemsForExport(gearListOutput);
   if (shareIncludeAutoGearCheckbox) {
     shareIncludeAutoGearCheckbox.disabled = !hasAutoGearRules;
     shareIncludeAutoGearCheckbox.setAttribute('aria-disabled', hasAutoGearRules ? 'false' : 'true');
@@ -3427,6 +3577,17 @@ function handleShareSetupClick() {
   if (shareIncludeAutoGearLabelElem) {
     shareIncludeAutoGearLabelElem.classList.toggle('disabled', !hasAutoGearRules);
     shareIncludeAutoGearLabelElem.setAttribute('aria-disabled', !hasAutoGearRules ? 'true' : 'false');
+  }
+  const shareIncludeOwnedGearCheckbox = shareContext.includeOwnedGearCheckbox;
+  const shareIncludeOwnedGearLabelElem = shareContext.includeOwnedGearLabel;
+  if (shareIncludeOwnedGearCheckbox) {
+    shareIncludeOwnedGearCheckbox.disabled = !hasOwnedGearForExport;
+    shareIncludeOwnedGearCheckbox.setAttribute('aria-disabled', hasOwnedGearForExport ? 'false' : 'true');
+    shareIncludeOwnedGearCheckbox.checked = hasOwnedGearForExport;
+  }
+  if (shareIncludeOwnedGearLabelElem) {
+    shareIncludeOwnedGearLabelElem.classList.toggle('disabled', !hasOwnedGearForExport);
+    shareIncludeOwnedGearLabelElem.setAttribute('aria-disabled', !hasOwnedGearForExport ? 'true' : 'false');
   }
 
   openDialog(shareDialog);
@@ -3456,6 +3617,7 @@ function handleShareFormSubmit(event) {
   const shareFilenameInput = shareContext.filenameInput;
   const shareDialog = shareContext.dialog;
   const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
+  const shareIncludeOwnedGearCheckbox = shareContext.includeOwnedGearCheckbox;
   if (!shareFilenameInput) return;
   const sanitized = sanitizeShareFilename(shareFilenameInput.value);
   if (!sanitized) {
@@ -3473,8 +3635,13 @@ function handleShareFormSubmit(event) {
     && !shareIncludeAutoGearCheckbox.disabled
     && shareIncludeAutoGearCheckbox.checked
   );
+  const includeOwnedGear = !!(
+    shareIncludeOwnedGearCheckbox
+    && !shareIncludeOwnedGearCheckbox.disabled
+    && shareIncludeOwnedGearCheckbox.checked
+  );
   closeDialog(shareDialog);
-  downloadSharedProject(shareFileName, includeAutoGear);
+  downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear);
 }
 
 function handleShareCancelClick() {

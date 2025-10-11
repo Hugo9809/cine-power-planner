@@ -10045,6 +10045,22 @@ body.dark-mode .requirement-box,
   box-shadow: none;
 }
 
+.gear-item-owned-export {
+  margin-inline-start: 0.4rem;
+  font-size: calc(var(--form-control-font-size) * 0.85);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--panel-bg) 96%, var(--accent-color) 4%) 0%,
+    color-mix(in srgb, var(--control-bg) 94%, var(--accent-color) 6%) 100%
+  );
+  border-color: color-mix(in srgb, var(--panel-border) 80%, var(--accent-color) 20%);
+}
+
+.dark-mode #gearListOutput .gear-item-owned-export {
+  background: color-mix(in srgb, var(--panel-bg) 88%, var(--accent-color) 12%);
+  border-color: color-mix(in srgb, var(--panel-border) 55%, var(--accent-color) 45%);
+}
+
 .gear-item-camera-link {
   display: inline-flex;
   align-items: center;
