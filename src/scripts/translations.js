@@ -10208,6 +10208,29 @@ function ensureLanguageAlignment(
   }
 }
 
+const globalScope =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof self !== 'undefined'
+        ? self
+        : typeof global !== 'undefined'
+          ? global
+          : null;
+
+if (globalScope) {
+  if (typeof globalScope.texts === 'undefined') {
+    globalScope.texts = texts;
+  }
+  if (typeof globalScope.categoryNames === 'undefined') {
+    globalScope.categoryNames = categoryNames;
+  }
+  if (typeof globalScope.gearItems === 'undefined') {
+    globalScope.gearItems = gearItems;
+  }
+}
+
 const supportedLanguages = Object.keys(texts);
 
 ensureLanguageAlignment(texts, { datasetName: 'texts', referenceLang: 'en' });
