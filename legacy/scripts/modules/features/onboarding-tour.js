@@ -145,7 +145,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     userProfile: {
       title: 'Configure your user profile',
-      body: 'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.'
+      body: 'Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays with your offline saves and keeps exports credited to the correct owner.'
     },
     nameProject: {
       title: 'Name your first project',
@@ -1333,7 +1333,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Add your display name, role, phone, email and photo right here. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = 'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
     var avatarGroup = DOCUMENT.createElement('div');
     avatarGroup.className = 'onboarding-avatar-group';
