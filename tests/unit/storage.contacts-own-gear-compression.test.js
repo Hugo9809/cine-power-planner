@@ -11,10 +11,44 @@ const createQuotaError = () => {
   return error;
 };
 
-const createMockStorage = ({ quotaOnProjectBackup = false, projectBackupFailures = 1 } = {}) => {
+const createMockStorage = ({
+  quotaOnProjectBackup = false,
+  projectBackupFailures = 1,
+  quotaFailuresByKey = {},
+} = {}) => {
   const data = new Map();
   const setItemCalls = [];
-  let projectBackupAttempts = 0;
+  const attemptsByKey = new Map();
+
+  const quotaConfig = quotaFailuresByKey && typeof quotaFailuresByKey === 'object'
+    ? quotaFailuresByKey
+    : {};
+
+  const shouldTriggerQuota = (key) => {
+    if (typeof key !== 'string') {
+      return false;
+    }
+
+    const attemptCount = (attemptsByKey.get(key) || 0) + 1;
+    attemptsByKey.set(key, attemptCount);
+
+    if (Object.prototype.hasOwnProperty.call(quotaConfig, key)) {
+      const configuredFailures = Number(quotaConfig[key]);
+      if (Number.isFinite(configuredFailures) && configuredFailures > 0) {
+        return attemptCount <= configuredFailures;
+      }
+      return false;
+    }
+
+    if (quotaOnProjectBackup && key === `${PROJECT_KEY}${BACKUP_SUFFIX}`) {
+      const limit = typeof projectBackupFailures === 'number' && projectBackupFailures > 0
+        ? projectBackupFailures
+        : 1;
+      return attemptCount <= limit;
+    }
+
+    return false;
+  };
 
   const storage = {
     get length() {
@@ -29,11 +63,8 @@ const createMockStorage = ({ quotaOnProjectBackup = false, projectBackupFailures
     },
     setItem(key, value) {
       setItemCalls.push({ key, value: String(value) });
-      if (quotaOnProjectBackup && key === `${PROJECT_KEY}${BACKUP_SUFFIX}`) {
-        projectBackupAttempts += 1;
-        if (projectBackupAttempts <= projectBackupFailures) {
-          throw createQuotaError();
-        }
+      if (shouldTriggerQuota(key)) {
+        throw createQuotaError();
       }
       data.set(key, String(value));
     },
@@ -48,11 +79,12 @@ const createMockStorage = ({ quotaOnProjectBackup = false, projectBackupFailures
   return { storage, data, setItemCalls };
 };
 
-const bootstrapStorageModule = (storage) => {
+const bootstrapStorageModule = (storage, options = {}) => {
   jest.resetModules();
+  const sessionStorage = options.sessionStorage || storage;
   global.localStorage = storage;
-  global.sessionStorage = storage;
-  global.window = { localStorage: storage, sessionStorage: storage };
+  global.sessionStorage = sessionStorage;
+  global.window = { localStorage: storage, sessionStorage };
   global.LZString = require('lz-string/libs/lz-string');
   return require('../../src/scripts/storage');
 };
@@ -110,5 +142,31 @@ describe('contacts and own gear storage bypass compression', () => {
     expect(containsCompressionFlag(data.get(OWN_GEAR_KEY))).toBe(false);
     expect(containsCompressionFlag(data.get(`${OWN_GEAR_KEY}${BACKUP_SUFFIX}`))).toBe(false);
     expect(containsCompressionFlag(data.get(`${PROJECT_KEY}${BACKUP_SUFFIX}`))).toBe(true);
+  });
+
+  test('quota recovery keeps protected backups uncompressed', () => {
+    const quotaFailuresByKey = {
+      [`${OWN_GEAR_KEY}${BACKUP_SUFFIX}`]: 1,
+    };
+
+    const { storage, data } = createMockStorage({ quotaFailuresByKey });
+    const sessionStorage = createMockStorage().storage;
+
+    data.set(PROJECT_KEY, JSON.stringify({ Active: { gearList: 'x'.repeat(2048) } }));
+    data.set(CONTACTS_KEY, JSON.stringify([{ id: 'contact-1', name: 'DP' }]));
+    data.set(OWN_GEAR_KEY, JSON.stringify([{ id: 'gear-1', name: 'Meter', notes: 'x'.repeat(256) }]));
+    data.set('otherKey', JSON.stringify({ payload: 'x'.repeat(8192) }));
+
+    const api = bootstrapStorageModule(storage, { sessionStorage });
+
+    api.ensureCriticalStorageBackups({ storage });
+
+    const ownGearBackup = data.get(`${OWN_GEAR_KEY}${BACKUP_SUFFIX}`);
+    expect(typeof ownGearBackup).toBe('string');
+    expect(containsCompressionFlag(ownGearBackup)).toBe(false);
+
+    const projectBackup = data.get(`${PROJECT_KEY}${BACKUP_SUFFIX}`);
+    expect(containsCompressionFlag(projectBackup)).toBe(true);
+    expect(containsCompressionFlag(data.get('otherKey'))).toBe(true);
   });
 });

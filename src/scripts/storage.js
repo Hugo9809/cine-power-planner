@@ -2766,9 +2766,13 @@ function ensureCriticalStorageBackups(options = {}) {
       }
     };
 
+    const compressionProtected = isCompressionProtectedStorageKey(entry.key)
+      || isCompressionProtectedStorageKey(entry.backupKey);
+
     const shouldAttemptCompression = typeof stringPrimaryValue === 'string'
       && stringPrimaryValue
-      && !stringPrimaryValue.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`);
+      && !stringPrimaryValue.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`)
+      && !compressionProtected;
 
     let candidateValue = stringPrimaryValue;
     let compressionInfo = null;
@@ -3859,10 +3863,10 @@ function registerActiveSetupStorageSkipKeys(skipSet) {
   }
 }
 
+var STORAGE_COMPRESSION_PROTECTED_KEYS = new Set();
+
 function registerProtectedCompressionSkipKeys(skipSet) {
-  if (!skipSet || typeof skipSet.add !== 'function') {
-    return;
-  }
+  const targetSet = skipSet && typeof skipSet.add === 'function' ? skipSet : null;
 
   const keysToProtect = [
     CONTACTS_STORAGE_KEY,
@@ -3875,13 +3879,30 @@ function registerProtectedCompressionSkipKeys(skipSet) {
       continue;
     }
 
-    skipSet.add(key);
+    STORAGE_COMPRESSION_PROTECTED_KEYS.add(key);
+    if (targetSet) {
+      targetSet.add(key);
+    }
 
     if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
-      skipSet.add(`${key}${STORAGE_BACKUP_SUFFIX}`);
+      const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+      STORAGE_COMPRESSION_PROTECTED_KEYS.add(backupKey);
+      if (targetSet) {
+        targetSet.add(backupKey);
+      }
     }
   }
 }
+
+function isCompressionProtectedStorageKey(key) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+
+  return STORAGE_COMPRESSION_PROTECTED_KEYS.has(key);
+}
+
+registerProtectedCompressionSkipKeys();
 
 function maybeDecompressStoredString(raw, options) {
   if (typeof raw !== 'string') {
