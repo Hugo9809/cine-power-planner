@@ -389,6 +389,19 @@
       });
     };
 
+    const ensureSynonymGroup = (triggers, expansions, groupRequirements) => {
+      const triggerList = Array.isArray(triggers) ? triggers : [triggers];
+      const requirementGroups = Array.isArray(groupRequirements) ? groupRequirements : [];
+      if (
+        (triggerList.length && hasAny(triggerList)) ||
+        (requirementGroups.length > 0 && hasAllGroups(requirementGroups))
+      ) {
+        const expansionList = Array.isArray(expansions) ? expansions : [expansions];
+        const combined = new Set([...triggerList, ...expansionList]);
+        addAll(Array.from(combined));
+      }
+    };
+
     if (
       hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) ||
       hasAllGroups([
@@ -518,6 +531,149 @@
     ) {
       addAll(['ev', 'exposurevalue']);
     }
+
+    ensureSynonymGroup(
+      ['usbc', 'usbtypec', 'usbctype', 'typec'],
+      ['usbc', 'usbtypec', 'usbctype', 'typec', 'usbpowerdelivery', 'powerdelivery', 'pd'],
+      [
+        ['usb'],
+        ['c', 'typec'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['usba', 'usbtypea', 'typea'],
+      ['usba', 'usbtypea', 'typea'],
+      [
+        ['usb'],
+        ['a', 'typea'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['microusb', 'usbmicro', 'usbmicrob'],
+      ['microusb', 'usbmicro', 'usbmicrob'],
+      [
+        ['usb'],
+        ['micro'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['miniusb', 'usbmini', 'usbminib'],
+      ['miniusb', 'usbmini', 'usbminib'],
+      [
+        ['usb'],
+        ['mini'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['microhdmi', 'hdmimicro'],
+      ['microhdmi', 'hdmimicro'],
+      [
+        ['micro'],
+        ['hdmi'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['minihdmi', 'hdmimini'],
+      ['minihdmi', 'hdmimini', 'hdmitypec'],
+      [
+        ['mini'],
+        ['hdmi'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['fullhdmi', 'hdmitypea'],
+      ['fullhdmi', 'hdmitypea'],
+      [
+        ['full'],
+        ['hdmi'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['sdxc'],
+      ['sdxc', 'secureddxc', 'secureddigitalxc'],
+      [
+        ['sd'],
+        ['xc'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['sdhc'],
+      ['sdhc', 'secureddigitalhc'],
+      [
+        ['sd'],
+        ['hc'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['cfexpress', 'cfexpresstypea', 'cfexpresstypeb'],
+      ['cfexpress', 'cfexpresstypea', 'cfexpresstypeb'],
+      [
+        ['cf'],
+        ['express'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['cfast'],
+      ['cfast'],
+      [
+        ['cf'],
+        ['ast', 'fast'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['xqd'],
+      ['xqd'],
+      [
+        ['qd'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['dtap', 'ptap', 'powertap'],
+      ['dtap', 'ptap', 'powertap'],
+      [
+        ['d', 'p'],
+        ['tap'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['vmount', 'vlock'],
+      ['vmount', 'vlock', 'vmountbattery', 'vmountplate'],
+      [
+        ['v'],
+        ['mount', 'lock'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['bmount'],
+      ['bmount', 'bmountrib'],
+      [
+        ['b'],
+        ['mount'],
+      ],
+    );
+
+    ensureSynonymGroup(
+      ['goldmount', 'antonbauer'],
+      ['goldmount', 'antonbauer'],
+      [
+        ['gold'],
+        ['mount'],
+      ],
+    );
   }
 
   const FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
