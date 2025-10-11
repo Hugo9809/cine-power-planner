@@ -1032,6 +1032,11 @@
   let stepConfig = getStepConfig();
 
   let overlayRoot = null;
+  let overlayHostObserver = null;
+  let overlayDialogOrder = new WeakMap();
+  let overlayDialogSequence = 0;
+  let pendingOverlayHostSync = null;
+  let pendingOverlayHostSyncType = null;
   let highlightEl = null;
   let activeTargetElement = null;
   let cardEl = null;
@@ -1070,6 +1075,201 @@
   let activeInteractionCleanup = null;
   let lastCardPlacement = 'floating';
   let proxyControlId = 0;
+
+  function isDialogElement(node) {
+    if (!node) {
+      return false;
+    }
+    const DialogCtor = GLOBAL_SCOPE && GLOBAL_SCOPE.HTMLDialogElement;
+    if (typeof DialogCtor === 'function') {
+      return node instanceof DialogCtor;
+    }
+    return typeof node.nodeName === 'string'
+      && node.nodeName.toLowerCase() === 'dialog';
+  }
+
+  function recordDialogOpenOrder(dialog) {
+    if (!dialog) {
+      return null;
+    }
+    overlayDialogSequence += 1;
+    overlayDialogOrder.set(dialog, overlayDialogSequence);
+    return overlayDialogSequence;
+  }
+
+  function resetDialogOpenOrder() {
+    overlayDialogOrder = new WeakMap();
+    overlayDialogSequence = 0;
+  }
+
+  function resolveTopmostDialog() {
+    if (!DOCUMENT || typeof DOCUMENT.querySelectorAll !== 'function') {
+      return null;
+    }
+    let topDialog = null;
+    let topOrder = -Infinity;
+    const dialogs = DOCUMENT.querySelectorAll('dialog[open]');
+    for (let index = 0; index < dialogs.length; index += 1) {
+      const dialog = dialogs[index];
+      if (!isDialogElement(dialog)) {
+        continue;
+      }
+      let order = overlayDialogOrder.get(dialog);
+      if (typeof order !== 'number') {
+        order = recordDialogOpenOrder(dialog);
+      }
+      if (typeof order !== 'number') {
+        continue;
+      }
+      if (!topDialog || order > topOrder) {
+        topDialog = dialog;
+        topOrder = order;
+      }
+    }
+    return topDialog;
+  }
+
+  function cancelOverlayHostSync() {
+    if (pendingOverlayHostSync === null) {
+      return;
+    }
+    if (
+      pendingOverlayHostSyncType === 'raf'
+      && GLOBAL_SCOPE
+      && typeof GLOBAL_SCOPE.cancelAnimationFrame === 'function'
+    ) {
+      GLOBAL_SCOPE.cancelAnimationFrame(pendingOverlayHostSync);
+    } else {
+      const clear = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.clearTimeout === 'function'
+        ? GLOBAL_SCOPE.clearTimeout
+        : (typeof clearTimeout === 'function' ? clearTimeout : null);
+      if (typeof clear === 'function') {
+        try {
+          clear(pendingOverlayHostSync);
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not clear overlay host sync timer.', error);
+        }
+      }
+    }
+    pendingOverlayHostSync = null;
+    pendingOverlayHostSyncType = null;
+  }
+
+  function syncOverlayHost() {
+    if (!overlayRoot || !DOCUMENT || !DOCUMENT.body) {
+      return;
+    }
+    const topDialog = resolveTopmostDialog();
+    const desiredHost = topDialog || DOCUMENT.body;
+    if (!desiredHost || typeof desiredHost.appendChild !== 'function') {
+      return;
+    }
+    if (overlayRoot.parentNode !== desiredHost) {
+      desiredHost.appendChild(overlayRoot);
+      schedulePositionUpdate();
+    }
+    if (topDialog) {
+      overlayRoot.setAttribute('data-onboarding-host', 'dialog');
+    } else {
+      overlayRoot.removeAttribute('data-onboarding-host');
+    }
+  }
+
+  function scheduleOverlayHostSync() {
+    if (!overlayRoot) {
+      return;
+    }
+    if (pendingOverlayHostSync !== null) {
+      return;
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
+      pendingOverlayHostSyncType = 'raf';
+      pendingOverlayHostSync = GLOBAL_SCOPE.requestAnimationFrame(() => {
+        pendingOverlayHostSync = null;
+        pendingOverlayHostSyncType = null;
+        syncOverlayHost();
+      });
+      return;
+    }
+    const set = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.setTimeout === 'function'
+      ? GLOBAL_SCOPE.setTimeout
+      : (typeof setTimeout === 'function' ? setTimeout : null);
+    if (typeof set === 'function') {
+      pendingOverlayHostSyncType = 'timeout';
+      pendingOverlayHostSync = set(() => {
+        pendingOverlayHostSync = null;
+        pendingOverlayHostSyncType = null;
+        syncOverlayHost();
+      }, 16);
+    }
+  }
+
+  function handleDialogHostMutations(mutations) {
+    if (!mutations) {
+      return;
+    }
+    let shouldSync = false;
+    for (let index = 0; index < mutations.length; index += 1) {
+      const mutation = mutations[index];
+      if (!mutation || mutation.type !== 'attributes' || mutation.attributeName !== 'open') {
+        continue;
+      }
+      const target = mutation.target;
+      if (!isDialogElement(target)) {
+        continue;
+      }
+      if (typeof target.hasAttribute === 'function' && target.hasAttribute('open')) {
+        recordDialogOpenOrder(target);
+        shouldSync = true;
+      } else if (typeof overlayDialogOrder.delete === 'function') {
+        overlayDialogOrder.delete(target);
+        shouldSync = true;
+      }
+    }
+    if (shouldSync) {
+      scheduleOverlayHostSync();
+    }
+  }
+
+  function startOverlayHostObserver() {
+    if (!overlayRoot || !DOCUMENT || !DOCUMENT.body) {
+      return;
+    }
+    if (overlayHostObserver) {
+      scheduleOverlayHostSync();
+      return;
+    }
+    const ObserverCtor = GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver;
+    if (typeof ObserverCtor !== 'function') {
+      scheduleOverlayHostSync();
+      return;
+    }
+    try {
+      overlayHostObserver = new ObserverCtor(handleDialogHostMutations);
+      overlayHostObserver.observe(DOCUMENT.body, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['open'],
+      });
+    } catch (error) {
+      overlayHostObserver = null;
+      safeWarn('cine.features.onboardingTour could not observe dialog toggles.', error);
+    }
+    scheduleOverlayHostSync();
+  }
+
+  function stopOverlayHostObserver() {
+    cancelOverlayHostSync();
+    if (overlayHostObserver && typeof overlayHostObserver.disconnect === 'function') {
+      try {
+        overlayHostObserver.disconnect();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not disconnect dialog observer.', error);
+      }
+    }
+    overlayHostObserver = null;
+    resetDialogOpenOrder();
+  }
 
   function getProxyControlId(prefix) {
     proxyControlId += 1;
@@ -1338,11 +1538,13 @@
     DOCUMENT.body.appendChild(overlayRoot);
 
     overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
+    startOverlayHostObserver();
   }
 
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElement();
+    stopOverlayHostObserver();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -1618,6 +1820,8 @@
       autoOpenedSettings = false;
     }
 
+    scheduleOverlayHostSync();
+
     if (step.ensureSettings.tabId && typeof activateSettingsTab === 'function') {
       try {
         activateSettingsTab(step.ensureSettings.tabId);
@@ -1643,6 +1847,7 @@
 
     const isVisible = isContactsDialogVisible();
     if (isVisible) {
+      scheduleOverlayHostSync();
       return;
     }
 
@@ -1659,6 +1864,7 @@
     }
 
     if (isContactsDialogVisible()) {
+      scheduleOverlayHostSync();
       return;
     }
 
@@ -1666,6 +1872,7 @@
     if (typeof openDialog === 'function') {
       try {
         openDialog(dialog);
+        scheduleOverlayHostSync();
         return;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not open contacts dialog.', error);
@@ -1674,12 +1881,14 @@
     if (typeof dialog.showModal === 'function') {
       try {
         dialog.showModal();
+        scheduleOverlayHostSync();
         return;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not show contacts dialog.', error);
       }
     }
     dialog.setAttribute('open', '');
+    scheduleOverlayHostSync();
   }
 
   function isContactsDialogVisible() {
@@ -1716,6 +1925,7 @@
     }
     contactsDialogRef.setAttribute('hidden', '');
     autoOpenedContacts = false;
+    scheduleOverlayHostSync();
   }
 
   function ensureOwnGearForStep(step) {
@@ -1733,6 +1943,7 @@
     }
 
     if (isOwnGearDialogVisible()) {
+      scheduleOverlayHostSync();
       return;
     }
 
@@ -1748,6 +1959,7 @@
     }
 
     if (isOwnGearDialogVisible()) {
+      scheduleOverlayHostSync();
       return;
     }
 
@@ -1755,6 +1967,7 @@
     if (typeof openDialog === 'function') {
       try {
         openDialog(dialog);
+        scheduleOverlayHostSync();
         return;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not open own gear dialog.', error);
@@ -1763,12 +1976,14 @@
     if (typeof dialog.showModal === 'function') {
       try {
         dialog.showModal();
+        scheduleOverlayHostSync();
         return;
       } catch (error) {
         safeWarn('cine.features.onboardingTour could not show own gear dialog.', error);
       }
     }
     dialog.setAttribute('open', '');
+    scheduleOverlayHostSync();
   }
 
   function isOwnGearDialogVisible() {
@@ -1805,6 +2020,7 @@
     }
     ownGearDialogRef.setAttribute('hidden', '');
     autoOpenedOwnGear = false;
+    scheduleOverlayHostSync();
   }
 
   function isSettingsDialogVisible() {
@@ -1843,6 +2059,7 @@
     }
     settingsDialogRef.setAttribute('hidden', '');
     autoOpenedSettings = false;
+    scheduleOverlayHostSync();
   }
 
   function getStepTexts(step) {
@@ -3263,6 +3480,7 @@
     attachGlobalListeners();
     showStep(resolvedIndex);
     applyHelpStatus(storedState, stepConfig);
+    scheduleOverlayHostSync();
 
     if (focusStart) {
       focusCard();
