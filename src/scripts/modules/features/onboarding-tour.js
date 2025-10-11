@@ -116,6 +116,8 @@
   const HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
+  const MAIN_ANCHOR_ID = 'mainContent';
+  const HEADER_ANCHOR_ID = 'topBar';
 
   const supportsDialogTopLayer = (function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
@@ -140,6 +142,10 @@
 
   function bringOverlayToTopLayer() {
     if (!overlayRoot) {
+      return;
+    }
+
+    if (overlayAnchor && DOCUMENT && overlayAnchor !== DOCUMENT.body) {
       return;
     }
 
@@ -1095,6 +1101,7 @@
   let stepConfig = getStepConfig();
 
   let overlayRoot = null;
+  let overlayAnchor = null;
   let highlightEl = null;
   let activeTargetElements = [];
   let cardEl = null;
@@ -1406,6 +1413,7 @@
     overlayRoot.appendChild(cardEl);
 
     DOCUMENT.body.appendChild(overlayRoot);
+    overlayAnchor = DOCUMENT.body;
 
     bringOverlayToTopLayer();
 
@@ -1426,6 +1434,7 @@
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
     overlayRoot = null;
+    overlayAnchor = null;
     highlightEl = null;
     cardEl = null;
     titleEl = null;
@@ -1535,6 +1544,117 @@
     return elements;
   }
 
+  function resolveOverlayAnchorForElements(elements) {
+    if (!DOCUMENT) {
+      return null;
+    }
+
+    const list = Array.isArray(elements) ? elements : [];
+    const main = DOCUMENT.getElementById(MAIN_ANCHOR_ID);
+    const header = DOCUMENT.getElementById(HEADER_ANCHOR_ID);
+
+    for (let index = 0; index < list.length; index += 1) {
+      const element = list[index];
+      if (!element) {
+        continue;
+      }
+      if (typeof element.closest === 'function') {
+        const flaggedAnchor = element.closest('[data-onboarding-anchor]');
+        if (flaggedAnchor) {
+          return flaggedAnchor;
+        }
+        const dialogAnchor = element.closest('dialog');
+        if (dialogAnchor) {
+          return dialogAnchor;
+        }
+      }
+      if (main && typeof main.contains === 'function' && main.contains(element)) {
+        return main;
+      }
+      if (header && typeof header.contains === 'function' && header.contains(element)) {
+        return header;
+      }
+    }
+
+    return DOCUMENT.body || null;
+  }
+
+  function setOverlayAnchorElement(anchorElement) {
+    if (!overlayRoot || !DOCUMENT) {
+      overlayAnchor = anchorElement || overlayAnchor;
+      return;
+    }
+
+    const target = anchorElement || DOCUMENT.body;
+    if (!target) {
+      return;
+    }
+
+    if (overlayAnchor === target && overlayRoot.parentNode === target) {
+      if (target === DOCUMENT.body) {
+        overlayRoot.classList.remove('onboarding-overlay--anchored');
+        bringOverlayToTopLayer();
+      } else {
+        overlayRoot.classList.add('onboarding-overlay--anchored');
+        if (supportsDialogTopLayer && isDialogElement(overlayRoot) && !overlayRoot.open) {
+          try {
+            overlayRoot.open = true;
+          } catch (openError) {
+            void openError;
+            try {
+              overlayRoot.setAttribute('open', '');
+            } catch (attrError) {
+              void attrError;
+            }
+          }
+        }
+      }
+      return;
+    }
+
+    const wantsTopLayer = target === DOCUMENT.body;
+    const isDialogRoot = supportsDialogTopLayer && isDialogElement(overlayRoot);
+
+    if (isDialogRoot && overlayRoot.open && !wantsTopLayer && typeof overlayRoot.close === 'function') {
+      try {
+        overlayRoot.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not reset overlay dialog state.', error);
+      }
+    }
+
+    if (overlayRoot.parentNode !== target) {
+      try {
+        target.appendChild(overlayRoot);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not move overlay to anchor.', error);
+      }
+    }
+
+    overlayAnchor = target;
+
+    if (wantsTopLayer) {
+      overlayRoot.classList.remove('onboarding-overlay--anchored');
+      bringOverlayToTopLayer();
+      return;
+    }
+
+    overlayRoot.classList.add('onboarding-overlay--anchored');
+
+    if (isDialogRoot && !overlayRoot.open) {
+      try {
+        overlayRoot.open = true;
+      } catch (openError) {
+        void openError;
+        try {
+          overlayRoot.setAttribute('open', '');
+        } catch (attrError) {
+          void attrError;
+        }
+      }
+    }
+  }
+
   function getTargetElement(step) {
     if (!step) {
       return null;
@@ -1573,6 +1693,7 @@
       return;
     }
     const highlightElements = getHighlightElements(currentStep);
+    setOverlayAnchorElement(resolveOverlayAnchorForElements(highlightElements));
     if (highlightElements.length === 0) {
       if (activeTargetElements.length > 0) {
         clearActiveTargetElements();
