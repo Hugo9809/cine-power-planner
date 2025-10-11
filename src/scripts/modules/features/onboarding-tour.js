@@ -714,6 +714,7 @@
   let overlayRoot = null;
   let backdropEl = null;
   let highlightEl = null;
+  let activeTargetElement = null;
   let cardEl = null;
   let titleEl = null;
   let bodyEl = null;
@@ -743,6 +744,7 @@
   let activeRequirementCompleted = false;
   let activeInteractionCleanup = null;
   let interactionIdCounter = 0;
+  let lastCardPlacement = 'floating';
 
   function nextInteractionId(suffix) {
     interactionIdCounter += 1;
@@ -892,6 +894,7 @@
 
     cardEl = DOCUMENT.createElement('section');
     cardEl.className = 'onboarding-card';
+    cardEl.setAttribute('data-placement', 'floating');
     cardEl.setAttribute('role', 'dialog');
     cardEl.setAttribute('aria-modal', 'true');
     cardEl.tabIndex = -1;
@@ -984,6 +987,7 @@
 
   function teardownOverlayElements() {
     clearFrame();
+    clearActiveTargetElement();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -1006,6 +1010,7 @@
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     interactionIdCounter = 0;
+    lastCardPlacement = 'floating';
   }
 
   function formatStepIndicator(index, total) {
@@ -1053,15 +1058,33 @@
     return null;
   }
 
+  function clearActiveTargetElement() {
+    if (activeTargetElement && typeof activeTargetElement.classList === 'object') {
+      activeTargetElement.classList.remove('onboarding-active-target');
+    }
+    activeTargetElement = null;
+  }
+
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
     }
     const target = getTargetElement(currentStep);
     if (!target) {
+      if (activeTargetElement) {
+        clearActiveTargetElement();
+      }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
+      positionCard(null, null);
       return;
+    }
+    if (target !== activeTargetElement) {
+      clearActiveTargetElement();
+      activeTargetElement = target;
+      if (typeof target.classList === 'object') {
+        target.classList.add('onboarding-active-target');
+      }
     }
     const rect = target.getBoundingClientRect();
     const padding = 12;
@@ -1074,35 +1097,47 @@
     highlightEl.style.height = `${height}px`;
     highlightEl.style.transform = `translate(${Math.max(0, left)}px, ${Math.max(0, top)}px)`;
     highlightEl.style.opacity = '1';
+    positionCard(target, rect);
   }
 
-  function positionCard() {
+  function positionCard(target, targetRect) {
     if (!cardEl) {
       return;
     }
     const viewportWidth = GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
     const viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
-    const target = getTargetElement(currentStep);
+    const targetElement = target || getTargetElement(currentStep);
+    const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const cardRect = cardEl.getBoundingClientRect();
     let top = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + Math.max(24, (viewportHeight - cardRect.height) / 2);
     let left = (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) + Math.max(24, (viewportWidth - cardRect.width) / 2);
+    let placement = 'floating';
 
-    if (target) {
-      const rect = target.getBoundingClientRect();
+    if (targetElement && resolvedRect) {
+      const rect = resolvedRect;
       const targetTop = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0);
       const targetLeft = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0);
-      const spaceBelow = (GLOBAL_SCOPE.innerHeight || viewportHeight) - (rect.bottom);
+      const spaceBelow = (GLOBAL_SCOPE.innerHeight || viewportHeight) - rect.bottom;
       const spaceAbove = rect.top;
+      const spaceRight = (GLOBAL_SCOPE.innerWidth || viewportWidth) - rect.right;
       if (spaceBelow > cardRect.height + 40) {
         top = targetTop + rect.height + 24;
+        placement = 'bottom';
       } else if (spaceAbove > cardRect.height + 40) {
         top = targetTop - cardRect.height - 24;
+        placement = 'top';
       }
-      if (targetLeft + rect.width + cardRect.width + 32 < (GLOBAL_SCOPE.scrollX || 0) + viewportWidth) {
+      if (spaceRight > cardRect.width + 40) {
         left = targetLeft + rect.width + 24;
+        placement = placement === 'floating' ? 'right' : `${placement}-right`;
       } else if (targetLeft - cardRect.width - 24 > 0) {
         left = targetLeft - cardRect.width - 24;
+        placement = placement === 'floating' ? 'left' : `${placement}-left`;
+      } else if (placement === 'floating') {
+        placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
       }
+    } else {
+      placement = 'floating';
     }
 
     const maxTop = (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) + viewportHeight - cardRect.height - 24;
@@ -1110,6 +1145,10 @@
 
     cardEl.style.top = `${Math.max(24 + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0), Math.min(top, maxTop))}px`;
     cardEl.style.left = `${Math.max(24 + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0), Math.min(left, maxLeft))}px`;
+    if (placement !== lastCardPlacement) {
+      lastCardPlacement = placement;
+      cardEl.setAttribute('data-placement', placement);
+    }
   }
 
   function ensureSettingsForStep(step) {
