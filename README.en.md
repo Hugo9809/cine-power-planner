@@ -650,7 +650,9 @@ Use Cine Power Planner end-to-end with the following routine:
   grow.
 - **Automatic gear snapshots** – rule changes trigger timestamped safety copies
   every 10 minutes in **Settings → Automatic Gear Rules**, and you can restore or
-  export them if a customization misfires.
+  export them if a customization misfires. The retention slider now defaults to
+  keeping 36 snapshots so crews have a longer runway before older entries are
+  trimmed.
 - **Factory reset** – wipes stored data only after downloading a backup. Use it
   when you need a clean slate.
 - **Hourly reminders** – a background routine prompts an additional backup each

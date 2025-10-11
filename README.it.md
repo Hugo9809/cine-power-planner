@@ -278,6 +278,8 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Registro storico** – Ogni backup completo aggiunge una voce consultabile in **Impostazioni → Dati e archiviazione** o esportabile insieme al file. Mantiene timestamp e nomi allineati alla documentazione anche offline.
 - **Backup di migrazione nascosti** – Prima di sovrascrivere planner, setup o preferenze, l’app salva il precedente JSON in `__legacyMigrationBackup`. In caso di errore, gli strumenti di recupero tornano automaticamente a quella copia. La compressione ora seleziona automaticamente la codifica sicura più compatta così i backup restano entro la quota del browser. Le scansioni di recupero della quota ora comprimono prima le voci archiviate più pesanti così da liberare spazio più velocemente senza toccare i backup attivi.【F:src/scripts/storage.js†L1541-L1652】
 - **Snapshot automatici delle regole** – Le modifiche in **Regole automatiche** generano copie con timestamp ogni dieci minuti.
+  Il controllo di conservazione ora parte da 36 copie per offrire più margine prima
+  di eliminare quelle vecchie.
 - **Ripristino impostazioni di fabbrica** – Cancella i dati solo dopo aver scaricato un backup.
 - **Promemoria orari** – Una routine in background suggerisce un backup aggiuntivo ogni ora per avere sempre una copia recente.
 - **Sentinella di integrità runtime** – Prima di partire, apri la console e assicurati che `window.__cineRuntimeIntegrity.ok` sia `true` (o esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Il report dimostra che i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback restano protetti offline.

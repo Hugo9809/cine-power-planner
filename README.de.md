@@ -278,6 +278,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Backup-Verlauf** – Jede Vollsicherung schreibt einen Eintrag, der sich in **Einstellungen → Daten & Speicher** prüfen oder zusammen mit dem Archiv exportieren lässt. Zeitstempel und Dateinamen bleiben so auch offline nachvollziehbar.
 - **Verborgene Migrations-Backups** – Vor Überschreibungen wird der vorige JSON-Snapshot im geschützten `__legacyMigrationBackup` abgelegt und bei Fehlern automatisch wiederhergestellt. Die Komprimierung wählt jetzt automatisch die kleinste sichere Kodierung, damit Sicherungen weiterhin in das Browser-Kontingent passen. Quotawiederherstellungsdurchläufe komprimieren nun zuerst die größten gespeicherten Einträge, um schneller Platz zu schaffen, ohne aktive Backups anzutasten.【F:src/scripts/storage.js†L1541-L1652】
 - **Automatische Regel-Snapshots** – Änderungen in **Automatische Gear-Regeln** erzeugen alle zehn Minuten Sicherheitskopien.
+  Der Aufbewahrungsregler startet jetzt bei 36 Sicherungen, damit Teams mehr Puffer
+  haben, bevor ältere Einträge entfernt werden.
 - **Factory Reset** – löscht Daten erst nach automatischem Backup.
 - **Stündliche Erinnerungen** – Hintergrundroutine fordert stündlich zu Backups auf.
 - **Runtime-Integritätswache** – Vor Abfahrt in der Konsole `window.__cineRuntimeIntegrity.ok` auf `true` prüfen oder `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Der Bericht bestätigt, dass Speichern/Teilen/Wiederherstellen und die Feedback-Speicherung offline geschützt sind.
