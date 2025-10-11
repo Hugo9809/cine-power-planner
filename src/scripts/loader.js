@@ -2197,5 +2197,33 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
   ensureCoreRuntimePlaceholders();
 
-  startLoading();
+  function startLoaderWhenBodyReady() {
+    if (typeof document === 'undefined') {
+      startLoading();
+      return;
+    }
+
+    if (document.body) {
+      startLoading();
+      return;
+    }
+
+    function handleReady() {
+      try {
+        document.removeEventListener('DOMContentLoaded', handleReady);
+      } catch (removeError) {
+        void removeError;
+      }
+      startLoading();
+    }
+
+    try {
+      document.addEventListener('DOMContentLoaded', handleReady, { once: true });
+    } catch (listenerError) {
+      void listenerError;
+      document.addEventListener('DOMContentLoaded', handleReady);
+    }
+  }
+
+  startLoaderWhenBodyReady();
 })();
