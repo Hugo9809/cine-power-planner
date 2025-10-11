@@ -1893,7 +1893,7 @@ const texts = {
         editDeviceData: {
           title: "Edit device data",
           body:
-            "Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.",
+            "Treat Step 13 as three quick passes in Device Library: 13A uses the Add button to create a new device entry, fill in the category, draw and output fields, then save so it anchors into the offline catalog; 13B selects the saved device from the list to review draw, outputs and compatibility metadata in the detail panel; 13C edits the specs or notes and saves again to confirm autosave, backups and exports all carry the most up-to-date numbers.",
         },
         ownGearAccess: {
           title: "Open the Own Gear dialog",
@@ -3954,7 +3954,7 @@ const texts = {
         editDeviceData: {
           title: "Modifica i dati dei dispositivi",
           body:
-            "Apri l'editor della Libreria dispositivi per aggiungere o modificare camere, batterie e accessori. Gli aggiornamenti vengono archiviati localmente, inclusi nei backup e trasportati in ogni export o pacchetto condiviso.",
+            "Affronta il passaggio 13 in tre sottopassi rapidi nella Libreria dispositivi: 13A usa il pulsante Aggiungi per creare una nuova voce, compilare categoria, assorbimento e uscite quindi salvare così da fissarla nel catalogo offline; 13B seleziona la voce salvata nell'elenco per rivedere assorbimento, uscite e metadati di compatibilità nel pannello dei dettagli; 13C modifica specifiche o note e salva di nuovo per verificare che autosave, backup ed export riportino sempre le cifre più aggiornate.",
         },
         ownGearAccess: {
           title: "Apri la finestra Attrezzatura propria",
@@ -6028,7 +6028,7 @@ const texts = {
         editDeviceData: {
           title: "Edita datos de dispositivos",
           body:
-            "Abre el editor de la Biblioteca de dispositivos para añadir o ajustar cámaras, baterías y accesorios. Las actualizaciones se guardan localmente, se incluyen en los respaldos y viajan en cada exportación o paquete compartido.",
+            "Trabaja el paso 13 en tres subpasos dentro de la Biblioteca de dispositivos: 13A usa el botón Añadir para crear un registro nuevo, completar categoría, consumo y salidas, y guardarlo para fijarlo en el catálogo offline; 13B abre el dispositivo guardado desde la lista para revisar consumo, salidas y metadatos de compatibilidad en el panel de detalles; 13C edita especificaciones o notas y guarda otra vez para confirmar que el autosave, los respaldos y las exportaciones mantienen los números más recientes.",
         },
         ownGearAccess: {
           title: "Abre el cuadro de Equipo propio",
@@ -8115,7 +8115,7 @@ const texts = {
         editDeviceData: {
           title: "Modifiez les données des appareils",
           body:
-            "Ouvrez l’éditeur de la bibliothèque d’appareils pour ajouter ou ajuster caméras, batteries et accessoires. Les mises à jour sont stockées localement, incluses dans les sauvegardes et intégrées à chaque export ou lot partagé.",
+            "Traitez l’étape 13 en trois sous-étapes rapides dans la Bibliothèque d’appareils : 13A utilise le bouton Ajouter pour créer une nouvelle entrée, renseigner catégorie, consommation et sorties puis enregistrer afin de l’ancrer dans le catalogue hors ligne ; 13B rouvre l’appareil enregistré depuis la liste pour examiner consommation, sorties et métadonnées de compatibilité dans le panneau de détails ; 13C modifie les spécifications ou les notes et enregistre de nouveau pour confirmer que l’enregistrement automatique, les sauvegardes et les exports conservent les dernières valeurs.",
         },
         ownGearAccess: {
           title: "Ouvrez la fenêtre Matériel personnel",
@@ -10206,7 +10206,7 @@ const texts = {
         editDeviceData: {
           title: "Gerätedaten bearbeiten",
           body:
-            "Öffne den Gerätekatalog-Editor, um Kameras, Akkus und Zubehör hinzuzufügen oder anzupassen. Aktualisierungen werden lokal gespeichert, in Backups aufgenommen und in jeden Export oder Share-Bundel übernommen.",
+            "Bearbeite Schritt 13 in drei kurzen Unterabschnitten in der Gerätebibliothek: 13A verwendet die Schaltfläche Hinzufügen, um einen neuen Eintrag anzulegen, Kategorie, Leistungsaufnahme und Ausgänge zu füllen und zu speichern, damit er im Offline-Katalog verankert ist; 13B öffnet den gespeicherten Eintrag aus der Liste, um Leistungsaufnahme, Ausgänge und Kompatibilitätsmetadaten im Detailbereich zu prüfen; 13C bearbeitet Spezifikationen oder Notizen und speichert erneut, um zu bestätigen, dass Autosave, Backups und Exporte die aktuellen Werte tragen.",
         },
         ownGearAccess: {
           title: "Dialog Eigenes Equipment öffnen",

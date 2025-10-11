@@ -320,7 +320,7 @@
     editDeviceData: {
       title: 'Edit device data',
       body:
-        'Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.',
+        'Treat Step 13 as three quick passes in Device Library: 13A uses the Add button to create a new device entry, fill in the category, draw and output fields, then save so it anchors into the offline catalog; 13B selects the saved device from the list to review draw, outputs and compatibility metadata in the detail panel; 13C edits the specs or notes and saves again to confirm autosave, backups and exports all carry the most up-to-date numbers.',
     },
     ownGearAccess: {
       title: 'Open the Own Gear dialog',
