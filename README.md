@@ -217,8 +217,8 @@ localization steps.
   production profiles.
 - **Diagnostics log controls** – inspect live runtime entries inside
   **Settings → Data & Storage**, filter by level or namespace, and tune log
-  retention, console mirroring and global error capture without leaving the
-  planner.
+  retention, console mirroring, default console capture and global error capture
+  without leaving the planner.
 - **Backup history ledger** – every full-app backup download records its
   timestamp and filename locally. Review counts in **Settings → Data & Storage**
   or export the log alongside your archives so you can prove retention while
@@ -683,9 +683,10 @@ Use Cine Power Planner end-to-end with the following routine:
 - The summary also estimates backup size using the most recent export, giving you
   a quick check that archives will fit on the storage you bring to set.
 - The **Diagnostics log** in this panel mirrors every cineLogging entry, lets
-  you filter by severity or namespace, and exposes retention, console mirroring
-  and global error capture toggles so you can adjust diagnostics without leaving
-  Settings. It now also calls out when filters hide all entries, avoiding false
+  you filter by severity or namespace, and exposes retention, console mirroring,
+  default console capture and global error capture toggles so you can adjust
+  diagnostics without leaving Settings. It now also calls out when filters hide
+  all entries, avoiding false
   alarms during audits. Entries stay local and persist across reloads when you
   enable session storage. Each entry now records an ISO timestamp, millisecond
   marker, event ID and channel indicator so you can line up console fallbacks

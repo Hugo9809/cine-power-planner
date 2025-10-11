@@ -863,7 +863,7 @@
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
-    captureConsole: false,
+    captureConsole: true,
   };
 
   const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
