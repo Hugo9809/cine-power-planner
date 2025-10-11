@@ -9185,10 +9185,27 @@ function gearListGenerateHtmlImpl(info = {}) {
     const registerCameraLinkTarget = name => {
         if (!hasCameraForLinking) return;
         if (typeof name !== 'string') return;
-        const normalized = normalizeGearNameForComparison(name);
-        if (normalized) {
-            cameraLinkTargets.add(normalized);
+        const normalizedValues = new Set();
+        const trimmedName = name.trim();
+        if (!trimmedName) return;
+        const appendNormalized = value => {
+            const normalized = normalizeGearNameForComparison(value);
+            if (normalized) {
+                normalizedValues.add(normalized);
+            }
+        };
+        appendNormalized(trimmedName);
+        try {
+            if (typeof addArriKNumber === 'function') {
+                const withKNumber = addArriKNumber(trimmedName);
+                if (withKNumber && withKNumber !== trimmedName) {
+                    appendNormalized(withKNumber);
+                }
+            }
+        } catch (error) {
+            void error;
         }
+        normalizedValues.forEach(value => cameraLinkTargets.add(value));
     };
     const markEntryCameraLink = entry => {
         if (!entry || !hasCameraForLinking) return;
