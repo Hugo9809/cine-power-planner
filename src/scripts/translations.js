@@ -1827,7 +1827,7 @@ const texts = {
         results: {
           title: "Review the results summary",
           body:
-            "Use the Power Summary to verify total draw, per-pack runtime projections, reserve margins and changeover countdowns before locking the build. Expand each battery group for device-by-device contribution details, charger requirements and status notes. Download the offline report for redundant backups, document any warnings that need action ahead of call time and confirm the autosave banner shows the latest timestamp so shares and exports capture the same data.",
+            "Power Summary gathers total draw, per-pack runtime projections, reserve margins and changeover countdowns in one view so you can confirm the build before locking it.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3837,7 +3837,7 @@ const texts = {
         results: {
           title: "Rivedi il riepilogo dei risultati",
           body:
-            "Usa Power Summary per verificare consumo totale, proiezioni di autonomia per pacco, margini di riserva e countdown dei cambi batteria prima di bloccare il setup. Espandi ogni gruppo batteria per vedere contributi per dispositivo, requisiti dei caricatori e note di stato. Scarica il report offline per backup ridondanti, annota gli avvisi che richiedono intervento prima del call time e conferma che il banner di salvataggio automatico mostri l'ultimo timestamp così condivisioni ed esportazioni catturano gli stessi dati.",
+            "Power Summary riunisce consumo totale, proiezioni di autonomia per batteria, margini di riserva e countdown dei cambi in un'unica vista così puoi confermare il setup prima di fissarlo.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -5860,7 +5860,7 @@ const texts = {
         results: {
           title: "Revisa el resumen de resultados",
           body:
-            "Usa el Resumen de energía para verificar el consumo total, las proyecciones de autonomía por paquete, los márgenes de reserva y las cuentas regresivas de cambio antes de fijar el montaje. Expande cada grupo de baterías para ver los aportes por dispositivo, los requisitos de cargadores y las notas de estado. Descarga el informe offline para respaldos redundantes, registra cualquier aviso que requiera acción antes del call time y confirma que el banner de autoguardado muestre la última marca de tiempo para que compartidos y exportaciones capturen los mismos datos.",
+            "Power Summary reúne el consumo total, las proyecciones de autonomía por batería, los márgenes de reserva y las cuentas regresivas de cambio en una sola vista para confirmar el montaje antes de fijarlo.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -7895,7 +7895,7 @@ const texts = {
         results: {
           title: "Passez en revue le résumé des résultats",
           body:
-            "Utilisez le Résumé d’alimentation pour vérifier la consommation totale, les projections d’autonomie par pack, les marges de réserve et les comptes à rebours de changement avant de verrouiller le setup. Développez chaque groupe de batteries pour afficher les contributions par appareil, les besoins des chargeurs et les notes d’état. Téléchargez le rapport hors ligne pour des sauvegardes redondantes, consignez tout avertissement nécessitant une action avant l’heure d’appel et confirmez que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que les partages et exports reprennent les mêmes données.",
+            "Power Summary rassemble la consommation totale, les estimations d’autonomie par batterie, les marges de réserve et les comptes à rebours de changement dans une seule vue pour valider la configuration avant de la figer.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -9935,7 +9935,7 @@ const texts = {
         results: {
           title: "Ergebnisse zusammenfassen",
           body:
-            "Nutze die Power Summary, um Gesamtverbrauch, Laufzeitprognosen je Akku, Sicherheitsreserven und Countdown bis zum Wechsel zu prüfen, bevor du das Setup fixierst. Klappe jede Batteriegruppe auf, um Beitragswerte pro Gerät, Ladeanforderungen und Statusnotizen zu sehen. Lade den Offline-Bericht für redundante Backups herunter, dokumentiere Warnungen, die vor dem Calltime gelöst werden müssen, und überprüfe, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Shares und Exporte denselben Stand enthalten.",
+            "Die Power Summary bündelt Gesamtverbrauch, Laufzeitprognosen pro Akku, Reservemargen und Countdown bis zum Wechsel in einer Ansicht, damit du den Aufbau vor dem Fixieren bestätigen kannst.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",
