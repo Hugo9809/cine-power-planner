@@ -5051,6 +5051,188 @@ const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
   () => null,
 );
 
+const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
+const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
+
+function normalizeCameraColorValue(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^#[0-9a-f]{6}$/i.test(trimmed)) {
+    return trimmed.toLowerCase();
+  }
+  if (/^[0-9a-f]{6}$/i.test(trimmed)) {
+    return `#${trimmed.toLowerCase()}`;
+  }
+  return '';
+}
+
+function generateDefaultCameraColor(letter) {
+  if (letter !== 'E') {
+    return '';
+  }
+  const generateChannel = () => {
+    let value = 0;
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      const array = new Uint8Array(1);
+      crypto.getRandomValues(array);
+      value = array[0] / 255;
+    } else {
+      value = Math.random();
+    }
+    const channel = Math.floor(value * 200) + 28;
+    return Math.max(24, Math.min(232, channel));
+  };
+  const components = [generateChannel(), generateChannel(), generateChannel()];
+  return `#${components.map(component => component.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function getDefaultCameraLetterColors() {
+  const defaults = {
+    A: '#d32f2f',
+    B: '#1e88e5',
+    C: '#fdd835',
+    D: '#43a047',
+    E: '#7b1fa2',
+  };
+  const generated = generateDefaultCameraColor('E');
+  if (generated) {
+    defaults.E = generated;
+  }
+  return defaults;
+}
+
+let cachedCameraLetterColors = null;
+
+function loadCameraLetterColors() {
+  if (cachedCameraLetterColors) {
+    return cachedCameraLetterColors;
+  }
+  const defaults = getDefaultCameraLetterColors();
+  let stored = null;
+  try {
+    const raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY);
+    if (raw) {
+      stored = JSON.parse(raw);
+    }
+  } catch (error) {
+    console.warn('Failed to read stored camera colors', error);
+    stored = null;
+  }
+  const resolved = { ...defaults };
+  if (stored && typeof stored === 'object') {
+    CAMERA_LETTERS.forEach(letter => {
+      const incoming = stored[letter] || stored[letter.toLowerCase()];
+      const normalized = normalizeCameraColorValue(incoming);
+      if (normalized) {
+        resolved[letter] = normalized;
+      }
+    });
+  } else {
+    try {
+      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY, JSON.stringify(resolved));
+    } catch (persistError) {
+      console.warn('Unable to persist default camera colors', persistError);
+    }
+  }
+  cachedCameraLetterColors = resolved;
+  return resolved;
+}
+
+function getCameraLetterColorsSafeSession() {
+  const colors = loadCameraLetterColors();
+  return { ...colors };
+}
+
+function setCameraLetterColors(newColors = {}) {
+  const current = { ...loadCameraLetterColors() };
+  let changed = false;
+  CAMERA_LETTERS.forEach(letter => {
+    const incoming = newColors[letter] || newColors[letter.toLowerCase()];
+    const normalized = normalizeCameraColorValue(incoming);
+    if (normalized && current[letter] !== normalized) {
+      current[letter] = normalized;
+      changed = true;
+    }
+  });
+  if (!changed) {
+    return current;
+  }
+  cachedCameraLetterColors = current;
+  try {
+    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY, JSON.stringify(current));
+  } catch (storeError) {
+    console.warn('Failed to persist camera color preferences', storeError);
+  }
+  if (typeof document !== 'undefined'
+    && typeof document.dispatchEvent === 'function'
+    && typeof CustomEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('camera-colors-changed'));
+    } catch (dispatchError) {
+      console.warn('Failed to broadcast camera color change', dispatchError);
+    }
+  }
+  return current;
+}
+
+function getCameraColorInputElements() {
+  if (typeof document === 'undefined') {
+    return [];
+  }
+  return CAMERA_LETTERS.map(letter => {
+    const id = `cameraColor${letter}`;
+    let element = null;
+    try {
+      element = typeof window !== 'undefined' && window[id]
+        ? window[id]
+        : document.getElementById(id);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+    return element ? { letter, element } : null;
+  }).filter(Boolean);
+}
+
+function updateCameraColorInputsFromState() {
+  const colors = getCameraLetterColorsSafeSession();
+  getCameraColorInputElements().forEach(entry => {
+    if (!entry || !entry.element) {
+      return;
+    }
+    const value = colors[entry.letter] || '';
+    if (value) {
+      entry.element.value = value;
+    }
+  });
+}
+
+function collectCameraColorInputValues() {
+  const result = {};
+  getCameraColorInputElements().forEach(entry => {
+    if (!entry || !entry.element) return;
+    const normalized = normalizeCameraColorValue(entry.element.value || '');
+    if (normalized) {
+      result[entry.letter] = normalized;
+    }
+  });
+  return result;
+}
+
+try {
+  if (typeof window !== 'undefined') {
+    window.getCameraLetterColors = () => getCameraLetterColorsSafeSession();
+    window.setCameraLetterColors = palette => setCameraLetterColors(palette);
+  }
+} catch (cameraColorExposeError) {
+  console.warn('Unable to expose camera color helpers', cameraColorExposeError);
+}
+
 const appearanceContext = {
   document: typeof document !== 'undefined' ? document : null,
   window: typeof window !== 'undefined' ? window : null,
@@ -5102,6 +5284,10 @@ const appearanceContext = {
     },
     isHighContrastActive: () => (typeof isHighContrastActive === 'function' ? isHighContrastActive() : false),
   },
+  cameraColors: {
+    getColors: () => getCameraLetterColorsSafeSession(),
+    setColors: palette => setCameraLetterColors(palette),
+  },
   icons: {
     registry: typeof ICON_GLYPHS === 'object' ? ICON_GLYPHS : null,
     applyIconGlyph: typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
@@ -5109,9 +5295,9 @@ const appearanceContext = {
     pinkModeIcons: typeof pinkModeIcons === 'object' ? pinkModeIcons : null,
     startPinkModeAnimatedIcons: typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null,
     stopPinkModeAnimatedIcons: typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null,
-    triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null,
-  },
-  storage: {
+          triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null,
+        },
+        storage: {
     getLocalStorage: () => {
       try {
         return typeof localStorage !== 'undefined' ? localStorage : null;
@@ -5430,6 +5616,7 @@ const mountVoltageResetButtonRef = (() => {
         updateAccentColorResetButtonState();
       }
     }
+    updateCameraColorInputsFromState();
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
@@ -5596,6 +5783,15 @@ const mountVoltageResetButtonRef = (() => {
           updateAccentColorResetButtonState();
         }
       }
+      const cameraPalette = collectCameraColorInputValues();
+      const normalizedPalette = setCameraLetterColors(cameraPalette);
+      const colorEntries = getCameraColorInputElements();
+      colorEntries.forEach(entry => {
+        const normalized = normalizedPalette[entry.letter];
+        if (normalized) {
+          entry.element.value = normalized;
+        }
+      });
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
