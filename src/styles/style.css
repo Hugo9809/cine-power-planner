@@ -6755,6 +6755,12 @@ body.dark-mode .onboarding-back-button {
   color: var(--inverse-text-color);
 }
 
+.onboarding-next-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--accent-color) 70%, rgba(0, 0, 0, 0.2) 30%);
+}
+
 .onboarding-next-button:hover,
 .onboarding-next-button:focus-visible {
   background: color-mix(in srgb, var(--accent-color) 85%, #ffffff 15%);

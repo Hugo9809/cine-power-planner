@@ -159,19 +159,12 @@
 
   const DEFAULT_STEP_KEYS = [
     'intro',
-    'projectOverview',
-    'deviceSelection',
-    'gearGeneration',
-    'gearCustomization',
-    'resultsReview',
-    'powerSummary',
-    'contactsOwnGear',
-    'autoGear',
-    'overviewPrint',
-    'exportImport',
-    'quickSafeguards',
-    'backupRestore',
-    'safetyNet',
+    'nameProject',
+    'saveProject',
+    'addCamera',
+    'addPower',
+    'generatePlan',
+    'exportBackup',
     'completion',
   ];
 
@@ -181,76 +174,300 @@
       body:
         'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.',
     },
-    projectOverview: {
-      title: 'Create and save your project',
+    nameProject: {
+      title: 'Name your first project',
       body:
-        'Start in Project Overview: enter a Project Name, pick -- New Project -- when you need a clean slate and press Save (or use Ctrl+S/⌘S) to capture snapshots as you experiment.',
+        'Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.',
     },
-    deviceSelection: {
-      title: 'Select cameras and devices',
+    saveProject: {
+      title: 'Save immediately',
       body:
-        'Open Configure Devices to choose cameras, monitors, power accessories and filters. Search boxes inside every dropdown help you find the right model quickly while offline.',
+        'Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.',
     },
-    gearGeneration: {
-      title: 'Generate requirements and gear lists',
+    addCamera: {
+      title: 'Add your primary camera',
       body:
-        'When the build looks right, select Generate Gear List and Project Requirements to capture crew roles, scenarios and automatically suggested items for the printable outputs.',
+        'Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.',
     },
-    gearCustomization: {
-      title: 'Customise the gear list',
+    addPower: {
+      title: 'Choose a power source',
       body:
-        'Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project.',
+        'Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.',
     },
-    resultsReview: {
-      title: 'Verify power results',
+    generatePlan: {
+      title: 'Generate your first plan',
       body:
-        'Open Power Summary to confirm draw totals, battery coverage and runtime predictions. The quick summary, charts and printable report all reflect your latest offline saves.',
+        'Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.',
     },
-    powerSummary: {
-      title: 'Review the Power Summary checkpoint',
+    exportBackup: {
+      title: 'Export an offline safety copy',
       body:
-        'Scan the Quick summary card to validate runtime estimates, battery counts and safety warnings at a glance. Confirming this checkpoint keeps charts, exports and offline reports aligned before you continue.',
-    },
-    contactsOwnGear: {
-      title: 'Reuse contacts and personal gear',
-      body:
-        'Use the sidebar buttons for Contacts and Own Gear to capture crew roles, phone/email details and the kit you already own. Both managers import vCards, save instantly to local storage, flow into backups and exports, and stay available offline for every project.',
-    },
-    autoGear: {
-      title: 'Refine automatic gear rules',
-      body:
-        'Open Settings → Automatic Gear Rules to set default monitors, create scenario-based additions and manage backups for the automation engine. Every change stays offline in your browser.',
-    },
-    overviewPrint: {
-      title: 'Generate overview & print',
-      body:
-        'Use Generate Overview to build the print-ready summary. From there you can review totals, print directly, or export a PDF for on-set binders and distribution.',
-    },
-    exportImport: {
-      title: 'Export and import safely',
-      body:
-        'Export Project downloads a JSON safety bundle for sharing or archiving. Use the Import Project field beside it to restore shared configurations without leaving the planner offline.',
-    },
-    quickSafeguards: {
-      title: 'Capture quick safeguards backup',
-      body:
-        'Open Settings → Data & Storage → Quick safeguards and press Download full backup before making major changes. The button stores a fresh planner-backup.json offline, logs the action in Latest activity and keeps a restore copy ready even if you stay on this tab.',
-    },
-    backupRestore: {
-      title: 'Back up and rehearse restores',
-      body:
-        'In Settings → Backup & Restore, capture full-app backups, compare auto-backups, rehearse restores and trigger factory resets after saving a safety copy.',
-    },
-    safetyNet: {
-      title: 'Confirm offline safety nets',
-      body:
-        'Check the offline badge in the top bar and the autosave status dot beside Save before moving on. They confirm your latest changes are stored locally even without a connection. If the badge appears or the autosave overlay pauses, capture a manual save, export the project bundle, and queue a backup before continuing.',
+        'Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.',
     },
     completion: {
       title: "You're ready to plan",
       body:
         'Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.',
     },
+  };
+
+  function getElement(selector) {
+    if (typeof selector !== 'string' || !selector) {
+      return null;
+    }
+    try {
+      return DOCUMENT.querySelector(selector);
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not query selector.', error);
+      return null;
+    }
+  }
+
+  function getFieldValue(element) {
+    if (!element) {
+      return '';
+    }
+    if (typeof element.value === 'string') {
+      return element.value;
+    }
+    if (typeof element.textContent === 'string') {
+      return element.textContent;
+    }
+    return '';
+  }
+
+  function createFieldCompletionRequirement(selector, predicate, events) {
+    const eventList = Array.isArray(events) && events.length ? events : ['input', 'change'];
+    return {
+      check() {
+        const element = getElement(selector);
+        if (!element) {
+          return false;
+        }
+        try {
+          return Boolean(predicate(getFieldValue(element), element));
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate field requirement.', error);
+          return false;
+        }
+      },
+      attach(context) {
+        const element = getElement(selector);
+        if (!element) {
+          if (typeof context.complete === 'function') {
+            context.complete();
+          }
+          return () => {};
+        }
+        const handler = () => {
+          let matches = false;
+          try {
+            matches = Boolean(predicate(getFieldValue(element), element));
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate field change.', error);
+            matches = false;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        for (let index = 0; index < eventList.length; index += 1) {
+          const eventName = eventList[index];
+          element.addEventListener(eventName, handler);
+        }
+        handler();
+        return () => {
+          for (let index = 0; index < eventList.length; index += 1) {
+            const eventName = eventList[index];
+            element.removeEventListener(eventName, handler);
+          }
+        };
+      },
+    };
+  }
+
+  function createClickCompletionRequirement(selectors, options) {
+    const normalized = Array.isArray(selectors) ? selectors.slice() : [selectors];
+    const eventName = options && typeof options.eventName === 'string' && options.eventName
+      ? options.eventName
+      : 'click';
+    const evaluate = typeof options?.check === 'function' ? options.check : null;
+    return {
+      check() {
+        if (!evaluate) {
+          return false;
+        }
+        try {
+          return Boolean(evaluate());
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate click requirement.', error);
+          return false;
+        }
+      },
+      attach(context) {
+        const removers = [];
+        let elementFound = false;
+        for (let index = 0; index < normalized.length; index += 1) {
+          const selector = normalized[index];
+          const node = getElement(selector);
+          if (!node) {
+            continue;
+          }
+          elementFound = true;
+          const listener = () => {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          };
+          node.addEventListener(eventName, listener);
+          removers.push(() => {
+            node.removeEventListener(eventName, listener);
+          });
+        }
+
+        if (evaluate) {
+          let matches = false;
+          try {
+            matches = Boolean(evaluate());
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate click requirement after attach.', error);
+            matches = false;
+          }
+          if (matches && typeof context.complete === 'function') {
+            context.complete();
+          } else if (!matches && typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        } else if (!elementFound && typeof context.complete === 'function') {
+          context.complete();
+        }
+
+        return () => {
+          for (let index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
+  function getProjectNameValue() {
+    const input = getElement('#setupName');
+    return typeof input?.value === 'string' ? input.value.trim() : '';
+  }
+
+  function hasSavedSetupForName(name) {
+    if (!name) {
+      return false;
+    }
+    const select = getElement('#setupSelect');
+    if (!select || !select.options) {
+      return false;
+    }
+    for (let index = 0; index < select.options.length; index += 1) {
+      const option = select.options[index];
+      if (option && typeof option.value === 'string' && option.value === name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function createSaveProjectRequirement() {
+    return {
+      check() {
+        return hasSavedSetupForName(getProjectNameValue());
+      },
+      attach(context) {
+        const removers = [];
+        const evaluate = () => {
+          const saved = hasSavedSetupForName(getProjectNameValue());
+          if (saved) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        const saveButton = getElement('#saveSetupBtn');
+        if (saveButton) {
+          const handleClick = () => {
+            setTimeout(evaluate, 50);
+          };
+          saveButton.addEventListener('click', handleClick);
+          removers.push(() => {
+            saveButton.removeEventListener('click', handleClick);
+          });
+        }
+
+        const setupSelect = getElement('#setupSelect');
+        if (setupSelect) {
+          const handleChange = () => {
+            evaluate();
+          };
+          setupSelect.addEventListener('change', handleChange);
+          removers.push(() => {
+            setupSelect.removeEventListener('change', handleChange);
+          });
+        }
+
+        const nameInput = getElement('#setupName');
+        if (nameInput) {
+          const handleInput = () => {
+            evaluate();
+          };
+          nameInput.addEventListener('input', handleInput);
+          removers.push(() => {
+            nameInput.removeEventListener('input', handleInput);
+          });
+        }
+
+        evaluate();
+
+        return () => {
+          for (let index = 0; index < removers.length; index += 1) {
+            try {
+              removers[index]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach save requirement.', error);
+            }
+          }
+        };
+      },
+    };
+  }
+
+  const STEP_COMPLETION_REQUIREMENTS = {
+    nameProject: createFieldCompletionRequirement(
+      '#setupName',
+      value => value.trim().length > 0,
+      ['input', 'change'],
+    ),
+    saveProject: createSaveProjectRequirement(),
+    addCamera: createFieldCompletionRequirement(
+      '#cameraSelect',
+      value => value && value !== 'None',
+      ['change'],
+    ),
+    addPower: createFieldCompletionRequirement(
+      '#batterySelect',
+      value => value && value !== 'None',
+      ['change'],
+    ),
+    generatePlan: createClickCompletionRequirement('#generateGearListBtn'),
+    exportBackup: createClickCompletionRequirement(
+      ['#shareSetupBtn', '#storageBackupNow'],
+    ),
   };
 
   const STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
@@ -460,68 +677,30 @@
         autoActions: null,
       },
       {
-        key: 'projectOverview',
-        highlight: '#setup-manager',
+        key: 'nameProject',
+        highlight: '#setupName',
         focus: '#setupName',
       },
       {
-        key: 'deviceSelection',
-        highlight: '#setup-config',
+        key: 'saveProject',
+        highlight: '#saveSetupBtn',
       },
       {
-        key: 'gearGeneration',
+        key: 'addCamera',
+        highlight: '#cameraSelect',
+      },
+      {
+        key: 'addPower',
+        highlight: '#batterySelect',
+      },
+      {
+        key: 'generatePlan',
         highlight: '#generateGearListBtn',
       },
       {
-        key: 'gearCustomization',
-        highlight: '[data-nav-key="gearListNav"]',
-      },
-      {
-        key: 'resultsReview',
-        highlight: '[data-nav-key="resultsHeading"]',
-        alternateHighlight: '#resultsHeading',
-        focus: '#resultsHeading',
-      },
-      {
-        key: 'powerSummary',
-        highlight: '#resultsPlainSummary',
-        alternateHighlight: '#resultsHeading',
-        focus: '#resultsPlainSummaryTitle',
-      },
-      {
-        key: 'contactsOwnGear',
-        highlight: '#openContactsBtn',
-        alternateHighlight: '[data-nav-key="ownGearNav"]',
-      },
-      {
-        key: 'autoGear',
-        highlight: '#autoGearHeading',
-        ensureSettings: { tabId: 'settingsTab-autoGear' },
-      },
-      {
-        key: 'overviewPrint',
-        highlight: '#generateOverviewBtn',
-      },
-      {
-        key: 'exportImport',
+        key: 'exportBackup',
         highlight: '#shareSetupBtn',
-        alternateHighlight: '#applySharedLinkBtn',
-      },
-      {
-        key: 'quickSafeguards',
-        highlight: '#storageBackupNow',
-        alternateHighlight: '#storageActionsHeading',
-        ensureSettings: { tabId: 'settingsTab-data' },
-      },
-      {
-        key: 'backupRestore',
-        highlight: '#backupSettings',
-        ensureSettings: { tabId: 'settingsTab-backup' },
-      },
-      {
-        key: 'safetyNet',
-        highlight: '#offlineIndicator',
-        alternateHighlight: '#saveSetupBtn',
+        alternateHighlight: '#storageBackupNow',
       },
       {
         key: 'completion',
@@ -558,6 +737,81 @@
   let settingsDialogRef = null;
   let resumeHintVisible = false;
   let resumeStartIndex = null;
+
+  let activeRequirementCleanup = null;
+  let activeRequirementCompleted = false;
+
+  function setNextButtonDisabled(disabled) {
+    if (!nextButton) {
+      return;
+    }
+    nextButton.disabled = !!disabled;
+    if (disabled) {
+      nextButton.setAttribute('aria-disabled', 'true');
+      nextButton.classList.add('onboarding-next-disabled');
+    } else {
+      nextButton.setAttribute('aria-disabled', 'false');
+      nextButton.classList.remove('onboarding-next-disabled');
+    }
+  }
+
+  function teardownStepRequirement() {
+    if (typeof activeRequirementCleanup === 'function') {
+      try {
+        activeRequirementCleanup();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not detach active requirement.', error);
+      }
+    }
+    activeRequirementCleanup = null;
+    activeRequirementCompleted = false;
+    setNextButtonDisabled(false);
+  }
+
+  function applyStepRequirement(step) {
+    if (!nextButton) {
+      return;
+    }
+
+    const requirement = step ? STEP_COMPLETION_REQUIREMENTS[step.key] : null;
+    if (!requirement) {
+      activeRequirementCompleted = true;
+      setNextButtonDisabled(false);
+      activeRequirementCleanup = null;
+      return;
+    }
+
+    const initialComplete = typeof requirement.check === 'function' ? requirement.check() : false;
+    activeRequirementCompleted = initialComplete;
+    setNextButtonDisabled(!initialComplete);
+
+    if (typeof requirement.attach !== 'function') {
+      return;
+    }
+
+    const cleanup = requirement.attach({
+      complete() {
+        if (!active || currentStep !== step) {
+          return;
+        }
+        if (!activeRequirementCompleted) {
+          activeRequirementCompleted = true;
+          setNextButtonDisabled(false);
+        }
+      },
+      incomplete() {
+        if (!active || currentStep !== step) {
+          return;
+        }
+        if (activeRequirementCompleted) {
+          activeRequirementCompleted = false;
+        }
+        setNextButtonDisabled(true);
+      },
+    });
+
+    activeRequirementCleanup = typeof cleanup === 'function' ? cleanup : null;
+  }
 
   function clearFrame() {
     if (pendingFrame === null) {
@@ -1117,8 +1371,9 @@
       return;
     }
 
-    const step = stepConfig[index];
     const previousStep = currentStep;
+    teardownStepRequirement();
+    const step = stepConfig[index];
 
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
       closeSettingsIfNeeded();
@@ -1155,6 +1410,7 @@
     }
 
     updateCardForStep(step, index);
+    applyStepRequirement(step);
 
     if (resumeHintVisible && resumeStartIndex !== null && index !== resumeStartIndex) {
       resumeHintVisible = false;
@@ -1403,6 +1659,7 @@
   function endTutorial() {
     active = false;
     clearFrame();
+    teardownStepRequirement();
     detachGlobalListeners();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
