@@ -385,12 +385,16 @@ Use Cine Power Planner end-to-end with the following routine:
   unsaved form inputs for the new project so you can review or edit without
   re-entering data.
 - **Crew contacts stay reusable.** Open the **Contacts** entry in the sidebar to
-  maintain a dedicated roster with roles, emails, phone numbers, websites and profile
-  photos that you can drop into any project. Contacts live in the same
-  localStorage snapshot as your projects, are included in manual backups and
-  can be imported from offline `.vcf` (vCard) files whenever you need to merge
-  address books. Saving a crew row back to the roster keeps future projects
-  aligned without retyping details.【F:index.html†L203-L206】【F:index.html†L6615-L6648】【F:src/scripts/app-core-new-1.js†L14233-L15090】
+    maintain a dedicated roster with roles, emails, phone numbers, websites and profile
+    photos that you can drop into any project. Contacts live in the same
+    localStorage snapshot as your projects, are included in manual backups and
+    can be imported from offline `.vcf` (vCard) files whenever you need to merge
+    address books. Saving a crew row back to the roster keeps future projects
+    aligned without retyping details.【F:index.html†L206-L209】【F:index.html†L7345-L7374】【F:src/scripts/app-core-new-1.js†L13632-L17848】
+- **Personal gear inventory stays in sync.** Open **Own Gear** in the sidebar to catalog kit names,
+    quantities, notes and sourcing. Entries share the same offline snapshot as projects, feed automatic
+    gear rule conditions and travel with manual backups, share bundles and quota recovery safeguards so
+    personal hardware never drifts from the planner.【F:index.html†L214-L219】【F:index.html†L6596-L6656】【F:src/scripts/modules/features/own-gear.js†L43-L172】【F:docs/save-share-restore-reference.md†L15-L17】
 - **Deletion requires confirmation.** Use the trash icon in the selector to
   remove unused versions. You’ll be asked to confirm before anything leaves the
   browser, ensuring you do not lose a project by accident.
