@@ -16916,6 +16916,15 @@ function handleUserProfileAvatarCleared() {
 }
 
 function handleUserProfileAvatarButtonClick() {
+  const hasAvatar = Boolean(userProfileState && userProfileState.avatar);
+  if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
+    try {
+      userProfileAvatarInput.click();
+      return;
+    } catch (error) {
+      void error;
+    }
+  }
   openAvatarOptionsDialog({
     getAvatar: () => userProfileState.avatar || '',
     getName: () => userProfileState.name || userProfileNameInput?.value || '',
@@ -16923,8 +16932,12 @@ function handleUserProfileAvatarButtonClick() {
       handleUserProfileAvatarCleared();
     },
     onChange: () => {
-      if (userProfileAvatarInput) {
-        userProfileAvatarInput.click();
+      if (userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
+        try {
+          userProfileAvatarInput.click();
+        } catch (error) {
+          void error;
+        }
       }
     },
     onEditSave: dataUrl => {
@@ -17696,6 +17709,14 @@ function createContactCard(contact) {
   });
 
   avatarButton.addEventListener('click', () => {
+    if (!contact.avatar && avatarInput && typeof avatarInput.click === 'function') {
+      try {
+        avatarInput.click();
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
     openAvatarOptionsDialog({
       getAvatar: () => contact.avatar || '',
       getName: () => contact.name || '',
@@ -17707,7 +17728,13 @@ function createContactCard(contact) {
         announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
       },
       onChange: () => {
-        avatarInput.click();
+        if (avatarInput && typeof avatarInput.click === 'function') {
+          try {
+            avatarInput.click();
+          } catch (error) {
+            void error;
+          }
+        }
       },
       onEditSave: dataUrl => {
         if (!dataUrl) return;
@@ -18055,6 +18082,14 @@ function createCrewRow(data = {}) {
   updateRowLinkedBadge(row);
 
   avatarButton.addEventListener('click', () => {
+    if (!avatarDataInput.value && avatarFileInput && typeof avatarFileInput.click === 'function') {
+      try {
+        avatarFileInput.click();
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
     openAvatarOptionsDialog({
       getAvatar: () => avatarDataInput.value || '',
       getName: () => nameInput.value || '',
@@ -18065,7 +18100,13 @@ function createCrewRow(data = {}) {
         announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
       },
       onChange: () => {
-        avatarFileInput.click();
+        if (avatarFileInput && typeof avatarFileInput.click === 'function') {
+          try {
+            avatarFileInput.click();
+          } catch (error) {
+            void error;
+          }
+        }
       },
       onEditSave: dataUrl => {
         if (!dataUrl) return;

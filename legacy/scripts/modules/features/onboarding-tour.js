@@ -1348,7 +1348,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-    var avatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent : 'Update profile photo';
+    var rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent.trim() : '';
+    var avatarActionLabel = !rawAvatarActionLabel ? 'Add profile Picture' : rawAvatarActionLabel.toLowerCase() === 'change photo' ? 'Add profile Picture' : rawAvatarActionLabel;
     var avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
     avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
