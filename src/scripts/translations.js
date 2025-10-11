@@ -1714,7 +1714,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—incluse il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1737,15 +1737,15 @@ const texts = {
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
       helpStatusNotStarted:
-        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+        "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
       helpStatusInProgress:
-        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
       helpStatusResume:
-        "Paused at {current}. {completed} of {total} steps already saved offline.",
+        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
       helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+        "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
       helpStatusCompleted:
-        "Tutorial complete. Replay any step anytime for a refresher.",
+        "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
       helpStatusLastCompleted:
         "Last completed: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Last update: {timeAgo}.",
@@ -3700,7 +3700,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—incluse il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
@@ -3723,15 +3723,15 @@ const texts = {
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
       helpStatusNotStarted:
-        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+        "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
       helpStatusInProgress:
-        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
       helpStatusResume:
-        "Paused at {current}. {completed} of {total} steps already saved offline.",
+        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
       helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+        "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
       helpStatusCompleted:
-        "Tutorial complete. Replay any step anytime for a refresher.",
+        "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
       helpStatusLastCompleted:
         "Ultimo completamento: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Ultimo aggiornamento: {timeAgo}.",
@@ -3751,47 +3751,127 @@ const texts = {
         intro: {
           title: "Benvenuto in Cine Power Planner",
           body:
-            "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente.",
+            "Questo percorso ampliato illustra ogni flusso che protegge i dati della troupe, dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva i progressi offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
         },
         userProfile: {
           title: "Configura il tuo profilo",
           body:
-            "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono i crediti corretti.",
+            "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono che le esportazioni accreditino il proprietario corretto.",
+        },
+        unitsPreferences: {
+          title: "Personalizza lingua, tema e unità",
+          body:
+            "Apri Impostazioni → Generale per scegliere lingua, tema chiaro o scuro, eventuale modalità rosa e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio al sicuro anche durante le pulizie automatiche di spazio.",
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
           body:
-            "Scrivi un nome progetto per attivare salvataggi automatici, backup ed esportazioni. Il pulsante Avanti si sblocca solo quando è presente un nome così ogni passaggio protegge subito il progetto offline.",
+            "Scrivi un nome progetto descrittivo per ancorare salvataggio automatico, cronologia, esportazioni e backup. Tutti i flussi successivi fanno riferimento a questo nome così la libreria offline resta organizzata e facile da ripristinare.",
         },
         saveProject: {
           title: "Salva subito",
           body:
-            "Premi Salva (o usa Ctrl+S/⌘S/Invio) per registrare una copia offline del progetto nominato. Se un setup già salvato è selezionato il passaggio viene completato automaticamente, altrimenti fai clic su Salva per proseguire.",
+            "Premi Salva (o usa Ctrl+S/⌘S/Invio) per registrare un'istantanea offline completa—dispositivi, calcoli di autonomia, requisiti, note e diagnostica. Il planner conferma il completamento prima di abilitare il flusso successivo.",
         },
         addCamera: {
           title: "Aggiungi la camera principale",
           body:
-            "Apri il menu Camera e scegli il corpo che stai pianificando. La ricerca funziona anche offline all'interno dell'elenco. Avanti si attiva quando selezioni un modello specifico.",
+            "Scegli il corpo macchina che stai pianificando. La ricerca offline è disponibile nel menu. La selezione sblocca accessori, assorbimenti e diagrammi dedicati.",
         },
-        addPower: {
-          title: "Scegli l'alimentazione",
+        addMonitoring: {
+          title: "Aggiungi monitor, video wireless e FIZ",
           body:
-            "Seleziona una batteria o una fonte DC adatta alla configurazione. La scelta aggiorna subito i calcoli di autonomia e viene salvata insieme allo snapshot del progetto.",
+            "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero setup.",
         },
-        generatePlan: {
-          title: "Genera il primo piano",
+        selectBattery: {
+          title: "Scegli batterie o alimentazioni DC",
           body:
-            "Usa Genera elenco attrezzatura e requisiti del progetto per creare la checklist stampabile. Si apre la finestra del progetto così puoi verificare assorbimenti, autonomia e note della troupe nello stesso posto.",
+            "Seleziona il sistema batteria o l'ingresso DC che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto.",
         },
-        exportBackup: {
-          title: "Esporta una copia di sicurezza offline",
+        results: {
+          title: "Rivedi il riepilogo dei risultati",
           body:
-            "Fai clic su Esporta progetto o su Quick safeguards per scaricare un backup JSON. Conservare una copia fuori dal browser protegge la nuova configurazione da reset e cambi di dispositivo.",
+            "Usa Power Summary per confermare assorbimenti totali, autonomie stimate e avvisi. Tutto ciò che vedi qui resta sincronizzato con il progetto salvato ed è incluso nelle esportazioni.",
+        },
+        batteryComparison: {
+          title: "Confronta le batterie",
+          body:
+            "Apri Confronto batterie per valutare alternative affiancate. Il grafico mantiene i calcoli offline così puoi testare scenari e fissare il margine di sicurezza migliore per la giornata.",
+        },
+        runtimeFeedback: {
+          title: "Invia feedback sull'autonomia",
+          body:
+            "Usa il pulsante feedback runtime per registrare risultati reali. Le voci si sincronizzano con il progetto corrente, migliorano le stime future e restano disponibili offline per gli audit.",
+        },
+        connectionDiagram: {
+          title: "Esamina il diagramma delle connessioni",
+          body:
+            "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, quindi salva così disposizione e annotazioni restano in esportazioni e ripristini.",
+        },
+        editDeviceData: {
+          title: "Modifica i dati dei dispositivi",
+          body:
+            "Apri l'editor della Libreria dispositivi per aggiungere o modificare camere, batterie e accessori. Gli aggiornamenti vengono archiviati localmente, inclusi nei backup e trasportati in ogni export o pacchetto condiviso.",
+        },
+        ownGear: {
+          title: "Documenta la tua attrezzatura",
+          body:
+            "Traccia l'inventario posseduto nella finestra Attrezzatura propria. Gli elementi salvati qui compaiono negli elenchi attrezzatura, nelle esportazioni e nei backup così ogni postazione sa cosa è già disponibile.",
+        },
+        generateGearAndRequirements: {
+          title: "Genera requisiti e elenco attrezzatura",
+          body:
+            "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte.",
+        },
+        autoGearRules: {
+          title: "Rivedi le regole automatiche dell'attrezzatura",
+          body:
+            "Impostazioni → Regole gear automatiche ti permette di definire condizioni che aggiungono automaticamente monitor, collegamenti wireless, gear FIZ e cavi. Le regole operano offline ogni volta che rigeneri il kit assicurando che nulla di critico manchi.",
+        },
+        projectRequirements: {
+          title: "Raffina i riquadri dei requisiti di progetto",
+          body:
+            "Modifica l'output Requisiti del progetto per registrare note troupe, deliverable e promemoria di sicurezza. Ogni riquadro viene salvato con il progetto, stampato nei riepiloghi e incluso nelle esportazioni.",
+        },
+        gearList: {
+          title: "Verifica l'elenco attrezzatura generato",
+          body:
+            "Controlla l'elenco attrezzatura categorizzato per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF.",
+        },
+        exportImport: {
+          title: "Esporta e importa progetti",
+          body:
+            "Usa Esporta progetto per scaricare una copia di sicurezza JSON e Importa progetto per provare i ripristini. Archivia le esportazioni su supporti ridondanti così nessuna postazione perde dati se il profilo del browser si reimposta.",
+        },
+        overviewAndPrint: {
+          title: "Genera panoramica e stampe",
+          body:
+            "Genera la panoramica del progetto per accedere a riepiloghi pronti per PDF, stampa e condivisione. La finestra usa solo dati salvati, quindi puoi stampare o esportare anche completamente offline.",
+        },
+        help: {
+          title: "Apri il centro assistenza",
+          body:
+            "La finestra Guida include documentazione ricercabile, note di traduzione e riferimenti del tutorial. Tienila appuntata mentre lavori: gli articoli restano in cache offline e si aggiornano quando arrivano nuove funzionalità.",
+        },
+        settingsGeneral: {
+          title: "Riapri Impostazioni → Generale",
+          body:
+            "Regola in qualsiasi momento lingua, tipografia, tema, modalità rosa, scala del fuoco e altre opzioni di presentazione. Le preferenze vengono salvate localmente, sincronizzate tra i progetti e incluse nei backup.",
+        },
+        settingsData: {
+          title: "Monitora Dati e archiviazione",
+          body:
+            "Usa la scheda Dati e archiviazione per richiedere l'archiviazione persistente, monitorare i timestamp dei salvataggi e avviare salvaguardie rapide. Questi controlli verificano che ogni snapshot di progetto resti disponibile offline.",
+        },
+        settingsBackup: {
+          title: "Gestisci Backup e ripristino",
+          body:
+            "La scheda Backup e ripristino gestisce esportazioni dell'intera app, prove di ripristino e diagnostica. Esegui backup prima dei cambiamenti importanti, archivia i file su supporti esterni e verifica regolarmente i ripristini.",
         },
         completion: {
-          title: "Tutto pronto per pianificare",
+          title: "Tutorial completato",
           body:
-            "Lascia aperta la Guida quando serve supporto aggiuntivo. Ricorda di salvare spesso, creare backup prima delle modifiche importanti e conservare le esportazioni in più posizioni offline.",
+            "Ora conosci tutte le protezioni. Continua a salvare spesso, esporta backup ridondanti e riprendi qualsiasi passaggio dalla Guida ogni volta che vuoi un ripasso. Cine Power Planner continuerà a proteggere i tuoi dati offline.",
         },
       },
     },
@@ -5620,7 +5700,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "para recorrer cada flujo de trabajo con seguimiento del progreso sin conexión—incluido el punto de control del Resumen de energía y el simulacro de red de seguridad offline—antes de configurar tu primer proyecto. Usa el navegador de pasos y el medidor de progreso para revisar sin conexión las secciones terminadas.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
@@ -5643,15 +5723,15 @@ const texts = {
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
       helpStatusNotStarted:
-        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+        "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
       helpStatusInProgress:
-        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+        "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
       helpStatusResume:
-        "Paused at {current}. {completed} of {total} steps already saved offline.",
+        "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
       helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+        "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
       helpStatusCompleted:
-        "Tutorial complete. Replay any step anytime for a refresher.",
+        "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
       helpStatusLastCompleted:
         "Último paso completado: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Última actualización: {timeAgo}.",
@@ -5671,48 +5751,129 @@ const texts = {
         intro: {
           title: "Bienvenido a Cine Power Planner",
           body:
-            "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta.",
+            "Este recorrido ampliado orienta cada flujo que protege los datos del equipo, desde el primer proyecto hasta los respaldos redundantes. Cada paso guarda el progreso sin conexión para que puedas pausar y reanudar sin perder protecciones.",
         },
         userProfile: {
           title: "Configura tu perfil",
           body:
-            "Completa tu nombre visible, rol, teléfono, correo y foto directamente en este paso. Los cambios se sincronizan con Contactos al instante, permanecen sin conexión en tus guardados y garantizan los créditos correctos.",
+            "Completa tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
+        },
+        unitsPreferences: {
+          title: "Ajusta idioma, tema y unidades",
+          body:
+            "Usa Configuración → General para elegir idioma, tema claro u oscuro, resaltes opcionales en modo rosa y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
           body:
-            "Escribe un nombre de proyecto para activar el guardado automático, las copias y las exportaciones. El botón Siguiente se desbloquea en cuanto haya un nombre, así cada paso protege el proyecto sin conexión.",
+            "Escribe un nombre descriptivo de proyecto para anclar el guardado automático, el historial, las exportaciones y los respaldos. Todos los flujos posteriores hacen referencia a este nombre para que tu biblioteca offline se mantenga organizada y fácil de restaurar.",
         },
         saveProject: {
           title: "Guarda de inmediato",
           body:
-            "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para capturar una instantánea sin conexión del proyecto con nombre. Si ya tienes seleccionado un proyecto guardado el paso se completa automáticamente; si no, haz clic en Guardar para continuar.",
+            "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para escribir una instantánea offline completa: dispositivos, cálculos de autonomía, requisitos, notas y diagnósticos. El planner confirma la finalización antes de habilitar el siguiente flujo.",
         },
         addCamera: {
           title: "Añade la cámara principal",
           body:
-            "Abre la lista Cámara y elige el cuerpo para tu plan. La búsqueda funciona sin conexión dentro del desplegable. Siguiente se activa cuando seleccionas un modelo específico.",
+            "Elige el cuerpo de cámara que estás planificando. La búsqueda sin conexión está disponible dentro del menú. Al seleccionar un cuerpo se desbloquean accesorios, consumos y diagramas adaptados.",
         },
-        addPower: {
-          title: "Elige una fuente de energía",
+        addMonitoring: {
+          title: "Añade monitores, video inalámbrico y FIZ",
           body:
-            "Selecciona una batería o fuente de CC que encaje con el montaje. La selección actualiza al instante los cálculos de autonomía y se guarda con la instantánea del proyecto.",
+            "Añade monitores abordo, transmisores inalámbricos y motores o controladores FIZ. Cada selección alimenta los cálculos de autonomía, los diagramas y las reglas automáticas para que el kit generado represente todo el montaje.",
         },
-        generatePlan: {
-          title: "Genera tu primer plan",
+        selectBattery: {
+          title: "Elige baterías o fuentes de CC",
           body:
-            "Usa Generar lista de equipo y requisitos del proyecto para crear la lista imprimible. Se abrirá el cuadro del proyecto para que revises consumos, autonomía y notas del equipo en un mismo lugar.",
+            "Selecciona el sistema de baterías o la entrada de CC que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto.",
         },
-        exportBackup: {
-          title: "Exporta una copia de seguridad sin conexión",
+        results: {
+          title: "Revisa el resumen de resultados",
           body:
-            "Haz clic en Exportar proyecto o en Quick safeguards para descargar una copia JSON. Guardar un archivo fuera del navegador protege el montaje frente a reinicios o cambios de dispositivo.",
+            "Usa el Resumen de energía para confirmar el consumo total, las autonomías estimadas y los avisos. Todo lo que ves aquí permanece sincronizado con el proyecto guardado y las exportaciones.",
+        },
+        batteryComparison: {
+          title: "Compara opciones de batería",
+          body:
+            "Abre Comparación de baterías para evaluar paquetes alternativos uno junto a otro. La gráfica mantiene los cálculos offline para que pruebes escenarios y asegures el margen de autonomía más seguro del día.",
+        },
+        runtimeFeedback: {
+          title: "Envía feedback de autonomía",
+          body:
+            "Usa el botón de feedback de autonomía para registrar resultados reales. Las entradas se sincronizan con el proyecto actual, fortalecen las estimaciones futuras y permanecen disponibles offline para auditorías.",
+        },
+        connectionDiagram: {
+          title: "Inspecciona el diagrama de conexiones",
+          body:
+            "El diagrama interactivo muestra cómo se conectan energía, video y control. Arrastra los nodos para planear el layout del rig y luego guarda para que la disposición y las anotaciones persistan en exportaciones y restauraciones.",
+        },
+        editDeviceData: {
+          title: "Edita datos de dispositivos",
+          body:
+            "Abre el editor de la Biblioteca de dispositivos para añadir o ajustar cámaras, baterías y accesorios. Las actualizaciones se guardan localmente, se incluyen en los respaldos y viajan en cada exportación o paquete compartido.",
+        },
+        ownGear: {
+          title: "Documenta tu propio equipo",
+          body:
+            "Registra el inventario propio en el cuadro Equipo propio. Los elementos guardados aquí aparecen en las listas de equipo, exportaciones y respaldos para que cada estación sepa qué hay disponible.",
+        },
+        generateGearAndRequirements: {
+          title: "Genera requisitos y lista de equipo",
+          body:
+            "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist tras cada cambio. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes.",
+        },
+        autoGearRules: {
+          title: "Revisa reglas automáticas de equipo",
+          body:
+            "Configuración → Reglas automáticas de equipo te permite definir condiciones que añaden automáticamente monitores, enlaces inalámbricos, equipo FIZ y cables. Las reglas se ejecutan offline cada vez que regeneras el kit, garantizando que nada crítico falte.",
+        },
+        projectRequirements: {
+          title: "Refina los recuadros de requisitos",
+          body:
+            "Ajusta la salida de Requisitos del proyecto para capturar notas del equipo, entregables y recordatorios de seguridad. Cada recuadro se guarda con el proyecto, se imprime en los resúmenes y fluye hacia las exportaciones.",
+        },
+        gearList: {
+          title: "Audita la lista de equipo generada",
+          body:
+            "Revisa la lista de equipo categorizada en busca de duplicados, cantidades y accesorios autoañadidos. Las ediciones se guardan al instante, se incluyen en los paquetes para compartir y aparecen en impresiones y PDF.",
+        },
+        exportImport: {
+          title: "Exporta e importa proyectos",
+          body:
+            "Usa Exportar proyecto para descargar una copia de seguridad JSON y Importar proyecto para ensayar restauraciones. Guarda las exportaciones en soportes redundantes para que ninguna estación pierda datos si el perfil del navegador se restablece.",
+        },
+        overviewAndPrint: {
+          title: "Genera vista general y documentos",
+          body:
+            "Genera la vista general del proyecto para acceder a resúmenes listos para PDF, impresión y compartir. El cuadro usa solo datos guardados, así que puedes imprimir o exportar incluso estando completamente offline.",
+        },
+        help: {
+          title: "Abre el centro de ayuda",
+          body:
+            "El cuadro de Ayuda incluye documentación con búsqueda, notas de traducción y referencias del tutorial. Mantenlo anclado mientras trabajas: los artículos se almacenan en caché sin conexión y se actualizan cuando llegan nuevas funciones.",
+        },
+        settingsGeneral: {
+          title: "Vuelve a Configuración → General",
+          body:
+            "Ajusta idioma, tipografía, tema, modo rosa, escala de enfoque y otras opciones de presentación cuando quieras. Las preferencias se guardan localmente, se sincronizan entre proyectos y se incluyen en los respaldos.",
+        },
+        settingsData: {
+          title: "Supervisa Datos y almacenamiento",
+          body:
+            "Usa la pestaña Datos y almacenamiento para solicitar almacenamiento persistente, vigilar las marcas de tiempo de guardado y lanzar protecciones rápidas. Estos controles verifican que cada instantánea del proyecto permanezca disponible sin conexión.",
+        },
+        settingsBackup: {
+          title: "Mantén Copia de seguridad y restauración",
+          body:
+            "La pestaña Copia de seguridad y restauración gestiona exportaciones completas de la app, ensayos de restauración y diagnósticos. Ejecuta respaldos antes de cambios importantes, archiva los archivos en medios externos y verifica las restauraciones con regularidad.",
         },
         completion: {
-          title: "Todo listo para planificar",
+          title: "Tutorial completado",
           body:
-            "Mantén Ayuda abierta cuando necesites más contexto. Recuerda guardar con frecuencia, crear copias antes de cambios importantes y almacenar las exportaciones en varias ubicaciones sin conexión.",
+            "Ahora conoces todas las salvaguardas. Sigue guardando con frecuencia, exporta copias redundantes y vuelve a cualquier paso desde Ayuda cuando necesites un repaso. Cine Power Planner seguirá protegiendo tus datos sin conexión.",
         },
+      },
       },
     },
     helpQuickStartChecklistTitle: "Lista de comprobación de inicio rápido",
@@ -7552,7 +7713,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "pour parcourir chaque flux de travail avec un suivi de progression hors ligne — y compris le point de contrôle du Résumé d’alimentation et la répétition du filet de sécurité hors ligne — avant de configurer votre premier projet. Utilisez le navigateur d’étapes et la jauge de progression pour revoir hors ligne les sections terminées.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
@@ -7575,15 +7736,15 @@ const texts = {
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
       helpStatusNotStarted:
-        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+        "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
       helpStatusInProgress:
-        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+        "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
       helpStatusResume:
-        "Paused at {current}. {completed} of {total} steps already saved offline.",
+        "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
       helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+        "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
       helpStatusCompleted:
-        "Tutorial complete. Replay any step anytime for a refresher.",
+        "Tutoriel terminé. Rejouez n’importe quelle étape à tout moment pour un rappel.",
       helpStatusLastCompleted:
         "Dernière étape terminée : {step} ({timeAgo}).",
       helpStatusLastUpdated: "Dernière mise à jour : {timeAgo}.",
@@ -7603,48 +7764,129 @@ const texts = {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
           body:
-            "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement.",
+            "Ce parcours étendu présente chaque flux qui protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape enregistre la progression hors ligne pour vous permettre de faire une pause et de reprendre sans perdre les garde-fous.",
         },
         userProfile: {
           title: "Configurez votre profil",
           body:
-            "Renseignez votre nom affiché, rôle, téléphone, e-mail et photo directement ici. Les changements se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent les bons crédits.",
+            "Renseignez votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Les modifications se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent que les exports créditent le bon responsable.",
+        },
+        unitsPreferences: {
+          title: "Réglez langue, thème et unités",
+          body:
+            "Utilisez Paramètres → Général pour choisir la langue, le thème clair ou sombre, les surbrillances optionnelles du mode rose et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
         },
         nameProject: {
           title: "Nommez votre premier projet",
           body:
-            "Saisissez un nom de projet pour activer l’enregistrement automatique, les sauvegardes et les exports. Le bouton Suivant se déverrouille dès qu’un nom est défini afin que chaque étape sécurise immédiatement le projet hors ligne.",
+            "Saisissez un nom de projet descriptif pour ancrer la sauvegarde automatique, l’historique, les exports et les sauvegardes. Tous les flux suivants s’y réfèrent pour que votre bibliothèque hors ligne reste organisée et facile à restaurer.",
         },
         saveProject: {
           title: "Enregistrez immédiatement",
           body:
-            "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour capturer une copie hors ligne du projet nommé. Si une configuration déjà sauvegardée est sélectionnée, l’étape se valide automatiquement ; sinon, appuyez sur Enregistrer pour continuer.",
+            "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour écrire une capture hors ligne complète : appareils, calculs d’autonomie, exigences, notes et diagnostics. Le planner confirme la fin avant d’activer le flux suivant.",
         },
         addCamera: {
           title: "Ajoutez la caméra principale",
           body:
-            "Ouvrez la liste Caméra et choisissez le boîtier que vous planifiez. La recherche est disponible hors connexion dans la liste. Suivant s’active lorsque vous sélectionnez un modèle précis.",
+            "Choisissez le boîtier que vous préparez. La recherche hors ligne est disponible dans la liste déroulante. Sélectionner un boîtier déverrouille les accessoires, consommations et diagrammes adaptés.",
         },
-        addPower: {
-          title: "Choisissez une source d’alimentation",
+        addMonitoring: {
+          title: "Ajoutez moniteurs, vidéo sans fil et FIZ",
           body:
-            "Sélectionnez une batterie ou une source CC adaptée à la configuration. Le choix met instantanément à jour les calculs d’autonomie et est enregistré avec l’instantané du projet.",
+            "Ajoutez moniteurs embarqués, transmetteurs sans fil et moteurs ou contrôleurs FIZ. Chaque sélection alimente les calculs d’autonomie, les diagrammes et les règles automatiques afin que le kit généré reflète l’ensemble du montage.",
         },
-        generatePlan: {
-          title: "Générez votre premier plan",
+        selectBattery: {
+          title: "Choisissez batteries ou alimentations CC",
           body:
-            "Utilisez Générer la liste du matériel et exigences du projet pour créer la checklist imprimable. La fenêtre du projet s’ouvre afin de vérifier ensemble consommations, autonomie et notes d’équipe.",
+            "Sélectionnez le système de batteries ou l’entrée CC qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne.",
         },
-        exportBackup: {
-          title: "Exportez une copie de sécurité hors ligne",
+        results: {
+          title: "Passez en revue le résumé des résultats",
           body:
-            "Cliquez sur Exporter le projet ou Quick safeguards pour télécharger une sauvegarde JSON. Conserver un fichier en dehors du navigateur protège la nouvelle configuration lors des réinitialisations ou changements d’appareil.",
+            "Utilisez le Résumé d’alimentation pour confirmer les consommations totales, les autonomies estimées et les avertissements. Tout ce qui est affiché reste synchronisé avec votre projet enregistré et vos exports.",
+        },
+        batteryComparison: {
+          title: "Comparez les options de batterie",
+          body:
+            "Ouvrez Comparaison de batteries pour évaluer les packs alternatifs côte à côte. Le graphique conserve les calculs hors ligne pour tester des scénarios et valider la marge d’autonomie la plus sûre de la journée.",
+        },
+        runtimeFeedback: {
+          title: "Envoyez un retour d’autonomie",
+          body:
+            "Utilisez le bouton de retour d’expérience sur l’autonomie pour consigner les résultats réels. Les entrées se synchronisent avec le projet en cours, renforcent les estimations futures et restent disponibles hors ligne pour les audits.",
+        },
+        connectionDiagram: {
+          title: "Inspectez le diagramme de connexion",
+          body:
+            "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations.",
+        },
+        editDeviceData: {
+          title: "Modifiez les données des appareils",
+          body:
+            "Ouvrez l’éditeur de la bibliothèque d’appareils pour ajouter ou ajuster caméras, batteries et accessoires. Les mises à jour sont stockées localement, incluses dans les sauvegardes et intégrées à chaque export ou lot partagé.",
+        },
+        ownGear: {
+          title: "Documentez votre matériel personnel",
+          body:
+            "Suivez l’inventaire possédé dans la fenêtre Matériel personnel. Les éléments enregistrés apparaissent dans les listes, les exports et les sauvegardes pour que chaque poste sache ce qui est déjà disponible.",
+        },
+        generateGearAndRequirements: {
+          title: "Générez exigences et liste du matériel",
+          body:
+            "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections.",
+        },
+        autoGearRules: {
+          title: "Révisez les règles automatiques d’équipement",
+          body:
+            "Paramètres → Règles automatiques d’équipement vous permet de définir des conditions qui ajoutent automatiquement moniteurs, liaisons sans fil, matériel FIZ et câbles. Les règles s’exécutent hors ligne à chaque régénération du kit afin de ne rien oublier de critique.",
+        },
+        projectRequirements: {
+          title: "Affinez les encarts d’exigences du projet",
+          body:
+            "Ajustez la sortie Exigences du projet pour capturer notes d’équipe, livrables et rappels de sécurité. Chaque encart est enregistré avec le projet, imprimé dans les aperçus et intégré aux exports.",
+        },
+        gearList: {
+          title: "Auditez la liste du matériel générée",
+          body:
+            "Vérifiez la liste du matériel classée par catégorie pour repérer doublons, quantités et accessoires ajoutés automatiquement. Les modifications sont sauvegardées instantanément, intégrées aux lots de partage et visibles dans les impressions et PDF.",
+        },
+        exportImport: {
+          title: "Exportez et importez des projets",
+          body:
+            "Utilisez Exporter le projet pour télécharger une copie JSON de sécurité et Importer un projet pour répéter les restaurations. Archivez les exports sur des supports redondants afin qu’aucun poste ne perde de données si le profil du navigateur est réinitialisé.",
+        },
+        overviewAndPrint: {
+          title: "Générez aperçu et impressions",
+          body:
+            "Générez l’aperçu du projet pour accéder aux résumés prêts pour PDF, impression et partage. La fenêtre n’utilise que des données enregistrées, ce qui vous permet d’imprimer ou d’exporter même totalement hors ligne.",
+        },
+        help: {
+          title: "Ouvrez le centre d’aide",
+          body:
+            "La fenêtre Aide inclut documentation recherchable, notes de traduction et repères du tutoriel. Gardez-la épinglée pendant le travail : les articles restent en cache hors ligne et se mettent à jour quand de nouvelles fonctions arrivent.",
+        },
+        settingsGeneral: {
+          title: "Retournez à Paramètres → Général",
+          body:
+            "Ajustez langue, typographie, thème, mode rose, échelle de mise au point et autres options de présentation quand vous voulez. Les préférences sont enregistrées localement, synchronisées entre les projets et ajoutées aux sauvegardes.",
+        },
+        settingsData: {
+          title: "Surveillez Données et stockage",
+          body:
+            "Utilisez l’onglet Données et stockage pour demander le stockage persistant, surveiller les horodatages de sauvegarde et lancer des protections rapides. Ces contrôles vérifient que chaque capture de projet reste disponible hors ligne.",
+        },
+        settingsBackup: {
+          title: "Maintenez Sauvegarde et restauration",
+          body:
+            "L’onglet Sauvegarde et restauration gère les exports complets de l’application, les répétitions de restauration et la diagnostic. Effectuez des sauvegardes avant les changements majeurs, archivez les fichiers sur des supports externes et validez régulièrement les restaurations.",
         },
         completion: {
-          title: "Vous êtes prêt à planifier",
+          title: "Tutoriel terminé",
           body:
-            "Gardez l’Aide ouverte pour approfondir au besoin. Pensez à enregistrer souvent, à créer une sauvegarde avant toute modification majeure et à conserver vos exports dans plusieurs emplacements hors ligne.",
+            "Vous connaissez désormais toutes les protections. Continuez à enregistrer souvent, exportez des sauvegardes redondantes et revisitez n’importe quelle étape depuis Aide quand vous voulez un rappel. Cine Power Planner continuera de protéger vos données hors ligne.",
         },
+      },
       },
     },
     helpQuickStartChecklistTitle: "Liste de démarrage rapide",
@@ -9489,7 +9731,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
     helpOnboardingTutorialCopy:
-      "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+      "um jeden Workflow mit Offline-Fortschrittsverfolgung durchzugehen – inklusive Power-Summary-Kontrollpunkt und Offline-Sicherheitsnetz-Probe –, bevor du dein erstes Projekt konfigurierst. Nutze den Schritt-Navigator und die Fortschrittsanzeige, um abgeschlossene Abschnitte offline erneut zu besuchen.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
@@ -9512,15 +9754,15 @@ const texts = {
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
       helpStatusNotStarted:
-        "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
+        "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
       helpStatusInProgress:
-        "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
+        "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
       helpStatusResume:
-        "Paused at {current}. {completed} of {total} steps already saved offline.",
+        "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
       helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+        "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
       helpStatusCompleted:
-        "Tutorial complete. Replay any step anytime for a refresher.",
+        "Tutorial abgeschlossen. Spiele jeden Schritt jederzeit zur Auffrischung erneut ab.",
       helpStatusLastCompleted:
         "Zuletzt abgeschlossen: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Letzte Aktualisierung: {timeAgo}.",
@@ -9540,48 +9782,129 @@ const texts = {
         intro: {
           title: "Willkommen bei Cine Power Planner",
           body:
-            "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst.",
+            "Dieser erweiterte Rundgang erklärt jeden Workflow, der die Daten deines Teams schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt speichert den Fortschritt offline, damit du jederzeit pausieren und ohne Verlust der Schutzmaßnahmen fortsetzen kannst.",
         },
         userProfile: {
           title: "Profil einrichten",
           body:
-            "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt in diesem Schritt ein. Die Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Sicherungen erhalten und sorgen für die richtigen Credits.",
+            "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt hier ein. Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Speicherungen und stellen sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
+        },
+        unitsPreferences: {
+          title: "Sprache, Theme und Einheiten anpassen",
+          body:
+            "Nutze Einstellungen → Allgemein, um Sprache, helles oder dunkles Theme, optionale Pink-Highlights und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
         },
         nameProject: {
-          title: "Benenne dein erstes Projekt",
+          title: "Erstes Projekt benennen",
           body:
-            "Trage einen Projektnamen ein, damit Autosave, Backups und Exporte aktiviert werden. Der Button Weiter wird erst freigeschaltet, wenn ein Name gesetzt ist – so schützt jeder Schritt dein Projekt sofort offline.",
+            "Gib einen aussagekräftigen Projektnamen ein, um Autosave, Verlauf, Exporte und Backups zu verankern. Alle weiteren Workflows verweisen auf diesen Namen, damit deine Offline-Bibliothek organisiert und leicht wiederherzustellen bleibt.",
         },
         saveProject: {
-          title: "Speichere sofort",
+          title: "Sofort speichern",
           body:
-            "Klicke auf Speichern (oder nutze Strg+S/Cmd+S/Eingabe), um eine Offline-Kopie des benannten Projekts festzuhalten. Ist bereits ein gespeichertes Projekt ausgewählt, gilt der Schritt automatisch als erledigt – sonst speichere, um fortzufahren.",
+            "Drücke Speichern (oder verwende Strg+S/⌘S/Eingabe), um einen vollständigen Offline-Snapshot zu schreiben – Geräte, Laufzeitberechnung, Anforderungen, Notizen und Diagnosen. Der Planner bestätigt den Abschluss, bevor der nächste Workflow aktiviert wird.",
         },
         addCamera: {
-          title: "Füge die Hauptkamera hinzu",
+          title: "Kamera auswählen",
           body:
-            "Öffne die Liste Kamera und wähle das Gehäuse, das du planst. Die Suche funktioniert offline direkt im Dropdown. Weiter wird aktiviert, sobald du ein konkretes Modell auswählst.",
+            "Wähle das Kameragehäuse, das du planen möchtest. Offline-Suche steht direkt im Dropdown bereit. Mit der Auswahl werden Zubehör, Leistungsaufnahmen und Diagramme freigeschaltet, die zu dieser Kamera passen.",
         },
-        addPower: {
-          title: "Wähle eine Stromquelle",
+        addMonitoring: {
+          title: "Monitore, Funkvideo und FIZ hinzufügen",
           body:
-            "Wähle einen Akku oder eine DC-Quelle, die zur Konfiguration passt. Die Auswahl aktualisiert sofort die Laufzeitberechnungen und wird zusammen mit dem Projektschnappschuss gespeichert.",
+            "Füge Onboard-Monitore, Funkübertrager sowie FIZ-Motoren oder -Controller hinzu. Jede Auswahl speist Laufzeitberechnungen, Diagramme und automatische Regelwerke, damit das generierte Kit den gesamten Aufbau widerspiegelt.",
         },
-        generatePlan: {
-          title: "Erstelle deinen ersten Plan",
+        selectBattery: {
+          title: "Batterien oder DC-Quellen wählen",
           body:
-            "Nutze Liste & Anforderungen generieren, um die druckbare Checkliste zu erstellen. Der Projektdialog öffnet sich, damit du Verbrauch, Laufzeiten und Teamnotizen an einem Ort prüfen kannst.",
+            "Wähle das Batteriesystem oder den DC-Eingang, der das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert.",
         },
-        exportBackup: {
-          title: "Exportiere eine Offline-Sicherheitskopie",
+        results: {
+          title: "Ergebnisse zusammenfassen",
           body:
-            "Klicke auf Projekt exportieren oder Quick safeguards, um ein JSON-Backup herunterzuladen. Eine Kopie außerhalb des Browsers schützt den Aufbau vor Zurücksetzungen oder Gerätewechseln.",
+            "Nutze die Power Summary, um Gesamtverbrauch, geschätzte Laufzeiten und Warnungen zu bestätigen. Alle angezeigten Werte bleiben mit deinem gespeicherten Projekt und den Exporten synchron.",
+        },
+        batteryComparison: {
+          title: "Batterieoptionen vergleichen",
+          body:
+            "Öffne den Batterie-Vergleich, um alternative Packs nebeneinander zu bewerten. Das Diagramm hält Berechnungen offline, damit du Szenarien testen und den sichersten Laufzeitpuffer für den Tag festlegen kannst.",
+        },
+        runtimeFeedback: {
+          title: "Laufzeit-Feedback senden",
+          body:
+            "Nutze die Laufzeit-Rückmeldung, um reale Ergebnisse zu protokollieren. Einträge synchronisieren sich mit dem aktuellen Projekt, stärken zukünftige Schätzungen und bleiben offline für Audits verfügbar.",
+        },
+        connectionDiagram: {
+          title: "Verbindungsdiagramm prüfen",
+          body:
+            "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben.",
+        },
+        editDeviceData: {
+          title: "Gerätedaten bearbeiten",
+          body:
+            "Öffne den Gerätekatalog-Editor, um Kameras, Akkus und Zubehör hinzuzufügen oder anzupassen. Aktualisierungen werden lokal gespeichert, in Backups aufgenommen und in jeden Export oder Share-Bundel übernommen.",
+        },
+        ownGear: {
+          title: "Eigenes Equipment dokumentieren",
+          body:
+            "Dokumentiere eigenes Inventar im Dialog Eigenes Equipment. Gespeicherte Einträge erscheinen in Gerätelisten, Exporten und Backups, damit jeder Arbeitsplatz weiß, was bereits verfügbar ist.",
+        },
+        generateGearAndRequirements: {
+          title: "Anforderungen und Gear-Liste erzeugen",
+          body:
+            "Nutze Gear-Liste und Projektanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden.",
+        },
+        autoGearRules: {
+          title: "Automatische Gear-Regeln prüfen",
+          body:
+            "Unter Einstellungen → Automatische Gear-Regeln definierst du Bedingungen, die Monitore, Funkverbindungen, FIZ-Geräte und Kabel automatisch hinzufügen. Die Regeln laufen offline bei jeder Neuerstellung des Kits und verhindern, dass wichtige Komponenten fehlen.",
+        },
+        projectRequirements: {
+          title: "Projektanforderungs-Boxen verfeinern",
+          body:
+            "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen.",
+        },
+        gearList: {
+          title: "Generierte Gear-Liste prüfen",
+          body:
+            "Prüfe die kategorisierte Gear-Liste auf Duplikate, Mengen und automatisch hinzugefügtes Zubehör. Änderungen werden sofort gespeichert, in Share-Bundles aufgenommen und erscheinen in Ausdrucken und PDFs.",
+        },
+        exportImport: {
+          title: "Projekte exportieren und importieren",
+          body:
+            "Nutze Projekt exportieren, um eine JSON-Sicherheitskopie herunterzuladen, und Projekt importieren, um Wiederherstellungen zu üben. Bewahre Exporte auf redundanten Medien auf, damit kein Arbeitsplatz Daten verliert, falls ein Browserprofil zurückgesetzt wird.",
+        },
+        overviewAndPrint: {
+          title: "Übersicht und Drucke erzeugen",
+          body:
+            "Erzeuge die Projektübersicht, um PDF-, Druck- und Sharing-fertige Zusammenfassungen zu erhalten. Der Dialog nutzt ausschließlich gespeicherte Daten, sodass du auch vollständig offline drucken oder exportieren kannst.",
+        },
+        help: {
+          title: "Hilfezentrum öffnen",
+          body:
+            "Der Hilfedialog umfasst durchsuchbare Dokumentation, Übersetzungshinweise und Tutorial-Referenzen. Lass ihn während der Arbeit angepinnt – Artikel bleiben offline zwischengespeichert und aktualisieren sich, sobald neue Funktionen eintreffen.",
+        },
+        settingsGeneral: {
+          title: "Einstellungen → Allgemein erneut besuchen",
+          body:
+            "Passe jederzeit Sprache, Typografie, Theme, Pink-Modus, Fokusskala und weitere Darstellungsoptionen an. Einstellungen werden lokal gesichert, zwischen Projekten synchronisiert und in Backups aufgenommen.",
+        },
+        settingsData: {
+          title: "Daten & Speicher überwachen",
+          body:
+            "Nutze den Reiter Daten & Speicher, um dauerhaften Speicher anzufordern, Speicherdaten zu überwachen und Schnellschutzmaßnahmen zu starten. Diese Kontrollen stellen sicher, dass jede Projektsicherung offline verfügbar bleibt.",
+        },
+        settingsBackup: {
+          title: "Backup & Wiederherstellung pflegen",
+          body:
+            "Der Reiter Backup & Wiederherstellung verwaltet Komplett-Exporte der App, Wiederherstellungsproben und Diagnose. Führe Backups vor großen Änderungen aus, archiviere die Dateien extern und überprüfe Wiederherstellungen regelmäßig.",
         },
         completion: {
-          title: "Alles bereit zum Planen",
+          title: "Tutorial abgeschlossen",
           body:
-            "Lass die Hilfe offen, wenn du detailliertere Hinweise brauchst. Speichere regelmäßig, erstelle vor größeren Änderungen ein Backup und bewahre Exporte an mehreren Offline-Orten auf.",
+            "Du kennst jetzt alle Schutzmaßnahmen. Speichere weiter häufig, exportiere redundante Backups und rufe bei Bedarf jeden Schritt über Hilfe erneut auf. Cine Power Planner schützt deine Daten weiterhin offline.",
         },
+      },
       },
     },
     helpQuickStartChecklistTitle: "Checkliste für den Schnellstart",
