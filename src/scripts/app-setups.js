@@ -6665,10 +6665,6 @@ function ensureGearItemCameraLinkIndicator(element) {
   icon.setAttribute('aria-hidden', 'true');
   icon.textContent = 'A';
   indicator.appendChild(icon);
-  const botText = doc.createElement('span');
-  botText.className = 'gear-item-camera-link__text';
-  botText.textContent = textsForDialog.cameraLinkBotLabel || 'bot';
-  indicator.appendChild(botText);
   const assist = doc.createElement('span');
   assist.className = 'visually-hidden';
   assist.setAttribute('data-camera-link-assist', 'true');
@@ -6704,11 +6700,6 @@ function updateGearItemCameraLinkIndicator(element, active, options = {}) {
   const icon = indicator.querySelector('.gear-item-camera-link__icon');
   if (icon) {
     icon.textContent = (options.iconText && options.iconText.trim()) || 'A';
-  }
-  const botText = indicator.querySelector('.gear-item-camera-link__text');
-  if (botText) {
-    const nextLabel = options.botLabel || textsForDialog.cameraLinkBotLabel || 'bot';
-    botText.textContent = nextLabel;
   }
   const assist = indicator.querySelector('[data-camera-link-assist]');
   if (assist) {
@@ -7643,7 +7634,6 @@ function getGearItemEditTexts() {
     cameraLinkCameraOption: langTexts.gearListEditCameraLinkCameraOption || fallbackTexts.gearListEditCameraLinkCameraOption || 'Link to camera (%s)',
     cameraLinkUnavailableOption: langTexts.gearListEditCameraLinkUnavailableOption || fallbackTexts.gearListEditCameraLinkUnavailableOption || 'Link to camera',
     cameraLinkBadgeLabel: langTexts.gearListCameraLinkBadgeLabel || fallbackTexts.gearListCameraLinkBadgeLabel || 'Linked to camera',
-    cameraLinkBotLabel: langTexts.gearListCameraLinkBotLabel || fallbackTexts.gearListCameraLinkBotLabel || 'bot',
     rentalLabel: langTexts.gearListEditRentalLabel || fallbackTexts.gearListEditRentalLabel || 'Exclude from rental house',
     rentalNote: resolveRentalProviderNoteLabel({
       fallback: langTexts.gearListRentalNote || fallbackTexts.gearListRentalNote || 'Rental house handles this item',

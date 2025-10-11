@@ -9858,16 +9858,6 @@ body.dark-mode .requirement-box,
   letter-spacing: 0.02em;
 }
 
-.gear-item-camera-link__text {
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-}
-
-.gear-item-camera-link--primary .gear-item-camera-link__text {
-  display: none;
-}
-
 #gearListOutput .auto-gear-rule-badge {
   display: none;
   margin-left: 0.75rem;
