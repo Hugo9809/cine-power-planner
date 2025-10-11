@@ -5874,7 +5874,6 @@ const texts = {
             "Ahora conoces todas las salvaguardas. Sigue guardando con frecuencia, exporta copias redundantes y vuelve a cualquier paso desde Ayuda cuando necesites un repaso. Cine Power Planner seguirá protegiendo tus datos sin conexión.",
         },
       },
-      },
     },
     helpQuickStartChecklistTitle: "Lista de comprobación de inicio rápido",
     helpDataSafetyTitle: "Protege tu trabajo",
@@ -7886,7 +7885,6 @@ const texts = {
           body:
             "Vous connaissez désormais toutes les protections. Continuez à enregistrer souvent, exportez des sauvegardes redondantes et revisitez n’importe quelle étape depuis Aide quand vous voulez un rappel. Cine Power Planner continuera de protéger vos données hors ligne.",
         },
-      },
       },
     },
     helpQuickStartChecklistTitle: "Liste de démarrage rapide",
@@ -9904,7 +9902,6 @@ const texts = {
           body:
             "Du kennst jetzt alle Schutzmaßnahmen. Speichere weiter häufig, exportiere redundante Backups und rufe bei Bedarf jeden Schritt über Hilfe erneut auf. Cine Power Planner schützt deine Daten weiterhin offline.",
         },
-      },
       },
     },
     helpQuickStartChecklistTitle: "Checkliste für den Schnellstart",
