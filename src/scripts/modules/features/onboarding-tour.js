@@ -2229,9 +2229,14 @@
       }
     }
 
-    const avatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
-      ? avatarButtonLabel.textContent
-      : 'Update profile photo';
+    const rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
+      ? avatarButtonLabel.textContent.trim()
+      : '';
+    const avatarActionLabel = !rawAvatarActionLabel
+      ? 'Add profile Picture'
+      : rawAvatarActionLabel.toLowerCase() === 'change photo'
+        ? 'Add profile Picture'
+        : rawAvatarActionLabel;
     const avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
     avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';

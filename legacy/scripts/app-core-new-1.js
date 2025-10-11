@@ -14689,6 +14689,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   function handleUserProfileAvatarButtonClick() {
+    var hasAvatar = Boolean(userProfileState && userProfileState.avatar);
+    if (!hasAvatar && userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
+      try {
+        userProfileAvatarInput.click();
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
     openAvatarOptionsDialog({
       getAvatar: function getAvatar() {
         return userProfileState.avatar || '';
@@ -14701,8 +14710,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         handleUserProfileAvatarCleared();
       },
       onChange: function onChange() {
-        if (userProfileAvatarInput) {
-          userProfileAvatarInput.click();
+        if (userProfileAvatarInput && typeof userProfileAvatarInput.click === 'function') {
+          try {
+            userProfileAvatarInput.click();
+          } catch (error) {
+            void error;
+          }
         }
       },
       onEditSave: function onEditSave(dataUrl) {
@@ -15488,6 +15501,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       persist();
     });
     avatarButton.addEventListener('click', function () {
+      if (!contact.avatar && avatarInput && typeof avatarInput.click === 'function') {
+        try {
+          avatarInput.click();
+          return;
+        } catch (error) {
+          void error;
+        }
+      }
       openAvatarOptionsDialog({
         getAvatar: function getAvatar() {
           return contact.avatar || '';
@@ -15503,7 +15524,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
         },
         onChange: function onChange() {
-          avatarInput.click();
+          if (avatarInput && typeof avatarInput.click === 'function') {
+            try {
+              avatarInput.click();
+            } catch (error) {
+              void error;
+            }
+          }
         },
         onEditSave: function onEditSave(dataUrl) {
           if (!dataUrl) return;
@@ -15846,6 +15873,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     updateRowLinkedBadge(row);
     avatarButton.addEventListener('click', function () {
+      if (!avatarDataInput.value && avatarFileInput && typeof avatarFileInput.click === 'function') {
+        try {
+          avatarFileInput.click();
+          return;
+        } catch (error) {
+          void error;
+        }
+      }
       openAvatarOptionsDialog({
         getAvatar: function getAvatar() {
           return avatarDataInput.value || '';
@@ -15860,7 +15895,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           announceContactsMessage(getContactsText('avatarCleared', 'Profile photo removed.'));
         },
         onChange: function onChange() {
-          avatarFileInput.click();
+          if (avatarFileInput && typeof avatarFileInput.click === 'function') {
+            try {
+              avatarFileInput.click();
+            } catch (error) {
+              void error;
+            }
+          }
         },
         onEditSave: function onEditSave(dataUrl) {
           if (!dataUrl) return;
