@@ -617,6 +617,83 @@
       return 1;
     };
 
+    const CACHE_SUPPORTS_MAP = typeof Map === 'function';
+    const CACHE_LIMIT_KEY = 400;
+    const CACHE_LIMIT_TOKENS = 250;
+    const CACHE_KEY_MAX_LENGTH = 200;
+    const CACHE_TOKENS_MAX_LENGTH = 200;
+    const FREEZE_SUPPORT = typeof Object.freeze === 'function';
+
+    const createCache = limit => {
+      if (CACHE_SUPPORTS_MAP) {
+        const map = new Map();
+        return {
+          get(key) {
+            return map.has(key) ? map.get(key) : undefined;
+          },
+          set(key, value) {
+            if (map.has(key)) {
+              map.set(key, value);
+              return;
+            }
+
+            if (map.size >= limit) {
+              const iterator = map.keys();
+              const first = iterator && typeof iterator.next === 'function' ? iterator.next() : null;
+              if (first && !first.done) {
+                map.delete(first.value);
+              }
+            }
+
+            map.set(key, value);
+          },
+        };
+      }
+
+      const entries = [];
+      return {
+        get(key) {
+          for (let index = 0; index < entries.length; index += 1) {
+            const entry = entries[index];
+            if (entry && entry[0] === key) {
+              return entry[1];
+            }
+          }
+          return undefined;
+        },
+        set(key, value) {
+          for (let index = 0; index < entries.length; index += 1) {
+            if (entries[index] && entries[index][0] === key) {
+              entries.splice(index, 1);
+              break;
+            }
+          }
+
+          entries.push([key, value]);
+
+          if (entries.length > limit) {
+            entries.shift();
+          }
+        },
+      };
+    };
+
+    const freezeArray = array => {
+      if (!Array.isArray(array) || !FREEZE_SUPPORT) {
+        return array;
+      }
+
+      try {
+        return Object.freeze(array);
+      } catch (error) {
+        void error;
+        return array;
+      }
+    };
+
+    const keyCache = createCache(CACHE_LIMIT_KEY);
+    const tokensCache = createCache(CACHE_LIMIT_TOKENS);
+
     const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
       if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
         return { score: 0, matched: 0 };
@@ -670,6 +747,14 @@
       }
 
       const str = String(value);
+      const cacheable = str.length <= CACHE_KEY_MAX_LENGTH;
+      if (cacheable) {
+        const cached = keyCache.get(str);
+        if (typeof cached !== 'undefined') {
+          return cached;
+        }
+      }
+
       let normalized = str.toLowerCase();
 
       if (typeof normalized.normalize === 'function') {
@@ -696,10 +781,17 @@
 
       const simplified = normalized.replace(/[^a-z0-9]+/g, '');
       if (simplified) {
+        if (cacheable) {
+          keyCache.set(str, simplified);
+        }
         return simplified;
       }
 
-      return str.toLowerCase().replace(/\s+/g, '');
+      const fallback = str.toLowerCase().replace(/\s+/g, '');
+      if (cacheable) {
+        keyCache.set(str, fallback);
+      }
+      return fallback;
     };
 
     const searchTokens = value => {
@@ -707,7 +799,16 @@
         return [];
       }
 
-      let normalized = String(value).toLowerCase();
+      const str = String(value);
+      const cacheable = str.length <= CACHE_TOKENS_MAX_LENGTH;
+      if (cacheable) {
+        const cached = tokensCache.get(str);
+        if (typeof cached !== 'undefined') {
+          return cached;
+        }
+      }
+
+      let normalized = str.toLowerCase();
       if (typeof normalized.normalize === 'function') {
         normalized = normalized.normalize('NFD');
       }
@@ -850,7 +951,11 @@
       }
 
       applySearchTokenSynonyms(tokens, addToken);
-      return Array.from(tokens);
+      const result = freezeArray(Array.from(tokens));
+      if (cacheable) {
+        tokensCache.set(str, result);
+      }
+      return result;
     };
 
     const findBestSearchMatch = (map, key, tokens = []) => {
