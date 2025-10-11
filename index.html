@@ -5062,8 +5062,8 @@
                 toggle to sync that line with your inventory before adjusting the
                 <a
                   class="help-link"
-                  href="#gearItemEditRentalToggle"
-                  data-help-target="#gearItemEditRentalToggle"
+                  href="#gearItemEditRental"
+                  data-help-target="#gearItemEditRentalSection"
                 >exclude from rental house</a>
                 option without leaving the list. Use the
                 <a class="help-link" href="#gearItemEditExtra" data-help-target="#gearItemEditExtraContainer">Temporary extra gear</a>
@@ -6736,6 +6736,27 @@
               autocomplete="off"
             ></textarea>
           </div>
+          <div id="gearItemEditCameraLinkContainer" class="form-row form-row--full gear-item-edit-camera-row">
+            <label id="gearItemEditCameraLinkLabel" for="gearItemEditCameraLink">Camera link</label>
+            <div id="gearItemEditCameraLinkField" class="gear-item-edit-camera-field">
+              <select id="gearItemEditCameraLink" name="gearItemEditCameraLink"></select>
+              <p id="gearItemEditCameraLinkHelp" class="gear-item-edit-help" hidden></p>
+            </div>
+          </div>
+          <div class="form-row form-row--full gear-item-edit-provider-row">
+            <label id="gearItemEditProviderLabel" for="gearItemEditProvider">Provided by</label>
+            <div class="gear-item-edit-provider-field">
+              <select id="gearItemEditProvider" name="gearItemEditProvider"></select>
+              <p id="gearItemEditProviderHelp" class="gear-item-edit-help" hidden></p>
+              <div id="gearItemEditOwnedContainer" class="gear-item-edit-owned">
+                <label id="gearItemEditOwnedLabel" class="gear-item-edit-checkbox" for="gearItemEditOwned">
+                  <input type="checkbox" id="gearItemEditOwned" name="gearItemEditOwned" />
+                  <span>Owned</span>
+                </label>
+                <p id="gearItemEditOwnedHelp" class="gear-item-edit-help" hidden></p>
+              </div>
+            </div>
+          </div>
           <div id="gearItemEditExtraContainer" class="form-row form-row--full gear-item-edit-extra">
             <label id="gearItemEditExtraLabel" class="gear-item-edit-checkbox" for="gearItemEditExtra">
               <input type="checkbox" id="gearItemEditExtra" name="gearItemEditExtra" />
@@ -6754,42 +6775,15 @@
             </div>
             <p id="gearItemEditExtraPeriodHelp" class="gear-item-edit-help" hidden></p>
           </div>
-          <div class="form-row form-row--full gear-item-edit-provider-row">
-            <label id="gearItemEditProviderLabel" for="gearItemEditProvider">Provided by</label>
-            <div class="gear-item-edit-provider-field">
-              <select id="gearItemEditProvider" name="gearItemEditProvider"></select>
-              <p id="gearItemEditProviderHelp" class="gear-item-edit-help" hidden></p>
-              <div id="gearItemEditOwnedContainer" class="gear-item-edit-owned">
-                <label id="gearItemEditOwnedLabel" class="gear-item-edit-checkbox" for="gearItemEditOwned">
-                  <input type="checkbox" id="gearItemEditOwned" name="gearItemEditOwned" />
-                  <span>Owned</span>
-                </label>
-                <p id="gearItemEditOwnedHelp" class="gear-item-edit-help" hidden></p>
-              </div>
-            </div>
-          </div>
-          <div id="gearItemEditCameraLinkContainer" class="form-row form-row--full gear-item-edit-camera-row">
-            <label id="gearItemEditCameraLinkLabel" for="gearItemEditCameraLink">Camera link</label>
-            <div id="gearItemEditCameraLinkField" class="gear-item-edit-camera-field">
-              <select id="gearItemEditCameraLink" name="gearItemEditCameraLink"></select>
-              <p id="gearItemEditCameraLinkHelp" class="gear-item-edit-help" hidden></p>
-            </div>
-          </div>
           <section
             id="gearItemEditRentalSection"
             class="gear-item-edit-rental"
             aria-labelledby="gearItemEditRentalLabel"
           >
-            <label
-              id="gearItemEditRentalContainer"
-              class="gear-item-edit-checkbox visually-hidden"
-            >
+            <label class="gear-item-edit-checkbox" for="gearItemEditRental">
               <input type="checkbox" id="gearItemEditRental" name="gearItemEditRental" />
               <span id="gearItemEditRentalLabel">Exclude from rental house</span>
             </label>
-            <button type="button" id="gearItemEditRentalToggle" class="gear-item-edit-rental-btn">
-              Exclude from rental house
-            </button>
             <p id="gearItemEditRentalDescription" class="gear-item-edit-rental-description"></p>
           </section>
         </div>
