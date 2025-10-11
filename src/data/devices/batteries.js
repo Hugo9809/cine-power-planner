@@ -548,14 +548,15 @@ const batteryData = {
     "capacity": 50,
     "pinA": 8,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 330
   },
   "SmallRig VB99 mini (V-Mount)": {
     "capacity": 99,
     "pinA": 10,
     "dtapA": 10,
     "mount_type": "V-Mount",
-    "weight_g": 585
+    "weight_g": 540
   },
   "SmallRig VB155 mini (V-Mount)": {
     "capacity": 155,
@@ -594,7 +595,8 @@ const batteryData = {
     "capacity": 50,
     "pinA": 6,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 300
   },
   "Hawk-Woods Mini V-Lok 98Wh (V-Mount)": {
     "capacity": 98,
