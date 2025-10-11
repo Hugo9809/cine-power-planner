@@ -638,20 +638,24 @@ const lensSelectionManager = (() => {
         const options = [];
         const seen = new Set();
         const addOption = (label) => {
-            if (!label || seen.has(label)) return;
-            seen.add(label);
-            options.push(label);
+            if (!label) return;
+            const normalized = label.trim();
+            if (!normalized || seen.has(normalized)) return;
+            seen.add(normalized);
+            options.push(normalized);
         };
-        if (currentMount) addOption(currentMount);
         const lensRecord = catalog.lensIndex.get(lensName);
-        if (lensRecord && Array.isArray(lensRecord.mountLabels)) {
+        if (lensRecord && Array.isArray(lensRecord.mountLabels) && lensRecord.mountLabels.length) {
             lensRecord.mountLabels.forEach(addOption);
+        } else {
+            mountOptions.forEach(addOption);
         }
-        const cameraMount = getCameraNativeMount();
-        if (cameraMount) addOption(cameraMount);
-        ['PL', 'EF', 'LPL'].forEach(addOption);
-        mountOptions.forEach(addOption);
-        return options;
+        const normalizedCurrent = typeof currentMount === 'string' ? currentMount.trim() : '';
+        const hasCurrent = normalizedCurrent && seen.has(normalizedCurrent);
+        return {
+            options,
+            hiddenValue: hasCurrent ? '' : normalizedCurrent,
+        };
     };
 
     const resolveDefaultMount = (lensName) => {
@@ -775,17 +779,32 @@ const lensSelectionManager = (() => {
             const mountSelect = doc.createElement('select');
             mountSelect.id = mountId;
             mountSelect.dataset.lensName = selection.name;
-            const mountOptionsForSelect = buildMountOptionsForSelection(selection.mount, selection.name);
+            const storedMount = typeof selection.mount === 'string' ? selection.mount.trim() : '';
+            if (selection.mount !== storedMount) {
+                selection.mount = storedMount;
+            }
+            const { options: mountOptionsForSelect, hiddenValue } = buildMountOptionsForSelection(storedMount, selection.name);
             mountOptionsForSelect.forEach(label => {
                 const option = doc.createElement('option');
                 option.value = label;
                 option.textContent = label;
-                if (selection.mount === label) {
+                if (storedMount === label) {
                     option.selected = true;
                 }
                 mountSelect.appendChild(option);
             });
-            if (!mountSelect.value && mountOptionsForSelect.length) {
+            if (hiddenValue) {
+                const storedOption = doc.createElement('option');
+                storedOption.value = hiddenValue;
+                storedOption.textContent = hiddenValue;
+                storedOption.hidden = true;
+                storedOption.disabled = true;
+                mountSelect.appendChild(storedOption);
+            }
+            if (storedMount) {
+                mountSelect.value = storedMount;
+            }
+            if (!storedMount && mountOptionsForSelect.length) {
                 mountSelect.value = mountOptionsForSelect[0];
                 selection.mount = mountSelect.value;
             }
