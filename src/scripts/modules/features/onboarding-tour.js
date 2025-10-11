@@ -117,6 +117,70 @@
   const HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
 
+  const supportsDialogTopLayer = (function detectDialogSupport() {
+    if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
+      return false;
+    }
+    try {
+      const dialog = DOCUMENT.createElement('dialog');
+      return typeof dialog.show === 'function' && typeof dialog.close === 'function';
+    } catch (error) {
+      void error;
+      return false;
+    }
+  }());
+
+  function isDialogElement(element) {
+    return Boolean(
+      element
+        && typeof element.nodeName === 'string'
+        && element.nodeName.toLowerCase() === 'dialog',
+    );
+  }
+
+  function bringOverlayToTopLayer() {
+    if (!overlayRoot) {
+      return;
+    }
+
+    if (supportsDialogTopLayer && isDialogElement(overlayRoot) && typeof overlayRoot.show === 'function') {
+      try {
+        if (overlayRoot.open && typeof overlayRoot.close === 'function') {
+          overlayRoot.close();
+        }
+      } catch (closeError) {
+        void closeError;
+      }
+      try {
+        overlayRoot.show();
+      } catch (showError) {
+        safeWarn('cine.features.onboardingTour could not refresh overlay top layer.', showError);
+      }
+      return;
+    }
+
+    if (overlayRoot.parentNode && typeof overlayRoot.parentNode.appendChild === 'function') {
+      try {
+        overlayRoot.parentNode.appendChild(overlayRoot);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not move overlay to front.', error);
+      }
+    }
+  }
+
+  function handleDialogToggle(event) {
+    if (!active || !event || !event.target) {
+      return;
+    }
+    const target = event.target;
+    if (target === overlayRoot) {
+      return;
+    }
+    if (isDialogElement(target) && target.open) {
+      bringOverlayToTopLayer();
+    }
+  }
+
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
       try {
@@ -1225,10 +1289,17 @@
 
   function ensureOverlayElements() {
     if (overlayRoot && overlayRoot.parentNode) {
+      bringOverlayToTopLayer();
       return;
     }
 
-    overlayRoot = DOCUMENT.createElement('div');
+    if (supportsDialogTopLayer) {
+      overlayRoot = DOCUMENT.createElement('dialog');
+      overlayRoot.setAttribute('role', 'presentation');
+      overlayRoot.setAttribute('aria-modal', 'false');
+    } else {
+      overlayRoot = DOCUMENT.createElement('div');
+    }
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
@@ -1336,6 +1407,8 @@
 
     DOCUMENT.body.appendChild(overlayRoot);
 
+    bringOverlayToTopLayer();
+
     overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
   }
 
@@ -1343,6 +1416,13 @@
     clearFrame();
     clearActiveTargetElements();
     if (overlayRoot && overlayRoot.parentNode) {
+      if (supportsDialogTopLayer && typeof overlayRoot.close === 'function' && overlayRoot.open) {
+        try {
+          overlayRoot.close();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not close overlay dialog.', error);
+        }
+      }
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
     overlayRoot = null;
@@ -3316,6 +3396,9 @@
     }
     if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
       DOCUMENT.addEventListener('scroll', schedulePositionUpdate, true);
+      if (supportsDialogTopLayer) {
+        DOCUMENT.addEventListener('toggle', handleDialogToggle, true);
+      }
     }
   }
 
@@ -3326,6 +3409,9 @@
     }
     if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
       DOCUMENT.removeEventListener('scroll', schedulePositionUpdate, true);
+      if (supportsDialogTopLayer) {
+        DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
+      }
     }
   }
 
@@ -3349,6 +3435,7 @@
     const resolvedIndex = startIndex >= 0 ? startIndex : stepConfig.length - 1;
 
     if (overlayRoot) {
+      bringOverlayToTopLayer();
       overlayRoot.classList.add('active');
       overlayRoot.setAttribute('aria-hidden', 'false');
     }
