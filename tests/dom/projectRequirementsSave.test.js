@@ -249,6 +249,45 @@ describe('project requirements persistence to project storage', () => {
     expect(projectEntry.projectInfo.shootingDays).toEqual(['2024-06-10 to 2024-06-12']);
   });
 
+  test('project requirements display combines production company address into a single box', () => {
+    const projectForm = document.getElementById('projectForm');
+    expect(projectForm).not.toBeNull();
+
+    const fillInput = (selector, value, eventType = 'input') => {
+      const element = projectForm.querySelector(selector);
+      expect(element).not.toBeNull();
+      element.value = value;
+      element.dispatchEvent(new Event(eventType, { bubbles: true }));
+    };
+
+    fillInput('#productionCompany', 'Studio Merge');
+    fillInput('#productionCompanyStreet', '500 Stage Way');
+    fillInput('#productionCompanyCity', 'Backlot City');
+    fillInput('#productionCompanyRegion', 'CA');
+    fillInput('#productionCompanyPostalCode', '90002');
+    fillInput('#productionCompanyCountry', 'USA');
+
+    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements } = env.utils;
+    const snapshot = collectProjectFormData();
+    const html = generateGearListHtml(snapshot);
+    displayGearAndRequirements(html);
+
+    const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
+    expect(projectRequirementsOutput).not.toBeNull();
+
+    const companyBoxes = projectRequirementsOutput.querySelectorAll('.requirement-box[data-field="productionCompany"]');
+    expect(companyBoxes).toHaveLength(1);
+
+    const addressBox = projectRequirementsOutput.querySelector('.requirement-box[data-field="productionCompanyAddress"]');
+    expect(addressBox).toBeNull();
+
+    const valueHtml = companyBoxes[0].querySelector('.req-value').innerHTML;
+    expect(valueHtml).toContain('Production Company Address');
+    expect(valueHtml).toContain('500 Stage Way');
+    expect(valueHtml).toContain('Backlot City');
+    expect(valueHtml).toContain('90002');
+  });
+
   describe('when a user profile exists', () => {
     beforeAll(() => {
       global.__NEXT_USER_PROFILE__ = {

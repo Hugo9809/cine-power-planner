@@ -209,6 +209,24 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     };
 }
 
+function applyCombinedProductionCompanyDisplay(targetInfo, sourceInfo, projectLabels) {
+    if (!targetInfo || typeof targetInfo !== 'object') {
+        return false;
+    }
+    const source = (sourceInfo && typeof sourceInfo === 'object') ? sourceInfo : targetInfo;
+    const combined = buildCombinedProductionCompanyDisplay(source, projectLabels);
+    if (!combined) {
+        return false;
+    }
+    targetInfo.productionCompany = combined;
+    PRODUCTION_COMPANY_FIELD_ORDER.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(targetInfo, key)) {
+            delete targetInfo[key];
+        }
+    });
+    return true;
+}
+
 function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
     if (typeof rawText !== 'string') {
         return null;
@@ -10251,22 +10269,18 @@ function gearListGenerateHtmlImpl(info = {}) {
     const projectInfo = { ...info };
     const projectFormTexts = texts[currentLang]?.projectForm || texts.en?.projectForm || {};
     const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
-    const combinedProductionCompany = buildCombinedProductionCompanyDisplay(info, projectLabels);
-    if (combinedProductionCompany) {
-        projectInfo.productionCompany = combinedProductionCompany;
-        [
-            'productionCompanyAddress',
-            'productionCompanyStreet',
-            'productionCompanyStreet2',
-            'productionCompanyCity',
-            'productionCompanyRegion',
-            'productionCompanyPostalCode',
-            'productionCompanyCountry'
-        ].forEach(key => {
-            if (Object.prototype.hasOwnProperty.call(projectInfo, key)) {
-                delete projectInfo[key];
+    let hasCombinedProductionCompany = applyCombinedProductionCompanyDisplay(projectInfo, info, projectLabels);
+    if (!hasCombinedProductionCompany) {
+        const hasStructuredAddress = PRODUCTION_COMPANY_FIELD_ORDER.some((key) => {
+            const value = projectInfo[key];
+            if (typeof value === 'string') {
+                return value.trim().length > 0;
             }
+            return value !== null && value !== undefined;
         });
+        if (hasStructuredAddress) {
+            hasCombinedProductionCompany = applyCombinedProductionCompanyDisplay(projectInfo, projectInfo, projectLabels);
+        }
     }
     const storageFallbackLabel = projectFormTexts.storageSummaryFallback
         || projectFormTexts.storageTypeLabel
@@ -10412,7 +10426,8 @@ function gearListGenerateHtmlImpl(info = {}) {
             v &&
             k !== 'projectName' &&
             !excludedFields.has(k) &&
-            !k.endsWith('Manual')
+            !k.endsWith('Manual') &&
+            !(hasCombinedProductionCompany && PRODUCTION_COMPANY_FIELD_ORDER.includes(k))
         );
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
