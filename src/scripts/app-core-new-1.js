@@ -13634,6 +13634,12 @@ function setLanguage(lang) {
     if (userProfileNameInput && contactsTexts.userProfileNamePlaceholder) {
       userProfileNameInput.setAttribute('placeholder', contactsTexts.userProfileNamePlaceholder);
     }
+    if (userProfileRoleLabel && contactsTexts.userProfileRoleLabel) {
+      userProfileRoleLabel.textContent = contactsTexts.userProfileRoleLabel;
+    }
+    if (userProfileRoleInput && contactsTexts.userProfileRolePlaceholder) {
+      userProfileRoleInput.setAttribute('placeholder', contactsTexts.userProfileRolePlaceholder);
+    }
     if (userProfilePhoneLabel && contactsTexts.userProfilePhoneLabel) {
       userProfilePhoneLabel.textContent = contactsTexts.userProfilePhoneLabel;
     }
@@ -13950,6 +13956,8 @@ var userProfileHeading = null;
 var userProfileDescription = null;
 var userProfileNameInput = null;
 var userProfileNameLabel = null;
+var userProfileRoleInput = null;
+var userProfileRoleLabel = null;
 var userProfilePhoneInput = null;
 var userProfilePhoneLabel = null;
 var userProfileEmailInput = null;
@@ -14006,6 +14014,8 @@ function resolveContactsDomRefs() {
   userProfileDescription = userProfileDescription || document.getElementById('contactsUserProfileDescription');
   userProfileNameInput = userProfileNameInput || document.getElementById('userProfileName');
   userProfileNameLabel = userProfileNameLabel || document.getElementById('userProfileNameLabel');
+  userProfileRoleInput = userProfileRoleInput || document.getElementById('userProfileRole');
+  userProfileRoleLabel = userProfileRoleLabel || document.getElementById('userProfileRoleLabel');
   userProfilePhoneInput = userProfilePhoneInput || document.getElementById('userProfilePhone');
   userProfilePhoneLabel = userProfilePhoneLabel || document.getElementById('userProfilePhoneLabel');
   userProfileEmailInput = userProfileEmailInput || document.getElementById('userProfileEmail');
@@ -15925,7 +15935,7 @@ const CONTACT_AVATAR_JPEG_MIN_QUALITY = 0.55;
 var contactsCache = [];
 var contactsInitialized = false;
 
-var userProfileState = { name: '', avatar: '', phone: '', email: '' };
+var userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
 var userProfileDirty = false;
 var userProfilePendingAnnouncement = false;
 
@@ -16578,6 +16588,7 @@ function getContactsSnapshot() {
 function assignUserProfileState(updates = {}) {
   const nextState = {
     name: typeof updates.name === 'string' ? updates.name : (userProfileState.name || ''),
+    role: typeof updates.role === 'string' ? updates.role : (userProfileState.role || ''),
     avatar: typeof updates.avatar === 'string' ? updates.avatar : (userProfileState.avatar || ''),
     phone: typeof updates.phone === 'string' ? updates.phone : (userProfileState.phone || ''),
     email: typeof updates.email === 'string' ? updates.email : (userProfileState.email || '')
@@ -16587,10 +16598,11 @@ function assignUserProfileState(updates = {}) {
 
 function getUserProfileSnapshot() {
   const name = typeof userProfileState.name === 'string' ? userProfileState.name.trim() : '';
+  const role = typeof userProfileState.role === 'string' ? userProfileState.role.trim() : '';
   const avatar = typeof userProfileState.avatar === 'string' ? userProfileState.avatar : '';
   const phone = typeof userProfileState.phone === 'string' ? userProfileState.phone.trim() : '';
   const email = typeof userProfileState.email === 'string' ? userProfileState.email.trim() : '';
-  return { name, avatar, phone, email };
+  return { name, role, avatar, phone, email };
 }
 
 function applyUserProfileToDom(options = {}) {
@@ -16611,6 +16623,20 @@ function applyUserProfileToDom(options = {}) {
       }
     } else {
       userProfileNameInput.value = profile.name;
+    }
+  }
+  if (userProfileRoleInput) {
+    if (preserveTarget === userProfileRoleInput) {
+      const start = userProfileRoleInput.selectionStart;
+      const end = userProfileRoleInput.selectionEnd;
+      userProfileRoleInput.value = profile.role;
+      try {
+        userProfileRoleInput.setSelectionRange(start, end);
+      } catch (error) {
+        void error;
+      }
+    } else {
+      userProfileRoleInput.value = profile.role;
     }
   }
   if (userProfilePhoneInput) {
@@ -16658,17 +16684,18 @@ function loadUserProfileState() {
       if (loaded && typeof loaded === 'object') {
         userProfileState = {
           name: typeof loaded.name === 'string' ? loaded.name : '',
+          role: typeof loaded.role === 'string' ? loaded.role : '',
           avatar: typeof loaded.avatar === 'string' ? loaded.avatar : '',
           phone: typeof loaded.phone === 'string' ? loaded.phone : '',
           email: typeof loaded.email === 'string' ? loaded.email : ''
         };
       } else {
-        userProfileState = { name: '', avatar: '', phone: '', email: '' };
+        userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
       }
     }
   } catch (error) {
     console.warn('Failed to load user profile', error);
-    userProfileState = { name: '', avatar: '', phone: '', email: '' };
+    userProfileState = { name: '', role: '', avatar: '', phone: '', email: '' };
   }
   userProfileDirty = false;
   userProfilePendingAnnouncement = false;
@@ -16709,6 +16736,18 @@ function handleUserProfileNameInput() {
     return;
   }
   assignUserProfileState({ name: rawValue });
+  userProfileDirty = true;
+  userProfilePendingAnnouncement = true;
+  persistUserProfileState();
+}
+
+function handleUserProfileRoleInput() {
+  if (!userProfileRoleInput) return;
+  const rawValue = typeof userProfileRoleInput.value === 'string' ? userProfileRoleInput.value : '';
+  if (rawValue.trim() === userProfileState.role.trim()) {
+    return;
+  }
+  assignUserProfileState({ role: rawValue });
   userProfileDirty = true;
   userProfilePendingAnnouncement = true;
   persistUserProfileState();
@@ -17627,6 +17666,10 @@ function initializeContactsModule() {
   if (userProfileNameInput) {
     userProfileNameInput.addEventListener('input', handleUserProfileNameInput);
     userProfileNameInput.addEventListener('blur', handleUserProfileFieldBlur);
+  }
+  if (userProfileRoleInput) {
+    userProfileRoleInput.addEventListener('input', handleUserProfileRoleInput);
+    userProfileRoleInput.addEventListener('blur', handleUserProfileFieldBlur);
   }
   if (userProfilePhoneInput) {
     userProfilePhoneInput.addEventListener('input', handleUserProfilePhoneInput);

@@ -194,7 +194,7 @@
     userProfile: {
       title: 'Configure your user profile',
       body:
-        'Open Contacts and fill in the “Your profile” card so projects credit the right owner. The display name, avatar and contact data stay offline, appear in exports and keep crew gear assignments consistent. You can skip for now and return later without losing progress.',
+        'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
     },
     unitsPreferences: {
       title: 'Tune language, theme and units',
@@ -905,9 +905,7 @@
       },
       {
         key: 'userProfile',
-        highlight: '#contactsUserProfile',
-        focus: '#userProfileName',
-        ensureContacts: true,
+        highlight: null,
         forceFloating: true,
         size: 'large',
       },
@@ -1992,6 +1990,8 @@
 
     const profileInput = DOCUMENT.getElementById('userProfileName');
     const profileLabel = DOCUMENT.getElementById('userProfileNameLabel');
+    const roleInput = DOCUMENT.getElementById('userProfileRole');
+    const roleLabel = DOCUMENT.getElementById('userProfileRoleLabel');
     const phoneInput = DOCUMENT.getElementById('userProfilePhone');
     const phoneLabel = DOCUMENT.getElementById('userProfilePhoneLabel');
     const emailInput = DOCUMENT.getElementById('userProfileEmail');
@@ -2004,7 +2004,7 @@
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Updates here sync instantly with the Contacts dialog and save offline with your projects. Add your display name, photo, phone and email so exports credit the right owner.';
+    intro.textContent = 'Add your display name, role, phone, email and photo right here. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -2094,6 +2094,8 @@
     avatarGroup.appendChild(avatarAction);
     fragment.appendChild(avatarGroup);
 
+    let firstProxyField = null;
+
     const createProxyField = (options) => {
       const {
         fieldKey,
@@ -2172,6 +2174,10 @@
 
       group.appendChild(proxyInput);
       fragment.appendChild(group);
+      if (!firstProxyField) {
+        firstProxyField = proxyInput;
+      }
+      return proxyInput;
     };
 
     const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
@@ -2185,7 +2191,7 @@
       }
     }
 
-    createProxyField({
+    const nameProxy = createProxyField({
       fieldKey: 'user-profile-name',
       labelText: resolvedNameLabel,
       placeholder: resolvedNamePlaceholder,
@@ -2193,6 +2199,26 @@
       type: 'text',
       autocomplete: 'name',
       onAfterSync: () => updateAvatarPreview(),
+    });
+
+    const resolvedRoleLabel = roleLabel && typeof roleLabel.textContent === 'string'
+      ? roleLabel.textContent
+      : 'Role or title';
+    let resolvedRolePlaceholder = 'e.g. 1st AC';
+    if (roleInput && typeof roleInput.getAttribute === 'function') {
+      const rolePlaceholder = roleInput.getAttribute('placeholder');
+      if (typeof rolePlaceholder === 'string' && rolePlaceholder) {
+        resolvedRolePlaceholder = rolePlaceholder;
+      }
+    }
+
+    createProxyField({
+      fieldKey: 'user-profile-role',
+      labelText: resolvedRoleLabel,
+      placeholder: resolvedRolePlaceholder,
+      target: roleInput,
+      type: 'text',
+      autocomplete: 'organization-title',
     });
 
     const resolvedPhoneLabel = phoneLabel && typeof phoneLabel.textContent === 'string'
@@ -2237,7 +2263,7 @@
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next to revisit this later—Contacts stays available from the sidebar without affecting tutorial progress.';
+    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
     fragment.appendChild(skipHint);
 
     while (interactionContainerEl.firstChild) {
@@ -2245,6 +2271,27 @@
     }
     interactionContainerEl.appendChild(fragment);
     interactionContainerEl.hidden = false;
+
+    const focusTarget = firstProxyField || nameProxy;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      const focusRunner = () => {
+        try {
+          focusTarget.focus({ preventScroll: true });
+        } catch (error) {
+          void error;
+          try {
+            focusTarget.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(focusRunner);
+      } else {
+        setTimeout(focusRunner, 0);
+      }
+    }
     return true;
   }
 

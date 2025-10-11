@@ -137,11 +137,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'nameProject', 'saveProject', 'addCamera', 'addPower', 'generatePlan', 'exportBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'nameProject', 'saveProject', 'addCamera', 'addPower', 'generatePlan', 'exportBackup', 'completion'];
   var DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
       body: 'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.'
+    },
+    userProfile: {
+      title: 'Configure your user profile',
+      body: 'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.'
     },
     nameProject: {
       title: 'Name your first project',
@@ -587,6 +591,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: 'intro',
       highlight: null,
       autoActions: null
+    }, {
+      key: 'userProfile',
+      highlight: null
     }, {
       key: 'nameProject',
       highlight: '#setupName',
@@ -1263,6 +1270,254 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       safeWarn('cine.features.onboardingTour could not dispatch guided event.', error);
     }
   }
+  function renderUserProfileInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+    var profileInput = DOCUMENT.getElementById('userProfileName');
+    var profileLabel = DOCUMENT.getElementById('userProfileNameLabel');
+    var roleInput = DOCUMENT.getElementById('userProfileRole');
+    var roleLabel = DOCUMENT.getElementById('userProfileRoleLabel');
+    var phoneInput = DOCUMENT.getElementById('userProfilePhone');
+    var phoneLabel = DOCUMENT.getElementById('userProfilePhoneLabel');
+    var emailInput = DOCUMENT.getElementById('userProfileEmail');
+    var emailLabel = DOCUMENT.getElementById('userProfileEmailLabel');
+    var avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
+    var avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
+    var avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    var fragment = DOCUMENT.createDocumentFragment();
+    var intro = DOCUMENT.createElement('p');
+    intro.className = 'onboarding-resume-hint';
+    intro.textContent = 'Add your display name, role, phone, email and photo right here. Updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    fragment.appendChild(intro);
+    var avatarGroup = DOCUMENT.createElement('div');
+    avatarGroup.className = 'onboarding-avatar-group';
+    var avatarPreview = DOCUMENT.createElement('div');
+    avatarPreview.className = 'onboarding-avatar-preview';
+    avatarGroup.appendChild(avatarPreview);
+    var renderAvatarInitial = function renderAvatarInitial(value) {
+      var span = DOCUMENT.createElement('span');
+      span.className = 'contact-card-avatar-initial';
+      span.textContent = value || '•';
+      avatarPreview.appendChild(span);
+    };
+    var getNameInitial = function getNameInitial() {
+      var raw = profileInput && typeof profileInput.value === 'string' ? profileInput.value.trim() : '';
+      return raw ? raw.charAt(0).toUpperCase() : '•';
+    };
+    var updateAvatarPreview = function updateAvatarPreview() {
+      while (avatarPreview.firstChild) {
+        avatarPreview.removeChild(avatarPreview.firstChild);
+      }
+      if (avatarContainer) {
+        var visual = avatarContainer.querySelector('.contact-card-avatar-visual');
+        if (visual) {
+          var currentImage = visual.querySelector('img');
+          if (currentImage && currentImage.src) {
+            var img = DOCUMENT.createElement('img');
+            img.src = currentImage.src;
+            img.alt = '';
+            avatarPreview.appendChild(img);
+            return;
+          }
+          var text = visual.textContent ? visual.textContent.trim() : '';
+          if (text) {
+            renderAvatarInitial(text.charAt(0).toUpperCase());
+            return;
+          }
+        }
+      }
+      renderAvatarInitial(getNameInitial());
+    };
+    updateAvatarPreview();
+    var avatarObserver = null;
+    if (GLOBAL_SCOPE.MutationObserver && avatarContainer) {
+      try {
+        avatarObserver = new GLOBAL_SCOPE.MutationObserver(function () {
+          return updateAvatarPreview();
+        });
+        avatarObserver.observe(avatarContainer, { childList: true, subtree: true, attributes: true });
+        registerCleanup(function () {
+          try {
+            avatarObserver.disconnect();
+          } catch (error) {
+            void error;
+          }
+        });
+      } catch (error) {
+        void error;
+      }
+    }
+    var avatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent : 'Update profile photo';
+    var avatarAction = DOCUMENT.createElement('button');
+    avatarAction.type = 'button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
+    avatarAction.textContent = avatarActionLabel;
+    var handleAvatarActionClick = function handleAvatarActionClick() {
+      if (avatarButton && typeof avatarButton.click === 'function') {
+        try {
+          avatarButton.click();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not open avatar options.', error);
+        }
+      }
+    };
+    avatarAction.addEventListener('click', handleAvatarActionClick);
+    registerCleanup(function () {
+      avatarAction.removeEventListener('click', handleAvatarActionClick);
+    });
+    avatarGroup.appendChild(avatarAction);
+    fragment.appendChild(avatarGroup);
+    var firstProxyField = null;
+    var createProxyField = function createProxyField(options) {
+      var fieldKey = options && options.fieldKey ? options.fieldKey : 'field';
+      var labelText = options && options.labelText ? options.labelText : '';
+      var placeholder = options && options.placeholder ? options.placeholder : '';
+      var target = options ? options.target : null;
+      var type = options && options.type ? options.type : 'text';
+      var autocomplete = options && options.autocomplete ? options.autocomplete : '';
+      var onAfterSync = options && typeof options.onAfterSync === 'function' ? options.onAfterSync : null;
+      var group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      var proxyId = nextInteractionId(fieldKey);
+      var label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', proxyId);
+      label.textContent = labelText;
+      group.appendChild(label);
+      var proxyInput = DOCUMENT.createElement('input');
+      proxyInput.type = type;
+      proxyInput.id = proxyId;
+      proxyInput.className = 'onboarding-field-input';
+      if (placeholder) {
+        proxyInput.placeholder = placeholder;
+      }
+      if (autocomplete) {
+        proxyInput.setAttribute('autocomplete', autocomplete);
+      }
+      proxyInput.value = target && typeof target.value === 'string' ? target.value : '';
+      var syncFromTarget = function syncFromTarget() {
+        if (!target) {
+          return;
+        }
+        if (proxyInput.value !== target.value) {
+          proxyInput.value = target.value || '';
+        }
+        if (onAfterSync) {
+          onAfterSync('from');
+        }
+      };
+      var syncToTarget = function syncToTarget() {
+        if (!target) {
+          return;
+        }
+        if (target.value !== proxyInput.value) {
+          target.value = proxyInput.value;
+          dispatchEventSafe(target, 'input');
+          dispatchEventSafe(target, 'change');
+        }
+        if (onAfterSync) {
+          onAfterSync('to');
+        }
+      };
+      proxyInput.addEventListener('input', syncToTarget);
+      proxyInput.addEventListener('change', syncToTarget);
+      registerCleanup(function () {
+        proxyInput.removeEventListener('input', syncToTarget);
+        proxyInput.removeEventListener('change', syncToTarget);
+      });
+      if (target) {
+        target.addEventListener('input', syncFromTarget);
+        target.addEventListener('change', syncFromTarget);
+        registerCleanup(function () {
+          target.removeEventListener('input', syncFromTarget);
+          target.removeEventListener('change', syncFromTarget);
+        });
+      } else {
+        proxyInput.disabled = true;
+        proxyInput.setAttribute('aria-disabled', 'true');
+      }
+      group.appendChild(proxyInput);
+      fragment.appendChild(group);
+      if (!firstProxyField) {
+        firstProxyField = proxyInput;
+      }
+      return proxyInput;
+    };
+    var resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string' ? profileLabel.textContent : 'Display name';
+    var resolvedNamePlaceholder = profileInput && typeof profileInput.getAttribute === 'function' && profileInput.getAttribute('placeholder') ? profileInput.getAttribute('placeholder') : 'e.g. Alex Rivera';
+    var nameProxy = createProxyField({
+      fieldKey: 'user-profile-name',
+      labelText: resolvedNameLabel,
+      placeholder: resolvedNamePlaceholder,
+      target: profileInput,
+      type: 'text',
+      autocomplete: 'name',
+      onAfterSync: function onAfterSync() {
+        updateAvatarPreview();
+      }
+    });
+    var resolvedRoleLabel = roleLabel && typeof roleLabel.textContent === 'string' ? roleLabel.textContent : 'Role or title';
+    var resolvedRolePlaceholder = roleInput && typeof roleInput.getAttribute === 'function' && roleInput.getAttribute('placeholder') ? roleInput.getAttribute('placeholder') : 'e.g. 1st AC';
+    createProxyField({
+      fieldKey: 'user-profile-role',
+      labelText: resolvedRoleLabel,
+      placeholder: resolvedRolePlaceholder,
+      target: roleInput,
+      type: 'text',
+      autocomplete: 'organization-title'
+    });
+    var resolvedPhoneLabel = phoneLabel && typeof phoneLabel.textContent === 'string' ? phoneLabel.textContent : 'Phone number';
+    var resolvedPhonePlaceholder = phoneInput && typeof phoneInput.getAttribute === 'function' && phoneInput.getAttribute('placeholder') ? phoneInput.getAttribute('placeholder') : '';
+    createProxyField({
+      fieldKey: 'user-profile-phone',
+      labelText: resolvedPhoneLabel,
+      placeholder: resolvedPhonePlaceholder,
+      target: phoneInput,
+      type: 'tel',
+      autocomplete: 'tel'
+    });
+    var resolvedEmailLabel = emailLabel && typeof emailLabel.textContent === 'string' ? emailLabel.textContent : 'Email address';
+    var resolvedEmailPlaceholder = emailInput && typeof emailInput.getAttribute === 'function' && emailInput.getAttribute('placeholder') ? emailInput.getAttribute('placeholder') : '';
+    createProxyField({
+      fieldKey: 'user-profile-email',
+      labelText: resolvedEmailLabel,
+      placeholder: resolvedEmailPlaceholder,
+      target: emailInput,
+      type: 'email',
+      autocomplete: 'email'
+    });
+    var skipHint = DOCUMENT.createElement('p');
+    skipHint.className = 'onboarding-resume-hint';
+    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    fragment.appendChild(skipHint);
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+    var focusTarget = firstProxyField || nameProxy;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      var focusRunner = function focusRunner() {
+        try {
+          focusTarget.focus({ preventScroll: true });
+        } catch (error) {
+          void error;
+          try {
+            focusTarget.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(focusRunner);
+      } else {
+        setTimeout(focusRunner, 0);
+      }
+    }
+    return true;
+  }
   function renderNameProjectInteraction(registerCleanup) {
     if (!interactionContainerEl) {
       return false;
@@ -1585,7 +1840,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var hasContent = false;
     var key = step && step.key;
-    if (key === 'nameProject') {
+    if (key === 'userProfile') {
+      hasContent = renderUserProfileInteraction(registerCleanup) || hasContent;
+    } else if (key === 'nameProject') {
       hasContent = renderNameProjectInteraction(registerCleanup) || hasContent;
     } else if (key === 'saveProject') {
       hasContent = renderSaveProjectInteraction(registerCleanup) || hasContent;

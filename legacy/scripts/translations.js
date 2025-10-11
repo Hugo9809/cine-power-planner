@@ -135,9 +135,15 @@ var texts = {
       avatarEditUnavailable: "Photo editor unavailable.",
       avatarEditFailed: "Could not update the photo framing.",
       userProfileHeading: "Your profile",
-      userProfileDescription: "Add your details so your gear shows as “User”.",
+      userProfileDescription: "Add your name, role, phone and email so your gear shows as “User”.",
       userProfileNameLabel: "Display name",
       userProfileNamePlaceholder: "Your name",
+      userProfileRoleLabel: "Role or title",
+      userProfileRolePlaceholder: "e.g. 1st AC",
+      userProfilePhoneLabel: "Phone number",
+      userProfilePhonePlaceholder: "Your phone number",
+      userProfileEmailLabel: "Email address",
+      userProfileEmailPlaceholder: "name@example.com",
       userProfileHint: "Used to show your first name and last initial for the “User” option in the provided by dropdown.",
       userProfileAvatarButton: "Change photo",
       userProfileAvatarRemove: "Remove photo",
@@ -1508,6 +1514,10 @@ var texts = {
           title: "Welcome to Cine Power Planner",
           body: "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own."
         },
+        userProfile: {
+          title: "Configure your user profile",
+          body: "Fill in your display name, role, phone, email and photo right in this step. Changes sync to Contacts instantly, stay offline with your saves and ensure exports credit the right owner."
+        },
         nameProject: {
           title: "Name your first project",
           body: "Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline."
@@ -1742,9 +1752,15 @@ var texts = {
       avatarEditUnavailable: "Editor foto non disponibile.",
       avatarEditFailed: "Impossibile aggiornare l'inquadratura della foto.",
       userProfileHeading: "Il tuo profilo",
-      userProfileDescription: "Aggiungi i tuoi dati così la tua attrezzatura appare come \"Utente\".",
+      userProfileDescription: "Aggiungi nome, ruolo, telefono ed email così la tua attrezzatura appare come \"Utente\".",
       userProfileNameLabel: "Nome visualizzato",
       userProfileNamePlaceholder: "Il tuo nome",
+      userProfileRoleLabel: "Ruolo o mansione",
+      userProfileRolePlaceholder: "es. 1º assistente camera",
+      userProfilePhoneLabel: "Numero di telefono",
+      userProfilePhonePlaceholder: "Il tuo numero di telefono",
+      userProfileEmailLabel: "Indirizzo email",
+      userProfileEmailPlaceholder: "nome@example.com",
       userProfileHint: "Usato per mostrare il nome e l'iniziale del cognome nell'opzione \"Utente\" del menu Fornito da.",
       userProfileAvatarButton: "Cambia foto",
       userProfileAvatarRemove: "Rimuovi foto",
@@ -3114,6 +3130,10 @@ var texts = {
           title: "Benvenuto in Cine Power Planner",
           body: "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente."
         },
+        userProfile: {
+          title: "Configura il tuo profilo",
+          body: "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono i crediti corretti."
+        },
         nameProject: {
           title: "Dai un nome al primo progetto",
           body: "Scrivi un nome progetto per attivare salvataggi automatici, backup ed esportazioni. Il pulsante Avanti si sblocca solo quando è presente un nome così ogni passaggio protegge subito il progetto offline."
@@ -3348,9 +3368,15 @@ var texts = {
       avatarEditUnavailable: "Editor de fotos no disponible.",
       avatarEditFailed: "No se pudo actualizar el encuadre de la foto.",
       userProfileHeading: "Tu perfil",
-      userProfileDescription: "Añade tus datos para que tu equipo aparezca como \"Usuario\".",
+      userProfileDescription: "Añade tu nombre, rol, teléfono y correo para que tu equipo aparezca como \"Usuario\".",
       userProfileNameLabel: "Nombre visible",
       userProfileNamePlaceholder: "Tu nombre",
+      userProfileRoleLabel: "Rol o cargo",
+      userProfileRolePlaceholder: "p. ej. 1.er asistente de cámara",
+      userProfilePhoneLabel: "Número de teléfono",
+      userProfilePhonePlaceholder: "Tu número de teléfono",
+      userProfileEmailLabel: "Correo electrónico",
+      userProfileEmailPlaceholder: "nombre@ejemplo.com",
       userProfileHint: "Sirve para mostrar tu nombre y la inicial del apellido en la opción \"Usuario\" del desplegable Proveedor.",
       userProfileAvatarButton: "Cambiar foto",
       userProfileAvatarRemove: "Quitar foto",
@@ -4720,6 +4746,10 @@ var texts = {
           title: "Bienvenido a Cine Power Planner",
           body: "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta."
         },
+        userProfile: {
+          title: "Configura tu perfil",
+          body: "Completa tu nombre visible, rol, teléfono, correo y foto directamente en este paso. Los cambios se sincronizan con Contactos al instante, permanecen sin conexión en tus guardados y garantizan los créditos correctos."
+        },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
           body: "Escribe un nombre de proyecto para activar el guardado automático, las copias y las exportaciones. El botón Siguiente se desbloquea en cuanto haya un nombre, así cada paso protege el proyecto sin conexión."
@@ -4954,9 +4984,15 @@ var texts = {
       avatarEditUnavailable: "Éditeur de photo indisponible.",
       avatarEditFailed: "Impossible de mettre à jour le cadrage de la photo.",
       userProfileHeading: "Votre profil",
-      userProfileDescription: "Ajoutez vos informations pour que votre matériel s’affiche comme \"Utilisateur\".",
+      userProfileDescription: "Ajoutez votre nom, rôle, téléphone et e-mail pour que votre matériel s’affiche comme \"Utilisateur\".",
       userProfileNameLabel: "Nom affiché",
       userProfileNamePlaceholder: "Votre nom",
+      userProfileRoleLabel: "Rôle ou fonction",
+      userProfileRolePlaceholder: "ex. 1er assistant caméra",
+      userProfilePhoneLabel: "Numéro de téléphone",
+      userProfilePhonePlaceholder: "Votre numéro de téléphone",
+      userProfileEmailLabel: "Adresse e-mail",
+      userProfileEmailPlaceholder: "prenom@exemple.com",
       userProfileHint: "Utilisé pour afficher votre prénom et l’initiale du nom dans l’option \"Utilisateur\" du menu Fournisseur.",
       userProfileAvatarButton: "Changer la photo",
       userProfileAvatarRemove: "Supprimer la photo",
@@ -6326,6 +6362,10 @@ var texts = {
           title: "Bienvenue dans Cine Power Planner",
           body: "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement."
         },
+        userProfile: {
+          title: "Configurez votre profil",
+          body: "Renseignez votre nom affiché, rôle, téléphone, e-mail et photo directement ici. Les changements se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent les bons crédits."
+        },
         nameProject: {
           title: "Nommez votre premier projet",
           body: "Saisissez un nom de projet pour activer l’enregistrement automatique, les sauvegardes et les exports. Le bouton Suivant se déverrouille dès qu’un nom est défini afin que chaque étape sécurise immédiatement le projet hors ligne."
@@ -6560,9 +6600,15 @@ var texts = {
       avatarEditUnavailable: "Fotobearbeitung nicht verfügbar.",
       avatarEditFailed: "Der Fotoausschnitt konnte nicht aktualisiert werden.",
       userProfileHeading: "Dein Profil",
-      userProfileDescription: "Füge deine Angaben hinzu, damit dein Equipment als \"User\" angezeigt wird.",
+      userProfileDescription: "Füge Name, Rolle, Telefon und E-Mail hinzu, damit dein Equipment als \"User\" angezeigt wird.",
       userProfileNameLabel: "Anzeigename",
       userProfileNamePlaceholder: "Dein Name",
+      userProfileRoleLabel: "Rolle oder Funktion",
+      userProfileRolePlaceholder: "z. B. 1. AC",
+      userProfilePhoneLabel: "Telefonnummer",
+      userProfilePhonePlaceholder: "Ihre Telefonnummer",
+      userProfileEmailLabel: "E-Mail-Adresse",
+      userProfileEmailPlaceholder: "name@beispiel.de",
       userProfileHint: "Zeigt im Eintrag \"User\" im Menü \"Bereitgestellt von\" deinen Vornamen und den Anfangsbuchstaben des Nachnamens.",
       userProfileAvatarButton: "Foto ändern",
       userProfileAvatarRemove: "Foto entfernen",
@@ -7931,6 +7977,10 @@ var texts = {
         intro: {
           title: "Willkommen bei Cine Power Planner",
           body: "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst."
+        },
+        userProfile: {
+          title: "Profil einrichten",
+          body: "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt in diesem Schritt ein. Die Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Sicherungen erhalten und sorgen für die richtigen Credits."
         },
         nameProject: {
           title: "Benenne dein erstes Projekt",
