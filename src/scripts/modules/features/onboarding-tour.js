@@ -1564,14 +1564,19 @@
       confirmSkip();
       return;
     }
-    if (key === 'ArrowRight') {
+    if (key === 'ArrowRight' || key === 'ArrowLeft') {
+      const nextBlocked =
+        key === 'ArrowRight' && (!activeRequirementCompleted || (nextButton && nextButton.disabled));
+      if (nextBlocked) {
+        event.preventDefault();
+        return;
+      }
       event.preventDefault();
-      goToNextStep();
-      return;
-    }
-    if (key === 'ArrowLeft') {
-      event.preventDefault();
-      goToPreviousStep();
+      if (key === 'ArrowRight') {
+        goToNextStep();
+      } else {
+        goToPreviousStep();
+      }
       return;
     }
     if (key !== 'Tab') {
