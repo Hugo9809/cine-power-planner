@@ -933,8 +933,13 @@
       },
       {
         key: 'addMonitoring',
-        highlight: '#monitorSelect',
-        alternateHighlight: '#videoSelect',
+        highlight: '#monitorRow',
+        highlightSelectors: [
+          '#monitorRow',
+          '#wirelessVideoRow',
+          '#fizFieldset',
+        ],
+        alternateHighlight: '#monitorSelect',
         focus: '#monitorSelect',
       },
       {
@@ -1032,7 +1037,7 @@
 
   let overlayRoot = null;
   let highlightEl = null;
-  let activeTargetElement = null;
+  let activeTargetElements = [];
   let cardEl = null;
   let titleEl = null;
   let bodyEl = null;
@@ -1312,7 +1317,7 @@
 
   function teardownOverlayElements() {
     clearFrame();
-    clearActiveTargetElement();
+    clearActiveTargetElements();
     if (overlayRoot && overlayRoot.parentNode) {
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
@@ -1380,65 +1385,208 @@
     }
   }
 
-  function getTargetElement(step) {
+  function getHighlightSelectors(step) {
     if (!step) {
-      return null;
+      return [];
+    }
+    const selectors = [];
+    const pushSelector = selector => {
+      if (typeof selector !== 'string' || !selector) {
+        return;
+      }
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
+    };
+
+    if (Array.isArray(step.highlightSelectors)) {
+      for (let index = 0; index < step.highlightSelectors.length; index += 1) {
+        pushSelector(step.highlightSelectors[index]);
+      }
+    }
+
+    pushSelector(step.highlight);
+
+    return selectors;
+  }
+
+  function getHighlightElements(step) {
+    if (!step) {
+      return [];
     }
     if (step.ensureSettings && (!settingsDialogRef || !isSettingsDialogVisible())) {
-      return null;
+      return [];
     }
-    if (typeof step.highlight === 'string' && step.highlight) {
-      const el = DOCUMENT.querySelector(step.highlight);
-      if (el) {
-        return el;
+
+    const selectors = getHighlightSelectors(step);
+    const elements = [];
+    const pushElement = element => {
+      if (!element) {
+        return;
       }
-      if (typeof step.alternateHighlight === 'string' && step.alternateHighlight) {
-        return DOCUMENT.querySelector(step.alternateHighlight);
+      if (elements.indexOf(element) === -1) {
+        elements.push(element);
       }
+    };
+
+    for (let index = 0; index < selectors.length; index += 1) {
+      const selector = selectors[index];
+      try {
+        const found = DOCUMENT.querySelectorAll(selector);
+        for (let elemIndex = 0; elemIndex < found.length; elemIndex += 1) {
+          pushElement(found[elemIndex]);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (!elements.length && typeof step.alternateHighlight === 'string' && step.alternateHighlight) {
+      try {
+        const fallback = DOCUMENT.querySelectorAll(step.alternateHighlight);
+        for (let index = 0; index < fallback.length; index += 1) {
+          pushElement(fallback[index]);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return elements;
+  }
+
+  function getTargetElement(step) {
+    const elements = getHighlightElements(step);
+    if (elements.length > 0) {
+      return elements[0];
     }
     return null;
   }
 
-  function clearActiveTargetElement() {
-    if (activeTargetElement && typeof activeTargetElement.classList === 'object') {
-      activeTargetElement.classList.remove('onboarding-active-target');
+  function clearActiveTargetElements() {
+    if (!activeTargetElements.length) {
+      return;
     }
-    activeTargetElement = null;
+    for (let index = 0; index < activeTargetElements.length; index += 1) {
+      const element = activeTargetElements[index];
+      if (element && typeof element.classList === 'object') {
+        element.classList.remove('onboarding-active-target');
+      }
+    }
+    activeTargetElements = [];
+  }
+
+  function setActiveTargetElements(elements) {
+    const next = Array.isArray(elements) ? elements.filter(Boolean) : [];
+    let changed = next.length !== activeTargetElements.length;
+    if (!changed) {
+      for (let index = 0; index < next.length; index += 1) {
+        if (next[index] !== activeTargetElements[index]) {
+          changed = true;
+          break;
+        }
+      }
+    }
+    if (!changed) {
+      return;
+    }
+    clearActiveTargetElements();
+    activeTargetElements = next;
+    for (let index = 0; index < activeTargetElements.length; index += 1) {
+      const element = activeTargetElements[index];
+      if (element && typeof element.classList === 'object') {
+        element.classList.add('onboarding-active-target');
+      }
+    }
   }
 
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
     }
-    const target = getTargetElement(currentStep);
-    if (!target) {
-      if (activeTargetElement) {
-        clearActiveTargetElement();
+    const targets = getHighlightElements(currentStep);
+    if (!targets.length) {
+      if (activeTargetElements.length) {
+        clearActiveTargetElements();
       }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
       positionCard(null, null);
       return;
     }
-    if (target !== activeTargetElement) {
-      clearActiveTargetElement();
-      activeTargetElement = target;
-      if (typeof target.classList === 'object') {
-        target.classList.add('onboarding-active-target');
+    setActiveTargetElements(targets);
+    let boundingRect = null;
+    let hasVisibleRect = false;
+    let fallbackRect = null;
+    for (let index = 0; index < targets.length; index += 1) {
+      const element = targets[index];
+      if (!element || typeof element.getBoundingClientRect !== 'function') {
+        continue;
+      }
+      const rect = element.getBoundingClientRect();
+      if (!fallbackRect) {
+        fallbackRect = rect;
+      }
+      if (rect.width > 0 || rect.height > 0) {
+        if (!boundingRect) {
+          boundingRect = {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+          };
+        } else {
+          const currentRight = boundingRect.left + boundingRect.width;
+          const currentBottom = boundingRect.top + boundingRect.height;
+          const rectRight = rect.left + rect.width;
+          const rectBottom = rect.top + rect.height;
+          const nextLeft = Math.min(boundingRect.left, rect.left);
+          const nextTop = Math.min(boundingRect.top, rect.top);
+          const nextRight = Math.max(currentRight, rectRight);
+          const nextBottom = Math.max(currentBottom, rectBottom);
+          boundingRect.left = nextLeft;
+          boundingRect.top = nextTop;
+          boundingRect.width = Math.max(0, nextRight - nextLeft);
+          boundingRect.height = Math.max(0, nextBottom - nextTop);
+        }
+        hasVisibleRect = true;
       }
     }
-    const rect = target.getBoundingClientRect();
+
+    if (!hasVisibleRect) {
+      if (fallbackRect) {
+        boundingRect = {
+          top: fallbackRect.top,
+          left: fallbackRect.left,
+          width: fallbackRect.width,
+          height: fallbackRect.height,
+        };
+      } else {
+        boundingRect = null;
+      }
+    }
+
+    const primaryTarget = targets[0] || null;
+    if (!boundingRect) {
+      highlightEl.style.transform = 'scale(0)';
+      highlightEl.style.opacity = '0';
+      positionCard(primaryTarget, null);
+      return;
+    }
+
     const padding = 12;
-    const width = Math.max(0, rect.width + padding * 2);
-    const height = Math.max(0, rect.height + padding * 2);
-    const left = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) - padding;
-    const top = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) - padding;
+    const scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
+    const scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
+    const width = Math.max(0, boundingRect.width + padding * 2);
+    const height = Math.max(0, boundingRect.height + padding * 2);
+    const left = boundingRect.left + scrollX - padding;
+    const top = boundingRect.top + scrollY - padding;
 
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
     highlightEl.style.transform = `translate(${Math.max(0, left)}px, ${Math.max(0, top)}px)`;
     highlightEl.style.opacity = '1';
-    positionCard(target, rect);
+    positionCard(primaryTarget, boundingRect);
   }
 
   function positionCard(target, targetRect) {
@@ -1925,8 +2073,12 @@
     if (typeof step.focus === 'string' && step.focus) {
       selectors.push(step.focus);
     }
-    if (typeof step.highlight === 'string' && step.highlight) {
-      selectors.push(step.highlight);
+    const highlightSelectors = getHighlightSelectors(step);
+    for (let index = 0; index < highlightSelectors.length; index += 1) {
+      selectors.push(highlightSelectors[index]);
+    }
+    if (!highlightSelectors.length && typeof step.alternateHighlight === 'string' && step.alternateHighlight) {
+      selectors.push(step.alternateHighlight);
     }
     let target = null;
     for (let index = 0; index < selectors.length; index += 1) {
@@ -2811,8 +2963,8 @@
           safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
         }
       }
-    } else if (step.highlight) {
-      const highlightTarget = DOCUMENT.querySelector(step.highlight);
+    } else {
+      const highlightTarget = getTargetElement(step);
       if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
         try {
           highlightTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
