@@ -6640,6 +6640,15 @@ textarea:disabled {
   z-index: 1200;
   display: none;
   pointer-events: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+}
+
+.onboarding-overlay[open] {
+  display: block;
 }
 
 .onboarding-overlay.active {
