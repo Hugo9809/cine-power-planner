@@ -1475,6 +1475,7 @@ var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
 var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
 var PROJECT_ACTIVITY_WINDOW_MS = 30 * 60 * 1000;
 var projectActivityTimestamps = new Map();
+var forcedCompressedProjectKeys = typeof Set === 'function' ? new Set() : null;
 var AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH = 2048;
 
 function isAutoBackupStorageKey(name) {
@@ -3526,6 +3527,91 @@ function pruneProjectActivityCache(validKeys) {
   });
 }
 
+function normalizeForcedProjectCompressionKey(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+
+  const normalized = normalizeProjectStorageKey(name);
+  return typeof normalized === 'string' && normalized ? normalized : '';
+}
+
+function isForcedProjectCompressionLocked(name) {
+  if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.has !== 'function') {
+    return false;
+  }
+
+  const normalized = normalizeForcedProjectCompressionKey(name);
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    return forcedCompressedProjectKeys.has(normalized);
+  } catch (error) {
+    void error;
+  }
+
+  return false;
+}
+
+function registerForcedProjectCompressionKey(name) {
+  if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.add !== 'function') {
+    clearActiveProjectCompressionHold(name);
+    if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
+      projectActivityTimestamps.delete(name);
+    }
+    return;
+  }
+
+  const normalized = normalizeForcedProjectCompressionKey(name);
+  if (!normalized) {
+    return;
+  }
+
+  try {
+    forcedCompressedProjectKeys.add(normalized);
+  } catch (error) {
+    void error;
+  }
+
+  if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
+    projectActivityTimestamps.delete(name);
+    if (normalized !== name) {
+      projectActivityTimestamps.delete(normalized);
+    }
+  }
+
+  clearActiveProjectCompressionHold(normalized);
+}
+
+function purgeForcedProjectCompressionKeys(validKeys) {
+  if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.forEach !== 'function') {
+    return;
+  }
+
+  const validSet = validKeys && typeof validKeys.has === 'function' ? validKeys : null;
+
+  forcedCompressedProjectKeys.forEach((key) => {
+    if (!key) {
+      try {
+        forcedCompressedProjectKeys.delete(key);
+      } catch (error) {
+        void error;
+      }
+      return;
+    }
+
+    if (validSet && !validSet.has(key)) {
+      try {
+        forcedCompressedProjectKeys.delete(key);
+      } catch (error) {
+        void error;
+      }
+    }
+  });
+}
+
 function ensureProjectEntryUncompressed(value, contextName) {
   const restored = restoreCompressedProjectEntry(value, contextName);
   if (restored.restored) {
@@ -3616,11 +3702,13 @@ function applyProjectEntryCompression(container) {
 
   keys.forEach((key) => {
     const normalizedKey = normalizeProjectStorageKey(key);
-    const isActiveHold = activeCompressionHoldKey
+    const forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
+    const isActiveHold = !forcedCompressionLocked
+      && activeCompressionHoldKey
       && normalizedKey === activeCompressionHoldKey;
     const timestamp = getProjectActivityTimestamp(key);
-    const keepUncompressed = isActiveHold
-      || (Number.isFinite(timestamp) && timestamp >= threshold);
+    const keepUncompressed = !forcedCompressionLocked
+      && (isActiveHold || (Number.isFinite(timestamp) && timestamp >= threshold));
     if (keepUncompressed) {
       container[key] = ensureProjectEntryUncompressed(container[key], key);
       if (isActiveHold && Number.isFinite(now)) {
@@ -3646,14 +3734,19 @@ function forceCompressAllProjectEntries(container, options = {}) {
   const activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED
     ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY
     : '';
+  const normalizedValidKeys = new Set();
 
   Object.keys(container).forEach((key) => {
     const normalizedKey = normalizeProjectStorageKey(key);
+    if (normalizedKey) {
+      normalizedValidKeys.add(normalizedKey);
+    }
     const isActiveHold = activeCompressionHoldKey
       && normalizedKey === activeCompressionHoldKey;
     const timestamp = getProjectActivityTimestamp(key);
     const withinActivityWindow = Number.isFinite(timestamp) && timestamp >= threshold;
-    if (isActiveHold || withinActivityWindow) {
+    const forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
+    if ((isActiveHold || withinActivityWindow) && !forcedCompressionLocked) {
       const currentValue = container[key];
       const uncompressedValue = ensureProjectEntryUncompressed(currentValue, key);
       if (uncompressedValue !== currentValue) {
@@ -3670,8 +3763,11 @@ function forceCompressAllProjectEntries(container, options = {}) {
     if (compressedValue !== currentValue) {
       container[key] = compressedValue;
       compressedKeys.push(key);
+      registerForcedProjectCompressionKey(normalizedKey || key);
     }
   });
+
+  purgeForcedProjectCompressionKeys(normalizedValidKeys);
 
   if (
     compressedKeys.length
@@ -9684,6 +9780,11 @@ function setActiveProjectCompressionHold(name) {
   }
 
   const normalized = normalizeProjectStorageKey(name);
+  if (isForcedProjectCompressionLocked(normalized)) {
+    ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
+    ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+    return normalized;
+  }
   ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = normalized;
   ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = true;
   return normalized;
