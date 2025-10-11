@@ -2609,7 +2609,7 @@ function resolveAutoGearBackupRetentionMin() {
 }
 
 function resolveAutoGearBackupRetentionDefault() {
-  const fallback = 12;
+  const fallback = 36;
   const min = AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE || 1;
   const max = 50;
   const normalizedFallback = Math.min(Math.max(Math.round(fallback), min), max);

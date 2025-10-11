@@ -280,6 +280,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Journal d’historique** – Chaque backup complet ajoute une entrée consultable via **Paramètres → Données & stockage** ou exportable avec l’archive. Horodatages et noms restent alignés avec votre documentation même hors ligne.
 - **Backups de migration cachés** – Avant d’écraser planners, configurations ou préférences, l’application enregistre le JSON précédent dans `__legacyMigrationBackup`. En cas d’échec, les outils de récupération reviennent automatiquement à cette copie. La compression choisit désormais automatiquement l’encodage sûr le plus compact afin que les sauvegardes restent dans le quota du navigateur. Les balayages de récupération de quota compressent désormais d’abord les entrées les plus volumineuses afin de libérer de l’espace plus rapidement sans toucher aux sauvegardes actives.【F:src/scripts/storage.js†L1541-L1652】
 - **Snapshots automatiques des règles** – Les modifications dans **Règles automatiques** génèrent des copies horodatées toutes les dix minutes.
+  Le curseur de rétention démarre désormais à 36 copies pour offrir davantage de marge
+  avant de supprimer les plus anciennes.
 - **Réinitialisation usine** – Efface les données uniquement après téléchargement d’un backup.
 - **Rappels horaires** – Une tâche de fond invite à créer un backup toutes les heures pour disposer d’une capture récente.
 - **Sentinelle d’intégrité runtime** – Avant un déplacement, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true` (ou exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Le rapport démontre que les parcours de sauvegarde/partage/restauration et la persistance du feedback restent protégés hors ligne.

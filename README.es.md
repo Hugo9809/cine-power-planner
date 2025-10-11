@@ -277,6 +277,8 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Libro de historial** – Cada copia completa añade una entrada que puedes auditar en **Configuración → Datos y almacenamiento** o exportar junto al archivo. Mantiene sellos horarios y nombres alineados con tu bitácora aunque trabajes sin conexión.
 - **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia. La compresión ahora selecciona automáticamente la codificación segura más compacta para que las copias sigan dentro de la cuota del navegador. Los barridos de recuperación de cuota ahora comprimen primero las entradas almacenadas más pesadas para liberar espacio más rápido sin tocar las copias de seguridad activas.【F:src/scripts/storage.js†L1541-L1652】
 - **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.
+  El control de retención ahora parte de 36 copias para ofrecer más margen antes de
+  recortar las antiguas.
 - **Restablecimiento de fábrica** – Borra datos sólo después de descargar un backup.
 - **Recordatorios por hora** – Una rutina en segundo plano sugiere realizar una copia adicional cada hora.
 - **Guardia de integridad runtime** – Antes de viajar, abre la consola y verifica que `window.__cineRuntimeIntegrity.ok` sea `true` (o ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). El informe demuestra que los caminos de guardado/compartido/restauración y la persistencia de feedback siguen protegidos offline.
