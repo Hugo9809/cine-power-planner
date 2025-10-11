@@ -1794,6 +1794,11 @@
     if (key !== 'Tab') {
       return;
     }
+    const target = event.target;
+    const targetInOverlay = overlayRoot && (target === overlayRoot || overlayRoot.contains(target));
+    if (!targetInOverlay) {
+      return;
+    }
     const focusable = Array.from(cardEl.querySelectorAll('button:not([disabled])'));
     if (!focusable.length) {
       return;
