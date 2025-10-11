@@ -509,6 +509,9 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Imports never overwrite by accident.** If an incoming bundle matches the
   name of an existing project, the planner saves the new copy as
   `project-name-imported` so both versions stay available until you review them.
+- **Unnamed imports still land safely.** When a shared bundle arrives without a
+  project name, the planner now saves it automatically under an `-imported`
+  title and updates the project selector so the imported data never gets lost.
 - **Standalone rule imports validate metadata offline.** When you import an
   `auto-gear-rules-*.json` file, the planner now checks the file type, semantic
   version and timestamp metadata before touching your saved rules—even without

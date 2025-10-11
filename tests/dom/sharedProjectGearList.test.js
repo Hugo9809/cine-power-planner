@@ -21,7 +21,8 @@ describe('shared project gear list handling', () => {
         loadSessionState: jest.fn(() => ({})),
         saveSetups: jest.fn(),
         loadSetups: jest.fn(() => ({})),
-        updateCalculations: jest.fn()
+        updateCalculations: jest.fn(),
+        populateSetupSelect: jest.fn()
       }
     });
   });
@@ -254,6 +255,33 @@ describe('shared project gear list handling', () => {
     const importedCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
     expect(importedCalls.length).toBeGreaterThan(0);
     expect(importedCalls.some(([, data]) => data.gearListAndProjectRequirementsGenerated === true)).toBe(true);
+  });
+
+  test('applySharedSetup saves unnamed imports under a generated key', () => {
+    const { utils, globals } = env;
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+
+    setupSelect.value = '';
+    setupSelect.dispatchEvent(new Event('change'));
+    setupNameInput.value = '';
+    setupNameInput.dispatchEvent(new Event('input'));
+
+    globals.loadProject.mockReturnValue({ Existing: { gearList: '<p>Old</p>' } });
+    globals.saveProject.mockClear();
+
+    const sharedData = {
+      gearList: '<div>Imported Gear</div>'
+    };
+
+    utils.applySharedSetup(sharedData);
+
+    const importedCalls = globals.saveProject.mock.calls.filter(([name]) => /-imported$/.test(name));
+    expect(importedCalls.length).toBeGreaterThan(0);
+    const [generatedName] = importedCalls[importedCalls.length - 1];
+    expect(typeof generatedName).toBe('string');
+    expect(generatedName.length).toBeGreaterThan(0);
+    expect(setupNameInput.value).toBe(generatedName);
   });
 
   test('sanitizes potentially unsafe shared HTML before display', () => {
