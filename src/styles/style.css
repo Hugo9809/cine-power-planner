@@ -6670,7 +6670,10 @@ textarea:disabled {
   position: absolute;
   --onboarding-card-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
   --onboarding-card-padding: clamp(1rem, 0.75rem + 1vw, 1.25rem);
-  max-width: min(26rem, calc(100vw - 3rem));
+  width: min(26rem, calc(100vw - 3rem));
+  inline-size: min(26rem, calc(100vw - 3rem));
+  min-height: min(calc(26rem * 1.08), calc((100vw - 3rem) * 1.08));
+  min-block-size: min(calc(26rem * 1.08), calc((100vw - 3rem) * 1.08));
   padding: var(--onboarding-card-padding);
   border-radius: 16px;
   background: var(--surface-color);
@@ -6682,6 +6685,7 @@ textarea:disabled {
   gap: var(--spacing-md);
   border: 1px solid var(--onboarding-card-border);
   max-height: min(80vh, calc(100vh - 3rem));
+  max-block-size: min(80vh, calc(100vh - 3rem));
   overflow: visible;
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
@@ -6717,7 +6721,10 @@ textarea:disabled {
 }
 
 .onboarding-card[data-size='large'] {
-  max-width: min(38rem, calc(100vw - 2rem));
+  width: min(38rem, calc(100vw - 2rem));
+  inline-size: min(38rem, calc(100vw - 2rem));
+  min-height: min(calc(38rem * 1.08), calc((100vw - 2rem) * 1.08));
+  min-block-size: min(calc(38rem * 1.08), calc((100vw - 2rem) * 1.08));
   --onboarding-card-padding: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
   gap: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
 }
