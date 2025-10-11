@@ -1770,12 +1770,12 @@ const texts = {
         userProfile: {
           title: "Configure your user profile",
           body:
-            "Fill in your display name, role, phone, email and photo right in this step. Changes sync to Contacts instantly, stay offline with your saves and ensure exports credit the right owner.",
+            "Choose your language along with your display name, role, phone, email and photo in this step. Changes sync to Contacts instantly, stay offline with your saves and ensure exports credit the right owner.",
         },
         unitsPreferences: {
-          title: "Tune language, theme and units",
+          title: "Tune theme and units",
           body:
-            "Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
+            "Use Settings → General to choose dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
         },
         nameProject: {
           title: "Name your first project",
@@ -3756,12 +3756,12 @@ const texts = {
         userProfile: {
           title: "Configura il tuo profilo",
           body:
-            "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono che le esportazioni accreditino il proprietario corretto.",
+            "Scegli lingua, nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono che le esportazioni accreditino il proprietario corretto.",
         },
         unitsPreferences: {
-          title: "Personalizza lingua, tema e unità",
+          title: "Personalizza tema e unità",
           body:
-            "Apri Impostazioni → Generale per scegliere lingua, tema chiaro o scuro, eventuale modalità rosa e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio al sicuro anche durante le pulizie automatiche di spazio.",
+            "Apri Impostazioni → Generale per scegliere tema chiaro o scuro, eventuale modalità rosa e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio al sicuro anche durante le pulizie automatiche di spazio.",
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
@@ -5756,12 +5756,12 @@ const texts = {
         userProfile: {
           title: "Configura tu perfil",
           body:
-            "Completa tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
+            "Elige idioma junto con tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
         },
         unitsPreferences: {
-          title: "Ajusta idioma, tema y unidades",
+          title: "Ajusta tema y unidades",
           body:
-            "Usa Configuración → General para elegir idioma, tema claro u oscuro, resaltes opcionales en modo rosa y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
+            "Usa Configuración → General para elegir tema claro u oscuro, resaltes opcionales en modo rosa y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
@@ -7768,12 +7768,12 @@ const texts = {
         userProfile: {
           title: "Configurez votre profil",
           body:
-            "Renseignez votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Les modifications se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent que les exports créditent le bon responsable.",
+            "Choisissez la langue ainsi que votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Les modifications se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent que les exports créditent le bon responsable.",
         },
         unitsPreferences: {
-          title: "Réglez langue, thème et unités",
+          title: "Réglez thème et unités",
           body:
-            "Utilisez Paramètres → Général pour choisir la langue, le thème clair ou sombre, les surbrillances optionnelles du mode rose et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
+            "Utilisez Paramètres → Général pour choisir le thème clair ou sombre, les surbrillances optionnelles du mode rose et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
         },
         nameProject: {
           title: "Nommez votre premier projet",
@@ -9785,12 +9785,12 @@ const texts = {
         userProfile: {
           title: "Profil einrichten",
           body:
-            "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt hier ein. Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Speicherungen und stellen sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
+            "Wähle Sprache plus Anzeigename, Rolle, Telefon, E-Mail und Foto direkt hier. Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Speicherungen und stellen sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
         },
         unitsPreferences: {
-          title: "Sprache, Theme und Einheiten anpassen",
+          title: "Theme und Einheiten anpassen",
           body:
-            "Nutze Einstellungen → Allgemein, um Sprache, helles oder dunkles Theme, optionale Pink-Highlights und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
+            "Nutze Einstellungen → Allgemein, um helles oder dunkles Theme, optionale Pink-Highlights und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
         },
         nameProject: {
           title: "Erstes Projekt benennen",

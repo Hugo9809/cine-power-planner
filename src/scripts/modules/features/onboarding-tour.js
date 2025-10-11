@@ -194,12 +194,12 @@
     userProfile: {
       title: 'Configure your user profile',
       body:
-        'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
+        'Pick your language plus your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
     },
     unitsPreferences: {
-      title: 'Tune language, theme and units',
+      title: 'Tune theme and units',
       body:
-        'Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
+        'Use Settings → General to choose dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
@@ -2254,6 +2254,125 @@
 
     let firstProxyField = null;
 
+    const languageSelectTopBar = DOCUMENT.getElementById('languageSelect');
+    const languageSelectSettings = DOCUMENT.getElementById('settingsLanguage');
+    const primaryLanguageTarget = languageSelectTopBar || languageSelectSettings || null;
+    const languageTargets = [];
+    const pushLanguageTarget = (target) => {
+      if (!target) {
+        return;
+      }
+      if (languageTargets.indexOf(target) === -1) {
+        languageTargets.push(target);
+      }
+    };
+    pushLanguageTarget(primaryLanguageTarget);
+    pushLanguageTarget(languageSelectSettings);
+    pushLanguageTarget(languageSelectTopBar);
+
+    if (primaryLanguageTarget) {
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const proxyId = getProxyControlId('language');
+      const label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', proxyId);
+      label.textContent = 'Language';
+      const proxySelect = DOCUMENT.createElement('select');
+      proxySelect.id = proxyId;
+      proxySelect.className = 'onboarding-field-select';
+
+      const resolveOptionSource = () => {
+        for (let index = 0; index < languageTargets.length; index += 1) {
+          const candidate = languageTargets[index];
+          if (candidate && candidate.options && candidate.options.length) {
+            return candidate;
+          }
+        }
+        return primaryLanguageTarget;
+      };
+
+      const updateProxyOptionsAndValue = () => {
+        const source = resolveOptionSource();
+        if (!source) {
+          return;
+        }
+        const previousValue = proxySelect.value;
+        proxySelect.textContent = '';
+        const sourceOptions = Array.from(source.options || []);
+        if (sourceOptions.length) {
+          sourceOptions.forEach(option => {
+            proxySelect.appendChild(option.cloneNode(true));
+          });
+        } else {
+          const fallbackOption = DOCUMENT.createElement('option');
+          const fallbackValue = source.value || 'en';
+          fallbackOption.value = fallbackValue;
+          fallbackOption.textContent = fallbackValue || 'English';
+          proxySelect.appendChild(fallbackOption);
+        }
+        const activeValue = primaryLanguageTarget && typeof primaryLanguageTarget.value === 'string'
+          ? primaryLanguageTarget.value
+          : (source && typeof source.value === 'string' ? source.value : previousValue);
+        const proxyOptions = Array.from(proxySelect.options || []);
+        const findMatchingValue = (value) => proxyOptions.some(option => option.value === value);
+        if (activeValue && findMatchingValue(activeValue)) {
+          proxySelect.value = activeValue;
+        } else if (previousValue && findMatchingValue(previousValue)) {
+          proxySelect.value = previousValue;
+        } else if (proxyOptions.length) {
+          proxySelect.value = proxyOptions[0].value;
+        }
+      };
+
+      updateProxyOptionsAndValue();
+
+      const syncTargetsFromProxy = () => {
+        const nextValue = proxySelect.value;
+        if (!primaryLanguageTarget) {
+          return;
+        }
+        if (typeof nextValue === 'string' && primaryLanguageTarget.value !== nextValue) {
+          primaryLanguageTarget.value = nextValue;
+        }
+        dispatchSyntheticEvent(primaryLanguageTarget, 'change');
+      };
+
+      proxySelect.addEventListener('change', syncTargetsFromProxy);
+      registerCleanup(() => {
+        proxySelect.removeEventListener('change', syncTargetsFromProxy);
+      });
+
+      const refreshProxyFromTargets = () => {
+        updateProxyOptionsAndValue();
+      };
+
+      for (let index = 0; index < languageTargets.length; index += 1) {
+        const target = languageTargets[index];
+        if (!target) {
+          continue;
+        }
+        target.addEventListener('change', refreshProxyFromTargets);
+        registerCleanup(() => {
+          target.removeEventListener('change', refreshProxyFromTargets);
+        });
+      }
+
+      if (typeof GLOBAL_SCOPE.addEventListener === 'function') {
+        GLOBAL_SCOPE.addEventListener('languagechange', refreshProxyFromTargets);
+        registerCleanup(() => {
+          GLOBAL_SCOPE.removeEventListener('languagechange', refreshProxyFromTargets);
+        });
+      }
+
+      group.appendChild(label);
+      group.appendChild(proxySelect);
+      fragment.appendChild(group);
+      if (!firstProxyField) {
+        firstProxyField = proxySelect;
+      }
+    }
+
     const createProxyField = (options) => {
       const {
         fieldKey,
@@ -2501,62 +2620,6 @@
     }
 
     const fragment = DOCUMENT.createDocumentFragment();
-
-    const languageSelect = DOCUMENT.getElementById('settingsLanguage');
-    if (languageSelect) {
-      const group = DOCUMENT.createElement('div');
-      group.className = 'onboarding-field-group';
-      const inputId = getProxyControlId('language');
-      const label = DOCUMENT.createElement('label');
-      label.className = 'onboarding-field-label';
-      label.setAttribute('for', inputId);
-      label.textContent = 'Language';
-      const proxySelect = DOCUMENT.createElement('select');
-      proxySelect.id = inputId;
-      proxySelect.className = 'onboarding-field-select';
-      const originalOptions = Array.from(languageSelect.options || []);
-      if (originalOptions.length === 0) {
-        const option = DOCUMENT.createElement('option');
-        option.value = languageSelect.value || 'en';
-        option.textContent = languageSelect.value || 'English';
-        proxySelect.appendChild(option);
-      } else {
-        for (let index = 0; index < originalOptions.length; index += 1) {
-          const source = originalOptions[index];
-          const option = DOCUMENT.createElement('option');
-          option.value = source.value;
-          option.textContent = source.textContent || source.value;
-          proxySelect.appendChild(option);
-        }
-      }
-      proxySelect.value = languageSelect.value || proxySelect.value;
-
-      const syncFromTarget = () => {
-        if (proxySelect.value !== languageSelect.value) {
-          proxySelect.value = languageSelect.value;
-        }
-      };
-
-      const syncToTarget = () => {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-      };
-
-      proxySelect.addEventListener('change', syncToTarget);
-      registerCleanup(() => {
-        proxySelect.removeEventListener('change', syncToTarget);
-      });
-      languageSelect.addEventListener('change', syncFromTarget);
-      registerCleanup(() => {
-        languageSelect.removeEventListener('change', syncFromTarget);
-      });
-
-      group.appendChild(label);
-      group.appendChild(proxySelect);
-      fragment.appendChild(group);
-    }
 
     const darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
     const themeGroup = DOCUMENT.createElement('div');
