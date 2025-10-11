@@ -1814,12 +1814,18 @@
       GLOBAL_SCOPE.addEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.addEventListener('scroll', schedulePositionUpdate, true);
     }
+    if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+      DOCUMENT.addEventListener('scroll', schedulePositionUpdate, true);
+    }
   }
 
   function detachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
       GLOBAL_SCOPE.removeEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.removeEventListener('scroll', schedulePositionUpdate, true);
+    }
+    if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
+      DOCUMENT.removeEventListener('scroll', schedulePositionUpdate, true);
     }
   }
 
