@@ -237,10 +237,11 @@ exported artifacts if it does not already exist) with:
   retry so auditors know what to watch during the next drill.
 - **Logger retention counters.** Capture the snapshot from `cineLogging.getStats()` so the
   audit trail shows how many diagnostics entries were recorded, when retention trimmed the
-  history and how many events were preserved. The expanded default retention now keeps
-  roughly 1,200 entries before rotation, giving investigations more headroom while staying
-  within offline storage budgets. Keeping this metadata with the exported backups proves
-  that no warnings disappeared silently while the limit rotated entries.
+  history, which severities dominated and how many events were preserved. The expanded
+  default retention now keeps roughly 1,200 entries before rotation and the per-level
+  breakdown shows whether a purge mostly removed debug chatter or critical warnings.
+  Keeping this metadata with the exported backups proves that no warnings disappeared
+  silently while the limit rotated entries.
 - **Cache status.** Confirm the help dialog, legal pages and other locally stored Uicons or
   helper scripts rendered correctly while offline. A quick note here proves the service
   worker cache stayed intact.

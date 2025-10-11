@@ -849,6 +849,112 @@
 
   const LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
 
+  const LEVEL_COUNTER_KEYS = Object.freeze(Object.keys(LOG_LEVEL_MAP).concat(['other']));
+
+  function createLevelCounters() {
+    const counters = Object.create(null);
+    for (let index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      const key = LEVEL_COUNTER_KEYS[index];
+      counters[key] = 0;
+    }
+    return counters;
+  }
+
+  function resetLevelCounters(counters) {
+    if (!counters || typeof counters !== 'object') {
+      return;
+    }
+
+    for (let index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      const key = LEVEL_COUNTER_KEYS[index];
+      counters[key] = 0;
+    }
+  }
+
+  function resolveLevelKey(level) {
+    if (typeof level === 'string' && level) {
+      if (Object.prototype.hasOwnProperty.call(LOG_LEVEL_MAP, level)) {
+        return level;
+      }
+      const trimmed = level.trim().toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(LOG_LEVEL_MAP, trimmed)) {
+        return trimmed;
+      }
+    }
+    return 'other';
+  }
+
+  function getCounterValue(counters, key) {
+    if (!counters || typeof counters !== 'object') {
+      return 0;
+    }
+
+    const value = counters[key];
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  function applyLevelCounterDelta(counters, level, delta) {
+    if (!counters || typeof counters !== 'object') {
+      return;
+    }
+
+    if (typeof delta !== 'number' || !Number.isFinite(delta) || delta === 0) {
+      return;
+    }
+
+    const key = resolveLevelKey(level);
+    const current = getCounterValue(counters, key);
+    const next = current + delta;
+    counters[key] = next > 0 ? next : 0;
+  }
+
+  function applyLevelCounterDeltaForEntries(counters, entries, delta) {
+    if (!Array.isArray(entries) || !entries.length) {
+      return;
+    }
+
+    if (typeof delta !== 'number' || !Number.isFinite(delta) || delta === 0) {
+      return;
+    }
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      const level = entry && entry.level;
+      applyLevelCounterDelta(counters, level, delta);
+    }
+  }
+
+  function summariseEntriesByLevel(entries) {
+    const summary = createLevelCounters();
+    applyLevelCounterDeltaForEntries(summary, entries, 1);
+    return summary;
+  }
+
+  function accumulateLevelSummary(target, summary) {
+    if (!target || typeof target !== 'object' || !summary || typeof summary !== 'object') {
+      return;
+    }
+
+    for (let index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      const key = LEVEL_COUNTER_KEYS[index];
+      const increment = getCounterValue(summary, key);
+      if (increment) {
+        const current = getCounterValue(target, key);
+        target[key] = current + increment;
+      }
+    }
+  }
+
+  function cloneLevelSummary(summary) {
+    const clone = createLevelCounters();
+    accumulateLevelSummary(clone, summary);
+    return clone;
+  }
+
+  function freezeLevelSummary(summary) {
+    return freezeDeep(cloneLevelSummary(summary));
+  }
+
   const HISTORY_MIN_LIMIT = 50;
   const HISTORY_ABSOLUTE_MIN_LIMIT = 1;
   const HISTORY_MAX_LIMIT = 5000;
@@ -886,6 +992,9 @@
   const configSubscribers = new Set();
   const attachedErrorTargets = typeof WeakSet === 'function' ? new WeakSet() : [];
   let runtimeEntryCount = 0;
+  const emittedLevelCounters = createLevelCounters();
+  const retainedLevelCounters = createLevelCounters();
+  const droppedLevelCounters = createLevelCounters();
   let totalEntriesDropped = 0;
   let lastHistoryDrop = null;
 
@@ -1400,10 +1509,11 @@
 
   function recordHistoryDrop(removedEntries, limit, options) {
     if (!Array.isArray(removedEntries) || removedEntries.length === 0) {
-      return;
+      return null;
     }
 
     totalEntriesDropped += removedEntries.length;
+    const removedSummary = summariseEntriesByLevel(removedEntries);
 
     const source = options && typeof options.source === 'string' && options.source.trim()
       ? options.source.trim()
@@ -1447,13 +1557,17 @@
         newestEntry && typeof newestEntry.isoTimestamp === 'string'
           ? newestEntry.isoTimestamp
           : null,
+      levels: freezeLevelSummary(removedSummary),
     });
 
     safeWarn('cineLogging: history trimmed to enforce retention limit', {
       limit,
       removed: removedEntries.length,
       source,
+      levels: cloneLevelSummary(removedSummary),
     });
+
+    return removedSummary;
   }
 
   function enforceHistoryLimit(options) {
@@ -1464,7 +1578,11 @@
 
     const overflow = logHistory.length - limit;
     const removedEntries = logHistory.splice(0, overflow);
-    recordHistoryDrop(removedEntries, limit, options);
+    applyLevelCounterDeltaForEntries(retainedLevelCounters, removedEntries, -1);
+    const removedSummary = recordHistoryDrop(removedEntries, limit, options);
+    if (removedSummary) {
+      accumulateLevelSummary(droppedLevelCounters, removedSummary);
+    }
     return overflow;
   }
 
@@ -1483,8 +1601,17 @@
     return `log-${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
   }
 
-  function appendEntry(entry) {
+  function pushEntryToHistory(entry) {
+    if (!entry) {
+      return;
+    }
+
     logHistory.push(entry);
+    applyLevelCounterDelta(retainedLevelCounters, entry.level, 1);
+  }
+
+  function appendEntry(entry) {
+    pushEntryToHistory(entry);
     runtimeEntryCount += 1;
     enforceHistoryLimit({ source: 'append' });
     persistHistorySafe();
@@ -1967,6 +2094,8 @@
       isoTimestamp,
     });
 
+    applyLevelCounterDelta(emittedLevelCounters, normalizedLevel, 1);
+
     if (shouldRecord(normalizedLevel)) {
       appendEntry(entry);
     }
@@ -2066,6 +2195,9 @@
       newestEntryIsoTimestamp: typeof lastHistoryDrop.newestEntryIsoTimestamp === 'string'
         ? lastHistoryDrop.newestEntryIsoTimestamp
         : null,
+      levels: lastHistoryDrop.levels
+        ? freezeLevelSummary(lastHistoryDrop.levels)
+        : freezeLevelSummary(createLevelCounters()),
     });
   }
 
@@ -2076,6 +2208,11 @@
       droppedEntries: totalEntriesDropped,
       historyLimit: getEffectiveHistoryLimit(),
       lastDrop: cloneLastDropSnapshot(),
+      levels: freezeDeep({
+        emitted: freezeLevelSummary(emittedLevelCounters),
+        retained: freezeLevelSummary(retainedLevelCounters),
+        dropped: freezeLevelSummary(droppedLevelCounters),
+      }),
       consoleCapture: freezeDeep({
         configured: activeConfig.captureConsole === true,
         installed: consoleProxyInstalled,
@@ -2087,6 +2224,7 @@
 
   function clearHistory(options) {
     logHistory.length = 0;
+    resetLevelCounters(retainedLevelCounters);
     if (!options || options.persist !== false) {
       persistHistorySafe();
     }
@@ -2658,7 +2796,7 @@
       for (let index = 0; index < parsed.length; index += 1) {
         const entry = normaliseStoredEntry(parsed[index]);
         if (entry) {
-          logHistory.push(entry);
+          pushEntryToHistory(entry);
         }
       }
       enforceHistoryLimit({ source: 'restore' });
