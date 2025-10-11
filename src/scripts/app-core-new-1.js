@@ -16185,11 +16185,18 @@ function initializeAvatarEditState(dataUrl) {
     announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
     return;
   }
+  const sectionWasHidden = Boolean(avatarEditSection?.classList.contains('hidden'));
+  if (sectionWasHidden) {
+    avatarEditSection.classList.remove('hidden');
+  }
   const viewportRect = avatarEditViewport.getBoundingClientRect();
   const viewportSize = Math.round(
     Math.max(avatarEditViewport.offsetWidth || 0, viewportRect.width || 0, viewportRect.height || 0)
   );
   if (!viewportSize) {
+    if (sectionWasHidden) {
+      avatarEditSection.classList.add('hidden');
+    }
     announceContactsMessage(getContactsText('avatarEditUnavailable', 'Photo editor unavailable.'));
     return;
   }
@@ -16198,6 +16205,9 @@ function initializeAvatarEditState(dataUrl) {
   const mime = parseDataUrlMimeType(dataUrl);
   image.onload = () => {
     if (!image.naturalWidth || !image.naturalHeight) {
+      if (sectionWasHidden) {
+        avatarEditSection.classList.add('hidden');
+      }
       announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
       return;
     }
@@ -16237,6 +16247,9 @@ function initializeAvatarEditState(dataUrl) {
     }
   };
   image.onerror = () => {
+    if (sectionWasHidden) {
+      avatarEditSection.classList.add('hidden');
+    }
     announceContactsMessage(getContactsText('avatarReadError', 'Could not read the selected image.'));
   };
   image.src = dataUrl;
