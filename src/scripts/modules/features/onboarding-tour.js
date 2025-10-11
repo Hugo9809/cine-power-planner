@@ -229,7 +229,7 @@
     results: {
       title: 'Review the results summary',
       body:
-        'Use the Power Summary to confirm draw totals, estimated runtimes and any warnings. Everything shown here stays synchronized with your saved project and exports.',
+        'Use the Power Summary to verify total draw, per-pack runtime projections, reserve margins and changeover countdowns before locking the build. Expand each battery group for device-by-device contribution details, charger requirements and status notes. Download the offline report for redundant backups, document any warnings that need action ahead of call time and confirm the autosave banner shows the latest timestamp so shares and exports capture the same data.',
     },
     batteryComparison: {
       title: 'Compare battery options',
