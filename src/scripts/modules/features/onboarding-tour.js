@@ -240,7 +240,10 @@
     'batteryComparison',
     'runtimeFeedback',
     'connectionDiagram',
-    'editDeviceData',
+    'deviceLibraryOpen',
+    'deviceLibraryAdd',
+    'deviceLibraryReview',
+    'deviceLibraryEdit',
     'ownGear',
     'generateGearAndRequirements',
     'autoGearRules',
@@ -316,10 +319,25 @@
       body:
         'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.',
     },
-    editDeviceData: {
-      title: 'Edit device data',
+    deviceLibraryOpen: {
+      title: 'Open the Device Library',
       body:
-        'Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.',
+        'Use Edit Device Data to open the Device Library without leaving the planner. The catalog loads from your offline cache so you can review hardware even when the connection drops, and the toggle keeps the section anchored for the next steps.',
+    },
+    deviceLibraryAdd: {
+      title: 'Add a new device entry',
+      body:
+        'Choose the correct category, fill in the power draw, connections and notes, then press Add. The planner writes the device to local storage immediately so autosave, backups, exports and share bundles all inherit the new hardware record.',
+    },
+    deviceLibraryReview: {
+      title: 'Review device details',
+      body:
+        'Use Show details inside Existing Devices to expand a record, confirm every connector and note, and collapse it again. All specs stay cached offline and mirrored into the quick-restore backups you create later in the tour.',
+    },
+    deviceLibraryEdit: {
+      title: 'Update saved devices safely',
+      body:
+        'Select Edit on any device, adjust the stored fields and save. The change is captured in the same offline snapshot used for autosave, exports, backups and restore rehearsals so no workstation drifts out of sync.',
     },
     ownGear: {
       title: 'Document your own gear',
@@ -634,6 +652,333 @@
     };
   }
 
+  function resolveDeviceListContainer() {
+    if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
+      return null;
+    }
+    if (deviceListContainerRef && deviceListContainerRef.isConnected) {
+      return deviceListContainerRef;
+    }
+    deviceListContainerRef = DOCUMENT.getElementById('deviceListContainer');
+    return deviceListContainerRef;
+  }
+
+  function collectDeviceLibraryEntryKeys() {
+    const keys = new Set();
+    const container = resolveDeviceListContainer();
+    if (!container || typeof container.querySelectorAll !== 'function') {
+      return keys;
+    }
+    const buttons = container.querySelectorAll('button.edit-btn[data-name][data-category]');
+    for (let index = 0; index < buttons.length; index += 1) {
+      const button = buttons[index];
+      if (!button || !button.dataset) {
+        continue;
+      }
+      const category = typeof button.dataset.category === 'string' ? button.dataset.category : '';
+      const subcategory = typeof button.dataset.subcategory === 'string' ? button.dataset.subcategory : '';
+      const name = typeof button.dataset.name === 'string' ? button.dataset.name : '';
+      keys.add(`${category}::${subcategory}::${name}`);
+    }
+    return keys;
+  }
+
+  function hasNewDeviceLibraryEntry(baseline) {
+    const reference = baseline instanceof Set ? baseline : null;
+    const current = collectDeviceLibraryEntryKeys();
+    if (!reference || reference.size === 0) {
+      return current.size > 0;
+    }
+    const iterator = current.values();
+    for (let entry = iterator.next(); !entry.done; entry = iterator.next()) {
+      if (!reference.has(entry.value)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function createDeviceLibraryOpenRequirement() {
+    const isVisible = () => {
+      const section = resolveDeviceManagerSection();
+      if (!section || !section.classList) {
+        return false;
+      }
+      return !section.classList.contains('hidden');
+    };
+
+    return {
+      check() {
+        return isVisible();
+      },
+      attach(context) {
+        const section = resolveDeviceManagerSection();
+        const toggle = resolveDeviceManagerToggle();
+        const evaluate = () => {
+          if (isVisible()) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        evaluate();
+
+        let observer = null;
+        if (section && typeof MutationObserver === 'function') {
+          try {
+            observer = new MutationObserver(() => {
+              evaluate();
+            });
+            observer.observe(section, { attributes: true, attributeFilter: ['class', 'hidden'] });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe device manager visibility.', error);
+            if (observer && typeof observer.disconnect === 'function') {
+              observer.disconnect();
+            }
+            observer = null;
+          }
+        }
+
+        const handleToggle = () => {
+          setTimeout(() => {
+            evaluate();
+          }, 0);
+        };
+
+        if (toggle && typeof toggle.addEventListener === 'function') {
+          toggle.addEventListener('click', handleToggle);
+        }
+
+        return () => {
+          if (observer && typeof observer.disconnect === 'function') {
+            observer.disconnect();
+          }
+          if (toggle && typeof toggle.removeEventListener === 'function') {
+            toggle.removeEventListener('click', handleToggle);
+          }
+        };
+      },
+    };
+  }
+
+  function createDeviceLibraryAdditionRequirement() {
+    return {
+      check() {
+        if (!(deviceLibraryAdditionBaseline instanceof Set)) {
+          deviceLibraryAdditionBaseline = collectDeviceLibraryEntryKeys();
+        }
+        return hasNewDeviceLibraryEntry(deviceLibraryAdditionBaseline);
+      },
+      attach(context) {
+        if (!(deviceLibraryAdditionBaseline instanceof Set)) {
+          deviceLibraryAdditionBaseline = collectDeviceLibraryEntryKeys();
+        }
+
+        const container = resolveDeviceListContainer();
+        const addButton = getElement('#addDeviceBtn');
+
+        const evaluate = () => {
+          if (hasNewDeviceLibraryEntry(deviceLibraryAdditionBaseline)) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        evaluate();
+
+        const handleAddClick = () => {
+          setTimeout(() => {
+            evaluate();
+          }, 0);
+        };
+
+        if (addButton && typeof addButton.addEventListener === 'function') {
+          addButton.addEventListener('click', handleAddClick);
+        }
+
+        let observer = null;
+        if (container && typeof MutationObserver === 'function') {
+          try {
+            observer = new MutationObserver(() => {
+              evaluate();
+            });
+            observer.observe(container, { childList: true, subtree: true });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe device list changes.', error);
+            if (observer && typeof observer.disconnect === 'function') {
+              observer.disconnect();
+            }
+            observer = null;
+          }
+        }
+
+        return () => {
+          if (addButton && typeof addButton.removeEventListener === 'function') {
+            addButton.removeEventListener('click', handleAddClick);
+          }
+          if (observer && typeof observer.disconnect === 'function') {
+            observer.disconnect();
+          }
+        };
+      },
+    };
+  }
+
+  function isAnyDeviceDetailExpanded() {
+    if (deviceLibraryDetailsViewed) {
+      return true;
+    }
+    const container = resolveDeviceListContainer();
+    if (!container || typeof container.querySelectorAll !== 'function') {
+      return false;
+    }
+    const expanded = container.querySelector('button.detail-toggle[aria-expanded="true"]');
+    if (expanded) {
+      return true;
+    }
+    return false;
+  }
+
+  function createDeviceLibraryReviewRequirement() {
+    return {
+      check() {
+        return isAnyDeviceDetailExpanded();
+      },
+      attach(context) {
+        const container = resolveDeviceListContainer();
+        if (!container) {
+          if (typeof context.complete === 'function') {
+            context.complete();
+          }
+          return () => {};
+        }
+
+        const evaluate = () => {
+          if (isAnyDeviceDetailExpanded()) {
+            deviceLibraryDetailsViewed = true;
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        evaluate();
+
+        const handleToggle = event => {
+          const button = event && typeof event.target?.closest === 'function'
+            ? event.target.closest('button.detail-toggle')
+            : null;
+          if (!button) {
+            return;
+          }
+          setTimeout(() => {
+            evaluate();
+          }, 0);
+        };
+
+        container.addEventListener('click', handleToggle);
+
+        return () => {
+          container.removeEventListener('click', handleToggle);
+        };
+      },
+    };
+  }
+
+  function createDeviceLibraryEditRequirement() {
+    return {
+      check() {
+        return deviceLibraryEditCompleted;
+      },
+      attach(context) {
+        const container = resolveDeviceListContainer();
+        const addButton = getElement('#addDeviceBtn');
+        const cancelButton = getElement('#cancelEditBtn');
+
+        const evaluate = () => {
+          if (deviceLibraryEditCompleted) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        evaluate();
+
+        if (!container && !addButton) {
+          return () => {};
+        }
+
+        const handleEditTrigger = event => {
+          const button = event && typeof event.target?.closest === 'function'
+            ? event.target.closest('button.edit-btn')
+            : null;
+          if (!button) {
+            return;
+          }
+          deviceLibraryEditPending = true;
+          if (!deviceLibraryEditCompleted && typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        const handleAddClick = () => {
+          if (!deviceLibraryEditPending) {
+            return;
+          }
+          setTimeout(() => {
+            const button = getElement('#addDeviceBtn');
+            if (button && button.dataset && button.dataset.mode === 'edit') {
+              return;
+            }
+            deviceLibraryEditPending = false;
+            deviceLibraryEditCompleted = true;
+            evaluate();
+          }, 0);
+        };
+
+        const handleCancel = () => {
+          deviceLibraryEditPending = false;
+          if (!deviceLibraryEditCompleted && typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+
+        if (container && typeof container.addEventListener === 'function') {
+          container.addEventListener('click', handleEditTrigger);
+        }
+        if (addButton && typeof addButton.addEventListener === 'function') {
+          addButton.addEventListener('click', handleAddClick);
+        }
+        if (cancelButton && typeof cancelButton.addEventListener === 'function') {
+          cancelButton.addEventListener('click', handleCancel);
+        }
+
+        return () => {
+          if (container && typeof container.removeEventListener === 'function') {
+            container.removeEventListener('click', handleEditTrigger);
+          }
+          if (addButton && typeof addButton.removeEventListener === 'function') {
+            addButton.removeEventListener('click', handleAddClick);
+          }
+          if (cancelButton && typeof cancelButton.removeEventListener === 'function') {
+            cancelButton.removeEventListener('click', handleCancel);
+          }
+        };
+      },
+    };
+  }
+
   function getProjectNameValue() {
     const input = getElement('#setupName');
     return typeof input?.value === 'string' ? input.value.trim() : '';
@@ -760,6 +1105,10 @@
       value => value && value !== 'None',
       ['change'],
     ),
+    deviceLibraryOpen: createDeviceLibraryOpenRequirement(),
+    deviceLibraryAdd: createDeviceLibraryAdditionRequirement(),
+    deviceLibraryReview: createDeviceLibraryReviewRequirement(),
+    deviceLibraryEdit: createDeviceLibraryEditRequirement(),
     generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
     exportImport: createClickCompletionRequirement(
       ['#shareSetupBtn', '#applySharedLinkBtn'],
@@ -1031,8 +1380,29 @@
         highlight: '#diagramArea',
       },
       {
-        key: 'editDeviceData',
+        key: 'deviceLibraryOpen',
         highlight: '#toggleDeviceManager',
+      },
+      {
+        key: 'deviceLibraryAdd',
+        highlight: ['#deviceLibraryForm', '#addDeviceBtn'],
+        focus: '#newName',
+        ensureDeviceManager: true,
+        size: 'large',
+      },
+      {
+        key: 'deviceLibraryReview',
+        highlight: ['#existingDevicesHeading', 'button.detail-toggle'],
+        alternateHighlight: '#deviceListContainer',
+        ensureDeviceManager: true,
+        size: 'large',
+      },
+      {
+        key: 'deviceLibraryEdit',
+        highlight: 'button.edit-btn',
+        alternateHighlight: '#deviceListContainer',
+        ensureDeviceManager: true,
+        size: 'large',
       },
       {
         key: 'ownGear',
@@ -1136,6 +1506,14 @@
   let contactsDialogRef = null;
   let autoOpenedOwnGear = false;
   let ownGearDialogRef = null;
+  let autoOpenedDeviceManager = false;
+  let deviceManagerSectionRef = null;
+  let deviceManagerToggleRef = null;
+  let deviceListContainerRef = null;
+  let deviceLibraryAdditionBaseline = null;
+  let deviceLibraryDetailsViewed = false;
+  let deviceLibraryEditCompleted = false;
+  let deviceLibraryEditPending = false;
   let resumeHintVisible = false;
   let resumeStartIndex = null;
 
@@ -2169,6 +2547,130 @@
     }
     ownGearDialogRef.setAttribute('hidden', '');
     autoOpenedOwnGear = false;
+  }
+
+  function resolveDeviceManagerSection() {
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    return deviceManagerSectionRef;
+  }
+
+  function resolveDeviceManagerToggle() {
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    return deviceManagerToggleRef;
+  }
+
+  function isDeviceManagerVisible() {
+    const section = resolveDeviceManagerSection();
+    if (!section || !section.classList) {
+      return false;
+    }
+    return !section.classList.contains('hidden');
+  }
+
+  function ensureDeviceManagerForStep(step) {
+    if (!step || !step.ensureDeviceManager) {
+      return;
+    }
+
+    const section = resolveDeviceManagerSection();
+    if (!section) {
+      return;
+    }
+
+    const toggle = resolveDeviceManagerToggle();
+    const config = typeof step.ensureDeviceManager === 'object'
+      ? step.ensureDeviceManager
+      : { open: Boolean(step.ensureDeviceManager) };
+    const shouldOpen = config.open !== false;
+    const wasVisible = isDeviceManagerVisible();
+
+    if (shouldOpen && !wasVisible) {
+      let opened = false;
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.showDeviceManagerSection === 'function') {
+        try {
+          GLOBAL_SCOPE.showDeviceManagerSection();
+          opened = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not open device manager via showDeviceManagerSection.', error);
+        }
+      }
+
+      if (!opened && toggle && typeof toggle.click === 'function') {
+        try {
+          toggle.click();
+          opened = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not toggle device manager button.', error);
+        }
+      }
+
+      if (!opened && section.classList && typeof section.classList.remove === 'function') {
+        section.classList.remove('hidden');
+        opened = true;
+      }
+
+      if (opened && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.refreshDeviceLists === 'function') {
+        try {
+          GLOBAL_SCOPE.refreshDeviceLists();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not refresh device lists.', error);
+        }
+      }
+    }
+
+    if (shouldOpen && !wasVisible && isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = true;
+    } else if (!shouldOpen) {
+      autoOpenedDeviceManager = false;
+    }
+  }
+
+  function closeDeviceManagerIfNeeded() {
+    const section = resolveDeviceManagerSection();
+    if (!section || !autoOpenedDeviceManager) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+
+    if (!isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+
+    let closed = false;
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.hideDeviceManagerSection === 'function') {
+      try {
+        GLOBAL_SCOPE.hideDeviceManagerSection();
+        closed = true;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close device manager via hideDeviceManagerSection.', error);
+      }
+    }
+
+    if (!closed) {
+      const toggle = resolveDeviceManagerToggle();
+      if (toggle && typeof toggle.click === 'function') {
+        try {
+          toggle.click();
+          closed = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not toggle device manager button to close.', error);
+        }
+      }
+    }
+
+    if (!closed && section.classList && typeof section.classList.add === 'function') {
+      section.classList.add('hidden');
+      closed = true;
+    }
+
+    if (closed) {
+      autoOpenedDeviceManager = false;
+    }
   }
 
   function isSettingsDialogVisible() {
@@ -3410,6 +3912,9 @@
     if (previousStep && previousStep.ensureOwnGear && !step.ensureOwnGear) {
       closeOwnGearIfNeeded();
     }
+    if (previousStep && previousStep.ensureDeviceManager && !step.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    }
 
     currentStep = step;
     currentIndex = index;
@@ -3433,6 +3938,13 @@
       closeOwnGearIfNeeded();
     } else {
       autoOpenedOwnGear = false;
+    }
+    if (step.ensureDeviceManager) {
+      ensureDeviceManagerForStep(step);
+    } else if (previousStep && previousStep.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    } else {
+      autoOpenedDeviceManager = false;
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
@@ -3567,6 +4079,7 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     const nextState = {
       ...storedState,
@@ -3583,6 +4096,7 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     const allStepKeys = stepConfig.map(step => step.key);
     const timestamp = getTimestamp();
@@ -3706,6 +4220,14 @@
     currentStep = null;
     autoOpenedSettings = false;
     settingsDialogRef = null;
+    autoOpenedDeviceManager = false;
+    deviceManagerSectionRef = null;
+    deviceManagerToggleRef = null;
+    deviceListContainerRef = null;
+    deviceLibraryAdditionBaseline = null;
+    deviceLibraryDetailsViewed = false;
+    deviceLibraryEditCompleted = false;
+    deviceLibraryEditPending = false;
     storedState = loadStoredState();
     resumeHintVisible = Boolean(resume);
     resumeStartIndex = resumeHintVisible ? resolvedIndex : null;
@@ -3727,6 +4249,12 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
+    deviceListContainerRef = null;
+    deviceLibraryAdditionBaseline = null;
+    deviceLibraryDetailsViewed = false;
+    deviceLibraryEditCompleted = false;
+    deviceLibraryEditPending = false;
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');

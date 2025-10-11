@@ -1844,10 +1844,25 @@ const texts = {
           body:
             "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.",
         },
-        editDeviceData: {
-          title: "Edit device data",
+        deviceLibraryOpen: {
+          title: "Open the Device Library",
           body:
-            "Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.",
+            "Use Edit Device Data to open the Device Library without leaving the planner. The catalog loads from your offline cache so you can review hardware even when the connection drops, and the toggle keeps the section anchored for the next steps.",
+        },
+        deviceLibraryAdd: {
+          title: "Add a new device entry",
+          body:
+            "Choose the correct category, fill in the power draw, connections and notes, then press Add. The planner writes the device to local storage immediately so autosave, backups, exports and share bundles all inherit the new hardware record.",
+        },
+        deviceLibraryReview: {
+          title: "Review device details",
+          body:
+            "Use Show details inside Existing Devices to expand a record, confirm every connector and note, and collapse it again. All specs stay cached offline and mirrored into the quick-restore backups you create later in the tour.",
+        },
+        deviceLibraryEdit: {
+          title: "Update saved devices safely",
+          body:
+            "Select Edit on any device, adjust the stored fields and save. The change is captured in the same offline snapshot used for autosave, exports, backups and restore rehearsals so no workstation drifts out of sync.",
         },
         ownGear: {
           title: "Document your own gear",
@@ -3854,10 +3869,25 @@ const texts = {
           body:
             "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, quindi salva così disposizione e annotazioni restano in esportazioni e ripristini.",
         },
-        editDeviceData: {
-          title: "Modifica i dati dei dispositivi",
+        deviceLibraryOpen: {
+          title: "Apri la Libreria dispositivi",
           body:
-            "Apri l'editor della Libreria dispositivi per aggiungere o modificare camere, batterie e accessori. Gli aggiornamenti vengono archiviati localmente, inclusi nei backup e trasportati in ogni export o pacchetto condiviso.",
+            "Usa Modifica dati dispositivi per aprire la Libreria senza uscire dal planner. Il catalogo viene caricato dalla cache offline così puoi esaminare l'hardware anche senza connessione e il comando resta pronto per i passaggi successivi.",
+        },
+        deviceLibraryAdd: {
+          title: "Aggiungi un nuovo dispositivo",
+          body:
+            "Scegli la categoria corretta, compila assorbimento, connessioni e note, quindi premi Aggiungi. Il planner salva subito il dispositivo nello storage locale così autosalvataggi, backup, esportazioni e condivisioni ereditano il nuovo record.",
+        },
+        deviceLibraryReview: {
+          title: "Verifica i dettagli del dispositivo",
+          body:
+            "Usa Mostra dettagli in Dispositivi esistenti per espandere una scheda, confermare connettori e note e poi richiuderla. Tutte le specifiche restano in cache offline e confluiscono nei backup di ripristino rapido che prepari più avanti nel tour.",
+        },
+        deviceLibraryEdit: {
+          title: "Aggiorna in sicurezza i dispositivi salvati",
+          body:
+            "Seleziona Modifica su un dispositivo, aggiorna i campi memorizzati e salva. La modifica viene catturata nello stesso snapshot offline usato per autosalvataggi, esportazioni, backup e prove di ripristino così nessuna postazione resta disallineata.",
         },
         ownGear: {
           title: "Documenta la tua attrezzatura",
@@ -5877,10 +5907,25 @@ const texts = {
           body:
             "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones.",
         },
-        editDeviceData: {
-          title: "Edita datos de dispositivos",
+        deviceLibraryOpen: {
+          title: "Abre la Biblioteca de dispositivos",
           body:
-            "Abre el editor de la Biblioteca de dispositivos para añadir o ajustar cámaras, baterías y accesorios. Las actualizaciones se guardan localmente, se incluyen en los respaldos y viajan en cada exportación o paquete compartido.",
+            "Usa Editar datos de dispositivos para abrir la Biblioteca sin salir del planificador. El catálogo se carga desde tu caché sin conexión para revisar el hardware aunque falle la conexión y el botón mantiene la sección lista para los pasos siguientes.",
+        },
+        deviceLibraryAdd: {
+          title: "Añade un nuevo dispositivo",
+          body:
+            "Elige la categoría correcta, completa consumo, conexiones y notas y pulsa Añadir. El planner escribe el dispositivo en el almacenamiento local al instante para que los guardados automáticos, respaldos, exportaciones y paquetes compartidos hereden el nuevo registro.",
+        },
+        deviceLibraryReview: {
+          title: "Revisa los detalles del dispositivo",
+          body:
+            "Usa Mostrar Detalles dentro de Dispositivos existentes para expandir un registro, confirmar conectores y notas y volver a contraerlo. Las especificaciones permanecen en caché offline y se copian en las copias de seguridad de restauración rápida que prepararás más adelante en el recorrido.",
+        },
+        deviceLibraryEdit: {
+          title: "Actualiza dispositivos guardados con seguridad",
+          body:
+            "Selecciona Editar en cualquier dispositivo, ajusta los campos guardados y presiona Guardar. El cambio queda capturado en la misma instantánea offline que usan el guardado automático, las exportaciones, los respaldos y los simulacros de restauración para que ninguna estación quede desincronizada.",
         },
         ownGear: {
           title: "Documenta tu propio equipo",
@@ -7912,10 +7957,25 @@ const texts = {
           body:
             "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations.",
         },
-        editDeviceData: {
-          title: "Modifiez les données des appareils",
+        deviceLibraryOpen: {
+          title: "Ouvrez la bibliothèque d’appareils",
           body:
-            "Ouvrez l’éditeur de la bibliothèque d’appareils pour ajouter ou ajuster caméras, batteries et accessoires. Les mises à jour sont stockées localement, incluses dans les sauvegardes et intégrées à chaque export ou lot partagé.",
+            "Utilisez Modifier les données des appareils pour ouvrir la bibliothèque sans quitter le planificateur. Le catalogue est chargé depuis votre cache hors ligne afin de consulter le matériel même sans connexion, et le bouton garde la section disponible pour les étapes suivantes.",
+        },
+        deviceLibraryAdd: {
+          title: "Ajoutez un nouvel appareil",
+          body:
+            "Choisissez la catégorie adéquate, renseignez consommation, connexions et notes puis cliquez sur Ajouter. Le planner enregistre aussitôt l’appareil dans le stockage local afin que l’enregistrement auto, les sauvegardes, les exports et les partages héritent du nouveau profil.",
+        },
+        deviceLibraryReview: {
+          title: "Passez en revue les détails d’un appareil",
+          body:
+            "Utilisez Afficher les Détails dans Appareils existants pour déployer une fiche, vérifier chaque connecteur et note, puis la refermer. Toutes les spécifications restent en cache hors ligne et sont recopiées dans les sauvegardes de restauration rapide préparées plus loin dans le tutoriel.",
+        },
+        deviceLibraryEdit: {
+          title: "Mettez à jour vos appareils en toute sécurité",
+          body:
+            "Sélectionnez Modifier sur un appareil, ajustez les champs enregistrés puis sauvegardez. La modification est capturée dans la même capture hors ligne que l’enregistrement auto, les exports, les sauvegardes et les répétitions de restauration afin qu’aucun poste ne se désynchronise.",
         },
         ownGear: {
           title: "Documentez votre matériel personnel",
@@ -9952,10 +10012,25 @@ const texts = {
           body:
             "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben.",
         },
-        editDeviceData: {
-          title: "Gerätedaten bearbeiten",
+        deviceLibraryOpen: {
+          title: "Gerätebibliothek öffnen",
           body:
-            "Öffne den Gerätekatalog-Editor, um Kameras, Akkus und Zubehör hinzuzufügen oder anzupassen. Aktualisierungen werden lokal gespeichert, in Backups aufgenommen und in jeden Export oder Share-Bundel übernommen.",
+            "Nutze Gerätedaten bearbeiten, um die Gerätebibliothek zu öffnen, ohne den Planer zu verlassen. Der Katalog wird aus deinem Offline-Cache geladen, sodass du Hardware auch ohne Verbindung prüfst, und der Schalter hält den Bereich für die nächsten Schritte bereit.",
+        },
+        deviceLibraryAdd: {
+          title: "Neues Gerät hinzufügen",
+          body:
+            "Wähle die passende Kategorie, fülle Verbrauch, Anschlüsse und Notizen aus und klicke auf Hinzufügen. Der Planner schreibt das Gerät sofort in den lokalen Speicher, damit Autosave, Backups, Exporte und geteilte Pakete den neuen Eintrag übernehmen.",
+        },
+        deviceLibraryReview: {
+          title: "Gerätedetails prüfen",
+          body:
+            "Nutze Details anzeigen innerhalb von Vorhandene Geräte, um einen Eintrag zu öffnen, alle Anschlüsse und Notizen zu kontrollieren und ihn wieder zu schließen. Die Spezifikationen bleiben offline zwischengespeichert und fließen in die Schnellwiederherstellungs-Backups ein, die du später im Rundgang erstellst.",
+        },
+        deviceLibraryEdit: {
+          title: "Gespeicherte Geräte sicher aktualisieren",
+          body:
+            "Wähle bei einem Gerät Bearbeiten, passe die gespeicherten Felder an und speichere. Die Änderung landet im gleichen Offline-Snapshot wie Autosave, Exporte, Backups und Wiederherstellungsproben, damit keine Station aus dem Takt gerät.",
         },
         ownGear: {
           title: "Eigenes Equipment dokumentieren",
