@@ -194,12 +194,12 @@
     userProfile: {
       title: 'Configure your user profile',
       body:
-        'Enter your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
+        'Pick your language plus your display name, role, phone, email and photo directly in this card. Every change syncs to Contacts instantly, saves offline with your projects and ensures exports credit the right owner.',
     },
     unitsPreferences: {
-      title: 'Tune language, theme and units',
+      title: 'Tune theme and units',
       body:
-        'Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
+        'Use Settings → General to choose dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
@@ -312,6 +312,12 @@
         'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.',
     },
   };
+
+  const PREFACE_STEP_KEYS = ['intro'];
+
+  function isPrefaceStepKey(key) {
+    return typeof key === 'string' && PREFACE_STEP_KEYS.indexOf(key) !== -1;
+  }
 
   function getElement(selector) {
     if (typeof selector !== 'string' || !selector) {
@@ -1030,6 +1036,75 @@
 
   let stepConfig = getStepConfig();
 
+  function isPrefaceStep(step) {
+    return Boolean(step && isPrefaceStepKey(step.key));
+  }
+
+  function getCountedSteps(config) {
+    const source = Array.isArray(config) ? config : stepConfig;
+    const counted = [];
+    for (let index = 0; index < source.length; index += 1) {
+      const candidate = source[index];
+      if (candidate && !isPrefaceStep(candidate)) {
+        counted.push(candidate);
+      }
+    }
+    return counted;
+  }
+
+  function getCountedStepIndex(step, config) {
+    if (!step) {
+      return -1;
+    }
+    const source = Array.isArray(config) ? config : stepConfig;
+    let countedIndex = -1;
+    let seen = 0;
+    for (let index = 0; index < source.length; index += 1) {
+      const candidate = source[index];
+      if (!candidate || isPrefaceStep(candidate)) {
+        continue;
+      }
+      if (candidate === step) {
+        countedIndex = seen;
+        break;
+      }
+      seen += 1;
+    }
+    return countedIndex;
+  }
+
+  function getCountedCompletedLength(completed, config) {
+    const source = Array.isArray(config) ? config : stepConfig;
+    const countedKeys = new Set();
+    for (let index = 0; index < source.length; index += 1) {
+      const candidate = source[index];
+      if (candidate && !isPrefaceStep(candidate) && typeof candidate.key === 'string') {
+        countedKeys.add(candidate.key);
+      }
+    }
+    if (!completed) {
+      return 0;
+    }
+    let count = 0;
+    if (typeof completed.forEach === 'function') {
+      completed.forEach(key => {
+        if (countedKeys.has(key)) {
+          count += 1;
+        }
+      });
+      return count;
+    }
+    if (Array.isArray(completed)) {
+      for (let index = 0; index < completed.length; index += 1) {
+        const key = completed[index];
+        if (countedKeys.has(key)) {
+          count += 1;
+        }
+      }
+    }
+    return count;
+  }
+
   let overlayRoot = null;
   let highlightEl = null;
   let activeTargetElements = [];
@@ -1367,14 +1442,18 @@
     lastCardPlacement = 'floating';
   }
 
-  function formatStepIndicator(index, total) {
+  function formatStepIndicator(step, index) {
     const template = typeof tourTexts.stepIndicator === 'string'
       ? tourTexts.stepIndicator
       : 'Step {current} of {total}';
-    const current = index + 1;
+    const countedSteps = getCountedSteps();
+    const countedTotal = countedSteps.length;
+    const countedIndex = getCountedStepIndex(step);
+    const current = countedIndex >= 0 ? countedIndex + 1 : index + 1;
+    const total = countedTotal > 0 ? countedTotal : countedSteps.length;
     return template
-      .replace('{current}', current)
-      .replace('{total}', total);
+      .replace('{current}', String(current))
+      .replace('{total}', String(total));
   }
 
   function focusCard() {
@@ -1954,13 +2033,21 @@
       resumeHintEl.textContent = '';
       return;
     }
-    const totalSteps = stepConfig.length;
+    const step = stepConfig[index];
+    if (!step || isPrefaceStep(step)) {
+      resumeHintEl.hidden = true;
+      resumeHintEl.textContent = '';
+      return;
+    }
+    const countedSteps = getCountedSteps();
+    const totalSteps = countedSteps.length;
     const completedSteps = storedState && Array.isArray(storedState.completedSteps)
-      ? storedState.completedSteps.length
+      ? getCountedCompletedLength(storedState.completedSteps, countedSteps)
       : 0;
+    const countedIndex = getCountedStepIndex(step, countedSteps);
     const template = tourTexts.resumeHintDetailed || tourTexts.resumeHint || 'Resuming where you left off.';
     const hint = template
-      .replace('{current}', String(index + 1))
+      .replace('{current}', String(Math.max(1, countedIndex + 1)))
       .replace('{total}', String(totalSteps))
       .replace('{completed}', String(Math.min(completedSteps, totalSteps)));
     resumeHintEl.hidden = false;
@@ -1975,7 +2062,6 @@
     const resolvedActiveIndex = typeof activeIndex === 'number' && activeIndex >= 0
       ? activeIndex
       : 0;
-    const total = stepConfig.length;
     const statusLabels = {
       current: tourTexts.stepStatusCurrent || 'Current step',
       complete: tourTexts.stepStatusComplete || 'Completed',
@@ -1994,15 +2080,19 @@
       stepListEl.setAttribute('aria-label', tourTexts.stepListAriaLabel || 'Tutorial steps');
     }
 
-    for (let index = 0; index < total; index += 1) {
+    let displayIndex = 0;
+    for (let index = 0; index < stepConfig.length; index += 1) {
       const step = stepConfig[index];
+      if (!step || isPrefaceStep(step)) {
+        continue;
+      }
       const texts = getStepTexts(step);
       const item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
-      if (index < 3) {
+      if (displayIndex < 3) {
         item.classList.add('onboarding-step-item--pinned');
         if (item && item.style && typeof item.style.setProperty === 'function') {
-          item.style.setProperty('--onboarding-step-pinned-index', String(index));
+          item.style.setProperty('--onboarding-step-pinned-index', String(displayIndex));
         }
       }
 
@@ -2039,6 +2129,7 @@
 
       item.appendChild(button);
       stepListEl.appendChild(item);
+      displayIndex += 1;
     }
   }
 
@@ -2253,6 +2344,125 @@
     fragment.appendChild(avatarGroup);
 
     let firstProxyField = null;
+
+    const languageSelectTopBar = DOCUMENT.getElementById('languageSelect');
+    const languageSelectSettings = DOCUMENT.getElementById('settingsLanguage');
+    const primaryLanguageTarget = languageSelectTopBar || languageSelectSettings || null;
+    const languageTargets = [];
+    const pushLanguageTarget = (target) => {
+      if (!target) {
+        return;
+      }
+      if (languageTargets.indexOf(target) === -1) {
+        languageTargets.push(target);
+      }
+    };
+    pushLanguageTarget(primaryLanguageTarget);
+    pushLanguageTarget(languageSelectSettings);
+    pushLanguageTarget(languageSelectTopBar);
+
+    if (primaryLanguageTarget) {
+      const group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      const proxyId = getProxyControlId('language');
+      const label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', proxyId);
+      label.textContent = 'Language';
+      const proxySelect = DOCUMENT.createElement('select');
+      proxySelect.id = proxyId;
+      proxySelect.className = 'onboarding-field-select';
+
+      const resolveOptionSource = () => {
+        for (let index = 0; index < languageTargets.length; index += 1) {
+          const candidate = languageTargets[index];
+          if (candidate && candidate.options && candidate.options.length) {
+            return candidate;
+          }
+        }
+        return primaryLanguageTarget;
+      };
+
+      const updateProxyOptionsAndValue = () => {
+        const source = resolveOptionSource();
+        if (!source) {
+          return;
+        }
+        const previousValue = proxySelect.value;
+        proxySelect.textContent = '';
+        const sourceOptions = Array.from(source.options || []);
+        if (sourceOptions.length) {
+          sourceOptions.forEach(option => {
+            proxySelect.appendChild(option.cloneNode(true));
+          });
+        } else {
+          const fallbackOption = DOCUMENT.createElement('option');
+          const fallbackValue = source.value || 'en';
+          fallbackOption.value = fallbackValue;
+          fallbackOption.textContent = fallbackValue || 'English';
+          proxySelect.appendChild(fallbackOption);
+        }
+        const activeValue = primaryLanguageTarget && typeof primaryLanguageTarget.value === 'string'
+          ? primaryLanguageTarget.value
+          : (source && typeof source.value === 'string' ? source.value : previousValue);
+        const proxyOptions = Array.from(proxySelect.options || []);
+        const findMatchingValue = (value) => proxyOptions.some(option => option.value === value);
+        if (activeValue && findMatchingValue(activeValue)) {
+          proxySelect.value = activeValue;
+        } else if (previousValue && findMatchingValue(previousValue)) {
+          proxySelect.value = previousValue;
+        } else if (proxyOptions.length) {
+          proxySelect.value = proxyOptions[0].value;
+        }
+      };
+
+      updateProxyOptionsAndValue();
+
+      const syncTargetsFromProxy = () => {
+        const nextValue = proxySelect.value;
+        if (!primaryLanguageTarget) {
+          return;
+        }
+        if (typeof nextValue === 'string' && primaryLanguageTarget.value !== nextValue) {
+          primaryLanguageTarget.value = nextValue;
+        }
+        dispatchSyntheticEvent(primaryLanguageTarget, 'change');
+      };
+
+      proxySelect.addEventListener('change', syncTargetsFromProxy);
+      registerCleanup(() => {
+        proxySelect.removeEventListener('change', syncTargetsFromProxy);
+      });
+
+      const refreshProxyFromTargets = () => {
+        updateProxyOptionsAndValue();
+      };
+
+      for (let index = 0; index < languageTargets.length; index += 1) {
+        const target = languageTargets[index];
+        if (!target) {
+          continue;
+        }
+        target.addEventListener('change', refreshProxyFromTargets);
+        registerCleanup(() => {
+          target.removeEventListener('change', refreshProxyFromTargets);
+        });
+      }
+
+      if (typeof GLOBAL_SCOPE.addEventListener === 'function') {
+        GLOBAL_SCOPE.addEventListener('languagechange', refreshProxyFromTargets);
+        registerCleanup(() => {
+          GLOBAL_SCOPE.removeEventListener('languagechange', refreshProxyFromTargets);
+        });
+      }
+
+      group.appendChild(label);
+      group.appendChild(proxySelect);
+      fragment.appendChild(group);
+      if (!firstProxyField) {
+        firstProxyField = proxySelect;
+      }
+    }
 
     const createProxyField = (options) => {
       const {
@@ -2501,62 +2711,6 @@
     }
 
     const fragment = DOCUMENT.createDocumentFragment();
-
-    const languageSelect = DOCUMENT.getElementById('settingsLanguage');
-    if (languageSelect) {
-      const group = DOCUMENT.createElement('div');
-      group.className = 'onboarding-field-group';
-      const inputId = getProxyControlId('language');
-      const label = DOCUMENT.createElement('label');
-      label.className = 'onboarding-field-label';
-      label.setAttribute('for', inputId);
-      label.textContent = 'Language';
-      const proxySelect = DOCUMENT.createElement('select');
-      proxySelect.id = inputId;
-      proxySelect.className = 'onboarding-field-select';
-      const originalOptions = Array.from(languageSelect.options || []);
-      if (originalOptions.length === 0) {
-        const option = DOCUMENT.createElement('option');
-        option.value = languageSelect.value || 'en';
-        option.textContent = languageSelect.value || 'English';
-        proxySelect.appendChild(option);
-      } else {
-        for (let index = 0; index < originalOptions.length; index += 1) {
-          const source = originalOptions[index];
-          const option = DOCUMENT.createElement('option');
-          option.value = source.value;
-          option.textContent = source.textContent || source.value;
-          proxySelect.appendChild(option);
-        }
-      }
-      proxySelect.value = languageSelect.value || proxySelect.value;
-
-      const syncFromTarget = () => {
-        if (proxySelect.value !== languageSelect.value) {
-          proxySelect.value = languageSelect.value;
-        }
-      };
-
-      const syncToTarget = () => {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-      };
-
-      proxySelect.addEventListener('change', syncToTarget);
-      registerCleanup(() => {
-        proxySelect.removeEventListener('change', syncToTarget);
-      });
-      languageSelect.addEventListener('change', syncFromTarget);
-      registerCleanup(() => {
-        languageSelect.removeEventListener('change', syncFromTarget);
-      });
-
-      group.appendChild(label);
-      group.appendChild(proxySelect);
-      fragment.appendChild(group);
-    }
 
     const darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
     const themeGroup = DOCUMENT.createElement('div');
@@ -2974,7 +3128,6 @@
       cardContentEl.scrollTop = 0;
     }
 
-    const totalSteps = stepConfig.length;
     const textPack = getStepTexts(step);
     const stepText = textPack.body;
 
@@ -2989,13 +3142,20 @@
     titleEl.textContent = textPack.title || '';
     bodyEl.textContent = stepText;
 
+    const preface = isPrefaceStep(step);
+
     if (step.key === 'completion') {
       progressEl.textContent = tourTexts.completionIndicator || '';
+    } else if (preface) {
+      const prefaceIndicator = typeof tourTexts.prefaceIndicator === 'string'
+        ? tourTexts.prefaceIndicator
+        : 'Orientation';
+      progressEl.textContent = prefaceIndicator;
     } else {
-      progressEl.textContent = formatStepIndicator(index, totalSteps);
+      progressEl.textContent = formatStepIndicator(step, index);
     }
 
-    updateProgressMeter(step, index);
+    updateProgressMeter(step);
 
     skipButton.textContent = tourTexts.skipLabel || 'Skip tutorial';
     backButton.textContent = tourTexts.backLabel || 'Back';
@@ -3009,7 +3169,7 @@
     backButton.disabled = index <= 0;
     backButton.hidden = index <= 0;
 
-    if (step.key === 'intro') {
+    if (preface) {
       skipButton.hidden = false;
     } else if (step.key === 'completion') {
       skipButton.hidden = true;
@@ -3022,26 +3182,36 @@
     renderStepInteraction(step);
   }
 
-  function updateProgressMeter(step, index) {
+  function updateProgressMeter(step) {
     if (!progressMeterEl || !progressMeterFillEl) {
       return;
     }
-    const totalSteps = stepConfig.length;
+    const countedSteps = getCountedSteps();
+    const totalSteps = countedSteps.length;
     const completedSteps = storedState && Array.isArray(storedState.completedSteps)
       ? storedState.completedSteps
       : [];
     const completedSet = new Set(completedSteps);
-    const activeContribution = step && !completedSet.has(step.key) ? 1 : 0;
-    const progressValue = Math.min(
-      totalSteps,
-      Math.max(index + 1, completedSet.size + activeContribution),
-    );
+    const countedCompleted = getCountedCompletedLength(completedSet, countedSteps);
+    const countedIndex = getCountedStepIndex(step, countedSteps);
+    const preface = isPrefaceStep(step);
+    const activeContribution = step && !completedSet.has(step.key) && !preface ? 1 : 0;
+    let progressValue = countedCompleted;
+    if (countedIndex >= 0) {
+      progressValue = Math.max(progressValue, countedIndex + 1);
+    }
+    progressValue = Math.max(progressValue, countedCompleted + activeContribution);
+    if (totalSteps > 0) {
+      progressValue = Math.min(totalSteps, progressValue);
+    } else {
+      progressValue = 0;
+    }
     const ratio = totalSteps > 0 ? Math.max(0, Math.min(1, progressValue / totalSteps)) : 0;
     progressMeterFillEl.style.width = `${ratio * 100}%`;
 
     const labelTemplate = tourTexts.progressValueLabel || 'Completed {completed} of {total} steps';
     const label = labelTemplate
-      .replace('{completed}', String(Math.min(completedSet.size, totalSteps)))
+      .replace('{completed}', String(Math.min(countedCompleted, totalSteps)))
       .replace('{total}', String(totalSteps));
     const meterLabel = tourTexts.progressMeterLabel || 'Tutorial progress';
     progressMeterEl.setAttribute('aria-label', meterLabel);
@@ -3190,7 +3360,7 @@
     const persisted = saveState(nextState);
     storedState = persisted || normalizeStateSnapshot(nextState);
     updateStepList(currentIndex);
-    updateProgressMeter(currentStep, currentIndex);
+    updateProgressMeter(currentStep);
     applyHelpButtonLabel();
   }
 
@@ -3555,8 +3725,9 @@
       }
     }
 
-    const total = allowedKeys.length;
-    const completedCount = Math.min(completedSet.size, total);
+    const countedSteps = getCountedSteps(stepList);
+    const total = countedSteps.length;
+    const completedCount = Math.min(getCountedCompletedLength(completedSet, countedSteps), total);
 
     const activeKey = stored && typeof stored.activeStep === 'string'
       ? stored.activeStep
@@ -3656,8 +3827,10 @@
     }
     const state = storedState || loadStoredState();
     const steps = getStepConfig();
+    const countedSteps = getCountedSteps(steps);
+    const total = countedSteps.length;
     const completedCount = state && Array.isArray(state.completedSteps)
-      ? state.completedSteps.length
+      ? getCountedCompletedLength(state.completedSteps, countedSteps)
       : 0;
     const labelTemplate = tourTexts.resumeLabelWithProgress || tourTexts.resumeLabel;
     let label;
@@ -3666,8 +3839,8 @@
     } else if (state && state.activeStep) {
       if (labelTemplate) {
         label = labelTemplate
-          .replace('{completed}', String(Math.min(completedCount, steps.length)))
-          .replace('{total}', String(steps.length));
+          .replace('{completed}', String(Math.min(completedCount, total)))
+          .replace('{total}', String(total));
       }
       if (!label) {
         label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
@@ -3675,8 +3848,8 @@
     } else if (completedCount > 0) {
       if (labelTemplate) {
         label = labelTemplate
-          .replace('{completed}', String(Math.min(completedCount, steps.length)))
-          .replace('{total}', String(steps.length));
+          .replace('{completed}', String(Math.min(completedCount, total)))
+          .replace('{total}', String(total));
       }
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
