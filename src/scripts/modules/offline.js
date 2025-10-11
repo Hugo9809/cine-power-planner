@@ -666,6 +666,149 @@
   })();
 
   const FORCE_RELOAD_CLEANUP_TIMEOUT_MS = 700;
+  const RELOAD_WARMUP_MAX_WAIT_MS = 180;
+  let reloadWarmupFailureLogged = false;
+
+  function createDelay(ms) {
+    const waitMs = typeof ms === 'number' && ms >= 0 ? ms : 0;
+
+    if (typeof setTimeout !== 'function') {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      try {
+        setTimeout(resolve, waitMs);
+      } catch (error) {
+        void error;
+        resolve();
+      }
+    });
+  }
+
+  function settlePromise(promise) {
+    if (!promise || typeof promise.then !== 'function') {
+      return Promise.resolve(false);
+    }
+
+    return promise
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  function scheduleReloadWarmup(options = {}) {
+    const nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
+    if (!nextHref) {
+      return null;
+    }
+
+    const win = resolveWindow(options.window);
+    const fetchFn = resolveFetch(options.fetch, win);
+    if (typeof fetchFn !== 'function') {
+      return null;
+    }
+
+    const nav = resolveNavigator(options.navigator);
+    if (nav && nav.onLine === false) {
+      return null;
+    }
+
+    let controller = null;
+    if (typeof AbortController === 'function') {
+      try {
+        controller = new AbortController();
+      } catch (abortError) {
+        void abortError;
+        controller = null;
+      }
+    }
+
+    let serviceWorkerSettled = false;
+    let cachesSettled = false;
+
+    const serviceWorkerPromise = settlePromise(options.serviceWorkerPromise).then((result) => {
+      serviceWorkerSettled = true;
+      return result;
+    });
+
+    const cachePromise = settlePromise(options.cachePromise).then((result) => {
+      cachesSettled = true;
+      return result;
+    });
+
+    const shouldAllowCache = options.allowCache === true;
+
+    const executeWarmup = async () => {
+      try {
+        await Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+      } catch (error) {
+        void error;
+      }
+
+      try {
+        await Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
+      } catch (error) {
+        void error;
+      }
+
+      const allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
+
+      const requestInit = {
+        cache: allowCachePopulation ? 'reload' : 'no-store',
+        credentials: 'same-origin',
+        redirect: 'follow',
+      };
+
+      if (controller && controller.signal) {
+        requestInit.signal = controller.signal;
+      }
+
+      let response = null;
+
+      try {
+        response = await fetchFn.call(win || undefined, nextHref, requestInit);
+      } catch (error) {
+        const aborted = controller && controller.signal && controller.signal.aborted;
+        if (!aborted && !reloadWarmupFailureLogged) {
+          reloadWarmupFailureLogged = true;
+          safeWarn('Reload warmup fetch failed', error);
+        }
+        return false;
+      }
+
+      if (!response) {
+        return false;
+      }
+
+      try {
+        const body = typeof response.clone === 'function' ? response.clone() : response;
+        if (body && typeof body.text === 'function' && body.bodyUsed !== true) {
+          await body.text();
+        }
+      } catch (consumeError) {
+        void consumeError;
+      }
+
+      return true;
+    };
+
+    const warmupTask = executeWarmup();
+    if (warmupTask && typeof warmupTask.catch === 'function') {
+      warmupTask.catch(() => {});
+    }
+
+    return {
+      cancel() {
+        if (controller && typeof controller.abort === 'function') {
+          try {
+            controller.abort();
+          } catch (abortError) {
+            void abortError;
+          }
+        }
+      },
+    };
+  }
 
   function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
     if (!promise || typeof promise.then !== 'function') {
@@ -867,6 +1010,42 @@
       return win.caches;
     }
     return resolveGlobal('caches');
+  }
+
+  function resolveLocation(explicitLocation) {
+    if (explicitLocation && typeof explicitLocation === 'object') {
+      return explicitLocation;
+    }
+
+    const win = resolveWindow();
+    if (win && win.location && typeof win.location === 'object') {
+      return win.location;
+    }
+
+    return resolveGlobal('location');
+  }
+
+  function resolveFetch(explicitFetch, windowLike) {
+    if (typeof explicitFetch === 'function') {
+      return explicitFetch;
+    }
+
+    if (typeof fetch === 'function') {
+      return fetch;
+    }
+
+    const win = windowLike || resolveWindow();
+    if (win && typeof win.fetch === 'function') {
+      try {
+        return win.fetch.bind(win);
+      } catch (error) {
+        void error;
+        return win.fetch;
+      }
+    }
+
+    const globalFetch = resolveGlobal('fetch');
+    return typeof globalFetch === 'function' ? globalFetch : null;
   }
 
   function registerFallbackStorage(storages, candidate, label) {
@@ -1888,7 +2067,7 @@
     });
   }
 
-  function triggerReload(windowOverride) {
+  function triggerReload(windowOverride, precomputedForceReloadUrl) {
     const win = resolveWindow(windowOverride);
     if (!win || !win.location) {
       return false;
@@ -1900,9 +2079,17 @@
     const hasReload = location && typeof location.reload === 'function';
     let navigationTriggered = false;
 
-    const forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
-    const nextHref = forceReloadUrl.nextHref;
-    const originalHref = forceReloadUrl.originalHref;
+    const forceReloadUrl =
+      precomputedForceReloadUrl && typeof precomputedForceReloadUrl === 'object'
+        ? precomputedForceReloadUrl
+        : buildForceReloadUrl(location, 'forceReload');
+
+    const originalHrefCandidate =
+      typeof forceReloadUrl.originalHref === 'string' && forceReloadUrl.originalHref
+        ? forceReloadUrl.originalHref
+        : readLocationHrefSafe(location);
+    const originalHref = originalHrefCandidate || readLocationHrefSafe(location);
+    const nextHref = typeof forceReloadUrl.nextHref === 'string' ? forceReloadUrl.nextHref : '';
     const timestamp = forceReloadUrl.timestamp;
     const baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
 
@@ -1971,6 +2158,10 @@
   }
 
   async function reloadApp(options = {}) {
+    const win = resolveWindow(options.window);
+    const location = resolveLocation(options.location || (win && win.location));
+    const forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
+
     let uiCacheCleared = false;
     const clearUiCacheStorageEntriesFn =
       typeof options.clearUiCacheStorageEntries === 'function'
@@ -2014,6 +2205,16 @@
       }
     })();
 
+    scheduleReloadWarmup({
+      window: win,
+      navigator: options.navigator,
+      fetch: options.fetch,
+      nextHref: forceReloadUrl.nextHref,
+      serviceWorkerPromise: serviceWorkerCleanupPromise,
+      cachePromise: cacheCleanupPromise,
+      allowCache: true,
+    });
+
     let serviceWorkersUnregistered = false;
 
     try {
@@ -2042,14 +2243,13 @@
     const reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
 
     try {
-      reloadTriggered = reloadFn(options.window);
+      reloadTriggered = reloadFn(options.window, forceReloadUrl);
     } catch (error) {
       safeWarn('Forced reload handler failed', error);
-      reloadTriggered = triggerReload(options.window);
+      reloadTriggered = triggerReload(options.window, forceReloadUrl);
     }
 
     if (!reloadTriggered) {
-      const win = resolveWindow(options.window);
       if (win && win.location && typeof win.location.reload === 'function') {
         try {
           win.location.reload();
