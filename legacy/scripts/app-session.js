@@ -1504,13 +1504,14 @@ function countCrewEntries(value) {
     if (typeof value.text === 'string') {
       return countCrewEntries(value.text);
     }
-    if (typeof value.name === 'string' || typeof value.role === 'string' || typeof value.phone === 'string' || typeof value.email === 'string' || typeof value.text === 'string') {
+    if (typeof value.name === 'string' || typeof value.role === 'string' || typeof value.phone === 'string' || typeof value.email === 'string' || typeof value.website === 'string' || typeof value.text === 'string') {
       var name = typeof value.name === 'string' ? value.name.trim() : '';
       var role = typeof value.role === 'string' ? value.role.trim() : '';
       var phone = typeof value.phone === 'string' ? value.phone.trim() : '';
       var email = typeof value.email === 'string' ? value.email.trim() : '';
+      var website = typeof value.website === 'string' ? value.website.trim() : '';
       var text = typeof value.text === 'string' ? value.text.trim() : '';
-      return name || role || phone || email || text ? 1 : 0;
+      return name || role || phone || email || website || text ? 1 : 0;
     }
     var nestedKeys = Object.keys(value).filter(function (key) {
       return key !== '__html';

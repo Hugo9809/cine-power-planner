@@ -151,6 +151,16 @@
       if (isImmutableBuiltin(value)) {
         return value;
       }
+
+      if (
+        typeof process !== 'undefined' &&
+        process &&
+        process.release &&
+        process.release.name === 'node'
+      ) {
+        return value;
+      }
+
       return originalFreeze.call(Object, value, ...rest);
     }
 

@@ -13590,7 +13590,8 @@ function setLanguage(lang) {
     const crewPlaceholders = {
       name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
       phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
-      email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
+      email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder,
+      website: projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder
     };
     const crewRoleLabels = texts[lang].crewRoles || (texts.en && texts.en.crewRoles) || {};
     const fallbackContacts = texts.en?.contacts || {};
@@ -13721,6 +13722,8 @@ function setLanguage(lang) {
       if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+      const websiteInput = row.querySelector('.person-website');
+      if (websiteInput && crewPlaceholders.website) websiteInput.placeholder = crewPlaceholders.website;
       const contactSelect = row.querySelector('.person-contact-select');
       if (contactSelect) {
         setContactSelectOptions(contactSelect, contactSelect.value);
@@ -16010,7 +16013,7 @@ function getContactById(id) {
 function getContactDisplayLabel(contact) {
   if (!contact) return '';
   const roleLabels = texts?.[currentLang]?.crewRoles || texts?.en?.crewRoles || {};
-  const base = contact.name || contact.email || contact.phone || contact.role || contact.id;
+  const base = contact.name || contact.email || contact.phone || contact.website || contact.role || contact.id;
   const roleLabel = contact.role ? (roleLabels[contact.role] || contact.role) : '';
   if (base && roleLabel && roleLabel !== base) {
     return `${base} — ${roleLabel}`;
@@ -16928,6 +16931,8 @@ function applyContactToCrewRow(row, contact, options = {}) {
     if (phoneInput) phoneInput.value = contact.phone || '';
     const emailInput = row.querySelector('.person-email');
     if (emailInput) emailInput.value = contact.email || '';
+    const websiteInput = row.querySelector('.person-website');
+    if (websiteInput) websiteInput.value = contact.website || '';
     setRowAvatar(row, contact.avatar || '', { name: contact.name });
     row.dataset.contactId = contact.id;
     const contactSelect = row.querySelector('.person-contact-select');
@@ -16965,12 +16970,14 @@ function getCrewRowSnapshot(row) {
   const nameInput = row.querySelector('.person-name');
   const phoneInput = row.querySelector('.person-phone');
   const emailInput = row.querySelector('.person-email');
+  const websiteInput = row.querySelector('.person-website');
   const avatarInput = row.querySelector('.person-avatar-data');
   return {
     role: sanitizeContactValue(roleSel?.value || ''),
     name: sanitizeContactValue(nameInput?.value || ''),
     phone: sanitizeContactValue(phoneInput?.value || ''),
     email: sanitizeContactValue(emailInput?.value || ''),
+    website: sanitizeContactValue(websiteInput?.value || ''),
     avatar: sanitizeContactValue(avatarInput?.value || ''),
     contactId: sanitizeContactValue(row.dataset.contactId || '')
   };
@@ -16999,8 +17006,8 @@ function deleteContact(contactId) {
 function saveCrewRowAsContact(row) {
   const snapshot = getCrewRowSnapshot(row);
   if (!snapshot) return;
-  if (!snapshot.name && !snapshot.email && !snapshot.phone) {
-    announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email or phone number before saving this contact.'));
+  if (!snapshot.name && !snapshot.email && !snapshot.phone && !snapshot.website) {
+    announceContactsMessage(getContactsText('contactMissingDetails', 'Enter a name, email, phone number or website before saving this contact.'));
     return;
   }
   const now = Date.now();
@@ -17011,6 +17018,7 @@ function saveCrewRowAsContact(row) {
       existing.role = snapshot.role || existing.role;
       existing.phone = snapshot.phone || existing.phone;
       existing.email = snapshot.email || existing.email;
+      existing.website = snapshot.website || existing.website;
       if (snapshot.avatar) {
         existing.avatar = snapshot.avatar;
       } else if (!existing.avatar) {
@@ -17033,6 +17041,7 @@ function saveCrewRowAsContact(row) {
     role: snapshot.role,
     phone: snapshot.phone,
     email: snapshot.email,
+    website: snapshot.website,
     avatar: snapshot.avatar,
     createdAt: now,
     updatedAt: now
@@ -17061,11 +17070,11 @@ function parseVCard(text) {
   let current = null;
   folded.forEach(line => {
     if (/^BEGIN:VCARD/i.test(line)) {
-      current = { name: '', role: '', phone: '', email: '', avatar: '' };
+      current = { name: '', role: '', phone: '', email: '', website: '', avatar: '' };
       return;
     }
     if (/^END:VCARD/i.test(line)) {
-      if (current && (current.name || current.email || current.phone)) {
+      if (current && (current.name || current.email || current.phone || current.website)) {
         contacts.push({ ...current });
       }
       current = null;
@@ -17096,6 +17105,10 @@ function parseVCard(text) {
     }
     if (baseKey === 'EMAIL') {
       if (!current.email) current.email = sanitizeContactValue(value);
+      return;
+    }
+    if (baseKey === 'URL' || /\.URL$/.test(baseKey)) {
+      if (!current.website) current.website = sanitizeContactValue(value);
       return;
     }
     if ((baseKey === 'ROLE' || baseKey === 'TITLE') && !current.role) {
@@ -17140,9 +17153,10 @@ function parseVCard(text) {
       role: sanitizeContactValue(entry.role),
       phone: sanitizeContactValue(entry.phone),
       email: sanitizeContactValue(entry.email),
+      website: sanitizeContactValue(entry.website),
       avatar: typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : ''
     }))
-    .filter(entry => entry.name || entry.email || entry.phone);
+    .filter(entry => entry.name || entry.email || entry.phone || entry.website);
 }
 
 function mergeImportedContacts(imported) {
@@ -17158,6 +17172,7 @@ function mergeImportedContacts(imported) {
       role: sanitizeContactValue(entry.role || ''),
       phone: sanitizeContactValue(entry.phone || ''),
       email: sanitizeContactValue(entry.email || ''),
+      website: sanitizeContactValue(entry.website || entry.url || ''),
       avatar: entry.avatar && entry.avatar.startsWith('data:') ? entry.avatar : ''
     };
     const existing = contactsCache.find(contact => {
@@ -17168,6 +17183,7 @@ function mergeImportedContacts(imported) {
         if (normalizedCandidate && normalizedExisting && normalizedCandidate === normalizedExisting) return true;
       }
       if (candidate.name && contact.name && candidate.name.toLowerCase() === contact.name.toLowerCase()) return true;
+      if (candidate.website && contact.website && candidate.website.toLowerCase() === contact.website.toLowerCase()) return true;
       return false;
     });
     if (existing) {
@@ -17175,6 +17191,7 @@ function mergeImportedContacts(imported) {
       if (candidate.role) existing.role = candidate.role;
       if (candidate.phone) existing.phone = candidate.phone;
       if (candidate.email) existing.email = candidate.email;
+      if (candidate.website) existing.website = candidate.website;
       if (candidate.avatar) existing.avatar = candidate.avatar;
       existing.updatedAt = Date.now();
       updated += 1;
@@ -17186,6 +17203,7 @@ function mergeImportedContacts(imported) {
         role: candidate.role,
         phone: candidate.phone,
         email: candidate.email,
+        website: candidate.website,
         avatar: candidate.avatar,
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -17312,6 +17330,21 @@ function createContactCard(contact) {
   emailWrapper.append(emailLabelElem, emailInput);
   fields.appendChild(emailWrapper);
 
+  const websiteInput = document.createElement('input');
+  websiteInput.type = 'url';
+  websiteInput.inputMode = 'url';
+  websiteInput.autocomplete = 'url';
+  websiteInput.value = contact.website || '';
+  websiteInput.placeholder = getContactsText('websitePlaceholder', 'https://example.com');
+  const websiteFieldId = ensureElementId(websiteInput, `${contact.id}-website`);
+  const websiteLabelElem = document.createElement('label');
+  websiteLabelElem.setAttribute('for', websiteFieldId);
+  websiteLabelElem.textContent = getContactsText('websiteLabel', 'Website');
+  const websiteWrapper = document.createElement('div');
+  websiteWrapper.className = 'contact-field';
+  websiteWrapper.append(websiteLabelElem, websiteInput);
+  fields.appendChild(websiteWrapper);
+
   card.appendChild(fields);
 
   const actions = document.createElement('div');
@@ -17376,6 +17409,10 @@ function createContactCard(contact) {
   });
   emailInput.addEventListener('input', () => {
     contact.email = sanitizeContactValue(emailInput.value);
+    persist();
+  });
+  websiteInput.addEventListener('input', () => {
+    contact.website = sanitizeContactValue(websiteInput.value);
     persist();
   });
 
@@ -17571,6 +17608,7 @@ function createCrewRow(data = {}) {
   const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
   const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
   const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+  const crewWebsiteLabelText = projectFormTexts.crewWebsiteLabel || fallbackProjectForm.crewWebsiteLabel || 'Crew member website';
   const crewContactLabelText = getContactsText('selectLabel', 'Saved contacts');
   const avatarChangeLabel = getContactsText('avatarChange', 'Change photo');
 
@@ -17643,6 +17681,14 @@ function createCrewRow(data = {}) {
   emailInput.value = data.email || '';
   applyLocaleMetadata(emailInput, rowLanguage, rowDirection);
 
+  const websiteInput = document.createElement('input');
+  websiteInput.type = 'url';
+  websiteInput.name = 'crewWebsite';
+  websiteInput.className = 'person-website';
+  websiteInput.placeholder = projectFormTexts.crewWebsitePlaceholder || fallbackProjectForm.crewWebsitePlaceholder || 'Website';
+  websiteInput.value = data.website || '';
+  applyLocaleMetadata(websiteInput, rowLanguage, rowDirection);
+
   const contactSelect = document.createElement('select');
   contactSelect.className = 'person-contact-select';
   applyLocaleMetadata(contactSelect, rowLanguage, rowDirection);
@@ -17652,6 +17698,7 @@ function createCrewRow(data = {}) {
   const nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
   const phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
   const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
+  const websiteLabel = createHiddenLabel(ensureElementId(websiteInput, crewWebsiteLabelText), crewWebsiteLabelText);
   const contactLabel = createHiddenLabel(ensureElementId(contactSelect, crewContactLabelText), crewContactLabelText);
 
   const linkedBadge = document.createElement('span');
@@ -17696,7 +17743,7 @@ function createCrewRow(data = {}) {
   actions.className = 'person-actions';
   actions.append(saveContactBtn, manageContactsBtn, removeBtn);
 
-  [roleLabel, nameLabel, phoneLabel, emailLabel, contactLabel].forEach(label => row.appendChild(label));
+  [roleLabel, nameLabel, phoneLabel, emailLabel, websiteLabel, contactLabel].forEach(label => row.appendChild(label));
   row.appendChild(avatarContainer);
   row.appendChild(contactSelect);
   row.appendChild(linkedBadge);
@@ -17704,6 +17751,7 @@ function createCrewRow(data = {}) {
   row.appendChild(nameInput);
   row.appendChild(phoneInput);
   row.appendChild(emailInput);
+  row.appendChild(websiteInput);
   row.appendChild(actions);
 
   if (data.contactId) {
@@ -17753,6 +17801,7 @@ function createCrewRow(data = {}) {
   });
   phoneInput.addEventListener('input', () => handleCrewRowManualChange(row));
   emailInput.addEventListener('input', () => handleCrewRowManualChange(row));
+  websiteInput.addEventListener('input', () => handleCrewRowManualChange(row));
 
   contactSelect.addEventListener('change', () => {
     const selectedId = contactSelect.value;

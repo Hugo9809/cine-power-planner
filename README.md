@@ -485,7 +485,7 @@ Use Cine Power Planner end-to-end with the following routine:
   unsaved form inputs for the new project so you can review or edit without
   re-entering data.
 - **Crew contacts stay reusable.** Open the **Contacts** entry in the sidebar to
-  maintain a dedicated roster with roles, emails, phone numbers and profile
+  maintain a dedicated roster with roles, emails, phone numbers, websites and profile
   photos that you can drop into any project. Contacts live in the same
   localStorage snapshot as your projects, are included in manual backups and
   can be imported from offline `.vcf` (vCard) files whenever you need to merge

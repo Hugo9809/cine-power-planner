@@ -706,10 +706,69 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackRegisterOrQueue;
   }();
+
+
+  function isNodeProcessReference(value) {
+    if (!value) {
+      return false;
+    }
+
+    if (typeof process === 'undefined' || !process) {
+      return false;
+    }
+
+    if (value === process) {
+      return true;
+    }
+
+    if (value && _typeof(value) === 'object') {
+      try {
+        if (value.constructor && value.constructor.name === 'process') {
+          return true;
+        }
+      } catch (processInspectionError) {
+        void processInspectionError;
+      }
+
+      if (typeof value.pid === 'number' && typeof value.nextTick === 'function' && typeof value.emit === 'function' && typeof value.binding === 'function') {
+        return true;
+      }
+    }
+
+    if (typeof value === 'function') {
+      if (value === process.binding || value === process._linkedBinding || value === process.dlopen) {
+        return true;
+      }
+
+      try {
+        var functionName = value.name || '';
+        if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
+          var source = Function.prototype.toString.call(value);
+          if (source && source.indexOf('[native code]') !== -1) {
+            return true;
+          }
+        }
+      } catch (functionInspectionError) {
+        void functionInspectionError;
+      }
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
+
+    if (isNodeProcessReference(value)) {
+      return true;
+    }
+
+    if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
+      return true;
+    }
+
     try {
       if (typeof module !== 'undefined' && module && typeof module.constructor === 'function' && value instanceof module.constructor) {
         return true;
