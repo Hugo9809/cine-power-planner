@@ -98,18 +98,60 @@
     return false;
   }
 
+  function fallbackResolveSeenTracker(seen) {
+    if (seen && typeof seen.has === 'function' && typeof seen.add === 'function') {
+      return seen;
+    }
+
+    if (Array.isArray(seen)) {
+      return {
+        has(value) {
+          return seen.indexOf(value) !== -1;
+        },
+        add(value) {
+          if (seen.indexOf(value) === -1) {
+            seen.push(value);
+          }
+        },
+      };
+    }
+
+    if (typeof WeakSet === 'function') {
+      try {
+        return new WeakSet();
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const tracked = [];
+    return {
+      has(value) {
+        return tracked.indexOf(value) !== -1;
+      },
+      add(value) {
+        if (tracked.indexOf(value) === -1) {
+          tracked.push(value);
+        }
+      },
+    };
+  }
+
   // Deeply freeze complex objects while tolerating environments that lack
-  // Object.freeze. The WeakSet guards against cyclical references.
-  function fallbackFreezeDeep(value, seen = new WeakSet()) {
+  // Object.freeze. When WeakSet support is missing we gracefully fall back to a
+  // list-based tracker so cyclical references still short-circuit.
+  function fallbackFreezeDeep(value, seen) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
 
-    if (seen.has(value)) {
+    const tracker = fallbackResolveSeenTracker(seen);
+
+    if (tracker.has(value)) {
       return value;
     }
 
-    seen.add(value);
+    tracker.add(value);
 
     let keys = [];
     try {
@@ -132,7 +174,7 @@
         continue;
       }
 
-      fallbackFreezeDeep(child, seen);
+      fallbackFreezeDeep(child, tracker);
     }
 
     try {

@@ -23,7 +23,7 @@ const gear = {
         "Sony F55"
       ],
       "isPersonalGear": false,
-      "listOfOrigin": "240315_Detective_von_Fock_Equpment_B-Cam_Rental.pdf"
+      "listOfOrigin": "240315_Detective_von_Fock_Equipment_B-Cam_Rental.pdf"
     }
   },
   "directorMonitors": {

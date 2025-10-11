@@ -17,8 +17,8 @@ This review surfaces follow-up tasks to protect user data workflows and document
 - **Impact**: Contributors updating offline manuals waste time looking for a non-existent directory, slowing translation updates required to keep onboard help in sync with save/share/restore changes.
 - **Recommended task**: Replace the outdated path in `docs/documentation-update-checklist.md` with the current module location and mention the runtime bridge if additional context is needed.
 
-## Harden tests against duplicated optical metadata
-- **Issue**: No automated test guards against duplicate optical properties like `imageCircleMm` in the lens catalog, allowing the regression above to slip in unnoticed.
-- **Impact**: Data integrity bugs reach users despite existing unit coverage, risking incorrect save/share exports that crews rely on offline.
-- **Recommended task**: Add a data integrity test (e.g., under `tests/data`) that loads `gearList.js` and asserts each lens defines unique optical keys, failing fast if a duplicate property would overwrite a prior value.
+## Maintain duplicate optical metadata regression guard
+- **Status**: `tests/data/gearListDuplicateKeys.test.js` now protects the lens catalog from duplicate optical properties like `imageCircleMm`, catching overwrites before they can corrupt saved loadouts.
+- **Impact**: Documenting the active safeguard reassures reviewers that offline exports remain trustworthy while keeping attention on any future changes that might disable the check.
+- **Action**: Keep the regression test updated whenever new optics metadata is added and note any new integrity gaps here so data bundles continue to round-trip safely.
 
