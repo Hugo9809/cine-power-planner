@@ -8353,7 +8353,7 @@ function renameSetup(oldName, newName) {
 }
 
 // --- Project Storage ---
-var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
+var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompany', 'productionCompanyAddress']);
 
 var LEGACY_PROJECT_FIELD_LABELS = {
   productionCompany: [
@@ -8608,6 +8608,128 @@ var LEGACY_PROJECT_FIELD_LABELS = {
   ],
 };
 
+var PRODUCTION_COMPANY_FIELD_ORDER = [
+  'productionCompanyAddress',
+  'productionCompanyStreet',
+  'productionCompanyStreet2',
+  'productionCompanyCity',
+  'productionCompanyRegion',
+  'productionCompanyPostalCode',
+  'productionCompanyCountry',
+];
+
+function normalizeProjectFieldLabel(label) {
+  if (typeof label !== 'string') {
+    return '';
+  }
+  return label.trim().replace(/[:：]\s*$/, '').trim();
+}
+
+function getProductionCompanyLabelSets(projectLabels) {
+  var labelSets = {};
+  var textsObj = typeof texts !== 'undefined' ? texts : null;
+  var fallbackProjectLabels = (textsObj && textsObj.en && textsObj.en.projectFields) || {};
+  var allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
+  allKeys.forEach(function (key) {
+    var set = new Set();
+    var addLabel = function (value) {
+      if (typeof value !== 'string') return;
+      var normalized = normalizeProjectFieldLabel(value);
+      if (normalized) {
+        set.add(normalized);
+      }
+    };
+    if (projectLabels && projectLabels[key]) {
+      addLabel(projectLabels[key]);
+    }
+    if (fallbackProjectLabels && fallbackProjectLabels[key]) {
+      addLabel(fallbackProjectLabels[key]);
+    }
+    var legacyLabels = LEGACY_PROJECT_FIELD_LABELS[key];
+    if (Array.isArray(legacyLabels)) {
+      legacyLabels.forEach(addLabel);
+    }
+    labelSets[key] = set;
+  });
+  return labelSets;
+}
+
+function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+  if (typeof rawText !== 'string') {
+    return null;
+  }
+  var normalizedText = rawText
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map(function (segment) { return segment.trim(); })
+    .filter(function (segment) { return segment; });
+  if (!normalizedText.length) {
+    return null;
+  }
+  var labelSets = getProductionCompanyLabelSets(projectLabels);
+  var result = {};
+  var firstLine = normalizedText[0];
+  if (firstLine) {
+    result.productionCompany = firstLine;
+  }
+  var collected = {};
+  var activeField = null;
+  normalizedText.slice(1).forEach(function (line) {
+    var normalizedLine = normalizeProjectFieldLabel(line);
+    var matchedField = null;
+    PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (field) {
+      if (matchedField || !labelSets[field]) return;
+      if (labelSets[field].has(normalizedLine)) {
+        matchedField = field;
+      }
+    });
+    if (matchedField) {
+      activeField = matchedField;
+      if (!collected[activeField]) {
+        collected[activeField] = [];
+      }
+      return;
+    }
+    if (!activeField) {
+      if (result.productionCompany) {
+        result.productionCompany += '\n' + line;
+      } else {
+        result.productionCompany = line;
+      }
+      return;
+    }
+    if (!collected[activeField]) {
+      collected[activeField] = [];
+    }
+    collected[activeField].push(line);
+  });
+
+  if (collected.productionCompanyAddress && collected.productionCompanyAddress.length) {
+    result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
+  }
+  if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
+    var streetParts = collected.productionCompanyStreet;
+    result.productionCompanyStreet = streetParts[0];
+    if (streetParts.length > 1) {
+      result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+    }
+  }
+  if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
+    result.productionCompanyCity = collected.productionCompanyCity.join(' ');
+  }
+  if (collected.productionCompanyRegion && collected.productionCompanyRegion.length) {
+    result.productionCompanyRegion = collected.productionCompanyRegion.join(' ');
+  }
+  if (collected.productionCompanyPostalCode && collected.productionCompanyPostalCode.length) {
+    result.productionCompanyPostalCode = collected.productionCompanyPostalCode.join(' ');
+  }
+  if (collected.productionCompanyCountry && collected.productionCompanyCountry.length) {
+    result.productionCompanyCountry = collected.productionCompanyCountry.join(' ');
+  }
+
+  return result;
+}
+
 var LEGACY_PROJECT_LABEL_FIELD_MAP = (() => {
   const map = new Map();
   const normalize = (label) => {
@@ -8737,6 +8859,13 @@ function extractProjectInfoFromHtml(html) {
   }
   const boxRegex = /<div[^>]*class=["'][^"']*requirement-box[^"']*["'][^>]*>[\s\S]*?<\/div>/gi;
   let match;
+  const textsObj = typeof texts !== 'undefined' ? texts : null;
+  const lang = typeof currentLang === 'string' && textsObj && textsObj[currentLang] ? currentLang : 'en';
+  const projectLabels = textsObj && textsObj[lang] && textsObj[lang].projectFields
+    ? textsObj[lang].projectFields
+    : textsObj && textsObj.en && textsObj.en.projectFields
+      ? textsObj.en.projectFields
+      : {};
   while ((match = boxRegex.exec(gridHtml))) {
     const boxHtml = match[0];
     const fieldMatch = boxHtml.match(/data-field=["']([^"']+)["']/i);
@@ -8753,8 +8882,25 @@ function extractProjectInfoFromHtml(html) {
     if (!normalizedValue) {
       continue;
     }
+    let valueToStore = normalizedValue;
+    if (fieldName === 'productionCompany') {
+      const expanded = expandCombinedProductionCompanyInfo(normalizedValue, projectLabels);
+      if (expanded && typeof expanded === 'object') {
+        if (expanded.productionCompany) {
+          valueToStore = expanded.productionCompany;
+        }
+        Object.entries(expanded).forEach(([expandedField, expandedValue]) => {
+          if (expandedField === 'productionCompany') {
+            return;
+          }
+          if (!Object.prototype.hasOwnProperty.call(info, expandedField)) {
+            info[expandedField] = expandedValue;
+          }
+        });
+      }
+    }
     if (!Object.prototype.hasOwnProperty.call(info, fieldName)) {
-      info[fieldName] = normalizedValue;
+      info[fieldName] = valueToStore;
     }
   }
   return Object.keys(info).length ? info : null;

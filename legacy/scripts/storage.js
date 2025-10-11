@@ -7040,7 +7040,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     });
   }
-  var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompanyAddress']);
+  var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'returnDays', 'crew', 'productionCompany', 'productionCompanyAddress']);
   var LEGACY_PROJECT_FIELD_LABELS = {
     productionCompany: ['Production Company', 'Produktionsfirma', 'Société de production', 'Productora', 'Casa di produzione'],
     productionCompanyAddress: ['Production Company Address', 'Adresse der Produktionsfirma', 'Adresse de la société de production', 'Dirección de la productora', 'Indirizzo della casa di produzione'],
@@ -7083,6 +7083,115 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     sliderBowl: ['Slider Bowl', 'Slider-Schale', 'Slider bowl', 'Bowl del slider', 'Slider bowl'],
     easyrig: ['Further Stabilisation', 'Weitere Stabilisierung', 'Stabilisation complémentaire', 'Estabilización adicional', 'Stabilizzazione aggiuntiva']
   };
+  var PRODUCTION_COMPANY_FIELD_ORDER = ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'];
+  function normalizeProjectFieldLabel(label) {
+    if (typeof label !== 'string') {
+      return '';
+    }
+    return label.trim().replace(/[:：]\s*$/, '').trim();
+  }
+  function getProductionCompanyLabelSets(projectLabels) {
+    var textsObj = typeof texts !== 'undefined' ? texts : null;
+    var labelSets = {};
+    var fallbackProjectLabels = textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
+    var allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
+    allKeys.forEach(function (key) {
+      var set = new Set();
+      var addLabel = function addLabel(value) {
+        if (typeof value !== 'string') return;
+        var normalized = normalizeProjectFieldLabel(value);
+        if (normalized) {
+          set.add(normalized);
+        }
+      };
+      if (projectLabels && projectLabels[key]) {
+        addLabel(projectLabels[key]);
+      }
+      if (fallbackProjectLabels && fallbackProjectLabels[key]) {
+        addLabel(fallbackProjectLabels[key]);
+      }
+      var legacyLabels = LEGACY_PROJECT_FIELD_LABELS[key];
+      if (Array.isArray(legacyLabels)) {
+        legacyLabels.forEach(addLabel);
+      }
+      labelSets[key] = set;
+    });
+    return labelSets;
+  }
+  function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+    if (typeof rawText !== 'string') {
+      return null;
+    }
+    var normalizedText = rawText.replace(/\r\n?/g, '\n').split('\n').map(function (segment) {
+      return segment.trim();
+    }).filter(function (segment) {
+      return segment;
+    });
+    if (!normalizedText.length) {
+      return null;
+    }
+    var labelSets = getProductionCompanyLabelSets(projectLabels);
+    var result = {};
+    var firstLine = normalizedText[0];
+    var rest = normalizedText.slice(1);
+    if (firstLine) {
+      result.productionCompany = firstLine;
+    }
+    var collected = {};
+    var activeField = null;
+    rest.forEach(function (line) {
+      var normalizedLine = normalizeProjectFieldLabel(line);
+      var matchedField = null;
+      PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (field) {
+        if (matchedField || !labelSets[field]) return;
+        if (labelSets[field].has(normalizedLine)) {
+          matchedField = field;
+        }
+      });
+      if (matchedField) {
+        activeField = matchedField;
+        if (!collected[activeField]) {
+          collected[activeField] = [];
+        }
+        return;
+      }
+      if (!activeField) {
+        if (result.productionCompany) {
+          result.productionCompany += '\n' + line;
+        } else {
+          result.productionCompany = line;
+        }
+        return;
+      }
+      if (!collected[activeField]) {
+        collected[activeField] = [];
+      }
+      collected[activeField].push(line);
+    });
+    if (collected.productionCompanyAddress && collected.productionCompanyAddress.length) {
+      result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
+    }
+    if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
+      var streetParts = collected.productionCompanyStreet;
+      result.productionCompanyStreet = streetParts[0];
+      if (streetParts.length > 1) {
+        result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+      }
+    }
+    if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
+      result.productionCompanyCity = collected.productionCompanyCity.join(' ');
+    }
+    if (collected.productionCompanyRegion && collected.productionCompanyRegion.length) {
+      result.productionCompanyRegion = collected.productionCompanyRegion.join(' ');
+    }
+    if (collected.productionCompanyPostalCode && collected.productionCompanyPostalCode.length) {
+      result.productionCompanyPostalCode = collected.productionCompanyPostalCode.join(' ');
+    }
+    if (collected.productionCompanyCountry && collected.productionCompanyCountry.length) {
+      result.productionCompanyCountry = collected.productionCompanyCountry.join(' ');
+    }
+    return result;
+  }
   var LEGACY_PROJECT_LABEL_FIELD_MAP = function () {
     var map = new Map();
     var normalize = function normalize(label) {
@@ -7190,6 +7299,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var boxRegex = /<div[^>]*class=["'][^"']*requirement-box[^"']*["'][^>]*>[\s\S]*?<\/div>/gi;
+    var textsObj = typeof texts !== 'undefined' ? texts : null;
+    var activeLang = typeof currentLang === 'string' && textsObj && textsObj[currentLang] ? currentLang : 'en';
+    var projectLabels = textsObj && textsObj[activeLang] && textsObj[activeLang].projectFields ? textsObj[activeLang].projectFields : textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
     var match;
     while (match = boxRegex.exec(gridHtml)) {
       var boxHtml = match[0];
@@ -7207,8 +7319,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!normalizedValue) {
         continue;
       }
+      var valueToStore = normalizedValue;
+      if (fieldName === 'productionCompany') {
+        var expanded = expandCombinedProductionCompanyInfo(normalizedValue, projectLabels);
+        if (expanded && _typeof(expanded) === 'object') {
+          if (expanded.productionCompany) {
+            valueToStore = expanded.productionCompany;
+          }
+          Object.entries(expanded).forEach(function (_ref15) {
+            var _ref16 = _slicedToArray(_ref15, 2),
+              expandedField = _ref16[0],
+              expandedValue = _ref16[1];
+            if (expandedField === 'productionCompany') {
+              return;
+            }
+            if (!Object.prototype.hasOwnProperty.call(info, expandedField)) {
+              info[expandedField] = expandedValue;
+            }
+          });
+        }
+      }
       if (!Object.prototype.hasOwnProperty.call(info, fieldName)) {
-        info[fieldName] = normalizedValue;
+        info[fieldName] = valueToStore;
       }
     }
     return Object.keys(info).length ? info : null;
