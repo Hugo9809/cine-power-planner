@@ -5806,7 +5806,7 @@ const texts = {
         connectionDiagram: {
           title: "Inspecciona el diagrama de conexiones",
           body:
-            "El diagrama interactivo muestra cómo se conectan energía, video y control. Arrastra los nodos para planear el layout del rig y luego guarda para que la disposición y las anotaciones persistan en exportaciones y restauraciones.",
+            "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones.",
         },
         editDeviceData: {
           title: "Edita datos de dispositivos",
@@ -5821,7 +5821,7 @@ const texts = {
         generateGearAndRequirements: {
           title: "Genera requisitos y lista de equipo",
           body:
-            "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist tras cada cambio. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes.",
+            "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes.",
         },
         autoGearRules: {
           title: "Revisa reglas automáticas de equipo",
@@ -5846,17 +5846,17 @@ const texts = {
         overviewAndPrint: {
           title: "Genera vista general y documentos",
           body:
-            "Genera la vista general del proyecto para acceder a resúmenes listos para PDF, impresión y compartir. El cuadro usa solo datos guardados, así que puedes imprimir o exportar incluso estando completamente offline.",
+            "Genera la vista general del proyecto para obtener el parte de energía listo para PDF, impresión o distribución al equipo. El cuadro usa solo datos guardados, así que puedes imprimir o exportar incluso estando completamente offline.",
         },
         help: {
           title: "Abre el centro de ayuda",
           body:
-            "El cuadro de Ayuda incluye documentación con búsqueda, notas de traducción y referencias del tutorial. Mantenlo anclado mientras trabajas: los artículos se almacenan en caché sin conexión y se actualizan cuando llegan nuevas funciones.",
+            "El cuadro de Ayuda funciona como manual de rodaje offline: reúne documentación con búsqueda, notas de traducción y referencias del tutorial. Mantenlo anclado mientras trabajas; los artículos se almacenan en caché sin conexión y se actualizan cuando llegan nuevas funciones.",
         },
         settingsGeneral: {
           title: "Vuelve a Configuración → General",
           body:
-            "Ajusta idioma, tipografía, tema, modo rosa, escala de enfoque y otras opciones de presentación cuando quieras. Las preferencias se guardan localmente, se sincronizan entre proyectos y se incluyen en los respaldos.",
+            "Ajusta idioma, tipografía, tema, modo rosa, escala de enfoque y otras opciones de presentación cuando quieras. Las preferencias se guardan localmente, viajan con tus proyectos y se incluyen en los respaldos.",
         },
         settingsData: {
           title: "Supervisa Datos y almacenamiento",
