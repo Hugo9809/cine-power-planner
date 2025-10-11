@@ -341,7 +341,9 @@ Use Cine Power Planner end-to-end with the following routine:
    frame rate and other factors influence field data.
 4. **Capture project requirements.** Fill out crew details, scenarios, handles,
    matte box preferences and monitoring layouts so generated lists reflect the
-   full production context. The Storage & Media grid now surfaces CFexpress,
+   full production context. Your saved user profile now appears automatically in
+   the crew list—adjust the role or contact info per project before exporting.
+   The Storage & Media grid now surfaces CFexpress,
    CFast, SD and microSD families directly from the offline gear catalog—even
    when the selected camera uses different slots—so you can log card counts and
    notes without leaving gaps in the saved bundle. Fork buttons duplicate

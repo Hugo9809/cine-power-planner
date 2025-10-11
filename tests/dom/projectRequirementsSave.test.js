@@ -1,6 +1,7 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+const USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
 
 describe('project requirements persistence to project storage', () => {
   let env;
@@ -10,6 +11,12 @@ describe('project requirements persistence to project storage', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     localStorage.clear();
+    if (global.__NEXT_USER_PROFILE__) {
+      localStorage.setItem(
+        USER_PROFILE_STORAGE_KEY,
+        JSON.stringify(global.__NEXT_USER_PROFILE__),
+      );
+    }
     env = setupScriptEnvironment({
       globals: {
         saveSessionState: jest.fn(),
@@ -240,6 +247,43 @@ describe('project requirements persistence to project storage', () => {
 
     expect(projectEntry.projectInfo.prepDays).toEqual(['2024-05-01 to 2024-05-03']);
     expect(projectEntry.projectInfo.shootingDays).toEqual(['2024-06-10 to 2024-06-12']);
+  });
+
+  describe('when a user profile exists', () => {
+    beforeAll(() => {
+      global.__NEXT_USER_PROFILE__ = {
+        name: 'Taylor Crew',
+        role: '1st AC',
+        phone: '555-0111',
+        email: 'taylor@example.com',
+      };
+    });
+
+    afterAll(() => {
+      delete global.__NEXT_USER_PROFILE__;
+    });
+
+    test('automatically seeds the crew list with the profile details', () => {
+      const crewRows = document.querySelectorAll('#crewContainer .person-row');
+      expect(crewRows.length).toBeGreaterThan(0);
+
+      const [profileRow] = crewRows;
+      expect(profileRow).toBeDefined();
+
+      const nameInput = profileRow.querySelector('.person-name');
+      const emailInput = profileRow.querySelector('.person-email');
+      const phoneInput = profileRow.querySelector('.person-phone');
+      const roleSelect = profileRow.querySelector('select[name="crewRole"]');
+
+      expect(nameInput?.value).toBe('Taylor Crew');
+      expect(emailInput?.value).toBe('taylor@example.com');
+      expect(phoneInput?.value).toBe('555-0111');
+      expect(roleSelect?.value).toBe('1st AC');
+
+      roleSelect.value = 'Director';
+      roleSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      expect(roleSelect.value).toBe('Director');
+    });
   });
 
   test('clicking the project dialog backdrop submits and closes the form', () => {
