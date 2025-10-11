@@ -140,6 +140,24 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     text: textLines.join('\n')
   };
 }
+
+function applyCombinedProductionCompanyDisplay(targetInfo, sourceInfo, projectLabels) {
+  if (!targetInfo || _typeof(targetInfo) !== 'object') {
+    return false;
+  }
+  var source = sourceInfo && _typeof(sourceInfo) === 'object' ? sourceInfo : targetInfo;
+  var combined = buildCombinedProductionCompanyDisplay(source, projectLabels);
+  if (!combined) {
+    return false;
+  }
+  targetInfo.productionCompany = combined;
+  PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (key) {
+    if (Object.prototype.hasOwnProperty.call(targetInfo, key)) {
+      delete targetInfo[key];
+    }
+  });
+  return true;
+}
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
 var EXTRA_GEAR_CATEGORY_KEY = 'temporary-extras';
 var projectPersistenceSuspendedCount = 0;
@@ -8650,14 +8668,18 @@ function gearListGenerateHtmlImpl() {
   var projectInfo = _objectSpread({}, info);
   var projectLabels = typeof texts !== 'undefined' && texts && typeof currentLang === 'string' && texts[currentLang] && texts[currentLang].projectFields ? texts[currentLang].projectFields : texts && texts.en && texts.en.projectFields ? texts.en.projectFields : {};
   var projectFormTexts = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectForm) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectForm) || {};
-  var combinedProductionCompany = buildCombinedProductionCompanyDisplay(info, projectLabels);
-  if (combinedProductionCompany) {
-    projectInfo.productionCompany = combinedProductionCompany;
-    ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'].forEach(function (key) {
-      if (Object.prototype.hasOwnProperty.call(projectInfo, key)) {
-        delete projectInfo[key];
+  var hasCombinedProductionCompany = applyCombinedProductionCompanyDisplay(projectInfo, info, projectLabels);
+  if (!hasCombinedProductionCompany) {
+    var hasStructuredAddress = PRODUCTION_COMPANY_FIELD_ORDER.some(function (key) {
+      var value = projectInfo[key];
+      if (typeof value === 'string') {
+        return value.trim().length > 0;
       }
+      return value !== null && value !== undefined;
     });
+    if (hasStructuredAddress) {
+      hasCombinedProductionCompany = applyCombinedProductionCompanyDisplay(projectInfo, projectInfo, projectLabels);
+    }
   }
   var storageFallbackLabel = projectFormTexts.storageSummaryFallback || projectFormTexts.storageTypeLabel || 'Media';
   var crewRoleLabels = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.crewRoles) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.crewRoles) || {};
@@ -8769,7 +8791,7 @@ function gearListGenerateHtmlImpl() {
     var _ref26 = _slicedToArray(_ref25, 2),
       k = _ref26[0],
       v = _ref26[1];
-    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
+    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual') && !(hasCombinedProductionCompany && PRODUCTION_COMPANY_FIELD_ORDER.includes(k));
   });
   var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref27) {
     var _ref28 = _slicedToArray(_ref27, 2),
