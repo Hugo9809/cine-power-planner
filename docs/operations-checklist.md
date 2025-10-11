@@ -37,6 +37,10 @@ update the repository or hand off a project at the end of the day.
      and mount for every chip, allows selecting a new lens without dropping
      existing chips, and keeps the hidden legacy select in sync so overview
      exports still list the chosen lenses.
+   - Launch the guided onboarding tutorial from **Help → Start guided tutorial**,
+     expand the step navigator and confirm Steps 1–3 stay pinned while you
+     scroll the remaining checklist. Keep the browser offline during the check to
+     prove the tour’s progress controls remain accessible without a connection.
 2. **Exercise manual save.** Make a harmless edit, press `Enter` or
    `Ctrl+S`/`⌘S`, then confirm the timestamp updates in the project selector.
 3. **Export safety snapshots.** Download both a `planner-backup.json` file and a
