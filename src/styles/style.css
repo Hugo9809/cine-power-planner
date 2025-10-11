@@ -6605,6 +6605,95 @@ body.dark-mode .onboarding-progress-fill {
   line-height: var(--line-height-relaxed);
 }
 
+.onboarding-interaction {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.onboarding-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.onboarding-field-label {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--text-color) 88%, rgba(0, 0, 0, 0.4));
+}
+
+body.dark-mode .onboarding-field-label {
+  color: color-mix(in srgb, var(--inverse-text-color) 92%, rgba(255, 255, 255, 0.4));
+}
+
+.onboarding-field-input,
+.onboarding-field-select {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 35%, var(--control-border));
+  background: color-mix(in srgb, var(--surface-color) 95%, rgba(255, 255, 255, 0.05) 5%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.dark-mode .onboarding-field-input,
+body.dark-mode .onboarding-field-select {
+  background: color-mix(in srgb, rgba(24, 28, 34, 0.95) 85%, rgba(255, 255, 255, 0.08) 15%);
+  border-color: color-mix(in srgb, var(--accent-color) 45%, rgba(255, 255, 255, 0.18));
+  color: var(--inverse-text-color);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.onboarding-field-input:focus,
+.onboarding-field-select:focus,
+.onboarding-field-input:focus-visible,
+.onboarding-field-select:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent-color) 70%, var(--control-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.onboarding-interaction-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.onboarding-interaction-button {
+  flex: 1 1 220px;
+  margin: 0;
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--accent-color) 88%, rgba(255, 255, 255, 0.06) 12%);
+  color: var(--inverse-text-color);
+  font-weight: var(--font-weight-medium);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.onboarding-interaction-button:hover,
+.onboarding-interaction-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 96%, rgba(255, 255, 255, 0.12) 4%);
+  transform: translateY(-1px);
+  box-shadow: 0 22px 38px rgba(0, 0, 0, 0.22);
+}
+
+.onboarding-interaction-button:active {
+  transform: translateY(0);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+body.dark-mode .onboarding-interaction-button {
+  background: color-mix(in srgb, var(--accent-color) 82%, rgba(18, 22, 28, 0.95) 18%);
+  color: var(--inverse-text-color);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-mode .onboarding-interaction-button:hover,
+body.dark-mode .onboarding-interaction-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 94%, rgba(255, 255, 255, 0.12) 6%);
+}
+
 .onboarding-resume-hint {
   margin: 0;
   padding: 0.625rem 0.875rem;
