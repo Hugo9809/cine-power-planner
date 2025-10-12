@@ -541,7 +541,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": true,
@@ -598,7 +601,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": true,
@@ -628,7 +634,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": "4-pin Aviation / NP-F"
+        "portType": [
+          "4-pin Aviation",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -659,7 +668,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": "4-pin Aviation / NP-F"
+        "portType": [
+          "4-pin Aviation",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -687,7 +699,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": "4-pin Aviation / NP-F"
+        "portType": [
+          "4-pin Aviation",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -718,7 +733,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "portType": "4-pin Aviation / NP-F"
+        "portType": [
+          "4-pin Aviation",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -743,7 +761,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -771,7 +792,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -799,7 +823,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -823,7 +850,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -851,7 +881,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "portType": "DC Barrel / NP-F"
+        "portType": [
+          "DC Barrel",
+          "NP-F"
+        ]
       }
     },
     "wirelessTx": false,
@@ -1005,7 +1038,10 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6.8-12",
-        "portType": "DC Barrel / D-Tap"
+        "portType": [
+          "DC Barrel",
+          "D-Tap"
+        ]
       }
     },
     "wirelessTx": false,
