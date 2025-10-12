@@ -90,14 +90,21 @@ describe('device database import helpers', () => {
     expect(result.devices).toEqual(sample);
   });
 
-  test('rejects dataset missing required categories', () => {
+  test('upgrades legacy datasets missing newly added categories', () => {
     env = setupScriptEnvironment();
-    const incomplete = { cameras: { 'Camera A': { powerDrawWatts: 10 } } };
+    const legacy = buildSampleDatabase();
+    delete legacy.directorMonitors;
+    delete legacy.fiz.distance;
+    delete legacy.accessories.cardReaders;
+    delete legacy.accessories.carts;
 
-    const result = env.utils.parseDeviceDatabaseImport(incomplete);
+    const result = env.utils.parseDeviceDatabaseImport(legacy);
 
-    expect(result.devices).toBeNull();
-    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors).toEqual([]);
+    expect(result.devices.directorMonitors).toEqual({});
+    expect(result.devices.fiz.distance).toEqual({});
+    expect(result.devices.accessories.cardReaders).toEqual({});
+    expect(result.devices.accessories.carts).toEqual({});
   });
 
   test('rejects malformed device collections', () => {
@@ -120,5 +127,68 @@ describe('device database import helpers', () => {
 
     expect(result.devices).toBeNull();
     expect(result.errors.some((msg) => msg.includes('FIZ'))).toBe(true);
+  });
+
+  test('converts legacy array-based device collections into objects', () => {
+    env = setupScriptEnvironment();
+    const legacy = {
+      cameras: [
+        { name: 'Camera A', powerDrawWatts: 10, power: { input: { type: 'DC' } } },
+      ],
+      monitors: [
+        { name: 'Monitor A', powerDrawWatts: 5, power: { input: { type: 'DC' } }, videoInputs: ['SDI'] },
+      ],
+      video: [
+        { name: 'Link A', powerDrawWatts: 2, power: { input: { type: 'USB-C' } }, videoOutputs: ['HDMI'] },
+      ],
+      viewfinders: [],
+      directorMonitors: [],
+      iosVideo: [],
+      videoAssist: [],
+      media: [],
+      lenses: [],
+      fiz: {
+        motors: [
+          { name: 'Motor A', powerDrawWatts: 1, fizConnector: '7-pin' },
+        ],
+        controllers: [],
+        distance: [],
+        handUnits: [],
+      },
+      batteries: [],
+      batteryHotswaps: [],
+      wirelessReceivers: [],
+      accessories: {
+        chargers: [
+          { name: 'Charger A', outputs: ['D-Tap'] },
+        ],
+        cages: [],
+        powerPlates: [],
+        cameraSupport: [],
+        matteboxes: [],
+        filters: [],
+        rigging: [],
+        batteries: [],
+        cables: [],
+        videoAssist: [],
+        media: [],
+        cardReaders: [],
+        tripodHeads: [],
+        tripods: [],
+        sliders: [],
+        cameraStabiliser: [],
+        grip: [],
+        carts: [],
+      },
+      batteryAdapters: {},
+    };
+
+    const result = env.utils.parseDeviceDatabaseImport(legacy);
+
+    expect(result.errors).toEqual([]);
+    expect(result.devices.cameras['Camera A'].powerDrawWatts).toBe(10);
+    expect(result.devices.monitors['Monitor A'].videoInputs).toEqual(['SDI']);
+    expect(result.devices.fiz.motors['Motor A'].fizConnector).toBe('7-pin');
+    expect(result.devices.accessories.chargers['Charger A'].outputs).toEqual(['D-Tap']);
   });
 });
