@@ -207,11 +207,56 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
 // workers, offline tabs and legacy frames all share the same configuration. We
 // build an ordered array here and then let the state helpers below iterate over
 // it when fetching shared utilities.
-var CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
-  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
-    ? CORE_GLOBAL_SCOPE
-    : null
-);
+var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopes() {
+  var shareTargets = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ];
+
+  for (var index = 0; index < shareTargets.length; index += 1) {
+    var target = shareTargets[index];
+    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+      continue;
+    }
+
+    try {
+      var existing = target.CORE_RUNTIME_CANDIDATE_SCOPES;
+      if (Array.isArray(existing) && existing.length) {
+        return existing;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+
+  var primaryScope =
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null;
+  var scopes = collectCoreRuntimeCandidateScopes(primaryScope);
+
+  for (var shareIndex = 0; shareIndex < shareTargets.length; shareIndex += 1) {
+    var shareTarget = shareTargets[shareIndex];
+    if (!shareTarget || (typeof shareTarget !== 'object' && typeof shareTarget !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (Object.isExtensible(shareTarget)) {
+        shareTarget.CORE_RUNTIME_CANDIDATE_SCOPES = scopes;
+      }
+    } catch (scopeShareError) {
+      void scopeShareError;
+    }
+  }
+
+  return scopes;
+})();
 
 var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;

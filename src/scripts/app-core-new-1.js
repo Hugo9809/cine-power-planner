@@ -220,9 +220,52 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-const CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
-  typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-);
+var CORE_RUNTIME_CANDIDATE_SCOPES = (function resolveCoreRuntimeCandidateScopes() {
+  const shareTargets = [
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < shareTargets.length; index += 1) {
+    const target = shareTargets[index];
+    if (!target || typeof target !== 'object') {
+      continue;
+    }
+
+    try {
+      const existing = target.CORE_RUNTIME_CANDIDATE_SCOPES;
+      if (Array.isArray(existing) && existing.length) {
+        return existing;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+
+  const scopes = collectCoreRuntimeCandidateScopes(
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+  );
+
+  for (let index = 0; index < shareTargets.length; index += 1) {
+    const target = shareTargets[index];
+    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (Object.isExtensible(target)) {
+        target.CORE_RUNTIME_CANDIDATE_SCOPES = scopes;
+      }
+    } catch (scopeShareError) {
+      void scopeShareError;
+    }
+  }
+
+  return scopes;
+})();
 
 function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale === 'object') {
