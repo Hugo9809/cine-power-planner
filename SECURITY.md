@@ -16,7 +16,7 @@ If you rely on a specific version, please keep it updated to the latest patch/mi
 
 **Preferred:** Use GitHub’s **“Report a vulnerability”** button on this repository (Private Vulnerability Reporting). This opens a private thread with the maintainers. :contentReference[oaicite:0]{index=0}
 
-**Fallback:** If the button is unavailable, email **<your-security-email@yourdomain>** with:
+**Fallback:** If the button is unavailable, email **info@lucazanner.com** with:
 - A clear description of the issue and potential impact
 - Minimal steps to reproduce (PoC if possible)
 - Affected version/commit and environment details
