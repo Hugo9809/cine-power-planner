@@ -6517,6 +6517,8 @@ body.high-contrast #hoverHelpTooltip .hover-help-hint {
   outline: 2px solid color-mix(in srgb, var(--accent-color) 75%, transparent);
   outline-offset: 3px;
   border-radius: 6px;
+  box-shadow: none !important;
+  filter: none !important;
   transition: outline-color 120ms ease;
 }
 
