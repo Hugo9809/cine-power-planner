@@ -2551,6 +2551,66 @@ function normalizeLensFocusScale(value) {
   return '';
 }
 
+function applyCameraFizConnectors(connectors) {
+  const normalized = Array.isArray(connectors)
+    ? connectors.map(entry => {
+      if (!entry || typeof entry === 'string') {
+        return entry;
+      }
+      if (typeof entry === 'object' && typeof entry.type === 'string') {
+        return { ...entry };
+      }
+      return entry;
+    })
+    : [];
+
+  let applied = false;
+
+  if (typeof setFizConnectors === 'function') {
+    try {
+      setFizConnectors(normalized);
+      applied = true;
+    } catch (directApplyError) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        try {
+          eventsLogger.warn('Direct setFizConnectors invocation failed', directApplyError, {
+            namespace: 'device-editor',
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
+
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Direct setFizConnectors invocation failed', directApplyError);
+      }
+    }
+  }
+
+  if (!applied) {
+    try {
+      callEventsCoreFunction('setFizConnectors', [normalized], { defer: true });
+      applied = true;
+    } catch (coreInvokeError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        try {
+          eventsLogger.error('Failed to schedule setFizConnectors', coreInvokeError, {
+            namespace: 'device-editor',
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
+
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to schedule setFizConnectors', coreInvokeError);
+      }
+    }
+  }
+
+  return applied;
+}
+
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
@@ -2592,7 +2652,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       { defer: true }
     );
     setVideoOutputs(deviceData.videoOutputs || []);
-    setFizConnectors(deviceData.fizConnectors || []);
+    applyCameraFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
     setTimecodes(deviceData.timecode || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
