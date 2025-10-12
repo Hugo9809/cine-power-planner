@@ -6926,6 +6926,8 @@ textarea:disabled {
   position: absolute;
   --onboarding-card-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
   --onboarding-card-padding: clamp(1rem, 0.75rem + 1vw, 1.25rem);
+  --onboarding-card-max-height-factor: 0.8;
+  --onboarding-card-viewport-offset: 3rem;
   width: min(26rem, calc(100vw - 3rem));
   inline-size: min(26rem, calc(100vw - 3rem));
   min-height: auto;
@@ -6940,13 +6942,32 @@ textarea:disabled {
   flex-direction: column;
   gap: var(--spacing-md);
   border: 1px solid var(--onboarding-card-border);
-  max-height: min(80vh, calc(100vh - 3rem));
-  max-block-size: min(80vh, calc(100vh - 3rem));
+  max-height: min(
+    calc(var(--onboarding-card-max-height-factor) * 100vh),
+    calc(100vh - var(--onboarding-card-viewport-offset))
+  );
+  max-block-size: min(
+    calc(var(--onboarding-card-max-height-factor) * 100vh),
+    calc(100vh - var(--onboarding-card-viewport-offset))
+  );
   overflow: visible;
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
   transition: transform 0.2s ease, opacity 0.2s ease;
   isolation: isolate;
+}
+
+@supports (height: 1dvh) {
+  .onboarding-card {
+    max-height: min(
+      calc(var(--onboarding-card-max-height-factor) * 100dvh),
+      calc(100dvh - var(--onboarding-card-viewport-offset))
+    );
+    max-block-size: min(
+      calc(var(--onboarding-card-max-height-factor) * 100dvh),
+      calc(100dvh - var(--onboarding-card-viewport-offset))
+    );
+  }
 }
 
 .onboarding-card-content {
@@ -7219,8 +7240,6 @@ body.dark-mode .onboarding-hero-offline {
 @media (max-width: 48rem) {
   .onboarding-card {
     --onboarding-card-viewport-offset: calc(3.5rem + env(safe-area-inset-bottom, 0px));
-    max-height: min(80vh, calc(100vh - var(--onboarding-card-viewport-offset)));
-    max-block-size: min(80vh, calc(100vh - var(--onboarding-card-viewport-offset)));
   }
 
   .onboarding-card[data-size='hero'] {
@@ -7290,14 +7309,8 @@ body.dark-mode .onboarding-hero-offline {
 @media (max-width: 32rem) {
   .onboarding-card {
     border-radius: 14px;
-    max-height: min(
-      88vh,
-      calc(100vh - (1.25rem + env(safe-area-inset-bottom, 0px)))
-    );
-    max-block-size: min(
-      88vh,
-      calc(100vh - (1.25rem + env(safe-area-inset-bottom, 0px)))
-    );
+    --onboarding-card-max-height-factor: 0.88;
+    --onboarding-card-viewport-offset: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   }
 
   .onboarding-card-content {
