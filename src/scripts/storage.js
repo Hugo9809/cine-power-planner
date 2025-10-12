@@ -8862,7 +8862,7 @@ function getProductionCompanyLabelSets(projectLabels) {
   return labelSets;
 }
 
-function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+function expandCombinedProductionCompanyInfo(rawText, projectLabels, metadata) {
   if (typeof rawText !== 'string') {
     return null;
   }
@@ -8879,6 +8879,64 @@ function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
   var firstLine = normalizedText[0];
   if (firstLine) {
     result.productionCompany = firstLine;
+  }
+  var metadataLines = Array.isArray(metadata === null || metadata === void 0 ? void 0 : metadata.lines)
+    ? metadata.lines
+    : null;
+  if (metadataLines && metadataLines.length) {
+    var collectedFromMetadata = {};
+    metadataLines.forEach(function (entry) {
+      if (!entry || typeof entry.text !== 'string') return;
+      var text = entry.text.trim();
+      if (!text) return;
+      var fields = entry.fields;
+      if (typeof fields === 'string') {
+        fields = fields.split(/\s+/);
+      }
+      if (!Array.isArray(fields) || !fields.length) return;
+      fields
+        .map(function (field) { return typeof field === 'string' ? field.trim() : ''; })
+        .filter(function (field) { return field && PRODUCTION_COMPANY_FIELD_ORDER.includes(field); })
+        .forEach(function (field) {
+          if (!collectedFromMetadata[field]) {
+            collectedFromMetadata[field] = [];
+          }
+          collectedFromMetadata[field].push(text);
+        });
+    });
+    if (Object.keys(collectedFromMetadata).length) {
+      if (collectedFromMetadata.productionCompanyAddress && collectedFromMetadata.productionCompanyAddress.length) {
+        result.productionCompanyAddress = collectedFromMetadata.productionCompanyAddress.join('\n');
+      }
+      if (collectedFromMetadata.productionCompanyStreet && collectedFromMetadata.productionCompanyStreet.length) {
+        var streetParts = collectedFromMetadata.productionCompanyStreet;
+        result.productionCompanyStreet = streetParts[0];
+        if (streetParts.length > 1) {
+          var secondary = streetParts.slice(1).join('\n');
+          if (secondary) {
+            result.productionCompanyStreet2 = secondary;
+          }
+        }
+      }
+      if (collectedFromMetadata.productionCompanyStreet2 && collectedFromMetadata.productionCompanyStreet2.length) {
+        var streetTwo = collectedFromMetadata.productionCompanyStreet2.join('\n');
+        if (streetTwo) {
+          result.productionCompanyStreet2 = result.productionCompanyStreet2
+            ? result.productionCompanyStreet2 + '\n' + streetTwo
+            : streetTwo;
+        }
+      }
+      var joinCollected = function (field) {
+        if (!collectedFromMetadata[field] || !collectedFromMetadata[field].length) return;
+        var combined = collectedFromMetadata[field].join(' ');
+        if (combined) {
+          result[field] = combined;
+        }
+      };
+      ['productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry']
+        .forEach(joinCollected);
+      return result;
+    }
   }
   var collected = {};
   var activeField = null;
@@ -9022,6 +9080,36 @@ function normalizeRequirementValueFromHtml(rawHtml, fieldName) {
   return parts.join(', ');
 }
 
+function extractRequirementValueMetadata(rawHtml) {
+  if (typeof rawHtml !== 'string') {
+    return null;
+  }
+  const spanRegex = /<span([^>]*)>([\s\S]*?)<\/span>/gi;
+  const lines = [];
+  let match;
+  while ((match = spanRegex.exec(rawHtml))) {
+    const attrs = match[1] || '';
+    if (!/class=["'][^"']*req-sub-line[^"']*["']/i.test(attrs)) {
+      continue;
+    }
+    const content = match[2] || '';
+    const text = decodeHtmlEntities(stripHtmlTags(content)).replace(/\s+/g, ' ').trim();
+    if (!text) {
+      continue;
+    }
+    const fieldsAttrMatch = attrs.match(/data-fields=["']([^"']+)["']/i);
+    const singleFieldMatch = fieldsAttrMatch
+      ? null
+      : attrs.match(/data-field=["']([^"']+)["']/i);
+    const rawFields = fieldsAttrMatch ? fieldsAttrMatch[1] : singleFieldMatch ? singleFieldMatch[1] : '';
+    const fields = typeof rawFields === 'string'
+      ? rawFields.split(/\s+/).map((field) => field.trim()).filter((field) => field)
+      : [];
+    lines.push({ text, fields });
+  }
+  return lines.length ? { lines } : null;
+}
+
 function mapLegacyRequirementLabel(labelText) {
   if (typeof labelText !== 'string') {
     return '';
@@ -9084,7 +9172,7 @@ function extractProjectInfoFromHtml(html) {
     const boxHtml = match[0];
     const fieldMatch = boxHtml.match(/data-field=["']([^"']+)["']/i);
     const labelMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-label[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
-    const valueMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-value[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
+    const valueMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-value[^"']*["'][^>]*>([\s\S]*)<\/span\s*>/i);
     const rawField = fieldMatch ? fieldMatch[1].trim() : '';
     const label = labelMatch ? decodeHtmlEntities(stripHtmlTags(labelMatch[1])) : '';
     const fieldName = rawField || mapLegacyRequirementLabel(label);
@@ -9097,8 +9185,10 @@ function extractProjectInfoFromHtml(html) {
       continue;
     }
     let valueToStore = normalizedValue;
+    let metadata = null;
     if (fieldName === 'productionCompany') {
-      const expanded = expandCombinedProductionCompanyInfo(normalizedValue, projectLabels);
+      metadata = extractRequirementValueMetadata(rawValue);
+      const expanded = expandCombinedProductionCompanyInfo(normalizedValue, projectLabels, metadata);
       if (expanded && typeof expanded === 'object') {
         if (expanded.productionCompany) {
           valueToStore = expanded.productionCompany;
