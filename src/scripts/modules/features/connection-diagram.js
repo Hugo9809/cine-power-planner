@@ -108,6 +108,22 @@
     const getZoomOutBtn = fallbackGetter(context.getZoomOutBtn, () => fallbackValue(context.zoomOutBtn, document ? document.getElementById('zoomOut') : null));
     const getResetViewBtn = fallbackGetter(context.getResetViewBtn, () => fallbackValue(context.resetViewBtn, document ? document.getElementById('resetView') : null));
     const getGridSnapToggleBtn = fallbackGetter(context.getGridSnapToggleBtn, () => fallbackValue(context.gridSnapToggleBtn, document ? document.getElementById('gridSnapToggle') : null));
+    const getDiagramDetailDialog = fallbackGetter(
+      context.getDiagramDetailDialog,
+      () => fallbackValue(context.diagramDetailDialog, document ? document.getElementById('diagramDetailDialog') : null),
+    );
+    const getDiagramDetailContent = fallbackGetter(
+      context.getDiagramDetailContent,
+      () => fallbackValue(context.diagramDetailContent, document ? document.getElementById('diagramDetailDialogContent') : null),
+    );
+    const getDiagramDetailHeading = fallbackGetter(
+      context.getDiagramDetailHeading,
+      () => fallbackValue(context.diagramDetailHeading, document ? document.getElementById('diagramDetailDialogHeading') : null),
+    );
+    const getDiagramDetailBackButton = fallbackGetter(
+      context.getDiagramDetailBackButton,
+      () => fallbackValue(context.diagramDetailBackButton, document ? document.getElementById('diagramDetailDialogBack') : null),
+    );
 
     const getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, () => false);
     // Persistence hooks are resolved lazily so feature modules can opt-in to
@@ -197,6 +213,13 @@
     let cleanupDiagramInteractions = null;
     let lastPopupEntries = {};
     let lastPointerPosition = null;
+    let detailDialog = null;
+    let detailDialogContent = null;
+    let detailDialogHeading = null;
+    let detailDialogBackButton = null;
+    let detailDialogSetupComplete = false;
+    let detailDialogDefaultHeading = 'Diagram details';
+    let detailDialogBackLabel = 'Back';
 
     const resolveSetupContainer = () => getSetupDiagramContainer();
     const resolveDiagramLegend = () => getDiagramLegend();
@@ -261,6 +284,104 @@
       if (category === 'cameras') return 'diagram-popup--camera';
       return '';
     };
+
+    function ensureDetailDialogElements() {
+      const dialogEl = getDiagramDetailDialog();
+      const contentEl = getDiagramDetailContent();
+      const headingEl = getDiagramDetailHeading();
+      const backButtonEl = getDiagramDetailBackButton();
+
+      const dialogChanged = dialogEl !== detailDialog;
+      detailDialog = dialogEl || null;
+      detailDialogContent = contentEl || null;
+      detailDialogHeading = headingEl || null;
+      detailDialogBackButton = backButtonEl || null;
+
+      if (detailDialog && (dialogChanged || !detailDialogSetupComplete)) {
+        const handleBackdropClick = event => {
+          if (event && event.target === detailDialog) {
+            closeDetailDialog();
+          }
+        };
+        detailDialog.addEventListener('click', handleBackdropClick);
+        detailDialog.addEventListener('cancel', event => {
+          event.preventDefault();
+          closeDetailDialog();
+        });
+        detailDialog.addEventListener('close', () => {
+          if (detailDialogContent) {
+            detailDialogContent.innerHTML = '';
+          }
+          if (detailDialogHeading) {
+            detailDialogHeading.textContent = detailDialogDefaultHeading;
+          }
+          detailDialog.classList.remove('diagram-detail-dialog--camera');
+        });
+        detailDialogSetupComplete = true;
+      }
+
+      if (detailDialogBackButton) {
+        detailDialogBackButton.onclick = closeDetailDialog;
+        detailDialogBackButton.textContent = detailDialogBackLabel;
+        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      }
+
+      if (detailDialogHeading && (!detailDialog || !detailDialog.open)) {
+        detailDialogHeading.textContent = detailDialogDefaultHeading;
+      }
+    }
+
+    function closeDetailDialog() {
+      ensureDetailDialogElements();
+      if (!detailDialog) return;
+      if (typeof detailDialog.close === 'function') {
+        if (detailDialog.open) {
+          detailDialog.close();
+        }
+      } else {
+        detailDialog.removeAttribute('open');
+        if (detailDialogContent) {
+          detailDialogContent.innerHTML = '';
+        }
+        if (detailDialogHeading) {
+          detailDialogHeading.textContent = detailDialogDefaultHeading;
+        }
+        detailDialog.classList.remove('diagram-detail-dialog--camera');
+      }
+    }
+
+    function openDetailDialogWithEntry(entry) {
+      ensureDetailDialogElements();
+      if (!detailDialog || !detailDialogContent || !entry) return;
+      const ownerDoc = detailDialog.ownerDocument || document;
+      if (!ownerDoc) return;
+
+      detailDialogContent.innerHTML = '';
+      const wrapper = ownerDoc.createElement('div');
+      wrapper.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+      wrapper.innerHTML = entry.content || '';
+      detailDialogContent.appendChild(wrapper);
+
+      const isCamera = Boolean(entry.className && entry.className.includes('diagram-popup--camera'));
+      detailDialog.classList.toggle('diagram-detail-dialog--camera', isCamera);
+
+      const headingText = entry.label || detailDialogDefaultHeading;
+      if (detailDialogHeading) {
+        detailDialogHeading.textContent = headingText;
+      }
+      if (detailDialogBackButton) {
+        detailDialogBackButton.textContent = detailDialogBackLabel;
+        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      }
+
+      if (typeof detailDialog.showModal === 'function') {
+        if (!detailDialog.open) {
+          detailDialog.showModal();
+        }
+      } else {
+        detailDialog.setAttribute('open', '');
+      }
+    }
 
     function normalizeDiagramPositionsInput(positions) {
       if (!positions || typeof positions !== 'object') {
@@ -414,6 +535,16 @@
       const batterySelect = resolveBatterySelect();
       const motorSelects = resolveMotorSelects();
       const controllerSelects = resolveControllerSelects();
+
+      const defaultHeadingText = texts[currentLang]?.diagramDetailDefaultHeading
+        || texts.en?.diagramDetailDefaultHeading
+        || 'Diagram details';
+      const backLabelText = texts[currentLang]?.diagramDetailBackLabel
+        || texts.en?.diagramDetailBackLabel
+        || 'Back';
+      detailDialogDefaultHeading = defaultHeadingText;
+      detailDialogBackLabel = backLabelText;
+      ensureDetailDialogElements();
 
       const isTouchDevice = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
       void isTouchDevice;
@@ -1064,6 +1195,19 @@
       const svg = setupDiagramContainer.querySelector('svg');
       if (!svg) return;
 
+      const texts = resolveTexts();
+      const currentLang = resolveCurrentLang();
+      const hoverNoticeText = texts[currentLang]?.diagramHoverNotice
+        || texts.en?.diagramHoverNotice
+        || 'Click me for more information!';
+      detailDialogDefaultHeading = texts[currentLang]?.diagramDetailDefaultHeading
+        || texts.en?.diagramDetailDefaultHeading
+        || detailDialogDefaultHeading;
+      detailDialogBackLabel = texts[currentLang]?.diagramDetailBackLabel
+        || texts.en?.diagramDetailBackLabel
+        || detailDialogBackLabel;
+      ensureDetailDialogElements();
+
       const popup = setupDiagramContainer.querySelector('#diagramPopup');
       const hidePopup = () => {
         if (!popup) return;
@@ -1072,6 +1216,8 @@
         popup.innerHTML = '';
         popup.dataset.columns = '1';
         popup.style.removeProperty('--diagram-popup-dynamic-width');
+        popup.className = 'diagram-popup';
+        popup.removeAttribute('aria-label');
       };
       hidePopup();
 
@@ -1208,12 +1354,16 @@
       let dragId = null;
       let dragPointerStart = null;
       let dragNode = null;
+      let dragMovedDuringInteraction = false;
+      let skipNextNodeClick = false;
       const onDragStart = e => {
         const node = e.target.closest('.diagram-node');
         if (!node) return;
         dragId = node.getAttribute('data-node');
         dragNode = node;
         dragPointerStart = getPos(e);
+        dragMovedDuringInteraction = false;
+        skipNextNodeClick = false;
         if (e.touches) e.preventDefault();
         e.stopPropagation();
         hidePopup();
@@ -1226,6 +1376,9 @@
         const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
         const dx = delta.x;
         const dy = delta.y;
+        if (!dragMovedDuringInteraction && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+          dragMovedDuringInteraction = true;
+        }
         let newX = start.x + dx;
         let newY = start.y + dy;
         if (getCurrentGridSnap()) {
@@ -1256,6 +1409,8 @@
         dragId = null;
         dragNode = null;
         dragPointerStart = null;
+        skipNextNodeClick = dragMovedDuringInteraction;
+        dragMovedDuringInteraction = false;
         renderSetupDiagram();
         if (scheduleProjectAutoSave) scheduleProjectAutoSave();
         else if (saveCurrentSession) saveCurrentSession();
@@ -1321,7 +1476,7 @@
           : (document?.documentElement?.clientHeight || 0);
         const margin = 12;
         popup.style.visibility = 'hidden';
-        popup.style.display = 'block';
+        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
         popup.removeAttribute('hidden');
         adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
         const popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
@@ -1379,34 +1534,26 @@
         }
       };
 
-      const showPopupForNode = (nodeEl) => {
+      const showHoverNoticeForNode = (nodeEl) => {
         if (!popup || !nodeEl) return;
         const nodeId = nodeEl.getAttribute('data-node');
-        if (!nodeId) {
+        if (!nodeId || !lastPopupEntries[nodeId]) {
           hidePopup();
           return;
         }
-        const entry = lastPopupEntries[nodeId];
-        if (!entry) {
-          hidePopup();
-          return;
-        }
-        popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
-        popup.innerHTML = entry.content || '';
-        if (entry.label) {
-          popup.setAttribute('aria-label', entry.label);
-        } else {
-          popup.removeAttribute('aria-label');
-        }
+        const safeNotice = escapeHtml(hoverNoticeText);
+        popup.className = 'diagram-popup diagram-popup--notice';
+        popup.innerHTML = `<p class="diagram-popup-notice">${safeNotice}</p>`;
+        popup.setAttribute('aria-label', hoverNoticeText);
         activePopupNode = nodeEl;
-        positionPopup(nodeEl, entry);
+        positionPopup(nodeEl, null);
       };
 
       const onNodeOver = e => {
         updatePointerPosition(e);
         const node = e.target.closest('.diagram-node');
         if (!node || node === activePopupNode) return;
-        showPopupForNode(node);
+        showHoverNoticeForNode(node);
       };
 
       const onNodeOut = e => {
@@ -1443,13 +1590,33 @@
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
       svg.addEventListener('mouseleave', onSvgLeave);
+      svg.addEventListener('click', onNodeClick);
       const repositionActivePopup = () => {
         if (!activePopupNode) return;
         const nodeId = activePopupNode.getAttribute('data-node');
+        if (!nodeId || !lastPopupEntries[nodeId]) {
+          hidePopup();
+          activePopupNode = null;
+          return;
+        }
+        positionPopup(activePopupNode, null);
+      };
+
+      const onNodeClick = e => {
+        const node = e.target.closest('.diagram-node');
+        if (!node) return;
+        if (skipNextNodeClick) {
+          skipNextNodeClick = false;
+          return;
+        }
+        const nodeId = node.getAttribute('data-node');
         if (!nodeId) return;
         const entry = lastPopupEntries[nodeId];
         if (!entry) return;
-        positionPopup(activePopupNode, entry);
+        hidePopup();
+        activePopupNode = null;
+        openDetailDialogWithEntry(entry);
+        e.stopPropagation();
       };
 
       svg.addEventListener('mousemove', updatePointerPosition);
@@ -1480,6 +1647,7 @@
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
+        svg.removeEventListener('click', onNodeClick);
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
         }

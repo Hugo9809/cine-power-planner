@@ -2083,6 +2083,9 @@ const texts = {
       "Close the device database editor and return to normal mode.",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
+    diagramHoverNotice: "Click me for more information!",
+    diagramDetailBackLabel: "Back",
+    diagramDetailDefaultHeading: "Diagram details",
     diagramMoveHint: "Drag nodes to rearrange; drag empty space to pan.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
@@ -4163,6 +4166,9 @@ const texts = {
     hideDeviceManagerHelp: "Nascondi l'editor del database dei dispositivi.",
     zoomInLabel: "Ingrandisci",
     zoomOutLabel: "Rimpicciolisci",
+    diagramHoverNotice: "Clicca per maggiori informazioni!",
+    diagramDetailBackLabel: "Indietro",
+    diagramDetailDefaultHeading: "Dettagli del diagramma",
     diagramMoveHint: "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma.",
   },
   es: {
@@ -6258,6 +6264,9 @@ const texts = {
     hideDeviceManagerHelp: "Oculta el editor de la base de datos de dispositivos.",
     zoomInLabel: "Acercar",
     zoomOutLabel: "Alejar",
+    diagramHoverNotice: "Haz clic para más información.",
+    diagramDetailBackLabel: "Volver",
+    diagramDetailDefaultHeading: "Detalles del diagrama",
     diagramMoveHint: "Mueve los nodos arrastrándolos. Arrastra un espacio vacío para desplazar el diagrama.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
@@ -8368,6 +8377,9 @@ const texts = {
     hideDeviceManagerHelp: "Masque l'éditeur de la base de données des appareils.",
     zoomInLabel: "Zoom avant",
     zoomOutLabel: "Zoom arrière",
+    diagramHoverNotice: "Cliquez pour en savoir plus !",
+    diagramDetailBackLabel: "Retour",
+    diagramDetailDefaultHeading: "Détails du diagramme",
     diagramMoveHint: "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
@@ -10478,6 +10490,9 @@ const texts = {
     hideDeviceManagerHelp: "Blendet den Gerätedatenbank-Editor aus.",
     zoomInLabel: "Hineinzoomen",
     zoomOutLabel: "Herauszoomen",
+    diagramHoverNotice: "Für weitere Infos anklicken!",
+    diagramDetailBackLabel: "Zurück",
+    diagramDetailDefaultHeading: "Diagrammdetails",
     diagramMoveHint: "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
