@@ -3366,6 +3366,11 @@
       ? introEntry.hero
       : {};
     const highlights = Array.isArray(heroTexts.highlights) ? heroTexts.highlights : [];
+    const heroHeading = typeof heroTexts.heading === 'string' && heroTexts.heading
+      ? heroTexts.heading
+      : (typeof introEntry.title === 'string' ? introEntry.title : '');
+    const heroSubheading = typeof heroTexts.subheading === 'string' ? heroTexts.subheading : '';
+    const heroSummary = typeof heroTexts.summary === 'string' ? heroTexts.summary : '';
     const badgeIcon = typeof heroTexts.badgeIcon === 'string' && heroTexts.badgeIcon
       ? heroTexts.badgeIcon
       : '\uE9C3';
@@ -3389,6 +3394,10 @@
 
     const hero = DOCUMENT.createElement('div');
     hero.className = 'onboarding-hero';
+
+    const heroBanner = DOCUMENT.createElement('div');
+    heroBanner.className = 'onboarding-hero-banner';
+    let heroBannerHasContent = false;
 
     if (badgeLabel || badgeDescription) {
       const badge = DOCUMENT.createElement('div');
@@ -3419,7 +3428,41 @@
       }
 
       badge.appendChild(badgeText);
-      hero.appendChild(badge);
+      heroBanner.appendChild(badge);
+      heroBannerHasContent = true;
+    }
+
+    if (heroHeading || heroSubheading || heroSummary) {
+      const headerWrap = DOCUMENT.createElement('div');
+      headerWrap.className = 'onboarding-hero-header';
+
+      if (heroHeading) {
+        const headingEl = DOCUMENT.createElement('h1');
+        headingEl.className = 'onboarding-hero-heading';
+        headingEl.textContent = heroHeading;
+        headerWrap.appendChild(headingEl);
+      }
+
+      if (heroSubheading) {
+        const subheadingEl = DOCUMENT.createElement('p');
+        subheadingEl.className = 'onboarding-hero-subheading';
+        subheadingEl.textContent = heroSubheading;
+        headerWrap.appendChild(subheadingEl);
+      }
+
+      if (heroSummary) {
+        const summaryEl = DOCUMENT.createElement('p');
+        summaryEl.className = 'onboarding-hero-summary';
+        summaryEl.textContent = heroSummary;
+        headerWrap.appendChild(summaryEl);
+      }
+
+      heroBanner.appendChild(headerWrap);
+      heroBannerHasContent = true;
+    }
+
+    if (heroBannerHasContent) {
+      hero.appendChild(heroBanner);
     }
 
     if (highlights.length) {

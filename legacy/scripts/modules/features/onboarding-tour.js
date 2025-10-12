@@ -2918,6 +2918,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var introEntry = tourTexts && tourTexts.steps && tourTexts.steps.intro ? tourTexts.steps.intro : {};
     var heroTexts = introEntry && typeof introEntry.hero === 'object' ? introEntry.hero : {};
     var highlights = Array.isArray(heroTexts.highlights) ? heroTexts.highlights : [];
+    var heroHeading = typeof heroTexts.heading === 'string' && heroTexts.heading
+      ? heroTexts.heading
+      : typeof introEntry.title === 'string'
+        ? introEntry.title
+        : '';
+    var heroSubheading = typeof heroTexts.subheading === 'string' ? heroTexts.subheading : '';
+    var heroSummary = typeof heroTexts.summary === 'string' ? heroTexts.summary : '';
     var badgeIcon = typeof heroTexts.badgeIcon === 'string' && heroTexts.badgeIcon ? heroTexts.badgeIcon : '\uE9C3';
     var badgeLabel = typeof heroTexts.badgeLabel === 'string' ? heroTexts.badgeLabel : '';
     var badgeDescription = typeof heroTexts.badgeDescription === 'string' ? heroTexts.badgeDescription : '';
@@ -2931,6 +2938,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var hero = DOCUMENT.createElement('div');
     hero.className = 'onboarding-hero';
+    var heroBanner = DOCUMENT.createElement('div');
+    heroBanner.className = 'onboarding-hero-banner';
+    var heroBannerHasContent = false;
     if (badgeLabel || badgeDescription) {
       var badge = DOCUMENT.createElement('div');
       badge.className = 'onboarding-hero-badge';
@@ -2955,7 +2965,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         badgeText.appendChild(badgeDescriptionEl);
       }
       badge.appendChild(badgeText);
-      hero.appendChild(badge);
+      heroBanner.appendChild(badge);
+      heroBannerHasContent = true;
+    }
+    if (heroHeading || heroSubheading || heroSummary) {
+      var headerWrap = DOCUMENT.createElement('div');
+      headerWrap.className = 'onboarding-hero-header';
+      if (heroHeading) {
+        var headingEl = DOCUMENT.createElement('h1');
+        headingEl.className = 'onboarding-hero-heading';
+        headingEl.textContent = heroHeading;
+        headerWrap.appendChild(headingEl);
+      }
+      if (heroSubheading) {
+        var subheadingEl = DOCUMENT.createElement('p');
+        subheadingEl.className = 'onboarding-hero-subheading';
+        subheadingEl.textContent = heroSubheading;
+        headerWrap.appendChild(subheadingEl);
+      }
+      if (heroSummary) {
+        var summaryEl = DOCUMENT.createElement('p');
+        summaryEl.className = 'onboarding-hero-summary';
+        summaryEl.textContent = heroSummary;
+        headerWrap.appendChild(summaryEl);
+      }
+      heroBanner.appendChild(headerWrap);
+      heroBannerHasContent = true;
+    }
+    if (heroBannerHasContent) {
+      hero.appendChild(heroBanner);
     }
     if (highlights.length) {
       var listEl = DOCUMENT.createElement('ul');

@@ -32,7 +32,7 @@ If you cannot translate a string immediately, copy the English text so the UI st
 
 ## Step 3: Update language selectors
 
-The Settings dialog, the top navigation and the onboarding language/profile card all render language options directly in [`index.html`](../index.html). Add a new `<option>` element for your language in both selectors so the header, onboarding and settings surfaces stay synchronized without editing localStorage.
+The Settings dialog, the top navigation and the onboarding hero panel all render language options directly in [`index.html`](../index.html). Add a new `<option>` element for your language in both selectors so the header, hero welcome step and settings surfaces stay synchronized without editing localStorage.
 
 ## Step 4: Verify the result
 
