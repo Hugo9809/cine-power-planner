@@ -227,6 +227,32 @@
     return value;
   }
 
+  function isPlainObject(value) {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  }
+
+  function isStepBodyValue(value) {
+    return (
+      typeof value === 'string'
+      || Array.isArray(value)
+      || isPlainObject(value)
+    );
+  }
+
+  function cloneStepBody(value) {
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (Array.isArray(value) || isPlainObject(value)) {
+      return clone(value);
+    }
+    return '';
+  }
+
   const DEFAULT_STEP_KEYS = [
     'intro',
     'userProfile',
@@ -261,8 +287,27 @@
   const DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
-      body:
-        'This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.',
+      body: [
+        {
+          kind: 'lead',
+          text:
+            'This guided safety tour prepares Cine Power Planner to protect every crew project—from the first setup through redundant backups.',
+        },
+        {
+          kind: 'list',
+          title: 'In the next steps you will:',
+          items: [
+            'Verify how offline saves, autosave and backups secure every workflow.',
+            'Practice where to store, restore and share data without risking loss.',
+            'Preview the protections that keep preferences and gear libraries synchronized.',
+          ],
+        },
+        {
+          kind: 'note',
+          text:
+            'Choose your language now so the entire interface and tutorial translate before you continue.',
+        },
+      ],
     },
     userProfile: {
       title: 'Configure your user profile',
@@ -270,9 +315,9 @@
         'Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays with your offline saves and keeps exports credited to the correct owner.',
     },
     unitsPreferences: {
-      title: 'Tune language, theme and units',
+      title: 'Tune theme and units',
       body:
-        'Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
+        'Use Settings → General to choose dark or light theme, optional pink mode highlights, focus scale and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
@@ -1159,10 +1204,18 @@
         (fallbackEntry && typeof fallbackEntry.title === 'string' && fallbackEntry.title) ||
         (typeof defaultEntry.title === 'string' ? defaultEntry.title : key);
 
-      const resolvedBody =
-        (localEntry && typeof localEntry.body === 'string' && localEntry.body) ||
-        (fallbackEntry && typeof fallbackEntry.body === 'string' && fallbackEntry.body) ||
-        (typeof defaultEntry.body === 'string' ? defaultEntry.body : '');
+      const resolvedBody = (() => {
+        if (localEntry && isStepBodyValue(localEntry.body)) {
+          return cloneStepBody(localEntry.body);
+        }
+        if (fallbackEntry && isStepBodyValue(fallbackEntry.body)) {
+          return cloneStepBody(fallbackEntry.body);
+        }
+        if (isStepBodyValue(defaultEntry.body)) {
+          return cloneStepBody(defaultEntry.body);
+        }
+        return '';
+      })();
 
       steps[key] = {
         title: resolvedTitle,
@@ -1652,8 +1705,9 @@
     titleEl.id = 'onboardingCardTitle';
     cardContentEl.appendChild(titleEl);
 
-    bodyEl = DOCUMENT.createElement('p');
+    bodyEl = DOCUMENT.createElement('div');
     bodyEl.id = 'onboardingCardBody';
+    bodyEl.className = 'onboarding-card-body';
     cardContentEl.appendChild(bodyEl);
 
     interactionContainerEl = DOCUMENT.createElement('div');
@@ -2450,7 +2504,7 @@
       : { title: step.key, body: '' };
     return {
       title: typeof pack.title === 'string' ? pack.title : step.key,
-      body: typeof pack.body === 'string' ? pack.body : '',
+      body: isStepBodyValue(pack.body) ? pack.body : '',
     };
   }
 
@@ -3009,68 +3063,71 @@
     return true;
   }
 
+  function createLanguageField(registerCleanup) {
+    const languageSelect = DOCUMENT.getElementById('settingsLanguage');
+    if (!languageSelect) {
+      return null;
+    }
+    const group = DOCUMENT.createElement('div');
+    group.className = 'onboarding-field-group';
+    const inputId = getProxyControlId('language');
+    const label = DOCUMENT.createElement('label');
+    label.className = 'onboarding-field-label';
+    label.setAttribute('for', inputId);
+    label.textContent = 'Language';
+    const proxySelect = DOCUMENT.createElement('select');
+    proxySelect.id = inputId;
+    proxySelect.className = 'onboarding-field-select';
+    const originalOptions = Array.from(languageSelect.options || []);
+    if (originalOptions.length === 0) {
+      const option = DOCUMENT.createElement('option');
+      option.value = languageSelect.value || 'en';
+      option.textContent = languageSelect.value || 'English';
+      proxySelect.appendChild(option);
+    } else {
+      for (let index = 0; index < originalOptions.length; index += 1) {
+        const source = originalOptions[index];
+        const option = DOCUMENT.createElement('option');
+        option.value = source.value;
+        option.textContent = source.textContent || source.value;
+        proxySelect.appendChild(option);
+      }
+    }
+    proxySelect.value = languageSelect.value || proxySelect.value;
+
+    const syncFromTarget = () => {
+      if (proxySelect.value !== languageSelect.value) {
+        proxySelect.value = languageSelect.value;
+      }
+    };
+
+    const syncToTarget = () => {
+      if (languageSelect.value !== proxySelect.value) {
+        languageSelect.value = proxySelect.value;
+        dispatchSyntheticEvent(languageSelect, 'change');
+      }
+    };
+
+    proxySelect.addEventListener('change', syncToTarget);
+    registerCleanup(() => {
+      proxySelect.removeEventListener('change', syncToTarget);
+    });
+    languageSelect.addEventListener('change', syncFromTarget);
+    registerCleanup(() => {
+      languageSelect.removeEventListener('change', syncFromTarget);
+    });
+
+    group.appendChild(label);
+    group.appendChild(proxySelect);
+    return group;
+  }
+
   function renderUnitsPreferencesInteraction(registerCleanup, step) {
     if (!interactionContainerEl) {
       return false;
     }
 
     const fragment = DOCUMENT.createDocumentFragment();
-
-    const languageSelect = DOCUMENT.getElementById('settingsLanguage');
-    if (languageSelect) {
-      const group = DOCUMENT.createElement('div');
-      group.className = 'onboarding-field-group';
-      const inputId = getProxyControlId('language');
-      const label = DOCUMENT.createElement('label');
-      label.className = 'onboarding-field-label';
-      label.setAttribute('for', inputId);
-      label.textContent = 'Language';
-      const proxySelect = DOCUMENT.createElement('select');
-      proxySelect.id = inputId;
-      proxySelect.className = 'onboarding-field-select';
-      const originalOptions = Array.from(languageSelect.options || []);
-      if (originalOptions.length === 0) {
-        const option = DOCUMENT.createElement('option');
-        option.value = languageSelect.value || 'en';
-        option.textContent = languageSelect.value || 'English';
-        proxySelect.appendChild(option);
-      } else {
-        for (let index = 0; index < originalOptions.length; index += 1) {
-          const source = originalOptions[index];
-          const option = DOCUMENT.createElement('option');
-          option.value = source.value;
-          option.textContent = source.textContent || source.value;
-          proxySelect.appendChild(option);
-        }
-      }
-      proxySelect.value = languageSelect.value || proxySelect.value;
-
-      const syncFromTarget = () => {
-        if (proxySelect.value !== languageSelect.value) {
-          proxySelect.value = languageSelect.value;
-        }
-      };
-
-      const syncToTarget = () => {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-      };
-
-      proxySelect.addEventListener('change', syncToTarget);
-      registerCleanup(() => {
-        proxySelect.removeEventListener('change', syncToTarget);
-      });
-      languageSelect.addEventListener('change', syncFromTarget);
-      registerCleanup(() => {
-        languageSelect.removeEventListener('change', syncFromTarget);
-      });
-
-      group.appendChild(label);
-      group.appendChild(proxySelect);
-      fragment.appendChild(group);
-    }
 
     const darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
     const themeGroup = DOCUMENT.createElement('div');
@@ -3462,6 +3519,53 @@
     return true;
   }
 
+  function renderIntroInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const fragment = DOCUMENT.createDocumentFragment();
+    const languageField = createLanguageField(registerCleanup);
+    if (languageField) {
+      fragment.appendChild(languageField);
+    }
+
+    if (!fragment.childNodes.length) {
+      return false;
+    }
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+
+    if (languageField) {
+      const select = languageField.querySelector('select');
+      if (select && typeof select.focus === 'function') {
+        const focusRunner = () => {
+          try {
+            select.focus({ preventScroll: true });
+          } catch (error) {
+            void error;
+            try {
+              select.focus();
+            } catch (focusError) {
+              void focusError;
+            }
+          }
+        };
+        if (typeof queueMicrotask === 'function') {
+          queueMicrotask(focusRunner);
+        } else {
+          setTimeout(focusRunner, 0);
+        }
+      }
+    }
+
+    return true;
+  }
+
   function renderStepInteraction(step) {
     if (!interactionContainerEl) {
       return;
@@ -3484,6 +3588,9 @@
     };
 
     const customRendered = (() => {
+      if (key === 'intro') {
+        return renderIntroInteraction(registerCleanup);
+      }
       if (key === 'userProfile') {
         return renderUserProfileInteraction(registerCleanup);
       }
@@ -3538,6 +3645,140 @@
     showStep(index);
   }
 
+  function clearBodyContent() {
+    if (!bodyEl) {
+      return;
+    }
+    while (bodyEl.firstChild) {
+      bodyEl.removeChild(bodyEl.firstChild);
+    }
+  }
+
+  function appendBodyParagraph(text, extraClass) {
+    if (!bodyEl || typeof text !== 'string') {
+      return false;
+    }
+    const normalized = text.trim();
+    if (!normalized) {
+      return false;
+    }
+    const paragraph = DOCUMENT.createElement('p');
+    paragraph.className = extraClass
+      ? `onboarding-card-paragraph ${extraClass}`
+      : 'onboarding-card-paragraph';
+    paragraph.textContent = normalized;
+    bodyEl.appendChild(paragraph);
+    return true;
+  }
+
+  function appendBodyList(segment) {
+    if (!bodyEl || !segment) {
+      return false;
+    }
+    const items = Array.isArray(segment.items) ? segment.items : [];
+    const filtered = [];
+    for (let index = 0; index < items.length; index += 1) {
+      const entry = items[index];
+      if (typeof entry === 'string') {
+        const trimmed = entry.trim();
+        if (trimmed) {
+          filtered.push(trimmed);
+        }
+      } else if (entry && typeof entry === 'object') {
+        const text = typeof entry.text === 'string' ? entry.text : entry.label;
+        if (typeof text === 'string') {
+          const trimmed = text.trim();
+          if (trimmed) {
+            filtered.push(trimmed);
+          }
+        }
+      }
+    }
+    if (!filtered.length) {
+      return false;
+    }
+    const wrapper = DOCUMENT.createElement('div');
+    wrapper.className = 'onboarding-intro-list';
+    if (segment && typeof segment.title === 'string') {
+      const title = segment.title.trim();
+      if (title) {
+        const heading = DOCUMENT.createElement('p');
+        heading.className = 'onboarding-intro-list-title';
+        heading.textContent = title;
+        wrapper.appendChild(heading);
+      }
+    }
+    const list = DOCUMENT.createElement('ul');
+    list.className = 'onboarding-intro-bullets';
+    for (let index = 0; index < filtered.length; index += 1) {
+      const itemText = filtered[index];
+      const item = DOCUMENT.createElement('li');
+      item.className = 'onboarding-intro-bullet';
+      const label = DOCUMENT.createElement('span');
+      label.className = 'onboarding-intro-bullet-text';
+      label.textContent = itemText;
+      item.appendChild(label);
+      list.appendChild(item);
+    }
+    wrapper.appendChild(list);
+    bodyEl.appendChild(wrapper);
+    return true;
+  }
+
+  function renderBodySegment(segment) {
+    if (typeof segment === 'string') {
+      return appendBodyParagraph(segment);
+    }
+    if (!segment || typeof segment !== 'object') {
+      return false;
+    }
+    const kind = typeof segment.kind === 'string'
+      ? segment.kind
+      : (typeof segment.type === 'string' ? segment.type : 'paragraph');
+    const text = typeof segment.text === 'string'
+      ? segment.text
+      : (typeof segment.body === 'string' ? segment.body : '');
+    switch (kind) {
+      case 'lead':
+        return appendBodyParagraph(text || '', 'onboarding-intro-lead');
+      case 'note':
+        return appendBodyParagraph(text || '', 'onboarding-intro-note');
+      case 'list':
+        return appendBodyList(segment);
+      case 'paragraph':
+      default:
+        return appendBodyParagraph(text || '');
+    }
+  }
+
+  function renderStepBodyContent(content) {
+    if (!bodyEl) {
+      return;
+    }
+    clearBodyContent();
+    if (typeof content === 'string') {
+      appendBodyParagraph(content);
+      return;
+    }
+    if (Array.isArray(content)) {
+      for (let index = 0; index < content.length; index += 1) {
+        renderBodySegment(content[index]);
+      }
+      return;
+    }
+    if (isPlainObject(content)) {
+      if (Array.isArray(content.segments)) {
+        for (let index = 0; index < content.segments.length; index += 1) {
+          renderBodySegment(content.segments[index]);
+        }
+        return;
+      }
+      renderBodySegment(content);
+      return;
+    }
+    appendBodyParagraph('');
+  }
+
   function updateCardForStep(step, index) {
     if (!cardEl) {
       return;
@@ -3560,7 +3801,7 @@
     cardEl.setAttribute('aria-describedby', bodyEl.id);
 
     titleEl.textContent = textPack.title || '';
-    bodyEl.textContent = stepText;
+    renderStepBodyContent(stepText);
 
     if (step.key === 'completion') {
       progressEl.textContent = tourTexts.completionIndicator || '';

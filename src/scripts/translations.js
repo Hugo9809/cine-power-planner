@@ -1832,8 +1832,27 @@ const texts = {
       steps: {
         intro: {
           title: "Welcome to Cine Power Planner",
-          body:
-            "This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.",
+          body: [
+            {
+              kind: "lead",
+              text:
+                "This guided safety tour prepares Cine Power Planner to protect every crew project—from the first setup through redundant backups.",
+            },
+            {
+              kind: "list",
+              title: "In the next steps you will:",
+              items: [
+                "Verify how offline saves, autosave and backups secure every workflow.",
+                "Practice where to store, restore and share data without risking loss.",
+                "Preview the protections that keep preferences and gear libraries synchronized.",
+              ],
+            },
+            {
+              kind: "note",
+              text:
+                "Choose your language now so the entire interface and tutorial translate before you continue.",
+            },
+          ],
         },
         userProfile: {
           title: "Configure your user profile",
@@ -1841,9 +1860,9 @@ const texts = {
             "Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays cached with your offline saves and keeps exports credited to the correct owner.",
         },
         unitsPreferences: {
-          title: "Tune language, theme and units",
+          title: "Tune theme and units",
           body:
-            "Use Settings → General to choose language, dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
+            "Use Settings → General to choose dark or light theme, optional pink mode highlights, focus scale and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
         },
         nameProject: {
           title: "Name your first project",
@@ -3903,8 +3922,27 @@ const texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-          body:
-            "Questo percorso ampliato illustra ogni flusso che protegge i dati della troupe, dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva i progressi offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
+          body: [
+            {
+              kind: "lead",
+              text:
+                "Questo tour guidato sulla sicurezza prepara Cine Power Planner a proteggere ogni progetto della troupe, dalla prima configurazione ai backup ridondanti.",
+            },
+            {
+              kind: "list",
+              title: "Nei prossimi passaggi potrai:",
+              items: [
+                "Verificare come salvataggi offline, autosalvataggio e backup mettono al sicuro ogni flusso di lavoro.",
+                "Esercitarti su dove archiviare, ripristinare e condividere i dati senza rischiare perdite.",
+                "Esaminare le protezioni che mantengono sincronizzate preferenze e librerie di attrezzatura.",
+              ],
+            },
+            {
+              kind: "note",
+              text:
+                "Scegli ora la lingua così l'interfaccia e il tutorial si traducono prima di proseguire.",
+            },
+          ],
         },
         userProfile: {
           title: "Configura il tuo profilo",
@@ -3912,9 +3950,9 @@ const texts = {
             "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono che le esportazioni accreditino il proprietario corretto.",
         },
         unitsPreferences: {
-          title: "Personalizza lingua, tema e unità",
+          title: "Personalizza tema e unità",
           body:
-            "Apri Impostazioni → Generale per scegliere lingua, tema chiaro o scuro, eventuale modalità rosa, scala di fuoco predefinita e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio al sicuro anche durante le pulizie automatiche di spazio.",
+            "Apri Impostazioni → Generale per scegliere tema chiaro o scuro, eventuale modalità rosa, scala di fuoco e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio resta al sicuro anche durante le pulizie automatiche di spazio.",
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
@@ -5987,8 +6025,27 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-          body:
-            "Este recorrido ampliado orienta cada flujo que protege los datos del equipo, desde el primer proyecto hasta los respaldos redundantes. Cada paso guarda el progreso sin conexión para que puedas pausar y reanudar sin perder protecciones.",
+          body: [
+            {
+              kind: "lead",
+              text:
+                "Este tour de seguridad guiado prepara a Cine Power Planner para proteger cada proyecto del equipo, desde la configuración inicial hasta los respaldos redundantes.",
+            },
+            {
+              kind: "list",
+              title: "En los próximos pasos podrás:",
+              items: [
+                "Comprobar cómo los guardados sin conexión, el guardado automático y las copias de seguridad protegen cada flujo de trabajo.",
+                "Practicar dónde almacenar, restaurar y compartir datos sin arriesgar pérdidas.",
+                "Previsualizar las protecciones que mantienen sincronizadas las preferencias y las bibliotecas de equipo.",
+              ],
+            },
+            {
+              kind: "note",
+              text:
+                "Elige tu idioma ahora para que la interfaz y el tutorial se traduzcan antes de continuar.",
+            },
+          ],
         },
         userProfile: {
           title: "Configura tu perfil",
@@ -5996,9 +6053,9 @@ const texts = {
             "Completa tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
         },
         unitsPreferences: {
-          title: "Ajusta idioma, tema y unidades",
+          title: "Ajusta tema y unidades",
           body:
-            "Usa Configuración → General para elegir idioma, tema claro u oscuro, resaltes opcionales en modo rosa, escala de enfoque predeterminada y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
+            "Usa Configuración → General para elegir tema claro u oscuro, resaltes opcionales en modo rosa, escala de enfoque predeterminada y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
@@ -8084,8 +8141,27 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-          body:
-            "Ce parcours étendu présente chaque flux qui protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape enregistre la progression hors ligne pour vous permettre de faire une pause et de reprendre sans perdre les garde-fous.",
+          body: [
+            {
+              kind: "lead",
+              text:
+                "Ce tour de sécurité guidé prépare Cine Power Planner à protéger chaque projet de l’équipe, de la configuration initiale aux sauvegardes redondantes.",
+            },
+            {
+              kind: "list",
+              title: "Au cours des prochaines étapes, vous pourrez :",
+              items: [
+                "Vérifier comment les sauvegardes hors ligne, l’enregistrement automatique et les copies de sécurité sécurisent chaque flux de travail.",
+                "Pratiquer où stocker, restaurer et partager les données sans risquer de pertes.",
+                "Découvrir les protections qui maintiennent synchronisées les préférences et les bibliothèques de matériel.",
+              ],
+            },
+            {
+              kind: "note",
+              text:
+                "Choisissez votre langue maintenant pour que l’interface et le tutoriel soient traduits avant de continuer.",
+            },
+          ],
         },
         userProfile: {
           title: "Configurez votre profil",
@@ -8093,9 +8169,9 @@ const texts = {
             "Renseignez votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Les modifications se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent que les exports créditent le bon responsable.",
         },
         unitsPreferences: {
-          title: "Réglez langue, thème et unités",
+          title: "Réglez thème et unités",
           body:
-            "Utilisez Paramètres → Général pour choisir la langue, le thème clair ou sombre, les surbrillances optionnelles du mode rose, l’échelle de mise au point par défaut et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
+            "Utilisez Paramètres → Général pour choisir le thème clair ou sombre, les surbrillances optionnelles du mode rose, l’échelle de mise au point par défaut et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
         },
         nameProject: {
           title: "Nommez votre premier projet",
@@ -10185,8 +10261,27 @@ const texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body:
-            "Dieser erweiterte Rundgang erklärt jeden Workflow, der die Daten deines Teams schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt speichert den Fortschritt offline, damit du jederzeit pausieren und ohne Verlust der Schutzmaßnahmen fortsetzen kannst.",
+          body: [
+            {
+              kind: "lead",
+              text:
+                "Diese geführte Sicherheitstour bereitet Cine Power Planner darauf vor, jedes Teamprojekt zu schützen – von der ersten Einrichtung bis zu redundanten Backups.",
+            },
+            {
+              kind: "list",
+              title: "In den nächsten Schritten kannst du:",
+              items: [
+                "Prüfen, wie Offline-Sicherungen, Autosave und Backups jeden Workflow absichern.",
+                "Üben, wo Daten gespeichert, wiederhergestellt und geteilt werden, ohne Verluste zu riskieren.",
+                "Vorab sehen, welche Schutzmechanismen Einstellungen und Gerätebibliotheken synchron halten.",
+              ],
+            },
+            {
+              kind: "note",
+              text:
+                "Wähle jetzt deine Sprache, damit sich Oberfläche und Tutorial vor dem Fortfahren übersetzen.",
+            },
+          ],
         },
         userProfile: {
           title: "Profil einrichten",
@@ -10194,9 +10289,9 @@ const texts = {
             "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt hier ein. Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Speicherungen und stellen sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
         },
         unitsPreferences: {
-          title: "Sprache, Theme und Einheiten anpassen",
+          title: "Theme und Einheiten anpassen",
           body:
-            "Nutze Einstellungen → Allgemein, um Sprache, helles oder dunkles Theme, optionale Pink-Highlights, Standard-Fokusskala und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
+            "Nutze Einstellungen → Allgemein, um helles oder dunkles Theme, optionale Pink-Highlights, Standard-Fokusskala und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
         },
         nameProject: {
           title: "Erstes Projekt benennen",
