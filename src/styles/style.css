@@ -7139,8 +7139,9 @@ body.dark-mode .onboarding-hero-highlight-icon--badge {
 }
 
 .onboarding-hero-highlight-badge-label {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
   font-weight: var(--font-weight-semibold);
+  color: inherit;
 }
 
 .onboarding-hero-highlight-badge-description {
