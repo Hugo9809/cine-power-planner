@@ -359,12 +359,12 @@
     intro: {
       title: 'Welcome to Cine Power Planner',
       body:
-        'This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.',
+        'Choose your interface language and explore how Cine Power Planner protects crew data—from first project setup to redundant backups. Every step saves offline so you can pause anytime without losing safeguards.',
     },
     userProfile: {
-      title: 'Configure language and your profile',
+      title: 'Secure your profile details',
       body:
-        'Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.',
+        'Confirm your display name, role, phone, email and photo. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.',
     },
     unitsPreferences: {
       title: 'Tune theme and units',
@@ -3082,6 +3082,251 @@
     }
   }
 
+  function renderIntroInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const fragment = DOCUMENT.createDocumentFragment();
+
+    const hero = DOCUMENT.createElement('div');
+    hero.className = 'onboarding-intro-hero';
+    const lede = DOCUMENT.createElement('p');
+    lede.className = 'onboarding-intro-lede';
+    lede.textContent = 'Choose your language to translate the tutorial instantly and review every safeguard at a glance.';
+    hero.appendChild(lede);
+    fragment.appendChild(hero);
+
+    const highlightMessages = [
+      'Autosave every workflow offline so pauses never lose safeguards.',
+      'Capture redundant backups and share-ready exports at every milestone.',
+      'Restore crew data without losing contacts, notes or device history.',
+    ];
+    const highlightList = DOCUMENT.createElement('ul');
+    highlightList.className = 'onboarding-intro-list';
+    for (let index = 0; index < highlightMessages.length; index += 1) {
+      const item = DOCUMENT.createElement('li');
+      item.className = 'onboarding-intro-item';
+      item.textContent = highlightMessages[index];
+      highlightList.appendChild(item);
+    }
+    fragment.appendChild(highlightList);
+
+    const languageSelect = DOCUMENT.getElementById('languageSelect');
+    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+    const settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
+    const languageTarget = languageSelect || settingsLanguage;
+
+    const languageGroup = DOCUMENT.createElement('div');
+    languageGroup.className = 'onboarding-field-group onboarding-intro-language';
+    const languageInputId = getProxyControlId('intro-language');
+    const languageLabel = DOCUMENT.createElement('label');
+    languageLabel.className = 'onboarding-field-label onboarding-intro-language-label';
+    languageLabel.setAttribute('for', languageInputId);
+
+    const resolveLanguageLabel = () => {
+      if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
+        const text = settingsLanguageLabel.textContent.trim();
+        if (text) {
+          return text;
+        }
+      }
+      if (languageSelect && typeof languageSelect.getAttribute === 'function') {
+        const ariaLabel = languageSelect.getAttribute('aria-label');
+        if (ariaLabel && ariaLabel.trim()) {
+          return ariaLabel.trim();
+        }
+      }
+      return 'Language';
+    };
+
+    languageLabel.textContent = resolveLanguageLabel();
+    languageGroup.appendChild(languageLabel);
+
+    const proxySelect = DOCUMENT.createElement('select');
+    proxySelect.id = languageInputId;
+    proxySelect.className = 'onboarding-field-input onboarding-field-select onboarding-intro-language-select';
+
+    const copyLanguageOptions = () => {
+      if (!languageTarget) {
+        return;
+      }
+      const targetOptions = languageTarget.options ? Array.from(languageTarget.options) : [];
+      proxySelect.textContent = '';
+      if (targetOptions.length) {
+        for (let optionIndex = 0; optionIndex < targetOptions.length; optionIndex += 1) {
+          const clone = targetOptions[optionIndex].cloneNode(true);
+          proxySelect.appendChild(clone);
+        }
+      } else {
+        const fallbackOption = DOCUMENT.createElement('option');
+        fallbackOption.value = languageTarget.value || '';
+        fallbackOption.textContent = languageTarget.value || '';
+        proxySelect.appendChild(fallbackOption);
+      }
+      if (languageTarget.value && proxySelect.value !== languageTarget.value) {
+        proxySelect.value = languageTarget.value;
+      }
+    };
+
+    if (languageTarget) {
+      copyLanguageOptions();
+    } else {
+      proxySelect.disabled = true;
+      proxySelect.setAttribute('aria-disabled', 'true');
+      const placeholderOption = DOCUMENT.createElement('option');
+      placeholderOption.value = '';
+      placeholderOption.textContent = 'Language selector unavailable';
+      proxySelect.appendChild(placeholderOption);
+    }
+
+    const syncLanguageFromActive = () => {
+      if (proxySelect.disabled) {
+        return;
+      }
+      if (languageTarget) {
+        copyLanguageOptions();
+      }
+      let activeValue = '';
+      if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
+        activeValue = languageSelect.value;
+      } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
+        activeValue = settingsLanguage.value;
+      }
+      if (activeValue && proxySelect.value !== activeValue) {
+        proxySelect.value = activeValue;
+      }
+    };
+
+    const syncLanguageToTargets = () => {
+      if (proxySelect.disabled) {
+        return;
+      }
+      const nextValue = proxySelect.value;
+      if (!nextValue) {
+        return;
+      }
+      let applied = false;
+      if (typeof GLOBAL_SCOPE?.setLanguage === 'function') {
+        try {
+          GLOBAL_SCOPE.setLanguage(nextValue);
+          applied = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+        }
+      }
+      if (!applied) {
+        if (languageSelect && languageSelect.value !== nextValue) {
+          languageSelect.value = nextValue;
+          dispatchSyntheticEvent(languageSelect, 'change');
+        }
+        if (settingsLanguage && settingsLanguage.value !== nextValue) {
+          settingsLanguage.value = nextValue;
+          dispatchSyntheticEvent(settingsLanguage, 'change');
+        }
+      }
+      syncLanguageFromActive();
+    };
+
+    if (!proxySelect.disabled) {
+      const handleProxyChange = () => {
+        syncLanguageToTargets();
+      };
+      proxySelect.addEventListener('change', handleProxyChange);
+      proxySelect.addEventListener('input', handleProxyChange);
+      registerCleanup(() => {
+        proxySelect.removeEventListener('change', handleProxyChange);
+        proxySelect.removeEventListener('input', handleProxyChange);
+      });
+    }
+
+    const handleExternalLanguageChange = () => {
+      syncLanguageFromActive();
+    };
+
+    if (languageSelect) {
+      languageSelect.addEventListener('change', handleExternalLanguageChange);
+      registerCleanup(() => {
+        languageSelect.removeEventListener('change', handleExternalLanguageChange);
+      });
+    }
+    if (settingsLanguage && settingsLanguage !== languageSelect) {
+      settingsLanguage.addEventListener('change', handleExternalLanguageChange);
+      registerCleanup(() => {
+        settingsLanguage.removeEventListener('change', handleExternalLanguageChange);
+      });
+    }
+
+    if (languageTarget && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+      try {
+        const mutationObserver = new GLOBAL_SCOPE.MutationObserver(() => copyLanguageOptions());
+        mutationObserver.observe(languageTarget, { childList: true });
+        registerCleanup(() => {
+          try {
+            mutationObserver.disconnect();
+          } catch (observerError) {
+            safeWarn('cine.features.onboardingTour could not disconnect language observer.', observerError);
+          }
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe language options.', error);
+      }
+    }
+
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
+      try {
+        GLOBAL_SCOPE.addEventListener('languagechange', handleExternalLanguageChange);
+        registerCleanup(() => {
+          try {
+            GLOBAL_SCOPE.removeEventListener('languagechange', handleExternalLanguageChange);
+          } catch (removeError) {
+            void removeError;
+          }
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe global language changes.', error);
+      }
+    }
+
+    languageGroup.appendChild(proxySelect);
+    fragment.appendChild(languageGroup);
+
+    const hint = DOCUMENT.createElement('p');
+    hint.className = 'onboarding-resume-hint onboarding-intro-hint';
+    hint.textContent = 'Language changes apply instantly across the tutorial, interface and offline saves.';
+    fragment.appendChild(hint);
+
+    syncLanguageFromActive();
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+
+    if (!proxySelect.disabled && typeof proxySelect.focus === 'function') {
+      const applyFocus = () => {
+        try {
+          proxySelect.focus({ preventScroll: true });
+        } catch (error) {
+          void error;
+          try {
+            proxySelect.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(applyFocus);
+      } else {
+        setTimeout(applyFocus, 0);
+      }
+    }
+
+    return true;
+  }
+
   function renderUserProfileInteraction(registerCleanup) {
     if (!interactionContainerEl) {
       return false;
@@ -3098,15 +3343,12 @@
     const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
-    const languageSelect = DOCUMENT.getElementById('languageSelect');
-    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
-    const settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
 
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Pick your interface language and contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    intro.textContent = 'Confirm your contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -3330,96 +3572,6 @@
       return proxyControl;
     };
 
-    let languageProxy = null;
-    if (languageSelect || settingsLanguage) {
-      const languageTarget = languageSelect || settingsLanguage;
-      const resolveLanguageLabel = () => {
-        if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
-          const text = settingsLanguageLabel.textContent.trim();
-          if (text) {
-            return text;
-          }
-        }
-        if (languageSelect && typeof languageSelect.getAttribute === 'function') {
-          const ariaLabel = languageSelect.getAttribute('aria-label');
-          if (ariaLabel && ariaLabel.trim()) {
-            return ariaLabel.trim();
-          }
-        }
-        return 'Language';
-      };
-
-      const handleLanguageSync = (direction) => {
-        if (!languageProxy || direction !== 'to') {
-          return;
-        }
-        const value = languageProxy.value;
-        if (typeof GLOBAL_SCOPE.setLanguage === 'function') {
-          try {
-            GLOBAL_SCOPE.setLanguage(value);
-          } catch (error) {
-            safeWarn('cine.features.onboardingTour could not sync language preference.', error);
-          }
-          return;
-        }
-        if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
-          languageSelect.value = value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-        if (settingsLanguage && settingsLanguage !== languageTarget && settingsLanguage.value !== value) {
-          settingsLanguage.value = value;
-          dispatchSyntheticEvent(settingsLanguage, 'change');
-        }
-      };
-
-      languageProxy = createProxyField({
-        fieldKey: 'user-language',
-        labelText: resolveLanguageLabel(),
-        target: languageTarget,
-        type: 'select',
-        onAfterSync: handleLanguageSync,
-      });
-
-      const syncLanguageFromActive = () => {
-        if (!languageProxy) {
-          return;
-        }
-        let activeValue = '';
-        if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
-          activeValue = languageSelect.value;
-        } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
-          activeValue = settingsLanguage.value;
-        }
-        if (activeValue && languageProxy.value !== activeValue) {
-          languageProxy.value = activeValue;
-        }
-      };
-
-      syncLanguageFromActive();
-
-      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
-        const handleLanguageChangeEvent = () => {
-          syncLanguageFromActive();
-        };
-        try {
-          GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChangeEvent);
-          registerCleanup(() => {
-            try {
-              GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageChangeEvent);
-            } catch (removeError) {
-              void removeError;
-            }
-          });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not observe language changes.', error);
-        }
-      }
-
-      registerCleanup(() => {
-        languageProxy = null;
-      });
-    }
-
     const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
       ? profileLabel.textContent
       : 'Display name';
@@ -3502,7 +3654,7 @@
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details and keeps them cached offline without resetting tutorial progress.';
     fragment.appendChild(skipHint);
 
     while (interactionContainerEl.firstChild) {
@@ -4009,6 +4161,9 @@
     };
 
     const customRendered = (() => {
+      if (key === 'intro') {
+        return renderIntroInteraction(registerCleanup);
+      }
       if (key === 'userProfile') {
         return renderUserProfileInteraction(registerCleanup);
       }

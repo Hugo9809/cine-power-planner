@@ -1782,7 +1782,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Open %1$s, start a %2$s to confirm your offline exports, and review Settings → Data & Storage for the latest autosave timestamp before you continue.",
     helpOnboardingTutorialCopy:
-      "to follow every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net drill—before configuring your first project. Use the step navigator and progress meter to review completed sections offline.",
+      "to follow every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net drill—before configuring your first project. Start by choosing your interface language so the tutorial stays in sync with the rest of the app. Use the step navigator and progress meter to review completed sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1834,12 +1834,12 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.",
+            "Choose your interface language and explore how Cine Power Planner protects crew data—from first project setup to redundant backups. Every step saves offline so you can pause anytime without losing safeguards.",
         },
         userProfile: {
-          title: "Configure language and your profile",
+          title: "Secure your profile details",
           body:
-            "Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.",
+            "Confirm your display name, role, phone, email and photo. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.",
         },
         unitsPreferences: {
           title: "Tune theme and units",
@@ -3864,7 +3864,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Apri %1$s, avvia una %2$s per confermare le esportazioni offline e controlla Impostazioni → Dati e archiviazione per verificare l'ultimo salvataggio automatico prima di proseguire.",
     helpOnboardingTutorialCopy:
-      "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—incluse il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
+      "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—compresi il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Inizia scegliendo la lingua dell'interfaccia così il tutorial resta sincronizzato con il resto dell'app. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
@@ -3916,12 +3916,12 @@ const texts = {
         intro: {
           title: "Benvenuto in Cine Power Planner",
           body:
-            "Questo percorso ampliato illustra ogni flusso che protegge i dati della troupe, dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva i progressi offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
+            "Scegli la lingua dell'interfaccia ed esplora come Cine Power Planner protegge i dati della troupe—dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
         },
         userProfile: {
-          title: "Configura lingua e profilo",
+          title: "Proteggi i dati del profilo",
           body:
-            "Scegli la lingua dell'interfaccia, il nome visualizzato, il ruolo, il telefono, l'email e la foto direttamente qui. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e garantisce che le esportazioni accreditino il proprietario corretto.",
+            "Conferma nome visualizzato, ruolo, telefono, email e foto. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e assicura che le esportazioni accreditino il proprietario corretto.",
         },
         unitsPreferences: {
           title: "Personalizza tema e unità",
@@ -5959,7 +5959,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Abre %1$s, inicia un %2$s para confirmar tus exportaciones sin conexión y revisa Configuración → Datos y almacenamiento para verificar la marca temporal del último guardado automático antes de continuar.",
     helpOnboardingTutorialCopy:
-      "para recorrer cada flujo de trabajo con seguimiento del progreso sin conexión—incluido el punto de control del Resumen de energía y el simulacro de red de seguridad offline—antes de configurar tu primer proyecto. Usa el navegador de pasos y el medidor de progreso para revisar sin conexión las secciones terminadas.",
+      "para recorrer cada flujo de trabajo con seguimiento del progreso sin conexión—incluidos el punto de control de Power Summary y el simulacro de red de seguridad offline—antes de configurar tu primer proyecto. Empieza eligiendo el idioma de la interfaz para que el tutorial se mantenga sincronizado con el resto de la app. Usa el navegador de pasos y el medidor de progreso para repasar sin conexión las secciones completadas.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
@@ -6011,12 +6011,12 @@ const texts = {
         intro: {
           title: "Bienvenido a Cine Power Planner",
           body:
-            "Este recorrido ampliado orienta cada flujo que protege los datos del equipo, desde el primer proyecto hasta los respaldos redundantes. Cada paso guarda el progreso sin conexión para que puedas pausar y reanudar sin perder protecciones.",
+            "Elige el idioma de la interfaz y descubre cómo Cine Power Planner protege los datos del equipo, desde la configuración del primer proyecto hasta los respaldos redundantes. Cada paso se guarda sin conexión, por lo que puedes pausar cuando quieras sin perder las protecciones.",
         },
         userProfile: {
-          title: "Configura idioma y perfil",
+          title: "Protege los datos de tu perfil",
           body:
-            "Elige el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
+            "Confirma tu nombre visible, rol, teléfono, correo y foto. Cada cambio se sincroniza al instante con Contactos, permanece en los guardados sin conexión y mantiene las exportaciones acreditadas a la persona correcta.",
         },
         unitsPreferences: {
           title: "Ajusta tema y unidades",
@@ -8067,7 +8067,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s, lancez un %2$s pour confirmer vos exports hors ligne et consultez Paramètres → Données et stockage afin de vérifier l'horodatage de la dernière sauvegarde automatique avant de continuer.",
     helpOnboardingTutorialCopy:
-      "pour parcourir chaque flux de travail avec un suivi de progression hors ligne — y compris le point de contrôle du Résumé d’alimentation et la répétition du filet de sécurité hors ligne — avant de configurer votre premier projet. Utilisez le navigateur d’étapes et la jauge de progression pour revoir hors ligne les sections terminées.",
+      "pour parcourir chaque flux de travail avec un suivi du progrès hors ligne — y compris le point de contrôle Power Summary et la répétition du filet de sécurité hors ligne — avant de configurer votre premier projet. Commencez par choisir la langue de l’interface afin que le tutoriel reste synchronisé avec le reste de l’application. Utilisez le navigateur d’étapes et la jauge de progression pour revoir hors ligne les sections terminées.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
@@ -8119,12 +8119,12 @@ const texts = {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
           body:
-            "Ce parcours étendu présente chaque flux qui protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape enregistre la progression hors ligne pour vous permettre de faire une pause et de reprendre sans perdre les garde-fous.",
+            "Choisissez la langue de l’interface et découvrez comment Cine Power Planner protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape est enregistrée hors ligne afin que vous puissiez faire une pause sans perdre les garde-fous.",
         },
         userProfile: {
-          title: "Configurez la langue et votre profil",
+          title: "Sécurisez les informations de votre profil",
           body:
-            "Choisissez la langue de l’interface, votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Chaque modification se synchronise immédiatement avec Contacts, reste disponible hors ligne dans vos sauvegardes et garantit que les exports créditent le bon responsable.",
+            "Confirmez votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo. Chaque modification se synchronise immédiatement avec Contacts, reste dans les enregistrements hors ligne et garantit que les exports attribuent la bonne personne.",
         },
         unitsPreferences: {
           title: "Réglez thème et unités",
@@ -10179,7 +10179,7 @@ const texts = {
     helpNoResultsSuggestionBackup:
       "Öffne %1$s, starte eine %2$s, um deine Offline-Exporte zu bestätigen, und prüfe unter Einstellungen → Daten & Speicherung den Zeitstempel des letzten automatischen Speicherns, bevor du fortfährst.",
     helpOnboardingTutorialCopy:
-      "um jeden Workflow mit Offline-Fortschrittsverfolgung durchzugehen – inklusive Power-Summary-Kontrollpunkt und Offline-Sicherheitsnetz-Probe –, bevor du dein erstes Projekt konfigurierst. Nutze den Schritt-Navigator und die Fortschrittsanzeige, um abgeschlossene Abschnitte offline erneut zu besuchen.",
+      "um jeden Workflow mit Offline-Fortschrittsverfolgung durchzugehen – einschließlich Power-Summary-Kontrollpunkt und Offline-Sicherheitsnetz-Übung –, bevor du dein erstes Projekt konfigurierst. Wähle zuerst die Oberflächensprache, damit das Tutorial mit dem restlichen Produkt übersetzt bleibt. Nutze den Schritt-Navigator und die Fortschrittsanzeige, um abgeschlossene Abschnitte offline erneut zu besuchen.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
@@ -10231,12 +10231,12 @@ const texts = {
         intro: {
           title: "Willkommen bei Cine Power Planner",
           body:
-            "Dieser erweiterte Rundgang erklärt jeden Workflow, der die Daten deines Teams schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt speichert den Fortschritt offline, damit du jederzeit pausieren und ohne Verlust der Schutzmaßnahmen fortsetzen kannst.",
+            "Wähle deine Oberflächensprache und sieh dir an, wie Cine Power Planner Crew-Daten schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt wird offline gespeichert, sodass du jederzeit pausieren kannst, ohne Schutzmaßnahmen zu verlieren.",
         },
         userProfile: {
-          title: "Sprache und Profil einrichten",
+          title: "Sichere deine Profildaten",
           body:
-            "Wähle die Sprache der Oberfläche, deinen Anzeigenamen, deine Rolle, Telefonnummer, E-Mail und dein Foto direkt hier. Jede Änderung wird sofort mit Kontakte synchronisiert, bleibt offline in deinen Speicherungen und stellt sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
+            "Bestätige Anzeigename, Rolle, Telefon, E-Mail und Foto. Jede Änderung synchronisiert sich sofort mit Kontakte, bleibt in den Offline-Speichern erhalten und sorgt dafür, dass Exporte der richtigen Person zugeordnet werden.",
         },
         unitsPreferences: {
           title: "Theme und Einheiten anpassen",

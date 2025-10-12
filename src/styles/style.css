@@ -7120,6 +7120,53 @@ body.dark-mode .onboarding-progress-fill {
   color: color-mix(in srgb, var(--text-color) 70%, rgba(0, 0, 0, 0.45));
 }
 
+.onboarding-intro-hero {
+  display: grid;
+  gap: clamp(0.2rem, 0.1rem + 0.4vw, 0.4rem);
+  margin-bottom: clamp(0.6rem, 0.35rem + 0.6vw, 0.9rem);
+}
+
+.onboarding-intro-lede {
+  margin: 0;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.2rem);
+  font-weight: var(--font-weight-semibold);
+  color: color-mix(in srgb, var(--accent-color) 75%, var(--text-color) 25%);
+}
+
+.onboarding-intro-list {
+  list-style: none;
+  margin: 0 0 clamp(0.75rem, 0.35rem + 0.8vw, 1.1rem);
+  padding: 0;
+  display: grid;
+  gap: clamp(0.35rem, 0.2rem + 0.4vw, 0.6rem);
+}
+
+.onboarding-intro-item {
+  position: relative;
+  padding-left: clamp(1.2rem, 0.9rem + 0.8vw, 1.8rem);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: var(--line-height-relaxed);
+}
+
+.onboarding-intro-item::before {
+  content: '•';
+  position: absolute;
+  left: 0.2rem;
+  top: 0.05rem;
+  font-size: clamp(1.1rem, 0.9rem + 0.7vw, 1.45rem);
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent-color) 85%, rgba(0, 0, 0, 0.2));
+}
+
+.onboarding-intro-language {
+  gap: clamp(0.25rem, 0.15rem + 0.3vw, 0.45rem);
+  margin-bottom: clamp(0.3rem, 0.2rem + 0.3vw, 0.55rem);
+}
+
+.onboarding-intro-hint {
+  margin-top: clamp(0.2rem, 0.1rem + 0.2vw, 0.35rem);
+}
+
 .onboarding-interaction {
   display: flex;
   flex-direction: column;
