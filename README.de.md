@@ -4,6 +4,31 @@
 
 Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Teilen professioneller Kamera-Strompläne, die dein Gerät niemals verlassen. Plane V‑Mount-, B‑Mount- oder Gold-Mount-Rigs, bewerte Laufzeiten, erfasse Projektanforderungen und exportiere teilbare Pakete – komplett im Browser, sogar offline. Alle Abhängigkeiten liegen in diesem Repository, damit dieselbe Erfahrung auf der Bühne, im Feld oder im Archivlaufwerk funktioniert, ohne nach Hause zu telefonieren.
 
+## Hauptfunktionen
+
+- **Gerätespezifische Stromdatenbank.** Greife auf gebündelte Leistungswerte für Kameras, Monitore, Sender, Lichter und Zubehör zu oder erweitere den lokalen Katalog um eigene Einträge, damit jedes Projekt mit verifizierten Daten startet.
+- **Laufzeit- und Akkuplanung.** Kombiniere Kapazitäten, Spannungsfamilien und Entladeverhalten, um abzuschätzen, wie lange jedes Rig durchhält, bevor Crews Akkus tauschen. Laufzeitfeedback hält die Erwartung während Vorbereitung und Proben sichtbar.
+- **Individuelle Rig-Konfigurationen.** Kombiniere Kameras, Zubehör, Crew-Anforderungen und gespeicherte Szenarien, um exakt die Builds abzubilden, die on set laufen. Exportiere Bundles oder Backups jederzeit, ohne dass Daten verloren gehen.
+- **Sicherheitsübungen & Prüfnachweise.** Geführte Drills, automatische Diff-Logs und Verifizierungspakete zeigen, dass Speichern, Teilen, Import, Backup und Restore jede Nutzerinformation schützen – selbst komplett ohne Internet.
+- **Konsequenter Offline-Betrieb.** Alle Icons, Fonts, Uicons und Hilfsskripte reisen mit dem Repository. Autosave, Backup, Restore, Teilen und Hilfe laufen vollständig lokal, damit Teams auch im isolierten Betrieb zuverlässig arbeiten.
+
+## Installation
+
+1. Klone oder lade dieses Repository auf ein vertrauenswürdiges Laufwerk:
+   ```bash
+   git clone https://github.com/Hugo9809/cine-power-planner.git
+   cd cine-power-planner
+   ```
+   (Wenn du ein Offline-Bundle erhalten hast, entpacke es stattdessen in einen lokalen Ordner.)
+2. Öffne `index.html` direkt in einem unterstützten Browser. Alle Assets laden aus dem Repository, sodass du die Verbindung sofort trennen kannst.
+3. (Optional) Serviere den Ordner über `http://localhost`, um den mitgelieferten Service Worker und die PWA-Installation zu aktivieren. Jeder statische Server funktioniert offline, zum Beispiel:
+   ```bash
+   npx http-server
+   # oder
+   python -m http.server
+   ```
+4. Folge dem [Schnellstart](#schnellstart), um Speichern, Teilen, Import, Backups und Wiederherstellungen auf jedem Gerät zu proben, bevor Crews den Planner im Einsatz verwenden.
+
 ## Auf einen Blick
 
 - **Offline zuerst planen.** Baue V‑Mount-, B‑Mount- oder Gold-Mount-Setups direkt im Browser. Alle Uicons, Schriften und Hilfsskripte liegen lokal, sodass nichts von externen CDNs oder Netzwerken abhängt. Klone das Repository, zieh das Netzwerkkabel ab und die Oberfläche funktioniert unverändert weiter.
@@ -97,6 +122,8 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 
 ## Inhaltsverzeichnis
 
+- [Hauptfunktionen](#hauptfunktionen)
+- [Installation](#installation)
 - [Auf einen Blick](#auf-einen-blick)
 - [Sicherheitsnetze im Überblick](#sicherheitsnetze-im-überblick)
 - [Schnellzugriffe](#schnellzugriffe)

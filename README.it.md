@@ -4,6 +4,31 @@
 
 Cine Power Planner è un’applicazione web autonoma pensata per creare, verificare e condividere piani di alimentazione professionali senza che i dati lascino mai il tuo dispositivo. Progetta rig V‑Mount, B‑Mount o Gold-Mount, stima le autonomie, raccogli i requisiti di progetto ed esporta pacchetti condivisibili – tutto nel browser, anche offline. Ogni dipendenza vive in questo repository, così l’esperienza resta identica in studio, sul portatile di campo o su un disco isolato.
 
+## Funzionalità principali
+
+- **Database energetico delle apparecchiature.** Consulta i valori di assorbimento inclusi per camere, monitor, trasmettitori, luci e accessori oppure amplia il catalogo locale con le tue voci così ogni progetto parte da dati verificati.
+- **Pianificazione dell’autonomia.** Combina capacità delle batterie, famiglie di tensione e comportamento di scarica per stimare quanto dura ogni rig prima del cambio pacco. Il feedback sull’autonomia mantiene visibili le aspettative durante preparazione e prove.
+- **Configurazioni personalizzate.** Combina camere, accessori, requisiti di troupe e scenari salvati per rispecchiare esattamente l’allestimento che userai sul set. Esporta pacchetti o backup in qualsiasi momento senza rischiare la perdita di dati.
+- **Esercitazioni di sicurezza e tracciabilità.** Percorsi guidati, log di differenze automatici e pacchetti di verifica dimostrano che salvataggi, condivisioni, import, backup e ripristini proteggono ogni dato utente anche senza riconnettersi.
+- **Operatività offline garantita.** Tutte le icone, i font, le Uicons e gli script di supporto viaggiano con il repository. Salvataggi automatici, backup, ripristini, condivisioni e guida funzionano interamente in locale per lavorare con serenità anche in ambienti isolati.
+
+## Installazione
+
+1. Clona o scarica questo repository su un’unità locale affidabile:
+   ```bash
+   git clone https://github.com/Hugo9809/cine-power-planner.git
+   cd cine-power-planner
+   ```
+   (Se hai ricevuto un bundle offline, estrailo in una cartella locale.)
+2. Apri `index.html` direttamente in un browser supportato. Tutte le risorse vengono caricate dal repository, quindi puoi disconnetterti subito.
+3. (Opzionale) Servi la cartella su `http://localhost` per attivare il service worker incluso e l’installazione PWA. Qualsiasi server statico funziona offline, ad esempio:
+   ```bash
+   npx http-server
+   # oppure
+   python -m http.server
+   ```
+4. Segui la [Guida rapida](#guida-rapida) per esercitare salvataggio, condivisione, import, backup e ripristino su ogni macchina prima di affidarti al planner sul set.
+
 ## In breve
 
 - **Pianifica offline-first.** Costruisci configurazioni V‑Mount, B‑Mount o Gold-Mount direttamente dal browser. Uicons, font e script di supporto sono inclusi localmente, senza affidarsi a CDN o alla rete. Clona il repository, scollega il cavo e l’interfaccia continua a funzionare allo stesso modo.
@@ -97,6 +122,8 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 
 ## Indice
 
+- [Funzionalità principali](#funzionalità-principali)
+- [Installazione](#installazione)
 - [In breve](#in-breve)
 - [Reti di sicurezza in sintesi](#reti-di-sicurezza-in-sintesi)
 - [Accessi rapidi](#accessi-rapidi)

@@ -4,6 +4,31 @@
 
 Cine Power Planner es una aplicación web independiente para crear, auditar y compartir planes de alimentación profesional que nunca abandonan tu equipo. Diseña rigs V‑Mount, B‑Mount o Gold-Mount, modela tiempos de autonomía, documenta requisitos del proyecto y exporta paquetes compartibles, todo dentro del navegador, incluso sin conexión. Cada dependencia vive en este repositorio para que la experiencia sea idéntica en un estudio, un portátil de rodaje o un disco aislado.
 
+## Funciones clave
+
+- **Base de datos de consumo energético.** Consulta valores de consumo incluidos para cámaras, monitores, transmisores, luces y accesorios, o amplía el catálogo local con tus propios equipos para que cada proyecto parta de datos verificados.
+- **Planificación de autonomía.** Combina capacidades de batería, familias de voltaje y comportamiento de descarga para estimar cuánto durará cada rig antes de cambiar baterías. El feedback de autonomía mantiene visibles las expectativas durante la preparación y los ensayos.
+- **Configuraciones personalizadas.** Mezcla cámaras, accesorios, requisitos del equipo y escenarios guardados para reflejar exactamente el montaje que usarás en el set. Exporta paquetes o copias de seguridad cuando quieras sin poner en riesgo los datos.
+- **Ensayos de seguridad y trazabilidad.** Los recorridos guiados, los registros de diferencias automáticos y los paquetes de verificación facilitan demostrar que guardar, compartir, importar, respaldar y restaurar protegen cada dato de usuario, incluso sin reconectarte.
+- **Operación offline garantizada.** Todos los iconos, fuentes, Uicons y scripts auxiliares viajan con el repositorio. El guardado automático, los respaldos, las restauraciones, el compartido y la ayuda funcionan totalmente en el dispositivo para que los equipos trabajen desconectados con confianza.
+
+## Instalación
+
+1. Clona o descarga este repositorio en una unidad local de confianza:
+   ```bash
+   git clone https://github.com/Hugo9809/cine-power-planner.git
+   cd cine-power-planner
+   ```
+   (Si recibiste un paquete offline, descomprímelo en una carpeta local.)
+2. Abre `index.html` directamente en un navegador compatible. Todos los recursos se cargan desde el repositorio, por lo que puedes desconectarte de inmediato.
+3. (Opcional) Sirve la carpeta en `http://localhost` para activar el service worker incluido y la instalación como PWA. Cualquier servidor estático funciona sin conexión, por ejemplo:
+   ```bash
+   npx http-server
+   # o
+   python -m http.server
+   ```
+4. Sigue la [Guía rápida](#guía-rápida) para ensayar guardado, compartido, importación, copias de seguridad y restauración en cada equipo antes de depender del planner en rodaje.
+
 ## De un vistazo
 
 - **Planifica sin conexión.** Construye configuraciones V‑Mount, B‑Mount o Gold-Mount directamente en el navegador. Todos los Uicons, fuentes y scripts auxiliares están incluidos, sin depender de CDNs ni de la red. Clona el repositorio, desconecta el cable y la interfaz seguirá funcionando igual.
@@ -97,6 +122,8 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 
 ## Tabla de contenidos
 
+- [Funciones clave](#funciones-clave)
+- [Instalación](#instalación)
 - [De un vistazo](#de-un-vistazo)
 - [Capas de seguridad a simple vista](#capas-de-seguridad-a-simple-vista)
 - [Accesos directos](#accesos-directos)
