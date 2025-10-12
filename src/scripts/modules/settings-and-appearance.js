@@ -490,6 +490,42 @@
       }
     }
 
+    function dispatchChangeEvent(target) {
+      if (!target || typeof target.dispatchEvent !== 'function') {
+        return;
+      }
+
+      let event = null;
+      if (typeof Event === 'function') {
+        try {
+          event = new Event('change', { bubbles: true });
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to create change event via constructor.', error);
+        }
+      }
+
+      if (!event && doc && typeof doc.createEvent === 'function') {
+        try {
+          event = doc.createEvent('Event');
+          if (event && typeof event.initEvent === 'function') {
+            event.initEvent('change', true, true);
+          }
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to create change event via legacy API.', error);
+        }
+      }
+
+      if (!event) {
+        return;
+      }
+
+      try {
+        target.dispatchEvent(event);
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: unable to dispatch change event.', error);
+      }
+    }
+
     function applyDarkMode(enabled) {
       const root = getRoot();
       const body = getBody();
@@ -528,7 +564,12 @@
       refreshDarkModeAccentBoost({ color: accentSource, highContrast });
       updateThemeColor(enabled);
       if (settings.darkMode) {
-        settings.darkMode.checked = !!enabled;
+        const nextChecked = Boolean(enabled);
+        const previousChecked = Boolean(settings.darkMode.checked);
+        settings.darkMode.checked = nextChecked;
+        if (nextChecked !== previousChecked) {
+          dispatchChangeEvent(settings.darkMode);
+        }
       }
     }
 

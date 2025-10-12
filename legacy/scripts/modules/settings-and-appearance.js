@@ -433,6 +433,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         applyIconGlyph(iconSpan, glyphConfig.value);
       }
     }
+    function dispatchChangeEvent(target) {
+      if (!target || typeof target.dispatchEvent !== 'function') {
+        return;
+      }
+
+      var event = null;
+      if (typeof Event === 'function') {
+        try {
+          event = new Event('change', { bubbles: true });
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to create change event via constructor.', error);
+        }
+      }
+
+      if (!event && doc && typeof doc.createEvent === 'function') {
+        try {
+          event = doc.createEvent('Event');
+          if (event && typeof event.initEvent === 'function') {
+            event.initEvent('change', true, true);
+          }
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: unable to create change event via legacy API.', error);
+        }
+      }
+
+      if (!event) {
+        return;
+      }
+
+      try {
+        target.dispatchEvent(event);
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: unable to dispatch change event.', error);
+      }
+    }
+
     function applyDarkMode(enabled) {
       var root = getRoot();
       var body = getBody();
@@ -472,7 +508,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
       updateThemeColor(enabled);
       if (settings.darkMode) {
-        settings.darkMode.checked = !!enabled;
+        var nextChecked = Boolean(enabled);
+        var previousChecked = Boolean(settings.darkMode.checked);
+        settings.darkMode.checked = nextChecked;
+        if (nextChecked !== previousChecked) {
+          dispatchChangeEvent(settings.darkMode);
+        }
       }
     }
     function applyHighContrast(enabled) {
