@@ -9321,6 +9321,65 @@ function sanitizeImportedProjectInfo(info) {
     return null;
   }
   const normalized = {};
+  const fallbackLensNames = [];
+  const fallbackLensNameSet = new Set();
+  const addFallbackLensName = (name) => {
+    if (typeof name !== 'string') {
+      return;
+    }
+    const trimmed = name.trim();
+    if (!trimmed || fallbackLensNameSet.has(trimmed)) {
+      return;
+    }
+    fallbackLensNameSet.add(trimmed);
+    fallbackLensNames.push(trimmed);
+  };
+  const registerFallbackLensNames = (source, options = {}) => {
+    if (source === null || source === undefined) {
+      return;
+    }
+    if (options.fromSelections) {
+      const entries = Array.isArray(source) ? source : [source];
+      entries.forEach((entry) => {
+        if (isMapLike(entry)) {
+          const converted = convertMapLikeToObject(entry);
+          if (converted) {
+            registerFallbackLensNames(converted, { fromSelections: true });
+            return;
+          }
+        }
+        if (isPlainObject(entry)) {
+          const mapped = deriveLensSelectionsFromNameMap(entry);
+          if (mapped.length) {
+            mapped.forEach((selection) => {
+              if (selection && typeof selection.name === 'string') {
+                addFallbackLensName(selection.name);
+              }
+            });
+            return;
+          }
+        }
+        const candidate = normalizeProjectLensNameCandidate(entry);
+        if (candidate) {
+          addFallbackLensName(candidate);
+        }
+      });
+      return;
+    }
+    const names = extractLensNamesFromSource(source);
+    if (!names.length) {
+      return;
+    }
+    names.forEach((name) => {
+      addFallbackLensName(name);
+    });
+  };
+
+  registerFallbackLensNames(info.lenses);
+  if (Object.prototype.hasOwnProperty.call(info, 'lensSelections')) {
+    registerFallbackLensNames(info.lensSelections, { fromSelections: true });
+  }
+
   Object.entries(info).forEach(([key, raw]) => {
     if (raw === null || raw === undefined) {
       return;
@@ -9332,11 +9391,37 @@ function sanitizeImportedProjectInfo(info) {
       }
       return;
     }
+    if (key === 'lenses') {
+      const { names } = normalizeProjectLensNamesField(raw);
+      normalized.lenses = names.slice();
+      return;
+    }
+    if (key === 'lensSelections') {
+      const result = normalizeProjectLensSelectionsFromSources(raw, fallbackLensNames);
+      if (result.selections && result.selections.length) {
+        normalized.lensSelections = result.selections;
+      }
+      return;
+    }
     const value = sanitizeImportedValue(raw);
     if (value !== null && value !== undefined) {
       normalized[key] = value;
     }
   });
+
+  if (!Object.prototype.hasOwnProperty.call(normalized, 'lenses') && fallbackLensNames.length) {
+    normalized.lenses = fallbackLensNames.slice();
+  }
+  if (
+    !Object.prototype.hasOwnProperty.call(normalized, 'lensSelections')
+    && fallbackLensNames.length
+  ) {
+    const derived = normalizeProjectLensSelectionsFromSources([], fallbackLensNames);
+    if (derived.selections && derived.selections.length) {
+      normalized.lensSelections = derived.selections;
+    }
+  }
+
   if (!Object.keys(normalized).length) {
     return null;
   }
@@ -9787,6 +9872,672 @@ function cloneProjectPowerSelection(selection) {
   };
 }
 
+const LEGACY_LENS_SELECTION_META_KEYS = new Set([
+  'name',
+  'lensname',
+  'label',
+  'title',
+  'text',
+  'lens',
+  'mount',
+  'mountlabel',
+  'mountname',
+  'mounts',
+  'note',
+  'notes',
+  'names',
+  'values',
+  'selection',
+  'legacyvalue',
+  'lensselections',
+  'selections',
+  'entries',
+  'items',
+  'options',
+  'meta',
+  'metadata',
+  'count',
+  'version',
+  'length',
+  'size',
+  'updated',
+  'created',
+  'createdat',
+  'timestamp',
+  'id',
+  'uuid',
+  'key',
+  'value',
+]);
+
+function isLikelyLensNameKey(key) {
+  if (typeof key !== 'string') {
+    return false;
+  }
+  const trimmed = key.trim();
+  if (!trimmed) {
+    return false;
+  }
+  if (/^[0-9]+$/u.test(trimmed)) {
+    return false;
+  }
+  const normalized = trimmed.toLowerCase();
+  if (normalized.startsWith('__proto__')) {
+    return false;
+  }
+  if (normalized === 'prototype' || normalized === 'constructor') {
+    return false;
+  }
+  if (LEGACY_LENS_SELECTION_META_KEYS.has(normalized)) {
+    return false;
+  }
+  return true;
+}
+
+function deriveLensNameKeysFromObject(value) {
+  if (!isPlainObject(value)) {
+    return [];
+  }
+  const keys = Object.keys(value);
+  const result = [];
+  keys.forEach((key) => {
+    if (!isLikelyLensNameKey(key)) {
+      return;
+    }
+    const trimmed = key.trim();
+    if (trimmed) {
+      result.push(trimmed);
+    }
+  });
+  return result;
+}
+
+function normalizeProjectLensNameCandidate(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  if (
+    typeof value === 'string'
+    || typeof value === 'number'
+    || typeof value === 'boolean'
+    || typeof value === 'bigint'
+  ) {
+    const stringValue = typeof value === 'string' ? value : String(value);
+    const trimmed = stringValue.trim();
+    return trimmed;
+  }
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const candidate = normalizeProjectLensNameCandidate(value[index]);
+      if (candidate) {
+        return candidate;
+      }
+    }
+    return '';
+  }
+
+  if (isMapLike(value)) {
+    const converted = convertMapLikeToObject(value);
+    if (converted) {
+      return normalizeProjectLensNameCandidate(converted);
+    }
+  }
+
+  if (isPlainObject(value)) {
+    const nameCandidates = [
+      value.name,
+      value.lensName,
+      value.label,
+      value.title,
+      value.text,
+      value.lens,
+    ];
+    for (let index = 0; index < nameCandidates.length; index += 1) {
+      const candidate = nameCandidates[index];
+      if (typeof candidate === 'string') {
+        const trimmed = candidate.trim();
+        if (trimmed) {
+          return trimmed;
+        }
+      }
+    }
+
+    const keyDerivedNames = deriveLensNameKeysFromObject(value);
+    if (keyDerivedNames.length) {
+      return keyDerivedNames[0];
+    }
+
+    if (Array.isArray(value.names) && value.names.length) {
+      const nestedName = normalizeProjectLensNameCandidate(value.names[0]);
+      if (nestedName) {
+        return nestedName;
+      }
+    }
+
+    if (Array.isArray(value.values) && value.values.length) {
+      const nestedValue = normalizeProjectLensNameCandidate(value.values[0]);
+      if (nestedValue) {
+        return nestedValue;
+      }
+    }
+
+    const nestedEntries = Object.values(value);
+    for (let index = 0; index < nestedEntries.length; index += 1) {
+      const nested = normalizeProjectLensNameCandidate(nestedEntries[index]);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+
+  return '';
+}
+
+function extractLensNamesFromSource(value) {
+  if (value === null || value === undefined) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    const names = [];
+    value.forEach((entry) => {
+      if (entry === null || entry === undefined) {
+        return;
+      }
+      if (typeof entry === 'string') {
+        const parsed = tryParseJSONLike(entry);
+        if (parsed.success) {
+          names.push(...extractLensNamesFromSource(parsed.parsed));
+          return;
+        }
+        const trimmed = entry.trim();
+        if (trimmed) {
+          names.push(trimmed);
+        }
+        return;
+      }
+      if (
+        typeof entry === 'number'
+        || typeof entry === 'boolean'
+        || typeof entry === 'bigint'
+      ) {
+        names.push(String(entry));
+        return;
+      }
+      const normalized = normalizeProjectLensNameCandidate(entry);
+      if (normalized) {
+        names.push(normalized);
+        return;
+      }
+      if (Array.isArray(entry)) {
+        names.push(...extractLensNamesFromSource(entry));
+        return;
+      }
+      if (isMapLike(entry)) {
+        const converted = convertMapLikeToObject(entry);
+        if (converted) {
+          names.push(...extractLensNamesFromSource(converted));
+        }
+        return;
+      }
+      if (isPlainObject(entry)) {
+        names.push(...extractLensNamesFromSource(Object.values(entry)));
+      }
+    });
+    return names;
+  }
+
+  if (
+    typeof value === 'number'
+    || typeof value === 'boolean'
+    || typeof value === 'bigint'
+  ) {
+    return [String(value)];
+  }
+
+  if (typeof value === 'string') {
+    const parsed = tryParseJSONLike(value);
+    if (parsed.success) {
+      return extractLensNamesFromSource(parsed.parsed);
+    }
+    return value
+      .split(/[\n,;]/u)
+      .map((part) => part.trim())
+      .filter((part) => part);
+  }
+
+  if (isMapLike(value)) {
+    const converted = convertMapLikeToObject(value);
+    if (converted) {
+      return extractLensNamesFromSource(converted);
+    }
+  }
+
+  if (isPlainObject(value)) {
+    const keyNames = deriveLensNameKeysFromObject(value);
+    if (keyNames.length) {
+      return keyNames;
+    }
+    const direct = normalizeProjectLensNameCandidate(value);
+    if (direct) {
+      return [direct];
+    }
+    const collected = [];
+    if (Array.isArray(value.names)) {
+      collected.push(...extractLensNamesFromSource(value.names));
+    }
+    if (Array.isArray(value.values)) {
+      collected.push(...extractLensNamesFromSource(value.values));
+    }
+    if (!collected.length) {
+      collected.push(...extractLensNamesFromSource(Object.values(value)));
+    }
+    return collected;
+  }
+
+  return [];
+}
+
+function normalizeProjectLensNamesField(value) {
+  const names = extractLensNamesFromSource(value);
+  const isNormalized = Array.isArray(value)
+    && value.length === names.length
+    && value.every(
+      (entry, index) => typeof entry === 'string' && entry.trim() === names[index],
+    );
+  return { names, changed: !isNormalized };
+}
+
+function normalizeProjectLensSelectionEntry(entry) {
+  if (entry === null || entry === undefined) {
+    return { selection: null, changed: false };
+  }
+
+  if (
+    typeof entry === 'string'
+    || typeof entry === 'number'
+    || typeof entry === 'boolean'
+    || typeof entry === 'bigint'
+  ) {
+    const name = normalizeProjectLensNameCandidate(entry);
+    if (!name) {
+      return { selection: null, changed: true };
+    }
+    return { selection: { name, mount: '' }, changed: true };
+  }
+
+  if (isMapLike(entry)) {
+    const converted = convertMapLikeToObject(entry);
+    if (converted) {
+      return normalizeProjectLensSelectionEntry(converted);
+    }
+  }
+
+  if (Array.isArray(entry)) {
+    if (!entry.length) {
+      return { selection: null, changed: true };
+    }
+    const name = normalizeProjectLensNameCandidate(entry[0]);
+    if (!name) {
+      return { selection: null, changed: true };
+    }
+    const mountValue = entry.length > 1 ? entry[1] : '';
+    const mount = typeof mountValue === 'string' ? mountValue.trim() : '';
+    const normalized = { name };
+    normalized.mount = mount || '';
+    return { selection: normalized, changed: true };
+  }
+
+  if (isPlainObject(entry)) {
+    const normalized = { ...entry };
+    let changed = false;
+
+    const name = normalizeProjectLensNameCandidate(entry);
+    if (!name) {
+      return { selection: null, changed: true };
+    }
+    if (normalized.name !== name) {
+      normalized.name = name;
+      changed = true;
+    }
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'name')) {
+      normalized.name = name;
+      changed = true;
+    }
+
+    const mountCandidates = [];
+    if (typeof entry.mount === 'string') {
+      mountCandidates.push(entry.mount);
+    }
+    if (typeof entry.mountLabel === 'string') {
+      mountCandidates.push(entry.mountLabel);
+    }
+    if (typeof entry.mountName === 'string') {
+      mountCandidates.push(entry.mountName);
+    }
+    if (Array.isArray(entry.mounts)) {
+      for (let index = 0; index < entry.mounts.length; index += 1) {
+        const candidate = entry.mounts[index];
+        if (typeof candidate === 'string' && candidate.trim()) {
+          mountCandidates.push(candidate);
+          break;
+        }
+      }
+    }
+
+    let mount = '';
+    for (let index = 0; index < mountCandidates.length; index += 1) {
+      const candidate = mountCandidates[index];
+      if (typeof candidate === 'string') {
+        const trimmed = candidate.trim();
+        if (trimmed) {
+          mount = trimmed;
+          break;
+        }
+      }
+    }
+
+    if (typeof normalized.mount === 'string') {
+      const trimmedMount = normalized.mount.trim();
+      if (trimmedMount !== normalized.mount) {
+        normalized.mount = trimmedMount;
+        changed = true;
+      }
+      if (!mount && trimmedMount) {
+        mount = trimmedMount;
+      }
+    }
+
+    if (!mount) {
+      mount = '';
+    }
+
+    if (normalized.mount !== mount) {
+      normalized.mount = mount;
+      changed = true;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'mount')) {
+      normalized.mount = mount;
+      changed = true;
+    }
+
+    return { selection: normalized, changed };
+  }
+
+  return { selection: null, changed: true };
+}
+
+function deriveLensSelectionsFromNameMap(source) {
+  if (!isPlainObject(source)) {
+    return [];
+  }
+
+  const directNameCandidates = [
+    source.name,
+    source.lensName,
+    source.label,
+    source.title,
+    source.text,
+    source.lens,
+  ];
+  for (let index = 0; index < directNameCandidates.length; index += 1) {
+    const candidate = directNameCandidates[index];
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return [];
+    }
+  }
+
+  const derived = [];
+  Object.entries(source).forEach(([rawKey, rawValue]) => {
+    if (!isLikelyLensNameKey(rawKey)) {
+      return;
+    }
+    const name = rawKey.trim();
+    if (!name) {
+      return;
+    }
+
+    let value = rawValue;
+    if (isMapLike(value)) {
+      const converted = convertMapLikeToObject(value);
+      if (converted) {
+        value = converted;
+      }
+    }
+
+    if (isPlainObject(value)) {
+      const selection = { ...value };
+      selection.name = name;
+      let mount = '';
+      const mountFields = ['mount', 'mountLabel', 'mountName'];
+      for (let index = 0; index < mountFields.length; index += 1) {
+        const field = mountFields[index];
+        if (typeof selection[field] !== 'string') {
+          continue;
+        }
+        const candidate = selection[field].trim();
+        if (candidate && candidate.toLowerCase() !== name.toLowerCase()) {
+          mount = candidate;
+          break;
+        }
+      }
+      if (!mount && Array.isArray(selection.mounts)) {
+        const candidate = normalizeProjectLensNameCandidate(selection.mounts);
+        if (candidate && candidate.toLowerCase() !== name.toLowerCase()) {
+          mount = candidate;
+        }
+      }
+      selection.mount = typeof mount === 'string' ? mount : '';
+      derived.push(selection);
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      const candidate = normalizeProjectLensNameCandidate(value);
+      const mount = candidate && candidate.toLowerCase() !== name.toLowerCase() ? candidate : '';
+      derived.push({ name, mount });
+      return;
+    }
+
+    if (
+      typeof value === 'string'
+      || typeof value === 'number'
+      || typeof value === 'boolean'
+      || typeof value === 'bigint'
+    ) {
+      const candidate = normalizeProjectLensNameCandidate(value);
+      const mount = candidate && candidate.toLowerCase() !== name.toLowerCase() ? candidate : '';
+      derived.push({ name, mount });
+      return;
+    }
+
+    if (value === null || value === undefined) {
+      derived.push({ name, mount: '' });
+      return;
+    }
+
+    const fallback = normalizeProjectLensNameCandidate(value);
+    const mount = fallback && fallback.toLowerCase() !== name.toLowerCase() ? fallback : '';
+    derived.push({ name, mount });
+  });
+  return derived;
+}
+
+function normalizeProjectLensSelectionsFromSources(sources, fallbackNames = []) {
+  const sourceList = Array.isArray(sources) ? sources : [sources];
+  const normalized = [];
+  const seenNames = new Set();
+  let changed = false;
+
+  const addSelection = (selection, entryChanged) => {
+    if (!selection || typeof selection !== 'object') {
+      if (entryChanged) {
+        changed = true;
+      }
+      return;
+    }
+
+    const clone = { ...selection };
+    const rawName = typeof clone.name === 'string' ? clone.name : '';
+    const name = rawName.trim();
+    if (!name) {
+      if (entryChanged) {
+        changed = true;
+      }
+      return;
+    }
+
+    if (clone.name !== name) {
+      clone.name = name;
+      entryChanged = true;
+    }
+
+    const rawMount = typeof clone.mount === 'string' ? clone.mount : '';
+    const mount = rawMount.trim();
+    if (clone.mount !== mount) {
+      clone.mount = mount;
+      entryChanged = true;
+    }
+    if (!Object.prototype.hasOwnProperty.call(clone, 'mount')) {
+      clone.mount = mount;
+      entryChanged = true;
+    }
+
+    if (entryChanged) {
+      changed = true;
+    }
+
+    normalized.push(clone);
+    seenNames.add(name);
+  };
+
+  const processSourceValue = (source) => {
+    if (source === null || source === undefined) {
+      return;
+    }
+
+    if (typeof source === 'string') {
+      const parsed = tryParseJSONLike(source);
+      if (parsed.success) {
+        processSourceValue(parsed.parsed);
+        changed = true;
+        return;
+      }
+      const names = extractLensNamesFromSource(source);
+      if (names.length) {
+        names.forEach((name) => {
+          addSelection({ name, mount: '' }, true);
+        });
+      } else {
+        changed = true;
+      }
+      return;
+    }
+
+    if (
+      typeof source === 'number'
+      || typeof source === 'boolean'
+      || typeof source === 'bigint'
+    ) {
+      addSelection({ name: String(source), mount: '' }, true);
+      return;
+    }
+
+    if (Array.isArray(source)) {
+      if (
+        source.length
+        && source.length <= 2
+        && (
+          typeof source[0] === 'string'
+          || typeof source[0] === 'number'
+          || typeof source[0] === 'boolean'
+          || typeof source[0] === 'bigint'
+        )
+      ) {
+        const { selection, changed: entryChanged } = normalizeProjectLensSelectionEntry(source);
+        if (selection) {
+          addSelection(selection, entryChanged);
+          return;
+        }
+      }
+      source.forEach((entry) => {
+        const { selection, changed: entryChanged } = normalizeProjectLensSelectionEntry(entry);
+        if (selection) {
+          addSelection(selection, entryChanged);
+        } else if (entryChanged) {
+          changed = true;
+        }
+      });
+      return;
+    }
+
+    if (isMapLike(source)) {
+      const converted = convertMapLikeToObject(source);
+      if (converted) {
+        processSourceValue(converted);
+        changed = true;
+      }
+      return;
+    }
+
+    if (isPlainObject(source)) {
+      const mappedSelections = deriveLensSelectionsFromNameMap(source);
+      if (mappedSelections.length) {
+        mappedSelections.forEach((entry) => {
+          addSelection(entry, true);
+        });
+        return;
+      }
+      const { selection, changed: entryChanged } = normalizeProjectLensSelectionEntry(source);
+      if (selection) {
+        addSelection(selection, entryChanged);
+        return;
+      }
+      const values = Object.values(source);
+      if (values.length) {
+        processSourceValue(values);
+        changed = true;
+      }
+      return;
+    }
+
+    const fallbackName = normalizeProjectLensNameCandidate(source);
+    if (fallbackName) {
+      addSelection({ name: fallbackName, mount: '' }, true);
+    } else {
+      changed = true;
+    }
+  };
+
+  for (let index = 0; index < sourceList.length; index += 1) {
+    processSourceValue(sourceList[index]);
+  }
+
+  if (Array.isArray(fallbackNames)) {
+    fallbackNames.forEach((rawName) => {
+      if (typeof rawName !== 'string') {
+        return;
+      }
+      const name = rawName.trim();
+      if (!name || seenNames.has(name)) {
+        return;
+      }
+      normalized.push({ name, mount: '' });
+      seenNames.add(name);
+      changed = true;
+    });
+  }
+
+  if (!normalized.length) {
+    return { selections: null, changed };
+  }
+
+  return { selections: normalized, changed };
+}
+
 function normalizeProject(data) {
   const restored = restoreCompressedProjectEntry(data);
   if (restored.restored) {
@@ -10066,6 +10817,157 @@ function normalizeProject(data) {
             break;
           }
         }
+      }
+      const fallbackLensNames = [];
+      const fallbackLensNameSet = new Set();
+      const addFallbackLensName = (name) => {
+        if (typeof name !== 'string') {
+          return;
+        }
+        const trimmed = name.trim();
+        if (!trimmed || fallbackLensNameSet.has(trimmed)) {
+          return;
+        }
+        fallbackLensNameSet.add(trimmed);
+        fallbackLensNames.push(trimmed);
+      };
+      const registerFallbackLensNames = (source, options = {}) => {
+        if (source === null || source === undefined) {
+          return;
+        }
+        if (options.fromSelections) {
+          const entries = Array.isArray(source) ? source : [source];
+          entries.forEach((entry) => {
+            if (isMapLike(entry)) {
+              const converted = convertMapLikeToObject(entry);
+              if (converted) {
+                registerFallbackLensNames(converted, { fromSelections: true });
+                return;
+              }
+            }
+            if (isPlainObject(entry)) {
+              const mapped = deriveLensSelectionsFromNameMap(entry);
+              if (mapped.length) {
+                mapped.forEach((selection) => {
+                  if (selection && typeof selection.name === 'string') {
+                    addFallbackLensName(selection.name);
+                  }
+                });
+                return;
+              }
+            }
+            const candidate = normalizeProjectLensNameCandidate(entry);
+            if (candidate) {
+              addFallbackLensName(candidate);
+            }
+          });
+          return;
+        }
+        const names = extractLensNamesFromSource(source);
+        if (!names.length) {
+          return;
+        }
+        names.forEach((name) => {
+          addFallbackLensName(name);
+        });
+      };
+
+      if (
+        normalized.projectInfo
+        && Object.prototype.hasOwnProperty.call(normalized.projectInfo, 'lenses')
+      ) {
+        const { names } = normalizeProjectLensNamesField(normalized.projectInfo.lenses);
+        normalized.projectInfo = normalized.projectInfo && typeof normalized.projectInfo === 'object'
+          ? normalized.projectInfo
+          : {};
+        normalized.projectInfo.lenses = names.slice();
+        registerFallbackLensNames(names);
+      }
+
+      registerFallbackLensNames(data.lenses);
+      if (isPlainObject(projectContainer)) {
+        registerFallbackLensNames(projectContainer.lenses);
+      }
+      registerFallbackLensNames(gearListSource && gearListSource.lenses);
+      if (isPlainObject(normalizedGearList)) {
+        registerFallbackLensNames(normalizedGearList.lenses);
+      }
+
+      if (
+        (!normalized.projectInfo
+          || !Array.isArray(normalized.projectInfo.lenses)
+          || !normalized.projectInfo.lenses.length)
+        && fallbackLensNames.length
+      ) {
+        normalized.projectInfo = normalized.projectInfo && typeof normalized.projectInfo === 'object'
+          ? normalized.projectInfo
+          : {};
+        normalized.projectInfo.lenses = fallbackLensNames.slice();
+      }
+
+      const lensSelectionSources = [];
+      if (
+        normalized.projectInfo
+        && Object.prototype.hasOwnProperty.call(normalized.projectInfo, 'lensSelections')
+      ) {
+        registerFallbackLensNames(normalized.projectInfo.lensSelections, { fromSelections: true });
+        lensSelectionSources.push(normalized.projectInfo.lensSelections);
+      }
+      if (Object.prototype.hasOwnProperty.call(data, 'lensSelections')) {
+        registerFallbackLensNames(data.lensSelections, { fromSelections: true });
+        lensSelectionSources.push(data.lensSelections);
+      }
+      if (
+        isPlainObject(projectContainer)
+        && Object.prototype.hasOwnProperty.call(projectContainer, 'lensSelections')
+      ) {
+        registerFallbackLensNames(projectContainer.lensSelections, { fromSelections: true });
+        lensSelectionSources.push(projectContainer.lensSelections);
+      }
+      if (
+        isPlainObject(gearListSource)
+        && Object.prototype.hasOwnProperty.call(gearListSource, 'lensSelections')
+      ) {
+        registerFallbackLensNames(gearListSource.lensSelections, { fromSelections: true });
+        lensSelectionSources.push(gearListSource.lensSelections);
+      }
+      if (
+        isPlainObject(normalizedGearList)
+        && Object.prototype.hasOwnProperty.call(normalizedGearList, 'lensSelections')
+      ) {
+        registerFallbackLensNames(normalizedGearList.lensSelections, { fromSelections: true });
+        lensSelectionSources.push(normalizedGearList.lensSelections);
+      }
+
+      const lensSelectionResult = normalizeProjectLensSelectionsFromSources(
+        lensSelectionSources,
+        fallbackLensNames,
+      );
+
+      if (
+        lensSelectionResult
+        && lensSelectionResult.selections
+        && lensSelectionResult.selections.length
+      ) {
+        normalized.projectInfo = normalized.projectInfo && typeof normalized.projectInfo === 'object'
+          ? normalized.projectInfo
+          : {};
+        normalized.projectInfo.lensSelections = lensSelectionResult.selections;
+        if (
+          !Array.isArray(normalized.projectInfo.lenses)
+          || !normalized.projectInfo.lenses.length
+        ) {
+          normalized.projectInfo.lenses = lensSelectionResult.selections
+            .map((entry) => (typeof entry.name === 'string' ? entry.name : ''))
+            .filter((name) => name);
+        }
+      } else if (
+        lensSelectionResult
+        && lensSelectionResult.changed
+        && normalized.projectInfo
+        && Object.prototype.hasOwnProperty.call(normalized.projectInfo, 'lensSelections')
+      ) {
+        delete normalized.projectInfo.lensSelections;
       }
       const derivedGenerationFlag = typeof data.gearListAndProjectRequirementsGenerated === 'boolean'
         ? data.gearListAndProjectRequirementsGenerated

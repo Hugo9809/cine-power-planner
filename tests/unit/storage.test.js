@@ -1238,6 +1238,152 @@ describe('project storage', () => {
     });
   });
 
+  test('loadProject upgrades legacy lens list strings to structured selections', () => {
+    const legacy = {
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: 'Zeiss CP.3 35mm T2.1, Cooke S4 50mm',
+      },
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: legacy }));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual(withGenerationFlag({
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: ['Zeiss CP.3 35mm T2.1', 'Cooke S4 50mm'],
+        lensSelections: [
+          { name: 'Zeiss CP.3 35mm T2.1', mount: '' },
+          { name: 'Cooke S4 50mm', mount: '' },
+        ],
+      },
+    }));
+  });
+
+  test('loadProject normalizes legacy lens selection objects and arrays', () => {
+    const legacy = {
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: [' Zeiss CP.3 35mm T2.1 ', 'Cooke S4 50mm'],
+        lensSelections: [
+          { lensName: ' Zeiss CP.3 35mm T2.1 ', mountLabel: ' PL ', note: 'A' },
+          ['Cooke S4 50mm', ' LPL '],
+          { name: 'Duplicate', mount: 'E', extra: true },
+          { label: 'Duplicate', mount: 'PL' },
+          null,
+        ],
+      },
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: legacy }));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual(withGenerationFlag({
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: ['Zeiss CP.3 35mm T2.1', 'Cooke S4 50mm'],
+        lensSelections: [
+          {
+            lensName: ' Zeiss CP.3 35mm T2.1 ',
+            mountLabel: ' PL ',
+            note: 'A',
+            name: 'Zeiss CP.3 35mm T2.1',
+            mount: 'PL',
+          },
+          { name: 'Cooke S4 50mm', mount: 'LPL' },
+          { name: 'Duplicate', mount: 'E', extra: true },
+          { label: 'Duplicate', mount: 'PL', name: 'Duplicate' },
+        ],
+      },
+    }));
+  });
+
+  test('loadProject derives lens selections when legacy data stored outside projectInfo', () => {
+    const legacy = {
+      gearList: '<ul>Legacy</ul>',
+      lenses: ['Angenieux 24-290', 'Fujinon 19-90'],
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: legacy }));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual(withGenerationFlag({
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: ['Angenieux 24-290', 'Fujinon 19-90'],
+        lensSelections: [
+          { name: 'Angenieux 24-290', mount: '' },
+          { name: 'Fujinon 19-90', mount: '' },
+        ],
+      },
+    }));
+  });
+
+  test('loadProject normalizes legacy lens selection maps with string mounts', () => {
+    const legacy = {
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lensSelections: {
+          'Zeiss CP.3 35mm T2.1': ' PL ',
+          'Cooke S4 50mm': 'LPL',
+          meta: 'ignore',
+        },
+      },
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: legacy }));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual(withGenerationFlag({
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: ['Zeiss CP.3 35mm T2.1', 'Cooke S4 50mm'],
+        lensSelections: [
+          { name: 'Zeiss CP.3 35mm T2.1', mount: 'PL' },
+          { name: 'Cooke S4 50mm', mount: 'LPL' },
+        ],
+      },
+    }));
+  });
+
+  test('loadProject preserves metadata when deriving lens selections from name maps', () => {
+    const legacy = {
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lensSelections: {
+          'Zeiss CP.3 35mm T2.1': { mountLabel: 'PL ', note: 'A', extra: { tag: 'prime' } },
+          'Cooke S4 50mm': { mount: ' LPL ', note: 'B' },
+          count: 2,
+        },
+      },
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: legacy }));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual(withGenerationFlag({
+      gearList: '<ul>Legacy</ul>',
+      projectInfo: {
+        lenses: ['Zeiss CP.3 35mm T2.1', 'Cooke S4 50mm'],
+        lensSelections: [
+          {
+            mountLabel: 'PL ',
+            note: 'A',
+            extra: { tag: 'prime' },
+            name: 'Zeiss CP.3 35mm T2.1',
+            mount: 'PL',
+          },
+          {
+            mount: 'LPL',
+            note: 'B',
+            name: 'Cooke S4 50mm',
+          },
+        ],
+      },
+    }));
+  });
+
   test('loadProject recovers project info from stored requirements HTML', () => {
     const legacyHtml = [
       '<h2>Legacy Project</h2>',
