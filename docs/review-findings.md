@@ -3,7 +3,7 @@
 This review surfaces follow-up tasks to protect user data workflows and documentation accuracy while keeping the offline-first contract intact.
 
 ## Fix typo in localized documentation
-- **Issue**: The German README describes the weighted feedback dashboard using the misspelled adjective "gewichtetetes".
+- **Issue**: The German README describes the weighted feedback dashboard using an incorrectly spelled adjective, which keeps the localized guidance from sounding professional.
 - **Impact**: Localized guidance looks unpolished and can confuse crews who translate instructions for offline binders.
 - **Recommended task**: Update the sentence to use the correct spelling "gewichtetes" and propagate the fix to any derivative docs that reuse the copy.
 

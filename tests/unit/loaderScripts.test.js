@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 
 describe('loader script bundles', () => {
   const loaderPath = path.join(__dirname, '..', '..', 'src', 'scripts', 'loader.js');
@@ -43,5 +44,31 @@ describe('loader script bundles', () => {
   test('legacy bundle migrates auto gear monitor defaults keys', () => {
     expect(legacyLoaderSource).toContain("autoGearMonitorDefaults");
     expect(legacyLoaderSource).toContain("cameraPowerPlanner_autoGearMonitorDefaults");
+  });
+
+  test('modern support check evaluates to a boolean sentinel', () => {
+    const modernSupportPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'src',
+      'scripts',
+      'modern-support-check.mjs',
+    );
+    const modernSupportSource = fs.readFileSync(modernSupportPath, 'utf8');
+    const context = vm.createContext({ globalThis: {} });
+    const sanitizedSource = modernSupportSource.replace(/\n?export\s*\{\s*\};?\s*$/, '');
+    vm.runInContext(sanitizedSource, context);
+
+    const flag = context.globalThis.__cinePowerOptionalChainingCheck__;
+    expect(typeof flag).toBe('boolean');
+    expect(flag).toBe(true);
+  });
+
+  test('loader cleanup removes optional chaining sentinel safely', () => {
+    expect(loaderSource).toContain('delete scope[OPTIONAL_CHAINING_FLAG];');
+    expect(loaderSource).toContain('scope[OPTIONAL_CHAINING_FLAG] = undefined;');
+    expect(legacyLoaderSource).toContain('delete scope[OPTIONAL_CHAINING_FLAG];');
+    expect(legacyLoaderSource).toContain('scope[OPTIONAL_CHAINING_FLAG] = undefined;');
   });
 });
