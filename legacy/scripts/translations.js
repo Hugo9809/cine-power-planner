@@ -8960,7 +8960,7 @@ var texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body: "Dieser geführte Rundgang stellt die Offline-Schutzmechanismen, die crewgerechte Automatisierung und die Restore-Übungen vor, damit jedes Projekt produktionsbereit bleibt.",
+          body: "",
           hero: {
             heading: "Willkommen bei Cine Power Planner",
             subheading: "Crew-orientierte Strom-, Gear- und Übergabeplanung – komplett offline.",
