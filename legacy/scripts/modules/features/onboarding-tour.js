@@ -1450,7 +1450,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (fallbackValue) {
         return fallbackValue;
       }
-      return 'Step 1';
+      return 'Preface';
     }();
     return _objectSpread(_objectSpread(_objectSpread({}, fallback), localized), {}, {
       prefaceIndicator: prefaceIndicatorText,
@@ -1974,7 +1974,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
       return tourTexts.prefaceIndicator.trim();
     }
-    return 'Step 1';
+    return 'Preface';
   }
   function focusCard() {
     var target = getTargetElement(currentStep);
@@ -2943,37 +2943,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var hero = DOCUMENT.createElement('div');
     hero.className = 'onboarding-hero';
-    var heroBanner = DOCUMENT.createElement('div');
-    heroBanner.className = 'onboarding-hero-banner';
-    var heroBannerHasContent = false;
+    var badgeHighlight = null;
     if (badgeLabel || badgeDescription) {
-      var badge = DOCUMENT.createElement('div');
-      badge.className = 'onboarding-hero-badge';
+      var badgeItem = DOCUMENT.createElement('li');
+      badgeItem.className = 'onboarding-hero-highlight onboarding-hero-highlight--badge';
       var badgeIconEl = DOCUMENT.createElement('span');
-      badgeIconEl.className = 'icon-glyph onboarding-hero-badge-icon';
+      badgeIconEl.className = 'icon-glyph onboarding-hero-highlight-icon onboarding-hero-highlight-icon--badge';
       badgeIconEl.setAttribute('data-icon-font', 'uicons');
       badgeIconEl.setAttribute('aria-hidden', 'true');
       badgeIconEl.textContent = badgeIcon;
-      badge.appendChild(badgeIconEl);
+      badgeItem.appendChild(badgeIconEl);
       var badgeText = DOCUMENT.createElement('div');
-      badgeText.className = 'onboarding-hero-badge-text';
+      badgeText.className = 'onboarding-hero-highlight-text onboarding-hero-highlight-text--badge';
       if (badgeLabel) {
         var badgeLabelEl = DOCUMENT.createElement('span');
-        badgeLabelEl.className = 'onboarding-hero-badge-label';
+        badgeLabelEl.className = 'onboarding-hero-highlight-badge-label';
         badgeLabelEl.textContent = badgeLabel;
         badgeText.appendChild(badgeLabelEl);
       }
       if (badgeDescription) {
         var badgeDescriptionEl = DOCUMENT.createElement('span');
-        badgeDescriptionEl.className = 'onboarding-hero-badge-description';
+        badgeDescriptionEl.className = 'onboarding-hero-highlight-badge-description';
         badgeDescriptionEl.textContent = badgeDescription;
         badgeText.appendChild(badgeDescriptionEl);
       }
-      badge.appendChild(badgeText);
-      heroBanner.appendChild(badge);
-      heroBannerHasContent = true;
+      badgeItem.appendChild(badgeText);
+      badgeHighlight = badgeItem;
     }
     if (heroHeading || heroSubheading || heroSummary) {
+      var heroBanner = DOCUMENT.createElement('div');
+      heroBanner.className = 'onboarding-hero-banner';
       var headerWrap = DOCUMENT.createElement('div');
       headerWrap.className = 'onboarding-hero-header';
       if (heroHeading) {
@@ -2995,14 +2994,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         headerWrap.appendChild(summaryEl);
       }
       heroBanner.appendChild(headerWrap);
-      heroBannerHasContent = true;
-    }
-    if (heroBannerHasContent) {
       hero.appendChild(heroBanner);
     }
-    if (highlights.length) {
+    if (highlights.length || badgeHighlight) {
       var listEl = DOCUMENT.createElement('ul');
       listEl.className = 'onboarding-hero-highlights';
+      if (badgeHighlight) {
+        listEl.appendChild(badgeHighlight);
+      }
       for (var highlightIndex = 0; highlightIndex < highlights.length; highlightIndex += 1) {
         var highlightEntry = highlights[highlightIndex] && typeof highlights[highlightIndex] === 'object' ? highlights[highlightIndex] : {};
         var itemEl = DOCUMENT.createElement('li');
