@@ -1,6 +1,6 @@
 # Cine Power Planner
 
-![Icono de Cine Power Planner](src/icons/logo-default.svg)
+<img src="src/icons/logo-default.svg" alt="Icono de Cine Power Planner" width="200">
 
 Cine Power Planner es una aplicación web independiente para crear, auditar y compartir planes de alimentación profesional que nunca abandonan tu equipo. Diseña rigs V‑Mount, B‑Mount o Gold-Mount, modela tiempos de autonomía, documenta requisitos del proyecto y exporta paquetes compartibles, todo dentro del navegador, incluso sin conexión. Cada dependencia vive en este repositorio para que la experiencia sea idéntica en un estudio, un portátil de rodaje o un disco aislado.
 
