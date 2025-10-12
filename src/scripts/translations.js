@@ -610,7 +610,7 @@ const texts = {
       "Import failed. The file does not match the automatic gear rules export format.",
     autoGearImportMetadataLabelType: "type marker",
     autoGearImportMetadataLabelVersion: "version",
-    autoGearImportMetadataLabelTimestamp: "timestamp",
+    autoGearImportMetadataLabelTimestamp: "marca temporale",
     autoGearImportMissingMetadataWarning:
       "Imported rules are missing required metadata: {fields}. Confirm the file comes from a trusted export before saving.",
     autoGearImportInvalidMetadataWarning:
@@ -8550,7 +8550,7 @@ const texts = {
       openManager: "Kontakte öffnen",
       linkedBadge: "Mit Kontakt verknüpft",
       contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse, eine Telefonnummer oder eine Website an, bevor du diesen Kontakt speicherst.",
-      websiteLabel: "Website",
+      websiteLabel: "Webseite",
       websitePlaceholder: "https://beispiel.de",
       avatarOptionsTitle: "Fotooptionen",
       avatarOptionsDescription: "Zeige eine Vorschau des Fotos und wähle eine Aktion.",
