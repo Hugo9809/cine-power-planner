@@ -220,9 +220,12 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-const CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
-  typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-);
+var CORE_RUNTIME_CANDIDATE_SCOPES =
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined'
+    ? CORE_RUNTIME_CANDIDATE_SCOPES
+    : collectCoreRuntimeCandidateScopes(
+        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+      );
 
 function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale === 'object') {
