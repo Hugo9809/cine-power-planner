@@ -69,7 +69,7 @@ If you also operate a related site or domain, consider publishing an RFC 9116 `s
 
 **Example (replace with your details):**
 Contact: mailto: info@lucazanner.com
-Policy: https://github.com/Hugo9809/camera-power-planner/blob/main/SECURITY.md
+Policy: https://github.com/Hugo9809/cine-power-planner/blob/main/SECURITY.md
 Preferred-Languages: en, de
 
 ---
