@@ -380,6 +380,87 @@ function resolveCoreOptionsArray(functionName, existingValues = []) {
   return fallback;
 }
 
+function readGlobalArraySnapshot(key) {
+  const scope = getGlobalScope();
+  if (!scope || !key) {
+    return [];
+  }
+
+  const value = scope[key];
+  return Array.isArray(value) ? value.slice() : [];
+}
+
+function publishGlobalArraySnapshot(key, values) {
+  const scope = getGlobalScope();
+  if (!scope || !key) {
+    return;
+  }
+
+  if (!Array.isArray(values)) {
+    delete scope[key];
+    return;
+  }
+
+  try {
+    scope[key] = values.slice();
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn(`Failed to persist ${key} options on the global scope`, error);
+    }
+  }
+}
+
+function syncCoreOptionsArray(globalKey, functionName, existingValues = []) {
+  const aggregated = [];
+  const seen = new Set();
+
+  const addValues = (values) => {
+    if (!Array.isArray(values)) {
+      return;
+    }
+    for (let index = 0; index < values.length; index += 1) {
+      const option = values[index];
+      if (typeof option !== 'string') {
+        continue;
+      }
+      if (!seen.has(option)) {
+        seen.add(option);
+        aggregated.push(option);
+      }
+    }
+  };
+
+  addValues(existingValues);
+  addValues(readGlobalArraySnapshot(globalKey));
+
+  const resolved = resolveCoreOptionsArray(functionName, aggregated);
+  const finalValues = Array.isArray(resolved) ? resolved : aggregated;
+
+  publishGlobalArraySnapshot(globalKey, finalValues);
+
+  return finalValues;
+}
+
+const initialViewfinderTypeOptions =
+  typeof viewfinderTypeOptions !== 'undefined' && Array.isArray(viewfinderTypeOptions)
+    ? viewfinderTypeOptions
+    : [];
+viewfinderTypeOptions = syncCoreOptionsArray(
+  'viewfinderTypeOptions',
+  'getAllViewfinderTypes',
+  initialViewfinderTypeOptions,
+);
+
+const initialViewfinderConnectorOptions =
+  typeof viewfinderConnectorOptions !== 'undefined' && Array.isArray(viewfinderConnectorOptions)
+    ? viewfinderConnectorOptions
+    : [];
+viewfinderConnectorOptions = syncCoreOptionsArray(
+  'viewfinderConnectorOptions',
+  'getAllViewfinderConnectors',
+  initialViewfinderConnectorOptions,
+);
+
 function readCoreDeviceSelectionHelper() {
   if (typeof globalThis !== 'undefined' && typeof globalThis.hasAnyDeviceSelection === 'function') {
     return globalThis.hasAnyDeviceSelection;
@@ -2638,8 +2719,8 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
         delete devices[categoryKey][name];
       }
       storeDevices(devices);
-      viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
-      viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
+      viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
       updateMountTypeOptions();
       // Re-populate all dropdowns and update calculations
@@ -3145,8 +3226,8 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   resetDeviceForm();
 
   storeDevices(devices);
-  viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
-  viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
+  viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+  viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
   updatePlateTypeOptions();
   updatePowerPortOptions();
   updatePowerDistTypeOptions();
@@ -3322,8 +3403,8 @@ if (exportAndRevertBtn) {
       }
       unifyDevices(devices);
       storeDevices(devices);
-      viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
-      viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
+      viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists(); // Update device manager lists
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
