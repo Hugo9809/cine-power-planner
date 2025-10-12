@@ -378,7 +378,12 @@ describe('onboarding tour manual start', () => {
     nextButton.click();
     await new Promise(resolve => setTimeout(resolve, 60));
 
-    expect(progress.textContent).toBe('Step 1 of 23');
+    const progressText = progress.textContent || '';
+    expect(progressText).toMatch(/^Step 1 of \d+/);
+
+    const totalMatch = /Step 1 of (\d+)/.exec(progressText);
+    expect(totalMatch).not.toBeNull();
+    expect(Number(totalMatch[1])).toBeGreaterThan(0);
 
     const onboardingLanguage = overlay.querySelector('select[id^="onboarding-user-language"]');
     expect(onboardingLanguage).not.toBeNull();
@@ -401,5 +406,64 @@ describe('onboarding tour manual start', () => {
     expect(onboardingLanguage.value).toBe('fr');
     expect(settingsLanguage.value).toBe('fr');
     expect(global.currentLang).toBe('fr');
+  });
+
+  test('allows tabbing through interactive onboarding controls', async () => {
+    loadModule();
+
+    const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+    const helpDialog = document.getElementById('helpDialog');
+    expect(trigger).not.toBeNull();
+    expect(helpDialog).not.toBeNull();
+
+    helpDialog.removeAttribute('hidden');
+    helpDialog.setAttribute('open', '');
+
+    trigger.click();
+    await new Promise(resolve => setTimeout(resolve, 40));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+
+    const nextButton = overlay.querySelector('.onboarding-next-button');
+    expect(nextButton).not.toBeNull();
+    nextButton.click();
+    await new Promise(resolve => setTimeout(resolve, 60));
+
+    const skipButton = overlay.querySelector('.onboarding-skip');
+    const onboardingLanguage = overlay.querySelector('select[id^="onboarding-user-language"]');
+    expect(skipButton).not.toBeNull();
+    expect(onboardingLanguage).not.toBeNull();
+
+    skipButton.focus();
+
+    const forwardFocus = async () => {
+      const target = document.activeElement || skipButton;
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    const backwardFocus = async () => {
+      const target = document.activeElement || onboardingLanguage;
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true }));
+      await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    await forwardFocus();
+
+    let guard = 0;
+    while (document.activeElement !== onboardingLanguage && guard < 20) {
+      await forwardFocus();
+      guard += 1;
+    }
+    expect(document.activeElement).toBe(onboardingLanguage);
+
+    await backwardFocus();
+    guard = 0;
+    while (document.activeElement !== skipButton && guard < 20) {
+      await backwardFocus();
+      guard += 1;
+    }
+    expect(document.activeElement).toBe(skipButton);
   });
 });

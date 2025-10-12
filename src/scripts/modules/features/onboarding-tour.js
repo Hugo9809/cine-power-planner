@@ -119,6 +119,8 @@
   const MAIN_ANCHOR_ID = 'mainContent';
   const HEADER_ANCHOR_ID = 'topBar';
 
+  const CARD_FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]';
+
   const supportsDialogTopLayer = (function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
       return false;
@@ -4407,7 +4409,7 @@
     if (key !== 'Tab') {
       return;
     }
-    const focusable = Array.from(cardEl.querySelectorAll('button:not([disabled])'));
+    const focusable = getCardFocusableElements();
     if (!focusable.length) {
       return;
     }
@@ -4428,6 +4430,56 @@
         target.focus();
       }
     }
+  }
+
+  function getCardFocusableElements() {
+    if (!cardEl || typeof cardEl.querySelectorAll !== 'function') {
+      return [];
+    }
+    const candidates = cardEl.querySelectorAll(CARD_FOCUSABLE_SELECTOR);
+    const focusable = [];
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (isCardElementFocusable(candidate) && focusable.indexOf(candidate) === -1) {
+        focusable.push(candidate);
+      }
+    }
+    return focusable;
+  }
+
+  function isCardElementFocusable(element) {
+    if (!element || typeof element !== 'object') {
+      return false;
+    }
+    if (typeof element.matches === 'function' && !element.matches(CARD_FOCUSABLE_SELECTOR)) {
+      return false;
+    }
+    if (element.disabled || element.hidden) {
+      return false;
+    }
+    if (typeof element.getAttribute === 'function') {
+      const typeAttr = element.getAttribute('type');
+      if (typeAttr && typeAttr.toLowerCase() === 'hidden') {
+        return false;
+      }
+      const ariaHidden = element.getAttribute('aria-hidden');
+      if (ariaHidden && ariaHidden.toLowerCase() === 'true') {
+        return false;
+      }
+    }
+    if (typeof element.closest === 'function') {
+      const hiddenAncestor = element.closest('[hidden], [aria-hidden="true"]');
+      if (hiddenAncestor) {
+        return false;
+      }
+    }
+    if (typeof element.focus !== 'function') {
+      return false;
+    }
+    if (typeof element.tabIndex === 'number' && element.tabIndex < 0) {
+      return false;
+    }
+    return true;
   }
 
   function attachGlobalListeners() {
