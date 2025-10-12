@@ -67,7 +67,61 @@ var CORE_ENVIRONMENT_HELPERS = function resolveCoreEnvironmentHelpers() {
   return helpers;
 }();
 
+var CORE_RUNTIME_SHARED = function resolveCoreRuntimeShared() {
+  var shared = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    shared = resolveCoreSupportModule('cineCoreRuntimeShared', './modules/core/runtime-shared.js');
+  }
+
+  if (!shared && typeof require === 'function') {
+    try {
+      var requiredShared = require('./modules/core/runtime-shared.js');
+      if (requiredShared && _typeof(requiredShared) === 'object') {
+        shared = requiredShared;
+      }
+    } catch (runtimeSharedRequireError) {
+      void runtimeSharedRequireError;
+    }
+  }
+
+  if (shared) {
+    return shared;
+  }
+
+  var fallbackScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null];
+
+  for (var sharedIndex = 0; sharedIndex < fallbackScopes.length; sharedIndex += 1) {
+    var candidateScope = fallbackScopes[sharedIndex];
+    if (!candidateScope || _typeof(candidateScope) !== 'object') {
+      continue;
+    }
+
+    try {
+      var candidateShared = candidateScope.cineCoreRuntimeShared;
+      if (candidateShared && _typeof(candidateShared) === 'object') {
+        return candidateShared;
+      }
+    } catch (runtimeSharedLookupError) {
+      void runtimeSharedLookupError;
+    }
+  }
+
+  return null;
+}();
+
 function collectCoreRuntimeCandidateScopes(primaryScope) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function') {
+    try {
+      var sharedScopes = CORE_RUNTIME_SHARED.collectCandidateScopes(primaryScope, CORE_ENVIRONMENT_HELPERS);
+      if (Array.isArray(sharedScopes)) {
+        return sharedScopes;
+      }
+    } catch (collectRuntimeScopeError) {
+      void collectRuntimeScopeError;
+    }
+  }
+
   var scopes = [];
 
   function registerScope(scope) {
@@ -518,9 +572,19 @@ var CORE_RUNTIME_STATE = function resolveCoreRuntimeState() {
   return resolvedState;
 }();
 function registerRuntimeScope(scope) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.registerScope === 'function') {
+    try {
+      CORE_RUNTIME_SHARED.registerScope(CORE_RUNTIME_STATE, scope);
+      return;
+    } catch (sharedRegisterError) {
+      void sharedRegisterError;
+    }
+  }
+
   if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.registerScope !== 'function') {
     return;
   }
+
   try {
     CORE_RUNTIME_STATE.registerScope(scope);
   } catch (registerError) {
@@ -531,6 +595,17 @@ for (var CORE_RUNTIME_SCOPE_INDEX = 0; CORE_RUNTIME_SCOPE_INDEX < CORE_RUNTIME_C
   registerRuntimeScope(CORE_RUNTIME_CANDIDATE_SCOPES[CORE_RUNTIME_SCOPE_INDEX]);
 }
 function getCoreRuntimeScopesSnapshot() {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.getScopesSnapshot === 'function') {
+    try {
+      var sharedSnapshot = CORE_RUNTIME_SHARED.getScopesSnapshot(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPES);
+      if (Array.isArray(sharedSnapshot)) {
+        return sharedSnapshot;
+      }
+    } catch (runtimeSnapshotError) {
+      void runtimeSnapshotError;
+    }
+  }
+
   if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getScopes === 'function') {
     try {
       return CORE_RUNTIME_STATE.getScopes();
@@ -538,28 +613,75 @@ function getCoreRuntimeScopesSnapshot() {
       void scopeReadError;
     }
   }
+
   return CORE_RUNTIME_CANDIDATE_SCOPES.slice();
 }
-var CORE_PART2_RUNTIME_SCOPE = CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getPrimaryScope === 'function' ? CORE_RUNTIME_STATE.getPrimaryScope() : null;
-if (!CORE_PART2_RUNTIME_SCOPE) {
-  CORE_PART2_RUNTIME_SCOPE = getCoreRuntimeScopesSnapshot().length ? getCoreRuntimeScopesSnapshot()[0] : null;
+
+var CORE_PART2_RUNTIME_SCOPE = CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.ensurePrimaryScope === 'function' ? function resolvePrimaryScopeWithShared() {
+  try {
+    return CORE_RUNTIME_SHARED.ensurePrimaryScope(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPES);
+  } catch (sharedPrimaryScopeError) {
+    void sharedPrimaryScopeError;
+  }
+
+  return null;
+}() : null;
+
+if (!CORE_PART2_RUNTIME_SCOPE && CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getPrimaryScope === 'function') {
+  try {
+    CORE_PART2_RUNTIME_SCOPE = CORE_RUNTIME_STATE.getPrimaryScope();
+  } catch (primaryScopeError) {
+    CORE_PART2_RUNTIME_SCOPE = null;
+    void primaryScopeError;
+  }
 }
+
+if (!CORE_PART2_RUNTIME_SCOPE) {
+  var runtimeScopesSnapshot = getCoreRuntimeScopesSnapshot();
+  CORE_PART2_RUNTIME_SCOPE = runtimeScopesSnapshot.length ? runtimeScopesSnapshot[0] : null;
+}
+
 function assignCoreTemperatureNoteRenderer(renderer) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.assignTemperatureRenderer === 'function') {
+    try {
+      CORE_RUNTIME_SHARED.assignTemperatureRenderer(CORE_RUNTIME_STATE, renderer);
+      return;
+    } catch (assignRendererError) {
+      void assignRendererError;
+    }
+  }
+
   if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.assignTemperatureRenderer !== 'function') {
     return;
   }
+
   CORE_RUNTIME_STATE.assignTemperatureRenderer(renderer);
 }
+
 function readGlobalScopeValue(name) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.readValue === 'function') {
+    try {
+      var sharedValue = CORE_RUNTIME_SHARED.readValue(CORE_RUNTIME_STATE, name, getCoreRuntimeScopesSnapshot());
+      if (typeof sharedValue !== 'undefined') {
+        return sharedValue;
+      }
+    } catch (sharedReadError) {
+      void sharedReadError;
+    }
+  }
+
   if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.readValue === 'function') {
     return CORE_RUNTIME_STATE.readValue(name);
   }
+
   var scopes = getCoreRuntimeScopesSnapshot();
+
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
     if (!scope || _typeof(scope) !== 'object') {
       continue;
     }
+
     try {
       if (name in scope) {
         return scope[name];
@@ -568,27 +690,43 @@ function readGlobalScopeValue(name) {
       void readError;
     }
   }
+
   return undefined;
 }
+
 function ensureGlobalFallback(name, fallbackValue) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.ensureValue === 'function') {
+    try {
+      return CORE_RUNTIME_SHARED.ensureValue(CORE_RUNTIME_STATE, name, fallbackValue, getCoreRuntimeScopesSnapshot());
+    } catch (sharedEnsureError) {
+      void sharedEnsureError;
+    }
+  }
+
   if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.ensureValue === 'function') {
     return CORE_RUNTIME_STATE.ensureValue(name, fallbackValue);
   }
+
   var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
     return fallbackValue;
   };
+
   var scopes = getCoreRuntimeScopesSnapshot();
+
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
+
     try {
       if (typeof scope[name] === 'undefined') {
         scope[name] = fallbackProvider();
       }
+
       return scope[name];
     } catch (ensureError) {
       void ensureError;
     }
   }
+
   try {
     return fallbackProvider();
   } catch (fallbackError) {
@@ -596,19 +734,37 @@ function ensureGlobalFallback(name, fallbackValue) {
     return undefined;
   }
 }
+
 function normaliseGlobalValue(name, validator, fallbackValue) {
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.normaliseValue === 'function') {
+    try {
+      CORE_RUNTIME_SHARED.normaliseValue(CORE_RUNTIME_STATE, name, validator, fallbackValue, getCoreRuntimeScopesSnapshot());
+      return;
+    } catch (sharedNormaliseError) {
+      void sharedNormaliseError;
+    }
+  }
+
   if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.normaliseValue === 'function') {
     CORE_RUNTIME_STATE.normaliseValue(name, validator, fallbackValue);
     return;
   }
+
   var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
     return fallbackValue;
   };
+
+  var validate = typeof validator === 'function' ? validator : function alwaysValid() {
+    return true;
+  };
+
   var scopes = getCoreRuntimeScopesSnapshot();
+
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
+
     try {
-      if (!validator(scope[name])) {
+      if (!validate(scope[name])) {
         scope[name] = fallbackProvider();
       }
     } catch (normaliseError) {
