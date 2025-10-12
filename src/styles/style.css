@@ -7211,6 +7211,12 @@ body.dark-mode .onboarding-hero-offline {
 }
 
 @media (max-width: 48rem) {
+  .onboarding-card {
+    --onboarding-card-viewport-offset: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    max-height: min(80vh, calc(100vh - var(--onboarding-card-viewport-offset)));
+    max-block-size: min(80vh, calc(100vh - var(--onboarding-card-viewport-offset)));
+  }
+
   .onboarding-card[data-size='hero'] {
     width: min(100%, calc(100vw - 1.25rem));
     inline-size: min(100%, calc(100vw - 1.25rem));
@@ -7278,8 +7284,14 @@ body.dark-mode .onboarding-hero-offline {
 @media (max-width: 32rem) {
   .onboarding-card {
     border-radius: 14px;
-    max-height: min(88vh, calc(100vh - 1.25rem));
-    max-block-size: min(88vh, calc(100vh - 1.25rem));
+    max-height: min(
+      88vh,
+      calc(100vh - (1.25rem + env(safe-area-inset-bottom, 0px)))
+    );
+    max-block-size: min(
+      88vh,
+      calc(100vh - (1.25rem + env(safe-area-inset-bottom, 0px)))
+    );
   }
 
   .onboarding-card-content {
