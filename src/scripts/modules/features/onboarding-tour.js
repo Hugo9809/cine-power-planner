@@ -440,12 +440,43 @@
     intro: {
       title: 'Welcome to Cine Power Planner',
       body:
-        'Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.',
+        'Begin with the offline-first power planner built for crews. This guided tour walks through the safeguards that keep every project ready to restore before the first shoot.',
+      hero: {
+        badgeIcon: '\uE9C3',
+        badgeLabel: 'Offline · Subscription-free',
+        badgeDescription:
+          'No servers, no accounts. Saves, autosaves, backups, restores, shares and imports all stay on this device.',
+        highlights: [
+          {
+            icon: '\uE1A6',
+            title: 'Plan safe power loads',
+            body:
+              'Model draw, runtime and changeovers to lock in battery safety margins with confidence.',
+          },
+          {
+            icon: '\uE467',
+            title: 'AutoGear builds reusable kits',
+            body:
+              'Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.',
+          },
+          {
+            icon: '\uE469',
+            title: 'Share requirements with context',
+            body:
+              'Capture deliverables, crew coverage and rental notes, then export PDFs crews and houses can trust.',
+          },
+        ],
+        languageLabel: 'Language',
+        languageHint:
+          'Choose the interface language. The tutorial, help and exports update instantly across offline saves.',
+        offlineSummary:
+          'Cine Power Planner runs entirely offline with an installable mobile PWA—bringing the same safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.',
+      },
     },
     userProfile: {
-      title: 'Configure language and your profile',
+      title: 'Complete your crew profile',
       body:
-        'Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.',
+        'Set your display name, role, phone, email and photo. Every update syncs to Contacts immediately, stays in offline saves and appears on exports.',
     },
     unitsPreferences: {
       title: 'Tune theme and units',
@@ -1585,10 +1616,15 @@
         (fallbackEntry && typeof fallbackEntry.body === 'string' && fallbackEntry.body) ||
         (typeof defaultEntry.body === 'string' ? defaultEntry.body : '');
 
-      steps[key] = {
+      const resolvedEntry = {
+        ...(defaultEntry && typeof defaultEntry === 'object' ? defaultEntry : {}),
+        ...(fallbackEntry && typeof fallbackEntry === 'object' ? fallbackEntry : {}),
+        ...(localEntry && typeof localEntry === 'object' ? localEntry : {}),
         title: resolvedTitle,
         body: resolvedBody,
       };
+
+      steps[key] = resolvedEntry;
     }
     const prefaceIndicatorText = (() => {
       const localizedValue = localized && typeof localized.prefaceIndicator === 'string'
@@ -1622,7 +1658,7 @@
         key: 'intro',
         highlight: null,
         preface: true,
-        size: 'large',
+        size: 'hero',
       },
       {
         key: 'userProfile',
@@ -3252,6 +3288,335 @@
     }
   }
 
+  function applyLanguagePreference(value) {
+    const candidate = typeof value === 'string' ? value.trim() : '';
+    if (!candidate) {
+      return false;
+    }
+
+    let applied = false;
+    const missingSentinel = {};
+
+    if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
+      try {
+        const result = GLOBAL_SCOPE.callCoreFunctionIfAvailable(
+          'setLanguage',
+          [candidate],
+          { defaultValue: missingSentinel },
+        );
+        if (result !== missingSentinel) {
+          applied = true;
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not route language preference via runtime bridge.', error);
+      }
+    }
+
+    if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
+      try {
+        GLOBAL_SCOPE.setLanguage(candidate);
+        applied = true;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+      }
+    }
+
+    return applied;
+  }
+
+  function renderIntroInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    const introEntry = tourTexts && tourTexts.steps && tourTexts.steps.intro
+      ? tourTexts.steps.intro
+      : {};
+    const heroTexts = introEntry && typeof introEntry.hero === 'object'
+      ? introEntry.hero
+      : {};
+    const highlights = Array.isArray(heroTexts.highlights) ? heroTexts.highlights : [];
+    const badgeIcon = typeof heroTexts.badgeIcon === 'string' && heroTexts.badgeIcon
+      ? heroTexts.badgeIcon
+      : '\uE9C3';
+    const badgeLabel = typeof heroTexts.badgeLabel === 'string' ? heroTexts.badgeLabel : '';
+    const badgeDescription = typeof heroTexts.badgeDescription === 'string'
+      ? heroTexts.badgeDescription
+      : '';
+    const languageLabel = typeof heroTexts.languageLabel === 'string'
+      ? heroTexts.languageLabel
+      : 'Language';
+    const languageHint = typeof heroTexts.languageHint === 'string' ? heroTexts.languageHint : '';
+    const offlineSummary = typeof heroTexts.offlineSummary === 'string'
+      ? heroTexts.offlineSummary
+      : '';
+
+    interactionContainerEl.hidden = false;
+    interactionContainerEl.classList.add('onboarding-interaction--hero');
+    registerCleanup(() => {
+      interactionContainerEl.classList.remove('onboarding-interaction--hero');
+    });
+
+    const hero = DOCUMENT.createElement('div');
+    hero.className = 'onboarding-hero';
+
+    if (badgeLabel || badgeDescription) {
+      const badge = DOCUMENT.createElement('div');
+      badge.className = 'onboarding-hero-badge';
+
+      const badgeIconEl = DOCUMENT.createElement('span');
+      badgeIconEl.className = 'icon-glyph onboarding-hero-badge-icon';
+      badgeIconEl.setAttribute('data-icon-font', 'uicons');
+      badgeIconEl.setAttribute('aria-hidden', 'true');
+      badgeIconEl.textContent = badgeIcon;
+      badge.appendChild(badgeIconEl);
+
+      const badgeText = DOCUMENT.createElement('div');
+      badgeText.className = 'onboarding-hero-badge-text';
+
+      if (badgeLabel) {
+        const labelEl = DOCUMENT.createElement('span');
+        labelEl.className = 'onboarding-hero-badge-label';
+        labelEl.textContent = badgeLabel;
+        badgeText.appendChild(labelEl);
+      }
+
+      if (badgeDescription) {
+        const descriptionEl = DOCUMENT.createElement('span');
+        descriptionEl.className = 'onboarding-hero-badge-description';
+        descriptionEl.textContent = badgeDescription;
+        badgeText.appendChild(descriptionEl);
+      }
+
+      badge.appendChild(badgeText);
+      hero.appendChild(badge);
+    }
+
+    if (highlights.length) {
+      const listEl = DOCUMENT.createElement('ul');
+      listEl.className = 'onboarding-hero-highlights';
+
+      for (let index = 0; index < highlights.length; index += 1) {
+        const entry = highlights[index] && typeof highlights[index] === 'object'
+          ? highlights[index]
+          : {};
+        const itemEl = DOCUMENT.createElement('li');
+        itemEl.className = 'onboarding-hero-highlight';
+
+        const iconEl = DOCUMENT.createElement('span');
+        iconEl.className = 'icon-glyph onboarding-hero-highlight-icon';
+        iconEl.setAttribute('data-icon-font', 'uicons');
+        iconEl.setAttribute('aria-hidden', 'true');
+        iconEl.textContent = typeof entry.icon === 'string' && entry.icon ? entry.icon : '\uE1A6';
+        itemEl.appendChild(iconEl);
+
+        const textWrap = DOCUMENT.createElement('div');
+        textWrap.className = 'onboarding-hero-highlight-text';
+
+        if (typeof entry.title === 'string' && entry.title) {
+          const titleEl = DOCUMENT.createElement('h3');
+          titleEl.className = 'onboarding-hero-highlight-title';
+          titleEl.textContent = entry.title;
+          textWrap.appendChild(titleEl);
+        }
+
+        if (typeof entry.body === 'string' && entry.body) {
+          const bodyEl = DOCUMENT.createElement('p');
+          bodyEl.className = 'onboarding-hero-highlight-body';
+          bodyEl.textContent = entry.body;
+          textWrap.appendChild(bodyEl);
+        }
+
+        itemEl.appendChild(textWrap);
+        listEl.appendChild(itemEl);
+      }
+
+      hero.appendChild(listEl);
+    }
+
+    const languageGroup = DOCUMENT.createElement('div');
+    languageGroup.className = 'onboarding-hero-language';
+
+    const languageSelect = DOCUMENT.getElementById('languageSelect');
+    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+    const languageTargets = [];
+    if (languageSelect) {
+      languageTargets.push(languageSelect);
+    }
+    if (settingsLanguage && settingsLanguage !== languageSelect) {
+      languageTargets.push(settingsLanguage);
+    }
+
+    const languageControlId = getProxyControlId('intro-language');
+    const labelEl = DOCUMENT.createElement('label');
+    labelEl.className = 'onboarding-hero-language-label';
+    labelEl.setAttribute('for', languageControlId);
+    labelEl.textContent = languageLabel;
+    languageGroup.appendChild(labelEl);
+
+    const languageProxy = DOCUMENT.createElement('select');
+    languageProxy.id = languageControlId;
+    languageProxy.className = 'onboarding-field-select onboarding-hero-language-select';
+
+    const copyOptionsFromSource = (source) => {
+      const preserveValue = languageProxy.value;
+      languageProxy.textContent = '';
+      if (!source) {
+        return;
+      }
+      const sourceOptions = source && source.options ? Array.from(source.options) : [];
+      if (sourceOptions.length) {
+        for (let index = 0; index < sourceOptions.length; index += 1) {
+          languageProxy.appendChild(sourceOptions[index].cloneNode(true));
+        }
+      } else if (typeof source.value === 'string') {
+        const option = DOCUMENT.createElement('option');
+        option.value = source.value;
+        option.textContent = source.value || '';
+        languageProxy.appendChild(option);
+      }
+      if (preserveValue) {
+        languageProxy.value = preserveValue;
+      }
+    };
+
+    const getActiveLanguageValue = () => {
+      for (let index = 0; index < languageTargets.length; index += 1) {
+        const target = languageTargets[index];
+        if (target && typeof target.value === 'string' && target.value) {
+          return target.value;
+        }
+      }
+      return '';
+    };
+
+    const syncLanguageProxyFromTargets = () => {
+      if (!languageTargets.length) {
+        return;
+      }
+      const base = languageTargets[0];
+      if (base) {
+        const activeValue = getActiveLanguageValue() || languageProxy.value;
+        copyOptionsFromSource(base);
+        if (activeValue) {
+          languageProxy.value = activeValue;
+        }
+      }
+    };
+
+    if (languageTargets.length) {
+      copyOptionsFromSource(languageTargets[0]);
+      const initialValue = getActiveLanguageValue();
+      if (initialValue) {
+        languageProxy.value = initialValue;
+      } else if (languageProxy.options && languageProxy.options.length && languageTargets[0]) {
+        languageProxy.value = languageTargets[0].value || languageProxy.options[0].value;
+      }
+    } else {
+      languageProxy.disabled = true;
+      languageProxy.setAttribute('aria-disabled', 'true');
+    }
+
+    const handleLanguageProxyChange = () => {
+      const value = languageProxy.value;
+      const applied = applyLanguagePreference(value);
+      if (applied) {
+        return;
+      }
+      for (let index = 0; index < languageTargets.length; index += 1) {
+        const target = languageTargets[index];
+        if (!target || target.value === value) {
+          continue;
+        }
+        target.value = value;
+        dispatchSyntheticEvent(target, 'change');
+      }
+    };
+
+    languageProxy.addEventListener('change', handleLanguageProxyChange);
+    registerCleanup(() => {
+      languageProxy.removeEventListener('change', handleLanguageProxyChange);
+    });
+
+    const handleTargetChange = () => {
+      syncLanguageProxyFromTargets();
+    };
+
+    for (let index = 0; index < languageTargets.length; index += 1) {
+      const target = languageTargets[index];
+      if (!target) {
+        continue;
+      }
+      target.addEventListener('change', handleTargetChange);
+      target.addEventListener('input', handleTargetChange);
+      registerCleanup(() => {
+        target.removeEventListener('change', handleTargetChange);
+        target.removeEventListener('input', handleTargetChange);
+      });
+      if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+        try {
+          const observer = new GLOBAL_SCOPE.MutationObserver(() => {
+            syncLanguageProxyFromTargets();
+          });
+          observer.observe(target, { childList: true });
+          registerCleanup(() => {
+            try {
+              observer.disconnect();
+            } catch (error) {
+              void error;
+            }
+          });
+        } catch (error) {
+          void error;
+        }
+        break;
+      }
+    }
+
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
+      const handleLanguageEvent = () => {
+        syncLanguageProxyFromTargets();
+      };
+      try {
+        GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageEvent);
+        registerCleanup(() => {
+          try {
+            GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageEvent);
+          } catch (removeError) {
+            void removeError;
+          }
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe language changes.', error);
+      }
+    }
+
+    languageGroup.appendChild(languageProxy);
+
+    if (languageHint) {
+      const hintEl = DOCUMENT.createElement('p');
+      hintEl.className = 'onboarding-hero-language-hint';
+      hintEl.textContent = languageHint;
+      languageGroup.appendChild(hintEl);
+    }
+
+    hero.appendChild(languageGroup);
+
+    if (offlineSummary) {
+      const offlineEl = DOCUMENT.createElement('p');
+      offlineEl.className = 'onboarding-hero-offline';
+      offlineEl.textContent = offlineSummary;
+      hero.appendChild(offlineEl);
+    }
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(hero);
+
+    return true;
+  }
+
   function renderUserProfileInteraction(registerCleanup) {
     if (!interactionContainerEl) {
       return false;
@@ -3268,54 +3633,11 @@
     const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
-    const languageSelect = DOCUMENT.getElementById('languageSelect');
-    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
-    const settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
-
-    const applyLanguagePreference = (value) => {
-      const candidate = typeof value === 'string' ? value.trim() : '';
-      if (!candidate) {
-        return false;
-      }
-
-      let applied = false;
-      const missingSentinel = {};
-
-      if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
-        try {
-          const result = GLOBAL_SCOPE.callCoreFunctionIfAvailable(
-            'setLanguage',
-            [candidate],
-            { defaultValue: missingSentinel },
-          );
-          if (result !== missingSentinel) {
-            applied = true;
-          }
-        } catch (error) {
-          safeWarn(
-            'cine.features.onboardingTour could not route language preference via runtime bridge.',
-            error,
-          );
-        }
-      }
-
-      if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
-        try {
-          GLOBAL_SCOPE.setLanguage(candidate);
-          applied = true;
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not sync language preference.', error);
-        }
-      }
-
-      return applied;
-    };
-
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Pick your interface language and contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    intro.textContent = 'Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -3538,124 +3860,6 @@
       }
       return proxyControl;
     };
-
-    let languageProxy = null;
-    if (languageSelect || settingsLanguage) {
-      const languageTarget = languageSelect || settingsLanguage;
-      const resolveLanguageLabel = () => {
-        if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
-          const text = settingsLanguageLabel.textContent.trim();
-          if (text) {
-            return text;
-          }
-        }
-        if (languageSelect && typeof languageSelect.getAttribute === 'function') {
-          const ariaLabel = languageSelect.getAttribute('aria-label');
-          if (ariaLabel && ariaLabel.trim()) {
-            return ariaLabel.trim();
-          }
-        }
-        return 'Language';
-      };
-
-      const handleLanguageSync = (direction) => {
-        if (!languageProxy || direction !== 'to') {
-          return;
-        }
-        const value = languageProxy.value;
-        const applied = applyLanguagePreference(value);
-        if (applied) {
-          return;
-        }
-        if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
-          languageSelect.value = value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-        if (settingsLanguage && settingsLanguage !== languageTarget && settingsLanguage.value !== value) {
-          settingsLanguage.value = value;
-          dispatchSyntheticEvent(settingsLanguage, 'change');
-        }
-      };
-
-      languageProxy = createProxyField({
-        fieldKey: 'user-language',
-        labelText: resolveLanguageLabel(),
-        target: languageTarget,
-        type: 'select',
-        onAfterSync: handleLanguageSync,
-      });
-
-      const syncLanguageFromActive = () => {
-        if (!languageProxy) {
-          return;
-        }
-        let activeValue = '';
-        if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
-          activeValue = languageSelect.value;
-        } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
-          activeValue = settingsLanguage.value;
-        }
-        if (activeValue && languageProxy.value !== activeValue) {
-          languageProxy.value = activeValue;
-        }
-      };
-
-      syncLanguageFromActive();
-
-      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
-        const handleLanguageChangeEvent = () => {
-          syncLanguageFromActive();
-        };
-        try {
-          GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChangeEvent);
-          registerCleanup(() => {
-            try {
-              GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageChangeEvent);
-            } catch (removeError) {
-              void removeError;
-            }
-          });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not observe language changes.', error);
-        }
-      }
-
-      const secondarySources = [];
-      if (languageSelect && languageSelect !== languageTarget) {
-        secondarySources.push(languageSelect);
-      }
-      if (settingsLanguage && settingsLanguage !== languageTarget) {
-        secondarySources.push(settingsLanguage);
-      }
-
-      if (secondarySources.length) {
-        const handleSecondarySourceChange = () => {
-          syncLanguageFromActive();
-        };
-        for (let index = 0; index < secondarySources.length; index += 1) {
-          const source = secondarySources[index];
-          if (!source) {
-            continue;
-          }
-          source.addEventListener('change', handleSecondarySourceChange);
-          source.addEventListener('input', handleSecondarySourceChange);
-        }
-        registerCleanup(() => {
-          for (let index = 0; index < secondarySources.length; index += 1) {
-            const source = secondarySources[index];
-            if (!source) {
-              continue;
-            }
-            source.removeEventListener('change', handleSecondarySourceChange);
-            source.removeEventListener('input', handleSecondarySourceChange);
-          }
-        });
-      }
-
-      registerCleanup(() => {
-        languageProxy = null;
-      });
-    }
 
     const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
       ? profileLabel.textContent
@@ -4246,6 +4450,9 @@
     };
 
     const customRendered = (() => {
+      if (key === 'intro') {
+        return renderIntroInteraction(registerCleanup);
+      }
       if (key === 'userProfile') {
         return renderUserProfileInteraction(registerCleanup);
       }
