@@ -356,7 +356,7 @@ function logOverview(level, message, detail, meta) {
     }
 }
 
-function resolveOverviewGearListSections(html) {
+function resolveOverviewGearListSectionsInternal(html) {
     const normalizedHtml = typeof html === 'string' ? html : '';
     if (!normalizedHtml) {
         return { projectHtml: '', gearHtml: '' };
@@ -417,6 +417,60 @@ function resolveOverviewGearListSections(html) {
 
     return fallbackResult;
 }
+
+(function exposeOverviewGearListSectionsResolver() {
+    const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+    if (!globalScope) {
+        return;
+    }
+
+    try {
+        if (!globalScope.cineOverview || typeof globalScope.cineOverview !== 'object') {
+            Object.defineProperty(globalScope, 'cineOverview', {
+                value: {},
+                configurable: true,
+                writable: true,
+                enumerable: true,
+            });
+        }
+    } catch (error) {
+        logOverview('warn', 'Unable to prepare cineOverview namespace.', error, {
+            action: 'prepare-cineOverview-namespace',
+        });
+    }
+
+    const namespaces = [globalScope];
+    if (globalScope && globalScope.cineOverview && namespaces.indexOf(globalScope.cineOverview) === -1) {
+        namespaces.push(globalScope.cineOverview);
+    }
+
+    for (let index = 0; index < namespaces.length; index += 1) {
+        const namespace = namespaces[index];
+        try {
+            if (namespace && typeof namespace === 'object'
+                && typeof namespace.resolveOverviewGearListSections !== 'function') {
+                Object.defineProperty(namespace, 'resolveOverviewGearListSections', {
+                    value: resolveOverviewGearListSectionsInternal,
+                    configurable: true,
+                    writable: true,
+                    enumerable: true,
+                });
+            }
+        } catch (error) {
+            logOverview('warn', 'Unable to expose overview gear list resolver.', error, {
+                action: 'expose-gear-resolver',
+                namespaceIndex: index,
+            });
+        }
+    }
+
+    return undefined;
+})();
 
         }
     } else {
@@ -1483,7 +1537,60 @@ function generatePrintableOverview(config = {}) {
     let projectSectionHtml = '';
     let gearSectionHtml = '';
     if (gearListCombined) {
-        const parts = resolveOverviewGearListSections(gearListCombined);
+        const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+            || (typeof window !== 'undefined' && window)
+            || (typeof self !== 'undefined' && self)
+            || (typeof global !== 'undefined' && global)
+            || null;
+
+        const fallbackSplit = (html) => {
+            const normalized = typeof html === 'string' ? html : '';
+            if (!normalized) {
+                return { projectHtml: '', gearHtml: '' };
+            }
+            if (typeof getSafeGearListHtmlSections === 'function') {
+                try {
+                    const sections = getSafeGearListHtmlSections(normalized);
+                    if (sections && typeof sections === 'object') {
+                        const projectHtml = typeof sections.projectHtml === 'string'
+                            ? sections.projectHtml
+                            : '';
+                        const gearHtml = typeof sections.gearHtml === 'string'
+                            ? sections.gearHtml
+                            : (projectHtml ? '' : normalized);
+                        return { projectHtml, gearHtml };
+                    }
+                } catch (error) {
+                    logOverview('warn', 'Fallback gear list splitter failed.', error, {
+                        action: 'fallback-split-gear-html',
+                    });
+                }
+            }
+            return { projectHtml: '', gearHtml: normalized };
+        };
+
+        const resolveGearSections = (() => {
+            if (globalScope && typeof globalScope.resolveOverviewGearListSections === 'function') {
+                return globalScope.resolveOverviewGearListSections;
+            }
+            if (globalScope
+                && globalScope.cineOverview
+                && typeof globalScope.cineOverview.resolveOverviewGearListSections === 'function') {
+                return globalScope.cineOverview.resolveOverviewGearListSections;
+            }
+            return fallbackSplit;
+        })();
+
+        let parts;
+        try {
+            parts = resolveGearSections(gearListCombined) || fallbackSplit(gearListCombined);
+        } catch (error) {
+            logOverview('warn', 'Unable to resolve overview gear list sections.', error, {
+                action: 'resolve-gear-sections',
+            });
+            parts = fallbackSplit(gearListCombined);
+        }
+
         if (parts.projectHtml) {
             projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
