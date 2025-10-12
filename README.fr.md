@@ -4,6 +4,31 @@
 
 Cine Power Planner est une application web autonome pour créer, auditer et partager des plans d’alimentation professionnels qui ne quittent jamais votre machine. Configurez des rigs V‑Mount, B‑Mount ou Gold-Mount, modélisez les autonomies, consignez les exigences du projet et exportez des lots partageables, entièrement dans le navigateur, même hors ligne. Toutes les dépendances résident dans ce dépôt, garantissant la même expérience sur un poste de plateau, un ordinateur portable de tournage ou un disque isolé.
 
+## Fonctionnalités principales
+
+- **Base de données énergétique des équipements.** Consultez les valeurs de consommation fournies pour caméras, moniteurs, émetteurs, éclairages et accessoires, ou enrichissez le catalogue local avec vos propres fiches afin que chaque projet repose sur des données vérifiées.
+- **Planification d’autonomie.** Combinez capacités de batterie, familles de tension et comportements de décharge pour estimer la durée de chaque rig avant changement de pack. Le retour d’autonomie garde ces attentes visibles pendant la préparation et les répétitions.
+- **Configurations sur mesure.** Assemblez caméras, accessoires, exigences d’équipe et scénarios enregistrés pour refléter fidèlement l’installation utilisée sur le plateau. Exportez bundles ou sauvegardes à tout moment sans compromettre les données.
+- **Répétitions de sécurité et traçabilité.** Parcours guidés, journaux de diff automatiques et paquets de vérification facilitent la preuve que sauvegarde, partage, import, backup et restauration protègent chaque donnée utilisateur, même sans reconnecter la machine.
+- **Fonctionnement hors ligne garanti.** Tous les icônes, polices, Uicons et scripts fournis voyagent avec le dépôt. Autosave, backup, restauration, partage et aide fonctionnent intégralement en local pour travailler sereinement en environnement isolé.
+
+## Installation
+
+1. Clonez ou téléchargez ce dépôt sur un support local de confiance :
+   ```bash
+   git clone https://github.com/Hugo9809/cine-power-planner.git
+   cd cine-power-planner
+   ```
+   (Si vous recevez un bundle hors ligne, extrayez-le dans un dossier local.)
+2. Ouvrez `index.html` directement dans un navigateur compatible. Tous les assets proviennent du dépôt, vous pouvez donc couper la connexion immédiatement.
+3. (Facultatif) Servez le dossier sur `http://localhost` pour activer le service worker embarqué et l’installation PWA. Tout serveur statique convient hors ligne, par exemple :
+   ```bash
+   npx http-server
+   # ou
+   python -m http.server
+   ```
+4. Suivez le [Démarrage rapide](#démarrage-rapide) afin de répéter sauvegarde, partage, import, backup et restauration sur chaque poste avant de dépendre du planner sur le terrain.
+
 ## En résumé
 
 - **Planification hors ligne en priorité.** Concevez des configurations V‑Mount, B‑Mount ou Gold-Mount directement dans le navigateur. Tous les Uicons, polices et scripts auxiliaires sont fournis localement, sans dépendre de CDNs ni du réseau. Clonez le dépôt, débranchez le câble et l’interface reste identique.
@@ -97,6 +122,8 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 
 ## Table des matières
 
+- [Fonctionnalités principales](#fonctionnalités-principales)
+- [Installation](#installation)
 - [En résumé](#en-résumé)
 - [Couches de sécurité en un coup d’œil](#couches-de-sécurité-en-un-coup-dœil)
 - [Accès rapides](#accès-rapides)

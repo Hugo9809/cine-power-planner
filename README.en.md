@@ -10,6 +10,49 @@ when you are offline. Every dependency lives in this repository so the same
 experience runs on a stage workstation, a field laptop or an air-gapped archive
 drive without phoning home.
 
+## Key Features
+
+- **Equipment power knowledge base.** Reference bundled draw figures for cameras,
+  monitors, transmitters, lights and accessories, or extend the local catalog
+  with your own entries so every project starts with verified data.
+- **Battery runtime planning.** Combine battery capacities, voltage families and
+  discharge behavior to estimate how long each rig will run before crews swap
+  packs. Runtime feedback keeps expectations visible during prep and rehearsal.
+- **Custom rig configurations.** Mix cameras, accessories, crew requirements and
+  saved scenarios to mirror the exact builds used on set. Export bundles or
+  backups at any time to move that configuration to another workstation without
+  risking data loss.
+- **Safety rehearsals & audit trails.** Guided drills, automatic diff logs and
+  verification packets make it easy to prove that save, share, import, backup
+  and restore workflows protect every bit of user data—even when you never
+  reconnect to the internet.
+- **Offline-first operation.** All icons, fonts, Uicons and helper scripts ship
+  with the repo. Autosave, backup, restore, share and help systems run entirely
+  on-device so crews can rehearse and operate in fully disconnected
+  environments.
+
+## Installation
+
+1. Clone or download this repository to a trusted local drive:
+   ```bash
+   git clone https://github.com/Hugo9809/cine-power-planner.git
+   cd cine-power-planner
+   ```
+   (If you received an offline bundle, unpack it to a local folder instead.)
+2. Open `index.html` directly in a supported browser. Every asset loads from the
+   repository, so you can disconnect immediately after opening the file.
+3. (Optional) Serve the folder over `http://localhost` to enable the bundled
+   service worker and Progressive Web App install prompt. Any static server
+   works while offline, for example:
+   ```bash
+   npx http-server
+   # or
+   python -m http.server
+   ```
+4. Follow the [Quick Start](#quick-start) drill to rehearse saving, sharing,
+   importing, backing up and restoring on every machine before crews rely on the
+   planner in the field.
+
 ## At a Glance
 
 - **Plan offline-first.** Build V‑Mount, B‑Mount or Gold‑Mount setups directly
@@ -151,6 +194,8 @@ production day.
 
 ## Table of Contents
 
+- [Key Features](#key-features)
+- [Installation](#installation)
 - [At a Glance](#at-a-glance)
 - [Safety Layers at a Glance](#safety-layers-at-a-glance)
 - [Quick Links](#quick-links)
