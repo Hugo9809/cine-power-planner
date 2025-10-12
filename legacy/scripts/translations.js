@@ -1580,7 +1580,8 @@ var texts = {
       steps: {
         intro: {
           title: "Welcome to Cine Power Planner",
-          body: "This guided tour introduces the offline safeguards, crew-ready automation, and restore drills that keep every project production-ready.",
+          body:
+            "Step 1 introduces the guided tour and the safeguards that keep every project recoverable before the first shoot. Follow the prompts to learn how saves, backups, and restores work without ever risking your offline data.",
           hero: {
             heading: "Welcome to Cine Power Planner",
             subheading: "Crew-first power, gear, and handoff planning — fully offline.",
