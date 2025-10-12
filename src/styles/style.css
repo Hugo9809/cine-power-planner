@@ -10292,13 +10292,13 @@ body.high-contrast .project-field-hint {
 
 /* Project requirement boxes */
 .requirements-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 10px;
   margin-bottom: 1em;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  align-items: stretch;
 }
 .requirement-box {
-  flex: 1 1 150px;
   background: var(--surface-color);
   border: 1px solid var(--panel-border);
   border-radius: 8px;
@@ -10306,6 +10306,7 @@ body.high-contrast .project-field-hint {
   padding: 10px;
   box-shadow: var(--panel-shadow);
   --requirement-accent-color: var(--text-color);
+  min-width: 0;
 }
 .requirement-box .req-icon {
   --req-icon-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
@@ -10365,9 +10366,15 @@ body.dark-mode .requirement-box,
   --requirement-accent-color: var(--inverse-text-color);
 }
 
-/* Let project scenarios span the full row for clarity */
-.requirement-box[data-field="requiredScenarios"] {
-  flex: 1 1 100%;
+/* Expand production company details and let project scenarios span the full row for clarity */
+.requirements-grid .requirement-box[data-field="productionCompany"][data-has-address="true"] {
+  grid-column: span 2;
+}
+
+.requirements-grid .requirement-box[data-field="requiredScenarios"],
+.requirements-grid .requirement-box[data-field="shootingScenarios"],
+.requirements-grid .requirement-box[data-field="shootingScenario"] {
+  grid-column: 1 / -1;
 }
 
 /* Overview dialog */

@@ -515,6 +515,10 @@ body.dark-mode #overviewDialogContent .requirement-box {
   font-size: var(--font-size-base);
 }
 
+#overviewDialogContent .requirements-grid .requirement-box[data-field="productionCompany"][data-has-address="true"] {
+  grid-column: span 2;
+}
+
 #overviewDialogContent .requirements-grid .requirement-box[data-field="requiredScenarios"],
 #overviewDialogContent .requirements-grid .requirement-box[data-field="shootingScenarios"],
 #overviewDialogContent .requirements-grid .requirement-box[data-field="shootingScenario"] {

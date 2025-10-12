@@ -10456,7 +10456,12 @@ function gearListGenerateHtmlImpl(info = {}) {
                 className: 'req-icon',
                 size: 'var(--req-icon-size)'
             });
-            return `<div class="requirement-box" data-field="${k}">${iconHtml}<span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
+            const extraAttrs = [];
+            if (k === 'productionCompany' && hasCombinedProductionCompany) {
+                extraAttrs.push('data-has-address="true"');
+            }
+            const attrHtml = extraAttrs.length ? ` ${extraAttrs.join(' ')}` : '';
+            return `<div class="requirement-box" data-field="${k}"${attrHtml}>${iconHtml}<span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
         }).join('') + '</div>' : '';
     const requirementsHeading = projectFormTexts.heading || 'Project Requirements';
     const infoHtml = infoEntries.length ? `<h3>${escapeHtml(requirementsHeading)}</h3>${boxesHtml}` : '';

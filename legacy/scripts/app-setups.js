@@ -9803,7 +9803,12 @@ function gearListGenerateHtmlImpl() {
       className: 'req-icon',
       size: 'var(--req-icon-size)'
     });
-    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\">").concat(iconHtml, "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
+    var extraAttrs = [];
+    if (k === 'productionCompany' && hasCombinedProductionCompany) {
+      extraAttrs.push('data-has-address="true"');
+    }
+    var attrHtml = extraAttrs.length ? " ".concat(extraAttrs.join(' ')) : '';
+    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\"").concat(attrHtml, ">" + iconHtml + "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
   }).join('') + '</div>' : '';
   var requirementsHeading = projectFormTexts.heading || 'Project Requirements';
   var infoHtml = infoEntries.length ? "<h3>".concat(escapeHtml(requirementsHeading), "</h3>").concat(boxesHtml) : '';
