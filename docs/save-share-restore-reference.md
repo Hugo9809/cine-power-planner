@@ -22,6 +22,19 @@ printed copy with field kits.
 - Automatic backups are stored as `auto-backup-*` entries and appear in the
   selector for review or manual restore.
 
+## Data & Storage dashboard review
+
+1. Open **Settings → Data & Storage** before disconnecting from the network.
+2. Inspect the **Storage summary** cards to confirm saved projects, autosaves,
+   backups, device exports and translation bundles all have current counts.
+3. Read the **Latest activity** timestamps for manual saves, automatic snapshots
+   and full backups; capture fresh exports if any entry looks stale.
+4. Check the **Backup guardian** status—every critical key must show as mirrored
+   before you rely on offline workstations.
+5. Use **Quick safeguards → Download full backup** when you need an immediate
+   snapshot and archive the JSON alongside project exports on two storage
+   devices.
+
 ## Planner backup export
 
 1. Open **Settings → Backup & Restore**.

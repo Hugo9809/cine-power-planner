@@ -20,6 +20,8 @@ runtime.
 - [ ] Refresh localized READMEs; add translator notes or placeholders when human
       updates are pending.
 - [ ] Update in-app help strings and `src/scripts/translations.js` entries.
+- [ ] Confirm the Help quick start checklist and Data & Storage callouts explain
+      the updated workflow, including backup guardian and quick safeguard steps.
 - [ ] Capture updated screenshots or diagrams using bundled assets only.
 - [ ] Regenerate printable/training materials and share bundle templates.
 - [ ] Export updated translation bundles for archival.
