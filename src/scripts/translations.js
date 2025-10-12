@@ -1835,37 +1835,53 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "Begin with the offline-first power planner built for crews. This guided tour highlights the safeguards that keep every project ready to restore before the first shoot.",
+            "This guided tour introduces the offline safeguards, crew-ready automation, and restore drills that keep every project production-ready.",
           hero: {
+            heading: "Welcome to Cine Power Planner",
+            subheading: "Crew-first power, gear, and handoff planning — fully offline.",
+            summary:
+              "Plan safe power loads, generate AutoGear kits, and capture handoffs while every save stays local. Follow the checkpoints to see how we protect your data before the first shoot day.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Offline · Subscription-free",
+            badgeLabel: "Crew-first · Offline forever",
             badgeDescription:
-              "No servers, no accounts. Saves, autosaves, backups, restores, shares and imports all stay on this device.",
+              "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
             highlights: [
               {
                 icon: "\uE1A6",
-                title: "Plan safe power loads",
+                title: "Lock in power, safety, and backups",
                 body:
-                  "Model draw, runtime and changeovers to lock in battery safety margins with confidence.",
+                  "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.",
               },
               {
                 icon: "\uE467",
                 title: "AutoGear builds reusable kits",
                 body:
-                  "Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.",
+                  "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.",
               },
               {
                 icon: "\uE469",
-                title: "Share requirements with context",
+                title: "Project requirements ready to hand off",
                 body:
-                  "Capture deliverables, crew coverage and rental notes, then export PDFs crews and houses can trust.",
+                  "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production can trust.",
+              },
+              {
+                icon: "\uE1A6",
+                title: "Offline-first, subscription-free PWA",
+                body:
+                  "Run the planner entirely offline, install it as a mobile PWA, and keep workflows available without subscriptions or servers.",
+              },
+              {
+                icon: "\uE467",
+                title: "Data is sacred",
+                body:
+                  "Autosave, backup/restore, share, and import safeguards protect every project snapshot. Restore rehearsals prove nothing is lost.",
               },
             ],
             languageLabel: "Language",
             languageHint:
-              "Choose the interface language. The tutorial, help and exports update instantly across offline saves.",
+              "Choose the interface language so this tour, the help center, and exports translate instantly across offline saves.",
             offlineSummary:
-              "Cine Power Planner runs entirely offline with an installable mobile PWA—bringing the same safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.",
+              "Cine Power Planner is built for field reliability: offline by default, installable on mobile, and always storing redundant saves locally so crews retain control of their data.",
           },
         },
         userProfile: {
@@ -3967,37 +3983,53 @@ const texts = {
         intro: {
           title: "Benvenuto in Cine Power Planner",
           body:
-            "Inizia con il planner dell’alimentazione progettato offline-first per le troupe. Questo tour guidato evidenzia le salvaguardie che mantengono ogni progetto pronto al ripristino prima della prima ripresa.",
+            "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
           hero: {
+            heading: "Benvenuto in Cine Power Planner",
+            subheading: "Pianificazione di energia, gear e handoff centrata sulla troupe — completamente offline.",
+            summary:
+              "Pianifica carichi sicuri, genera kit AutoGear e prepara le consegne mentre ogni salvataggio resta locale. Segui i checkpoint per vedere come proteggiamo i dati prima del primo ciak.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Offline · Senza abbonamento",
+            badgeLabel: "Crew-first · Offline per sempre",
             badgeDescription:
-              "Nessun server, nessun account. Salvataggi, autosalvataggi, backup, ripristini, condivisioni e importazioni restano su questo dispositivo.",
+              "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
             highlights: [
               {
                 icon: "\uE1A6",
-                title: "Pianifica carichi di potenza sicuri",
+                title: "Metti al sicuro potenza, safety e backup",
                 body:
-                  "Modella assorbimenti, runtime e cambi turno per fissare i margini di sicurezza delle batterie con sicurezza.",
+                  "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare.",
               },
               {
                 icon: "\uE467",
                 title: "AutoGear crea kit riutilizzabili",
                 body:
-                  "Assembla liste complete, regola al volo le regole di automazione e riusa i preset tra i progetti.",
+                  "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset.",
               },
               {
                 icon: "\uE469",
-                title: "Condividi requisiti con contesto",
+                title: "Requisiti di progetto pronti alla consegna",
                 body:
-                  "Raccogli deliverable, copertura crew e note per il noleggio, poi esporta PDF affidabili per troupe e rental.",
+                  "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF affidabili per troupe, rental e produzione.",
+              },
+              {
+                icon: "\uE1A6",
+                title: "PWA offline e senza abbonamento",
+                body:
+                  "Esegui il planner completamente offline, installalo come PWA mobile e mantieni ogni workflow disponibile senza server né abbonamenti.",
+              },
+              {
+                icon: "\uE467",
+                title: "I dati sono sacri",
+                body:
+                  "Autosalvataggi, backup/ripristino, condivisione e importazione proteggono ogni snapshot del progetto. Le prove di ripristino dimostrano che nulla va perso.",
               },
             ],
             languageLabel: "Lingua",
             languageHint:
-              "Scegli la lingua dell’interfaccia. Tutorial, guida ed export si aggiornano subito in tutti i salvataggi offline.",
+              "Scegli la lingua dell’interfaccia così questo tour, la guida e gli export si traducono subito in tutti i salvataggi offline.",
             offlineSummary:
-              "Cine Power Planner funziona interamente offline con una PWA mobile installabile: le stesse salvaguardie per salvataggi, backup, condivisioni e prove di ripristino arrivano sul set senza abbonamenti.",
+              "Cine Power Planner nasce per l’uso sul campo: offline di default, installabile su mobile e sempre con salvataggi ridondanti locali così la troupe mantiene il controllo dei dati.",
           },
         },
         userProfile: {
@@ -6112,37 +6144,53 @@ const texts = {
         intro: {
           title: "Bienvenido a Cine Power Planner",
           body:
-            "Comienza con el planificador de energía pensado para trabajar sin conexión. Este recorrido guiado destaca las salvaguardas que mantienen cada proyecto listo para restaurarse antes del primer día de rodaje.",
+            "Este recorrido guiado presenta las salvaguardas fuera de línea, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           hero: {
+            heading: "Bienvenido a Cine Power Planner",
+            subheading: "Planificación de energía, gear y handoff enfocada en el equipo, totalmente offline.",
+            summary:
+              "Planifica cargas seguras, genera kits AutoGear y prepara las entregas mientras cada guardado permanece local. Sigue los hitos para ver cómo protegemos tus datos antes del primer día de rodaje.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Sin conexión · Sin suscripción",
+            badgeLabel: "Crew-first · Offline para siempre",
             badgeDescription:
-              "Sin servidores ni cuentas. Los guardados, autoguardados, copias, restauraciones, compartidos e importaciones permanecen en este dispositivo.",
+              "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, backup, restauración, compartición e importación vive en este dispositivo.",
             highlights: [
               {
                 icon: "\uE1A6",
-                title: "Planifica cargas seguras de energía",
+                title: "Asegura potencia, seguridad y backups",
                 body:
-                  "Modela consumos, autonomías y relevos para asegurar márgenes de seguridad de las baterías con confianza.",
+                  "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar.",
               },
               {
                 icon: "\uE467",
                 title: "AutoGear arma kits reutilizables",
                 body:
-                  "Arma listas completas, ajusta reglas automáticas al vuelo y reutiliza preajustes entre proyectos.",
+                  "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets.",
               },
               {
                 icon: "\uE469",
-                title: "Comparte requisitos con contexto",
+                title: "Requisitos del proyecto listos para entregar",
                 body:
-                  "Registra entregables, cobertura del equipo y notas para rental, luego exporta PDFs confiables para la crew y las casas de alquiler.",
+                  "Lleva el seguimiento de requisitos, cobertura de equipo y notas de alquiler; luego exporta paquetes PDF fiables para el equipo, las casas de renta y producción.",
+              },
+              {
+                icon: "\uE1A6",
+                title: "PWA offline y sin suscripción",
+                body:
+                  "Ejecuta el planner completamente offline, instálalo como PWA móvil y mantén cada workflow disponible sin servidores ni suscripciones.",
+              },
+              {
+                icon: "\uE467",
+                title: "Los datos son sagrados",
+                body:
+                  "Autosave, backup/restauración, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde.",
               },
             ],
             languageLabel: "Idioma",
             languageHint:
-              "Elige el idioma de la interfaz. El tutorial, la ayuda y los exportes se actualizan al instante en todos los guardados sin conexión.",
+              "Elige el idioma de la interfaz para que este tour, la ayuda y los exports se traduzcan al instante en tus guardados offline.",
             offlineSummary:
-              "Cine Power Planner funciona totalmente sin conexión con una PWA móvil instalable: las mismas salvaguardas para guardados, copias, compartidos y ensayos de restauración te acompañan en el set sin suscripciones.",
+              "Cine Power Planner está diseñado para el set: offline por defecto, instalable en móvil y siempre guardando copias redundantes locales para que el equipo conserve el control de sus datos.",
           },
         },
         userProfile: {
@@ -8270,37 +8318,53 @@ const texts = {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
           body:
-            "Commencez avec le planificateur d’énergie conçu pour fonctionner hors ligne. Ce tutoriel guidé met en avant les garde-fous qui gardent chaque projet prêt à être restauré avant le premier jour de tournage.",
+            "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
           hero: {
+            heading: "Bienvenue dans Cine Power Planner",
+            subheading: "Planification de puissance, de matériel et de handoff centrée équipe — entièrement hors ligne.",
+            summary:
+              "Planifiez des charges sûres, générez des kits AutoGear et préparez les handoffs pendant que chaque sauvegarde reste locale. Suivez les jalons pour découvrir comment nous protégeons vos données avant le premier tournage.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Hors ligne · Sans abonnement",
+            badgeLabel: "Crew-first · Hors ligne pour toujours",
             badgeDescription:
-              "Sans serveur ni compte. Les enregistrements, auto-sauvegardes, sauvegardes, restaurations, partages et importations restent sur cet appareil.",
+              "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
             highlights: [
               {
                 icon: "\uE1A6",
-                title: "Planifiez des charges d’alimentation sûres",
+                title: "Sécuriser puissance, sécurité et backups",
                 body:
-                  "Modélisez consommation, autonomie et relèves pour verrouiller les marges de sécurité des batteries en toute confiance.",
+                  "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner.",
               },
               {
                 icon: "\uE467",
                 title: "AutoGear compose des kits réutilisables",
                 body:
-                  "Assemblez des listes complètes, ajustez les règles automatiques à la volée et réutilisez les préréglages d’un projet à l’autre.",
+                  "Générez des listes complètes depuis des scénarios de tournage avec les règles AutoGear, ajustez-les pour la journée et réutilisez les presets.",
               },
               {
                 icon: "\uE469",
-                title: "Partagez les exigences avec le contexte",
+                title: "Exigences projet prêtes à transmettre",
                 body:
-                  "Consignez livrables, couverture d’équipe et notes location, puis exportez des PDF fiables pour l’équipe et les loueurs.",
+                  "Suivez exigences, couverture équipe et notes de location puis exportez des PDF fiables pour l’équipe, les loueurs et la production.",
+              },
+              {
+                icon: "\uE1A6",
+                title: "PWA hors ligne, sans abonnement",
+                body:
+                  "Utilisez le planner entièrement hors ligne, installez-le comme PWA mobile et gardez chaque workflow disponible sans serveurs ni abonnements.",
+              },
+              {
+                icon: "\uE467",
+                title: "Les données sont sacrées",
+                body:
+                  "Autosave, backups/restaurations, partage et import protègent chaque instantané de projet. Les exercices de restauration prouvent qu’aucune donnée ne se perd.",
               },
             ],
             languageLabel: "Langue",
             languageHint:
-              "Choisissez la langue de l’interface. Le tutoriel, l’aide et les exports se mettent à jour instantanément dans toutes les sauvegardes hors ligne.",
+              "Choisissez la langue de l’interface pour que cette visite, l’aide et les exports se traduisent instantanément dans vos sauvegardes hors ligne.",
             offlineSummary:
-              "Cine Power Planner fonctionne entièrement hors ligne avec une PWA mobile installable : les mêmes sauvegardes, partages et répétitions de restauration vous accompagnent sur le plateau sans abonnement.",
+              "Cine Power Planner est pensé pour le terrain : hors ligne par défaut, installable sur mobile et stockant toujours des sauvegardes redondantes localement afin que l’équipe garde le contrôle de ses données.",
           },
         },
         userProfile: {
@@ -10432,37 +10496,53 @@ const texts = {
         intro: {
           title: "Willkommen bei Cine Power Planner",
           body:
-            "Starte mit dem offline-first Power-Planer für Crews. Diese geführte Tour zeigt die Schutzmechanismen, die jedes Projekt noch vor dem ersten Drehtag wiederherstellbar halten.",
+            "Dieser geführte Rundgang stellt die Offline-Schutzmechanismen, die crewgerechte Automatisierung und die Restore-Übungen vor, damit jedes Projekt produktionsbereit bleibt.",
           hero: {
+            heading: "Willkommen bei Cine Power Planner",
+            subheading: "Crew-orientierte Strom-, Gear- und Übergabeplanung – komplett offline.",
+            summary:
+              "Plane sichere Lasten, baue AutoGear-Kits und sichere Übergaben, während jeder Speicherstand lokal bleibt. Folge den Checkpoints, um zu sehen, wie wir deine Daten vor dem ersten Drehtag absichern.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Offline · Ohne Abonnement",
+            badgeLabel: "Crew-first · Dauerhaft offline",
             badgeDescription:
-              "Keine Server, keine Konten. Speichern, Autosaves, Backups, Wiederherstellungen, Freigaben und Importe bleiben auf diesem Gerät.",
+              "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
             highlights: [
               {
                 icon: "\uE1A6",
-                title: "Sichere Leistungsbudgets planen",
+                title: "Leistung, Sicherheit und Backups absichern",
                 body:
-                  "Simuliere Verbrauch, Laufzeit und Wechsel, um Batteriereserven mit Vertrauen abzusichern.",
+                  "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind.",
               },
               {
                 icon: "\uE467",
                 title: "AutoGear baut wiederverwendbare Kits",
                 body:
-                  "Stelle komplette Listen zusammen, passe Regeln unterwegs an und nutze Presets mehrfach.",
+                  "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden.",
               },
               {
                 icon: "\uE469",
-                title: "Anforderungen mit Kontext teilen",
+                title: "Projektanforderungen übergabebereit",
                 body:
-                  "Erfasse Deliverables, Crew-Abdeckung und Rental-Notizen und exportiere PDFs, denen Team und Verleiher vertrauen.",
+                  "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion exportieren.",
+              },
+              {
+                icon: "\uE1A6",
+                title: "Offline-first, abofreie PWA",
+                body:
+                  "Den Planner komplett offline nutzen, als mobile PWA installieren und Workflows ohne Server oder Abos verfügbar halten.",
+              },
+              {
+                icon: "\uE467",
+                title: "Daten sind heilig",
+                body:
+                  "Autosave-, Backup/Restore-, Teilen- und Import-Workflows schützen jede Projektsicherung. Restore-Proben zeigen, dass nichts verloren geht.",
               },
             ],
             languageLabel: "Sprache",
             languageHint:
-              "Wähle die Oberflächensprache. Tutorial, Hilfe und Exporte aktualisieren sich sofort in allen Offline-Sicherungen.",
+              "Sprache der Oberfläche wählen, damit Tour, Hilfe und Exporte sofort in allen Offline-Speicherständen übersetzt werden.",
             offlineSummary:
-              "Cine Power Planner läuft vollständig offline und bietet eine installierbare mobile PWA – dieselben gesicherten Speicherstände, Backups, Freigaben und Wiederherstellungsproben auch am Set, ganz ohne Abonnement.",
+              "Cine Power Planner ist für den Feldeinsatz gebaut: standardmäßig offline, auf Mobilgeräten installierbar und speichert immer redundante Stände lokal, damit die Crew die Daten behält.",
           },
         },
         userProfile: {
