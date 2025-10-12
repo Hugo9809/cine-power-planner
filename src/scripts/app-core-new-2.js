@@ -17247,6 +17247,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['applySharedSetup', () => applySharedSetup],
       ['updateBatteryPlateVisibility', () => updateBatteryPlateVisibility],
       ['updateBatteryOptions', () => updateBatteryOptions],
+      ['updatePlateTypeOptions', () => updatePlateTypeOptions],
       ['renderSetupDiagram', () => renderSetupDiagram],
       ['enableDiagramInteractions', () => enableDiagramInteractions],
       ['updateDiagramLegend', () => updateDiagramLegend],
