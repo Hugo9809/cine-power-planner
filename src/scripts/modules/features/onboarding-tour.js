@@ -483,22 +483,22 @@
     resultsTotalDraw: {
       title: 'Confirm total draw and peak load',
       body:
-        'Start Step 8A in Power Summary by focusing on the Total Draw card. Confirm the combined wattage, review the peak load indicator and log any anomalies so troubleshooting notes stay alongside offline saves.',
+        'Begin the first pass through Power Summary by focusing on the Total Draw card. Confirm the combined wattage, review the peak load indicator and log any anomalies so troubleshooting notes stay alongside offline saves.',
     },
     resultsBatteryRuntime: {
       title: 'Expand battery runtime projections',
       body:
-        'Continue into Step 8B by expanding each battery group to inspect runtime projections, reserve margin highlights, recommended pack counts and charger assignments. Apply adjustments so autosave, shares and backups remain synchronized with the plan.',
+        'Next, expand each battery group to inspect runtime projections, reserve margin highlights, recommended pack counts and charger assignments. Apply adjustments so autosave, shares and backups remain synchronized with the plan.',
     },
     resultsChangeover: {
       title: 'Check changeover timers and autosave',
       body:
-        'Move to Step 8C for the changeover countdown timers and charger coverage tiles. Verify swap cadence, make sure every assignment has charger coverage and confirm the autosave banner timestamp before leaving the view.',
+        'Then review the changeover countdown timers and charger coverage tiles. Verify swap cadence, make sure every assignment has charger coverage and confirm the autosave banner timestamp before leaving the view.',
     },
     resultsConnectorWarnings: {
       title: 'Capture connector capacity warnings',
       body:
-        'Close Step 8D by scanning the Power Summary warnings for D-Tap, 2-pin and accessory outputs that exceed their limits. If a connector cannot handle the load, document the mitigation, adjust distribution as needed, download the offline report for redundant backups and ensure exports and share links mirror the autosaved snapshot.',
+        'Finally, scan the Power Summary warnings for D-Tap, 2-pin and accessory outputs that exceed their limits. If a connector cannot handle the load, document the mitigation, adjust distribution as needed, download the offline report for redundant backups and ensure exports and share links mirror the autosaved snapshot.',
     },
     batteryComparison: {
       title: 'Compare battery options',

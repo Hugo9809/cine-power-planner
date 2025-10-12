@@ -1874,22 +1874,22 @@ const texts = {
         resultsTotalDraw: {
           title: "Confirm total draw and peak load",
           body:
-            "Start Step 8A in Power Summary by focusing on the Total Draw card. Confirm the combined wattage, review the peak load indicator, and log any anomalies so troubleshooting notes stay alongside offline saves.",
+            "Begin the first pass through Power Summary by focusing on the Total Draw card. Confirm the combined wattage, review the peak load indicator, and log any anomalies so troubleshooting notes stay alongside offline saves.",
         },
         resultsBatteryRuntime: {
           title: "Expand battery runtime projections",
           body:
-            "Continue into Step 8B by expanding each battery group to inspect runtime projections, reserve margin highlights, recommended pack counts, and charger assignments. Apply adjustments so autosave, shares, and backups remain synchronized with the plan.",
+            "Next, expand each battery group to inspect runtime projections, reserve margin highlights, recommended pack counts, and charger assignments. Apply adjustments so autosave, shares, and backups remain synchronized with the plan.",
         },
         resultsChangeover: {
           title: "Check changeover timers and autosave",
           body:
-            "Move to Step 8C for the changeover countdown timers and charger coverage tiles. Verify swap cadence, make sure every assignment has charger coverage, and confirm the autosave banner timestamp before leaving the view.",
+            "Then review the changeover countdown timers and charger coverage tiles. Verify swap cadence, make sure every assignment has charger coverage, and confirm the autosave banner timestamp before leaving the view.",
         },
         resultsConnectorWarnings: {
           title: "Capture connector capacity warnings",
           body:
-            "Close Step 8D by scanning the Power Summary warnings for D-Tap, 2-pin, and accessory outputs that exceed their limits. If a connector cannot handle the load, document the mitigation, adjust distribution as needed, download the offline report for redundant backups, and ensure exports and share links mirror the autosaved snapshot.",
+            "Finally, scan the Power Summary warnings for D-Tap, 2-pin, and accessory outputs that exceed their limits. If a connector cannot handle the load, document the mitigation, adjust distribution as needed, download the offline report for redundant backups, and ensure exports and share links mirror the autosaved snapshot.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3971,22 +3971,22 @@ const texts = {
         resultsTotalDraw: {
           title: "Conferma carico totale e picco",
           body:
-            "Inizia il passaggio 8A in Power Summary concentrandoti sulla scheda Carico totale. Verifica i watt complessivi, controlla l’indicatore di picco e annota eventuali anomalie così le note di diagnostica restano nei salvataggi offline.",
+            "Inizia questa prima passata in Power Summary concentrandoti sulla scheda Carico totale. Verifica i watt complessivi, controlla l’indicatore di picco e annota eventuali anomalie così le note di diagnostica restano nei salvataggi offline.",
         },
         resultsBatteryRuntime: {
           title: "Espandi le proiezioni di autonomia delle batterie",
           body:
-            "Prosegui con il passaggio 8B espandendo ogni gruppo di batterie per esaminare proiezioni di autonomia, evidenze sui margini di riserva, conteggio consigliato dei pacchi e assegnazioni dei caricabatterie. Applica gli aggiustamenti così autosalvataggi, condivisioni e backup restano sincronizzati con il piano.",
+            "Prosegui espandendo ogni gruppo di batterie per esaminare proiezioni di autonomia, evidenze sui margini di riserva, conteggio consigliato dei pacchi e assegnazioni dei caricabatterie. Applica gli aggiustamenti così autosalvataggi, condivisioni e backup restano sincronizzati con il piano.",
         },
         resultsChangeover: {
           title: "Controlla timer di cambio e autosalvataggio",
           body:
-            "Passa al passaggio 8C per i timer di cambio batteria e le tessere sulla copertura dei caricabatterie. Verifica il ritmo dei cambi, assicurati che ogni assegnazione abbia copertura e controlla il timestamp del banner di salvataggio automatico prima di uscire dalla schermata.",
+            "Poi passa ai timer di cambio batteria e alle tessere sulla copertura dei caricabatterie. Verifica il ritmo dei cambi, assicurati che ogni assegnazione abbia copertura e controlla il timestamp del banner di salvataggio automatico prima di uscire dalla schermata.",
         },
         resultsConnectorWarnings: {
           title: "Gestisci gli avvisi sui connettori",
           body:
-            "Chiudi con il passaggio 8D esaminando gli avvisi di Power Summary su D-Tap, connettori a 2 pin e uscite accessorie oltre i loro limiti. Se un connettore non regge il carico, documenta la mitigazione, adatta la distribuzione, scarica il rapporto offline per backup ridondanti e assicurati che export e condivisioni corrispondano allo snapshot autosalvato.",
+            "Infine esamina gli avvisi di Power Summary su D-Tap, connettori a 2 pin e uscite accessorie oltre i loro limiti. Se un connettore non regge il carico, documenta la mitigazione, adatta la distribuzione, scarica il rapporto offline per backup ridondanti e assicurati che export e condivisioni corrispondano allo snapshot autosalvato.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -6081,22 +6081,22 @@ const texts = {
         resultsTotalDraw: {
           title: "Confirma la carga total y el pico",
           body:
-            "Empieza el paso 8A en Power Summary centrándote en la tarjeta de Carga total. Verifica los vatios combinados, revisa el indicador de carga máxima y registra cualquier anomalía para que las notas de diagnóstico permanezcan en los guardados sin conexión.",
+            "Empieza esta primera pasada por Power Summary centrándote en la tarjeta de Carga total. Verifica los vatios combinados, revisa el indicador de carga máxima y registra cualquier anomalía para que las notas de diagnóstico permanezcan en los guardados sin conexión.",
         },
         resultsBatteryRuntime: {
           title: "Expande las proyecciones de autonomía de baterías",
           body:
-            "Continúa con el paso 8B expandiendo cada grupo de baterías para revisar las proyecciones de autonomía, los avisos de margen de reserva, la cantidad recomendada de paquetes y las asignaciones de cargadores. Aplica ajustes para que el autoguardado, las comparticiones y las copias de seguridad se mantengan sincronizados con el plan.",
+            "Continúa expandiendo cada grupo de baterías para revisar las proyecciones de autonomía, los avisos de margen de reserva, la cantidad recomendada de paquetes y las asignaciones de cargadores. Aplica ajustes para que el autoguardado, las comparticiones y las copias de seguridad se mantengan sincronizados con el plan.",
         },
         resultsChangeover: {
           title: "Comprueba los temporizadores de cambio y el autoguardado",
           body:
-            "Pasa al paso 8C para revisar los temporizadores de cambio y las tarjetas de cobertura de cargadores. Verifica el ritmo de intercambio, asegúrate de que cada asignación tenga cobertura y confirma la marca de tiempo del banner de autoguardado antes de salir de la vista.",
+            "Luego revisa los temporizadores de cambio y las tarjetas de cobertura de cargadores. Verifica el ritmo de intercambio, asegúrate de que cada asignación tenga cobertura y confirma la marca de tiempo del banner de autoguardado antes de salir de la vista.",
         },
         resultsConnectorWarnings: {
           title: "Registra las alertas de conectores",
           body:
-            "Cierra con el paso 8D revisando las alertas de Power Summary sobre salidas D-Tap, de 2 pines y accesorias que exceden sus límites. Si un conector no soporta la carga, documenta la mitigación, ajusta la distribución según sea necesario, descarga el informe sin conexión para copias redundantes y asegúrate de que exportaciones y enlaces compartidos coincidan con el autoguardado.",
+            "Por último repasa las alertas de Power Summary sobre salidas D-Tap, de 2 pines y accesorias que exceden sus límites. Si un conector no soporta la carga, documenta la mitigación, ajusta la distribución según sea necesario, descarga el informe sin conexión para copias redundantes y asegúrate de que exportaciones y enlaces compartidos coincidan con el autoguardado.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -8204,22 +8204,22 @@ const texts = {
         resultsTotalDraw: {
           title: "Confirmez la consommation totale et le pic",
           body:
-            "Commencez l’étape 8A dans Power Summary en vous concentrant sur la carte Consommation totale. Vérifiez les watts combinés, contrôlez l’indicateur de pic et consignez toute anomalie afin que les notes de diagnostic restent dans les sauvegardes hors ligne.",
+            "Commencez cette première passe dans Power Summary en vous concentrant sur la carte Consommation totale. Vérifiez les watts combinés, contrôlez l’indicateur de pic et consignez toute anomalie afin que les notes de diagnostic restent dans les sauvegardes hors ligne.",
         },
         resultsBatteryRuntime: {
           title: "Déployez les projections d’autonomie des batteries",
           body:
-            "Poursuivez à l’étape 8B en déployant chaque groupe de batteries pour examiner projections d’autonomie, alertes de marge de réserve, nombre de packs recommandé et affectations des chargeurs. Appliquez les ajustements pour que l’autosauvegarde, les partages et les sauvegardes demeurent synchronisés avec le plan.",
+            "Poursuivez en déployant chaque groupe de batteries pour examiner projections d’autonomie, alertes de marge de réserve, nombre de packs recommandé et affectations des chargeurs. Appliquez les ajustements pour que l’autosauvegarde, les partages et les sauvegardes demeurent synchronisés avec le plan.",
         },
         resultsChangeover: {
           title: "Vérifiez les minuteries de permutation et l’autosauvegarde",
           body:
-            "Passez à l’étape 8C pour consulter les compteurs de permutation et les tuiles de couverture des chargeurs. Vérifiez la cadence des permutations, assurez-vous que chaque affectation dispose d’un chargeur et confirmez l’horodatage de la bannière d’autosauvegarde avant de quitter la vue.",
+            "Ensuite, consultez les compteurs de permutation et les tuiles de couverture des chargeurs. Vérifiez la cadence des permutations, assurez-vous que chaque affectation dispose d’un chargeur et confirmez l’horodatage de la bannière d’autosauvegarde avant de quitter la vue.",
         },
         resultsConnectorWarnings: {
           title: "Consignez les alertes de connecteurs",
           body:
-            "Terminez avec l’étape 8D en examinant les avertissements de Power Summary concernant les sorties D-Tap, 2 broches et accessoires qui dépassent leurs limites. Si un connecteur ne supporte pas la charge, consignez la mitigation, ajustez la distribution, téléchargez le rapport hors ligne pour des sauvegardes redondantes et assurez-vous que exports et partages reflètent l’instantané autosauvegardé.",
+            "Terminez en examinant les avertissements de Power Summary concernant les sorties D-Tap, 2 broches et accessoires qui dépassent leurs limites. Si un connecteur ne supporte pas la charge, consignez la mitigation, ajustez la distribution, téléchargez le rapport hors ligne pour des sauvegardes redondantes et assurez-vous que exports et partages reflètent l’instantané autosauvegardé.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -10331,22 +10331,22 @@ const texts = {
         resultsTotalDraw: {
           title: "Gesamtverbrauch und Spitzenlast bestätigen",
           body:
-            "Starte Schritt 8A im Power Summary, indem du dich auf die Karte Gesamtverbrauch konzentrierst. Prüfe die addierten Watt, kontrolliere den Spitzenlast-Hinweis und notiere Auffälligkeiten, damit Diagnosehinweise in den Offline-Sicherungen bleiben.",
+            "Starte mit diesem ersten Durchgang im Power Summary, indem du dich auf die Karte Gesamtverbrauch konzentrierst. Prüfe die addierten Watt, kontrolliere den Spitzenlast-Hinweis und notiere Auffälligkeiten, damit Diagnosehinweise in den Offline-Sicherungen bleiben.",
         },
         resultsBatteryRuntime: {
           title: "Laufzeitprognosen der Batterien aufklappen",
           body:
-            "Fahre in Schritt 8B fort und klappe jede Batteriegruppe auf, um Laufzeitprognosen, Reservemargen-Hinweise, empfohlene Pack-Anzahlen und Ladegeräte-Zuweisungen zu prüfen. Übernimm Anpassungen, damit Autosave, Freigaben und Backups mit dem Plan synchron bleiben.",
+            "Fahre fort und klappe jede Batteriegruppe auf, um Laufzeitprognosen, Reservemargen-Hinweise, empfohlene Pack-Anzahlen und Ladegeräte-Zuweisungen zu prüfen. Übernimm Anpassungen, damit Autosave, Freigaben und Backups mit dem Plan synchron bleiben.",
         },
         resultsChangeover: {
           title: "Countdowns und Autosave kontrollieren",
           body:
-            "Wechsle zu Schritt 8C, um die Countdown-Timer für den Wechsel sowie die Kacheln zur Ladegeräteabdeckung zu prüfen. Überwache die Wechselkadenz, stelle sicher, dass jede Zuweisung ein Ladegerät hat, und prüfe den Zeitstempel des Autosave-Banners, bevor du die Ansicht verlässt.",
+            "Wechsle anschließend zu den Countdown-Timern für den Wechsel sowie zu den Kacheln zur Ladegeräteabdeckung. Überwache die Wechselkadenz, stelle sicher, dass jede Zuweisung ein Ladegerät hat, und prüfe den Zeitstempel des Autosave-Banners, bevor du die Ansicht verlässt.",
         },
         resultsConnectorWarnings: {
           title: "Warnungen zu Anschlüssen festhalten",
           body:
-            "Schließe mit Schritt 8D und kontrolliere die Warnungen im Power Summary zu D-Tap-, 2-Pin- und Zubehör-Ausgängen, die ihre Grenzen überschreiten. Wenn ein Anschluss die Last nicht trägt, dokumentiere Gegenmaßnahmen, passe die Verteilung an, lade den Offline-Bericht für redundante Backups herunter und stelle sicher, dass Exporte und Freigaben dem Autosave-Snapshot entsprechen.",
+            "Schließe ab und kontrolliere die Warnungen im Power Summary zu D-Tap-, 2-Pin- und Zubehör-Ausgängen, die ihre Grenzen überschreiten. Wenn ein Anschluss die Last nicht trägt, dokumentiere Gegenmaßnahmen, passe die Verteilung an, lade den Offline-Bericht für redundante Backups herunter und stelle sicher, dass Exporte und Freigaben dem Autosave-Snapshot entsprechen.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",
