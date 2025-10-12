@@ -5352,10 +5352,13 @@ function analyzeAutoGearSegment(nodes) {
     }
     const wrapper = document.createElement('div');
     nodes.forEach(node => wrapper.appendChild(node.cloneNode(true)));
-    let text = wrapper.innerHTML
-        .replace(/<select[\s\S]*?<\/select>/gi, '')
-        .replace(/<[^>]+>/g, '')
-        .trim();
+    let html = wrapper.innerHTML.replace(/<select[\s\S]*?<\/select>/gi, '');
+    let prev;
+    do {
+        prev = html;
+        html = html.replace(/<[^>]+>/g, '');
+    } while (html !== prev);
+    let text = html.trim();
     if (!text) return null;
     const match = text.match(/^(\d+)x\s+/);
     let count = 1;
