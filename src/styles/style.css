@@ -7027,8 +7027,16 @@ body.dark-mode .onboarding-highlight {
 }
 
 .onboarding-card[data-size='hero'] {
-  width: min(44rem, calc(100vw - 1.5rem));
-  inline-size: min(44rem, calc(100vw - 1.5rem));
+  --onboarding-card-hero-margin: 1.5rem;
+  --onboarding-card-hero-available: calc(100vw - var(--onboarding-card-hero-margin));
+  --onboarding-card-hero-inline: var(
+    --onboarding-card-hero-inline-size,
+    var(--onboarding-card-hero-available)
+  );
+  width: min(44rem, var(--onboarding-card-hero-inline));
+  inline-size: min(44rem, var(--onboarding-card-hero-inline));
+  max-width: min(44rem, var(--onboarding-card-hero-inline));
+  max-inline-size: min(44rem, var(--onboarding-card-hero-inline));
   --onboarding-card-padding: clamp(1.5rem, 1.15rem + 2vw, 2.25rem);
   gap: clamp(1.35rem, 1.1rem + 1.5vw, 2rem);
   --onboarding-hero-heading-fluid-adjust: clamp(
@@ -7036,6 +7044,14 @@ body.dark-mode .onboarding-highlight {
     2.1vw,
     calc(var(--font-size-relative-base) * var(--font-scale-lg))
   );
+}
+
+@supports (width: calc(100dvw - 1px)) {
+  .onboarding-card[data-size='hero'] {
+    --onboarding-card-hero-available: calc(
+      100dvw - var(--onboarding-card-hero-margin)
+    );
+  }
 }
 
 .onboarding-interaction--hero {
@@ -7282,8 +7298,11 @@ body.dark-mode .onboarding-hero-offline {
   }
 
   .onboarding-card[data-size='hero'] {
-    width: min(100%, calc(100vw - 1.25rem));
-    inline-size: min(100%, calc(100vw - 1.25rem));
+    --onboarding-card-hero-margin: 1.25rem;
+    width: min(100%, var(--onboarding-card-hero-inline));
+    inline-size: min(100%, var(--onboarding-card-hero-inline));
+    max-width: min(100%, var(--onboarding-card-hero-inline));
+    max-inline-size: min(100%, var(--onboarding-card-hero-inline));
     --onboarding-card-padding: clamp(1.1rem, 0.85rem + 2vw, 1.65rem);
     gap: clamp(1.05rem, 0.85rem + 1.4vw, 1.6rem);
   }
@@ -7406,6 +7425,7 @@ body.dark-mode .onboarding-hero-offline {
   }
 
   .onboarding-card[data-size='hero'] {
+    --onboarding-card-hero-margin: 1rem;
     --onboarding-card-padding: clamp(0.9rem, 0.75rem + 2vw, 1.35rem);
     gap: clamp(0.85rem, 0.7rem + 1vw, 1.2rem);
   }
