@@ -1,9 +1,5 @@
 (function () {
-  function detectScope(primary) {
-    if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
-      return primary;
-    }
-
+  function detectAmbientScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
       return globalThis;
     }
@@ -23,7 +19,15 @@
     return null;
   }
 
-  function registerCandidateScope(scopes, scope) {
+  function fallbackDetectScope(primary) {
+    if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
+      return primary;
+    }
+
+    return detectAmbientScope();
+  }
+
+  function fallbackRegisterCandidateScope(scopes, scope) {
     if (!Array.isArray(scopes)) {
       return;
     }
@@ -41,7 +45,12 @@
     scopes.push(scope);
   }
 
-  function collectCandidateScopes(primaryScope, environmentHelpers) {
+  function fallbackCollectCandidateScopes(
+    primaryScope,
+    environmentHelpers,
+    detect,
+    register,
+  ) {
     const scopes = [];
 
     if (
@@ -52,7 +61,7 @@
         const collected = environmentHelpers.fallbackCollectCandidateScopes(primaryScope);
         if (Array.isArray(collected)) {
           for (let collectedIndex = 0; collectedIndex < collected.length; collectedIndex += 1) {
-            registerCandidateScope(scopes, collected[collectedIndex]);
+            register(scopes, collected[collectedIndex]);
           }
         }
       } catch (collectError) {
@@ -60,18 +69,15 @@
       }
     }
 
-    registerCandidateScope(scopes, primaryScope);
-    registerCandidateScope(scopes, typeof globalThis !== 'undefined' ? globalThis : null);
-    registerCandidateScope(scopes, typeof window !== 'undefined' ? window : null);
-    registerCandidateScope(scopes, typeof self !== 'undefined' ? self : null);
-    registerCandidateScope(scopes, typeof global !== 'undefined' ? global : null);
+    register(scopes, primaryScope);
+    register(scopes, typeof globalThis !== 'undefined' ? globalThis : null);
+    register(scopes, typeof window !== 'undefined' ? window : null);
+    register(scopes, typeof self !== 'undefined' ? self : null);
+    register(scopes, typeof global !== 'undefined' ? global : null);
 
     let detected = null;
 
-    if (
-      environmentHelpers &&
-      typeof environmentHelpers.fallbackDetectGlobalScope === 'function'
-    ) {
+    if (environmentHelpers && typeof environmentHelpers.fallbackDetectGlobalScope === 'function') {
       try {
         detected = environmentHelpers.fallbackDetectGlobalScope();
       } catch (detectError) {
@@ -81,15 +87,15 @@
     }
 
     if (!detected) {
-      detected = detectScope(primaryScope);
+      detected = detect(primaryScope);
     }
 
-    registerCandidateScope(scopes, detected);
+    register(scopes, detected);
 
     return scopes;
   }
 
-  function registerScope(runtimeState, scope) {
+  function fallbackRegisterScope(runtimeState, scope) {
     if (!runtimeState || typeof runtimeState.registerScope !== 'function') {
       return;
     }
@@ -101,17 +107,17 @@
     }
   }
 
-  function registerScopes(runtimeState, candidateScopes) {
+  function fallbackRegisterScopes(runtimeState, candidateScopes, register) {
     if (!Array.isArray(candidateScopes)) {
       return;
     }
 
     for (let index = 0; index < candidateScopes.length; index += 1) {
-      registerScope(runtimeState, candidateScopes[index]);
+      register(runtimeState, candidateScopes[index]);
     }
   }
 
-  function getScopesSnapshot(runtimeState, candidateScopes) {
+  function fallbackGetScopesSnapshot(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getScopes === 'function') {
       try {
         const runtimeScopes = runtimeState.getScopes();
@@ -130,7 +136,7 @@
     return [];
   }
 
-  function ensurePrimaryScope(runtimeState, candidateScopes) {
+  function fallbackEnsurePrimaryScope(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getPrimaryScope === 'function') {
       try {
         const primary = runtimeState.getPrimaryScope();
@@ -154,7 +160,7 @@
     return null;
   }
 
-  function assignTemperatureRenderer(runtimeState, renderer) {
+  function fallbackAssignTemperatureRenderer(runtimeState, renderer) {
     if (typeof renderer !== 'function') {
       return;
     }
@@ -170,7 +176,7 @@
     }
   }
 
-  function readValue(runtimeState, name, candidateScopes) {
+  function fallbackReadValue(runtimeState, name, candidateScopes) {
     if (runtimeState && typeof runtimeState.readValue === 'function') {
       try {
         return runtimeState.readValue(name);
@@ -199,7 +205,7 @@
     return undefined;
   }
 
-  function ensureValue(runtimeState, name, fallbackValue, candidateScopes) {
+  function fallbackEnsureValue(runtimeState, name, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.ensureValue === 'function') {
       try {
         return runtimeState.ensureValue(name, fallbackValue);
@@ -250,7 +256,7 @@
     }
   }
 
-  function normaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes) {
+  function fallbackNormaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.normaliseValue === 'function') {
       try {
         runtimeState.normaliseValue(name, validator, fallbackValue);
@@ -292,6 +298,131 @@
     }
   }
 
+  function loadModuleFromRegistry(name) {
+    const scope = detectAmbientScope();
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const registry = scope.cineCoreRuntimeSharedModules;
+      if (registry && typeof registry === 'object') {
+        const module = registry[name];
+        if (module && typeof module === 'object') {
+          return module;
+        }
+      }
+    } catch (registryLookupError) {
+      void registryLookupError;
+    }
+
+    return null;
+  }
+
+  function loadModule(name, requirePath) {
+    let resolved = null;
+
+    if (typeof require === 'function') {
+      try {
+        resolved = require(requirePath);
+      } catch (moduleRequireError) {
+        void moduleRequireError;
+      }
+    }
+
+    if (!resolved) {
+      resolved = loadModuleFromRegistry(name);
+    }
+
+    return resolved || null;
+  }
+
+  const scopeDetectionModule = loadModule('scopeDetection', './runtime-shared/scope-detection.js') || {};
+  const scopeRegistrationModule = loadModule('scopeRegistration', './runtime-shared/scope-registration.js') || {};
+  const scopeSnapshotModule = loadModule('scopeSnapshot', './runtime-shared/scope-snapshot.js') || {};
+  const temperatureToolsModule = loadModule('temperatureTools', './runtime-shared/temperature-tools.js') || {};
+  const valueAccessModule = loadModule('valueAccess', './runtime-shared/value-access.js') || {};
+
+  const detectScope =
+    typeof scopeDetectionModule.detectScope === 'function'
+      ? scopeDetectionModule.detectScope
+      : fallbackDetectScope;
+
+  const registerCandidateScope =
+    typeof scopeDetectionModule.registerCandidateScope === 'function'
+      ? scopeDetectionModule.registerCandidateScope
+      : fallbackRegisterCandidateScope;
+
+  const collectCandidateScopes =
+    typeof scopeDetectionModule.collectCandidateScopes === 'function'
+      ? function collectCandidateScopesWrapper(primaryScope, environmentHelpers) {
+          return scopeDetectionModule.collectCandidateScopes(primaryScope, environmentHelpers);
+        }
+      : function fallbackCollectCandidateScopesWrapper(primaryScope, environmentHelpers) {
+          return fallbackCollectCandidateScopes(
+            primaryScope,
+            environmentHelpers,
+            detectScope,
+            registerCandidateScope,
+          );
+        };
+
+  const registerScope =
+    typeof scopeRegistrationModule.registerScope === 'function'
+      ? scopeRegistrationModule.registerScope
+      : function fallbackRegisterScopeWrapper(runtimeState, scope) {
+          fallbackRegisterScope(runtimeState, scope);
+        };
+
+  const registerScopes =
+    typeof scopeRegistrationModule.registerScopes === 'function'
+      ? function registerScopesWrapper(runtimeState, candidateScopes) {
+          scopeRegistrationModule.registerScopes(runtimeState, candidateScopes);
+        }
+      : function fallbackRegisterScopesWrapper(runtimeState, candidateScopes) {
+          fallbackRegisterScopes(runtimeState, candidateScopes, registerScope);
+        };
+
+  const getScopesSnapshot =
+    typeof scopeSnapshotModule.getScopesSnapshot === 'function'
+      ? scopeSnapshotModule.getScopesSnapshot
+      : fallbackGetScopesSnapshot;
+
+  const ensurePrimaryScope =
+    typeof scopeSnapshotModule.ensurePrimaryScope === 'function'
+      ? scopeSnapshotModule.ensurePrimaryScope
+      : fallbackEnsurePrimaryScope;
+
+  const assignTemperatureRenderer =
+    typeof temperatureToolsModule.assignTemperatureRenderer === 'function'
+      ? temperatureToolsModule.assignTemperatureRenderer
+      : fallbackAssignTemperatureRenderer;
+
+  const readValue =
+    typeof valueAccessModule.readValue === 'function'
+      ? valueAccessModule.readValue
+      : fallbackReadValue;
+
+  const ensureValue =
+    typeof valueAccessModule.ensureValue === 'function'
+      ? valueAccessModule.ensureValue
+      : function fallbackEnsureValueWrapper(runtimeState, name, fallbackValue, candidateScopes) {
+          return fallbackEnsureValue(runtimeState, name, fallbackValue, candidateScopes);
+        };
+
+  const normaliseValue =
+    typeof valueAccessModule.normaliseValue === 'function'
+      ? valueAccessModule.normaliseValue
+      : function fallbackNormaliseValueWrapper(
+          runtimeState,
+          name,
+          validator,
+          fallbackValue,
+          candidateScopes,
+        ) {
+          fallbackNormaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes);
+        };
+
   const namespace = {
     collectCandidateScopes,
     registerScope,
@@ -306,9 +437,10 @@
 
   const globalScope = detectScope();
   const targetName = 'cineCoreRuntimeShared';
-  const existing = globalScope && typeof globalScope[targetName] === 'object'
-    ? globalScope[targetName]
-    : {};
+  const existing =
+    globalScope && typeof globalScope[targetName] === 'object'
+      ? globalScope[targetName]
+      : {};
 
   const target = existing;
   for (const key of Object.keys(namespace)) {

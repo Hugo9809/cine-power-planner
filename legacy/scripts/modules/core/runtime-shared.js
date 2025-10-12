@@ -1,10 +1,6 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  function detectScope(primary) {
-    if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
-      return primary;
-    }
-
+  function detectAmbientScope() {
     if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
       return globalThis;
     }
@@ -24,7 +20,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
 
-  function registerCandidateScope(scopes, scope) {
+  function fallbackDetectScope(primary) {
+    if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
+      return primary;
+    }
+
+    return detectAmbientScope();
+  }
+
+  function fallbackRegisterCandidateScope(scopes, scope) {
     if (!Array.isArray(scopes)) {
       return;
     }
@@ -42,7 +46,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scopes.push(scope);
   }
 
-  function collectCandidateScopes(primaryScope, environmentHelpers) {
+  function fallbackCollectCandidateScopes(primaryScope, environmentHelpers, detect, register) {
     var scopes = [];
 
     if (environmentHelpers && typeof environmentHelpers.fallbackCollectCandidateScopes === 'function') {
@@ -50,7 +54,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var collected = environmentHelpers.fallbackCollectCandidateScopes(primaryScope);
         if (Array.isArray(collected)) {
           for (var collectedIndex = 0; collectedIndex < collected.length; collectedIndex += 1) {
-            registerCandidateScope(scopes, collected[collectedIndex]);
+            register(scopes, collected[collectedIndex]);
           }
         }
       } catch (collectError) {
@@ -58,11 +62,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
 
-    registerCandidateScope(scopes, primaryScope);
-    registerCandidateScope(scopes, typeof globalThis !== 'undefined' ? globalThis : null);
-    registerCandidateScope(scopes, typeof window !== 'undefined' ? window : null);
-    registerCandidateScope(scopes, typeof self !== 'undefined' ? self : null);
-    registerCandidateScope(scopes, typeof global !== 'undefined' ? global : null);
+    register(scopes, primaryScope);
+    register(scopes, typeof globalThis !== 'undefined' ? globalThis : null);
+    register(scopes, typeof window !== 'undefined' ? window : null);
+    register(scopes, typeof self !== 'undefined' ? self : null);
+    register(scopes, typeof global !== 'undefined' ? global : null);
 
     var detected = null;
 
@@ -76,15 +80,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     if (!detected) {
-      detected = detectScope(primaryScope);
+      detected = detect(primaryScope);
     }
 
-    registerCandidateScope(scopes, detected);
+    register(scopes, detected);
 
     return scopes;
   }
 
-  function registerScope(runtimeState, scope) {
+  function fallbackRegisterScope(runtimeState, scope) {
     if (!runtimeState || typeof runtimeState.registerScope !== 'function') {
       return;
     }
@@ -96,17 +100,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
 
-  function registerScopes(runtimeState, candidateScopes) {
+  function fallbackRegisterScopes(runtimeState, candidateScopes, register) {
     if (!Array.isArray(candidateScopes)) {
       return;
     }
 
     for (var index = 0; index < candidateScopes.length; index += 1) {
-      registerScope(runtimeState, candidateScopes[index]);
+      register(runtimeState, candidateScopes[index]);
     }
   }
 
-  function getScopesSnapshot(runtimeState, candidateScopes) {
+  function fallbackGetScopesSnapshot(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getScopes === 'function') {
       try {
         var runtimeScopes = runtimeState.getScopes();
@@ -125,7 +129,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return [];
   }
 
-  function ensurePrimaryScope(runtimeState, candidateScopes) {
+  function fallbackEnsurePrimaryScope(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getPrimaryScope === 'function') {
       try {
         var primary = runtimeState.getPrimaryScope();
@@ -149,7 +153,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
 
-  function assignTemperatureRenderer(runtimeState, renderer) {
+  function fallbackAssignTemperatureRenderer(runtimeState, renderer) {
     if (typeof renderer !== 'function') {
       return;
     }
@@ -165,7 +169,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
 
-  function readValue(runtimeState, name, candidateScopes) {
+  function fallbackReadValue(runtimeState, name, candidateScopes) {
     if (runtimeState && typeof runtimeState.readValue === 'function') {
       try {
         return runtimeState.readValue(name);
@@ -194,7 +198,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return undefined;
   }
 
-  function ensureValue(runtimeState, name, fallbackValue, candidateScopes) {
+  function fallbackEnsureValue(runtimeState, name, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.ensureValue === 'function') {
       try {
         return runtimeState.ensureValue(name, fallbackValue);
@@ -245,7 +249,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
 
-  function normaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes) {
+  function fallbackNormaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.normaliseValue === 'function') {
       try {
         runtimeState.normaliseValue(name, validator, fallbackValue);
@@ -287,6 +291,125 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
 
+  function loadModuleFromRegistry(name) {
+    var scope = detectAmbientScope();
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+
+    try {
+      var registry = scope.cineCoreRuntimeSharedModules;
+      if (registry && _typeof(registry) === 'object') {
+        var module = registry[name];
+        if (module && _typeof(module) === 'object') {
+          return module;
+        }
+      }
+    } catch (registryLookupError) {
+      void registryLookupError;
+    }
+
+    return null;
+  }
+
+  function loadModule(name, requirePath) {
+    var resolved = null;
+
+    if (typeof require === 'function') {
+      try {
+        resolved = require(requirePath);
+      } catch (moduleRequireError) {
+        void moduleRequireError;
+      }
+    }
+
+    if (!resolved) {
+      resolved = loadModuleFromRegistry(name);
+    }
+
+    return resolved || null;
+  }
+
+  var scopeDetectionModule = loadModule('scopeDetection', './runtime-shared/scope-detection.js') || {};
+  var scopeRegistrationModule = loadModule('scopeRegistration', './runtime-shared/scope-registration.js') || {};
+  var scopeSnapshotModule = loadModule('scopeSnapshot', './runtime-shared/scope-snapshot.js') || {};
+  var temperatureToolsModule = loadModule('temperatureTools', './runtime-shared/temperature-tools.js') || {};
+  var valueAccessModule = loadModule('valueAccess', './runtime-shared/value-access.js') || {};
+
+  var detectScope =
+    typeof scopeDetectionModule.detectScope === 'function'
+      ? scopeDetectionModule.detectScope
+      : fallbackDetectScope;
+
+  var registerCandidateScope =
+    typeof scopeDetectionModule.registerCandidateScope === 'function'
+      ? scopeDetectionModule.registerCandidateScope
+      : fallbackRegisterCandidateScope;
+
+  var collectCandidateScopes =
+    typeof scopeDetectionModule.collectCandidateScopes === 'function'
+      ? function collectCandidateScopesWrapper(primaryScope, environmentHelpers) {
+          return scopeDetectionModule.collectCandidateScopes(primaryScope, environmentHelpers);
+        }
+      : function fallbackCollectCandidateScopesWrapper(primaryScope, environmentHelpers) {
+          return fallbackCollectCandidateScopes(
+            primaryScope,
+            environmentHelpers,
+            detectScope,
+            registerCandidateScope,
+          );
+        };
+
+  var registerScope =
+    typeof scopeRegistrationModule.registerScope === 'function'
+      ? scopeRegistrationModule.registerScope
+      : function fallbackRegisterScopeWrapper(runtimeState, scope) {
+          fallbackRegisterScope(runtimeState, scope);
+        };
+
+  var registerScopes =
+    typeof scopeRegistrationModule.registerScopes === 'function'
+      ? function registerScopesWrapper(runtimeState, candidateScopes) {
+          scopeRegistrationModule.registerScopes(runtimeState, candidateScopes);
+        }
+      : function fallbackRegisterScopesWrapper(runtimeState, candidateScopes) {
+          fallbackRegisterScopes(runtimeState, candidateScopes, registerScope);
+        };
+
+  var getScopesSnapshot =
+    typeof scopeSnapshotModule.getScopesSnapshot === 'function'
+      ? scopeSnapshotModule.getScopesSnapshot
+      : fallbackGetScopesSnapshot;
+
+  var ensurePrimaryScope =
+    typeof scopeSnapshotModule.ensurePrimaryScope === 'function'
+      ? scopeSnapshotModule.ensurePrimaryScope
+      : fallbackEnsurePrimaryScope;
+
+  var assignTemperatureRenderer =
+    typeof temperatureToolsModule.assignTemperatureRenderer === 'function'
+      ? temperatureToolsModule.assignTemperatureRenderer
+      : fallbackAssignTemperatureRenderer;
+
+  var readValue =
+    typeof valueAccessModule.readValue === 'function'
+      ? valueAccessModule.readValue
+      : fallbackReadValue;
+
+  var ensureValue =
+    typeof valueAccessModule.ensureValue === 'function'
+      ? valueAccessModule.ensureValue
+      : function fallbackEnsureValueWrapper(runtimeState, name, fallbackValue, candidateScopes) {
+          return fallbackEnsureValue(runtimeState, name, fallbackValue, candidateScopes);
+        };
+
+  var normaliseValue =
+    typeof valueAccessModule.normaliseValue === 'function'
+      ? valueAccessModule.normaliseValue
+      : function fallbackNormaliseValueWrapper(runtimeState, name, validator, fallbackValue, candidateScopes) {
+          fallbackNormaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes);
+        };
+
   var namespace = {
     collectCandidateScopes: collectCandidateScopes,
     registerScope: registerScope,
@@ -301,13 +424,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   var globalScope = detectScope();
   var targetName = 'cineCoreRuntimeShared';
-  var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
-  var target = existing;
-  Object.keys(namespace).forEach(function (key) {
-    target[key] = namespace[key];
-  });
+  var existing =
+    globalScope && _typeof(globalScope[targetName]) === 'object'
+      ? globalScope[targetName]
+      : {};
 
-  if (globalScope && _typeof(globalScope) === 'object') {
+  var target = existing;
+  for (var key in namespace) {
+    if (Object.prototype.hasOwnProperty.call(namespace, key)) {
+      target[key] = namespace[key];
+    }
+  }
+
+  if (globalScope && (_typeof(globalScope) === 'object' || typeof globalScope === 'function')) {
     try {
       globalScope[targetName] = target;
     } catch (assignError) {
