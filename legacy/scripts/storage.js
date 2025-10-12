@@ -54,6 +54,52 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void storageInitFlagError;
     }
   }
+  function storageManualDeepClone(value, references) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+
+    var referenceStore = references;
+    if (!referenceStore) {
+      referenceStore = typeof WeakMap === 'function' ? new WeakMap() : [];
+    }
+
+    if (referenceStore && typeof referenceStore.has === 'function' && typeof referenceStore.get === 'function') {
+      if (referenceStore.has(value)) {
+        return referenceStore.get(value);
+      }
+    } else if (Array.isArray(referenceStore)) {
+      for (var index = 0; index < referenceStore.length; index += 1) {
+        var entry = referenceStore[index];
+        if (entry && entry[0] === value) {
+          return entry[1];
+        }
+      }
+    }
+
+    var clone = Array.isArray(value) ? [] : {};
+
+    if (referenceStore && typeof referenceStore.set === 'function') {
+      referenceStore.set(value, clone);
+    } else if (Array.isArray(referenceStore)) {
+      referenceStore.push([value, clone]);
+    }
+
+    if (Array.isArray(value)) {
+      for (var i = 0; i < value.length; i += 1) {
+        clone[i] = storageManualDeepClone(value[i], referenceStore);
+      }
+    } else {
+      var keys = Object.keys(value);
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        var key = keys[keyIndex];
+        clone[key] = storageManualDeepClone(value[key], referenceStore);
+      }
+    }
+
+    return clone;
+  }
+
   function storageJsonDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
@@ -63,7 +109,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (jsonCloneError) {
       void jsonCloneError;
     }
-    return value;
+    return storageManualDeepClone(value, null);
   }
   function storageResolveStructuredClone(scope) {
     if (typeof structuredClone === 'function') {

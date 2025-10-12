@@ -73,6 +73,55 @@
   // Perform a defensive deep clone that keeps us safe even when the runtime
   // does not provide a structured clone implementation. We always fall back to
   // this logic so that backup/restore data is never mutated accidentally.
+  function storageManualDeepClone(value, references) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    let referenceStore = references;
+    if (!referenceStore) {
+      referenceStore =
+        typeof WeakMap === 'function'
+          ? new WeakMap()
+          : [];
+    }
+
+    if (typeof referenceStore.has === 'function' && typeof referenceStore.get === 'function') {
+      if (referenceStore.has(value)) {
+        return referenceStore.get(value);
+      }
+    } else if (Array.isArray(referenceStore)) {
+      for (let index = 0; index < referenceStore.length; index += 1) {
+        const entry = referenceStore[index];
+        if (entry && entry[0] === value) {
+          return entry[1];
+        }
+      }
+    }
+
+    const clone = Array.isArray(value) ? [] : {};
+
+    if (typeof referenceStore.set === 'function') {
+      referenceStore.set(value, clone);
+    } else if (Array.isArray(referenceStore)) {
+      referenceStore.push([value, clone]);
+    }
+
+    if (Array.isArray(value)) {
+      for (let index = 0; index < value.length; index += 1) {
+        clone[index] = storageManualDeepClone(value[index], referenceStore);
+      }
+    } else {
+      const keys = Object.keys(value);
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        clone[key] = storageManualDeepClone(value[key], referenceStore);
+      }
+    }
+
+    return clone;
+  }
+
   function storageJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
@@ -84,7 +133,7 @@
       void jsonCloneError;
     }
 
-    return value;
+    return storageManualDeepClone(value, null);
   }
 
   // Try to locate a built-in structuredClone implementation on whichever
