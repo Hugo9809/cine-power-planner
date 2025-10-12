@@ -26,3 +26,5 @@ Fixes: <!-- e.g. #12 (issue number) if applicable -->
 - [ ] I have updated the documentation (README or other docs) accordingly (if relevant).
 - [ ] I have linked any related issues in this PR description (e.g., "Fixes #__"). 
 
+---
+**Preview:** GitHub Pages will post a per-PR URL in the checks section once deploy finishes.
