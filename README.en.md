@@ -713,7 +713,10 @@ Use Cine Power Planner end-to-end with the following routine:
   reloads when you enable session storage. Each entry now records an ISO
   timestamp, millisecond marker, event ID and channel indicator so teams can
   align console fallbacks with stored diagnostics even when the structured
-  logger is unavailable.
+  logger is unavailable. A live enablement summary now shows whether each
+  severity will reach the console mirror or the retained history before you
+  dispatch heavyweight diagnostics, making it safer to toggle verbose traces
+  during offline shoots.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.

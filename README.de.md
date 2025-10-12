@@ -353,6 +353,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
 - Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
 - Das **Diagnoseprotokoll** spiegelt alle cineLogging-Einträge, erlaubt Filter nach Schweregrad oder Namespace und bietet Regler für Aufbewahrung, Konsolenspiegelung, die standardmäßig aktivierte Konsolenerfassung sowie globale Fehlererfassung – direkt offline in den Einstellungen. Ein Hinweis erscheint, sobald Filter alle Einträge ausblenden, damit Prüfungen nicht versehentlich als Fehler gewertet werden. Jeder Eintrag vermerkt jetzt ISO-Zeitstempel, Millisekundenmarke, Ereignis-ID und Kanal, damit du Konsolen-Fallbacks selbst dann mit den gespeicherten Diagnosen abgleichen kannst, wenn der strukturierte Logger fehlt. Warnungen und Fehler aus Übersichts-Drucken sowie PDF-Exporten landen nun ebenfalls hier – inklusive Hinweis, ob das Fallback-Fenster anspringen musste –, damit Freigabeproben den kompletten Ablauf nachvollziehen.
+  Eine Live-Übersicht zur Aktivierung zeigt jetzt, ob jede Schwere die Konsolenspiegelung oder das aufbewahrte Protokoll erreicht, bevor du schwere Diagnostik losschickst – so lassen sich ausführliche Traces offline sicherer zuschalten.
 - Vollbackups zeigen ihre aktuelle Anzahl und speisen das Backup-Protokoll, damit du vor dem Archivieren kontrollieren kannst, ob die stündlichen Sicherungen erfasst wurden.
 
 ## Speicherbudget & Wartung

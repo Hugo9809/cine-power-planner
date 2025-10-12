@@ -1767,6 +1767,58 @@
     return getLevelPriority(level) >= getLevelPriority(activeConfig.level);
   }
 
+  function getLevelState(level) {
+    const normalizedLevel = normalizeLevel(level, 'info');
+    const consoleEnabled = shouldOutputToConsole(normalizedLevel);
+    const historyEnabled = shouldRecord(normalizedLevel);
+
+    return freezeDeep({
+      level: normalizedLevel,
+      enabled: consoleEnabled || historyEnabled,
+      console: consoleEnabled,
+      history: historyEnabled,
+      thresholds: freezeDeep({
+        console: normalizeLevel(activeConfig.level, DEFAULT_CONFIG_VALUES.level),
+        history: normalizeLevel(activeConfig.historyLevel, DEFAULT_CONFIG_VALUES.historyLevel),
+      }),
+    });
+  }
+
+  function isLevelEnabled(level, options) {
+    const state = getLevelState(level);
+
+    if (!options || typeof options !== 'object') {
+      return state.enabled;
+    }
+
+    const checkConsole = options.console !== false;
+    const checkHistory = options.history !== false;
+
+    if (!checkConsole && !checkHistory) {
+      return false;
+    }
+
+    if (options.requireAll === true) {
+      if (checkConsole && !state.console) {
+        return false;
+      }
+      if (checkHistory && !state.history) {
+        return false;
+      }
+      return true;
+    }
+
+    if (checkConsole && state.console) {
+      return true;
+    }
+
+    if (checkHistory && state.history) {
+      return true;
+    }
+
+    return false;
+  }
+
   function createEntryId(timestamp) {
     return `log-${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
   }
@@ -2576,6 +2628,12 @@
         return logWithNamespace('error', message, detail, meta);
       },
       getConfig: getConfigSnapshot,
+      isLevelEnabled(level, optionOverrides) {
+        return isLevelEnabled(level, optionOverrides);
+      },
+      getLevelState(level) {
+        return getLevelState(level);
+      },
     });
   }
 
@@ -3111,6 +3169,8 @@
     clearHistory,
     getConfig: getConfigSnapshot,
     setConfig,
+    getLevelState,
+    isLevelEnabled,
     subscribe,
     subscribeConfig,
     enableConsoleCapture,
