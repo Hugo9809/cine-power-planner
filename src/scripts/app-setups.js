@@ -11159,15 +11159,58 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (selectedNames.monitor) {
         const monitorLabel = 'Onboard Monitor';
         const monitorsDb = devices?.monitors || {};
-        const stripCameraLinkPrefix = label => {
+        const stripCameraLinkPrefix = (label) => {
             if (typeof label !== 'string') return '';
             const trimmed = label.trim();
             if (!trimmed) return '';
-            const match = trimmed.match(/^(linked\s+to\s+camera)(?:\s*[—–-]\s*|\s*:\s*|\s+)(.+)$/i);
-            if (match && match[2]) {
-                return match[2].trim();
+            const lower = trimmed.toLowerCase();
+            const words = ['linked', 'to', 'camera'];
+            const NBSP_CHAR = String.fromCharCode(160);
+            const isWhitespaceChar = (char) => (
+                char === ' '
+                || char === '\t'
+                || char === '\n'
+                || char === '\r'
+                || char === '\f'
+                || char === '\v'
+                || char === NBSP_CHAR
+            );
+            const skipWhitespace = (position) => {
+                let idx = position;
+                while (idx < lower.length && isWhitespaceChar(lower[idx])) {
+                    idx += 1;
+                }
+                return idx;
+            };
+            let index = 0;
+            for (let w = 0; w < words.length; w += 1) {
+                index = skipWhitespace(index);
+                const word = words[w];
+                if (lower.slice(index, index + word.length) !== word) {
+                    return trimmed;
+                }
+                index += word.length;
             }
-            return trimmed;
+            const gapStart = index;
+            index = skipWhitespace(index);
+            const consumedWhitespace = index > gapStart;
+            if (index >= trimmed.length) {
+                return trimmed;
+            }
+            const separators = new Set(['—', '–', '-', ':']);
+            let usedSeparator = false;
+            if (separators.has(trimmed[index])) {
+                index += 1;
+                usedSeparator = true;
+            }
+            index = skipWhitespace(index);
+            if (!consumedWhitespace && !usedSeparator) {
+                return trimmed;
+            }
+            if (index >= trimmed.length) {
+                return trimmed;
+            }
+            return trimmed.slice(index).trim();
         };
         const stripEnclosingQuotes = value => {
             if (typeof value !== 'string') return '';

@@ -10588,11 +10588,53 @@ function gearListGenerateHtmlImpl() {
       if (typeof label !== 'string') return '';
       var trimmed = label.trim();
       if (!trimmed) return '';
-      var match = trimmed.match(/^(linked\s+to\s+camera)(?:\s*[—–-]\s*|\s*:\s*|\s+)(.+)$/i);
-      if (match && match[2]) {
-        return match[2].trim();
+      var lower = trimmed.toLowerCase();
+      var words = ['linked', 'to', 'camera'];
+      var NBSP_CHAR = String.fromCharCode(160);
+      var isWhitespaceChar = function isWhitespaceChar(char) {
+        return char === ' ' || char === '\t' || char === '\n' || char === '\r' || char === '\f' || char === '\v' || char === NBSP_CHAR;
+      };
+      var skipWhitespace = function skipWhitespace(position) {
+        var idx = position;
+        while (idx < lower.length && isWhitespaceChar(lower[idx])) {
+          idx += 1;
+        }
+        return idx;
+      };
+      var index = 0;
+      for (var w = 0; w < words.length; w += 1) {
+        index = skipWhitespace(index);
+        var word = words[w];
+        if (lower.slice(index, index + word.length) !== word) {
+          return trimmed;
+        }
+        index += word.length;
       }
-      return trimmed;
+      var gapStart = index;
+      index = skipWhitespace(index);
+      var consumedWhitespace = index > gapStart;
+      if (index >= trimmed.length) {
+        return trimmed;
+      }
+      var separators = {
+        '—': true,
+        '–': true,
+        '-': true,
+        ':': true
+      };
+      var usedSeparator = false;
+      if (separators[trimmed[index]]) {
+        index += 1;
+        usedSeparator = true;
+      }
+      index = skipWhitespace(index);
+      if (!consumedWhitespace && !usedSeparator) {
+        return trimmed;
+      }
+      if (index >= trimmed.length) {
+        return trimmed;
+      }
+      return trimmed.slice(index).trim();
     };
     var stripEnclosingQuotes = function stripEnclosingQuotes(value) {
       if (typeof value !== 'string') return '';
