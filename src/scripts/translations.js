@@ -958,8 +958,16 @@ const texts = {
     loggingPersistSessionLabel: "Keep log between reloads",
     loggingPersistSessionHelp:
       "Store entries in session storage so diagnostics survive refreshes.",
+    loggingExportButton: "Export log",
+    loggingExportHelp: "Download the full diagnostics log as a JSON file.",
+    loggingExportSuccess: "Diagnostics log exported.",
+    loggingExportError: "Log export failed. Try again after reloading Settings.",
+    loggingExportUnavailable: "Logging unavailable. Try again after reloading Settings.",
     loggingStatusIdle: "Live log ready.",
     loggingStatusUpdating: "Updating log…",
+    loggingStatusExporting: "Preparing log export…",
+    loggingStatusExported: "Diagnostics log ready for download.",
+    loggingStatusExportFailed: "Log export failed.",
     loggingStorageEstimateUpdated: "Storage estimate refreshed.",
     loggingStorageQuotaOnly: "Available storage: {quota}.",
     loggingStatusError:
@@ -3788,8 +3796,18 @@ const texts = {
     loggingPersistSessionLabel: "Mantieni il registro dopo il ricaricamento",
     loggingPersistSessionHelp:
       "Salva le voci nella sessione per conservarle dopo un refresh.",
+    loggingExportButton: "Esporta registro",
+    loggingExportHelp: "Scarica l'intero registro diagnostico in un file JSON.",
+    loggingExportSuccess: "Registro diagnostico esportato.",
+    loggingExportError:
+      "Esportazione del registro non riuscita. Riprova dopo aver ricaricato Impostazioni.",
+    loggingExportUnavailable:
+      "Registrazione non disponibile. Riprova dopo aver ricaricato Impostazioni.",
     loggingStatusIdle: "Registro in tempo reale pronto.",
     loggingStatusUpdating: "Aggiornamento del registro…",
+    loggingStatusExporting: "Preparazione dell'esportazione del registro…",
+    loggingStatusExported: "Registro diagnostico pronto per il download.",
+    loggingStatusExportFailed: "Esportazione del registro non riuscita.",
     loggingStorageEstimateUpdated: "Stima dello spazio aggiornata.",
     loggingStorageQuotaOnly: "Spazio disponibile: {quota}.",
     loggingStatusError:
@@ -5970,8 +5988,18 @@ const texts = {
     loggingPersistSessionLabel: "Mantener registro tras recargar",
     loggingPersistSessionHelp:
       "Guarda las entradas en sessionStorage para que sobrevivan a un refresco.",
+    loggingExportButton: "Exportar registro",
+    loggingExportHelp: "Descarga el registro de diagnósticos completo como un archivo JSON.",
+    loggingExportSuccess: "Registro de diagnósticos exportado.",
+    loggingExportError:
+      "La exportación del registro falló. Vuelve a intentarlo tras recargar Ajustes.",
+    loggingExportUnavailable:
+      "El registro no está disponible. Vuelve a intentarlo tras recargar Ajustes.",
     loggingStatusIdle: "Registro en vivo listo.",
     loggingStatusUpdating: "Actualizando registro…",
+    loggingStatusExporting: "Preparando la exportación del registro…",
+    loggingStatusExported: "Registro de diagnósticos listo para descargar.",
+    loggingStatusExportFailed: "Falló la exportación del registro.",
     loggingStorageEstimateUpdated: "Estimación de almacenamiento actualizada.",
     loggingStorageQuotaOnly: "Almacenamiento disponible: {quota}.",
     loggingStatusError:
@@ -8165,8 +8193,18 @@ const texts = {
     loggingPersistSessionLabel: "Conserver le journal après rechargement",
     loggingPersistSessionHelp:
       "Stocke les entrées dans la session pour survivre aux rafraîchissements.",
+    loggingExportButton: "Exporter le journal",
+    loggingExportHelp: "Téléchargez l’intégralité du journal de diagnostic au format JSON.",
+    loggingExportSuccess: "Journal de diagnostic exporté.",
+    loggingExportError:
+      "Échec de l’export du journal. Réessayez après avoir rechargé Paramètres.",
+    loggingExportUnavailable:
+      "Journal indisponible. Réessayez après avoir rechargé Paramètres.",
     loggingStatusIdle: "Journal en direct prêt.",
     loggingStatusUpdating: "Mise à jour du journal…",
+    loggingStatusExporting: "Préparation de l’export du journal…",
+    loggingStatusExported: "Journal de diagnostic prêt au téléchargement.",
+    loggingStatusExportFailed: "Échec de l’export du journal.",
     loggingStorageEstimateUpdated: "Estimation de stockage actualisée.",
     loggingStorageQuotaOnly: "Stockage disponible : {quota}.",
     loggingStatusError:
@@ -10364,8 +10402,18 @@ const texts = {
     loggingPersistSessionLabel: "Protokoll zwischen Reloads behalten",
     loggingPersistSessionHelp:
       "Speichert Einträge in der Session, damit Diagnosen Reloads überstehen.",
+    loggingExportButton: "Protokoll exportieren",
+    loggingExportHelp: "Laden Sie das vollständige Diagnoseprotokoll als JSON-Datei herunter.",
+    loggingExportSuccess: "Diagnoseprotokoll exportiert.",
+    loggingExportError:
+      "Protokollexport fehlgeschlagen. Versuchen Sie es nach dem Neuladen der Einstellungen erneut.",
+    loggingExportUnavailable:
+      "Protokoll nicht verfügbar. Versuchen Sie es nach dem Neuladen der Einstellungen erneut.",
     loggingStatusIdle: "Live-Protokoll bereit.",
     loggingStatusUpdating: "Protokoll wird aktualisiert…",
+    loggingStatusExporting: "Protokollexport wird vorbereitet…",
+    loggingStatusExported: "Diagnoseprotokoll bereit zum Herunterladen.",
+    loggingStatusExportFailed: "Protokollexport fehlgeschlagen.",
     loggingStorageEstimateUpdated: "Speicherabschätzung aktualisiert.",
     loggingStorageQuotaOnly: "Verfügbarer Speicher: {quota}.",
     loggingStatusError:

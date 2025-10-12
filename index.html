@@ -2858,6 +2858,19 @@
               <p id="loggingPersistSessionHelp" class="settings-hint">Store entries in session storage to survive refreshes.</p>
             </div>
           </div>
+          <div class="logging-actions">
+            <button
+              type="button"
+              id="loggingExportBtn"
+              aria-describedby="loggingExportHelp"
+              data-feature-search="true"
+              data-feature-search-keywords="diagnostics log export download backup"
+            >
+              <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
+              Export log
+            </button>
+            <p id="loggingExportHelp" class="settings-hint">Download the full diagnostics log as a JSON file.</p>
+          </div>
           <p id="loggingStatus" class="storage-summary-note" aria-live="polite"></p>
           <div class="logging-history-container" aria-live="polite">
             <ol id="loggingHistory" class="logging-history"></ol>
@@ -4472,7 +4485,9 @@
               plus
               <a class="help-link" href="#loggingPersistSession" data-help-target="#loggingPersistSession">Keep log between reloads</a>
               whenever you are collecting incident evidence. Mirroring to the console keeps runtime guard checks aligned across
-              both views.
+              both views. When you need to archive findings, use the
+              <a class="help-link button-link" href="#loggingExportBtn" data-help-target="#loggingExportBtn">Export log</a>
+              action to download a JSON copy you can store with your backup notes.
             </li>
           </ul>
         </section>
