@@ -10,6 +10,9 @@ air-gapped workflows.
       machines.
 - [ ] Launch `index.html` once per machine to warm caches, then disconnect the
       network and verify functionality.
+- [ ] Open **Help → Start Here** and complete the offline readiness quick check
+      to verify the Data & Storage dashboard timestamps, persistent storage
+      status, redundant backups and rehearsal coverage before travelling.
 - [ ] Export planner backups and project bundles; store copies on redundant
       physical media.
 - [ ] Print essential docs (operations checklist, save/share reference,
