@@ -2151,6 +2151,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/offline.js',
       'src/scripts/modules/core-shared.js',
       'src/scripts/modules/core/project-intelligence.js',
+      'src/scripts/modules/core/runtime-state.js',
       'src/scripts/modules/core/persistence-guard.js',
       'src/scripts/modules/core/experience.js',
       'src/scripts/modules/logging.js',

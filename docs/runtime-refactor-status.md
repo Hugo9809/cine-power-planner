@@ -66,3 +66,18 @@
 
 - Re-ran `node tools/runUnitTests.js tests/unit/runtimeModule.test.js` (still fails in baseline with registry warnings; no new regressions detected).
 - Pending: full suite (`npm run test:unit`, `npm run test:script`).
+
+## Step 6 – Runtime state helper extraction
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-2.js` | 17726 | 17841 | +115 |
+| `legacy/scripts/app-core-new-2.js` | 16385 | 16463 | +78 |
+| `src/scripts/modules/core/runtime-state.js` | – | 413 | +413 |
+| `legacy/scripts/modules/core/runtime-state.js` | – | 393 | +393 |
+
+*Notes:*
+
+- Extracted the shared runtime state factory into `cineCoreRuntimeState` so both modern and legacy bundles can reuse safe scope registration, freeze tracking, and temperature render guards without copying boilerplate.【F:src/scripts/modules/core/runtime-state.js†L1-L239】【F:legacy/scripts/modules/core/runtime-state.js†L1-L222】
+- App core now resolves the helper module before falling back to the legacy inline implementation, ensuring autosave, backup, and restore safeguards benefit from the centralised freeze registry across browser, worker, and Node contexts.【F:src/scripts/app-core-new-2.js†L1-L205】【F:legacy/scripts/app-core-new-2.js†L1-L204】
+- Service worker assets, loader manifests, and the runtime bundler parts list include the new module so offline pre-caching continues to cover the extracted helpers for both modern and legacy builds.【F:src/scripts/script.js†L41-L50】【F:legacy/scripts/script.js†L1-L8】【F:service-worker-assets.js†L41-L118】
