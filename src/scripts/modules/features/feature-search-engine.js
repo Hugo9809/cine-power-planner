@@ -438,6 +438,40 @@
       ]);
     }
 
+    ensureSynonymGroup(
+      ['delete', 'remove', 'clear', 'trash', 'bin', 'discard', 'erase', 'wipe'],
+      ['delete', 'remove', 'clear', 'trash', 'bin', 'discard', 'erase', 'wipe'],
+    );
+
+    ensureSynonymGroup(
+      ['save', 'backup', 'store', 'archive', 'preserve', 'safeguard', 'protect'],
+      ['save', 'backup', 'store', 'archive', 'preserve', 'safeguard', 'protect'],
+    );
+
+    ensureSynonymGroup(
+      ['restore', 'recover', 'load', 'import', 'rollback', 'return', 'reopen'],
+      ['restore', 'recover', 'load', 'import', 'rollback', 'return', 'reopen'],
+    );
+
+    ensureSynonymGroup(
+      ['share', 'export', 'send', 'distribute', 'forward', 'deliver', 'publish'],
+      ['share', 'export', 'send', 'distribute', 'forward', 'deliver', 'publish'],
+    );
+
+    ensureSynonymGroup(
+      ['duplicate', 'copy', 'clone', 'replicate', 'mirror'],
+      ['duplicate', 'copy', 'clone', 'replicate', 'mirror'],
+    );
+
+    ensureSynonymGroup(
+      ['autosave', 'autobackup', 'autosync', 'autosynchronize'],
+      ['autosave', 'autobackup', 'autosync', 'autosynchronize'],
+      [
+        ['auto', 'automatic'],
+        ['save', 'backup', 'sync', 'synchronise', 'synchronize'],
+      ],
+    );
+
     if (hasAny(['wh', 'watthour', 'watthours'])) {
       addAll(['wh', 'watthour', 'watthours', 'watt', 'watts', 'hour', 'hours']);
     } else if (

@@ -272,7 +272,7 @@
         id="deleteSetupBtn"
         title="Delete selected project"
         data-feature-search="true"
-        data-feature-search-keywords="delete remove project clear"
+        data-feature-search-keywords="delete remove project clear trash bin discard erase wipe"
       >
         <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>Delete
       </button>
@@ -283,7 +283,7 @@
       <button
         id="saveSetupBtn"
         data-feature-search="true"
-        data-feature-search-keywords="save project store backup autosave offline"
+        data-feature-search-keywords="save project store backup autosave offline archive preserve protect safeguard"
       ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
     </div>
     <div class="form-row form-row-actions" role="group" aria-label="Project actions">
@@ -292,7 +292,7 @@
         <button
           id="shareSetupBtn"
           data-feature-search="true"
-          data-feature-search-keywords="export share download backup archive"
+          data-feature-search-keywords="export share download backup archive distribute forward deliver publish send"
         >
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
           Export Project
@@ -310,7 +310,7 @@
           <button
             id="applySharedLinkBtn"
             data-feature-search="true"
-            data-feature-search-keywords="import project load restore file"
+            data-feature-search-keywords="import project load restore file recover reopen rollback"
           >
             <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>
             Import Project
@@ -2514,15 +2514,15 @@
             <input type="checkbox" id="settingsShowAutoBackups" />
           </div>
           <div class="form-row project-backups-actions">
-            <button
-              type="button"
-              id="backupDiffToggleButton"
-              class="inline-form-button"
-              aria-expanded="false"
-              aria-controls="backupDiffSection"
-              data-feature-search="true"
-              data-feature-search-keywords="compare backups versions diff changes log"
-            >
+          <button
+            type="button"
+            id="backupDiffToggleButton"
+            class="inline-form-button"
+            aria-expanded="false"
+            aria-controls="backupDiffSection"
+            data-feature-search="true"
+            data-feature-search-keywords="compare backups versions diff changes log history audit"
+          >
               Compare versions
             </button>
           </div>
@@ -2565,7 +2565,7 @@
               type="button"
               id="backupDiffExport"
               data-feature-search="true"
-              data-feature-search-keywords="export log backup diff report"
+              data-feature-search-keywords="export log backup diff report archive preserve"
             >
               Export log
             </button>
@@ -2586,7 +2586,7 @@
             <button
               id="backupSettings"
               data-feature-search="true"
-              data-feature-search-keywords="backup download archive safety full"
+              data-feature-search-keywords="backup download archive safety full safeguard protect preserve snapshot"
             >
               Backup
             </button>
@@ -2594,21 +2594,21 @@
             <button
               id="restoreSettings"
               data-feature-search="true"
-              data-feature-search-keywords="restore recover backup import full"
+              data-feature-search-keywords="restore recover backup import full load reopen rollback rescue"
             >
               Restore
             </button>
             <button
               id="restoreRehearsalButton"
               data-feature-search="true"
-              data-feature-search-keywords="restore rehearsal sandbox verify test backup"
+              data-feature-search-keywords="restore rehearsal sandbox verify test backup practice simulate"
             >
               Restore rehearsal
             </button>
             <button
               id="factoryResetButton"
               data-feature-search="true"
-              data-feature-search-keywords="factory reset clear wipe safety backup"
+              data-feature-search-keywords="factory reset clear wipe safety backup sanitize"
             >
               Factory reset
             </button>
@@ -2655,7 +2655,7 @@
                 type="button"
                 id="restoreRehearsalBrowse"
                 data-feature-search="true"
-                data-feature-search-keywords="choose file select backup import"
+                data-feature-search-keywords="choose file select backup import pick upload browse"
               >
                 Choose file
               </button>
@@ -2695,7 +2695,7 @@
                 type="button"
                 id="restoreRehearsalProceed"
                 data-feature-search="true"
-                data-feature-search-keywords="apply rehearsal restore commit backup"
+                data-feature-search-keywords="apply rehearsal restore commit backup confirm load"
               >
                 Continue rehearsal restore
               </button>
@@ -2703,7 +2703,7 @@
                 type="button"
                 id="restoreRehearsalAbort"
                 data-feature-search="true"
-                data-feature-search-keywords="abort rehearsal restore cancel backup"
+                data-feature-search-keywords="abort rehearsal restore cancel backup stop exit"
               >
                 Abort rehearsal
               </button>
@@ -2739,7 +2739,7 @@
               type="button"
               id="storagePersistenceRequest"
               data-feature-search="true"
-              data-feature-search-keywords="storage persistent quota space offline protect"
+              data-feature-search-keywords="storage persistent quota space offline protect safeguard"
             >
               Protect storage on this device
             </button>
@@ -2758,7 +2758,7 @@
               type="button"
               id="storageBackupNow"
               data-feature-search="true"
-              data-feature-search-keywords="backup download full data storage"
+              data-feature-search-keywords="backup download full data storage preserve safeguard"
             >
               Download full backup
             </button>
@@ -2766,7 +2766,7 @@
               type="button"
               id="storageOpenBackupTab"
               data-feature-search="true"
-              data-feature-search-keywords="open backup restore settings data storage"
+              data-feature-search-keywords="open backup restore settings data storage manage"
             >
               Open Backup &amp; Restore
             </button>
@@ -2864,7 +2864,7 @@
               id="loggingExportBtn"
               aria-describedby="loggingExportHelp"
               data-feature-search="true"
-              data-feature-search-keywords="diagnostics log export download backup"
+              data-feature-search-keywords="diagnostics log export download backup archive history"
             >
               <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
               Export log
@@ -5657,6 +5657,10 @@
                 jumps to features, device selectors or help topics; press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>
                 on macOS) to focus it from anywhere, press Enter to navigate and use × to clear. On small screens the side menu
                 opens automatically.
+              </li>
+              <li>
+                Safety-focused keywords such as “trash”, “archive”, “safeguard”, “recover” or “rollback” now map directly to
+                delete, backup, save and restore tools so protecting data is just a few keystrokes away.
               </li>
               <li>
                 Each suggestion shows whether it opens a feature, action, device or help topic. Quoted phrases sort to the top
