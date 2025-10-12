@@ -18584,6 +18584,9 @@ function getAvailableStorageMediaTypes() {
         addType(canonical);
       }
     }
+    if (Array.isArray(info?.supportedMedia)) {
+      info.supportedMedia.forEach(mediaType => addType(mediaType));
+    }
     const variantHint = typeof info?.model === 'string' ? info.model : '';
     const match = variantHint.match(/(CFexpress Type [AB](?: \(v\d(?:\.\d)?\))?|CFast 2\.0|microSDXC UHS-I|SDXC UHS-II|SDXC UHS-I|XQD|RED MINI-MAG|Codex Compact Drive)/i);
     if (match) {
@@ -18784,6 +18787,7 @@ function createStorageRequirementRow(data = {}) {
   removeBtn.setAttribute('aria-label', removeLabel);
   removeBtn.setAttribute('title', removeLabel);
   removeBtn.setAttribute('data-help', removeLabel);
+  removeBtn.dataset.storageActionKey = 'storageRemoveEntry';
   removeBtn.addEventListener('click', () => {
     row.remove();
     if (!storageNeedsContainer.querySelector('.storage-row')) {
@@ -18797,6 +18801,40 @@ function createStorageRequirementRow(data = {}) {
     scheduleProjectAutoSave(true);
   });
 
+  const duplicateBtn = document.createElement('button');
+  duplicateBtn.type = 'button';
+  duplicateBtn.className = 'storage-duplicate-btn';
+  duplicateBtn.innerHTML = iconMarkup(ICON_GLYPHS.add, 'btn-icon');
+  duplicateBtn.dataset.storageActionKey = 'storageDuplicateEntry';
+  const duplicateLabel = getProjectFormText('storageDuplicateEntry', 'Duplicate media row');
+  duplicateBtn.setAttribute('aria-label', duplicateLabel);
+  duplicateBtn.setAttribute('title', duplicateLabel);
+  duplicateBtn.setAttribute('data-help', duplicateLabel);
+  duplicateBtn.addEventListener('click', () => {
+    const entry = {
+      quantity: quantityInput ? quantityInput.value : '',
+      type: typeSelect ? typeSelect.value : '',
+      variant: variantSelect ? variantSelect.value : '',
+      notes: notesInput ? notesInput.value : ''
+    };
+    const newRow = createStorageRequirementRow(entry);
+    if (newRow && typeof storageNeedsContainer?.insertBefore === 'function') {
+      storageNeedsContainer.insertBefore(newRow, row.nextSibling);
+      const focusField = newRow.querySelector('.storage-quantity');
+      if (focusField) {
+        focusField.focus();
+        if (typeof focusField.select === 'function') {
+          focusField.select();
+        }
+      }
+    }
+    scheduleProjectAutoSave(true);
+  });
+
+  const actionContainer = document.createElement('div');
+  actionContainer.className = 'storage-row-actions';
+  actionContainer.append(duplicateBtn, removeBtn);
+
   row.append(
     quantityLabel,
     quantityInput,
@@ -18806,7 +18844,7 @@ function createStorageRequirementRow(data = {}) {
     variantSelect,
     notesLabel,
     notesInput,
-    removeBtn
+    actionContainer
   );
 
   storageNeedsContainer.appendChild(row);
@@ -18847,6 +18885,13 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
     || fallbackProjectForm.storageNotesPlaceholder
     || '';
 
+  const duplicateActionLabel = projectFormTexts.storageDuplicateEntry
+    || fallbackProjectForm.storageDuplicateEntry
+    || 'Duplicate media row';
+  const removeBase = projectFormTexts.removeEntry
+    || fallbackProjectForm.removeEntry
+    || 'Remove';
+
   document.querySelectorAll('#storageNeedsContainer .storage-type').forEach(select => {
     const firstOption = select.options[0];
     if (firstOption) firstOption.textContent = typePlaceholder;
@@ -18857,6 +18902,17 @@ function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectF
   });
   document.querySelectorAll('#storageNeedsContainer .storage-notes').forEach(input => {
     input.placeholder = notesPlaceholder;
+  });
+  document.querySelectorAll('#storageNeedsContainer [data-storage-action-key="storageDuplicateEntry"]').forEach(button => {
+    button.setAttribute('aria-label', duplicateActionLabel);
+    button.setAttribute('title', duplicateActionLabel);
+    button.setAttribute('data-help', duplicateActionLabel);
+  });
+  const storageRemoveLabel = `${removeBase} ${labelText}`.trim();
+  document.querySelectorAll('#storageNeedsContainer [data-storage-action-key="storageRemoveEntry"]').forEach(button => {
+    button.setAttribute('aria-label', storageRemoveLabel);
+    button.setAttribute('title', storageRemoveLabel);
+    button.setAttribute('data-help', storageRemoveLabel);
   });
 }
 

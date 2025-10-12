@@ -1504,7 +1504,15 @@ main.legal-content {
   min-width: 160px;
 }
 
-.storage-row button {
+.storage-row .storage-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  margin-left: 0.5rem;
+}
+
+.storage-row .storage-row-actions button {
   flex: 0 0 auto;
   margin: 0;
   align-self: center;
