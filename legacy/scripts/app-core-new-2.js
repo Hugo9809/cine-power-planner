@@ -173,8 +173,64 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   registerScope(detectedScope);
   return scopes;
 }
-if (typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' || !CORE_RUNTIME_CANDIDATE_SCOPES || typeof CORE_RUNTIME_CANDIDATE_SCOPES.length !== 'number') {
-  CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
+if (typeof CORE_RUNTIME_CANDIDATE_SCOPE_LIST === 'undefined') {
+  var CORE_RUNTIME_CANDIDATE_SCOPE_LIST;
+}
+
+if (typeof CORE_RUNTIME_CANDIDATE_SCOPE_LIST === 'undefined' || !CORE_RUNTIME_CANDIDATE_SCOPE_LIST || typeof CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length !== 'number') {
+  var __CINE_RESOLVED_CANDIDATE_SCOPES__ = null;
+
+  var __cineSharedCandidateScope = typeof globalThis !== 'undefined' && globalThis ? globalThis : typeof window !== 'undefined' && window ? window : typeof self !== 'undefined' && self ? self : typeof global !== 'undefined' && global ? global : null;
+
+  if (__cineSharedCandidateScope) {
+    try {
+      var __cineLegacyCandidates__ = __cineSharedCandidateScope.CORE_RUNTIME_CANDIDATE_SCOPES;
+      if (__cineLegacyCandidates__ && typeof __cineLegacyCandidates__.length === 'number') {
+        __CINE_RESOLVED_CANDIDATE_SCOPES__ = __cineLegacyCandidates__;
+      }
+    } catch (cineLegacyLookupError) {
+      void cineLegacyLookupError;
+    }
+
+    if (!__CINE_RESOLVED_CANDIDATE_SCOPES__) {
+      try {
+        var __cineModernCandidates__ = __cineSharedCandidateScope.CORE_RUNTIME_CANDIDATE_SCOPE_LIST;
+        if (__cineModernCandidates__ && typeof __cineModernCandidates__.length === 'number') {
+          __CINE_RESOLVED_CANDIDATE_SCOPES__ = __cineModernCandidates__;
+        }
+      } catch (cineModernLookupError) {
+        void cineModernLookupError;
+      }
+    }
+  }
+
+  if (!__CINE_RESOLVED_CANDIDATE_SCOPES__) {
+    __CINE_RESOLVED_CANDIDATE_SCOPES__ = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
+  }
+
+  try {
+    CORE_RUNTIME_CANDIDATE_SCOPE_LIST = __CINE_RESOLVED_CANDIDATE_SCOPES__;
+  } catch (cineScopeAssignError) {
+    void cineScopeAssignError;
+    if (typeof CORE_RUNTIME_CANDIDATE_SCOPE_LIST === 'undefined') {
+      var CORE_RUNTIME_CANDIDATE_SCOPE_LIST = __CINE_RESOLVED_CANDIDATE_SCOPES__;
+      void CORE_RUNTIME_CANDIDATE_SCOPE_LIST;
+    }
+  }
+
+  if (__cineSharedCandidateScope && _typeof(__cineSharedCandidateScope) === 'object') {
+    try {
+      __cineSharedCandidateScope.CORE_RUNTIME_CANDIDATE_SCOPE_LIST = __CINE_RESOLVED_CANDIDATE_SCOPES__;
+    } catch (cinePublishModernError) {
+      void cinePublishModernError;
+    }
+
+    try {
+      __cineSharedCandidateScope.CORE_RUNTIME_CANDIDATE_SCOPES = __CINE_RESOLVED_CANDIDATE_SCOPES__;
+    } catch (cinePublishLegacyError) {
+      void cinePublishLegacyError;
+    }
+  }
 }
 var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPart2() {
   if (typeof CORE_RUNTIME_STATE_SUPPORT !== 'undefined' && CORE_RUNTIME_STATE_SUPPORT) {
@@ -204,8 +260,8 @@ var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPa
     }
     return resolvedSupport;
   }
-  for (var supportIndex = 0; supportIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; supportIndex += 1) {
-    var supportScope = CORE_RUNTIME_CANDIDATE_SCOPES[supportIndex];
+  for (var supportIndex = 0; supportIndex < CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length; supportIndex += 1) {
+    var supportScope = CORE_RUNTIME_CANDIDATE_SCOPE_LIST[supportIndex];
     if (!supportScope || _typeof(supportScope) !== 'object') {
       continue;
     }
@@ -529,20 +585,20 @@ function createLocalRuntimeState(candidateScopes) {
 }
 var CORE_RUNTIME_STATE = function resolveCoreRuntimeState() {
   var resolvedState = null;
-  for (var index = 0; index < CORE_RUNTIME_CANDIDATE_SCOPES.length; index += 1) {
-    var scope = CORE_RUNTIME_CANDIDATE_SCOPES[index];
+  for (var index = 0; index < CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length; index += 1) {
+    var scope = CORE_RUNTIME_CANDIDATE_SCOPE_LIST[index];
     if (scope && _typeof(scope.__cineRuntimeState) === 'object') {
       resolvedState = scope.__cineRuntimeState;
       break;
     }
   }
   if (!resolvedState) {
-    for (var factoryIndex = 0; factoryIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; factoryIndex += 1) {
-      var factoryScope = CORE_RUNTIME_CANDIDATE_SCOPES[factoryIndex];
+    for (var factoryIndex = 0; factoryIndex < CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length; factoryIndex += 1) {
+      var factoryScope = CORE_RUNTIME_CANDIDATE_SCOPE_LIST[factoryIndex];
       var createRuntimeState = factoryScope && typeof factoryScope.__cineCreateRuntimeState === 'function' ? factoryScope.__cineCreateRuntimeState : null;
       if (typeof createRuntimeState === 'function') {
         try {
-          resolvedState = createRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+          resolvedState = createRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPE_LIST);
         } catch (createStateError) {
           resolvedState = null;
           void createStateError;
@@ -554,9 +610,9 @@ var CORE_RUNTIME_STATE = function resolveCoreRuntimeState() {
     }
   }
   if (!resolvedState) {
-    resolvedState = createLocalRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+    resolvedState = createLocalRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPE_LIST);
   }
-  var primaryScope = CORE_RUNTIME_CANDIDATE_SCOPES.length ? CORE_RUNTIME_CANDIDATE_SCOPES[0] : null;
+  var primaryScope = CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length ? CORE_RUNTIME_CANDIDATE_SCOPE_LIST[0] : null;
   if (primaryScope && resolvedState) {
     try {
       Object.defineProperty(primaryScope, '__cineRuntimeState', {
@@ -594,13 +650,13 @@ function registerRuntimeScope(scope) {
     void registerError;
   }
 }
-for (var CORE_RUNTIME_SCOPE_INDEX = 0; CORE_RUNTIME_SCOPE_INDEX < CORE_RUNTIME_CANDIDATE_SCOPES.length; CORE_RUNTIME_SCOPE_INDEX += 1) {
-  registerRuntimeScope(CORE_RUNTIME_CANDIDATE_SCOPES[CORE_RUNTIME_SCOPE_INDEX]);
+for (var CORE_RUNTIME_SCOPE_INDEX = 0; CORE_RUNTIME_SCOPE_INDEX < CORE_RUNTIME_CANDIDATE_SCOPE_LIST.length; CORE_RUNTIME_SCOPE_INDEX += 1) {
+  registerRuntimeScope(CORE_RUNTIME_CANDIDATE_SCOPE_LIST[CORE_RUNTIME_SCOPE_INDEX]);
 }
 function getCoreRuntimeScopesSnapshot() {
   if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.getScopesSnapshot === 'function') {
     try {
-      var sharedSnapshot = CORE_RUNTIME_SHARED.getScopesSnapshot(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPES);
+      var sharedSnapshot = CORE_RUNTIME_SHARED.getScopesSnapshot(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPE_LIST);
       if (Array.isArray(sharedSnapshot)) {
         return sharedSnapshot;
       }
@@ -615,11 +671,11 @@ function getCoreRuntimeScopesSnapshot() {
       void scopeReadError;
     }
   }
-  return CORE_RUNTIME_CANDIDATE_SCOPES.slice();
+  return CORE_RUNTIME_CANDIDATE_SCOPE_LIST.slice();
 }
 var CORE_PART2_RUNTIME_SCOPE = CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.ensurePrimaryScope === 'function' ? function resolvePrimaryScopeWithShared() {
   try {
-    return CORE_RUNTIME_SHARED.ensurePrimaryScope(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPES);
+    return CORE_RUNTIME_SHARED.ensurePrimaryScope(CORE_RUNTIME_STATE, CORE_RUNTIME_CANDIDATE_SCOPE_LIST);
   } catch (sharedPrimaryScopeError) {
     void sharedPrimaryScopeError;
   }
