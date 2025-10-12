@@ -20,7 +20,7 @@ describe('translations global merging', () => {
     global.texts = {
       en: {
         onboardingTour: {
-          prefaceIndicator: 'Preface',
+          prefaceIndicator: 'Welcome',
         },
       },
     };
@@ -30,9 +30,9 @@ describe('translations global merging', () => {
     expect(global.texts).toBeDefined();
     expect(global.texts.de).toBeDefined();
     expect(global.texts.de.onboardingTour).toBeDefined();
-    expect(global.texts.de.onboardingTour.prefaceIndicator).toBe('Vorwort');
+    expect(global.texts.de.onboardingTour.prefaceIndicator).toBe('Willkommen');
 
-    expect(texts.de.onboardingTour.prefaceIndicator).toBe('Vorwort');
-    expect(texts.en.onboardingTour.prefaceIndicator).toBe('Preface');
+    expect(texts.de.onboardingTour.prefaceIndicator).toBe('Willkommen');
+    expect(texts.en.onboardingTour.prefaceIndicator).toBe('Welcome');
   });
 });

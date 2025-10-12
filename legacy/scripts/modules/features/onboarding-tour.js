@@ -1450,7 +1450,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (fallbackValue) {
         return fallbackValue;
       }
-      return 'Preface';
+      return 'Welcome';
     }();
     return _objectSpread(_objectSpread(_objectSpread({}, fallback), localized), {}, {
       prefaceIndicator: prefaceIndicatorText,
@@ -1990,7 +1990,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
       return tourTexts.prefaceIndicator.trim();
     }
-    return 'Preface';
+    return 'Welcome';
   }
   function focusCard() {
     var target = getTargetElement(currentStep);
