@@ -1,0 +1,22 @@
+name: PR Preview
+on:
+  pull_request:
+    branches: [ main ]
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy to Pages (PR-specific)
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          preview: true
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
