@@ -4310,7 +4310,7 @@ function applyImportedOwnedGearMarkers(markers, options = {}) {
     }
     const selectorId = (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function')
       ? CSS.escape(marker.ownedId)
-      : String(marker.ownedId).replace(/"/g, '\\"');
+      : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     const element = root.querySelector(`[data-gear-own-gear-id="${selectorId}"]`);
     if (!element) {
       return;
