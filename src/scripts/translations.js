@@ -1829,6 +1829,25 @@ const texts = {
         "You can reopen the tutorial from Help or use the step navigator to replay any section later.",
       skipConfirmationAccept: "Skip tutorial",
       skipConfirmationCancel: "Continue tutorial",
+      interactions: {
+        userProfileIntro:
+          "Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.",
+        userProfileSkipHint:
+          "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
+        unitsLanguageLabel: "Language",
+        unitsThemeLabel: "Theme",
+        unitsThemeLight: "Light",
+        unitsThemeDark: "Dark",
+        unitsPinkModeLabel: "Pink mode accents",
+        unitsPinkModeOff: "Disabled",
+        unitsPinkModeOn: "Enabled",
+        unitsTemperatureLabel: "Temperature units",
+        unitsTemperatureCelsius: "Celsius (°C)",
+        unitsTemperatureFahrenheit: "Fahrenheit (°F)",
+        unitsPersistenceHint:
+          "Request persistent storage so the browser keeps planner data even when space runs low.",
+        unitsPersistenceRequest: "Request storage protection",
+      },
       steps: {
         intro: {
           title: "Welcome to Cine Power Planner",
@@ -3890,6 +3909,25 @@ const texts = {
         "Puoi riaprire il tutorial dalla Guida oppure usare il navigatore dei passaggi per ripassare ogni sezione più tardi.",
       skipConfirmationAccept: "Salta tutorial",
       skipConfirmationCancel: "Continua tutorial",
+      interactions: {
+        userProfileIntro:
+          "Gli aggiornamenti si sincronizzano subito con Contatti, restano memorizzati offline e confluiscono nelle esportazioni così la troupe sa sempre a chi appartiene la configurazione.",
+        userProfileSkipHint:
+          "Premi Avanti quando sei pronto: Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare l’avanzamento del tutorial.",
+        unitsLanguageLabel: "Lingua",
+        unitsThemeLabel: "Tema",
+        unitsThemeLight: "Chiaro",
+        unitsThemeDark: "Scuro",
+        unitsPinkModeLabel: "Accenti modalità rosa",
+        unitsPinkModeOff: "Disattivato",
+        unitsPinkModeOn: "Attivato",
+        unitsTemperatureLabel: "Unità di temperatura",
+        unitsTemperatureCelsius: "Celsius (°C)",
+        unitsTemperatureFahrenheit: "Fahrenheit (°F)",
+        unitsPersistenceHint:
+          "Richiedi l’archiviazione persistente così il browser mantiene i dati del planner anche quando lo spazio è quasi esaurito.",
+        unitsPersistenceRequest: "Richiedi protezione archiviazione",
+      },
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
@@ -5964,6 +6002,25 @@ const texts = {
         "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
       skipConfirmationAccept: "Omitir tutorial",
       skipConfirmationCancel: "Continuar tutorial",
+      interactions: {
+        userProfileIntro:
+          "Tus actualizaciones se sincronizan al instante con Contactos, se conservan en caché sin conexión y se incluyen en las exportaciones para que el equipo siempre sepa quién es el responsable del set.",
+        userProfileSkipHint:
+          "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
+        unitsLanguageLabel: "Idioma",
+        unitsThemeLabel: "Tema",
+        unitsThemeLight: "Claro",
+        unitsThemeDark: "Oscuro",
+        unitsPinkModeLabel: "Acentos modo rosa",
+        unitsPinkModeOff: "Desactivado",
+        unitsPinkModeOn: "Activado",
+        unitsTemperatureLabel: "Unidades de temperatura",
+        unitsTemperatureCelsius: "Celsius (°C)",
+        unitsTemperatureFahrenheit: "Fahrenheit (°F)",
+        unitsPersistenceHint:
+          "Solicita almacenamiento persistente para que el navegador conserve los datos del planificador incluso cuando quede poco espacio.",
+        unitsPersistenceRequest: "Solicitar protección de almacenamiento",
+      },
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
@@ -8051,6 +8108,25 @@ const texts = {
         "Vous pourrez rouvrir le tutoriel depuis Aide ou utiliser le navigateur d'étapes pour rejouer chaque section plus tard.",
       skipConfirmationAccept: "Ignorer le tutoriel",
       skipConfirmationCancel: "Continuer le tutoriel",
+      interactions: {
+        userProfileIntro:
+          "Vos mises à jour se synchronisent instantanément avec Contacts, restent mises en cache hors ligne et s’intègrent aux exports pour que l’équipe sache toujours qui est responsable du setup.",
+        userProfileSkipHint:
+          "Appuyez sur Suivant quand vous êtes prêt — Contacts dans la barre latérale affiche toujours ces informations enregistrées sans réinitialiser la progression du tutoriel.",
+        unitsLanguageLabel: "Langue",
+        unitsThemeLabel: "Thème",
+        unitsThemeLight: "Clair",
+        unitsThemeDark: "Sombre",
+        unitsPinkModeLabel: "Accents mode rose",
+        unitsPinkModeOff: "Désactivé",
+        unitsPinkModeOn: "Activé",
+        unitsTemperatureLabel: "Unités de température",
+        unitsTemperatureCelsius: "Celsius (°C)",
+        unitsTemperatureFahrenheit: "Fahrenheit (°F)",
+        unitsPersistenceHint:
+          "Demandez un stockage persistant pour que le navigateur conserve les données du planificateur même lorsque l’espace vient à manquer.",
+        unitsPersistenceRequest: "Demander la protection du stockage",
+      },
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
@@ -10142,6 +10218,25 @@ const texts = {
         "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen oder über den Schritt-Navigator einzelne Abschnitte erneut durchgehen.",
       skipConfirmationAccept: "Tutorial überspringen",
       skipConfirmationCancel: "Tutorial fortsetzen",
+      interactions: {
+        userProfileIntro:
+          "Aktualisierungen werden sofort mit Kontakte synchronisiert, bleiben offline zwischengespeichert und fließen in Exporte ein, damit Teams immer wissen, wem das Setup gehört.",
+        userProfileSkipHint:
+          "Drücke Weiter, wenn du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorialfortschritt zurückzusetzen.",
+        unitsLanguageLabel: "Sprache",
+        unitsThemeLabel: "Design",
+        unitsThemeLight: "Hell",
+        unitsThemeDark: "Dunkel",
+        unitsPinkModeLabel: "Pink-Mode-Akzente",
+        unitsPinkModeOff: "Deaktiviert",
+        unitsPinkModeOn: "Aktiviert",
+        unitsTemperatureLabel: "Temperatureinheiten",
+        unitsTemperatureCelsius: "Celsius (°C)",
+        unitsTemperatureFahrenheit: "Fahrenheit (°F)",
+        unitsPersistenceHint:
+          "Fordere dauerhaften Speicher an, damit der Browser Planerdaten behält, selbst wenn wenig Platz verfügbar ist.",
+        unitsPersistenceRequest: "Speicherschutz anfordern",
+      },
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",

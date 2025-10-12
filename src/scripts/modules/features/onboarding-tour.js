@@ -1157,14 +1157,49 @@
         body: resolvedBody,
       };
     }
+    const fallbackInteractions =
+      fallback && typeof fallback.interactions === 'object'
+        ? fallback.interactions
+        : {};
+    const localizedInteractions =
+      localized && typeof localized.interactions === 'object'
+        ? localized.interactions
+        : {};
+
     return {
       ...fallback,
       ...localized,
       steps,
+      interactions: {
+        ...fallbackInteractions,
+        ...localizedInteractions,
+      },
     };
   }
 
   let tourTexts = resolveTourTexts();
+
+  function getInteractionText(key, fallbackValue) {
+    if (!key) {
+      return typeof fallbackValue === 'string' ? fallbackValue : '';
+    }
+
+    const interactions =
+      tourTexts && typeof tourTexts.interactions === 'object'
+        ? tourTexts.interactions
+        : null;
+
+    const value =
+      interactions && typeof interactions[key] === 'string'
+        ? interactions[key]
+        : null;
+
+    if (value && value.trim()) {
+      return value.trim();
+    }
+
+    return typeof fallbackValue === 'string' ? fallbackValue : '';
+  }
 
   function getStepConfig() {
     return [
@@ -2644,7 +2679,10 @@
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = getInteractionText(
+      'userProfileIntro',
+      'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.',
+    );
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -2950,7 +2988,10 @@
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    skipHint.textContent = getInteractionText(
+      'userProfileSkipHint',
+      'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.',
+    );
     fragment.appendChild(skipHint);
 
     while (interactionContainerEl.firstChild) {
@@ -2997,7 +3038,13 @@
       const label = DOCUMENT.createElement('label');
       label.className = 'onboarding-field-label';
       label.setAttribute('for', inputId);
-      label.textContent = 'Language';
+      const languageLabelSource = DOCUMENT.getElementById('settingsLanguageLabel');
+      const languageLabelText = languageLabelSource
+        && typeof languageLabelSource.textContent === 'string'
+        ? languageLabelSource.textContent.trim()
+        : '';
+      label.textContent = languageLabelText
+        || getInteractionText('unitsLanguageLabel', 'Language');
       const proxySelect = DOCUMENT.createElement('select');
       proxySelect.id = inputId;
       proxySelect.className = 'onboarding-field-select';
@@ -3052,16 +3099,16 @@
     const themeLabel = DOCUMENT.createElement('label');
     themeLabel.className = 'onboarding-field-label';
     themeLabel.setAttribute('for', themeId);
-    themeLabel.textContent = 'Theme';
+    themeLabel.textContent = getInteractionText('unitsThemeLabel', 'Theme');
     const themeSelect = DOCUMENT.createElement('select');
     themeSelect.id = themeId;
     themeSelect.className = 'onboarding-field-select';
     const themeLight = DOCUMENT.createElement('option');
     themeLight.value = 'light';
-    themeLight.textContent = 'Light';
+    themeLight.textContent = getInteractionText('unitsThemeLight', 'Light');
     const themeDark = DOCUMENT.createElement('option');
     themeDark.value = 'dark';
-    themeDark.textContent = 'Dark';
+    themeDark.textContent = getInteractionText('unitsThemeDark', 'Dark');
     themeSelect.appendChild(themeLight);
     themeSelect.appendChild(themeDark);
     themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
@@ -3107,16 +3154,21 @@
       const pinkLabel = DOCUMENT.createElement('label');
       pinkLabel.className = 'onboarding-field-label';
       pinkLabel.setAttribute('for', pinkId);
-      pinkLabel.textContent = 'Pink mode accents';
+      const pinkLabelSource = DOCUMENT.getElementById('settingsPinkModeLabel');
+      const pinkLabelText = pinkLabelSource && typeof pinkLabelSource.textContent === 'string'
+        ? pinkLabelSource.textContent.trim()
+        : '';
+      pinkLabel.textContent = pinkLabelText
+        || getInteractionText('unitsPinkModeLabel', 'Pink mode accents');
       const pinkSelect = DOCUMENT.createElement('select');
       pinkSelect.id = pinkId;
       pinkSelect.className = 'onboarding-field-select';
       const pinkOff = DOCUMENT.createElement('option');
       pinkOff.value = 'off';
-      pinkOff.textContent = 'Disabled';
+      pinkOff.textContent = getInteractionText('unitsPinkModeOff', 'Disabled');
       const pinkOn = DOCUMENT.createElement('option');
       pinkOn.value = 'on';
-      pinkOn.textContent = 'Enabled';
+      pinkOn.textContent = getInteractionText('unitsPinkModeOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
       pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
@@ -3217,15 +3269,23 @@
       const unitsLabel = DOCUMENT.createElement('label');
       unitsLabel.className = 'onboarding-field-label';
       unitsLabel.setAttribute('for', unitsId);
-      unitsLabel.textContent = 'Temperature units';
+      const unitsLabelSource = DOCUMENT.getElementById('settingsTemperatureUnitLabel');
+      const unitsLabelText = unitsLabelSource && typeof unitsLabelSource.textContent === 'string'
+        ? unitsLabelSource.textContent.trim()
+        : '';
+      unitsLabel.textContent = unitsLabelText
+        || getInteractionText('unitsTemperatureLabel', 'Temperature units');
       const proxyUnits = DOCUMENT.createElement('select');
       proxyUnits.id = unitsId;
       proxyUnits.className = 'onboarding-field-select';
       const unitOptions = Array.from(tempUnitSelect.options || []);
       if (unitOptions.length === 0) {
         const option = DOCUMENT.createElement('option');
-        option.value = tempUnitSelect.value || 'celsius';
-        option.textContent = tempUnitSelect.value || 'Celsius';
+        const fallbackUnitValue = tempUnitSelect.value || 'celsius';
+        option.value = fallbackUnitValue;
+        option.textContent = fallbackUnitValue === 'fahrenheit'
+          ? getInteractionText('unitsTemperatureFahrenheit', 'Fahrenheit (°F)')
+          : getInteractionText('unitsTemperatureCelsius', 'Celsius (°C)');
         proxyUnits.appendChild(option);
       } else {
         for (let index = 0; index < unitOptions.length; index += 1) {
@@ -3268,7 +3328,10 @@
     const persistenceButton = DOCUMENT.getElementById('storagePersistenceRequest');
     const persistenceHint = DOCUMENT.createElement('p');
     persistenceHint.className = 'onboarding-resume-hint';
-    persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
+    persistenceHint.textContent = getInteractionText(
+      'unitsPersistenceHint',
+      'Request persistent storage so the browser keeps planner data even when space runs low.',
+    );
     fragment.appendChild(persistenceHint);
 
     const statusGroup = DOCUMENT.createElement('div');
@@ -3386,7 +3449,10 @@
     const requestButton = DOCUMENT.createElement('button');
     requestButton.type = 'button';
     requestButton.className = 'onboarding-interaction-button';
-    requestButton.textContent = 'Request storage protection';
+    requestButton.textContent = getInteractionText(
+      'unitsPersistenceRequest',
+      'Request storage protection',
+    );
     requestButton.disabled = !persistenceButton;
 
     const handleRequest = () => {
