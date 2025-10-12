@@ -644,7 +644,8 @@ const batteryData = {
     "capacity": 95,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 550
   },
   "Hawk-Woods V-Lok 200Wh (VL-200S) (V-Mount)": {
     "capacity": 200,
@@ -656,7 +657,8 @@ const batteryData = {
     "capacity": 350,
     "pinA": 15,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1600
   },
   "Hawk-Woods X-Lok 98Wh (XL-98) (V-Mount)": {
     "capacity": 98,
@@ -744,7 +746,31 @@ const batteryData = {
     "capacity": 98,
     "pinA": 12,
     "dtapA": 10,
-    "mount_type": "Gold-Mount"
+    "mount_type": "Gold-Mount",
+    "weight_g": 800,
+    "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g"
+  },
+  "SWIT PB-S98S (V-Mount)": {
+    "capacity": 98,
+    "pinA": 12,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 809,
+    "weight_notes": "PB-S98S (V-mount) 809 g; PB-S98A (Gold mount) 800 g"
+  },
+  "SWIT PB-S220A (Gold-Mount)": {
+    "capacity": 220,
+    "pinA": null,
+    "dtapA": null,
+    "mount_type": "Gold-Mount",
+    "weight_g": 1435
+  },
+  "SWIT PB-S220S (V-Mount)": {
+    "capacity": 220,
+    "pinA": null,
+    "dtapA": null,
+    "mount_type": "V-Mount",
+    "weight_g": 1440
   },
   "SWIT PB-H290A (Gold-Mount)": {
     "capacity": 290,

@@ -223,6 +223,7 @@ const fizData = {
       "powerDrawWatts": 22.2,
       "internalController": false,
       "torqueNm": null,
+      "weight_g": 290,
       "gearTypes": [
         "0.8 mod",
         "0.5 mod",
