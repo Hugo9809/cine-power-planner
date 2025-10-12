@@ -8366,6 +8366,12 @@ button {
     color 0.2s;
 }
 
+button:hover,
+button:focus-visible {
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+}
+
 .share-import-group button {
   margin: 0;
   flex: 1 1 100%;
