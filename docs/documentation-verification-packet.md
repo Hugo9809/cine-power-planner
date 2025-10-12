@@ -53,3 +53,5 @@ up and restoring must never risk user data.
 Maintaining a rigorous documentation verification packet keeps the written guidance, translations
 and recovery artefacts synchronized with the product, protecting user data under every offline
 scenario the planner supports.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

@@ -116,3 +116,5 @@ Record the outputs (or screenshots) in your verification log, and store them alo
 - **Incident investigations.** If autosaves pause or imports warn about mismatches, perform each workflow in an isolated profile, export fresh backups, and attach the recorded outputs to your incident log before applying a restore.
 
 Keeping this reference near the workstation ensures crews rehearse the exact same offline workflows the application enforces in code, preserving user data at every step.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

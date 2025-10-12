@@ -103,3 +103,5 @@ Running this audit on a predictable schedule ensures the README family, help cen
 translations and printed manuals stay aligned with the runtime safeguards that keep every
 save, share, import, backup and restore workflow lossless—even when crews rely on the
 planner entirely offline.【F:docs/documentation-coverage-matrix.md†L1-L63】【F:README.md†L210-L337】
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

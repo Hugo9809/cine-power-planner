@@ -16,3 +16,5 @@
 - Prototype the verification ledger and documentation tracker as optional, local-only modules so they never transmit data externally.
 - Extend the diagnostics dashboard to host checksum verification and incident capture flows, keeping data integrity tooling in one offline workspace.
 - Update the documentation guides once new features land so rehearsals, translations and help topics stay synchronized with the enhanced safeguards.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

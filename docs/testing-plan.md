@@ -88,3 +88,5 @@ you prepare a release candidate or validate a workstation:
 Document the drill results alongside your automated test logs so every release
 carries evidence that saving, sharing, importing, backup and restore routines
 were validated end-to-end.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

@@ -202,3 +202,5 @@ instructions even years later when internet access is unavailable.
 Maintaining this cadence guarantees the planner’s guidance, translations and offline-first
 workflows stay in sync, keeping user data safe even in the most isolated production
 environments.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

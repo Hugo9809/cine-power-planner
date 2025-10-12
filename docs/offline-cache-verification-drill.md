@@ -88,3 +88,5 @@ documented drill before handing the app to crews working without connectivity.
 Completing this drill ensures the cached application, bundled assets and
 persistence safeguards remain in lockstep, keeping user data safe even when crews
 work entirely offline.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

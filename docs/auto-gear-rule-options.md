@@ -1,81 +1,62 @@
 # Automatic Gear Rule Options Overview
 
-This document summarises how the existing automatic gear additions are currently generated so
-teams can migrate projects away from the legacy "automatic additions" behaviour while keeping the
-planner predictable, offline-ready and data-safe.
+Automatic gear rules are generated and managed entirely in the browser so crews can rehearse,
+edit and restore presets while fully offline. This overview summarises how the rules are
+constructed, which UI affordances expose them and how to migrate away from legacy behaviour
+without risking data loss.
 
-## How the current automatic additions work
+## How rule generation works today
+1. **Scenario diffs per requirement.** The factory clones the current project form, renders a
+   baseline gear table, then re-renders it for every selected scenario. The delta becomes a rule
+   scoped to that scenario (including removals) so each automatic addition is recreated as an
+   explicit rule.【F:src/scripts/modules/features/auto-gear-rules.js†L1586-L1630】
+2. **Scenario combinations and overlaps.** Known pairs such as `Handheld + Easyrig` and
+   `Slider + Undersling mode` produce additional rules after subtracting individual scenario
+   contributions. A dedicated overlap removes duplicate rain gear when both rain scenarios are
+   active, keeping preset output predictable.【F:src/scripts/modules/features/auto-gear-rules.js†L1620-L1660】
+3. **Equipment option triggers.** Camera handles, viewfinder extensions and video distribution
+   selections each toggle variants against the baseline table and store the resulting additions and
+   removals, ensuring option-specific hardware is explicit in backups and shares.【F:src/scripts/modules/features/auto-gear-rules.js†L488-L652】
+4. **Helper coverage rules.** Additional builders seed onboard monitor rigging, tripod preferences
+   and ARRI viewfinder bracket support even when no scenario triggers them, mirroring the legacy
+   automatic additions while keeping every rule auditable.【F:src/scripts/modules/features/auto-gear-rules.js†L660-L840】
+5. **Baseline diffing safeguards.** All comparisons rely on the rendered gear table being parsed
+   into category maps and diffed, preserving quantity accuracy when projects migrate from legacy
+   behaviour to explicit rules.【F:src/scripts/modules/features/auto-gear-rules.js†L488-L647】【F:src/scripts/modules/features/auto-gear-rules.js†L1586-L1634】
 
-1. **Scenario diffs per requirement** – The planner renders a baseline gear table without extra
-   scenarios and compares it with tables generated for each selected scenario. The delta becomes
-   a rule scoped to that scenario (including removal entries), so every scenario-specific auto
-   addition can be recreated as an explicit rule.【F:src/scripts/app-core-new-1.js†L3371-L3402】
-2. **Scenario combinations and overlaps** – Known pairs such as `Handheld + Easyrig` and
-   `Slider + Undersling mode` receive additional rules after subtracting the individual scenario
-   contributions. An extra overlap rule removes duplicate rain gear when both "Extreme rain" and
-   "Rain Machine" are active.【F:src/scripts/app-core-new-1.js†L3404-L3451】
-3. **Equipment option triggers** – Camera handles, viewfinder extensions and video distribution
-   choices each produce rules by toggling a single option on/off against the baseline table. The
-   generated rule stores the calculated additions and removals for that option.【F:src/scripts/app-core-new-1.js†L2701-L2837】
-4. **Default coverage rules** – Additional helper rules are appended for default video
-   distribution options, onboard monitor rigging, any-motor support kits, always-needed gear,
-   five-day consumables top-ups and matte box templates.【F:src/scripts/app-core-new-1.js†L2840-L3502】
-5. **Gear table parsing** – All comparisons rely on parsing the rendered gear table into category
-   maps and diffing them. This ensures quantities remain accurate when converting legacy
-   behaviour into explicit rules.【F:src/scripts/app-core-new-1.js†L2508-L2559】
+## Scenario logic and multipliers
+- **Joiner normalisation.** Scenario logic strings are normalised to `all`, `any` or `multiplier`
+  so imported or legacy rules continue to load safely even when users typed alternative labels.
+  Unrecognised values fall back to `all` so no scenario silently deactivates a rule.【F:src/scripts/app-setups.js†L6166-L6177】
+- **Multiplier safeguards.** Multiplier rules keep the requested primary scenario when possible,
+  fall back to the first scenario when it goes missing and only scale quantities after all extra
+  scenarios are active. If supporting scenarios are absent the rule still triggers at ×1, preventing
+  accidental over-allocation when partial conditions are met.【F:src/scripts/app-setups.js†L6179-L6224】
 
-## Condition joiners refresher
-
-* **All** – Every selected value for the condition must match before the rule activates. This is
-  the default for existing rules and remains the fallback when an unknown joiner is encountered
-  during normalization.【F:src/scripts/app-core-new-1.js†L3446-L3458】
-* **Any** – At least one selected value has to match. Rules saved before this update that used the
-  legacy “any” behaviour continue to load without changes because the joiner value is preserved
-  verbatim.【F:src/scripts/app-core-new-1.js†L3459-L3466】
-* **Or** – Begins a fresh OR group when evaluating condition chains while still matching any value
-  within the condition itself. The loader now keeps the explicit `"or"` joiner so editor UIs can
-  surface the grouping intent to the crew configuring backup rules.【F:src/scripts/app-core-new-1.js†L3446-L3466】
-* **Multiplier** – Treats the first value in the list as the base requirement and only scales the
-  rule when every additional value is also present. The multiplier defaults to ×1 but scales the
-  additions and removals once the factor input is above one, preserving the base scenario so teams
-  can express “double for rehearsal days” or similar patterns without cloning rules.【F:src/scripts/app-core-new-1.js†L3431-L3504】【F:src/scripts/app-setups.js†L2925-L3389】
-
-## Scenario multiplier specifics
-
-* **Base scenario selection** – When a rule is saved in multiplier mode the normalizer keeps the
-  requested primary scenario (or falls back to the first entry) so the rule still triggers offline
-  even if a share or backup reorders the trigger list. The base value is re-inserted if it goes
-  missing to avoid losing the anchor that defines when scaling can start.【F:src/scripts/app-core-new-1.js†L3431-L3504】
-* **Scaling behaviour** – During evaluation the rule activates only when the base scenario is
-  present. Each extra scenario must also be selected before the stored multiplier factor is applied
-  to the quantities being added or removed, ensuring the planner never over-allocates gear when a
-  project only partially meets the multiplier conditions.【F:src/scripts/app-setups.js†L2930-L3389】
-* **Editor and summaries** – The automatic gear editor surfaces the multiplier mode label, factor
-  and base scenario inside the summary strings so crews can understand why a rule scales up without
-  needing network access. The UI formats the factor using the active language pack, keeping the
-  documentation view and inline help in sync for offline teams.【F:src/scripts/app-core-new-2.js†L3363-L3389】
+## Editor, presets and highlight tools
+- **Inline naming fallback.** When browsers block `window.prompt`, the editor automatically opens
+  the inline naming dialog so presets can still be saved offline. Labels, buttons and focus traps are
+  localised using bundled texts to keep the workflow accessible without network access.【F:src/scripts/app-core-new-2.js†L2816-L2879】
+- **Highlight overlay.** The automatic gear workspace provides an explicit toggle to colour-code
+  stacked rule effects while reviewing drafts. The control lives alongside add, reset, export and
+  import actions so crews can audit rule impacts quickly during offline rehearsals.【F:index.html†L1485-L1519】
+- **Backups and retention.** Automatic gear backups are captured locally with retention limits,
+  success/error notifications and restore confirmations to keep presets redundant across sessions.
+  Restores refresh the editor, monitor defaults and diff signatures so changes remain tracked in the
+  autosave ledger.【F:src/scripts/app-core-new-2.js†L6641-L6724】
 
 ## Migration checklist
+- Continue diffing rendered tables when generating rules so quantity maths remain correct in saved
+  presets and exported bundles.【F:src/scripts/modules/features/auto-gear-rules.js†L488-L647】【F:src/scripts/modules/features/auto-gear-rules.js†L1586-L1634】
+- Keep helper builders (monitor rigging, tripod combinations, ARRI bracket coverage) active to avoid
+  losing safety stock that crews expect in historical backups.【F:src/scripts/modules/features/auto-gear-rules.js†L660-L840】
+- Persist rules, presets, backups and monitor defaults through the existing automatic gear storage
+  wrappers so manual saves, autosave snapshots and share bundles remain lossless.【F:src/scripts/modules/persistence.js†L1036-L1100】
+- When extending UI filters or highlights, update translations and documentation so offline crews
+  continue to see accurate labels during audits and rehearsals.【F:src/scripts/translations.js†L120-L220】
 
-* Ensure rule generation continues to parse the gear table HTML before diffing so quantity math
-  stays correct.【F:src/scripts/app-core-new-1.js†L2508-L2559】
-* Preserve the logic that deduplicates appended helper rules to avoid duplicated presets when
-  saving or sharing projects.【F:src/scripts/app-core-new-1.js†L3456-L3502】
-* When exporting or backing up, store these rules using the existing automatic gear backup and
-  preset infrastructure so user data remains safe and offline-capable.
-
-## Preset naming reliability
-
-* Browsers that disable native `prompt()` dialogs (for example installed PWAs running without a
-  URL bar) now trigger an inline naming modal within the Automatic gear preset panel. A quick timing
-  check detects blocked prompts or thrown errors so the inline fallback opens automatically instead
-  of treating the save as cancelled. The dialog keeps the experience accessible offline and
-  guarantees presets can still be saved without losing user data.【F:src/scripts/app-core-new-2.js†L2497-L2524】【F:src/styles/style.css†L2583-L2624】
-
-## Draft impact preview cues
-
-* The draft impact preview surfaces stacked changes whenever multiple rules touch the same gear
-  entry. Turn the **Highlight automatic gear** toggle **On** to activate the multicolour stacked
-  indicator while auditing rule changes. The preview falls back to the standard positive/negative
-  borders whenever the highlight overlay is disabled so the behaviour remains predictable during
-  offline reviews.
+## Draft impact previews
+Highlighting remains optional: with the toggle enabled, stacked automatic gear changes receive the
+multicolour overlay while the default positive/negative borders remain available for quieter audits.
+Because both behaviours run locally, switching between them does not risk data loss or require
+network access.【F:index.html†L1485-L1519】

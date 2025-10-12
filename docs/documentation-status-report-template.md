@@ -114,3 +114,5 @@ translations and printable manuals stay synchronized with the runtime guard and
 offline persistence safeguards. Auditors can trace exactly which instructions
 shipped, prove that locally stored Uicons and assets remained available offline
 and confirm that no user data was ever put at risk.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

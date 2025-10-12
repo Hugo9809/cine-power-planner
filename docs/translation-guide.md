@@ -79,3 +79,5 @@ npm run test:unit
 ## Step 5: Open a pull request
 
 Commit your changes, describe the new language in the pull request summary and mention any remaining untranslated phrases so maintainers can help. Linking to this guide from your PR helps other contributors follow the same process.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

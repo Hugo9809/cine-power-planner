@@ -64,3 +64,5 @@ protecting user data.
 Keeping this matrix current ensures crews always receive accurate, localized and
 redundant guidance for every workflow that touches user data, even when they are
 working entirely offline.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

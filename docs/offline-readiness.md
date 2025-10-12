@@ -250,3 +250,5 @@ Store the log in the same folder as the verified exports on both redundant media
 auditable paper trail makes it obvious when the last offline rehearsal occurred and which
 assets were inspected, keeping save, share, import, backup and restore workflows trusted by
 every crew member.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

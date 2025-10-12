@@ -158,3 +158,5 @@ appears, stabilize the environment before attempting to fix it:
 Following this routine ensures no user data is lost, offline capabilities remain
 healthy and every team member who launches Cine Power Planner inherits a verified
 environment.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
