@@ -220,12 +220,50 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-var CORE_RUNTIME_CANDIDATE_SCOPES =
-  typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined'
-    ? CORE_RUNTIME_CANDIDATE_SCOPES
-    : collectCoreRuntimeCandidateScopes(
-        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-      );
+const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandidateScopes() {
+  if (
+    typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
+    CORE_RUNTIME_CANDIDATE_SCOPES &&
+    typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+  ) {
+    return CORE_RUNTIME_CANDIDATE_SCOPES;
+  }
+
+  return collectCoreRuntimeCandidateScopes(
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+  );
+})();
+
+(function syncCoreRuntimeCandidateScopes(resolvedScopes) {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
+
+  if (
+    scope &&
+    (!scope.CORE_RUNTIME_CANDIDATE_SCOPES || scope.CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes)
+  ) {
+    try {
+      scope.CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  try {
+    if (
+      typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' ||
+      CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes
+    ) {
+      CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    }
+  } catch (candidateAssignError) {
+    void candidateAssignError;
+  }
+})(CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED);
 
 function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale === 'object') {
@@ -1341,8 +1379,8 @@ function createCoreRuntimeState(candidateScopes) {
 }
 
 const CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', () => {
-  const candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES.length
-    ? CORE_RUNTIME_CANDIDATE_SCOPES
+  const candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length
+    ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED
     : collectCoreRuntimeCandidateScopes(
         typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
       );
