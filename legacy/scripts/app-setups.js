@@ -9921,6 +9921,40 @@ function gearListGenerateHtmlImpl() {
   var formatItems = function formatItems(arr) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var entries = {};
+    var parseBaseAndContext = function parseBaseAndContext(rawName) {
+      var trimmed = rawName.trim();
+      if (!trimmed) {
+        return {
+          base: '',
+          ctx: ''
+        };
+      }
+      if (trimmed.charAt(trimmed.length - 1) !== ')') {
+        return {
+          base: trimmed,
+          ctx: ''
+        };
+      }
+      var openIndex = trimmed.lastIndexOf(' (');
+      if (openIndex === -1) {
+        return {
+          base: trimmed,
+          ctx: ''
+        };
+      }
+      var potentialBase = trimmed.slice(0, openIndex).trim();
+      var potentialCtx = trimmed.slice(openIndex + 2, -1).trim();
+      if (!potentialBase || !potentialCtx || potentialCtx.indexOf('(') !== -1 || potentialCtx.indexOf(')') !== -1) {
+        return {
+          base: trimmed,
+          ctx: ''
+        };
+      }
+      return {
+        base: potentialBase,
+        ctx: potentialCtx
+      };
+    };
     arr.filter(Boolean).map(addArriKNumber).forEach(function (rawItem) {
       var item = rawItem.trim();
       if (!item) return;
@@ -9928,9 +9962,9 @@ function gearListGenerateHtmlImpl() {
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
-      var match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-      var base = match ? match[1].trim() : namePart.trim();
-      var ctx = match && match[2] ? match[2].trim() : '';
+      var _parseBaseAndContext = parseBaseAndContext(namePart),
+        base = _parseBaseAndContext.base,
+        ctx = _parseBaseAndContext.ctx;
       if (!base) return;
       if (!entries[base]) {
         entries[base] = {

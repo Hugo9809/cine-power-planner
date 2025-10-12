@@ -10574,6 +10574,36 @@ function gearListGenerateHtmlImpl(info = {}) {
         : '';
     const formatItems = (arr, options = {}) => {
         const entries = {};
+        const parseBaseAndContext = rawName => {
+            const trimmed = rawName.trim();
+            if (!trimmed) {
+                return { base: '', ctx: '' };
+            }
+
+            if (trimmed.charAt(trimmed.length - 1) !== ')') {
+                return { base: trimmed, ctx: '' };
+            }
+
+            const openIndex = trimmed.lastIndexOf(' (');
+            if (openIndex === -1) {
+                return { base: trimmed, ctx: '' };
+            }
+
+            const potentialBase = trimmed.slice(0, openIndex).trim();
+            const potentialCtx = trimmed.slice(openIndex + 2, -1).trim();
+
+            if (
+                !potentialBase ||
+                !potentialCtx ||
+                potentialCtx.indexOf('(') !== -1 ||
+                potentialCtx.indexOf(')') !== -1
+            ) {
+                return { base: trimmed, ctx: '' };
+            }
+
+            return { base: potentialBase, ctx: potentialCtx };
+        };
+
         arr.filter(Boolean).map(addArriKNumber).forEach(rawItem => {
             const item = rawItem.trim();
             if (!item) return;
@@ -10581,9 +10611,7 @@ function gearListGenerateHtmlImpl(info = {}) {
             const parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
             const quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
             const namePart = quantityMatch ? quantityMatch[2] : item;
-            const match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-            const base = match ? match[1].trim() : namePart.trim();
-            const ctx = match && match[2] ? match[2].trim() : '';
+            const { base, ctx } = parseBaseAndContext(namePart);
             if (!base) return;
             if (!entries[base]) {
                 entries[base] = { total: 0, ctxCounts: {}, cameraLink: false, cameraLinkLabel: '' };
