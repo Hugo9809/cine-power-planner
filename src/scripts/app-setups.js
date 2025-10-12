@@ -11049,20 +11049,103 @@ function gearListGenerateHtmlImpl(info = {}) {
     let monitoringItems = '';
     const monitorSizes = [];
     if (selectedNames.monitor) {
-        const size = devices?.monitors?.[selectedNames.monitor]?.screenSizeInches;
-        if (size) monitorSizes.push(size);
-        const sizeHtml = size ? `${escapeHtml(String(size))}&quot; - ` : '';
         const monitorLabel = 'Onboard Monitor';
-        const monitorName = addArriKNumber(selectedNames.monitor);
-        const displayHtml = `1x <strong>${monitorLabel}</strong> - ${sizeHtml}${escapeHtml(monitorName)} - incl. Sunhood`;
+        const monitorsDb = devices?.monitors || {};
+        const stripCameraLinkPrefix = label => {
+            if (typeof label !== 'string') return '';
+            const trimmed = label.trim();
+            if (!trimmed) return '';
+            const match = trimmed.match(/^(linked\s+to\s+camera)(?:\s*[—–-]\s*|\s*:\s*|\s+)(.+)$/i);
+            if (match && match[2]) {
+                return match[2].trim();
+            }
+            return trimmed;
+        };
+        const stripEnclosingQuotes = value => {
+            if (typeof value !== 'string') return '';
+            return value.replace(/^["'“”‚‘’]+/, '').replace(/["'“”‚‘’]+$/, '').trim();
+        };
+        const cleanupMonitorLabel = value => stripEnclosingQuotes(stripCameraLinkPrefix(value));
+        const monitorSelectValue = typeof monitorSelect !== 'undefined'
+            && monitorSelect
+            && monitorSelect.value
+            && monitorSelect.value !== 'None'
+            ? monitorSelect.value
+            : '';
+        const storedMonitorSelectionRaw = typeof info.monitorSelection === 'string'
+            ? info.monitorSelection.trim()
+            : '';
+        const candidateValues = [];
+        const addCandidate = value => {
+            const trimmed = typeof value === 'string' ? value.trim() : '';
+            if (!trimmed) return;
+            if (!candidateValues.includes(trimmed)) {
+                candidateValues.push(trimmed);
+            }
+            const cleaned = cleanupMonitorLabel(trimmed);
+            if (cleaned && !candidateValues.includes(cleaned)) {
+                candidateValues.push(cleaned);
+            }
+        };
+        addCandidate(monitorSelectValue);
+        addCandidate(storedMonitorSelectionRaw);
+        addCandidate(selectedNames.monitor);
+        let monitorDatasetKey = '';
+        let monitorDatasetEntry = null;
+        candidateValues.some(name => {
+            if (Object.prototype.hasOwnProperty.call(monitorsDb, name)) {
+                monitorDatasetKey = name;
+                monitorDatasetEntry = monitorsDb[name];
+                return true;
+            }
+            return false;
+        });
+        let sizeValue = monitorDatasetEntry && typeof monitorDatasetEntry.screenSizeInches !== 'undefined'
+            ? Number(monitorDatasetEntry.screenSizeInches)
+            : NaN;
+        if (!Number.isFinite(sizeValue)) {
+            const parsedSize = parseFloat(String(monitorDatasetEntry?.screenSizeInches ?? ''));
+            sizeValue = Number.isFinite(parsedSize) ? parsedSize : NaN;
+        }
+        if (!Number.isFinite(sizeValue)) {
+            sizeValue = NaN;
+        }
+        if (Number.isFinite(sizeValue)) {
+            monitorSizes.push(sizeValue);
+        }
+        const formatSizeValue = value => {
+            if (!Number.isFinite(value)) return '';
+            const normalized = Number(value.toFixed(2));
+            return Number.isInteger(normalized)
+                ? String(normalized)
+                : String(normalized).replace(/\.0+$/, '');
+        };
+        const sizeText = formatSizeValue(sizeValue);
+        const sizeSegment = sizeText ? `${escapeHtml(sizeText)}&quot;` : '';
+        const monitorDisplayBase = cleanupMonitorLabel(selectedNames.monitor)
+            || monitorDatasetKey
+            || cleanupMonitorLabel(storedMonitorSelectionRaw)
+            || cleanupMonitorLabel(monitorSelectValue);
+        const monitorDisplayName = monitorDisplayBase ? addArriKNumber(monitorDisplayBase) : '';
+        const monitorNameHtml = monitorDisplayName ? `&quot;${escapeHtml(monitorDisplayName)}&quot;` : '';
+        const displaySegments = [`1x <strong>${monitorLabel}</strong>`];
+        if (sizeSegment) displaySegments.push(sizeSegment);
+        if (monitorNameHtml) displaySegments.push(monitorNameHtml);
+        displaySegments.push('incl. Sunhood');
+        const displayHtml = displaySegments.join(' - ');
         const attributeParts = [];
-        if (size) attributeParts.push(`${size}"`);
-        if (monitorName) attributeParts.push(monitorName);
+        if (sizeText) attributeParts.push(`${sizeText}"`);
+        if (monitorDisplayName) attributeParts.push(monitorDisplayName);
         attributeParts.push('incl. Sunhood');
         const attributeText = attributeParts.filter(Boolean).join(' - ');
         const dataName = attributeText ? `${monitorLabel} (${attributeText})` : monitorLabel;
+        const monitorCameraLinkLabel = monitorDisplayName
+            || cleanupMonitorLabel(selectedNames.monitor)
+            || cleanupMonitorLabel(storedMonitorSelectionRaw)
+            || cleanupMonitorLabel(monitorSelectValue)
+            || '';
         const monitorExtraAttributes = hasCameraForLinking
-            ? buildCameraLinkAttributes(selectedNames.monitor)
+            ? buildCameraLinkAttributes(monitorCameraLinkLabel || undefined)
             : '';
         monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
             name: dataName,
