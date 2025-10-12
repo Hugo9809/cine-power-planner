@@ -7866,6 +7866,17 @@ body.dark-mode .onboarding-step-item[data-status='complete'] .onboarding-step-bu
   min-width: 130px;
 }
 
+.onboarding-card[data-step-key='intro'] .onboarding-back-button {
+  display: none;
+}
+
+.onboarding-skip--intro {
+  flex: 0 0 auto;
+  min-width: auto;
+  padding-inline: 0;
+  align-self: center;
+}
+
 .onboarding-back-button {
   background: color-mix(in srgb, var(--control-bg) 85%, rgba(0, 0, 0, 0.05) 15%);
 }
@@ -7920,6 +7931,10 @@ body.dark-mode .onboarding-next-button:focus-visible {
   .onboarding-card-actions button {
     flex: 1;
     min-width: unset;
+  }
+
+  .onboarding-skip--intro {
+    flex: 0 0 auto;
   }
 }
 

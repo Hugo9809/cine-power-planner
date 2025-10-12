@@ -1944,6 +1944,8 @@
   let progressMeterEl = null;
   let progressMeterFillEl = null;
   let cardContentEl = null;
+  let cardHeaderEl = null;
+  let cardActionsEl = null;
   let stepListContainerEl = null;
   let stepListEl = null;
   let resumeHintEl = null;
@@ -2212,6 +2214,7 @@
     const header = DOCUMENT.createElement('div');
     header.className = 'onboarding-card-header';
     cardEl.appendChild(header);
+    cardHeaderEl = header;
 
     progressEl = DOCUMENT.createElement('p');
     progressEl.className = 'onboarding-progress';
@@ -2277,6 +2280,7 @@
     const actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-card-actions';
     cardEl.appendChild(actions);
+    cardActionsEl = actions;
 
     backButton = DOCUMENT.createElement('button');
     backButton.type = 'button';
@@ -2330,6 +2334,8 @@
     progressMeterEl = null;
     progressMeterFillEl = null;
     cardContentEl = null;
+    cardHeaderEl = null;
+    cardActionsEl = null;
     stepListContainerEl = null;
     stepListEl = null;
     resumeHintEl = null;
@@ -4731,6 +4737,29 @@
     showStep(index);
   }
 
+  function moveSkipButtonToActions() {
+    if (!skipButton || !cardActionsEl) {
+      return;
+    }
+    if (cardActionsEl.contains(skipButton)) {
+      return;
+    }
+    const referenceNode = nextButton && cardActionsEl.contains(nextButton) ? nextButton : null;
+    cardActionsEl.insertBefore(skipButton, referenceNode);
+    skipButton.classList.add('onboarding-skip--intro');
+  }
+
+  function moveSkipButtonToHeader() {
+    if (!skipButton || !cardHeaderEl) {
+      return;
+    }
+    if (cardHeaderEl.contains(skipButton)) {
+      return;
+    }
+    cardHeaderEl.appendChild(skipButton);
+    skipButton.classList.remove('onboarding-skip--intro');
+  }
+
   function updateCardForStep(step, index) {
     if (!cardEl) {
       return;
@@ -4749,6 +4778,13 @@
       ? step.size
       : 'standard';
     cardEl.setAttribute('data-size', size);
+
+    const stepKey = step && typeof step.key === 'string' ? step.key : '';
+    if (stepKey) {
+      cardEl.setAttribute('data-step-key', stepKey);
+    } else {
+      cardEl.removeAttribute('data-step-key');
+    }
 
     cardEl.setAttribute('aria-labelledby', titleEl.id);
     cardEl.setAttribute('aria-describedby', bodyEl.id);
@@ -4769,18 +4805,40 @@
     skipButton.textContent = tourTexts.skipLabel || 'Skip tutorial';
     backButton.textContent = tourTexts.backLabel || 'Back';
 
-    if (step.key === 'completion') {
+    const isIntroStep = stepKey === 'intro';
+    const isCompletionStep = stepKey === 'completion';
+
+    if (isCompletionStep) {
       nextButton.textContent = tourTexts.doneLabel || 'Finish';
+    } else if (isIntroStep) {
+      nextButton.textContent = tourTexts.introStartLabel || 'Start onboarding tour';
     } else {
       nextButton.textContent = tourTexts.nextLabel || 'Next';
     }
 
-    backButton.disabled = index <= 0;
-    backButton.hidden = index <= 0;
+    if (isIntroStep) {
+      backButton.disabled = true;
+      backButton.hidden = true;
+    } else {
+      backButton.disabled = index <= 0;
+      backButton.hidden = index <= 0;
+    }
+    backButton.setAttribute('aria-hidden', backButton.hidden ? 'true' : 'false');
+    if (backButton.hidden) {
+      backButton.tabIndex = -1;
+    } else {
+      backButton.removeAttribute('tabindex');
+    }
 
-    if (step.key === 'intro') {
+    if (isIntroStep) {
+      moveSkipButtonToActions();
+    } else {
+      moveSkipButtonToHeader();
+    }
+
+    if (isIntroStep) {
       skipButton.hidden = false;
-    } else if (step.key === 'completion') {
+    } else if (isCompletionStep) {
       skipButton.hidden = true;
     } else {
       skipButton.hidden = false;
