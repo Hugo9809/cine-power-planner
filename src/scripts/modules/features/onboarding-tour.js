@@ -443,12 +443,16 @@
     intro: {
       title: 'Welcome to Cine Power Planner',
       body:
-        'Begin with the offline-first power planner built for crews. This guided tour walks through the safeguards that keep every project ready to restore before the first shoot.',
+        'Step 1 introduces the guided tour and the safeguards that keep every project recoverable before the first shoot. Follow the prompts to learn how saves, backups and restores work without ever risking your offline data.',
       hero: {
+        heading: 'Step 1 · Welcome aboard',
+        subheading: 'Power planning without losing data',
+        summary:
+          'Preview how Cine Power Planner protects work-in-progress before you add your first camera. The tour keeps progress local, explains every safety net and helps you confirm each safeguard.',
         badgeIcon: '\uE9C3',
-        badgeLabel: 'Offline · Subscription-free',
+        badgeLabel: 'Offline-first & private',
         badgeDescription:
-          'No servers, no accounts. Saves, autosaves, backups, restores, shares and imports all stay on this device.',
+          'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
         highlights: [
           {
             icon: '\uE1A6',
@@ -464,16 +468,16 @@
           },
           {
             icon: '\uE469',
-            title: 'Share requirements with context',
+            title: 'Safeguard and share with context',
             body:
-              'Capture deliverables, crew coverage and rental notes, then export PDFs crews and houses can trust.',
+              'Capture deliverables, crew coverage and rental notes, then export PDFs and restore bundles crews can trust.',
           },
         ],
-        languageLabel: 'Language',
+        languageLabel: 'Choose your language',
         languageHint:
-          'Choose the interface language. The tutorial, help and exports update instantly across offline saves.',
+          'Switch languages now—the tutorial, help and exports update instantly across offline saves.',
         offlineSummary:
-          'Cine Power Planner runs entirely offline with an installable mobile PWA—bringing the same safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.',
+          'Install the Cine Power Planner PWA to mirror safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.',
       },
     },
     userProfile: {
@@ -1657,7 +1661,7 @@
       if (fallbackValue) {
         return fallbackValue;
       }
-      return 'Preface';
+      return 'Step 1';
     })();
 
     return {
@@ -2278,7 +2282,7 @@
     if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
       return tourTexts.prefaceIndicator.trim();
     }
-    return 'Preface';
+    return 'Step 1';
   }
 
   function focusCard() {
