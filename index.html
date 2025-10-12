@@ -480,6 +480,24 @@
     <div id="diagramArea" role="img" aria-label="Project diagram" aria-describedby="diagramDesc">
       <div id="diagramPopup" class="diagram-popup"></div>
     </div>
+    <dialog
+      id="diagramDetailDialog"
+      class="app-modal diagram-detail-dialog"
+      aria-modal="true"
+      aria-labelledby="diagramDetailDialogHeading"
+    >
+      <div class="diagram-detail-dialog__inner">
+        <header class="diagram-detail-dialog__header">
+          <button
+            type="button"
+            id="diagramDetailDialogBack"
+            class="diagram-detail-dialog__back"
+          ></button>
+          <h2 id="diagramDetailDialogHeading" class="diagram-detail-dialog__title">Diagram details</h2>
+        </header>
+        <div id="diagramDetailDialogContent" class="diagram-detail-dialog__content"></div>
+      </div>
+    </dialog>
     <div id="diagramLegend" class="diagram-legend"></div>
     <div class="diagram-controls">
       <button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out">
