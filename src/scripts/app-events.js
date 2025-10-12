@@ -2581,7 +2581,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     callEventsCoreFunction('setLensMounts', [
       Array.isArray(deviceData.lensMount) ? deviceData.lensMount : [],
     ]);
-    setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
+    callEventsCoreFunction(
+      'setPowerDistribution',
+      [deviceData.power?.powerDistributionOutputs || []],
+      { defer: true }
+    );
     setVideoOutputs(deviceData.videoOutputs || []);
     setFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
@@ -2906,7 +2910,7 @@ addSafeEventListener(newCategorySelect, "change", () => {
   if (lensFocusScaleSelect) {
     lensFocusScaleSelect.value = '';
   }
-  clearPowerDistribution();
+  callEventsCoreFunction('clearPowerDistribution', [], { defer: true });
   clearVideoOutputs();
   clearFizConnectors();
   clearViewfinders();
