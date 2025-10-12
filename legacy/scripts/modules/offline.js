@@ -490,18 +490,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  function fallbackFreezeDeep(value) {
-    var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
+  function fallbackResolveSeenTracker(seen) {
+    if (seen && typeof seen.has === 'function' && typeof seen.add === 'function') {
+      return seen;
+    }
+    if (Array.isArray(seen)) {
+      return {
+        has: function has(value) {
+          return seen.indexOf(value) !== -1;
+        },
+        add: function add(value) {
+          if (seen.indexOf(value) === -1) {
+            seen.push(value);
+          }
+        }
+      };
+    }
+    if (typeof WeakSet === 'function') {
+      try {
+        return new WeakSet();
+      } catch (trackerError) {
+        void trackerError;
+      }
+    }
+    var tracked = [];
+    return {
+      has: function has(value) {
+        return tracked.indexOf(value) !== -1;
+      },
+      add: function add(value) {
+        if (tracked.indexOf(value) === -1) {
+          tracked.push(value);
+        }
+      }
+    };
+  }
+  function fallbackFreezeDeep(value, seen) {
     if (!value || _typeof(value) !== 'object') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
       return value;
     }
-    if (seen.has(value)) {
+    var tracker = fallbackResolveSeenTracker(seen);
+    if (tracker.has(value)) {
       return value;
     }
-    seen.add(value);
+    tracker.add(value);
     var keys = Object.getOwnPropertyNames(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
@@ -515,7 +550,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
         continue;
       }
-      fallbackFreezeDeep(child, seen);
+      fallbackFreezeDeep(child, tracker);
     }
     try {
       return Object.freeze(value);
@@ -736,7 +771,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void abortError;
           }
         }
-      }
+      },
+      promise: warmupTask,
+      done: warmupTask
     };
   }
   function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateRejection) {
@@ -1936,8 +1973,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         clearUiCacheStorageEntriesFn,
         serviceWorkerCleanupPromise,
         cacheCleanupPromise,
+        warmupHandle,
+        resolveWarmupPromise,
+        wrapResultWithSource,
+        warmupPromise,
+        serviceWorkerResultLogged,
+        serviceWorkerResultPromiseRaw,
+        serviceWorkerResultPromise,
+        warmupResultPromise,
+        gatePromise,
         serviceWorkersUnregistered,
+        warmupFinishedBeforeReload,
+        serviceWorkerStatusKnown,
         serviceWorkerAwaitResult,
+        gateResult,
+        detail,
         reloadTriggered,
         reloadFn,
         cachesCleared,
@@ -2004,7 +2054,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }, _callee5, null, [[0, 2]]);
             }))();
-            scheduleReloadWarmup({
+            warmupHandle = scheduleReloadWarmup({
               window: win,
               navigator: options.navigator,
               fetch: options.fetch,
@@ -2013,28 +2063,99 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               cachePromise: cacheCleanupPromise,
               allowCache: true
             });
+            resolveWarmupPromise = function resolveWarmupPromise(handle) {
+              if (!handle || _typeof(handle) !== 'object') {
+                return null;
+              }
+              if (handle.promise && typeof handle.promise.then === 'function') {
+                return handle.promise;
+              }
+              if (handle.done && typeof handle.done.then === 'function') {
+                return handle.done;
+              }
+              return null;
+            };
+            wrapResultWithSource = function wrapResultWithSource(source, promise) {
+              if (!promise || typeof promise.then !== 'function') {
+                return Promise.resolve({
+                  source: source,
+                  value: promise,
+                  successful: true,
+                  error: null
+                });
+              }
+              return Promise.resolve(promise).then(function (value) {
+                return {
+                  source: source,
+                  value: value,
+                  successful: true,
+                  error: null
+                };
+              }).catch(function (error) {
+                return {
+                  source: source,
+                  value: undefined,
+                  successful: false,
+                  error: error
+                };
+              });
+            };
+            warmupPromise = resolveWarmupPromise(warmupHandle);
+            serviceWorkerResultLogged = false;
+            serviceWorkerResultPromiseRaw = wrapResultWithSource('serviceWorker', serviceWorkerCleanupPromise);
+            serviceWorkerResultPromise = serviceWorkerResultPromiseRaw.then(function (result) {
+              if (!result.successful && result.error && !serviceWorkerResultLogged) {
+                serviceWorkerResultLogged = true;
+                safeWarn('Service worker cleanup promise rejected', result.error);
+              }
+              return result;
+            });
+            warmupResultPromise = warmupPromise ? wrapResultWithSource('warmup', warmupPromise) : null;
+            gatePromise = warmupResultPromise ? Promise.race([serviceWorkerResultPromise, warmupResultPromise]) : serviceWorkerResultPromise;
             serviceWorkersUnregistered = false;
+            warmupFinishedBeforeReload = false;
+            serviceWorkerStatusKnown = false;
             _context6.p = 1;
             _context6.n = 2;
-            return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
-              safeWarn('Service worker cleanup timed out before reload, continuing anyway.', {
+            return awaitPromiseWithSoftTimeout(gatePromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
+              safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
                 timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
               });
             }, function (lateError) {
-              safeWarn('Service worker cleanup failed after reload triggered', lateError);
+              if (lateError && lateError.source === 'warmup') {
+                var _detail = lateError.error || lateError;
+                safeWarn('Reload warmup failed after reload triggered', _detail);
+                return;
+              }
+              var detail = lateError && lateError.error ? lateError.error : lateError;
+              safeWarn('Service worker cleanup failed after reload triggered', detail);
             });
           case 2:
             serviceWorkerAwaitResult = _context6.v;
             if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
-              serviceWorkersUnregistered = !!serviceWorkerAwaitResult.result;
+              gateResult = serviceWorkerAwaitResult.result;
+              if (gateResult && gateResult.source === 'serviceWorker') {
+                serviceWorkerStatusKnown = true;
+                if (gateResult.successful) {
+                  serviceWorkersUnregistered = !!gateResult.value;
+                } else if (!serviceWorkerResultLogged && gateResult.error) {
+                  serviceWorkerResultLogged = true;
+                  safeWarn('Service worker cleanup promise rejected', gateResult.error);
+                }
+              } else if (gateResult && gateResult.source === 'warmup') {
+                warmupFinishedBeforeReload = gateResult.successful && gateResult.value === true;
+                if (!gateResult.successful && gateResult.error) {
+                  safeWarn('Reload warmup promise rejected before reload triggered', gateResult.error);
+                }
+              }
             }
             _context6.n = 4;
             break;
           case 3:
             _context6.p = 3;
             _t0 = _context6.v;
-            safeWarn('Service worker cleanup promise rejected', _t0);
-            serviceWorkersUnregistered = false;
+            detail = _t0 && _t0.error ? _t0.error : _t0;
+            safeWarn('Reload preparation gate failed', detail);
           case 4:
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
@@ -2071,6 +2192,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return _context6.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
+              serviceWorkerStatusKnown: serviceWorkerStatusKnown,
+              warmupCompleted: warmupFinishedBeforeReload,
               cachesCleared: cachesCleared,
               reloadTriggered: reloadTriggered,
               navigationTriggered: reloadTriggered

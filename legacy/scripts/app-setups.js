@@ -104,8 +104,7 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
   var textLines = [];
   var labelSets = getProductionCompanyLabelSets(projectLabels);
   var knownLabelLines = new Set();
-  Object.keys(labelSets || {}).forEach(function (key) {
-    var set = labelSets[key];
+  Object.values(labelSets).forEach(function (set) {
     if (!set) return;
     set.forEach(function (value) {
       if (typeof value === 'string' && value) {
@@ -10650,14 +10649,9 @@ function gearListGenerateHtmlImpl() {
       if (index >= trimmed.length) {
         return trimmed;
       }
-      var separators = {
-        '—': true,
-        '–': true,
-        '-': true,
-        ':': true
-      };
+      var separators = new Set(['—', '–', '-', ':']);
       var usedSeparator = false;
-      if (separators[trimmed[index]]) {
+      if (separators.has(trimmed[index])) {
         index += 1;
         usedSeparator = true;
       }
@@ -10675,7 +10669,7 @@ function gearListGenerateHtmlImpl() {
       var source = value.trim();
       if (!source) return '';
       var isQuoteChar = function isQuoteChar(char) {
-        return char === '"' || char === "'" || char === '“' || char === '”' || char === '‚' || char === '‘' || char === '’';
+        return char === '"' || char === '\'' || char === '“' || char === '”' || char === '‚' || char === '‘' || char === '’';
       };
       var start = 0;
       var end = source.length;

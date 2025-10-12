@@ -7511,10 +7511,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
     }
     if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
-      var streetParts = collected.productionCompanyStreet;
-      result.productionCompanyStreet = streetParts[0];
-      if (streetParts.length > 1) {
-        result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+      var streetLines = collected.productionCompanyStreet;
+      result.productionCompanyStreet = streetLines[0];
+      if (streetLines.length > 1) {
+        result.productionCompanyStreet2 = streetLines.slice(1).join('\n');
       }
     }
     if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
@@ -7685,7 +7685,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var boxHtml = match[0];
       var fieldMatch = boxHtml.match(/data-field=["']([^"']+)["']/i);
       var labelMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-label[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
-    var valueMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-value[^"']*["'][^>]*>([\s\S]*)<\/span\s*>/i);
+      var valueMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-value[^"']*["'][^>]*>([\s\S]*)<\/span\s*>/i);
       var rawField = fieldMatch ? fieldMatch[1].trim() : '';
       var label = labelMatch ? decodeHtmlEntities(stripHtmlTags(labelMatch[1])) : '';
       var fieldName = rawField || mapLegacyRequirementLabel(label);
@@ -7836,6 +7836,68 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var normalized = {};
+    var fallbackLensNames = [];
+    var fallbackLensNameSet = new Set();
+    var addFallbackLensName = function addFallbackLensName(name) {
+      if (typeof name !== 'string') {
+        return;
+      }
+      var trimmed = name.trim();
+      if (!trimmed || fallbackLensNameSet.has(trimmed)) {
+        return;
+      }
+      fallbackLensNameSet.add(trimmed);
+      fallbackLensNames.push(trimmed);
+    };
+    var _registerFallbackLensNames = function registerFallbackLensNames(source) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      if (source === null || source === undefined) {
+        return;
+      }
+      if (options.fromSelections) {
+        var entries = Array.isArray(source) ? source : [source];
+        entries.forEach(function (entry) {
+          if (isMapLike(entry)) {
+            var converted = convertMapLikeToObject(entry);
+            if (converted) {
+              _registerFallbackLensNames(converted, {
+                fromSelections: true
+              });
+              return;
+            }
+          }
+          if (isPlainObject(entry)) {
+            var mapped = deriveLensSelectionsFromNameMap(entry);
+            if (mapped.length) {
+              mapped.forEach(function (selection) {
+                if (selection && typeof selection.name === 'string') {
+                  addFallbackLensName(selection.name);
+                }
+              });
+              return;
+            }
+          }
+          var candidate = normalizeProjectLensNameCandidate(entry);
+          if (candidate) {
+            addFallbackLensName(candidate);
+          }
+        });
+        return;
+      }
+      var names = extractLensNamesFromSource(source);
+      if (!names.length) {
+        return;
+      }
+      names.forEach(function (name) {
+        addFallbackLensName(name);
+      });
+    };
+    _registerFallbackLensNames(info.lenses);
+    if (Object.prototype.hasOwnProperty.call(info, 'lensSelections')) {
+      _registerFallbackLensNames(info.lensSelections, {
+        fromSelections: true
+      });
+    }
     Object.entries(info).forEach(function (_ref19) {
       var _ref20 = _slicedToArray(_ref19, 2),
         key = _ref20[0],
@@ -7850,11 +7912,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         return;
       }
+      if (key === 'lenses') {
+        var _normalizeProjectLens = normalizeProjectLensNamesField(raw),
+          names = _normalizeProjectLens.names;
+        normalized.lenses = names.slice();
+        return;
+      }
+      if (key === 'lensSelections') {
+        var result = normalizeProjectLensSelectionsFromSources(raw, fallbackLensNames);
+        if (result.selections && result.selections.length) {
+          normalized.lensSelections = result.selections;
+        }
+        return;
+      }
       var value = sanitizeImportedValue(raw);
       if (value !== null && value !== undefined) {
         normalized[key] = value;
       }
     });
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'lenses') && fallbackLensNames.length) {
+      normalized.lenses = fallbackLensNames.slice();
+    }
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'lensSelections') && fallbackLensNames.length) {
+      var derived = normalizeProjectLensSelectionsFromSources([], fallbackLensNames);
+      if (derived.selections && derived.selections.length) {
+        normalized.lensSelections = derived.selections;
+      }
+    }
     if (!Object.keys(normalized).length) {
       return null;
     }
@@ -8296,6 +8380,598 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       batteryHotswap: normalized.batteryHotswap
     };
   }
+  var LEGACY_LENS_SELECTION_META_KEYS = new Set(['name', 'lensname', 'label', 'title', 'text', 'lens', 'mount', 'mountlabel', 'mountname', 'mounts', 'note', 'notes', 'names', 'values', 'selection', 'legacyvalue', 'lensselections', 'selections', 'entries', 'items', 'options', 'meta', 'metadata', 'count', 'version', 'length', 'size', 'updated', 'created', 'createdat', 'timestamp', 'id', 'uuid', 'key', 'value']);
+  function isLikelyLensNameKey(key) {
+    if (typeof key !== 'string') {
+      return false;
+    }
+    var trimmed = key.trim();
+    if (!trimmed) {
+      return false;
+    }
+    if (/^[0-9]+$/.test(trimmed)) {
+      return false;
+    }
+    var normalized = trimmed.toLowerCase();
+    if (normalized.startsWith('__proto__')) {
+      return false;
+    }
+    if (normalized === 'prototype' || normalized === 'constructor') {
+      return false;
+    }
+    if (LEGACY_LENS_SELECTION_META_KEYS.has(normalized)) {
+      return false;
+    }
+    return true;
+  }
+  function deriveLensNameKeysFromObject(value) {
+    if (!isPlainObject(value)) {
+      return [];
+    }
+    var keys = Object.keys(value);
+    var result = [];
+    keys.forEach(function (key) {
+      if (!isLikelyLensNameKey(key)) {
+        return;
+      }
+      var trimmed = key.trim();
+      if (trimmed) {
+        result.push(trimmed);
+      }
+    });
+    return result;
+  }
+  function normalizeProjectLensNameCandidate(value) {
+    if (value === null || value === undefined) {
+      return '';
+    }
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+      var stringValue = typeof value === 'string' ? value : String(value);
+      var trimmed = stringValue.trim();
+      return trimmed;
+    }
+    if (Array.isArray(value)) {
+      for (var index = 0; index < value.length; index += 1) {
+        var candidate = normalizeProjectLensNameCandidate(value[index]);
+        if (candidate) {
+          return candidate;
+        }
+      }
+      return '';
+    }
+    if (isMapLike(value)) {
+      var converted = convertMapLikeToObject(value);
+      if (converted) {
+        return normalizeProjectLensNameCandidate(converted);
+      }
+    }
+    if (isPlainObject(value)) {
+      var nameCandidates = [value.name, value.lensName, value.label, value.title, value.text, value.lens];
+      for (var _index6 = 0; _index6 < nameCandidates.length; _index6 += 1) {
+        var _candidate3 = nameCandidates[_index6];
+        if (typeof _candidate3 === 'string') {
+          var _trimmed = _candidate3.trim();
+          if (_trimmed) {
+            return _trimmed;
+          }
+        }
+      }
+      var keyDerivedNames = deriveLensNameKeysFromObject(value);
+      if (keyDerivedNames.length) {
+        return keyDerivedNames[0];
+      }
+      if (Array.isArray(value.names) && value.names.length) {
+        var nestedName = normalizeProjectLensNameCandidate(value.names[0]);
+        if (nestedName) {
+          return nestedName;
+        }
+      }
+      if (Array.isArray(value.values) && value.values.length) {
+        var nestedValue = normalizeProjectLensNameCandidate(value.values[0]);
+        if (nestedValue) {
+          return nestedValue;
+        }
+      }
+      var nestedEntries = Object.values(value);
+      for (var _index7 = 0; _index7 < nestedEntries.length; _index7 += 1) {
+        var nested = normalizeProjectLensNameCandidate(nestedEntries[_index7]);
+        if (nested) {
+          return nested;
+        }
+      }
+    }
+    return '';
+  }
+  function extractLensNamesFromSource(value) {
+    if (value === null || value === undefined) {
+      return [];
+    }
+    if (Array.isArray(value)) {
+      var names = [];
+      value.forEach(function (entry) {
+        if (entry === null || entry === undefined) {
+          return;
+        }
+        if (typeof entry === 'string') {
+          var parsed = tryParseJSONLike(entry);
+          if (parsed.success) {
+            names.push.apply(names, _toConsumableArray(extractLensNamesFromSource(parsed.parsed)));
+            return;
+          }
+          var trimmed = entry.trim();
+          if (trimmed) {
+            names.push(trimmed);
+          }
+          return;
+        }
+        if (typeof entry === 'number' || typeof entry === 'boolean' || typeof entry === 'bigint') {
+          names.push(String(entry));
+          return;
+        }
+        var normalized = normalizeProjectLensNameCandidate(entry);
+        if (normalized) {
+          names.push(normalized);
+          return;
+        }
+        if (Array.isArray(entry)) {
+          names.push.apply(names, _toConsumableArray(extractLensNamesFromSource(entry)));
+          return;
+        }
+        if (isMapLike(entry)) {
+          var converted = convertMapLikeToObject(entry);
+          if (converted) {
+            names.push.apply(names, _toConsumableArray(extractLensNamesFromSource(converted)));
+          }
+          return;
+        }
+        if (isPlainObject(entry)) {
+          names.push.apply(names, _toConsumableArray(extractLensNamesFromSource(Object.values(entry))));
+        }
+      });
+      return names;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+      return [String(value)];
+    }
+    if (typeof value === 'string') {
+      var parsed = tryParseJSONLike(value);
+      if (parsed.success) {
+        return extractLensNamesFromSource(parsed.parsed);
+      }
+      return value.split(/[\n,;]/).map(function (part) {
+        return part.trim();
+      }).filter(function (part) {
+        return part;
+      });
+    }
+    if (isMapLike(value)) {
+      var converted = convertMapLikeToObject(value);
+      if (converted) {
+        return extractLensNamesFromSource(converted);
+      }
+    }
+    if (isPlainObject(value)) {
+      var keyNames = deriveLensNameKeysFromObject(value);
+      if (keyNames.length) {
+        return keyNames;
+      }
+      var direct = normalizeProjectLensNameCandidate(value);
+      if (direct) {
+        return [direct];
+      }
+      var collected = [];
+      if (Array.isArray(value.names)) {
+        collected.push.apply(collected, _toConsumableArray(extractLensNamesFromSource(value.names)));
+      }
+      if (Array.isArray(value.values)) {
+        collected.push.apply(collected, _toConsumableArray(extractLensNamesFromSource(value.values)));
+      }
+      if (!collected.length) {
+        collected.push.apply(collected, _toConsumableArray(extractLensNamesFromSource(Object.values(value))));
+      }
+      return collected;
+    }
+    return [];
+  }
+  function normalizeProjectLensNamesField(value) {
+    var names = extractLensNamesFromSource(value);
+    var isNormalized = Array.isArray(value) && value.length === names.length && value.every(function (entry, index) {
+      return typeof entry === 'string' && entry.trim() === names[index];
+    });
+    return {
+      names: names,
+      changed: !isNormalized
+    };
+  }
+  function normalizeProjectLensSelectionEntry(entry) {
+    if (entry === null || entry === undefined) {
+      return {
+        selection: null,
+        changed: false
+      };
+    }
+    if (typeof entry === 'string' || typeof entry === 'number' || typeof entry === 'boolean' || typeof entry === 'bigint') {
+      var name = normalizeProjectLensNameCandidate(entry);
+      if (!name) {
+        return {
+          selection: null,
+          changed: true
+        };
+      }
+      return {
+        selection: {
+          name: name,
+          mount: ''
+        },
+        changed: true
+      };
+    }
+    if (isMapLike(entry)) {
+      var converted = convertMapLikeToObject(entry);
+      if (converted) {
+        return normalizeProjectLensSelectionEntry(converted);
+      }
+    }
+    if (Array.isArray(entry)) {
+      if (!entry.length) {
+        return {
+          selection: null,
+          changed: true
+        };
+      }
+      var _name = normalizeProjectLensNameCandidate(entry[0]);
+      if (!_name) {
+        return {
+          selection: null,
+          changed: true
+        };
+      }
+      var mountValue = entry.length > 1 ? entry[1] : '';
+      var mount = typeof mountValue === 'string' ? mountValue.trim() : '';
+      var normalized = {
+        name: _name
+      };
+      normalized.mount = mount || '';
+      return {
+        selection: normalized,
+        changed: true
+      };
+    }
+    if (isPlainObject(entry)) {
+      var _normalized2 = _objectSpread({}, entry);
+      var changed = false;
+      var _name2 = normalizeProjectLensNameCandidate(entry);
+      if (!_name2) {
+        return {
+          selection: null,
+          changed: true
+        };
+      }
+      if (_normalized2.name !== _name2) {
+        _normalized2.name = _name2;
+        changed = true;
+      }
+      if (!Object.prototype.hasOwnProperty.call(_normalized2, 'name')) {
+        _normalized2.name = _name2;
+        changed = true;
+      }
+      var mountCandidates = [];
+      if (typeof entry.mount === 'string') {
+        mountCandidates.push(entry.mount);
+      }
+      if (typeof entry.mountLabel === 'string') {
+        mountCandidates.push(entry.mountLabel);
+      }
+      if (typeof entry.mountName === 'string') {
+        mountCandidates.push(entry.mountName);
+      }
+      if (Array.isArray(entry.mounts)) {
+        for (var index = 0; index < entry.mounts.length; index += 1) {
+          var candidate = entry.mounts[index];
+          if (typeof candidate === 'string' && candidate.trim()) {
+            mountCandidates.push(candidate);
+            break;
+          }
+        }
+      }
+      var _mount = '';
+      for (var _index8 = 0; _index8 < mountCandidates.length; _index8 += 1) {
+        var _candidate4 = mountCandidates[_index8];
+        if (typeof _candidate4 === 'string') {
+          var trimmed = _candidate4.trim();
+          if (trimmed) {
+            _mount = trimmed;
+            break;
+          }
+        }
+      }
+      if (typeof _normalized2.mount === 'string') {
+        var trimmedMount = _normalized2.mount.trim();
+        if (trimmedMount !== _normalized2.mount) {
+          _normalized2.mount = trimmedMount;
+          changed = true;
+        }
+        if (!_mount && trimmedMount) {
+          _mount = trimmedMount;
+        }
+      }
+      if (!_mount) {
+        _mount = '';
+      }
+      if (_normalized2.mount !== _mount) {
+        _normalized2.mount = _mount;
+        changed = true;
+      }
+      if (!Object.prototype.hasOwnProperty.call(_normalized2, 'mount')) {
+        _normalized2.mount = _mount;
+        changed = true;
+      }
+      return {
+        selection: _normalized2,
+        changed: changed
+      };
+    }
+    return {
+      selection: null,
+      changed: true
+    };
+  }
+  function deriveLensSelectionsFromNameMap(source) {
+    if (!isPlainObject(source)) {
+      return [];
+    }
+    var directNameCandidates = [source.name, source.lensName, source.label, source.title, source.text, source.lens];
+    for (var index = 0; index < directNameCandidates.length; index += 1) {
+      var candidate = directNameCandidates[index];
+      if (typeof candidate === 'string' && candidate.trim()) {
+        return [];
+      }
+    }
+    var derived = [];
+    Object.entries(source).forEach(function (_ref27) {
+      var _ref28 = _slicedToArray(_ref27, 2),
+        rawKey = _ref28[0],
+        rawValue = _ref28[1];
+      if (!isLikelyLensNameKey(rawKey)) {
+        return;
+      }
+      var name = rawKey.trim();
+      if (!name) {
+        return;
+      }
+      var value = rawValue;
+      if (isMapLike(value)) {
+        var converted = convertMapLikeToObject(value);
+        if (converted) {
+          value = converted;
+        }
+      }
+      if (isPlainObject(value)) {
+        var selection = _objectSpread({}, value);
+        selection.name = name;
+        var _mount2 = '';
+        var mountFields = ['mount', 'mountLabel', 'mountName'];
+        for (var _index9 = 0; _index9 < mountFields.length; _index9 += 1) {
+          var field = mountFields[_index9];
+          if (typeof selection[field] !== 'string') {
+            continue;
+          }
+          var _candidate5 = selection[field].trim();
+          if (_candidate5 && _candidate5.toLowerCase() !== name.toLowerCase()) {
+            _mount2 = _candidate5;
+            break;
+          }
+        }
+        if (!_mount2 && Array.isArray(selection.mounts)) {
+          var _candidate6 = normalizeProjectLensNameCandidate(selection.mounts);
+          if (_candidate6 && _candidate6.toLowerCase() !== name.toLowerCase()) {
+            _mount2 = _candidate6;
+          }
+        }
+        selection.mount = typeof _mount2 === 'string' ? _mount2 : '';
+        derived.push(selection);
+        return;
+      }
+      if (Array.isArray(value)) {
+        var _candidate7 = normalizeProjectLensNameCandidate(value);
+        var _mount3 = _candidate7 && _candidate7.toLowerCase() !== name.toLowerCase() ? _candidate7 : '';
+        derived.push({
+          name: name,
+          mount: _mount3
+        });
+        return;
+      }
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+        var _candidate8 = normalizeProjectLensNameCandidate(value);
+        var _mount4 = _candidate8 && _candidate8.toLowerCase() !== name.toLowerCase() ? _candidate8 : '';
+        derived.push({
+          name: name,
+          mount: _mount4
+        });
+        return;
+      }
+      if (value === null || value === undefined) {
+        derived.push({
+          name: name,
+          mount: ''
+        });
+        return;
+      }
+      var fallback = normalizeProjectLensNameCandidate(value);
+      var mount = fallback && fallback.toLowerCase() !== name.toLowerCase() ? fallback : '';
+      derived.push({
+        name: name,
+        mount: mount
+      });
+    });
+    return derived;
+  }
+  function normalizeProjectLensSelectionsFromSources(sources) {
+    var fallbackNames = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var sourceList = Array.isArray(sources) ? sources : [sources];
+    var normalized = [];
+    var seenNames = new Set();
+    var changed = false;
+    var addSelection = function addSelection(selection, entryChanged) {
+      if (!selection || _typeof(selection) !== 'object') {
+        if (entryChanged) {
+          changed = true;
+        }
+        return;
+      }
+      var clone = _objectSpread({}, selection);
+      var rawName = typeof clone.name === 'string' ? clone.name : '';
+      var name = rawName.trim();
+      if (!name) {
+        if (entryChanged) {
+          changed = true;
+        }
+        return;
+      }
+      if (clone.name !== name) {
+        clone.name = name;
+        entryChanged = true;
+      }
+      var rawMount = typeof clone.mount === 'string' ? clone.mount : '';
+      var mount = rawMount.trim();
+      if (clone.mount !== mount) {
+        clone.mount = mount;
+        entryChanged = true;
+      }
+      if (!Object.prototype.hasOwnProperty.call(clone, 'mount')) {
+        clone.mount = mount;
+        entryChanged = true;
+      }
+      if (entryChanged) {
+        changed = true;
+      }
+      normalized.push(clone);
+      seenNames.add(name);
+    };
+    var _processSourceValue = function processSourceValue(source) {
+      if (source === null || source === undefined) {
+        return;
+      }
+      if (typeof source === 'string') {
+        var parsed = tryParseJSONLike(source);
+        if (parsed.success) {
+          _processSourceValue(parsed.parsed);
+          changed = true;
+          return;
+        }
+        var names = extractLensNamesFromSource(source);
+        if (names.length) {
+          names.forEach(function (name) {
+            addSelection({
+              name: name,
+              mount: ''
+            }, true);
+          });
+        } else {
+          changed = true;
+        }
+        return;
+      }
+      if (typeof source === 'number' || typeof source === 'boolean' || typeof source === 'bigint') {
+        addSelection({
+          name: String(source),
+          mount: ''
+        }, true);
+        return;
+      }
+      if (Array.isArray(source)) {
+        if (source.length && source.length <= 2 && (typeof source[0] === 'string' || typeof source[0] === 'number' || typeof source[0] === 'boolean' || typeof source[0] === 'bigint')) {
+          var _normalizeProjectLens2 = normalizeProjectLensSelectionEntry(source),
+            selection = _normalizeProjectLens2.selection,
+            entryChanged = _normalizeProjectLens2.changed;
+          if (selection) {
+            addSelection(selection, entryChanged);
+            return;
+          }
+        }
+        source.forEach(function (entry) {
+          var _normalizeProjectLens3 = normalizeProjectLensSelectionEntry(entry),
+            selection = _normalizeProjectLens3.selection,
+            entryChanged = _normalizeProjectLens3.changed;
+          if (selection) {
+            addSelection(selection, entryChanged);
+          } else if (entryChanged) {
+            changed = true;
+          }
+        });
+        return;
+      }
+      if (isMapLike(source)) {
+        var converted = convertMapLikeToObject(source);
+        if (converted) {
+          _processSourceValue(converted);
+          changed = true;
+        }
+        return;
+      }
+      if (isPlainObject(source)) {
+        var mappedSelections = deriveLensSelectionsFromNameMap(source);
+        if (mappedSelections.length) {
+          mappedSelections.forEach(function (entry) {
+            addSelection(entry, true);
+          });
+          return;
+        }
+        var _normalizeProjectLens4 = normalizeProjectLensSelectionEntry(source),
+          _selection = _normalizeProjectLens4.selection,
+          _entryChanged = _normalizeProjectLens4.changed;
+        if (_selection) {
+          addSelection(_selection, _entryChanged);
+          return;
+        }
+        var values = Object.values(source);
+        if (values.length) {
+          _processSourceValue(values);
+          changed = true;
+        }
+        return;
+      }
+      var fallbackName = normalizeProjectLensNameCandidate(source);
+      if (fallbackName) {
+        addSelection({
+          name: fallbackName,
+          mount: ''
+        }, true);
+      } else {
+        changed = true;
+      }
+    };
+    for (var index = 0; index < sourceList.length; index += 1) {
+      _processSourceValue(sourceList[index]);
+    }
+    if (Array.isArray(fallbackNames)) {
+      fallbackNames.forEach(function (rawName) {
+        if (typeof rawName !== 'string') {
+          return;
+        }
+        var name = rawName.trim();
+        if (!name || seenNames.has(name)) {
+          return;
+        }
+        normalized.push({
+          name: name,
+          mount: ''
+        });
+        seenNames.add(name);
+        changed = true;
+      });
+    }
+    if (!normalized.length) {
+      return {
+        selections: null,
+        changed: changed
+      };
+    }
+    return {
+      selections: normalized,
+      changed: changed
+    };
+  }
   function normalizeProject(data) {
     var restored = restoreCompressedProjectEntry(data);
     if (restored.restored) {
@@ -8453,7 +9129,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (normalizedProjectInfo) {
           normalizeImportedProjectFilters(normalizedProjectInfo);
         }
-        var _normalized2 = {
+        var _normalized3 = {
           gearList: Array.isArray(normalizedGearList) || isPlainObject(normalizedGearList) ? cloneProjectData(normalizedGearList) : normalizedGearList,
           projectInfo: normalizedProjectInfo ? cloneProjectInfo(normalizedProjectInfo) : null
         };
@@ -8464,7 +9140,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           normalizedDiagramPositions = normalizeDiagramPositions(nestedDiagramSource);
         }
         if (Object.keys(normalizedDiagramPositions).length) {
-          _normalized2.diagramPositions = cloneDiagramPositionsForStorage(normalizedDiagramPositions);
+          _normalized3.diagramPositions = cloneDiagramPositionsForStorage(normalizedDiagramPositions);
         }
         var htmlSources = [];
         if (typeof data.projectHtml === 'string') {
@@ -8513,7 +9189,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           for (var i = 0; i < htmlSources.length; i += 1) {
             var recovered = extractProjectInfoFromHtml(htmlSources[i]);
             if (recovered) {
-              _normalized2.projectInfo = cloneProjectInfo(recovered);
+              _normalized3.projectInfo = cloneProjectInfo(recovered);
               break;
             }
           }
@@ -8523,59 +9199,179 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (_recovered) {
               var recoveredClone = cloneProjectInfo(_recovered) || {};
               var normalizedClone = cloneProjectInfo(normalizedProjectInfo) || {};
-              _normalized2.projectInfo = _objectSpread(_objectSpread({}, recoveredClone), normalizedClone);
+              _normalized3.projectInfo = _objectSpread(_objectSpread({}, recoveredClone), normalizedClone);
               break;
             }
           }
         }
+        var fallbackLensNames = [];
+        var fallbackLensNameSet = new Set();
+        var addFallbackLensName = function addFallbackLensName(name) {
+          if (typeof name !== 'string') {
+            return;
+          }
+          var trimmed = name.trim();
+          if (!trimmed || fallbackLensNameSet.has(trimmed)) {
+            return;
+          }
+          fallbackLensNameSet.add(trimmed);
+          fallbackLensNames.push(trimmed);
+        };
+        var _registerFallbackLensNames2 = function registerFallbackLensNames(source) {
+          var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+          if (source === null || source === undefined) {
+            return;
+          }
+          if (options.fromSelections) {
+            var entries = Array.isArray(source) ? source : [source];
+            entries.forEach(function (entry) {
+              if (isMapLike(entry)) {
+                var _converted = convertMapLikeToObject(entry);
+                if (_converted) {
+                  _registerFallbackLensNames2(_converted, {
+                    fromSelections: true
+                  });
+                  return;
+                }
+              }
+              if (isPlainObject(entry)) {
+                var mapped = deriveLensSelectionsFromNameMap(entry);
+                if (mapped.length) {
+                  mapped.forEach(function (selection) {
+                    if (selection && typeof selection.name === 'string') {
+                      addFallbackLensName(selection.name);
+                    }
+                  });
+                  return;
+                }
+              }
+              var candidate = normalizeProjectLensNameCandidate(entry);
+              if (candidate) {
+                addFallbackLensName(candidate);
+              }
+            });
+            return;
+          }
+          var names = extractLensNamesFromSource(source);
+          if (!names.length) {
+            return;
+          }
+          names.forEach(function (name) {
+            addFallbackLensName(name);
+          });
+        };
+        if (_normalized3.projectInfo && Object.prototype.hasOwnProperty.call(_normalized3.projectInfo, 'lenses')) {
+          var _normalizeProjectLens5 = normalizeProjectLensNamesField(_normalized3.projectInfo.lenses),
+            names = _normalizeProjectLens5.names;
+          _normalized3.projectInfo = _normalized3.projectInfo && _typeof(_normalized3.projectInfo) === 'object' ? _normalized3.projectInfo : {};
+          _normalized3.projectInfo.lenses = names.slice();
+          _registerFallbackLensNames2(names);
+        }
+        _registerFallbackLensNames2(data.lenses);
+        if (isPlainObject(projectContainer)) {
+          _registerFallbackLensNames2(projectContainer.lenses);
+        }
+        _registerFallbackLensNames2(gearListSource && gearListSource.lenses);
+        if (isPlainObject(normalizedGearList)) {
+          _registerFallbackLensNames2(normalizedGearList.lenses);
+        }
+        if ((!_normalized3.projectInfo || !Array.isArray(_normalized3.projectInfo.lenses) || !_normalized3.projectInfo.lenses.length) && fallbackLensNames.length) {
+          _normalized3.projectInfo = _normalized3.projectInfo && _typeof(_normalized3.projectInfo) === 'object' ? _normalized3.projectInfo : {};
+          _normalized3.projectInfo.lenses = fallbackLensNames.slice();
+        }
+        var lensSelectionSources = [];
+        if (_normalized3.projectInfo && Object.prototype.hasOwnProperty.call(_normalized3.projectInfo, 'lensSelections')) {
+          _registerFallbackLensNames2(_normalized3.projectInfo.lensSelections, {
+            fromSelections: true
+          });
+          lensSelectionSources.push(_normalized3.projectInfo.lensSelections);
+        }
+        if (Object.prototype.hasOwnProperty.call(data, 'lensSelections')) {
+          _registerFallbackLensNames2(data.lensSelections, {
+            fromSelections: true
+          });
+          lensSelectionSources.push(data.lensSelections);
+        }
+        if (isPlainObject(projectContainer) && Object.prototype.hasOwnProperty.call(projectContainer, 'lensSelections')) {
+          _registerFallbackLensNames2(projectContainer.lensSelections, {
+            fromSelections: true
+          });
+          lensSelectionSources.push(projectContainer.lensSelections);
+        }
+        if (isPlainObject(gearListSource) && Object.prototype.hasOwnProperty.call(gearListSource, 'lensSelections')) {
+          _registerFallbackLensNames2(gearListSource.lensSelections, {
+            fromSelections: true
+          });
+          lensSelectionSources.push(gearListSource.lensSelections);
+        }
+        if (isPlainObject(normalizedGearList) && Object.prototype.hasOwnProperty.call(normalizedGearList, 'lensSelections')) {
+          _registerFallbackLensNames2(normalizedGearList.lensSelections, {
+            fromSelections: true
+          });
+          lensSelectionSources.push(normalizedGearList.lensSelections);
+        }
+        var lensSelectionResult = normalizeProjectLensSelectionsFromSources(lensSelectionSources, fallbackLensNames);
+        if (lensSelectionResult && lensSelectionResult.selections && lensSelectionResult.selections.length) {
+          _normalized3.projectInfo = _normalized3.projectInfo && _typeof(_normalized3.projectInfo) === 'object' ? _normalized3.projectInfo : {};
+          _normalized3.projectInfo.lensSelections = lensSelectionResult.selections;
+          if (!Array.isArray(_normalized3.projectInfo.lenses) || !_normalized3.projectInfo.lenses.length) {
+            _normalized3.projectInfo.lenses = lensSelectionResult.selections.map(function (entry) {
+              return typeof entry.name === 'string' ? entry.name : '';
+            }).filter(function (name) {
+              return name;
+            });
+          }
+        } else if (lensSelectionResult && lensSelectionResult.changed && _normalized3.projectInfo && Object.prototype.hasOwnProperty.call(_normalized3.projectInfo, 'lensSelections')) {
+          delete _normalized3.projectInfo.lensSelections;
+        }
         var derivedGenerationFlag = typeof data.gearListAndProjectRequirementsGenerated === 'boolean' ? data.gearListAndProjectRequirementsGenerated : htmlSources.some(function (value) {
           return typeof value === 'string' && value.trim();
         });
-        _normalized2.gearListAndProjectRequirementsGenerated = derivedGenerationFlag;
+        _normalized3.gearListAndProjectRequirementsGenerated = derivedGenerationFlag;
         if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
-          _normalized2.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
+          _normalized3.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
         }
         if (normalizedGearSelectors && Object.keys(normalizedGearSelectors).length) {
-          _normalized2.gearSelectors = normalizedGearSelectors;
+          _normalized3.gearSelectors = normalizedGearSelectors;
         }
         if (normalizedPowerSelection) {
-          _normalized2.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
+          _normalized3.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
         }
-        copyAutoBackupMetadata(data, _normalized2);
-        if (_normalized2.projectInfo) {
-          normalizeImportedProjectFilters(_normalized2.projectInfo);
+        copyAutoBackupMetadata(data, _normalized3);
+        if (_normalized3.projectInfo) {
+          normalizeImportedProjectFilters(_normalized3.projectInfo);
         }
-        if (_normalized2.projectInfo) {
-          var normalizedInfo = normalizeLegacyLongGopStructure(_normalized2.projectInfo);
-          if (normalizedInfo !== _normalized2.projectInfo) {
-            _normalized2.projectInfo = normalizedInfo;
+        if (_normalized3.projectInfo) {
+          var normalizedInfo = normalizeLegacyLongGopStructure(_normalized3.projectInfo);
+          if (normalizedInfo !== _normalized3.projectInfo) {
+            _normalized3.projectInfo = normalizedInfo;
           }
         }
-        if (_normalized2.autoGearRules) {
-          var normalizedRules = normalizeLegacyLongGopStructure(_normalized2.autoGearRules);
-          if (normalizedRules !== _normalized2.autoGearRules) {
-            _normalized2.autoGearRules = normalizedRules;
+        if (_normalized3.autoGearRules) {
+          var normalizedRules = normalizeLegacyLongGopStructure(_normalized3.autoGearRules);
+          if (normalizedRules !== _normalized3.autoGearRules) {
+            _normalized3.autoGearRules = normalizedRules;
           }
         }
-        if (_normalized2.gearSelectors) {
-          var normalizedSelectors = normalizeLegacyLongGopStructure(_normalized2.gearSelectors);
-          if (normalizedSelectors !== _normalized2.gearSelectors) {
-            _normalized2.gearSelectors = normalizedSelectors;
+        if (_normalized3.gearSelectors) {
+          var normalizedSelectors = normalizeLegacyLongGopStructure(_normalized3.gearSelectors);
+          if (normalizedSelectors !== _normalized3.gearSelectors) {
+            _normalized3.gearSelectors = normalizedSelectors;
           }
         }
-        if (_normalized2.diagramPositions) {
-          var normalizedDiagram = normalizeLegacyLongGopStructure(_normalized2.diagramPositions);
-          if (normalizedDiagram !== _normalized2.diagramPositions) {
-            _normalized2.diagramPositions = normalizedDiagram;
+        if (_normalized3.diagramPositions) {
+          var normalizedDiagram = normalizeLegacyLongGopStructure(_normalized3.diagramPositions);
+          if (normalizedDiagram !== _normalized3.diagramPositions) {
+            _normalized3.diagramPositions = normalizedDiagram;
           }
         }
-        if (_normalized2.powerSelection) {
-          var normalizedPower = normalizeLegacyLongGopStructure(_normalized2.powerSelection);
-          if (normalizedPower !== _normalized2.powerSelection) {
-            _normalized2.powerSelection = normalizedPower;
+        if (_normalized3.powerSelection) {
+          var normalizedPower = normalizeLegacyLongGopStructure(_normalized3.powerSelection);
+          if (normalizedPower !== _normalized3.powerSelection) {
+            _normalized3.powerSelection = normalizedPower;
           }
         }
-        return _normalized2;
+        return _normalized3;
       }
       if (Object.prototype.hasOwnProperty.call(data, "projectHtml") || Object.prototype.hasOwnProperty.call(data, "gearHtml")) {
         return {
@@ -8735,13 +9531,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function readAllProjectsFromStorage() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref27 = options || {},
-      _ref27$forceRefresh = _ref27.forceRefresh,
-      forceRefresh = _ref27$forceRefresh === void 0 ? false : _ref27$forceRefresh,
-      _ref27$forMutation = _ref27.forMutation,
-      forMutation = _ref27$forMutation === void 0 ? false : _ref27$forMutation,
-      _ref27$skipAutoBackup = _ref27.skipAutoBackupExpansion,
-      skipAutoBackupExpansion = _ref27$skipAutoBackup === void 0 ? false : _ref27$skipAutoBackup;
+    var _ref29 = options || {},
+      _ref29$forceRefresh = _ref29.forceRefresh,
+      forceRefresh = _ref29$forceRefresh === void 0 ? false : _ref29$forceRefresh,
+      _ref29$forMutation = _ref29.forMutation,
+      forMutation = _ref29$forMutation === void 0 ? false : _ref29$forMutation,
+      _ref29$skipAutoBackup = _ref29.skipAutoBackupExpansion,
+      skipAutoBackupExpansion = _ref29$skipAutoBackup === void 0 ? false : _ref29$skipAutoBackup;
     applyLegacyStorageMigrations();
     var shouldUseCache = !skipAutoBackupExpansion;
     if (shouldUseCache && !forceRefresh) {
@@ -8882,10 +9678,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return LEGACY_PROJECT_ROOT_KEYS.has(key);
     });
     if (maybeLegacy) {
-      var _normalized3 = normalizeProject(expandedParsed);
-      if (_normalized3) {
+      var _normalized4 = normalizeProject(expandedParsed);
+      if (_normalized4) {
         var _updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
-        projects[_updatedName] = _normalized3;
+        projects[_updatedName] = _normalized4;
         registerLookupKey("", _updatedName);
         markProjectNameUsed(_updatedName);
       }
@@ -8941,9 +9737,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function persistAllProjects(projects) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref28 = options || {},
-      _ref28$skipCompressio = _ref28.skipCompression,
-      skipCompression = _ref28$skipCompressio === void 0 ? false : _ref28$skipCompressio;
+    var _ref30 = options || {},
+      _ref30$skipCompressio = _ref30.skipCompression,
+      skipCompression = _ref30$skipCompressio === void 0 ? false : _ref30$skipCompressio;
     var safeStorage = getSafeLocalStorage();
     enforceAutoBackupLimits(projects);
     var serializedProjects = serializeAutoBackupEntries(projects, {
@@ -9086,8 +9882,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       console.warn('Unable to deep clone project for backup', error);
       var fallback = _objectSpread({}, entry);
-      var _normalized4 = normalizeLegacyLongGopStructure(fallback);
-      return _normalized4 !== fallback ? _normalized4 : fallback;
+      var _normalized5 = normalizeLegacyLongGopStructure(fallback);
+      return _normalized5 !== fallback ? _normalized5 : fallback;
     }
   }
   function maybeCreateProjectDeletionBackup(projects, key) {
@@ -9474,9 +10270,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var _importProject = ensureImporter();
       var count = 0;
-      entries.forEach(function (_ref29) {
-        var name = _ref29.name,
-          project = _ref29.project;
+      entries.forEach(function (_ref31) {
+        var name = _ref31.name,
+          project = _ref31.project;
         if (project === null || project === undefined) {
           return;
         }
@@ -9495,10 +10291,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(collection)) {
       var _importProject2 = ensureImporter();
-      Object.entries(collection).forEach(function (_ref30) {
-        var _ref31 = _slicedToArray(_ref30, 2),
-          name = _ref31[0],
-          proj = _ref31[1];
+      Object.entries(collection).forEach(function (_ref32) {
+        var _ref33 = _slicedToArray(_ref32, 2),
+          name = _ref33[0],
+          proj = _ref33[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
         _importProject2(typeof normalizedName === 'string' ? normalizedName : '', proj);
       });
@@ -10193,11 +10989,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _opts$skipNormalizati2 = opts.skipNormalization,
       skipNormalization = _opts$skipNormalizati2 === void 0 ? false : _opts$skipNormalizati2;
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
-    var _ref32 = skipNormalization ? {
+    var _ref34 = skipNormalization ? {
         normalized: safeBackups,
         changed: false
       } : normalizeLegacyLongGopBackups(safeBackups),
-      normalizedBackups = _ref32.normalized;
+      normalizedBackups = _ref34.normalized;
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
     var attemptedMigrationCleanup = false;
@@ -10581,9 +11377,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!Object.prototype.hasOwnProperty.call(value, key)) {
           continue;
         }
-        var _candidate3 = normalizeAutoGearBackupRetentionValue(value[key], null);
-        if (typeof _candidate3 === 'number' && Number.isFinite(_candidate3)) {
-          return clampAutoGearBackupRetention(_candidate3);
+        var _candidate9 = normalizeAutoGearBackupRetentionValue(value[key], null);
+        if (typeof _candidate9 === 'number' && Number.isFinite(_candidate9)) {
+          return clampAutoGearBackupRetention(_candidate9);
         }
       }
       return fallback;
@@ -10655,8 +11451,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       clearOnboardingTutorialState(storageCandidates[index]);
     }
     var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
-    for (var _index6 = 0; _index6 < sessionCandidates.length; _index6 += 1) {
-      clearOnboardingTutorialState(sessionCandidates[_index6]);
+    for (var _index0 = 0; _index0 < sessionCandidates.length; _index0 += 1) {
+      clearOnboardingTutorialState(sessionCandidates[_index0]);
     }
     var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
     var collectStorageKeys = function collectStorageKeys(storage) {
@@ -10668,10 +11464,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var keys = [];
       if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-        for (var _index7 = 0; _index7 < storage.length; _index7 += 1) {
+        for (var _index1 = 0; _index1 < storage.length; _index1 += 1) {
           var candidateKey = null;
           try {
-            candidateKey = storage.key(_index7);
+            candidateKey = storage.key(_index1);
           } catch (error) {
             console.warn('Unable to inspect storage key during factory reset', error);
           }
@@ -11018,9 +11814,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (Array.isArray(value)) {
       for (var i = 0; i < value.length; i += 1) {
-        var _normalized5 = normalizeImportedBoolean(value[i]);
-        if (_normalized5 !== null) {
-          return _normalized5;
+        var _normalized6 = normalizeImportedBoolean(value[i]);
+        if (_normalized6 !== null) {
+          return _normalized6;
         }
       }
       return null;
@@ -11139,9 +11935,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!Object.prototype.hasOwnProperty.call(value, key)) {
           continue;
         }
-        var _candidate4 = normalizeImportedAutoGearBackupRetention(value[key]);
-        if (typeof _candidate4 === 'number') {
-          return _candidate4;
+        var _candidate0 = normalizeImportedAutoGearBackupRetention(value[key]);
+        if (typeof _candidate0 === 'number') {
+          return _candidate0;
         }
       }
       return null;
@@ -11165,10 +11961,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref33) {
-      var _ref34 = _slicedToArray(_ref33, 2),
-        key = _ref34[0],
-        val = _ref34[1];
+    Object.entries(value).forEach(function (_ref35) {
+      var _ref36 = _slicedToArray(_ref35, 2),
+        key = _ref36[0],
+        val = _ref36[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -11225,21 +12021,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     for (var _i7 = 0; _i7 < variants.length; _i7 += 1) {
-      var _candidate5 = "".concat(variants[_i7]).concat(STORAGE_BACKUP_SUFFIX);
-      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate5)) {
+      var _candidate1 = "".concat(variants[_i7]).concat(STORAGE_BACKUP_SUFFIX);
+      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate1)) {
         return {
-          key: _candidate5,
-          value: snapshot[_candidate5],
+          key: _candidate1,
+          value: snapshot[_candidate1],
           type: 'backup'
         };
       }
     }
     for (var _i8 = 0; _i8 < variants.length; _i8 += 1) {
-      var _candidate6 = "".concat(variants[_i8]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
-      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate6)) {
+      var _candidate10 = "".concat(variants[_i8]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate10)) {
         return {
-          key: _candidate6,
-          value: snapshot[_candidate6],
+          key: _candidate10,
+          value: snapshot[_candidate10],
           type: 'migration-backup'
         };
       }
@@ -11529,9 +12325,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref35 = options || {},
-      _ref35$skipSnapshotCo = _ref35.skipSnapshotConversion,
-      skipSnapshotConversion = _ref35$skipSnapshotCo === void 0 ? false : _ref35$skipSnapshotCo;
+    var _ref37 = options || {},
+      _ref37$skipSnapshotCo = _ref37.skipSnapshotConversion,
+      skipSnapshotConversion = _ref37$skipSnapshotCo === void 0 ? false : _ref37$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {

@@ -231,7 +231,7 @@ var texts = {
     languageSetting: "Language",
     settingsLanguageHelp: "Choose the interface language. Changes apply immediately and are remembered for next time.",
     darkModeSetting: "Dark mode",
-    settingsDarkModeHelp: "Toggle dark mode from Settings while previewing the result instantly.",
+    settingsDarkModeHelp: "Switch between light and dark themes from any control. The onboarding selector, top-bar toggle and Settings checkbox stay synchronized instantly.",
     pinkModeSetting: "Pink mode",
     settingsPinkModeHelp: "Enable the playful pink accent theme from Settings.",
     accentColorSetting: "Accent color",
@@ -497,7 +497,7 @@ var texts = {
     autoGearImportSchemaError: "Import failed. The file does not match the automatic gear rules export format.",
     autoGearImportMetadataLabelType: "type marker",
     autoGearImportMetadataLabelVersion: "version",
-    autoGearImportMetadataLabelTimestamp: "timestamp",
+    autoGearImportMetadataLabelTimestamp: "marca temporale",
     autoGearImportMissingMetadataWarning: "Imported rules are missing required metadata: {fields}. Confirm the file comes from a trusted export before saving.",
     autoGearImportInvalidMetadataWarning: "Imported rules include invalid metadata: {fields}. Confirm the file comes from a trusted export before saving.",
     autoGearImportNewerVersionWarning: "Imported rules were created with version {importVersion}, which is newer than this build ({appVersion}). Double-check compatibility before relying on them.",
@@ -714,8 +714,7 @@ var texts = {
     confirmFactoryReset: "Create a backup and wipe all planner data?",
     confirmFactoryResetAgain: "Last warning: all projects, devices, settings and feedback will be deleted. Continue?",
     factoryResetBackupFailed: "Backup failed. Data was not deleted.",
-    factoryResetAwaitDownload:
-      "Allow downloads to save your backup. The factory reset will continue after you accept the download.",
+    factoryResetAwaitDownload: "Allow downloads to save your backup. The factory reset will continue after you accept the download.",
     factoryResetDownloadBlocked: "The backup download was blocked. Data was not deleted.",
     factoryResetSuccess: "Backup downloaded. All planner data cleared. Reloading…",
     factoryResetError: "Factory reset failed. Please try again.",
@@ -781,8 +780,16 @@ var texts = {
     loggingCaptureErrorsHelp: "Record uncaught errors and unhandled promise rejections.",
     loggingPersistSessionLabel: "Keep log between reloads",
     loggingPersistSessionHelp: "Store entries in session storage so diagnostics survive refreshes.",
+    loggingExportButton: "Export log",
+    loggingExportHelp: "Download the full diagnostics log as a JSON file.",
+    loggingExportSuccess: "Diagnostics log exported.",
+    loggingExportError: "Log export failed. Try again after reloading Settings.",
+    loggingExportUnavailable: "Logging unavailable. Try again after reloading Settings.",
     loggingStatusIdle: "Live log ready.",
     loggingStatusUpdating: "Updating log…",
+    loggingStatusExporting: "Preparing log export…",
+    loggingStatusExported: "Diagnostics log ready for download.",
+    loggingStatusExportFailed: "Log export failed.",
     loggingStorageEstimateUpdated: "Storage estimate refreshed.",
     loggingStorageQuotaOnly: "Available storage: {quota}.",
     loggingStatusError: "Logging unavailable. Diagnostics remain in the browser console.",
@@ -1272,6 +1279,7 @@ var texts = {
       storageTypePlaceholder: "Select media type",
       storageVariantPlaceholder: "Select brand & size",
       storageNotesPlaceholder: "Add notes (brand, capacity, recorder...)",
+      storageDuplicateEntry: "Duplicate media row",
       storageSummaryFallback: "Media",
       monitoringHeading: "Monitoring",
       monitoringConfiguration: "Camera Monitoring Configuration:",
@@ -1403,8 +1411,7 @@ var texts = {
       "Rigging Grip": "Rigging Grip"
     },
     gearListNoteLabel: "Note:",
-    gearListAutosaveNote:
-      "Autosaved after each rig tweak so the offline gear manifest mirrors your latest camera build.",
+    gearListAutosaveNote: "Autosaved after each rig tweak so the offline gear manifest mirrors your latest camera build.",
     gearListAddCustomItem: "Add custom item",
     gearListAddCustomItemToCategory: "Add custom item to {category}",
     gearListRemoveCustomItem: "Remove",
@@ -1549,6 +1556,7 @@ var texts = {
       skipLabel: "Skip tutorial",
       backLabel: "Back",
       nextLabel: "Next",
+      introStartLabel: "Start onboarding tour",
       doneLabel: "Finish tutorial",
       stepIndicator: "Step {current} of {total}",
       completionIndicator: "First project secured offline",
@@ -1557,14 +1565,27 @@ var texts = {
       stepStatusCurrent: "Current step",
       stepStatusComplete: "Completed",
       stepStatusUpcoming: "Up next",
-      resumeHint: "Resuming where you left off. Use the step navigator to revisit earlier workflows without losing progress.",
-      resumeHintDetailed: "Resuming at step {current} of {total}. {completed} steps are already complete and saved offline.",
+      resumeHint: "Picking up right where you paused. Use the step navigator to revisit earlier workflows without clearing offline progress.",
+      resumeHintDetailed: "Resuming at step {current} of {total}. {completed} steps are already complete and locked into your offline saves.",
+      userProfileInteractionIntro: "Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.",
+      userProfileInteractionSkipHint: "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
+      userProfileAvatarAction: "Add profile photo",
+      unitsPreferencesLanguageLabel: "Language",
+      unitsPreferencesThemeLabel: "Theme",
+      unitsPreferencesThemeLight: "Light",
+      unitsPreferencesThemeDark: "Dark",
+      unitsPreferencesPinkLabel: "Pink mode accents",
+      unitsPreferencesPinkOff: "Disabled",
+      unitsPreferencesPinkOn: "Enabled",
+      unitsPreferencesUnitsLabel: "Temperature units",
+      unitsPreferencesPersistenceHint: "Request persistent storage so the browser keeps planner data even when space runs low.",
+      unitsPreferencesPersistenceAction: "Protect storage on this device",
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
-      helpStatusNotStarted: "Guided tutorial progress saves offline as you advance. Next step: {next}.",
-      helpStatusInProgress: "Offline progress saved: {completed} steps completed out of {total}. Next: {next}.",
-      helpStatusResume: "Paused on {current}. {completed} of {total} steps already saved offline.",
+      helpStatusNotStarted: "Guided tutorial progress saves offline as you advance. Up next: {next}.",
+      helpStatusInProgress: "Offline progress saved: {completed} steps completed out of {total}. Next workflow: {next}.",
+      helpStatusResume: "Paused on {current}. {completed} of {total} steps already secured offline.",
       helpStatusSkipped: "Tutorial skipped. Restart whenever you're ready—saved progress stays available offline.",
       helpStatusCompleted: "Tutorial completed. Replay any step anytime for a refresher.",
       helpStatusLastCompleted: "Last completed: {step} ({timeAgo}).",
@@ -1587,54 +1608,39 @@ var texts = {
           hero: {
             heading: "Welcome to Cine Power Planner",
             subheading: "Crew-first power, gear, and handoff planning — fully offline.",
-            summary:
-              "Plan safe power loads, generate AutoGear kits, and capture handoffs while every save stays local. Follow the checkpoints to see how we protect your data before the first shoot day.",
+            summary: "Plan safe power loads, generate AutoGear kits, and capture handoffs while every save stays local. Follow the checkpoints to see how we protect your data before the first shoot day.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline forever",
-            badgeDescription:
-              "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
-            highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Lock in power, safety, and backups",
-                body:
-                  "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling."
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear builds reusable kits",
-                body:
-                  "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
-              },
-              {
-                icon: "\uE469",
-                title: "Project requirements ready to hand off",
-                body:
-                  "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production can trust."
-              },
-              {
-                icon: "\uE9D4",
-                title: "Offline-first, subscription-free PWA",
-                body:
-                  "Run the planner entirely offline, install it as a mobile PWA, and keep workflows available without subscriptions or servers."
-              },
-              {
-                icon: "\uE5BD",
-                title: "Data is sacred",
-                body:
-                  "Autosave, backup/restore, share, and import safeguards protect every project snapshot. Restore rehearsals prove nothing is lost."
-              }
-            ],
+            badgeDescription: "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
+            highlights: [{
+              icon: "\uE1A9",
+              title: "Lock in power, safety, and backups",
+              body: "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling."
+            }, {
+              icon: "\uE467",
+              title: "AutoGear builds reusable kits",
+              body: "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets."
+            }, {
+              icon: "\uE469",
+              title: "Project requirements ready to hand off",
+              body: "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production can trust."
+            }, {
+              icon: "\uE9D4",
+              title: "Offline-first, subscription-free PWA",
+              body: "Run the planner entirely offline, install it as a mobile PWA, and keep workflows available without subscriptions or servers."
+            }, {
+              icon: "\uE5BD",
+              title: "Data is sacred",
+              body: "Autosave, backup/restore, share, and import safeguards protect every project snapshot. Restore rehearsals prove nothing is lost."
+            }],
             languageLabel: "Language",
-            languageHint:
-              "Choose the interface language so this tour, the help center, and exports translate instantly across offline saves.",
-            offlineSummary:
-              "Cine Power Planner is built for field reliability: offline by default, installable on mobile, and always storing redundant saves locally so crews retain control of their data."
+            languageHint: "Choose the interface language so this tour, the help center, and exports translate instantly across offline saves.",
+            offlineSummary: "Cine Power Planner is built for field reliability: offline by default, installable on mobile, and always storing redundant saves locally so crews retain control of their data."
           }
         },
         userProfile: {
           title: "Complete your crew profile",
-          body: "Set your display name, role, phone, email and photo. Every update syncs to Contacts immediately, stays in offline saves and appears on exports."
+          body: "Set your display name, role, phone, email and photo. Each update syncs to Contacts immediately, stays in offline saves and appears on exports."
         },
         unitsPreferences: {
           title: "Tune theme and units",
@@ -1662,23 +1668,19 @@ var texts = {
         },
         resultsTotalDraw: {
           title: "Power Summary pass: Total draw",
-          body:
-            "Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks."
+          body: "Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks."
         },
         resultsBatteryPacks: {
           title: "Power Summary pass: Battery runtimes",
-          body:
-            "Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety."
+          body: "Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety."
         },
         resultsChangeover: {
           title: "Power Summary pass: Changeovers",
-          body:
-            "Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot."
+          body: "Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot."
         },
         resultsWarnings: {
           title: "Power Summary pass: Warnings and backups",
-          body:
-            "Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state."
+          body: "Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state."
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -1838,6 +1840,9 @@ var texts = {
     hideDeviceManagerHelp: "Close the device database editor and return to normal mode.",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
+    diagramHoverNotice: "Click me for more information!",
+    diagramDetailBackLabel: "Back",
+    diagramDetailDefaultHeading: "Diagram details",
     diagramMoveHint: "Drag nodes to rearrange; drag empty space to pan."
   },
   it: {
@@ -2383,6 +2388,7 @@ var texts = {
       storageTypePlaceholder: "Seleziona tipo di supporto",
       storageVariantPlaceholder: "Seleziona marca e capacità",
       storageNotesPlaceholder: "Aggiungi note (marca, capacità, registratore…)",
+      storageDuplicateEntry: "Duplica riga supporti",
       storageSummaryFallback: "Supporto",
       monitoringHeading: "Monitoraggio",
       monitoringConfiguration: "Configurazione monitoraggio camera:",
@@ -2453,7 +2459,7 @@ var texts = {
       productionCompanyPostalCodePlaceholder: "00100",
       productionCompanyCountry: "Paese",
       productionCompanyCountryPlaceholder: "Italia",
-      rentalHouse: "Rental",
+      rentalHouse: "Service di noleggio",
       crew: "Troupe",
       prepDays: "Giorni di preparazione",
       shootingDays: "Giorni di riprese",
@@ -2514,8 +2520,7 @@ var texts = {
       "Rigging Grip": "Macchinista rigging"
     },
     gearListNoteLabel: "Nota:",
-    gearListAutosaveNote:
-      "Salvato automaticamente a ogni modifica del setup così l'inventario offline riflette l'ultimo assetto camera.",
+    gearListAutosaveNote: "Salvato automaticamente a ogni modifica del setup così l'inventario offline riflette l'ultimo assetto camera.",
     gearListAddCustomItem: "Aggiungi elemento personalizzato",
     gearListAddCustomItemToCategory: "Aggiungi elemento personalizzato a {category}",
     gearListRemoveCustomItem: "Rimuovi",
@@ -2526,14 +2531,14 @@ var texts = {
     gearListCustomItemNameAria: "Nome dell'elemento personalizzato in {category}",
     gearListCustomItemNamePlaceholder: "Elemento personalizzato",
     gearListCustomItemPreviewFallback: "Elemento personalizzato",
-    gearListExcludeRentalToggle: "Escludi per il rental",
-    gearListIncludeRentalToggle: "Includi per il rental",
-    gearListRentalNote: "Il rental house fornisce questo elemento",
+    gearListExcludeRentalToggle: "Escludi per il service di noleggio",
+    gearListIncludeRentalToggle: "Includi per il service di noleggio",
+    gearListRentalNote: "Il service di noleggio fornisce questo elemento",
     gearListEditProviderLabel: "Fornito da",
-    gearListEditProviderHelp: "Scegli chi fornisce questo elemento. Il rental resta predefinito, a meno che l'elemento sia nella tua lista di attrezzatura personale.",
-    gearListProviderRental: "Rental house",
+    gearListEditProviderHelp: "Scegli chi fornisce questo elemento. Il service di noleggio resta l'opzione predefinita, a meno che l'elemento sia nella tua lista di attrezzatura personale.",
+    gearListProviderRental: "Service di noleggio",
     gearListProviderUser: "Utente",
-    gearListProviderCrewHeading: "Crew",
+    gearListProviderCrewHeading: "Troupe",
     gearListProviderUnknown: "Altro fornitore",
     gearListEditOwnedLabel: "Di proprietà",
     gearListEditOwnedHelp: "Aggiungi o rimuovi questa voce dalla tua lista di Attrezzatura personale per mantenerla sincronizzata.",
@@ -2561,7 +2566,7 @@ var texts = {
     gearListExtraIndicatorOpen: "Extra temporaneo da %s",
     gearListExtraIndicatorEnd: "Extra temporaneo fino a %s",
     gearListExtraIndicatorNoPeriod: "Extra temporaneo",
-    gearListEditRentalLabel: "Escludi per il rental",
+    gearListEditRentalLabel: "Escludi per il service di noleggio",
     gearListEditSave: "Salva",
     gearListEditCancel: "Annulla",
     gearListEditButton: "Modifica elemento della lista",
@@ -2681,11 +2686,11 @@ var texts = {
     documentationTrackerSectionProgress: "{completed}/{total}",
     documentationTrackerUpdatedAt: "Aggiornato {time}",
     documentationTrackerTargetSummary: "Obiettivo {date}",
-    documentationTrackerDefaultReleaseName: "Release {date}",
+    documentationTrackerDefaultReleaseName: "Versione {date}",
     languageSetting: "Lingua",
     settingsLanguageHelp: "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
     darkModeSetting: "Modalità scura",
-    settingsDarkModeHelp: "Attiva o disattiva il tema scuro dalle Impostazioni visualizzando subito il risultato.",
+    settingsDarkModeHelp: "Passa tra tema chiaro e scuro da qualsiasi controllo. Selettore onboarding, interruttore nella barra superiore e casella nelle Impostazioni restano sincronizzati all'istante.",
     pinkModeSetting: "Modalità rosa",
     settingsPinkModeHelp: "Attiva il tema rosa giocoso dalle Impostazioni.",
     accentColorSetting: "Colore evidenza",
@@ -3168,8 +3173,7 @@ var texts = {
     confirmFactoryReset: "Creare un backup e cancellare tutti i dati dell’app?",
     confirmFactoryResetAgain: "Ultimo avviso: tutti i progetti, dispositivi, impostazioni e feedback salvati verranno eliminati. Continuare?",
     factoryResetBackupFailed: "Backup non riuscito. I dati non sono stati eliminati.",
-    factoryResetAwaitDownload:
-      "Consenti i download per salvare il backup. Il ripristino di fabbrica continuerà dopo aver accettato il download.",
+    factoryResetAwaitDownload: "Consenti i download per salvare il backup. Il ripristino di fabbrica continuerà dopo aver accettato il download.",
     factoryResetDownloadBlocked: "Il download del backup è stato bloccato. I dati non sono stati eliminati.",
     factoryResetSuccess: "Backup scaricato. Tutti i dati dell’app sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
@@ -3235,8 +3239,16 @@ var texts = {
     loggingCaptureErrorsHelp: "Registra errori non gestiti e promesse respinte.",
     loggingPersistSessionLabel: "Mantieni il registro dopo il ricaricamento",
     loggingPersistSessionHelp: "Salva le voci nella sessione per conservarle dopo un refresh.",
+    loggingExportButton: "Esporta registro",
+    loggingExportHelp: "Scarica l'intero registro diagnostico in un file JSON.",
+    loggingExportSuccess: "Registro diagnostico esportato.",
+    loggingExportError: "Esportazione del registro non riuscita. Riprova dopo aver ricaricato Impostazioni.",
+    loggingExportUnavailable: "Registrazione non disponibile. Riprova dopo aver ricaricato Impostazioni.",
     loggingStatusIdle: "Registro in tempo reale pronto.",
     loggingStatusUpdating: "Aggiornamento del registro…",
+    loggingStatusExporting: "Preparazione dell'esportazione del registro…",
+    loggingStatusExported: "Registro diagnostico pronto per il download.",
+    loggingStatusExportFailed: "Esportazione del registro non riuscita.",
     loggingStorageEstimateUpdated: "Stima dello spazio aggiornata.",
     loggingStorageQuotaOnly: "Spazio disponibile: {quota}.",
     loggingStatusError: "Registrazione non disponibile. La console del browser resta come backup.",
@@ -3383,6 +3395,7 @@ var texts = {
       skipLabel: "Salta tutorial",
       backLabel: "Indietro",
       nextLabel: "Avanti",
+      introStartLabel: "Inizia il tour di onboarding",
       doneLabel: "Termina tutorial",
       stepIndicator: "Passo {current} di {total}",
       completionIndicator: "Primo progetto salvato offline",
@@ -3391,14 +3404,27 @@ var texts = {
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
       stepStatusUpcoming: "In arrivo",
-      resumeHint: "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
-      resumeHintDetailed: "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già stati completati e salvati offline.",
+      resumeHint: "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
+      resumeHintDetailed: "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
+      userProfileInteractionIntro: "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il setup.",
+      userProfileInteractionSkipHint: "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
+      userProfileAvatarAction: "Aggiungi foto profilo",
+      unitsPreferencesLanguageLabel: "Lingua",
+      unitsPreferencesThemeLabel: "Tema",
+      unitsPreferencesThemeLight: "Chiaro",
+      unitsPreferencesThemeDark: "Scuro",
+      unitsPreferencesPinkLabel: "Accenti modalità rosa",
+      unitsPreferencesPinkOff: "Disattivati",
+      unitsPreferencesPinkOn: "Attivati",
+      unitsPreferencesUnitsLabel: "Unità di temperatura",
+      unitsPreferencesPersistenceHint: "Richiedi l'archiviazione persistente così il browser mantiene i dati del planner anche quando lo spazio si esaurisce.",
+      unitsPreferencesPersistenceAction: "Proteggi l'archiviazione su questo dispositivo",
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
       helpStatusNotStarted: "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
-      helpStatusInProgress: "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
-      helpStatusResume: "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
+      helpStatusInProgress: "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo flusso: {next}.",
+      helpStatusResume: "In pausa su {current}. {completed} passaggi su {total} già messi al sicuro offline.",
       helpStatusSkipped: "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
       helpStatusCompleted: "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
       helpStatusLastCompleted: "Ultimo completamento: {step} ({timeAgo}).",
@@ -3417,54 +3443,38 @@ var texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-          body:
-            "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
+          body: "Questo tour guidato presenta le salvaguardie offline, l’automazione orientata alla troupe e le prove di ripristino che mantengono ogni progetto pronto per la produzione.",
           hero: {
             heading: "Benvenuto in Cine Power Planner",
             subheading: "Pianificazione di energia, gear e handoff centrata sulla troupe — completamente offline.",
-            summary:
-              "Pianifica carichi sicuri, genera kit AutoGear e prepara le consegne mentre ogni salvataggio resta locale. Segui i checkpoint per vedere come proteggiamo i dati prima del primo ciak.",
+            summary: "Pianifica carichi sicuri, genera kit AutoGear e prepara le consegne mentre ogni salvataggio resta locale. Segui i checkpoint per vedere come proteggiamo i dati prima del primo ciak.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline per sempre",
-            badgeDescription:
-              "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
-            highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Metti al sicuro potenza, safety e backup",
-                body:
-                  "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare."
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear crea kit riutilizzabili",
-                body:
-                  "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset."
-              },
-              {
-                icon: "\uE469",
-                title: "Requisiti di progetto pronti alla consegna",
-                body:
-                  "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF affidabili per troupe, rental e produzione."
-              },
-              {
-                icon: "\uE9D4",
-                title: "PWA offline e senza abbonamento",
-                body:
-                  "Esegui il planner completamente offline, installalo come PWA mobile e mantieni ogni workflow disponibile senza server né abbonamenti."
-              },
-              {
-                icon: "\uE5BD",
-                title: "I dati sono sacri",
-                body:
-                  "Autosalvataggi, backup/ripristino, condivisione e importazione proteggono ogni snapshot del progetto. Le prove di ripristino dimostrano che nulla va perso."
-              }
-            ],
+            badgeDescription: "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
+            highlights: [{
+              icon: "\uE1A9",
+              title: "Metti al sicuro potenza, safety e backup",
+              body: "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare."
+            }, {
+              icon: "\uE467",
+              title: "AutoGear crea kit riutilizzabili",
+              body: "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset."
+            }, {
+              icon: "\uE469",
+              title: "Requisiti di progetto pronti alla consegna",
+              body: "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF affidabili per troupe, rental e produzione."
+            }, {
+              icon: "\uE9D4",
+              title: "PWA offline e senza abbonamento",
+              body: "Esegui il planner completamente offline, installalo come PWA mobile e mantieni ogni workflow disponibile senza server né abbonamenti."
+            }, {
+              icon: "\uE5BD",
+              title: "I dati sono sacri",
+              body: "Autosalvataggi, backup/ripristino, condivisione e importazione proteggono ogni snapshot del progetto. Le prove di ripristino dimostrano che nulla va perso."
+            }],
             languageLabel: "Lingua",
-            languageHint:
-              "Scegli la lingua dell’interfaccia così questo tour, la guida e gli export si traducono subito in tutti i salvataggi offline.",
-            offlineSummary:
-              "Cine Power Planner nasce per l’uso sul campo: offline di default, installabile su mobile e sempre con salvataggi ridondanti locali così la troupe mantiene il controllo dei dati."
+            languageHint: "Scegli la lingua dell’interfaccia così questo tour, la guida e gli export si traducono subito in tutti i salvataggi offline.",
+            offlineSummary: "Cine Power Planner nasce per l’uso sul campo: offline di default, installabile su mobile e sempre con salvataggi ridondanti locali così la troupe mantiene il controllo dei dati."
           }
         },
         userProfile: {
@@ -3497,23 +3507,19 @@ var texts = {
         },
         resultsTotalDraw: {
           title: "Passaggio Power Summary: Carico totale",
-          body:
-            "Avvia la revisione in Power Summary confermando la scheda Carico totale e il picco previsto così i calcoli della domanda restano accurati prima di approfondire."
+          body: "Avvia la revisione in Power Summary confermando la scheda Carico totale e il picco previsto così i calcoli della domanda restano accurati prima di approfondire."
         },
         resultsBatteryPacks: {
           title: "Passaggio Power Summary: Autonomie delle batterie",
-          body:
-            "Espandi ogni pacco batteria per verificare proiezioni di autonomia, evidenziazioni del margine di riserva e note dei dispositivi assicurandoti che l'autosalvataggio catturi le ultime scelte per la sicurezza offline."
+          body: "Espandi ogni pacco batteria per verificare proiezioni di autonomia, evidenziazioni del margine di riserva e note dei dispositivi assicurandoti che l'autosalvataggio catturi le ultime scelte per la sicurezza offline."
         },
         resultsChangeover: {
           title: "Passaggio Power Summary: Cambi turno",
-          body:
-            "Prosegui con i timer di cambio per confermare copertura dei caricabatterie e indicatori di stato così ogni handoff resta organizzato nello snapshot salvato."
+          body: "Prosegui con i timer di cambio per confermare copertura dei caricabatterie e indicatori di stato così ogni handoff resta organizzato nello snapshot salvato."
         },
         resultsWarnings: {
           title: "Passaggio Power Summary: Avvisi e backup",
-          body:
-            "Registra gli avvisi sui connettori quando i D-Tap o i pin non reggono il carico, scarica il rapporto offline per backup ridondanti e conferma il banner di autosalvataggio affinché condivisioni ed esportazioni riflettano lo stesso stato."
+          body: "Registra gli avvisi sui connettori quando i D-Tap o i pin non reggono il carico, scarica il rapporto offline per backup ridondanti e conferma il banner di autosalvataggio affinché condivisioni ed esportazioni riflettano lo stesso stato."
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -3673,6 +3679,9 @@ var texts = {
     hideDeviceManagerHelp: "Nascondi l'editor del database dei dispositivi.",
     zoomInLabel: "Ingrandisci",
     zoomOutLabel: "Rimpicciolisci",
+    diagramHoverNotice: "Clicca per maggiori informazioni!",
+    diagramDetailBackLabel: "Indietro",
+    diagramDetailDefaultHeading: "Dettagli del diagramma",
     diagramMoveHint: "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma."
   },
   es: {
@@ -3775,11 +3784,11 @@ var texts = {
     sideMenuHelp: "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     contacts: {
       heading: "Contactos",
-      description: "Guarda a los miembros del equipo una vez, consérvalos sin conexión y reutilízalos en cada proyecto.",
+      description: "Guarda a los miembros del equipo de rodaje una vez, consérvalos sin conexión y reutilízalos en cada proyecto.",
       addContactButton: "Agregar contacto",
       importButton: "Importar vCard",
       importHint: "Importa archivos .vcf para añadir contactos al instante.",
-      emptyState: "Todavía no hay contactos guardados. Añade a tu equipo ahora para reutilizarlo más tarde.",
+      emptyState: "Todavía no hay contactos guardados. Añade a tu equipo de rodaje ahora para reutilizarlo más tarde.",
       close: "Cerrar",
       selectLabel: "Contactos guardados",
       selectPlaceholder: "Selecciona un contacto",
@@ -3807,7 +3816,7 @@ var texts = {
       avatarEditUnavailable: "Editor de fotos no disponible.",
       avatarEditFailed: "No se pudo actualizar el encuadre de la foto.",
       userProfileHeading: "Tu perfil",
-      userProfileDescription: "Añade tu nombre, rol, teléfono y correo para que tu equipo aparezca como \"Usuario\".",
+      userProfileDescription: "Añade tu nombre, rol, teléfono y correo para que tu equipo de rodaje aparezca como \"Usuario\".",
       userProfileNameLabel: "Nombre visible",
       userProfileNamePlaceholder: "Tu nombre",
       userProfileRoleLabel: "Rol o cargo",
@@ -3816,19 +3825,19 @@ var texts = {
       userProfilePhonePlaceholder: "Tu número de teléfono",
       userProfileEmailLabel: "Correo electrónico",
       userProfileEmailPlaceholder: "nombre@ejemplo.com",
-      userProfileHint: "Sirve para mostrar tu nombre y la inicial del apellido en la opción \"Usuario\" del desplegable Proveedor. El teléfono y el correo aparecen en exportaciones y copias de seguridad para que la crew pueda localizarte sin conexión.",
+      userProfileHint: "Sirve para mostrar tu nombre y la inicial del apellido en la opción \"Usuario\" del desplegable Proveedor. El teléfono y el correo aparecen en exportaciones y copias de seguridad para que el equipo de rodaje pueda localizarte sin conexión.",
       userProfileAvatarButton: "Cambiar foto",
       userProfileAvatarRemove: "Quitar foto",
       userProfileSaved: "Perfil guardado.",
-      contactDetached: "Fila de equipo desconectada del contacto guardado.",
-      contactApplied: "Fila de equipo actualizada desde el contacto.",
+      contactDetached: "Fila del equipo de rodaje desconectada del contacto guardado.",
+      contactApplied: "Fila del equipo de rodaje actualizada desde el contacto.",
       contactDeleted: "Contacto eliminado. Las filas del proyecto conservan sus datos.",
       contactSaved: "Contacto guardado para futuros proyectos.",
       contactUpdated: "Contacto actualizado.",
       contactDraftCreated: "Nuevo contacto listo. Completa los detalles.",
-      contactFallbackName: "Contacto de la crew",
-      useInProject: "Añadir a la crew del proyecto",
-      contactAddedToProject: "Contacto añadido al proyecto actual.",
+      contactFallbackName: "Contacto del equipo de rodaje",
+      useInProject: "Añadir al equipo de rodaje del proyecto",
+      contactAddedToProject: "Contacto añadido al equipo de rodaje del proyecto.",
       deleteContact: "Eliminar contacto",
       deleteConfirm: "¿Eliminar este contacto? Las filas del proyecto conservarán sus datos.",
       importSummary: "{added} añadidos, {updated} actualizados.",
@@ -4175,7 +4184,7 @@ var texts = {
       productionCompanyCountry: "País",
       productionCompanyCountryPlaceholder: "España",
       rentalHouse: "Rental:",
-      crewHeading: "Equipo",
+      crewHeading: "Equipo de rodaje",
       prepLabel: "Días de preparación:",
       shootLabel: "Días de rodaje:",
       returnLabel: "Día de devolución:",
@@ -4218,6 +4227,7 @@ var texts = {
       storageTypePlaceholder: "Selecciona tipo de soporte",
       storageVariantPlaceholder: "Selecciona marca y capacidad",
       storageNotesPlaceholder: "Añade notas (marca, capacidad, grabador…)",
+      storageDuplicateEntry: "Duplicar fila de soporte",
       storageSummaryFallback: "Soporte",
       monitoringHeading: "Monitorización",
       monitoringConfiguration: "Configuración de monitorización:",
@@ -4267,11 +4277,11 @@ var texts = {
       crewPhonePlaceholder: "Teléfono",
       crewEmailPlaceholder: "Correo",
       crewWebsitePlaceholder: "Sitio web",
-      crewRoleLabel: "Rol del equipo",
-      crewNameLabel: "Nombre del miembro del equipo",
-      crewPhoneLabel: "Teléfono del miembro del equipo",
-      crewEmailLabel: "Correo del miembro del equipo",
-      crewWebsiteLabel: "Sitio web del miembro del equipo"
+      crewRoleLabel: "Rol del equipo de rodaje",
+      crewNameLabel: "Nombre del miembro del equipo de rodaje",
+      crewPhoneLabel: "Teléfono del miembro del equipo de rodaje",
+      crewEmailLabel: "Correo del miembro del equipo de rodaje",
+      crewWebsiteLabel: "Sitio web del miembro del equipo de rodaje"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -4289,7 +4299,7 @@ var texts = {
       productionCompanyCountry: "País",
       productionCompanyCountryPlaceholder: "España",
       rentalHouse: "Rental",
-      crew: "Equipo",
+      crew: "Equipo de rodaje",
       prepDays: "Días de preparación",
       shootingDays: "Días de rodaje",
       returnDays: "Días de devolución",
@@ -4349,8 +4359,7 @@ var texts = {
       "Rigging Grip": "Grip de rigging"
     },
     gearListNoteLabel: "Nota:",
-    gearListAutosaveNote:
-      "Se guarda automáticamente tras cada ajuste del rig para que el listado offline refleje el último montaje de cámara.",
+    gearListAutosaveNote: "Se guarda automáticamente tras cada ajuste del rig para que el listado offline refleje el último montaje de cámara.",
     gearListAddCustomItem: "Añadir elemento personalizado",
     gearListAddCustomItemToCategory: "Añadir elemento personalizado a {category}",
     gearListRemoveCustomItem: "Eliminar",
@@ -4368,7 +4377,7 @@ var texts = {
     gearListEditProviderHelp: "Selecciona quién aporta este elemento. La casa de alquiler es el valor predeterminado salvo que esté en tu lista de equipo propio.",
     gearListProviderRental: "Casa de alquiler",
     gearListProviderUser: "Usuario",
-    gearListProviderCrewHeading: "Equipo",
+    gearListProviderCrewHeading: "Equipo de rodaje",
     gearListProviderUnknown: "Proveedor personalizado",
     gearListEditOwnedLabel: "Propio",
     gearListEditOwnedHelp: "Añade o elimina esta línea de tu lista de Equipo propio para mantenerla sincronizada.",
@@ -4520,7 +4529,7 @@ var texts = {
     languageSetting: "Idioma",
     settingsLanguageHelp: "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
     darkModeSetting: "Modo oscuro",
-    settingsDarkModeHelp: "Activa o desactiva el modo oscuro desde Ajustes viendo el resultado al momento.",
+    settingsDarkModeHelp: "Cambia entre tema claro y oscuro desde cualquier control. El selector de onboarding, el interruptor de la barra superior y la casilla de Ajustes se mantienen sincronizados al instante.",
     pinkModeSetting: "Modo rosa",
     settingsPinkModeHelp: "Activa el tema rosa divertido desde Ajustes.",
     accentColorSetting: "Color de acento",
@@ -4731,10 +4740,10 @@ var texts = {
     autoGearDefaultDirectorMonitorLabel: "Monitor de dirección 15-21\"",
     autoGearMonitorDefaultPlaceholder: "Usar recomendado automáticamente",
     autoGearMonitorHelp: "Aplica la regla cuando se seleccionan estos monitores a bordo.",
-    autoGearCrewPresentLabel: "Equipo presente",
-    autoGearCrewPresentHelp: "Aplica esta regla cuando estos perfiles figuren en el proyecto.",
-    autoGearCrewAbsentLabel: "Equipo ausente",
-    autoGearCrewAbsentHelp: "Aplica esta regla cuando estos perfiles no figuren en el proyecto.",
+    autoGearCrewPresentLabel: "Equipo de rodaje presente",
+    autoGearCrewPresentHelp: "Aplica esta regla cuando estos perfiles del equipo de rodaje figuren en el proyecto.",
+    autoGearCrewAbsentLabel: "Equipo de rodaje ausente",
+    autoGearCrewAbsentHelp: "Aplica esta regla cuando estos perfiles del equipo de rodaje no figuren en el proyecto.",
     autoGearWirelessLabel: "Transmisores inalámbricos",
     autoGearWirelessHelp: "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
     autoGearMotorsLabel: "Motores FIZ",
@@ -4980,7 +4989,7 @@ var texts = {
     restoreRehearsalClose: "Cerrar ensayo",
     restoreRehearsalMetricProjects: "Proyectos",
     restoreRehearsalMetricProjectDetails: "Detalles del proyecto",
-    restoreRehearsalMetricCrew: "Integrantes del equipo",
+    restoreRehearsalMetricCrew: "Integrantes del equipo de rodaje",
     restoreRehearsalMetricSchedule: "Entradas de programación",
     restoreRehearsalMetricRules: "Reglas automáticas",
     restoreRehearsalMetricFavorites: "Favoritos",
@@ -5003,8 +5012,7 @@ var texts = {
     confirmFactoryReset: "¿Crear una copia de seguridad y borrar todos los datos del planificador?",
     confirmFactoryResetAgain: "Último aviso: se eliminarán todos los proyectos, dispositivos, ajustes y comentarios guardados. ¿Continuar?",
     factoryResetBackupFailed: "La copia de seguridad falló. No se eliminaron los datos.",
-    factoryResetAwaitDownload:
-      "Permite las descargas para guardar tu copia de seguridad. El restablecimiento de fábrica continuará después de aceptar la descarga.",
+    factoryResetAwaitDownload: "Permite las descargas para guardar tu copia de seguridad. El restablecimiento de fábrica continuará después de aceptar la descarga.",
     factoryResetDownloadBlocked: "La descarga de la copia de seguridad fue bloqueada. No se eliminaron datos.",
     factoryResetSuccess: "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
     factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
@@ -5070,8 +5078,16 @@ var texts = {
     loggingCaptureErrorsHelp: "Registra errores no capturados y rechazos de promesas.",
     loggingPersistSessionLabel: "Mantener registro tras recargar",
     loggingPersistSessionHelp: "Guarda las entradas en sessionStorage para que sobrevivan a un refresco.",
+    loggingExportButton: "Exportar registro",
+    loggingExportHelp: "Descarga el registro de diagnósticos completo como un archivo JSON.",
+    loggingExportSuccess: "Registro de diagnósticos exportado.",
+    loggingExportError: "La exportación del registro falló. Vuelve a intentarlo tras recargar Ajustes.",
+    loggingExportUnavailable: "El registro no está disponible. Vuelve a intentarlo tras recargar Ajustes.",
     loggingStatusIdle: "Registro en vivo listo.",
     loggingStatusUpdating: "Actualizando registro…",
+    loggingStatusExporting: "Preparando la exportación del registro…",
+    loggingStatusExported: "Registro de diagnósticos listo para descargar.",
+    loggingStatusExportFailed: "Falló la exportación del registro.",
     loggingStorageEstimateUpdated: "Estimación de almacenamiento actualizada.",
     loggingStorageQuotaOnly: "Almacenamiento disponible: {quota}.",
     loggingStatusError: "La bitácora no está disponible. La consola sigue registrando como respaldo.",
@@ -5218,6 +5234,7 @@ var texts = {
       skipLabel: "Omitir tutorial",
       backLabel: "Atrás",
       nextLabel: "Siguiente",
+      introStartLabel: "Iniciar tour de onboarding",
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
       completionIndicator: "Primer proyecto guardado sin conexión",
@@ -5226,14 +5243,27 @@ var texts = {
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
       stepStatusUpcoming: "A continuación",
-      resumeHint: "Retomas justo donde lo dejaste. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
-      resumeHintDetailed: "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y guardados sin conexión.",
+      resumeHint: "Retomas justo donde hiciste la pausa. Usa el navegador de pasos para repasar flujos anteriores sin borrar el progreso guardado sin conexión.",
+      resumeHintDetailed: "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y asegurados en tus guardados sin conexión.",
+      userProfileInteractionIntro: "Introduce los datos de tu equipo una sola vez. Cada actualización se sincroniza al instante con Contactos, permanece guardada sin conexión y se refleja en las exportaciones para que el equipo siempre sepa quién es el responsable del set.",
+      userProfileInteractionSkipHint: "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
+      userProfileAvatarAction: "Añadir foto de perfil",
+      unitsPreferencesLanguageLabel: "Idioma",
+      unitsPreferencesThemeLabel: "Tema",
+      unitsPreferencesThemeLight: "Claro",
+      unitsPreferencesThemeDark: "Oscuro",
+      unitsPreferencesPinkLabel: "Acentos del modo rosa",
+      unitsPreferencesPinkOff: "Desactivados",
+      unitsPreferencesPinkOn: "Activados",
+      unitsPreferencesUnitsLabel: "Unidades de temperatura",
+      unitsPreferencesPersistenceHint: "Solicita almacenamiento persistente para que el navegador conserve los datos del planificador incluso cuando haya poco espacio.",
+      unitsPreferencesPersistenceAction: "Proteger almacenamiento en este dispositivo",
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
       helpStatusNotStarted: "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
-      helpStatusInProgress: "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
-      helpStatusResume: "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
+      helpStatusInProgress: "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente flujo: {next}.",
+      helpStatusResume: "En pausa en {current}. {completed} de {total} pasos ya quedan protegidos sin conexión.",
       helpStatusSkipped: "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
       helpStatusCompleted: "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
       helpStatusLastCompleted: "Último paso completado: {step} ({timeAgo}).",
@@ -5252,54 +5282,38 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-          body:
-            "Este recorrido guiado presenta las salvaguardas fuera de línea, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
+          body: "Este recorrido guiado presenta las salvaguardas fuera de línea, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           hero: {
             heading: "Bienvenido a Cine Power Planner",
             subheading: "Planificación de energía, gear y handoff enfocada en el equipo, totalmente offline.",
-            summary:
-              "Planifica cargas seguras, genera kits AutoGear y prepara las entregas mientras cada guardado permanece local. Sigue los hitos para ver cómo protegemos tus datos antes del primer día de rodaje.",
+            summary: "Planifica cargas seguras, genera kits AutoGear y prepara las entregas mientras cada guardado permanece local. Sigue los hitos para ver cómo protegemos tus datos antes del primer día de rodaje.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Offline para siempre",
-            badgeDescription:
-              "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, backup, restauración, compartición e importación vive en este dispositivo.",
-            highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Asegura potencia, seguridad y backups",
-                body:
-                  "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar."
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear arma kits reutilizables",
-                body:
-                  "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets."
-              },
-              {
-                icon: "\uE469",
-                title: "Requisitos del proyecto listos para entregar",
-                body:
-                  "Lleva el seguimiento de requisitos, cobertura de equipo y notas de alquiler; luego exporta paquetes PDF fiables para el equipo, las casas de renta y producción."
-              },
-              {
-                icon: "\uE9D4",
-                title: "PWA offline y sin suscripción",
-                body:
-                  "Ejecuta el planner completamente offline, instálalo como PWA móvil y mantén cada workflow disponible sin servidores ni suscripciones."
-              },
-              {
-                icon: "\uE5BD",
-                title: "Los datos son sagrados",
-                body:
-                  "Autosave, backup/restauración, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde."
-              }
-            ],
+            badgeDescription: "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, backup, restauración, compartición e importación vive en este dispositivo.",
+            highlights: [{
+              icon: "\uE1A9",
+              title: "Asegura potencia, seguridad y backups",
+              body: "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar."
+            }, {
+              icon: "\uE467",
+              title: "AutoGear arma kits reutilizables",
+              body: "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets."
+            }, {
+              icon: "\uE469",
+              title: "Requisitos del proyecto listos para entregar",
+              body: "Lleva el seguimiento de requisitos, cobertura de equipo y notas de alquiler; luego exporta paquetes PDF fiables para el equipo, las casas de renta y producción."
+            }, {
+              icon: "\uE9D4",
+              title: "PWA offline y sin suscripción",
+              body: "Ejecuta el planner completamente offline, instálalo como PWA móvil y mantén cada workflow disponible sin servidores ni suscripciones."
+            }, {
+              icon: "\uE5BD",
+              title: "Los datos son sagrados",
+              body: "Autosave, backup/restauración, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde."
+            }],
             languageLabel: "Idioma",
-            languageHint:
-              "Elige el idioma de la interfaz para que este tour, la ayuda y los exports se traduzcan al instante en tus guardados offline.",
-            offlineSummary:
-              "Cine Power Planner está diseñado para el set: offline por defecto, instalable en móvil y siempre guardando copias redundantes locales para que el equipo conserve el control de sus datos."
+            languageHint: "Elige el idioma de la interfaz para que este tour, la ayuda y los exports se traduzcan al instante en tus guardados offline.",
+            offlineSummary: "Cine Power Planner está diseñado para el set: offline por defecto, instalable en móvil y siempre guardando copias redundantes locales para que el equipo conserve el control de sus datos."
           }
         },
         userProfile: {
@@ -5332,23 +5346,19 @@ var texts = {
         },
         resultsTotalDraw: {
           title: "Pasada por Power Summary: Consumo total",
-          body:
-            "Inicia la revisión en Power Summary confirmando la tarjeta de Consumo total y la carga pico para que las matemáticas de demanda sigan precisas antes de profundizar."
+          body: "Inicia la revisión en Power Summary confirmando la tarjeta de Consumo total y la carga pico para que las matemáticas de demanda sigan precisas antes de profundizar."
         },
         resultsBatteryPacks: {
           title: "Pasada por Power Summary: Autonomías de baterías",
-          body:
-            "Expande cada grupo de baterías para revisar proyecciones de autonomía, márgenes de reserva resaltados y notas de dispositivos asegurándote de que el autoguardado capture las últimas selecciones para la seguridad offline."
+          body: "Expande cada grupo de baterías para revisar proyecciones de autonomía, márgenes de reserva resaltados y notas de dispositivos asegurándote de que el autoguardado capture las últimas selecciones para la seguridad offline."
         },
         resultsChangeover: {
           title: "Pasada por Power Summary: Cambios",
-          body:
-            "Continúa con los temporizadores de cambio para confirmar la cobertura de cargadores y los indicadores de estado de modo que cada relevo quede organizado en la instantánea guardada."
+          body: "Continúa con los temporizadores de cambio para confirmar la cobertura de cargadores y los indicadores de estado de modo que cada relevo quede organizado en la instantánea guardada."
         },
         resultsWarnings: {
           title: "Pasada por Power Summary: Avisos y copias",
-          body:
-            "Registra las advertencias de conectores cuando los D-Tap o los pines no soportan la carga, descarga el informe offline como copia de seguridad redundante y confirma el banner de guardado automático para que las comparticiones y exportaciones reflejen el mismo estado."
+          body: "Registra las advertencias de conectores cuando los D-Tap o los pines no soportan la carga, descarga el informe offline como copia de seguridad redundante y confirma el banner de guardado automático para que las comparticiones y exportaciones reflejen el mismo estado."
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -5508,6 +5518,9 @@ var texts = {
     hideDeviceManagerHelp: "Oculta el editor de la base de datos de dispositivos.",
     zoomInLabel: "Acercar",
     zoomOutLabel: "Alejar",
+    diagramHoverNotice: "Haz clic para más información.",
+    diagramDetailBackLabel: "Volver",
+    diagramDetailDefaultHeading: "Detalles del diagrama",
     diagramMoveHint: "Mueve los nodos arrastrándolos. Arrastra un espacio vacío para desplazar el diagrama."
   },
   fr: {
@@ -6053,6 +6066,7 @@ var texts = {
       storageTypePlaceholder: "Sélectionner un type de support",
       storageVariantPlaceholder: "Sélectionner marque et capacité",
       storageNotesPlaceholder: "Ajouter des notes (marque, capacité, enregistreur…)",
+      storageDuplicateEntry: "Dupliquer la ligne de support",
       storageSummaryFallback: "Support",
       monitoringHeading: "Monitoring vidéo",
       monitoringConfiguration: "Configuration monitoring caméra :",
@@ -6184,8 +6198,7 @@ var texts = {
       "Rigging Grip": "Machiniste rigging"
     },
     gearListNoteLabel: "Note :",
-    gearListAutosaveNote:
-      "Enregistré automatiquement après chaque retouche du rig pour que la feuille de matériel hors ligne reflète la dernière config caméra.",
+    gearListAutosaveNote: "Enregistré automatiquement après chaque retouche du rig pour que la feuille de matériel hors ligne reflète la dernière config caméra.",
     gearListAddCustomItem: "Ajouter un élément personnalisé",
     gearListAddCustomItemToCategory: "Ajouter un élément personnalisé à {category}",
     gearListRemoveCustomItem: "Supprimer",
@@ -6355,7 +6368,7 @@ var texts = {
     languageSetting: "Langue",
     settingsLanguageHelp: "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
     darkModeSetting: "Mode sombre",
-    settingsDarkModeHelp: "Activez ou désactivez le mode sombre depuis Paramètres et voyez le résultat immédiatement.",
+    settingsDarkModeHelp: "Basculez entre thèmes clair et sombre depuis n’importe quel contrôle. Le sélecteur d’onboarding, le bouton de la barre supérieure et la case Paramètres restent synchronisés instantanément.",
     pinkModeSetting: "Mode rose",
     settingsPinkModeHelp: "Activez le thème rose ludique depuis Paramètres.",
     accentColorSetting: "Couleur d’accent",
@@ -6838,8 +6851,7 @@ var texts = {
     confirmFactoryReset: "Créer une sauvegarde puis effacer toutes les données du planificateur ?",
     confirmFactoryResetAgain: "Dernier avertissement : tous les projets, appareils, réglages et retours enregistrés seront supprimés. Continuer ?",
     factoryResetBackupFailed: "Échec de la sauvegarde. Aucune donnée n’a été supprimée.",
-    factoryResetAwaitDownload:
-      "Autorisez les téléchargements pour enregistrer votre sauvegarde. La réinitialisation d’usine reprendra après avoir accepté le téléchargement.",
+    factoryResetAwaitDownload: "Autorisez les téléchargements pour enregistrer votre sauvegarde. La réinitialisation d’usine reprendra après avoir accepté le téléchargement.",
     factoryResetDownloadBlocked: "Le téléchargement de la sauvegarde a été bloqué. Aucune donnée n’a été supprimée.",
     factoryResetSuccess: "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
     factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
@@ -6905,8 +6917,16 @@ var texts = {
     loggingCaptureErrorsHelp: "Enregistre les erreurs non interceptées et les promesses rejetées.",
     loggingPersistSessionLabel: "Conserver le journal après rechargement",
     loggingPersistSessionHelp: "Stocke les entrées dans la session pour survivre aux rafraîchissements.",
+    loggingExportButton: "Exporter le journal",
+    loggingExportHelp: "Téléchargez l’intégralité du journal de diagnostic au format JSON.",
+    loggingExportSuccess: "Journal de diagnostic exporté.",
+    loggingExportError: "Échec de l’export du journal. Réessayez après avoir rechargé Paramètres.",
+    loggingExportUnavailable: "Journal indisponible. Réessayez après avoir rechargé Paramètres.",
     loggingStatusIdle: "Journal en direct prêt.",
     loggingStatusUpdating: "Mise à jour du journal…",
+    loggingStatusExporting: "Préparation de l’export du journal…",
+    loggingStatusExported: "Journal de diagnostic prêt au téléchargement.",
+    loggingStatusExportFailed: "Échec de l’export du journal.",
     loggingStorageEstimateUpdated: "Estimation de stockage actualisée.",
     loggingStorageQuotaOnly: "Stockage disponible : {quota}.",
     loggingStatusError: "Journal indisponible. La console du navigateur reste le secours.",
@@ -7053,6 +7073,7 @@ var texts = {
       skipLabel: "Ignorer le tutoriel",
       backLabel: "Retour",
       nextLabel: "Suivant",
+      introStartLabel: "Commencer le parcours d’onboarding",
       doneLabel: "Terminer le tutoriel",
       stepIndicator: "Étape {current} sur {total}",
       completionIndicator: "Premier projet sauvegardé hors ligne",
@@ -7061,14 +7082,27 @@ var texts = {
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
       stepStatusUpcoming: "À suivre",
-      resumeHint: "Vous reprenez là où vous vous étiez arrêté. Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
-      resumeHintDetailed: "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et sauvegardées hors ligne.",
+      resumeHint: "Vous reprenez exactement là où vous avez fait pause. Utilisez le navigateur d'étapes pour revoir les workflows précédents sans effacer la progression sauvegardée hors ligne.",
+      resumeHintDetailed: "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et verrouillées dans vos sauvegardes hors ligne.",
+      userProfileInteractionIntro: "Saisissez une fois les informations de votre équipe. Chaque mise à jour se synchronise immédiatement avec Contacts, reste mise en cache hors ligne et se retrouve dans les exports pour que l’équipe sache toujours qui possède le setup.",
+      userProfileInteractionSkipHint: "Appuyez sur Suivant quand vous êtes prêt : Contacts dans la barre latérale affiche toujours ces informations sauvegardées sans réinitialiser la progression du tutoriel.",
+      userProfileAvatarAction: "Ajouter une photo de profil",
+      unitsPreferencesLanguageLabel: "Langue",
+      unitsPreferencesThemeLabel: "Thème",
+      unitsPreferencesThemeLight: "Clair",
+      unitsPreferencesThemeDark: "Sombre",
+      unitsPreferencesPinkLabel: "Accents du mode rose",
+      unitsPreferencesPinkOff: "Désactivés",
+      unitsPreferencesPinkOn: "Activés",
+      unitsPreferencesUnitsLabel: "Unités de température",
+      unitsPreferencesPersistenceHint: "Demandez un stockage persistant pour que le navigateur conserve les données du planner même lorsque l’espace est limité.",
+      unitsPreferencesPersistenceAction: "Protéger le stockage sur cet appareil",
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
       helpStatusNotStarted: "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
-      helpStatusInProgress: "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
-      helpStatusResume: "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
+      helpStatusInProgress: "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. Prochain workflow : {next}.",
+      helpStatusResume: "En pause sur {current}. {completed} étape(s) sur {total} déjà sécurisées hors ligne.",
       helpStatusSkipped: "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
       helpStatusCompleted: "Tutoriel terminé. Rejouez n’importe quelle étape à tout moment pour un rappel.",
       helpStatusLastCompleted: "Dernière étape terminée : {step} ({timeAgo}).",
@@ -7087,54 +7121,38 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-          body:
-            "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
+          body: "Cette visite guidée présente les protections hors ligne, l’automatisation orientée équipe et les exercices de restauration qui gardent chaque projet prêt pour le plateau.",
           hero: {
             heading: "Bienvenue dans Cine Power Planner",
             subheading: "Planification de puissance, de matériel et de handoff centrée équipe — entièrement hors ligne.",
-            summary:
-              "Planifiez des charges sûres, générez des kits AutoGear et préparez les handoffs pendant que chaque sauvegarde reste locale. Suivez les jalons pour découvrir comment nous protégeons vos données avant le premier tournage.",
+            summary: "Planifiez des charges sûres, générez des kits AutoGear et préparez les handoffs pendant que chaque sauvegarde reste locale. Suivez les jalons pour découvrir comment nous protégeons vos données avant le premier tournage.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Hors ligne pour toujours",
-            badgeDescription:
-              "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
-            highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Sécuriser puissance, sécurité et backups",
-                body:
-                  "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner."
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear compose des kits réutilisables",
-                body:
-                  "Générez des listes complètes depuis des scénarios de tournage avec les règles AutoGear, ajustez-les pour la journée et réutilisez les presets."
-              },
-              {
-                icon: "\uE469",
-                title: "Exigences projet prêtes à transmettre",
-                body:
-                  "Suivez exigences, couverture équipe et notes de location puis exportez des PDF fiables pour l’équipe, les loueurs et la production."
-              },
-              {
-                icon: "\uE9D4",
-                title: "PWA hors ligne, sans abonnement",
-                body:
-                  "Utilisez le planner entièrement hors ligne, installez-le comme PWA mobile et gardez chaque workflow disponible sans serveurs ni abonnements."
-              },
-              {
-                icon: "\uE5BD",
-                title: "Les données sont sacrées",
-                body:
-                  "Autosave, backups/restaurations, partage et import protègent chaque instantané de projet. Les exercices de restauration prouvent qu’aucune donnée ne se perd."
-              }
-            ],
+            badgeDescription: "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
+            highlights: [{
+              icon: "\uE1A9",
+              title: "Sécuriser puissance, sécurité et backups",
+              body: "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner."
+            }, {
+              icon: "\uE467",
+              title: "AutoGear compose des kits réutilisables",
+              body: "Générez des listes complètes depuis des scénarios de tournage avec les règles AutoGear, ajustez-les pour la journée et réutilisez les presets."
+            }, {
+              icon: "\uE469",
+              title: "Exigences projet prêtes à transmettre",
+              body: "Suivez exigences, couverture équipe et notes de location puis exportez des PDF fiables pour l’équipe, les loueurs et la production."
+            }, {
+              icon: "\uE9D4",
+              title: "PWA hors ligne, sans abonnement",
+              body: "Utilisez le planner entièrement hors ligne, installez-le comme PWA mobile et gardez chaque workflow disponible sans serveurs ni abonnements."
+            }, {
+              icon: "\uE5BD",
+              title: "Les données sont sacrées",
+              body: "Autosave, backups/restaurations, partage et import protègent chaque instantané de projet. Les exercices de restauration prouvent qu’aucune donnée ne se perd."
+            }],
             languageLabel: "Langue",
-            languageHint:
-              "Choisissez la langue de l’interface pour que cette visite, l’aide et les exports se traduisent instantanément dans vos sauvegardes hors ligne.",
-            offlineSummary:
-              "Cine Power Planner est pensé pour le terrain : hors ligne par défaut, installable sur mobile et stockant toujours des sauvegardes redondantes localement afin que l’équipe garde le contrôle de ses données."
+            languageHint: "Choisissez la langue de l’interface pour que cette visite, l’aide et les exports se traduisent instantanément dans vos sauvegardes hors ligne.",
+            offlineSummary: "Cine Power Planner est pensé pour le terrain : hors ligne par défaut, installable sur mobile et stockant toujours des sauvegardes redondantes localement afin que l’équipe garde le contrôle de ses données."
           }
         },
         userProfile: {
@@ -7167,23 +7185,19 @@ var texts = {
         },
         resultsTotalDraw: {
           title: "Passage Power Summary : Consommation totale",
-          body:
-            "Commencez la revue dans Power Summary en confirmant la carte Consommation totale et la charge de pointe afin que le calcul de la demande reste exact avant d’aller plus loin."
+          body: "Commencez la revue dans Power Summary en confirmant la carte Consommation totale et la charge de pointe afin que le calcul de la demande reste exact avant d’aller plus loin."
         },
         resultsBatteryPacks: {
           title: "Passage Power Summary : Autonomie des batteries",
-          body:
-            "Dépliez chaque groupe de batteries pour examiner les projections d’autonomie, les marges de réserve mises en évidence et les notes d’équipement en vérifiant que l’enregistrement automatique capture les derniers choix pour la sécurité hors ligne."
+          body: "Dépliez chaque groupe de batteries pour examiner les projections d’autonomie, les marges de réserve mises en évidence et les notes d’équipement en vérifiant que l’enregistrement automatique capture les derniers choix pour la sécurité hors ligne."
         },
         resultsChangeover: {
           title: "Passage Power Summary : Basculements",
-          body:
-            "Poursuivez avec les minuteries de bascule pour confirmer la couverture des chargeurs et les indicateurs d’état afin que chaque relais reste organisé dans l’instantané sauvegardé."
+          body: "Poursuivez avec les minuteries de bascule pour confirmer la couverture des chargeurs et les indicateurs d’état afin que chaque relais reste organisé dans l’instantané sauvegardé."
         },
         resultsWarnings: {
           title: "Passage Power Summary : Alertes et sauvegardes",
-          body:
-            "Consignez les alertes de connecteur lorsque les D-Tap ou les broches ne supportent pas la charge, téléchargez le rapport hors ligne pour des sauvegardes redondantes et vérifiez la bannière d’enregistrement automatique afin que partages et exports reflètent le même état."
+          body: "Consignez les alertes de connecteur lorsque les D-Tap ou les broches ne supportent pas la charge, téléchargez le rapport hors ligne pour des sauvegardes redondantes et vérifiez la bannière d’enregistrement automatique afin que partages et exports reflètent le même état."
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -7343,6 +7357,9 @@ var texts = {
     hideDeviceManagerHelp: "Masque l'éditeur de la base de données des appareils.",
     zoomInLabel: "Zoom avant",
     zoomOutLabel: "Zoom arrière",
+    diagramHoverNotice: "Cliquez pour en savoir plus !",
+    diagramDetailBackLabel: "Retour",
+    diagramDetailDefaultHeading: "Détails du diagramme",
     diagramMoveHint: "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme."
   },
   de: {
@@ -7457,7 +7474,7 @@ var texts = {
       openManager: "Kontakte öffnen",
       linkedBadge: "Mit Kontakt verknüpft",
       contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse, eine Telefonnummer oder eine Website an, bevor du diesen Kontakt speicherst.",
-      websiteLabel: "Website",
+      websiteLabel: "Webseite",
       websitePlaceholder: "https://beispiel.de",
       avatarOptionsTitle: "Fotooptionen",
       avatarOptionsDescription: "Zeige eine Vorschau des Fotos und wähle eine Aktion.",
@@ -7844,7 +7861,7 @@ var texts = {
       productionCompanyPostalCodePlaceholder: "10115",
       productionCompanyCountry: "Land",
       productionCompanyCountryPlaceholder: "Deutschland",
-      rentalHouse: "Verleih:",
+      rentalHouse: "Rentalhaus:",
       crewHeading: "Team",
       prepLabel: "Prep-Tage:",
       shootLabel: "Drehtage:",
@@ -7888,6 +7905,7 @@ var texts = {
       storageTypePlaceholder: "Medientyp auswählen",
       storageVariantPlaceholder: "Marke und Größe auswählen",
       storageNotesPlaceholder: "Notizen hinzufügen (Marke, Kapazität, Recorder …)",
+      storageDuplicateEntry: "Speichereintrag duplizieren",
       storageSummaryFallback: "Speichermedium",
       monitoringHeading: "Bildkontrolle",
       monitoringConfiguration: "Monitoring-Konfiguration der Kamera:",
@@ -7958,7 +7976,7 @@ var texts = {
       productionCompanyPostalCodePlaceholder: "10115",
       productionCompanyCountry: "Land",
       productionCompanyCountryPlaceholder: "Deutschland",
-      rentalHouse: "Verleih",
+      rentalHouse: "Rentalhaus",
       crew: "Team",
       prepDays: "Prep-Tage",
       shootingDays: "Drehtage",
@@ -8019,8 +8037,7 @@ var texts = {
       "Rigging Grip": "Rigging-Grip"
     },
     gearListNoteLabel: "Notiz:",
-    gearListAutosaveNote:
-      "Wird nach jedem Rig-Feinschliff automatisch gesichert, damit das Offline-Gear-Manifest deinen aktuellen Kamerabau widerspiegelt.",
+    gearListAutosaveNote: "Wird nach jedem Rig-Feinschliff automatisch gesichert, damit das Offline-Gear-Manifest deinen aktuellen Kamerabau widerspiegelt.",
     gearListAddCustomItem: "Benutzerdefinierten Eintrag hinzufügen",
     gearListAddCustomItemToCategory: "Benutzerdefinierten Eintrag zu {category} hinzufügen",
     gearListRemoveCustomItem: "Entfernen",
@@ -8031,14 +8048,14 @@ var texts = {
     gearListCustomItemNameAria: "Name des benutzerdefinierten Eintrags in {category}",
     gearListCustomItemNamePlaceholder: "Benutzerdefinierter Eintrag",
     gearListCustomItemPreviewFallback: "Benutzerdefinierter Eintrag",
-    gearListExcludeRentalToggle: "Für Rental House ausblenden",
-    gearListIncludeRentalToggle: "Für Rental House einblenden",
-    gearListRentalNote: "Rental House stellt diesen Artikel bereit",
+    gearListExcludeRentalToggle: "Für das Rentalhaus ausblenden",
+    gearListIncludeRentalToggle: "Für das Rentalhaus einblenden",
+    gearListRentalNote: "Das Rentalhaus stellt diesen Artikel bereit",
     gearListEditProviderLabel: "Bereitgestellt von",
-    gearListEditProviderHelp: "Wähle, wer diesen Artikel bereitstellt. Standard ist das Rental House, außer der Artikel steht in deiner Eigengear-Liste.",
-    gearListProviderRental: "Rental House",
-    gearListProviderUser: "User",
-    gearListProviderCrewHeading: "Crew",
+    gearListEditProviderHelp: "Wähle, wer diesen Artikel bereitstellt. Standard ist das Rentalhaus, außer der Artikel steht in deiner Eigengear-Liste.",
+    gearListProviderRental: "Rentalhaus",
+    gearListProviderUser: "Benutzer",
+    gearListProviderCrewHeading: "Team",
     gearListProviderUnknown: "Eigener Anbieter",
     gearListEditOwnedLabel: "Eigen",
     gearListEditOwnedHelp: "Füge diese Zeile deiner Eigengear-Liste hinzu oder entferne sie, damit dein Bestand synchron bleibt.",
@@ -8066,7 +8083,7 @@ var texts = {
     gearListExtraIndicatorOpen: "Temporäres Extra ab %s",
     gearListExtraIndicatorEnd: "Temporäres Extra bis %s",
     gearListExtraIndicatorNoPeriod: "Temporäres Extra",
-    gearListEditRentalLabel: "Für Rental House ausblenden",
+    gearListEditRentalLabel: "Für das Rentalhaus ausblenden",
     gearListEditSave: "Speichern",
     gearListEditCancel: "Abbrechen",
     gearListEditButton: "Gear-Element bearbeiten",
@@ -8190,7 +8207,7 @@ var texts = {
     languageSetting: "Sprache",
     settingsLanguageHelp: "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",
     darkModeSetting: "Dunkelmodus",
-    settingsDarkModeHelp: "Schalte den Dark Mode in den Einstellungen ein oder aus und sieh das Ergebnis sofort.",
+    settingsDarkModeHelp: "Wechsle den hellen oder dunklen Modus an jeder Stelle. Onboarding-Auswahl, Schalter in der Kopfzeile und das Kontrollkästchen in den Einstellungen bleiben sofort synchron.",
     pinkModeSetting: "Pinkmodus",
     settingsPinkModeHelp: "Aktiviere das verspielte Pink-Theme in den Einstellungen.",
     accentColorSetting: "Akzentfarbe",
@@ -8673,8 +8690,7 @@ var texts = {
     confirmFactoryReset: "Backup erstellen und alle Planer-Daten löschen?",
     confirmFactoryResetAgain: "Letzte Warnung: Alle gespeicherten Projekte, Geräte, Einstellungen und Rückmeldungen werden gelöscht. Fortfahren?",
     factoryResetBackupFailed: "Backup fehlgeschlagen. Daten wurden nicht gelöscht.",
-    factoryResetAwaitDownload:
-      "Erlaube Downloads, damit deine Sicherung gespeichert wird. Die Werkseinstellung wird fortgesetzt, nachdem du den Download akzeptiert hast.",
+    factoryResetAwaitDownload: "Erlaube Downloads, damit deine Sicherung gespeichert wird. Die Werkseinstellung wird fortgesetzt, nachdem du den Download akzeptiert hast.",
     factoryResetDownloadBlocked: "Der Sicherungsdownload wurde blockiert. Es wurden keine Daten gelöscht.",
     factoryResetSuccess: "Backup heruntergeladen. Alle Planer-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
@@ -8740,8 +8756,16 @@ var texts = {
     loggingCaptureErrorsHelp: "Erfasst unbehandelte Fehler und Promise-Ablehnungen.",
     loggingPersistSessionLabel: "Protokoll zwischen Reloads behalten",
     loggingPersistSessionHelp: "Speichert Einträge in der Session, damit Diagnosen Reloads überstehen.",
+    loggingExportButton: "Protokoll exportieren",
+    loggingExportHelp: "Laden Sie das vollständige Diagnoseprotokoll als JSON-Datei herunter.",
+    loggingExportSuccess: "Diagnoseprotokoll exportiert.",
+    loggingExportError: "Protokollexport fehlgeschlagen. Versuchen Sie es nach dem Neuladen der Einstellungen erneut.",
+    loggingExportUnavailable: "Protokoll nicht verfügbar. Versuchen Sie es nach dem Neuladen der Einstellungen erneut.",
     loggingStatusIdle: "Live-Protokoll bereit.",
     loggingStatusUpdating: "Protokoll wird aktualisiert…",
+    loggingStatusExporting: "Protokollexport wird vorbereitet…",
+    loggingStatusExported: "Diagnoseprotokoll bereit zum Herunterladen.",
+    loggingStatusExportFailed: "Protokollexport fehlgeschlagen.",
     loggingStorageEstimateUpdated: "Speicherabschätzung aktualisiert.",
     loggingStorageQuotaOnly: "Verfügbarer Speicher: {quota}.",
     loggingStatusError: "Protokollierung nicht verfügbar. Die Konsole protokolliert weiter als Fallback.",
@@ -8888,6 +8912,7 @@ var texts = {
       skipLabel: "Tutorial überspringen",
       backLabel: "Zurück",
       nextLabel: "Weiter",
+      introStartLabel: "Onboarding-Tour starten",
       doneLabel: "Tutorial abschließen",
       stepIndicator: "Schritt {current} von {total}",
       completionIndicator: "Erstes Projekt offline gesichert",
@@ -8896,14 +8921,27 @@ var texts = {
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
       stepStatusUpcoming: "Als nächstes",
-      resumeHint: "Du machst dort weiter, wo du aufgehört hast. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
-      resumeHintDetailed: "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und offline gesichert.",
+      resumeHint: "Du machst genau dort weiter, wo du pausiert hast. Mit dem Schritt-Navigator kannst du frühere Abläufe erneut ansehen, ohne den offline gespeicherten Fortschritt zu löschen.",
+      resumeHintDetailed: "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und fest in deinen Offline-Sicherungen verankert.",
+      userProfileInteractionIntro: "Erfasse die Crew-Daten einmalig. Jede Aktualisierung synchronisiert sich sofort mit Kontakte, bleibt offline zwischengespeichert und fließt in Exporte ein, damit das Team immer weiß, wem das Setup gehört.",
+      userProfileInteractionSkipHint: "Drücke Weiter, sobald du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorial-Fortschritt zurückzusetzen.",
+      userProfileAvatarAction: "Profilfoto hinzufügen",
+      unitsPreferencesLanguageLabel: "Sprache",
+      unitsPreferencesThemeLabel: "Design",
+      unitsPreferencesThemeLight: "Hell",
+      unitsPreferencesThemeDark: "Dunkel",
+      unitsPreferencesPinkLabel: "Pinkmodus-Akzente",
+      unitsPreferencesPinkOff: "Deaktiviert",
+      unitsPreferencesPinkOn: "Aktiviert",
+      unitsPreferencesUnitsLabel: "Temperatureinheiten",
+      unitsPreferencesPersistenceHint: "Fordere dauerhaften Speicher an, damit der Browser die Planner-Daten selbst bei wenig Platz behält.",
+      unitsPreferencesPersistenceAction: "Speicher auf diesem Gerät schützen",
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
       helpStatusNotStarted: "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
-      helpStatusInProgress: "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
-      helpStatusResume: "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
+      helpStatusInProgress: "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Nächster Ablauf: {next}.",
+      helpStatusResume: "Pausiert bei {current}. {completed} von {total} Schritten bereits offline abgesichert.",
       helpStatusSkipped: "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
       helpStatusCompleted: "Tutorial abgeschlossen. Spiele jeden Schritt jederzeit zur Auffrischung erneut ab.",
       helpStatusLastCompleted: "Zuletzt abgeschlossen: {step} ({timeAgo}).",
@@ -8922,54 +8960,38 @@ var texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body:
-            "Dieser geführte Rundgang stellt die Offline-Schutzmechanismen, die crewgerechte Automatisierung und die Restore-Übungen vor, damit jedes Projekt produktionsbereit bleibt.",
+          body: "Dieser geführte Rundgang stellt die Offline-Schutzmechanismen, die crewgerechte Automatisierung und die Restore-Übungen vor, damit jedes Projekt produktionsbereit bleibt.",
           hero: {
             heading: "Willkommen bei Cine Power Planner",
             subheading: "Crew-orientierte Strom-, Gear- und Übergabeplanung – komplett offline.",
-            summary:
-              "Plane sichere Lasten, baue AutoGear-Kits und sichere Übergaben, während jeder Speicherstand lokal bleibt. Folge den Checkpoints, um zu sehen, wie wir deine Daten vor dem ersten Drehtag absichern.",
+            summary: "Plane sichere Lasten, baue AutoGear-Kits und sichere Übergaben, während jeder Speicherstand lokal bleibt. Folge den Checkpoints, um zu sehen, wie wir deine Daten vor dem ersten Drehtag absichern.",
             badgeIcon: "\uE9C3",
             badgeLabel: "Crew-first · Dauerhaft offline",
-            badgeDescription:
-              "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
-            highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Leistung, Sicherheit und Backups absichern",
-                body:
-                  "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind."
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear baut wiederverwendbare Kits",
-                body:
-                  "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden."
-              },
-              {
-                icon: "\uE469",
-                title: "Projektanforderungen übergabebereit",
-                body:
-                  "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion exportieren."
-              },
-              {
-                icon: "\uE9D4",
-                title: "Offline-first, abofreie PWA",
-                body:
-                  "Den Planner komplett offline nutzen, als mobile PWA installieren und Workflows ohne Server oder Abos verfügbar halten."
-              },
-              {
-                icon: "\uE5BD",
-                title: "Daten sind heilig",
-                body:
-                  "Autosave-, Backup/Restore-, Teilen- und Import-Workflows schützen jede Projektsicherung. Restore-Proben zeigen, dass nichts verloren geht."
-              }
-            ],
+            badgeDescription: "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
+            highlights: [{
+              icon: "\uE1A9",
+              title: "Leistung, Sicherheit und Backups absichern",
+              body: "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind."
+            }, {
+              icon: "\uE467",
+              title: "AutoGear baut wiederverwendbare Kits",
+              body: "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden."
+            }, {
+              icon: "\uE469",
+              title: "Projektanforderungen übergabebereit",
+              body: "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion exportieren."
+            }, {
+              icon: "\uE9D4",
+              title: "Offline-first, abofreie PWA",
+              body: "Den Planner komplett offline nutzen, als mobile PWA installieren und Workflows ohne Server oder Abos verfügbar halten."
+            }, {
+              icon: "\uE5BD",
+              title: "Daten sind heilig",
+              body: "Autosave-, Backup/Restore-, Teilen- und Import-Workflows schützen jede Projektsicherung. Restore-Proben zeigen, dass nichts verloren geht."
+            }],
             languageLabel: "Sprache",
-            languageHint:
-              "Sprache der Oberfläche wählen, damit Tour, Hilfe und Exporte sofort in allen Offline-Speicherständen übersetzt werden.",
-            offlineSummary:
-              "Cine Power Planner ist für den Feldeinsatz gebaut: standardmäßig offline, auf Mobilgeräten installierbar und speichert immer redundante Stände lokal, damit die Crew die Daten behält."
+            languageHint: "Sprache der Oberfläche wählen, damit Tour, Hilfe und Exporte sofort in allen Offline-Speicherständen übersetzt werden.",
+            offlineSummary: "Cine Power Planner ist für den Feldeinsatz gebaut: standardmäßig offline, auf Mobilgeräten installierbar und speichert immer redundante Stände lokal, damit die Crew die Daten behält."
           }
         },
         userProfile: {
@@ -9002,23 +9024,19 @@ var texts = {
         },
         resultsTotalDraw: {
           title: "Power Summary-Durchgang: Gesamtverbrauch",
-          body:
-            "Starte die Prüfung in der Leistungsübersicht, indem du die Karte Gesamtverbrauch und die Spitzenlast bestätigst, damit die Bedarfsberechnung stimmt, bevor du tiefer einsteigst."
+          body: "Starte die Prüfung in der Leistungsübersicht, indem du die Karte Gesamtverbrauch und die Spitzenlast bestätigst, damit die Bedarfsberechnung stimmt, bevor du tiefer einsteigst."
         },
         resultsBatteryPacks: {
           title: "Power Summary-Durchgang: Batterielaufzeiten",
-          body:
-            "Klappe jede Batteriegruppe auf, um Laufzeitprognosen, hervorgehobene Reservemargen und Gerätehinweise zu prüfen und vergewissere dich, dass das Autosave die letzten Entscheidungen für die Offline-Sicherheit erfasst."
+          body: "Klappe jede Batteriegruppe auf, um Laufzeitprognosen, hervorgehobene Reservemargen und Gerätehinweise zu prüfen und vergewissere dich, dass das Autosave die letzten Entscheidungen für die Offline-Sicherheit erfasst."
         },
         resultsChangeover: {
           title: "Power Summary-Durchgang: Umschaltungen",
-          body:
-            "Gehe die Umschalt-Countdowns durch, bestätige Ladeabdeckung und Statusanzeigen, damit jeder Wechsel im gespeicherten Snapshot organisiert bleibt."
+          body: "Gehe die Umschalt-Countdowns durch, bestätige Ladeabdeckung und Statusanzeigen, damit jeder Wechsel im gespeicherten Snapshot organisiert bleibt."
         },
         resultsWarnings: {
           title: "Power Summary-Durchgang: Warnungen und Backups",
-          body:
-            "Protokolliere Anschlusswarnungen, wenn D-Tap oder Pins die Last nicht tragen können, lade den Offline-Bericht für redundante Backups herunter und prüfe das Autosave-Banner, damit Freigaben und Exporte denselben Stand widerspiegeln."
+          body: "Protokolliere Anschlusswarnungen, wenn D-Tap oder Pins die Last nicht tragen können, lade den Offline-Bericht für redundante Backups herunter und prüfe das Autosave-Banner, damit Freigaben und Exporte denselben Stand widerspiegeln."
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",
@@ -9070,7 +9088,7 @@ var texts = {
         },
         projectRequirements: {
           title: "Projektanforderungs-Boxen verfeinern",
-          body: "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing—Produktionsfirma, Verleihpräferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
+          body: "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing—Produktionsfirma, Rentalhaus-Präferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
         },
         gearList: {
           title: "Generierte Gear-Liste prüfen",
@@ -9178,6 +9196,9 @@ var texts = {
     hideDeviceManagerHelp: "Blendet den Gerätedatenbank-Editor aus.",
     zoomInLabel: "Hineinzoomen",
     zoomOutLabel: "Herauszoomen",
+    diagramHoverNotice: "Für weitere Infos anklicken!",
+    diagramDetailBackLabel: "Zurück",
+    diagramDetailDefaultHeading: "Diagrammdetails",
     diagramMoveHint: "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben."
   }
 };
@@ -9436,16 +9457,46 @@ function ensureLanguageAlignment(dataset) {
     });
   }
 }
+function mergeTranslationValue(target, source) {
+  var sourceIsArray = Array.isArray(source);
+  var sourceIsObject = !sourceIsArray && source && _typeof(source) === 'object';
+  if (sourceIsArray) {
+    return source.map(function (item) {
+      return cloneTranslationValue(item);
+    });
+  }
+  if (sourceIsObject) {
+    var result = target && _typeof(target) === 'object' ? target : {};
+    var sourceKeys = Object.keys(source);
+    for (var index = 0; index < sourceKeys.length; index += 1) {
+      var key = sourceKeys[index];
+      result[key] = mergeTranslationValue(result[key], source[key]);
+    }
+    Object.keys(result).forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(source, key)) {
+        delete result[key];
+      }
+    });
+    return result;
+  }
+  return source;
+}
 var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
 if (globalScope) {
-  if (typeof globalScope.texts === 'undefined') {
-    globalScope.texts = texts;
+  if (_typeof(globalScope.texts) === 'object' && globalScope.texts !== null) {
+    mergeTranslationValue(globalScope.texts, texts);
+  } else {
+    globalScope.texts = cloneTranslationValue(texts);
   }
-  if (typeof globalScope.categoryNames === 'undefined') {
-    globalScope.categoryNames = categoryNames;
+  if (_typeof(globalScope.categoryNames) === 'object' && globalScope.categoryNames !== null) {
+    mergeTranslationValue(globalScope.categoryNames, categoryNames);
+  } else {
+    globalScope.categoryNames = cloneTranslationValue(categoryNames);
   }
-  if (typeof globalScope.gearItems === 'undefined') {
-    globalScope.gearItems = gearItems;
+  if (_typeof(globalScope.gearItems) === 'object' && globalScope.gearItems !== null) {
+    mergeTranslationValue(globalScope.gearItems, gearItems);
+  } else {
+    globalScope.gearItems = cloneTranslationValue(gearItems);
   }
 }
 var supportedLanguages = Object.keys(texts);

@@ -4,47 +4,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
       return primary;
     }
-
-    if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
+    if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
       return globalThis;
     }
-
-    if (typeof window !== 'undefined' && window && _typeof(window) === 'object') {
+    if (typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
       return window;
     }
-
-    if (typeof self !== 'undefined' && self && _typeof(self) === 'object') {
+    if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
       return self;
     }
-
-    if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
+    if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
       return global;
     }
-
     return null;
   }
-
   function registerCandidateScope(scopes, scope) {
     if (!Array.isArray(scopes)) {
       return;
     }
-
-    if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
       return;
     }
-
     for (var index = 0; index < scopes.length; index += 1) {
       if (scopes[index] === scope) {
         return;
       }
     }
-
     scopes.push(scope);
   }
-
   function collectCandidateScopes(primaryScope, environmentHelpers) {
     var scopes = [];
-
     if (environmentHelpers && typeof environmentHelpers.fallbackCollectCandidateScopes === 'function') {
       try {
         var collected = environmentHelpers.fallbackCollectCandidateScopes(primaryScope);
@@ -57,15 +46,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void collectError;
       }
     }
-
     registerCandidateScope(scopes, primaryScope);
     registerCandidateScope(scopes, typeof globalThis !== 'undefined' ? globalThis : null);
     registerCandidateScope(scopes, typeof window !== 'undefined' ? window : null);
     registerCandidateScope(scopes, typeof self !== 'undefined' ? self : null);
     registerCandidateScope(scopes, typeof global !== 'undefined' ? global : null);
-
     var detected = null;
-
     if (environmentHelpers && typeof environmentHelpers.fallbackDetectGlobalScope === 'function') {
       try {
         detected = environmentHelpers.fallbackDetectGlobalScope();
@@ -74,38 +60,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         detected = null;
       }
     }
-
     if (!detected) {
       detected = detectScope(primaryScope);
     }
-
     registerCandidateScope(scopes, detected);
-
     return scopes;
   }
-
   function registerScope(runtimeState, scope) {
     if (!runtimeState || typeof runtimeState.registerScope !== 'function') {
       return;
     }
-
     try {
       runtimeState.registerScope(scope);
     } catch (registerError) {
       void registerError;
     }
   }
-
   function registerScopes(runtimeState, candidateScopes) {
     if (!Array.isArray(candidateScopes)) {
       return;
     }
-
     for (var index = 0; index < candidateScopes.length; index += 1) {
       registerScope(runtimeState, candidateScopes[index]);
     }
   }
-
   function getScopesSnapshot(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getScopes === 'function') {
       try {
@@ -117,14 +95,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void getScopesError;
       }
     }
-
     if (Array.isArray(candidateScopes)) {
       return candidateScopes.slice();
     }
-
     return [];
   }
-
   function ensurePrimaryScope(runtimeState, candidateScopes) {
     if (runtimeState && typeof runtimeState.getPrimaryScope === 'function') {
       try {
@@ -136,7 +111,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void getPrimaryError;
       }
     }
-
     if (Array.isArray(candidateScopes)) {
       for (var index = 0; index < candidateScopes.length; index += 1) {
         var candidate = candidateScopes[index];
@@ -145,26 +119,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-
     return null;
   }
-
   function assignTemperatureRenderer(runtimeState, renderer) {
     if (typeof renderer !== 'function') {
       return;
     }
-
     if (!runtimeState || typeof runtimeState.assignTemperatureRenderer !== 'function') {
       return;
     }
-
     try {
       runtimeState.assignTemperatureRenderer(renderer);
     } catch (assignRendererError) {
       void assignRendererError;
     }
   }
-
   function readValue(runtimeState, name, candidateScopes) {
     if (runtimeState && typeof runtimeState.readValue === 'function') {
       try {
@@ -173,15 +142,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void readValueError;
       }
     }
-
     var scopes = Array.isArray(candidateScopes) ? candidateScopes : [];
-
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
-      if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         continue;
       }
-
       try {
         if (name in scope) {
           return scope[name];
@@ -190,10 +156,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void lookupError;
       }
     }
-
     return undefined;
   }
-
   function ensureValue(runtimeState, name, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.ensureValue === 'function') {
       try {
@@ -202,14 +166,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void ensureValueError;
       }
     }
-
-    var fallbackProvider =
-      typeof fallbackValue === 'function'
-        ? fallbackValue
-        : function provideStaticFallback() {
-            return fallbackValue;
-          };
-
+    var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+      return fallbackValue;
+    };
     if (typeof name !== 'string' || !name) {
       try {
         return fallbackProvider();
@@ -218,15 +177,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return undefined;
       }
     }
-
     var scopes = Array.isArray(candidateScopes) ? candidateScopes : [];
-
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
-      if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         continue;
       }
-
       try {
         if (typeof scope[name] === 'undefined') {
           scope[name] = fallbackProvider();
@@ -236,7 +192,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void ensureError;
       }
     }
-
     try {
       return fallbackProvider();
     } catch (fallbackProviderError) {
@@ -244,7 +199,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return undefined;
     }
   }
-
   function normaliseValue(runtimeState, name, validator, fallbackValue, candidateScopes) {
     if (runtimeState && typeof runtimeState.normaliseValue === 'function') {
       try {
@@ -254,29 +208,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void normaliseValueError;
       }
     }
-
-    var validate =
-      typeof validator === 'function'
-        ? validator
-        : function alwaysValid() {
-            return true;
-          };
-
-    var fallbackProvider =
-      typeof fallbackValue === 'function'
-        ? fallbackValue
-        : function provideStaticFallback() {
-            return fallbackValue;
-          };
-
+    var validate = typeof validator === 'function' ? validator : function alwaysValid() {
+      return true;
+    };
+    var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+      return fallbackValue;
+    };
     var scopes = Array.isArray(candidateScopes) ? candidateScopes : [];
-
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
-      if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         continue;
       }
-
       try {
         if (!validate(scope[name])) {
           scope[name] = fallbackProvider();
@@ -286,7 +229,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
-
   var namespace = {
     collectCandidateScopes: collectCandidateScopes,
     registerScope: registerScope,
@@ -298,15 +240,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ensureValue: ensureValue,
     normaliseValue: normaliseValue
   };
-
   var globalScope = detectScope();
   var targetName = 'cineCoreRuntimeShared';
   var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
   var target = existing;
-  Object.keys(namespace).forEach(function (key) {
+  for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
+    var key = _Object$keys[_i];
     target[key] = namespace[key];
-  });
-
+  }
   if (globalScope && _typeof(globalScope) === 'object') {
     try {
       globalScope[targetName] = target;
@@ -314,8 +255,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void assignError;
     }
   }
-
-  if (typeof module === 'object' && module && module.exports) {
+  if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = target;
   }
 })();

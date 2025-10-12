@@ -18,7 +18,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-
   function resolveRuntimeEnvironmentHelpers() {
     if (typeof require === 'function') {
       try {
@@ -30,7 +29,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
     var candidates = [];
     function pushCandidate(scope) {
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -40,14 +38,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         candidates.push(scope);
       }
     }
-
     var primary = detectHelperScope();
     pushCandidate(primary);
     if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
     if (typeof window !== 'undefined') pushCandidate(window);
     if (typeof self !== 'undefined') pushCandidate(self);
     if (typeof global !== 'undefined') pushCandidate(global);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
       try {
@@ -59,23 +55,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-
     return null;
   }
-
   var RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
-
   function invokeEnvironmentHelper(helperName, args, fallback) {
-    if (
-      RUNTIME_ENVIRONMENT_HELPERS &&
-      helperName &&
-      typeof RUNTIME_ENVIRONMENT_HELPERS[helperName] === 'function'
-    ) {
+    if (RUNTIME_ENVIRONMENT_HELPERS && helperName && typeof RUNTIME_ENVIRONMENT_HELPERS[helperName] === 'function') {
       try {
-        var result = RUNTIME_ENVIRONMENT_HELPERS[helperName].apply(
-          RUNTIME_ENVIRONMENT_HELPERS,
-          Array.isArray(args) ? args : []
-        );
+        var result = RUNTIME_ENVIRONMENT_HELPERS[helperName].apply(RUNTIME_ENVIRONMENT_HELPERS, Array.isArray(args) ? args : []);
         if (typeof result !== 'undefined') {
           return result;
         }
@@ -83,19 +69,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void helperInvocationError;
       }
     }
-
     if (typeof fallback === 'function') {
       return fallback();
     }
-
-    return void 0;
+    return undefined;
   }
-
   function fallbackDetectGlobalScope() {
-    if (
-      RUNTIME_ENVIRONMENT_HELPERS &&
-      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
-    ) {
+    if (RUNTIME_ENVIRONMENT_HELPERS && typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function') {
       try {
         var detected = RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
         if (detected) {
@@ -120,10 +100,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   function fallbackCollectCandidateScopes(primary) {
-    if (
-      RUNTIME_ENVIRONMENT_HELPERS &&
-      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
-    ) {
+    if (RUNTIME_ENVIRONMENT_HELPERS && typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function') {
       try {
         var scoped = RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primary);
         if (Array.isArray(scoped)) {
@@ -150,158 +127,115 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return scopes;
   }
   function fallbackLoadModuleEnvironment(scope) {
-    return invokeEnvironmentHelper(
-      'fallbackLoadModuleEnvironment',
-      [scope],
-      function localFallback() {
-        var required = fallbackTryRequire('./environment.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        var candidates = fallbackCollectCandidateScopes(scope);
-        for (var index = 0; index < candidates.length; index += 1) {
-          var candidate = candidates[index];
-          if (candidate && _typeof(candidate.cineModuleEnvironment) === 'object') {
-            return candidate.cineModuleEnvironment;
-          }
-        }
-
-        return null;
+    return invokeEnvironmentHelper('fallbackLoadModuleEnvironment', [scope], function localFallback() {
+      var required = fallbackTryRequire('./environment.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
       }
-    );
+      var candidates = fallbackCollectCandidateScopes(scope);
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (candidate && _typeof(candidate.cineModuleEnvironment) === 'object') {
+          return candidate.cineModuleEnvironment;
+        }
+      }
+      return null;
+    });
   }
   function fallbackLoadEnvironmentBridge(scope) {
-    return invokeEnvironmentHelper(
-      'fallbackLoadEnvironmentBridge',
-      [scope],
-      function localFallback() {
-        var required = fallbackTryRequire('./environment-bridge.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        var candidates = fallbackCollectCandidateScopes(scope);
-        for (var index = 0; index < candidates.length; index += 1) {
-          var candidate = candidates[index];
-          if (candidate && _typeof(candidate.cineEnvironmentBridge) === 'object') {
-            return candidate.cineEnvironmentBridge;
-          }
-        }
-
-        return null;
+    return invokeEnvironmentHelper('fallbackLoadEnvironmentBridge', [scope], function localFallback() {
+      var required = fallbackTryRequire('./environment-bridge.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
       }
-    );
+      var candidates = fallbackCollectCandidateScopes(scope);
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (candidate && _typeof(candidate.cineEnvironmentBridge) === 'object') {
+          return candidate.cineEnvironmentBridge;
+        }
+      }
+      return null;
+    });
   }
   function fallbackResolveModuleGlobals(scope) {
-    return invokeEnvironmentHelper(
-      'fallbackResolveModuleGlobals',
-      [scope],
-      function localFallback() {
-        var required = fallbackTryRequire('./globals.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        var candidates = fallbackCollectCandidateScopes(scope);
-        for (var index = 0; index < candidates.length; index += 1) {
-          var candidate = candidates[index];
-          if (candidate && _typeof(candidate.cineModuleGlobals) === 'object') {
-            return candidate.cineModuleGlobals;
-          }
-        }
-
-        return null;
+    return invokeEnvironmentHelper('fallbackResolveModuleGlobals', [scope], function localFallback() {
+      var required = fallbackTryRequire('./globals.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
       }
-    );
+      var candidates = fallbackCollectCandidateScopes(scope);
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (candidate && _typeof(candidate.cineModuleGlobals) === 'object') {
+          return candidate.cineModuleGlobals;
+        }
+      }
+      return null;
+    });
   }
   function fallbackTryRequire(modulePath) {
-    return invokeEnvironmentHelper(
-      'fallbackTryRequire',
-      [modulePath],
-      function localFallback() {
-        if (typeof require !== 'function') {
-          return null;
-        }
-
-        try {
-          return require(modulePath);
-        } catch (error) {
-          void error;
-          return null;
-        }
-      }
-    );
-  }
-  function resolveModuleLinker(scope) {
-    return invokeEnvironmentHelper(
-      'resolveModuleLinker',
-      [scope],
-      function localFallback() {
-        var required = fallbackTryRequire('./helpers/module-linker.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        var candidates = fallbackCollectCandidateScopes(scope);
-        for (var index = 0; index < candidates.length; index += 1) {
-          var candidate = candidates[index];
-          try {
-            var linker = candidate && candidate.cineModuleLinker;
-            if (linker && _typeof(linker) === 'object') {
-              return linker;
-            }
-          } catch (error) {
-            void error;
-          }
-        }
-
+    return invokeEnvironmentHelper('fallbackTryRequire', [modulePath], function localFallback() {
+      if (typeof require !== 'function') {
         return null;
       }
-    );
+      try {
+        return require(modulePath);
+      } catch (error) {
+        void error;
+        return null;
+      }
+    });
+  }
+  function resolveModuleLinker(scope) {
+    return invokeEnvironmentHelper('resolveModuleLinker', [scope], function localFallback() {
+      var required = fallbackTryRequire('./helpers/module-linker.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+      var candidates = fallbackCollectCandidateScopes(scope);
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        try {
+          var linker = candidate && candidate.cineModuleLinker;
+          if (linker && _typeof(linker) === 'object') {
+            return linker;
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+      return null;
+    });
   }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
   var MODULE_LINKER = resolveModuleLinker(LOCAL_SCOPE);
   function resolveModuleSystem(scope) {
-    return invokeEnvironmentHelper(
-      'resolveModuleSystem',
-      [scope],
-      function localFallback() {
-        var targetScope = scope || LOCAL_SCOPE;
-
-        var required = fallbackTryRequire('./system.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
-          return targetScope.cineModuleSystem;
-        }
-
-        return null;
+    return invokeEnvironmentHelper('resolveModuleSystem', [scope], function localFallback() {
+      var targetScope = scope || LOCAL_SCOPE;
+      var required = fallbackTryRequire('./system.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
       }
-    );
+      if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
+        return targetScope.cineModuleSystem;
+      }
+      return null;
+    });
   }
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   function resolveEnvironmentContext(scope) {
-    return invokeEnvironmentHelper(
-      'resolveEnvironmentContext',
-      [scope || LOCAL_SCOPE],
-      function localFallback() {
-        var targetScope = scope || LOCAL_SCOPE;
-        var required = fallbackTryRequire('./environment-context.js');
-
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-
-        if (targetScope && _typeof(targetScope.cineModuleEnvironmentContext) === 'object') {
-          return targetScope.cineModuleEnvironmentContext;
-        }
-
-        return null;
+    return invokeEnvironmentHelper('resolveEnvironmentContext', [scope || LOCAL_SCOPE], function localFallback() {
+      var targetScope = scope || LOCAL_SCOPE;
+      var required = fallbackTryRequire('./environment-context.js');
+      if (required && _typeof(required) === 'object') {
+        return required;
       }
-    );
+      if (targetScope && _typeof(targetScope.cineModuleEnvironmentContext) === 'object') {
+        return targetScope.cineModuleEnvironmentContext;
+      }
+      return null;
+    });
   }
   var ENVIRONMENT_CONTEXT = resolveEnvironmentContext(LOCAL_SCOPE);
   function detectWithContext() {
@@ -932,8 +866,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   var FULLY_FROZEN_OBJECTS = typeof WeakSet === 'function' ? new WeakSet() : null;
-  function fallbackFreezeDeep(value) {
-    var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
+  function fallbackResolveSeenTracker(seen) {
+    if (seen && typeof seen.has === 'function' && typeof seen.add === 'function') {
+      return seen;
+    }
+    if (Array.isArray(seen)) {
+      return {
+        has: function has(value) {
+          return seen.indexOf(value) !== -1;
+        },
+        add: function add(value) {
+          if (seen.indexOf(value) === -1) {
+            seen.push(value);
+          }
+        }
+      };
+    }
+    if (typeof WeakSet === 'function') {
+      try {
+        return new WeakSet();
+      } catch (trackerError) {
+        void trackerError;
+      }
+    }
+    var tracked = [];
+    return {
+      has: function has(value) {
+        return tracked.indexOf(value) !== -1;
+      },
+      add: function add(value) {
+        if (tracked.indexOf(value) === -1) {
+          tracked.push(value);
+        }
+      }
+    };
+  }
+  function fallbackFreezeDeep(value, seen) {
     if (!value || _typeof(value) !== 'object') {
       return value;
     }
@@ -943,10 +911,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (FULLY_FROZEN_OBJECTS && FULLY_FROZEN_OBJECTS.has(value)) {
       return value;
     }
-    if (seen.has(value)) {
+    var tracker = fallbackResolveSeenTracker(seen);
+    if (tracker.has(value)) {
       return value;
     }
-    seen.add(value);
+    tracker.add(value);
     var alreadyFrozen = false;
     if (typeof Object.isFrozen === 'function') {
       try {
@@ -998,7 +967,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         continue;
       }
       try {
-        fallbackFreezeDeep(child, seen);
+        fallbackFreezeDeep(child, tracker);
       } catch (childError) {
         void childError;
       }
@@ -1050,11 +1019,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackFreezeDeep;
   }();
-  function _enforceShallowFreeze(target) {
-    if (!target || (_typeof(target) !== 'object' && typeof target !== 'function')) {
+  function enforceShallowFreeze(target) {
+    if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
       return target;
     }
-
     try {
       if (typeof Object.preventExtensions === 'function') {
         Object.preventExtensions(target);
@@ -1062,7 +1030,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (preventError) {
       void preventError;
     }
-
     try {
       if (typeof Object.seal === 'function') {
         Object.seal(target);
@@ -1070,9 +1037,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (sealError) {
       void sealError;
     }
-
     var keys = [];
-
     try {
       var ownNames = Object.getOwnPropertyNames(target);
       for (var index = 0; index < ownNames.length; index += 1) {
@@ -1081,45 +1046,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (nameError) {
       void nameError;
     }
-
     if (typeof Object.getOwnPropertySymbols === 'function') {
       try {
         var symbols = Object.getOwnPropertySymbols(target);
-        for (var symbolIndex = 0; symbolIndex < symbols.length; symbolIndex += 1) {
-          keys.push(symbols[symbolIndex]);
+        for (var _index = 0; _index < symbols.length; _index += 1) {
+          keys.push(symbols[_index]);
         }
       } catch (symbolError) {
         void symbolError;
       }
     }
-
-    for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
-      var key = keys[keyIndex];
-
-      var descriptor;
+    for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
+      var key = keys[_index2];
+      var descriptor = void 0;
       try {
         descriptor = Object.getOwnPropertyDescriptor(target, key);
       } catch (descriptorError) {
         void descriptorError;
         descriptor = null;
       }
-
       if (!descriptor) {
         continue;
       }
-
-      var requiresLock = descriptor.configurable === true ||
-        (Object.prototype.hasOwnProperty.call(descriptor, 'writable') && descriptor.writable === true);
-
+      var requiresLock = descriptor.configurable === true || 'writable' in descriptor && descriptor.writable === true;
       if (!requiresLock) {
         continue;
       }
-
       var nextDescriptor = {
         configurable: false,
         enumerable: !!descriptor.enumerable
       };
-
       if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
         nextDescriptor.value = descriptor.value;
         nextDescriptor.writable = false;
@@ -1127,18 +1083,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         nextDescriptor.get = descriptor.get;
         nextDescriptor.set = descriptor.set;
       }
-
       try {
         Object.defineProperty(target, key, nextDescriptor);
       } catch (defineError) {
         void defineError;
       }
     }
-
     return target;
   }
-
-  function _ensureDeepFrozen(value) {
+  function ensureDeepFrozen(value) {
     var frozen = freezeDeep(value);
     if (Object.isFrozen(frozen)) {
       return frozen;
@@ -1151,7 +1104,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       void error;
     }
-    _enforceShallowFreeze(frozen);
+    enforceShallowFreeze(frozen);
     return frozen;
   }
   function fallbackSafeWarn(message, detail) {
@@ -1274,13 +1227,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var registry = options.registry || MODULE_REGISTRY;
     var queueKey = typeof options.queueKey === 'string' && options.queueKey ? options.queueKey : PENDING_QUEUE_KEY;
     if (!registry || typeof registry.register !== 'function') {
-      return _ensureDeepFrozen({
+      return ensureDeepFrozen({
         ok: false,
         processed: 0,
         requeued: 0,
         scopes: 0,
         queueKey: queueKey,
-        failures: _ensureDeepFrozen([{
+        failures: ensureDeepFrozen([{
           reason: 'missing-registry'
         }])
       });
@@ -1346,13 +1299,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (failures.length > 0 && options.warn) {
       safeWarn('cineRuntime.flushPendingModuleQueues() encountered issues while replaying module registrations.', failures);
     }
-    return _ensureDeepFrozen({
+    return ensureDeepFrozen({
       ok: failures.length === 0,
       processed: processed,
       requeued: requeued,
       scopes: touchedScopes,
       queueKey: queueKey,
-      failures: failures.length > 0 ? _ensureDeepFrozen(failures) : _ensureDeepFrozen([])
+      failures: failures.length > 0 ? ensureDeepFrozen(failures) : ensureDeepFrozen([])
     });
   }
   function synchronizeModuleLinks() {
@@ -1391,13 +1344,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var combinedFailures = [];
     if (Array.isArray(flushResult.failures)) {
-      for (var _index = 0; _index < flushResult.failures.length; _index += 1) {
-        combinedFailures.push(flushResult.failures[_index]);
+      for (var _index3 = 0; _index3 < flushResult.failures.length; _index3 += 1) {
+        combinedFailures.push(flushResult.failures[_index3]);
       }
     }
     if (exposureFailures.length > 0) {
-      for (var _index2 = 0; _index2 < exposureFailures.length; _index2 += 1) {
-        combinedFailures.push(exposureFailures[_index2]);
+      for (var _index4 = 0; _index4 < exposureFailures.length; _index4 += 1) {
+        combinedFailures.push(exposureFailures[_index4]);
       }
     }
     var result = {
@@ -1407,7 +1360,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       flushed: flushResult,
       failures: combinedFailures
     };
-    return _ensureDeepFrozen(result);
+    return ensureDeepFrozen(result);
   }
   var INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({
     warn: false
@@ -1416,7 +1369,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var registry = options.registry || MODULE_REGISTRY;
     if (!registry || typeof registry.list !== 'function' || typeof registry.describe !== 'function') {
-      return _ensureDeepFrozen({
+      return ensureDeepFrozen({
         ok: false,
         reason: 'missing-registry',
         modules: [],
@@ -1428,12 +1381,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     try {
       names = registry.list();
     } catch (error) {
-      return _ensureDeepFrozen({
+      return ensureDeepFrozen({
         ok: false,
         reason: 'list-failed',
         modules: [],
         missingConnections: [],
-        errors: _ensureDeepFrozen([{
+        errors: ensureDeepFrozen([{
           type: 'list',
           message: error && typeof error.message === 'string' ? error.message : null
         }])
@@ -1501,14 +1454,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           _iterator.f();
         }
       }
-      modules.push(_ensureDeepFrozen({
+      modules.push(ensureDeepFrozen({
         name: name,
         connections: connectionList,
         missing: missingList,
         ok: missingList.length === 0
       }));
     }
-    return _ensureDeepFrozen({
+    return ensureDeepFrozen({
       ok: missingConnections.length === 0,
       modules: modules,
       missingConnections: missingConnections,
@@ -1688,8 +1641,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       detailMap[key] = false;
       return;
     }
-    for (var _index3 = 0; _index3 < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index3 += 1) {
-      var path = REQUIRED_PERSISTENCE_FUNCTIONS[_index3];
+    for (var _index5 = 0; _index5 < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index5 += 1) {
+      var path = REQUIRED_PERSISTENCE_FUNCTIONS[_index5];
       var segments = parsePath(path);
       var bindingName = segments[segments.length - 1];
       var bindingPath = "cinePersistence.bindings.".concat(bindingName);
@@ -1812,7 +1765,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function listCriticalChecks() {
-    return _ensureDeepFrozen({
+    return ensureDeepFrozen({
       cinePersistence: REQUIRED_PERSISTENCE_FUNCTIONS.slice(),
       cineOffline: REQUIRED_OFFLINE_FUNCTIONS.slice(),
       cineUi: {
@@ -1915,12 +1868,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       inspectUiHelp(ui, missing, detailMap);
     }
     var ok = missing.length === 0;
-    var result = _ensureDeepFrozen({
+    var result = ensureDeepFrozen({
       ok: ok,
       missing: missing.slice(),
-      modules: _ensureDeepFrozen(modulePresence),
-      details: _ensureDeepFrozen(detailMap),
-      registry: registrySnapshot ? _ensureDeepFrozen(registrySnapshot) : null,
+      modules: ensureDeepFrozen(modulePresence),
+      details: ensureDeepFrozen(detailMap),
+      registry: registrySnapshot ? ensureDeepFrozen(registrySnapshot) : null,
       checks: listCriticalChecks(),
       synchronization: synchronization
     });
@@ -1936,7 +1889,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return result;
   }
-  var runtimeAPI = _ensureDeepFrozen({
+  var runtimeAPI = ensureDeepFrozen({
     getPersistence: function getPersistence(options) {
       return ensureModule('cinePersistence', options);
     },
@@ -1957,7 +1910,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     listCriticalChecks: listCriticalChecks,
     verifyCriticalFlows: verifyCriticalFlows,
-    __internal: _ensureDeepFrozen({
+    __internal: ensureDeepFrozen({
       resolveModule: resolveModule,
       ensureModule: ensureModule,
       listCriticalChecks: listCriticalChecks,

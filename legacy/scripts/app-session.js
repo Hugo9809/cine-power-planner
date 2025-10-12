@@ -1267,7 +1267,7 @@ function ensureSessionRuntimeFunction(functionName) {
     };
   });
 }
-var AUTO_GEAR_RUNTIME_HANDLERS = ['handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'handleAutoGearShowBackupsToggle', 'handleAutoGearConditionShortcut'];
+var AUTO_GEAR_RUNTIME_HANDLERS = ['handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'handleAutoGearShowBackupsToggle', 'handleAutoGearConditionShortcut', 'saveAutoGearRuleFromEditor'];
 for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   var handlerName = AUTO_GEAR_RUNTIME_HANDLERS[index];
   ensureSessionRuntimeFunction(handlerName, {
@@ -1299,6 +1299,16 @@ function getSessionCoreValue(functionName) {
     void coerceError;
     return defaultValue;
   }
+}
+function deriveSessionProjectInfo(info) {
+  var fallback = info && _typeof(info) === 'object' ? _objectSpread({}, info) : {};
+  var derived = callSessionCoreFunction('deriveProjectInfo', [info], {
+    defaultValue: fallback
+  });
+  if (derived && _typeof(derived) === 'object') {
+    return derived;
+  }
+  return fallback;
 }
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
@@ -2708,7 +2718,7 @@ function saveCurrentSession() {
   var info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
   info.easyrig = getSessionCoreValue('getEasyrigValue');
-  currentProjectInfo = deriveProjectInfo(info);
+  currentProjectInfo = deriveSessionProjectInfo(info);
   var batteryValue = batterySelect ? batterySelect.value : '';
   var batteryPlateValue = batteryPlateSelect ? batteryPlateSelect.value : '';
   var state = {
@@ -3573,9 +3583,7 @@ function applyImportedOwnedGearMarkers(markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
-      ? CSS.escape(marker.ownedId)
-      : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var element = root.querySelector("[data-gear-own-gear-id=\"".concat(selectorId, "\"]"));
     if (!element) {
       return;
@@ -4542,7 +4550,15 @@ var appearanceContext = {
         return null;
       }
     },
-    getSafeLocalStorage: function getSafeLocalStorageWrapper() {
+    getSafeLocalStorage: function (_getSafeLocalStorage) {
+      function getSafeLocalStorage() {
+        return _getSafeLocalStorage.apply(this, arguments);
+      }
+      getSafeLocalStorage.toString = function () {
+        return _getSafeLocalStorage.toString();
+      };
+      return getSafeLocalStorage;
+    }(function () {
       try {
         if (typeof getSafeLocalStorage === 'function') {
           return getSafeLocalStorage();
@@ -4551,8 +4567,16 @@ var appearanceContext = {
         console.warn('cineSettingsAppearance: getSafeLocalStorage threw while building context', storageError);
       }
       return null;
-    },
-    resolveSafeLocalStorage: function resolveSafeLocalStorageWrapper() {
+    }),
+    resolveSafeLocalStorage: function (_resolveSafeLocalStorage) {
+      function resolveSafeLocalStorage() {
+        return _resolveSafeLocalStorage.apply(this, arguments);
+      }
+      resolveSafeLocalStorage.toString = function () {
+        return _resolveSafeLocalStorage.toString();
+      };
+      return resolveSafeLocalStorage;
+    }(function () {
       try {
         if (typeof resolveSafeLocalStorage === 'function') {
           return resolveSafeLocalStorage();
@@ -4561,7 +4585,7 @@ var appearanceContext = {
         console.warn('cineSettingsAppearance: resolveSafeLocalStorage threw while building context', storageError);
       }
       return null;
-    }
+    })
   },
   preferences: {
     getTemperatureUnit: function getTemperatureUnit() {
@@ -4670,14 +4694,12 @@ if (appearanceModule && typeof appearanceModule.createThemePreferenceController 
     }
   });
 }
-
 var themePreferenceGlobalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
-
-function setThemePreference(value, options) {
+var setThemePreference = function setThemePreference(value) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var normalized = !!value;
-  var config = options && _typeof(options) === 'object' ? options : {};
   if (themePreferenceController && typeof themePreferenceController.setValue === 'function') {
-    themePreferenceController.setValue(normalized, config);
+    themePreferenceController.setValue(normalized, options);
     return;
   }
   applyDarkMode(normalized);
@@ -4687,7 +4709,10 @@ function setThemePreference(value, options) {
     if (typeof resolveSafeLocalStorage === 'function') {
       var safeStorage = resolveSafeLocalStorage();
       if (safeStorage && typeof safeStorage.setItem === 'function') {
-        persistTargets.push({ name: 'safeLocalStorage', storage: safeStorage });
+        persistTargets.push({
+          name: 'safeLocalStorage',
+          storage: safeStorage
+        });
       }
     }
   } catch (error) {
@@ -4695,59 +4720,61 @@ function setThemePreference(value, options) {
   }
   try {
     if (typeof localStorage !== 'undefined') {
-      persistTargets.push({ name: 'localStorage', storage: localStorage });
+      persistTargets.push({
+        name: 'localStorage',
+        storage: localStorage
+      });
     }
   } catch (error) {
     console.warn('Could not access localStorage while persisting dark mode preference', error);
   }
-  for (var index = 0; index < persistTargets.length; index += 1) {
-    var entry = persistTargets[index];
+  persistTargets.forEach(function (entry) {
     if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
-      continue;
+      return;
     }
     try {
       entry.storage.setItem('darkMode', serialized);
     } catch (persistError) {
-      console.warn('Could not persist dark mode preference to ' + entry.name, persistError);
+      console.warn("Could not persist dark mode preference to ".concat(entry.name), persistError);
     }
-  }
-}
-
-function getThemePreference() {
+  });
+};
+var getThemePreference = function getThemePreference() {
   if (themePreferenceController && typeof themePreferenceController.getValue === 'function') {
     return !!themePreferenceController.getValue();
   }
-  return typeof document !== 'undefined' && document.body && document.body.classList && document.body.classList.contains('dark-mode');
-}
-
-function registerThemeControl(element, config) {
+  return typeof document !== 'undefined' && document.body && typeof document.body.classList !== 'undefined' && document.body.classList.contains('dark-mode');
+};
+var registerThemeControl = function registerThemeControl(element, config) {
   if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
-    return function noopUnregister() {};
+    return function () {};
   }
   try {
     return themePreferenceController.registerControl(element, config);
   } catch (registrationError) {
     console.warn('Failed to register theme control', registrationError);
-    return function noopUnregister() {};
+    return function () {};
   }
-}
-
+};
 var unregisterHeaderThemeControl = function unregisterHeaderThemeControl() {};
 var unregisterSettingsThemeControl = function unregisterSettingsThemeControl() {};
-
 if (themePreferenceController) {
   if (darkModeToggle) {
-    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, {
+      type: 'button'
+    });
   }
   if (settingsDarkMode) {
-    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, {
+      type: 'checkbox'
+    });
   }
 } else {
   var fallbackDarkMode = false;
   try {
-    var storedDarkPreference = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
-    if (storedDarkPreference !== null) {
-      fallbackDarkMode = storedDarkPreference === 'true';
+    var stored = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
+    if (stored !== null) {
+      fallbackDarkMode = stored === 'true';
     } else if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       fallbackDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
@@ -4766,7 +4793,6 @@ if (themePreferenceController) {
     });
   }
 }
-
 if (themePreferenceGlobalScope) {
   try {
     themePreferenceGlobalScope.cineThemePreference = themePreferenceController ? {
@@ -4774,23 +4800,19 @@ if (themePreferenceGlobalScope) {
         return registerThemeControl(element, options);
       },
       setValue: function setValue(value, options) {
-        setThemePreference(value, options);
+        return setThemePreference(value, options);
       },
       getValue: function getValue() {
         return getThemePreference();
       },
       reloadFromStorage: function reloadFromStorage(options) {
-        if (themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function') {
-          return themePreferenceController.reloadFromStorage(options);
-        }
-        return getThemePreference();
+        return themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function' ? themePreferenceController.reloadFromStorage(options) : getThemePreference();
       }
     } : null;
   } catch (exposeError) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
 }
-
 var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
 var highContrastEnabled = false;
 try {
@@ -5045,34 +5067,36 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsDarkMode) {
-        setThemePreference(settingsDarkMode.checked, { persist: true });
+        setThemePreference(settingsDarkMode.checked, {
+          persist: true
+        });
       }
       if (settingsPinkMode) {
         persistPinkModePreference(settingsPinkMode.checked);
       }
       if (settingsHighContrast) {
-        var _enabled = settingsHighContrast.checked;
-        applyHighContrast(_enabled);
+        var enabled = settingsHighContrast.checked;
+        applyHighContrast(enabled);
         try {
-          localStorage.setItem('highContrast', _enabled);
+          localStorage.setItem('highContrast', enabled);
         } catch (e) {
           console.warn('Could not save high contrast preference', e);
         }
       }
       if (settingsReduceMotion) {
-        var _enabled2 = settingsReduceMotion.checked;
-        applyReduceMotion(_enabled2);
+        var _enabled = settingsReduceMotion.checked;
+        applyReduceMotion(_enabled);
         try {
-          localStorage.setItem('reduceMotion', _enabled2);
+          localStorage.setItem('reduceMotion', _enabled);
         } catch (e) {
           console.warn('Could not save reduce motion preference', e);
         }
       }
       if (settingsRelaxedSpacing) {
-        var _enabled3 = settingsRelaxedSpacing.checked;
-        applyRelaxedSpacing(_enabled3);
+        var _enabled2 = settingsRelaxedSpacing.checked;
+        applyRelaxedSpacing(_enabled2);
         try {
-          localStorage.setItem('relaxedSpacing', _enabled3);
+          localStorage.setItem('relaxedSpacing', _enabled2);
         } catch (e) {
           console.warn('Could not save relaxed spacing preference', e);
         }
@@ -6920,7 +6944,9 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
   }
   try {
-    setThemePreference(safeGetItem('darkMode') === 'true', { persist: true });
+    setThemePreference(safeGetItem('darkMode') === 'true', {
+      persist: true
+    });
   } catch (error) {
     console.warn('Failed to apply restored dark mode preference', error);
   }
@@ -7483,6 +7509,7 @@ var loggingUnavailableEl = typeof document !== 'undefined' ? document.getElement
 var loggingLevelFilterEl = typeof document !== 'undefined' ? document.getElementById('loggingLevelFilter') : null;
 var loggingNamespaceFilterEl = typeof document !== 'undefined' ? document.getElementById('loggingNamespaceFilter') : null;
 var loggingNamespaceHelpEl = typeof document !== 'undefined' ? document.getElementById('loggingNamespaceFilterHelp') : null;
+var loggingExportButton = typeof document !== 'undefined' ? document.getElementById('loggingExportBtn') : null;
 var loggingHistoryLimitInput = typeof document !== 'undefined' ? document.getElementById('loggingHistoryLimit') : null;
 var loggingHistoryLimitHelpEl = typeof document !== 'undefined' ? document.getElementById('loggingHistoryLimitHelp') : null;
 var loggingConsoleOutputInput = typeof document !== 'undefined' ? document.getElementById('loggingConsoleOutput') : null;
@@ -7563,6 +7590,7 @@ var LOGGING_LEVEL_PRIORITY = {
 };
 var LOGGING_HISTORY_MIN = 50;
 var LOGGING_HISTORY_MAX = 2000;
+var LOGGING_EXPORT_STATUS_RESET_DELAY = 6000;
 var loggingState = {
   initialized: false,
   loggingApi: null,
@@ -7573,7 +7601,8 @@ var loggingState = {
   levelFilter: 'all',
   namespaceFilter: '',
   config: null,
-  namespaceDebounce: null
+  namespaceDebounce: null,
+  statusResetTimer: null
 };
 function getLoggingLangInfo() {
   var fallbackTexts = texts && texts.en ? texts.en : {};
@@ -7589,6 +7618,10 @@ function setLoggingStatusKey(key) {
   if (!loggingStatusEl) {
     return;
   }
+  if (loggingState.statusResetTimer != null) {
+    clearTimeout(loggingState.statusResetTimer);
+    loggingState.statusResetTimer = null;
+  }
   var _getLoggingLangInfo = getLoggingLangInfo(),
     langTexts = _getLoggingLangInfo.langTexts,
     fallbackTexts = _getLoggingLangInfo.fallbackTexts;
@@ -7599,6 +7632,27 @@ function setLoggingStatusKey(key) {
   } else {
     loggingStatusEl.removeAttribute('data-help');
   }
+}
+function scheduleLoggingStatusReset() {
+  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 5000;
+  var fallbackKey = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'loggingStatusIdle';
+  if (loggingState.statusResetTimer != null) {
+    clearTimeout(loggingState.statusResetTimer);
+    loggingState.statusResetTimer = null;
+  }
+  if (typeof setTimeout !== 'function') {
+    if (fallbackKey) {
+      setLoggingStatusKey(fallbackKey);
+    }
+    return;
+  }
+  var timeout = typeof delay === 'number' && Number.isFinite(delay) ? Math.max(0, delay) : 5000;
+  loggingState.statusResetTimer = setTimeout(function () {
+    loggingState.statusResetTimer = null;
+    if (fallbackKey) {
+      setLoggingStatusKey(fallbackKey);
+    }
+  }, timeout);
 }
 function resolveLoggingApi() {
   if (loggingState.loggingApi && typeof loggingState.loggingApi.getHistory === 'function') {
@@ -7645,7 +7699,7 @@ function detachLoggingSubscriptions() {
   loggingState.unsubscribeConfig = null;
 }
 function setLoggingControlsDisabled(disabled) {
-  var inputs = [loggingLevelFilterEl, loggingNamespaceFilterEl, loggingHistoryLimitInput, loggingConsoleOutputInput, loggingCaptureConsoleInput, loggingCaptureErrorsInput, loggingPersistSessionInput];
+  var inputs = [loggingLevelFilterEl, loggingNamespaceFilterEl, loggingHistoryLimitInput, loggingConsoleOutputInput, loggingCaptureConsoleInput, loggingCaptureErrorsInput, loggingPersistSessionInput, loggingExportButton];
   inputs.forEach(function (input) {
     if (!input) return;
     input.disabled = !!disabled;
@@ -7711,15 +7765,218 @@ function createLogDetailsElement(label, value) {
   details.appendChild(pre);
   return details;
 }
+function sanitizeLoggingFileSegment(segment) {
+  if (typeof segment !== 'string') {
+    return '';
+  }
+  var trimmed = segment.trim();
+  if (!trimmed) {
+    return '';
+  }
+  return trimmed.replace(/[^A-Za-z0-9.-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+function buildLoggingExportMetadata() {
+  var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Date();
+  var referenceDate = date instanceof Date && !Number.isNaN(date.getTime()) ? date : new Date();
+  if (!(referenceDate instanceof Date) || Number.isNaN(referenceDate.getTime())) {
+    referenceDate = new Date();
+  }
+  var isoTimestamp = '';
+  if (referenceDate && typeof referenceDate.toISOString === 'function') {
+    try {
+      isoTimestamp = referenceDate.toISOString();
+    } catch (isoError) {
+      void isoError;
+      isoTimestamp = '';
+    }
+  }
+  if (!isoTimestamp) {
+    var fallbackDate = new Date(Date.now());
+    try {
+      isoTimestamp = fallbackDate.toISOString();
+      referenceDate = fallbackDate;
+    } catch (fallbackIsoError) {
+      void fallbackIsoError;
+      isoTimestamp = String(Date.now());
+    }
+  }
+  var stampSource = isoTimestamp || String(Date.now());
+  var sanitizedStamp = sanitizeLoggingFileSegment(stampSource.replace(/[:.]/g, '-')) || sanitizeLoggingFileSegment(stampSource) || String(Date.now());
+  var versionCandidate = typeof ACTIVE_APP_VERSION === 'string' && ACTIVE_APP_VERSION ? ACTIVE_APP_VERSION : typeof APP_VERSION === 'string' && APP_VERSION ? APP_VERSION : '';
+  var sanitizedVersion = sanitizeLoggingFileSegment(versionCandidate);
+  var parts = ['cine-power-planner-log'];
+  if (sanitizedVersion) {
+    parts.push("v".concat(sanitizedVersion));
+  }
+  parts.push(sanitizedStamp);
+  var timezoneOffsetMinutes = typeof referenceDate.getTimezoneOffset === 'function' ? 0 - referenceDate.getTimezoneOffset() : null;
+  return {
+    isoTimestamp: isoTimestamp,
+    timezoneOffsetMinutes: timezoneOffsetMinutes,
+    fileName: "".concat(parts.join('-'), ".json")
+  };
+}
+function cloneLoggingExportValue(value) {
+  if (value === null || _typeof(value) !== 'object') {
+    return value;
+  }
+  try {
+    return SESSION_DEEP_CLONE(value);
+  } catch (cloneError) {
+    void cloneError;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (jsonError) {
+    void jsonError;
+  }
+  if (Array.isArray(value)) {
+    return value.slice();
+  }
+  return _objectSpread({}, value);
+}
+function exportLoggingHistory() {
+  var logging = resolveLoggingApi();
+  var _getLoggingLangInfo2 = getLoggingLangInfo(),
+    langTexts = _getLoggingLangInfo2.langTexts,
+    fallbackTexts = _getLoggingLangInfo2.fallbackTexts;
+  var unavailableMessage = langTexts && langTexts.loggingExportUnavailable || fallbackTexts && fallbackTexts.loggingExportUnavailable || '';
+  var errorMessage = langTexts && langTexts.loggingExportError || fallbackTexts && fallbackTexts.loggingExportError || '';
+  var successMessage = langTexts && langTexts.loggingExportSuccess || fallbackTexts && fallbackTexts.loggingExportSuccess || 'Diagnostics log exported.';
+  var shouldRestoreDisabled = loggingExportButton && !loggingExportButton.disabled;
+  if (loggingExportButton) {
+    loggingExportButton.disabled = true;
+    loggingExportButton.setAttribute('aria-disabled', 'true');
+  }
+  try {
+    if (!logging || typeof logging.getHistory !== 'function') {
+      if (unavailableMessage) {
+        showNotification('error', unavailableMessage);
+      }
+      setLoggingStatusKey('loggingStatusError');
+      scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY, 'loggingStatusIdle');
+      return;
+    }
+    setLoggingStatusKey('loggingStatusExporting');
+    var snapshot = logging.getHistory({}) || [];
+    if (!Array.isArray(snapshot)) {
+      throw new Error('Invalid diagnostics history snapshot.');
+    }
+    var historySource = snapshot;
+    var historySnapshot = cloneLoggingExportValue(historySource);
+    if (!Array.isArray(historySnapshot)) {
+      historySnapshot = historySource.slice();
+    }
+    var configSnapshot = null;
+    if (typeof logging.getConfig === 'function') {
+      try {
+        var config = logging.getConfig();
+        if (config && _typeof(config) === 'object') {
+          var clonedConfig = cloneLoggingExportValue(config);
+          configSnapshot = clonedConfig && _typeof(clonedConfig) === 'object' ? clonedConfig : _objectSpread({}, config);
+        }
+      } catch (configError) {
+        logSettingsEvent('warn', 'Diagnostics log export config capture failed', {
+          message: describeError(configError)
+        }, {
+          namespace: 'logging-export'
+        });
+      }
+    }
+    var statsSnapshot = null;
+    if (typeof logging.getStats === 'function') {
+      try {
+        var stats = logging.getStats();
+        if (stats && _typeof(stats) === 'object') {
+          var clonedStats = cloneLoggingExportValue(stats);
+          statsSnapshot = clonedStats && _typeof(clonedStats) === 'object' ? clonedStats : _objectSpread({}, stats);
+        }
+      } catch (statsError) {
+        logSettingsEvent('warn', 'Diagnostics log export stats capture failed', {
+          message: describeError(statsError)
+        }, {
+          namespace: 'logging-export'
+        });
+      }
+    }
+    var metadata = buildLoggingExportMetadata(new Date());
+    var exportPayload = {
+      exportedAt: metadata.isoTimestamp,
+      timezoneOffsetMinutes: metadata.timezoneOffsetMinutes,
+      filters: {
+        level: loggingState.levelFilter || 'all',
+        namespace: loggingState.namespaceFilter || ''
+      },
+      history: historySnapshot,
+      historyLength: historySnapshot.length
+    };
+    var appVersion = typeof ACTIVE_APP_VERSION === 'string' && ACTIVE_APP_VERSION ? ACTIVE_APP_VERSION : typeof APP_VERSION === 'string' && APP_VERSION ? APP_VERSION : null;
+    if (appVersion) {
+      exportPayload.appVersion = appVersion;
+    }
+    if (configSnapshot && _typeof(configSnapshot) === 'object') {
+      exportPayload.config = configSnapshot;
+    }
+    if (statsSnapshot && _typeof(statsSnapshot) === 'object') {
+      exportPayload.stats = statsSnapshot;
+    }
+    var serialized = JSON.stringify(exportPayload, null, 2);
+    if (!serialized) {
+      throw new Error('Empty diagnostics export payload.');
+    }
+    if (typeof downloadBackupPayload !== 'function') {
+      throw new Error('downloadBackupPayload unavailable.');
+    }
+    var downloadResult = downloadBackupPayload(serialized, metadata.fileName);
+    if (!downloadResult || !downloadResult.success) {
+      throw new Error('Diagnostics log download failed.');
+    }
+    logSettingsEvent('info', 'Diagnostics log exported', {
+      entries: historySnapshot.length,
+      fileName: metadata.fileName
+    }, {
+      namespace: 'logging-export'
+    });
+    if (successMessage) {
+      showNotification('success', successMessage);
+    }
+    setLoggingStatusKey('loggingStatusExported');
+    scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
+    if (downloadResult.method === 'manual' || downloadResult.method === 'window-fallback') {
+      var manualMessage = getManualDownloadFallbackMessage();
+      if (manualMessage) {
+        showNotification('warning', manualMessage);
+      }
+    }
+  } catch (error) {
+    var message = describeError(error);
+    logSettingsEvent('error', 'Diagnostics log export failed', {
+      message: message || null
+    }, {
+      namespace: 'logging-export'
+    });
+    var failureMessage = errorMessage || message || 'Log export failed.';
+    if (failureMessage) {
+      showNotification('error', failureMessage);
+    }
+    setLoggingStatusKey('loggingStatusExportFailed');
+    scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
+  } finally {
+    if (loggingExportButton && shouldRestoreDisabled) {
+      loggingExportButton.disabled = false;
+      loggingExportButton.setAttribute('aria-disabled', 'false');
+    }
+  }
+}
 function renderLoggingHistory() {
   loggingState.renderScheduled = false;
   if (!loggingSectionEl || !loggingHistoryListEl) {
     return;
   }
   var logging = resolveLoggingApi();
-  var _getLoggingLangInfo2 = getLoggingLangInfo(),
-    langTexts = _getLoggingLangInfo2.langTexts,
-    fallbackTexts = _getLoggingLangInfo2.fallbackTexts;
+  var _getLoggingLangInfo3 = getLoggingLangInfo(),
+    langTexts = _getLoggingLangInfo3.langTexts,
+    fallbackTexts = _getLoggingLangInfo3.fallbackTexts;
   if (!logging || typeof logging.getHistory !== 'function') {
     setLoggingControlsDisabled(true);
     if (loggingUnavailableEl) {
@@ -7865,9 +8122,9 @@ function applyLoggingConfig(config) {
     return;
   }
   loggingState.config = config;
-  var _getLoggingLangInfo3 = getLoggingLangInfo(),
-    langTexts = _getLoggingLangInfo3.langTexts,
-    fallbackTexts = _getLoggingLangInfo3.fallbackTexts;
+  var _getLoggingLangInfo4 = getLoggingLangInfo(),
+    langTexts = _getLoggingLangInfo4.langTexts,
+    fallbackTexts = _getLoggingLangInfo4.fallbackTexts;
   if (loggingHistoryLimitInput && typeof config.historyLimit === 'number') {
     loggingHistoryLimitInput.value = config.historyLimit;
     var template = langTexts.loggingHistoryLimitStatus || fallbackTexts.loggingHistoryLimitStatus || (loggingHistoryLimitHelpEl ? loggingHistoryLimitHelpEl.textContent : '');
@@ -8016,6 +8273,11 @@ function initializeLoggingPanel() {
   registerToggleHandler(loggingCaptureConsoleInput, 'captureConsole');
   registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
   registerToggleHandler(loggingPersistSessionInput, 'persistSession');
+  if (loggingExportButton) {
+    loggingExportButton.addEventListener('click', function () {
+      exportLoggingHistory();
+    });
+  }
   if (loggingNamespaceHelpEl) {
     loggingNamespaceHelpEl.setAttribute('aria-live', 'polite');
   }
@@ -8168,10 +8430,10 @@ function refreshStoragePersistenceStatus() {
   return _refreshStoragePersistenceStatus.apply(this, arguments);
 }
 function _refreshStoragePersistenceStatus() {
-  _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee() {
+  _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee2() {
     var options,
-      _ref29,
-      _ref29$fromRequest,
+      _ref30,
+      _ref30$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -8179,20 +8441,20 @@ function _refreshStoragePersistenceStatus() {
       usageValue,
       quotaValue,
       estimate,
-      _args = arguments,
-      _t,
-      _t2;
-    return _regenerator().w(function (_context) {
-      while (1) switch (_context.p = _context.n) {
+      _args2 = arguments,
+      _t3,
+      _t4;
+    return _regenerator().w(function (_context2) {
+      while (1) switch (_context2.p = _context2.n) {
         case 0:
-          options = _args.length > 0 && _args[0] !== undefined ? _args[0] : {};
+          options = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : {};
           if (storagePersistenceStatusEl) {
-            _context.n = 1;
+            _context2.n = 1;
             break;
           }
-          return _context.a(2);
+          return _context2.a(2);
         case 1:
-          _ref29 = options || {}, _ref29$fromRequest = _ref29.fromRequest, fromRequest = _ref29$fromRequest === void 0 ? false : _ref29$fromRequest;
+          _ref30 = options || {}, _ref30$fromRequest = _ref30.fromRequest, fromRequest = _ref30$fromRequest === void 0 ? false : _ref30$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -8201,14 +8463,14 @@ function _refreshStoragePersistenceStatus() {
           renderStoragePersistenceStatus();
           storageManager = getStorageManagerInstance();
           if (storageManager) {
-            _context.n = 3;
+            _context2.n = 3;
             break;
           }
           if (!(checkToken !== storagePersistenceCheckToken)) {
-            _context.n = 2;
+            _context2.n = 2;
             break;
           }
-          return _context.a(2);
+          return _context2.a(2);
         case 2:
           storagePersistenceState.supported = false;
           storagePersistenceState.persisted = false;
@@ -8219,37 +8481,37 @@ function _refreshStoragePersistenceStatus() {
             storagePersistenceState.lastRequestDenied = true;
           }
           renderStoragePersistenceStatus();
-          return _context.a(2);
+          return _context2.a(2);
         case 3:
           storagePersistenceState.supported = true;
           persistedValue = storagePersistenceState.persisted;
           if (!(typeof storageManager.persisted === 'function')) {
-            _context.n = 7;
+            _context2.n = 7;
             break;
           }
-          _context.p = 4;
-          _context.n = 5;
+          _context2.p = 4;
+          _context2.n = 5;
           return storageManager.persisted();
         case 5:
-          persistedValue = _context.v;
-          _context.n = 7;
+          persistedValue = _context2.v;
+          _context2.n = 7;
           break;
         case 6:
-          _context.p = 6;
-          _t = _context.v;
-          console.warn('Unable to determine persistent storage state', _t);
+          _context2.p = 6;
+          _t3 = _context2.v;
+          console.warn('Unable to determine persistent storage state', _t3);
         case 7:
           usageValue = storagePersistenceState.usage;
           quotaValue = storagePersistenceState.quota;
           if (!(typeof storageManager.estimate === 'function')) {
-            _context.n = 11;
+            _context2.n = 11;
             break;
           }
-          _context.p = 8;
-          _context.n = 9;
+          _context2.p = 8;
+          _context2.n = 9;
           return storageManager.estimate();
         case 9:
-          estimate = _context.v;
+          estimate = _context2.v;
           if (estimate && _typeof(estimate) === 'object') {
             if (typeof estimate.usage === 'number' && Number.isFinite(estimate.usage)) {
               usageValue = estimate.usage;
@@ -8258,18 +8520,18 @@ function _refreshStoragePersistenceStatus() {
               quotaValue = estimate.quota;
             }
           }
-          _context.n = 11;
+          _context2.n = 11;
           break;
         case 10:
-          _context.p = 10;
-          _t2 = _context.v;
-          console.warn('Unable to estimate storage usage', _t2);
+          _context2.p = 10;
+          _t4 = _context2.v;
+          console.warn('Unable to estimate storage usage', _t4);
         case 11:
           if (!(checkToken !== storagePersistenceCheckToken)) {
-            _context.n = 12;
+            _context2.n = 12;
             break;
           }
-          return _context.a(2);
+          return _context2.a(2);
         case 12:
           storagePersistenceState.persisted = Boolean(persistedValue);
           storagePersistenceState.usage = typeof usageValue === 'number' && Number.isFinite(usageValue) ? usageValue : null;
@@ -8283,9 +8545,9 @@ function _refreshStoragePersistenceStatus() {
           });
           renderStoragePersistenceStatus();
         case 13:
-          return _context.a(2);
+          return _context2.a(2);
       }
-    }, _callee, null, [[8, 10], [4, 6]]);
+    }, _callee2, null, [[8, 10], [4, 6]]);
   }));
   return _refreshStoragePersistenceStatus.apply(this, arguments);
 }
@@ -8293,46 +8555,46 @@ function handleStoragePersistenceRequest(_x3) {
   return _handleStoragePersistenceRequest.apply(this, arguments);
 }
 function _handleStoragePersistenceRequest() {
-  _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee2(event) {
-    var storageManager, granted, alreadyGranted, result, _t3;
-    return _regenerator().w(function (_context2) {
-      while (1) switch (_context2.p = _context2.n) {
+  _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee3(event) {
+    var storageManager, granted, alreadyGranted, result, _t5;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.p = _context3.n) {
         case 0:
           if (event && typeof event.preventDefault === 'function') {
             event.preventDefault();
           }
           if (!(!storagePersistenceRequestButton || storagePersistenceState.requestInFlight)) {
-            _context2.n = 1;
+            _context3.n = 1;
             break;
           }
-          return _context2.a(2);
+          return _context3.a(2);
         case 1:
           storageManager = getStorageManagerInstance();
           storagePersistenceState.requestAttempted = true;
           if (!(!storageManager || typeof storageManager.persist !== 'function')) {
-            _context2.n = 2;
+            _context3.n = 2;
             break;
           }
           storagePersistenceState.supported = Boolean(storageManager);
           storagePersistenceState.lastRequestDenied = true;
           storagePersistenceState.lastError = null;
           renderStoragePersistenceStatus();
-          return _context2.a(2);
+          return _context3.a(2);
         case 2:
           storagePersistenceState.requestInFlight = true;
           storagePersistenceState.lastError = null;
           renderStoragePersistenceStatus();
           granted = false;
           alreadyGranted = false;
-          _context2.p = 3;
+          _context3.p = 3;
           if (!(typeof requestPersistentStorage === 'function')) {
-            _context2.n = 5;
+            _context3.n = 5;
             break;
           }
-          _context2.n = 4;
+          _context3.n = 4;
           return requestPersistentStorage();
         case 4:
-          result = _context2.v;
+          result = _context3.v;
           if (result && typeof result.supported === 'boolean') {
             storagePersistenceState.supported = result.supported;
           }
@@ -8346,21 +8608,21 @@ function _handleStoragePersistenceRequest() {
             storagePersistenceState.lastError = result.error;
             console.warn('Persistent storage request error', result.error);
           }
-          _context2.n = 7;
+          _context3.n = 7;
           break;
         case 5:
-          _context2.n = 6;
+          _context3.n = 6;
           return storageManager.persist();
         case 6:
-          granted = _context2.v;
+          granted = _context3.v;
         case 7:
-          _context2.n = 9;
+          _context3.n = 9;
           break;
         case 8:
-          _context2.p = 8;
-          _t3 = _context2.v;
-          storagePersistenceState.lastError = _t3;
-          console.warn('Persistent storage request failed', _t3);
+          _context3.p = 8;
+          _t5 = _context3.v;
+          storagePersistenceState.lastError = _t5;
+          console.warn('Persistent storage request failed', _t5);
         case 9:
           storagePersistenceState.requestInFlight = false;
           storagePersistenceState.lastRequestDenied = !(granted || alreadyGranted);
@@ -8374,9 +8636,9 @@ function _handleStoragePersistenceRequest() {
             console.warn('Persistent storage status refresh failed', error);
           });
         case 10:
-          return _context2.a(2);
+          return _context3.a(2);
       }
-    }, _callee2, null, [[3, 8]]);
+    }, _callee3, null, [[3, 8]]);
   }));
   return _handleStoragePersistenceRequest.apply(this, arguments);
 }
@@ -9001,231 +9263,298 @@ function resetPlannerStateAfterFactoryReset() {
   }
 }
 if (factoryResetButton) {
-  factoryResetButton.addEventListener('click', function () {
-    var langTexts = texts[currentLang] || texts.en || {};
-    var confirmReset = langTexts.confirmFactoryReset || 'Create a backup and wipe all planner data?';
-    if (!confirm(confirmReset)) return;
-    var confirmResetAgain = langTexts.confirmFactoryResetAgain || 'This will permanently delete all saved planner data. Continue?';
-    if (!confirm(confirmResetAgain)) return;
-    if (typeof performSettingsBackup !== 'function') {
-      var errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-      showNotification('error', errorMsg);
-      return;
-    }
-    var backupResult = null;
-    try {
-      backupResult = performSettingsBackup(false, new Date());
-    } catch (error) {
-      console.error('Backup before factory reset failed', error);
-    }
-    if (!backupResult || !backupResult.fileName) {
-      var backupFailedMsg = langTexts.factoryResetBackupFailed || 'Backup failed. Data was not deleted.';
-      showNotification('error', backupFailedMsg);
-      return;
-    }
-    var proceedWithFactoryReset = function proceedWithFactoryReset() {
-        if (typeof clearAllData !== 'function') {
-          var _errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+  factoryResetButton.addEventListener('click', _asyncToGenerator(_regenerator().m(function _callee() {
+    var langTexts, confirmReset, confirmResetAgain, errorMsg, backupResult, backupFailedMsg, downloadPermissionState, finalDownloadPermissionState, downloadResult, permissionMonitor, deniedMsg, waitMsg, _deniedMsg, _deniedMsg2, _errorMsg, eventName, eventInstance, resetMountVoltagePreferencesFn, updateMountVoltageInputsFromStateFn, successMsg, _errorMsg2, _t, _t2;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          langTexts = texts[currentLang] || texts.en || {};
+          confirmReset = langTexts.confirmFactoryReset || 'Create a backup and wipe all planner data?';
+          if (confirm(confirmReset)) {
+            _context.n = 1;
+            break;
+          }
+          return _context.a(2);
+        case 1:
+          confirmResetAgain = langTexts.confirmFactoryResetAgain || 'This will permanently delete all saved planner data. Continue?';
+          if (confirm(confirmResetAgain)) {
+            _context.n = 2;
+            break;
+          }
+          return _context.a(2);
+        case 2:
+          if (!(typeof performSettingsBackup !== 'function')) {
+            _context.n = 3;
+            break;
+          }
+          errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+          showNotification('error', errorMsg);
+          return _context.a(2);
+        case 3:
+          backupResult = null;
+          try {
+            backupResult = performSettingsBackup(false, new Date());
+          } catch (error) {
+            console.error('Backup before factory reset failed', error);
+          }
+          if (!(!backupResult || !backupResult.fileName)) {
+            _context.n = 4;
+            break;
+          }
+          backupFailedMsg = langTexts.factoryResetBackupFailed || 'Backup failed. Data was not deleted.';
+          showNotification('error', backupFailedMsg);
+          return _context.a(2);
+        case 4:
+          downloadPermissionState = 'unknown';
+          finalDownloadPermissionState = 'unknown';
+          downloadResult = backupResult.downloadResult;
+          permissionMonitor = downloadResult && downloadResult.permission ? downloadResult.permission : null;
+          if (!(permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function')) {
+            _context.n = 8;
+            break;
+          }
+          _context.p = 5;
+          _context.n = 6;
+          return permissionMonitor.initial;
+        case 6:
+          downloadPermissionState = _context.v;
+          _context.n = 8;
+          break;
+        case 7:
+          _context.p = 7;
+          _t = _context.v;
+          console.warn('Failed to inspect automatic download permission before factory reset', _t);
+          downloadPermissionState = 'unknown';
+        case 8:
+          if (!(downloadPermissionState === 'denied')) {
+            _context.n = 9;
+            break;
+          }
+          deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+          showNotification('error', deniedMsg);
+          if (typeof alert === 'function') {
+            alert(deniedMsg);
+          }
+          return _context.a(2);
+        case 9:
+          if (downloadPermissionState === 'prompt') {
+            waitMsg = langTexts.factoryResetAwaitDownload || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
+            showNotification('info', waitMsg);
+            if (typeof alert === 'function') {
+              alert(waitMsg);
+            }
+          }
+          if (!(permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function')) {
+            _context.n = 14;
+            break;
+          }
+          _context.p = 10;
+          _context.n = 11;
+          return permissionMonitor.ready;
+        case 11:
+          finalDownloadPermissionState = _context.v;
+          _context.n = 13;
+          break;
+        case 12:
+          _context.p = 12;
+          _t2 = _context.v;
+          console.warn('Failed to await automatic download permission before factory reset', _t2);
+          finalDownloadPermissionState = 'unknown';
+        case 13:
+          _context.n = 15;
+          break;
+        case 14:
+          finalDownloadPermissionState = downloadPermissionState;
+        case 15:
+          if (!(downloadPermissionState === 'prompt')) {
+            _context.n = 17;
+            break;
+          }
+          if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
+            finalDownloadPermissionState = 'unknown';
+          }
+          if (!(finalDownloadPermissionState !== 'granted')) {
+            _context.n = 16;
+            break;
+          }
+          _deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+          showNotification('error', _deniedMsg);
+          if (typeof alert === 'function') {
+            alert(_deniedMsg);
+          }
+          return _context.a(2);
+        case 16:
+          _context.n = 18;
+          break;
+        case 17:
+          if (!(finalDownloadPermissionState === 'denied')) {
+            _context.n = 18;
+            break;
+          }
+          _deniedMsg2 = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
+          showNotification('error', _deniedMsg2);
+          if (typeof alert === 'function') {
+            alert(_deniedMsg2);
+          }
+          return _context.a(2);
+        case 18:
+          if (!(typeof clearAllData !== 'function')) {
+            _context.n = 19;
+            break;
+          }
+          _errorMsg = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
           showNotification('error', _errorMsg);
-          return;
-        }
-        try {
-          factoryResetInProgress = true;
-          if (typeof globalThis !== 'undefined') {
+          return _context.a(2);
+        case 19:
+          try {
+            factoryResetInProgress = true;
+            if (typeof globalThis !== 'undefined') {
+              try {
+                globalThis.__cameraPowerPlannerFactoryResetting = true;
+              } catch (flagError) {
+                console.warn('Unable to flag factory reset on global scope', flagError);
+              }
+            }
+            if (projectAutoSaveTimer) {
+              clearTimeout(projectAutoSaveTimer);
+              projectAutoSaveTimer = null;
+            }
             try {
-              globalThis.__cameraPowerPlannerFactoryResetting = true;
-            } catch (flagError) {
-              console.warn('Unable to flag factory reset on global scope', flagError);
+              stopPinkModeIconRotation();
+              stopPinkModeAnimatedIcons();
+            } catch (animationError) {
+              console.warn('Failed to stop pink mode animations during factory reset', animationError);
             }
-          }
-          if (projectAutoSaveTimer) {
-            clearTimeout(projectAutoSaveTimer);
-            projectAutoSaveTimer = null;
-          }
-          try {
-            stopPinkModeIconRotation();
-            stopPinkModeAnimatedIcons();
-          } catch (animationError) {
-            console.warn('Failed to stop pink mode animations during factory reset', animationError);
-          }
-          clearAllData();
-          try {
-            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-              var eventName = 'cameraPowerPlannerFactoryReset';
-              var eventInstance = null;
-              if (typeof window.CustomEvent === 'function') {
-                eventInstance = new window.CustomEvent(eventName);
-              } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
-                eventInstance = document.createEvent('Event');
-                eventInstance.initEvent(eventName, false, false);
+            clearAllData();
+            try {
+              if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                eventName = 'cameraPowerPlannerFactoryReset';
+                eventInstance = null;
+                if (typeof window.CustomEvent === 'function') {
+                  eventInstance = new window.CustomEvent(eventName);
+                } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+                  eventInstance = document.createEvent('Event');
+                  eventInstance.initEvent(eventName, false, false);
+                }
+                if (eventInstance) {
+                  window.dispatchEvent(eventInstance);
+                }
               }
-              if (eventInstance) {
-                window.dispatchEvent(eventInstance);
-              }
+            } catch (factoryResetEventError) {
+              console.warn('Failed to dispatch factory reset event', factoryResetEventError);
             }
-          } catch (factoryResetEventError) {
-            console.warn('Failed to dispatch factory reset event', factoryResetEventError);
-          }
-          try {
-            resetPlannerStateAfterFactoryReset();
-          } catch (resetError) {
-            console.warn('Failed to reset planner state after factory reset', resetError);
-          }
-          try {
-            setThemePreference(false, { persist: true });
-          } catch (darkError) {
-            console.warn('Failed to reset dark mode during factory reset', darkError);
-          }
-          try {
-            highContrastEnabled = false;
-            applyHighContrast(false);
-            if (settingsHighContrast) {
-              settingsHighContrast.checked = false;
+            try {
+              resetPlannerStateAfterFactoryReset();
+            } catch (resetError) {
+              console.warn('Failed to reset planner state after factory reset', resetError);
             }
-          } catch (contrastError) {
-            console.warn('Failed to reset high contrast during factory reset', contrastError);
-          }
-          try {
-            pinkModeEnabled = false;
-            applyPinkMode(false);
-            rememberSettingsPinkModeBaseline();
-          } catch (pinkError) {
-            console.warn('Failed to reset pink mode during factory reset', pinkError);
-          }
-          showAutoBackups = false;
-          if (settingsShowAutoBackups) {
-            settingsShowAutoBackups.checked = false;
-          }
-          try {
-            accentColor = DEFAULT_ACCENT_COLOR;
-            prevAccentColor = DEFAULT_ACCENT_COLOR;
-            clearAccentColorOverrides();
-            applyAccentColor(accentColor);
-            if (accentColorInput) {
-              accentColorInput.value = DEFAULT_ACCENT_COLOR;
-            }
-            if (typeof updateAccentColorResetButtonState === 'function') {
-              updateAccentColorResetButtonState();
-            }
-          } catch (accentError) {
-            console.warn('Failed to reset accent color during factory reset', accentError);
-          }
-          try {
-            var resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
-            if (resetMountVoltagePreferencesFn) {
-              resetMountVoltagePreferencesFn({
-                persist: true,
-                triggerUpdate: true
+            try {
+              setThemePreference(false, {
+                persist: true
               });
-            } else {
-              warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+            } catch (darkError) {
+              console.warn('Failed to reset dark mode during factory reset', darkError);
             }
-            var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-            if (updateMountVoltageInputsFromStateFn) {
-              updateMountVoltageInputsFromStateFn();
-            } else {
-              warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
-            }
-            rememberSettingsMountVoltagesBaseline();
-          } catch (voltageResetError) {
-            console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
-          }
-          try {
-            fontSize = '16';
-            applyFontSizeSafe(fontSize);
-            if (settingsFontSize) {
-              settingsFontSize.value = fontSize;
-            }
-          } catch (fontSizeError) {
-            console.warn('Failed to reset font size during factory reset', fontSizeError);
-          }
-          try {
-            fontFamily = "'Ubuntu', sans-serif";
-            applyFontFamilySafe(fontFamily);
-            if (settingsFontFamily) {
-              settingsFontFamily.value = fontFamily;
-            }
-          } catch (fontFamilyError) {
-            console.warn('Failed to reset font family during factory reset', fontFamilyError);
-          }
-          if (settingsDialog) {
-            settingsDialog.setAttribute('hidden', '');
-          }
-          var successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
-          showNotification('success', successMsg);
-          setTimeout(function () {
-            if (typeof window !== 'undefined' && window.location && window.location.reload) {
-              window.location.reload();
-            }
-          }, 600);
-        } catch (error) {
-          console.error('Factory reset failed', error);
-          factoryResetInProgress = false;
-          if (typeof globalThis !== 'undefined') {
             try {
-              delete globalThis.__cameraPowerPlannerFactoryResetting;
-            } catch (cleanupError) {
-              console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+              highContrastEnabled = false;
+              applyHighContrast(false);
+              if (settingsHighContrast) {
+                settingsHighContrast.checked = false;
+              }
+            } catch (contrastError) {
+              console.warn('Failed to reset high contrast during factory reset', contrastError);
             }
+            try {
+              pinkModeEnabled = false;
+              applyPinkMode(false);
+              rememberSettingsPinkModeBaseline();
+            } catch (pinkError) {
+              console.warn('Failed to reset pink mode during factory reset', pinkError);
+            }
+            showAutoBackups = false;
+            if (settingsShowAutoBackups) {
+              settingsShowAutoBackups.checked = false;
+            }
+            try {
+              accentColor = DEFAULT_ACCENT_COLOR;
+              prevAccentColor = DEFAULT_ACCENT_COLOR;
+              clearAccentColorOverrides();
+              applyAccentColor(accentColor);
+              if (accentColorInput) {
+                accentColorInput.value = DEFAULT_ACCENT_COLOR;
+              }
+              if (typeof updateAccentColorResetButtonState === 'function') {
+                updateAccentColorResetButtonState();
+              }
+            } catch (accentError) {
+              console.warn('Failed to reset accent color during factory reset', accentError);
+            }
+            try {
+              resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+              if (resetMountVoltagePreferencesFn) {
+                resetMountVoltagePreferencesFn({
+                  persist: true,
+                  triggerUpdate: true
+                });
+              } else {
+                warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+              }
+              updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+              if (updateMountVoltageInputsFromStateFn) {
+                updateMountVoltageInputsFromStateFn();
+              } else {
+                warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+              }
+              rememberSettingsMountVoltagesBaseline();
+            } catch (voltageResetError) {
+              console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
+            }
+            try {
+              fontSize = '16';
+              applyFontSizeSafe(fontSize);
+              if (settingsFontSize) {
+                settingsFontSize.value = fontSize;
+              }
+            } catch (fontSizeError) {
+              console.warn('Failed to reset font size during factory reset', fontSizeError);
+            }
+            try {
+              fontFamily = "'Ubuntu', sans-serif";
+              applyFontFamilySafe(fontFamily);
+              if (settingsFontFamily) {
+                settingsFontFamily.value = fontFamily;
+              }
+            } catch (fontFamilyError) {
+              console.warn('Failed to reset font family during factory reset', fontFamilyError);
+            }
+            if (settingsDialog) {
+              settingsDialog.setAttribute('hidden', '');
+            }
+            successMsg = langTexts.factoryResetSuccess || 'Backup downloaded. All planner data cleared. Reloading…';
+            showNotification('success', successMsg);
+            setTimeout(function () {
+              if (typeof window !== 'undefined' && window.location && window.location.reload) {
+                window.location.reload();
+              }
+            }, 600);
+          } catch (error) {
+            console.error('Factory reset failed', error);
+            factoryResetInProgress = false;
+            if (typeof globalThis !== 'undefined') {
+              try {
+                delete globalThis.__cameraPowerPlannerFactoryResetting;
+              } catch (cleanupError) {
+                console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+              }
+            }
+            _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
+            showNotification('error', _errorMsg2);
           }
-          var _errorMsg2 = langTexts.factoryResetError || 'Factory reset failed. Please try again.';
-          showNotification('error', _errorMsg2);
-        }
-      
-    };
-    var downloadResult = backupResult && backupResult.downloadResult ? backupResult.downloadResult : null;
-    var permissionMonitor = downloadResult && downloadResult.permission ? downloadResult.permission : null;
-    if (!permissionMonitor || !permissionMonitor.initial || typeof permissionMonitor.initial.then !== 'function') {
-      proceedWithFactoryReset();
-      return;
-    }
-    permissionMonitor.initial.then(function (state) {
-      if (state === 'denied') {
-        var deniedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
-        showNotification('error', deniedMsg);
-        if (typeof alert === 'function') {
-          alert(deniedMsg);
-        }
-        return null;
+        case 20:
+          return _context.a(2);
       }
-      if (state === 'prompt') {
-        var waitMsg = langTexts.factoryResetAwaitDownload || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
-        showNotification('info', waitMsg);
-        if (typeof alert === 'function') {
-          alert(waitMsg);
-        }
-        if (permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function') {
-          return permissionMonitor.ready.then(function (finalState) {
-            if (finalState === 'granted') {
-              return finalState;
-            }
-            return 'denied';
-          }).catch(function (permissionAwaitError) {
-            console.warn('Failed to await automatic download permission before factory reset', permissionAwaitError);
-            return 'denied';
-          });
-        }
-        return 'denied';
-      }
-      return state || "unknown";
-    }).then(function (result) {
-      if (result === 'denied') {
-        var blockedMsg = langTexts.factoryResetDownloadBlocked || 'The backup download was blocked. Data was not deleted.';
-        showNotification('error', blockedMsg);
-        if (typeof alert === 'function') {
-          alert(blockedMsg);
-        }
-        return;
-      }
-      if (result === null) {
-        return;
-      }
-      proceedWithFactoryReset();
-    }).catch(function (permissionError) {
-      console.warn('Failed to inspect automatic download permission before factory reset', permissionError);
-      proceedWithFactoryReset();
-    });
-  });
+    }, _callee, null, [[10, 12], [5, 7]]);
+  })));
 }
 var UI_CACHE_STORAGE_KEYS_FOR_RELOAD = ['cameraPowerPlanner_schemaCache', 'cinePowerPlanner_schemaCache'];
 var UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = ['', '__backup', '__legacyMigrationBackup'];
@@ -9314,9 +9643,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref15) {
-    var scope = _ref15.scope,
-      label = _ref15.label;
+  scopeCandidates.forEach(function (_ref16) {
+    var scope = _ref16.scope,
+      label = _ref16.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -10165,25 +10494,25 @@ function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
-  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee5() {
-    var reloadFallback, offlineModule, beforeReloadHref, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t8, _t9, _t0;
-    return _regenerator().w(function (_context5) {
-      while (1) switch (_context5.p = _context5.n) {
+  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee6() {
+    var reloadFallback, offlineModule, beforeReloadHref, reloadAttempt, _yield$awaitPromiseWi, timedOut, result, reloadHandled, navigationObserved, uiCacheCleared, serviceWorkerCleanupPromise, cacheCleanupPromise, _navigator, serviceWorker, win, _t0, _t1, _t10;
+    return _regenerator().w(function (_context6) {
+      while (1) switch (_context6.p = _context6.n) {
         case 0:
           reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context5.n = 6;
+            _context6.n = 6;
             break;
           }
-          _context5.p = 1;
+          _context6.p = 1;
           reloadAttempt = offlineModule.reloadApp({
             window: window,
             navigator: typeof navigator !== 'undefined' ? navigator : undefined,
             caches: typeof caches !== 'undefined' ? caches : undefined
           });
-          _context5.n = 2;
+          _context6.n = 2;
           return awaitPromiseWithSoftTimeout(reloadAttempt, OFFLINE_RELOAD_TIMEOUT_MS, function () {
             console.warn('Offline module reload timed out; continuing with manual fallback after soft timeout.', {
               timeoutMs: OFFLINE_RELOAD_TIMEOUT_MS
@@ -10192,36 +10521,36 @@ function _clearCachesAndReload() {
             console.warn('Offline module reload promise rejected after timeout', lateError);
           });
         case 2:
-          _yield$awaitPromiseWi = _context5.v;
+          _yield$awaitPromiseWi = _context6.v;
           timedOut = _yield$awaitPromiseWi.timedOut;
           result = _yield$awaitPromiseWi.result;
           if (timedOut) {
-            _context5.n = 4;
+            _context6.n = 4;
             break;
           }
           reloadHandled = result === true || result && _typeof(result) === 'object' && (result.reloadTriggered === true || result.navigationTriggered === true);
           if (!reloadHandled) {
-            _context5.n = 4;
+            _context6.n = 4;
             break;
           }
-          _context5.n = 3;
+          _context6.n = 3;
           return waitForReloadNavigation(beforeReloadHref).catch(function () {
             return false;
           });
         case 3:
-          navigationObserved = _context5.v;
+          navigationObserved = _context6.v;
           if (!navigationObserved) {
-            _context5.n = 4;
+            _context6.n = 4;
             break;
           }
-          return _context5.a(2);
+          return _context6.a(2);
         case 4:
-          _context5.n = 6;
+          _context6.n = 6;
           break;
         case 5:
-          _context5.p = 5;
-          _t8 = _context5.v;
-          console.warn('Offline module reload failed, falling back to manual refresh', _t8);
+          _context6.p = 5;
+          _t0 = _context6.v;
+          console.warn('Offline module reload failed, falling back to manual refresh', _t0);
         case 6:
           uiCacheCleared = false;
           try {
@@ -10244,22 +10573,22 @@ function _clearCachesAndReload() {
           cacheCleanupPromise = Promise.resolve(false);
           if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
             _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee3() {
-              var registrations, regs, reg, readyReg, _t4, _t5, _t6;
-              return _regenerator().w(function (_context3) {
-                while (1) switch (_context3.p = _context3.n) {
+            serviceWorkerCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
+              var registrations, regs, reg, readyReg, _t6, _t7, _t8;
+              return _regenerator().w(function (_context4) {
+                while (1) switch (_context4.p = _context4.n) {
                   case 0:
-                    _context3.p = 0;
+                    _context4.p = 0;
                     registrations = [];
-                    _context3.p = 1;
+                    _context4.p = 1;
                     if (!(typeof serviceWorker.getRegistrations === 'function')) {
-                      _context3.n = 3;
+                      _context4.n = 3;
                       break;
                     }
-                    _context3.n = 2;
+                    _context4.n = 2;
                     return serviceWorker.getRegistrations();
                   case 2:
-                    regs = _context3.v;
+                    regs = _context4.v;
                     if (Array.isArray(regs)) {
                       regs.forEach(function (reg) {
                         if (reg) {
@@ -10267,56 +10596,56 @@ function _clearCachesAndReload() {
                         }
                       });
                     }
-                    _context3.n = 9;
+                    _context4.n = 9;
                     break;
                   case 3:
                     if (!(typeof serviceWorker.getRegistration === 'function')) {
-                      _context3.n = 5;
+                      _context4.n = 5;
                       break;
                     }
-                    _context3.n = 4;
+                    _context4.n = 4;
                     return serviceWorker.getRegistration();
                   case 4:
-                    reg = _context3.v;
+                    reg = _context4.v;
                     if (reg) {
                       registrations.push(reg);
                     }
-                    _context3.n = 9;
+                    _context4.n = 9;
                     break;
                   case 5:
                     if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-                      _context3.n = 9;
+                      _context4.n = 9;
                       break;
                     }
-                    _context3.p = 6;
-                    _context3.n = 7;
+                    _context4.p = 6;
+                    _context4.n = 7;
                     return serviceWorker.ready;
                   case 7:
-                    readyReg = _context3.v;
+                    readyReg = _context4.v;
                     if (readyReg) {
                       registrations.push(readyReg);
                     }
-                    _context3.n = 9;
+                    _context4.n = 9;
                     break;
                   case 8:
-                    _context3.p = 8;
-                    _t4 = _context3.v;
-                    console.warn('Failed to await active service worker', _t4);
+                    _context4.p = 8;
+                    _t6 = _context4.v;
+                    console.warn('Failed to await active service worker', _t6);
                   case 9:
-                    _context3.n = 11;
+                    _context4.n = 11;
                     break;
                   case 10:
-                    _context3.p = 10;
-                    _t5 = _context3.v;
-                    console.warn('Failed to query service worker registrations', _t5);
+                    _context4.p = 10;
+                    _t7 = _context4.v;
+                    console.warn('Failed to query service worker registrations', _t7);
                   case 11:
                     if (registrations.length) {
-                      _context3.n = 12;
+                      _context4.n = 12;
                       break;
                     }
-                    return _context3.a(2, false);
+                    return _context4.a(2, false);
                   case 12:
-                    _context3.n = 13;
+                    _context4.n = 13;
                     return Promise.all(registrations.map(function (reg) {
                       if (!reg || typeof reg.unregister !== 'function') {
                         return Promise.resolve(false);
@@ -10327,32 +10656,32 @@ function _clearCachesAndReload() {
                       });
                     }));
                   case 13:
-                    return _context3.a(2, true);
+                    return _context4.a(2, true);
                   case 14:
-                    _context3.p = 14;
-                    _t6 = _context3.v;
-                    console.warn('Service worker cleanup failed', _t6);
-                    return _context3.a(2, false);
+                    _context4.p = 14;
+                    _t8 = _context4.v;
+                    console.warn('Service worker cleanup failed', _t8);
+                    return _context4.a(2, false);
                 }
-              }, _callee3, null, [[6, 8], [1, 10], [0, 14]]);
+              }, _callee4, null, [[6, 8], [1, 10], [0, 14]]);
             }))();
           }
           if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
-            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee4() {
-              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t7;
-              return _regenerator().w(function (_context4) {
-                while (1) switch (_context4.p = _context4.n) {
+            cacheCleanupPromise = _asyncToGenerator(_regenerator().m(function _callee5() {
+              var keys, explicitName, lowerExplicit, relevantKeys, removedAny, _t9;
+              return _regenerator().w(function (_context5) {
+                while (1) switch (_context5.p = _context5.n) {
                   case 0:
-                    _context4.p = 0;
-                    _context4.n = 1;
+                    _context5.p = 0;
+                    _context5.n = 1;
                     return caches.keys();
                   case 1:
-                    keys = _context4.v;
+                    keys = _context5.v;
                     if (!(!Array.isArray(keys) || !keys.length)) {
-                      _context4.n = 2;
+                      _context5.n = 2;
                       break;
                     }
-                    return _context4.a(2, false);
+                    return _context5.a(2, false);
                   case 2:
                     explicitName = resolveCineCacheNameForReload();
                     lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
@@ -10360,13 +10689,13 @@ function _clearCachesAndReload() {
                       return isRelevantCacheKeyForReload(key, explicitName, lowerExplicit);
                     });
                     if (relevantKeys.length) {
-                      _context4.n = 3;
+                      _context5.n = 3;
                       break;
                     }
-                    return _context4.a(2, false);
+                    return _context5.a(2, false);
                   case 3:
                     removedAny = false;
-                    _context4.n = 4;
+                    _context5.n = 4;
                     return Promise.all(relevantKeys.map(function (key) {
                       if (!key || typeof caches.delete !== 'function') {
                         return Promise.resolve(false);
@@ -10380,18 +10709,18 @@ function _clearCachesAndReload() {
                       });
                     }));
                   case 4:
-                    return _context4.a(2, removedAny);
+                    return _context5.a(2, removedAny);
                   case 5:
-                    _context4.p = 5;
-                    _t7 = _context4.v;
-                    console.warn('Cache clear failed', _t7);
-                    return _context4.a(2, false);
+                    _context5.p = 5;
+                    _t9 = _context5.v;
+                    console.warn('Cache clear failed', _t9);
+                    return _context5.a(2, false);
                 }
-              }, _callee4, null, [[0, 5]]);
+              }, _callee5, null, [[0, 5]]);
             }))();
           }
-          _context5.p = 7;
-          _context5.n = 8;
+          _context6.p = 7;
+          _context6.n = 8;
           return awaitPromiseWithSoftTimeout(serviceWorkerCleanupPromise, FORCE_RELOAD_CLEANUP_TIMEOUT_MS, function () {
             console.warn('Service worker cleanup timed out before reload; continuing anyway.', {
               timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS
@@ -10400,12 +10729,12 @@ function _clearCachesAndReload() {
             console.warn('Service worker cleanup failed after reload triggered', lateError);
           });
         case 8:
-          _context5.n = 10;
+          _context6.n = 10;
           break;
         case 9:
-          _context5.p = 9;
-          _t9 = _context5.v;
-          console.warn('Service worker cleanup failed', _t9);
+          _context6.p = 9;
+          _t1 = _context6.v;
+          console.warn('Service worker cleanup failed', _t1);
         case 10:
           try {
             if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
@@ -10422,20 +10751,20 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          _context5.p = 11;
-          _context5.n = 12;
+          _context6.p = 11;
+          _context6.n = 12;
           return cacheCleanupPromise;
         case 12:
-          _context5.n = 14;
+          _context6.n = 14;
           break;
         case 13:
-          _context5.p = 13;
-          _t0 = _context5.v;
-          console.warn('Cache clear failed', _t0);
+          _context6.p = 13;
+          _t10 = _context6.v;
+          console.warn('Cache clear failed', _t10);
         case 14:
-          return _context5.a(2);
+          return _context6.a(2);
       }
-    }, _callee5, null, [[11, 13], [7, 9], [1, 5]]);
+    }, _callee6, null, [[11, 13], [7, 9], [1, 5]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -10881,8 +11210,8 @@ if (helpButton && helpDialog) {
       }
       hiddenItems.sort(function (a, b) {
         return a.index - b.index;
-      }).forEach(function (_ref16) {
-        var node = _ref16.node;
+      }).forEach(function (_ref17) {
+        var node = _ref17.node;
         return fragment.appendChild(node);
       });
       if (fragment.childNodes.length) {
@@ -10916,10 +11245,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref17) {
-      var section = _ref17.section,
-        listItem = _ref17.listItem,
-        button = _ref17.button;
+    helpQuickLinkItems.forEach(function (_ref18) {
+      var section = _ref18.section,
+        listItem = _ref18.listItem,
+        button = _ref18.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -10952,9 +11281,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref18) {
-      var button = _ref18.button,
-        label = _ref18.label;
+    helpQuickLinkItems.forEach(function (_ref19) {
+      var button = _ref19.button,
+        label = _ref19.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -11165,11 +11494,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref19 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref19.totalCount,
-      visibleCount = _ref19.visibleCount,
-      hasQuery = _ref19.hasQuery,
-      queryText = _ref19.queryText;
+    var _ref20 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref20.totalCount,
+      visibleCount = _ref20.visibleCount,
+      hasQuery = _ref20.hasQuery,
+      queryText = _ref20.queryText;
     var hideAssist = function hideAssist() {
       if (!helpResultsAssist) return;
       helpResultsAssist.textContent = '';
@@ -11723,11 +12052,11 @@ if (helpButton && helpDialog) {
       return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref20 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref20$includeTextCon = _ref20.includeTextContent,
-        includeTextContent = _ref20$includeTextCon === void 0 ? false : _ref20$includeTextCon,
-        _ref20$preferTextAsLa = _ref20.preferTextAsLabel,
-        preferTextAsLabel = _ref20$preferTextAsLa === void 0 ? false : _ref20$preferTextAsLa;
+      var _ref21 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref21$includeTextCon = _ref21.includeTextContent,
+        includeTextContent = _ref21$includeTextCon === void 0 ? false : _ref21$includeTextCon,
+        _ref21$preferTextAsLa = _ref21.preferTextAsLabel,
+        preferTextAsLabel = _ref21$preferTextAsLa === void 0 ? false : _ref21$preferTextAsLa;
       if (!element) return;
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
@@ -11759,9 +12088,9 @@ if (helpButton && helpDialog) {
       }
     };
     var applyFromIds = function applyFromIds(ids) {
-      var _ref21 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref21$preferTextAsLa = _ref21.preferTextAsLabel,
-        preferTextAsLabel = _ref21$preferTextAsLa === void 0 ? false : _ref21$preferTextAsLa;
+      var _ref22 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref22$preferTextAsLa = _ref22.preferTextAsLabel,
+        preferTextAsLabel = _ref22$preferTextAsLa === void 0 ? false : _ref22$preferTextAsLa;
       if (!ids) return;
       ids.split(/\s+/).map(function (id) {
         return id.trim();
@@ -12715,10 +13044,10 @@ function getRequiredScenarioOptionEntries() {
     }
     options.set(value, value);
   });
-  return Array.from(options.entries()).map(function (_ref22) {
-    var _ref23 = _slicedToArray(_ref22, 2),
-      value = _ref23[0],
-      label = _ref23[1];
+  return Array.from(options.entries()).map(function (_ref23) {
+    var _ref24 = _slicedToArray(_ref23, 2),
+      value = _ref24[0],
+      label = _ref24[1];
     return {
       value: value,
       label: label
@@ -13127,7 +13456,7 @@ function populateLensDropdown() {
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
   for (var _index16 = 0; _index16 < lensNames.length; _index16 += 1) {
-    var _ref24, _lens$minFocusMeters;
+    var _ref25, _lens$minFocusMeters;
     var name = lensNames[_index16];
     var opt = document.createElement('option');
     opt.value = name;
@@ -13144,7 +13473,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref24 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref24 !== void 0 ? _ref24 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref25 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref25 !== void 0 ? _ref25 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (Number.isFinite(minFocus) && minFocus > 0) {
       var formattedMinFocus = formatLensMinFocus(minFocus, lensFocusScaleMode);
       if (formattedMinFocus) {
@@ -13362,9 +13691,9 @@ function buildFrameRateSuggestions(entries, contextTokens) {
     return a[0].localeCompare(b[0]);
   });
   return {
-    values: sortedEntries.map(function (_ref25) {
-      var _ref26 = _slicedToArray(_ref25, 1),
-        value = _ref26[0];
+    values: sortedEntries.map(function (_ref26) {
+      var _ref27 = _slicedToArray(_ref26, 1),
+        value = _ref27[0];
       return value;
     }),
     metadata: new Map(sortedEntries)
@@ -13779,11 +14108,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref27) {
-    var type = _ref27.type,
-      _ref27$size = _ref27.size,
-      size = _ref27$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref27$size,
-      values = _ref27.values;
+  filters.forEach(function (_ref28) {
+    var type = _ref28.type,
+      _ref28$size = _ref28.size,
+      size = _ref28$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref28$size,
+      values = _ref28.values;
     if (!type) return;
     var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -14384,8 +14713,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref28) {
-    var type = _ref28.type;
+  filters.forEach(function (_ref29) {
+    var type = _ref29.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
