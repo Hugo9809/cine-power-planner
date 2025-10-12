@@ -10768,6 +10768,35 @@ function ensureLanguageAlignment(
   }
 }
 
+function mergeTranslationValue(target, source) {
+  const sourceIsArray = Array.isArray(source);
+  const sourceIsObject = !sourceIsArray && source && typeof source === 'object';
+
+  if (sourceIsArray) {
+    return source.map(item => cloneTranslationValue(item));
+  }
+
+  if (sourceIsObject) {
+    const result = target && typeof target === 'object' ? target : {};
+    const sourceKeys = Object.keys(source);
+
+    for (let index = 0; index < sourceKeys.length; index += 1) {
+      const key = sourceKeys[index];
+      result[key] = mergeTranslationValue(result[key], source[key]);
+    }
+
+    Object.keys(result).forEach(key => {
+      if (!Object.prototype.hasOwnProperty.call(source, key)) {
+        delete result[key];
+      }
+    });
+
+    return result;
+  }
+
+  return source;
+}
+
 const globalScope =
   typeof globalThis !== 'undefined'
     ? globalThis
@@ -10780,14 +10809,20 @@ const globalScope =
           : null;
 
 if (globalScope) {
-  if (typeof globalScope.texts === 'undefined') {
-    globalScope.texts = texts;
+  if (typeof globalScope.texts === 'object' && globalScope.texts !== null) {
+    mergeTranslationValue(globalScope.texts, texts);
+  } else {
+    globalScope.texts = cloneTranslationValue(texts);
   }
-  if (typeof globalScope.categoryNames === 'undefined') {
-    globalScope.categoryNames = categoryNames;
+  if (typeof globalScope.categoryNames === 'object' && globalScope.categoryNames !== null) {
+    mergeTranslationValue(globalScope.categoryNames, categoryNames);
+  } else {
+    globalScope.categoryNames = cloneTranslationValue(categoryNames);
   }
-  if (typeof globalScope.gearItems === 'undefined') {
-    globalScope.gearItems = gearItems;
+  if (typeof globalScope.gearItems === 'object' && globalScope.gearItems !== null) {
+    mergeTranslationValue(globalScope.gearItems, gearItems);
+  } else {
+    globalScope.gearItems = cloneTranslationValue(gearItems);
   }
 }
 
