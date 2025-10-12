@@ -207,11 +207,16 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
 // workers, offline tabs and legacy frames all share the same configuration. We
 // build an ordered array here and then let the state helpers below iterate over
 // it when fetching shared utilities.
-var CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
-  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
-    ? CORE_GLOBAL_SCOPE
-    : null
-);
+var CORE_RUNTIME_CANDIDATE_SCOPES =
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined'
+    ? CORE_RUNTIME_CANDIDATE_SCOPES
+    : collectCoreRuntimeCandidateScopes(
+        typeof CORE_GLOBAL_SCOPE !== 'undefined'
+          && CORE_GLOBAL_SCOPE
+          && typeof CORE_GLOBAL_SCOPE === 'object'
+          ? CORE_GLOBAL_SCOPE
+          : null
+      );
 
 var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;

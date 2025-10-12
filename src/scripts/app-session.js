@@ -1723,6 +1723,7 @@ const AUTO_GEAR_RUNTIME_HANDLERS = [
   'handleAutoGearDeletePreset',
   'handleAutoGearShowBackupsToggle',
   'handleAutoGearConditionShortcut',
+  'saveAutoGearRuleFromEditor',
 ];
 
 for (let index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
@@ -1760,6 +1761,17 @@ function getSessionCoreValue(functionName, options = {}) {
     void coerceError;
     return defaultValue;
   }
+}
+
+function deriveSessionProjectInfo(info) {
+  const fallback = info && typeof info === 'object' ? { ...info } : {};
+  const derived = callSessionCoreFunction('deriveProjectInfo', [info], { defaultValue: fallback });
+
+  if (derived && typeof derived === 'object') {
+    return derived;
+  }
+
+  return fallback;
 }
 
 const temperaturePreferenceStorageKey =
@@ -3352,7 +3364,7 @@ function saveCurrentSession(options = {}) {
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
   info.easyrig = getSessionCoreValue('getEasyrigValue');
-  currentProjectInfo = deriveProjectInfo(info);
+  currentProjectInfo = deriveSessionProjectInfo(info);
   const batteryValue = batterySelect ? batterySelect.value : '';
   const batteryPlateValue = batteryPlateSelect ? batteryPlateSelect.value : '';
   const state = {
