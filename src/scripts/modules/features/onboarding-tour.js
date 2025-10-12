@@ -1958,6 +1958,7 @@
   let skipButton = null;
   let helpButtonListenerAttached = false;
   let delegatedHelpListener = null;
+  let visualViewportListenersAttached = false;
 
   let active = false;
   let currentIndex = -1;
@@ -2142,24 +2143,81 @@
       ? GLOBAL_SCOPE.innerHeight
       : (DOCUMENT && DOCUMENT.documentElement && DOCUMENT.documentElement.clientHeight) || 0;
 
-    if (!overlayRoot || typeof overlayRoot.getBoundingClientRect !== 'function') {
-      return {
-        offsetLeft: 0,
-        offsetTop: 0,
-        viewportWidth: fallbackWidth,
-        viewportHeight: fallbackHeight,
-      };
+    let offsetLeft = 0;
+    let offsetTop = 0;
+    let viewportWidth = fallbackWidth;
+    let viewportHeight = fallbackHeight;
+
+    if (overlayRoot && typeof overlayRoot.getBoundingClientRect === 'function') {
+      const rect = overlayRoot.getBoundingClientRect();
+      if (rect) {
+        if (typeof rect.left === 'number') {
+          offsetLeft = -rect.left;
+        }
+        if (typeof rect.top === 'number') {
+          offsetTop = -rect.top;
+        }
+        if (typeof rect.width === 'number' && rect.width > 0) {
+          viewportWidth = rect.width;
+        }
+        if (typeof rect.height === 'number' && rect.height > 0) {
+          viewportHeight = rect.height;
+        }
+      }
     }
 
-    const rect = overlayRoot.getBoundingClientRect();
-    const width = rect && typeof rect.width === 'number' && rect.width > 0 ? rect.width : fallbackWidth;
-    const height = rect && typeof rect.height === 'number' && rect.height > 0 ? rect.height : fallbackHeight;
+    const visualViewport = GLOBAL_SCOPE && GLOBAL_SCOPE.visualViewport;
+    if (visualViewport) {
+      const isAnchored = Boolean(
+        overlayRoot
+        && overlayRoot.classList
+        && typeof overlayRoot.classList.contains === 'function'
+        && overlayRoot.classList.contains('onboarding-overlay--anchored')
+      );
+
+      const visualWidth = typeof visualViewport.width === 'number' && visualViewport.width > 0
+        ? visualViewport.width
+        : null;
+      const visualHeight = typeof visualViewport.height === 'number' && visualViewport.height > 0
+        ? visualViewport.height
+        : null;
+      const rawOffsetLeft = typeof visualViewport.offsetLeft === 'number'
+        ? visualViewport.offsetLeft
+        : typeof visualViewport.pageLeft === 'number'
+          ? visualViewport.pageLeft
+          : 0;
+      const rawOffsetTop = typeof visualViewport.offsetTop === 'number'
+        ? visualViewport.offsetTop
+        : typeof visualViewport.pageTop === 'number'
+          ? visualViewport.pageTop
+          : 0;
+      const computedOffsetLeft = Number.isFinite(rawOffsetLeft) ? rawOffsetLeft : 0;
+      const computedOffsetTop = Number.isFinite(rawOffsetTop) ? rawOffsetTop : 0;
+
+      if (!isAnchored) {
+        offsetLeft = -computedOffsetLeft;
+        offsetTop = -computedOffsetTop;
+        if (visualWidth !== null) {
+          viewportWidth = visualWidth;
+        }
+        if (visualHeight !== null) {
+          viewportHeight = visualHeight;
+        }
+      } else {
+        if (visualWidth !== null) {
+          viewportWidth = Math.min(viewportWidth, visualWidth);
+        }
+        if (visualHeight !== null) {
+          viewportHeight = Math.min(viewportHeight, visualHeight);
+        }
+      }
+    }
 
     return {
-      offsetLeft: -rect.left,
-      offsetTop: -rect.top,
-      viewportWidth: width,
-      viewportHeight: height,
+      offsetLeft,
+      offsetTop,
+      viewportWidth,
+      viewportHeight,
     };
   }
 
@@ -2179,6 +2237,35 @@
     } else {
       pendingFrame = setTimeout(runner, 16);
     }
+  }
+
+  function handleVisualViewportChange() {
+    schedulePositionUpdate();
+  }
+
+  function attachVisualViewportListeners() {
+    if (visualViewportListenersAttached) {
+      return;
+    }
+    const viewport = GLOBAL_SCOPE && GLOBAL_SCOPE.visualViewport;
+    if (!viewport || typeof viewport.addEventListener !== 'function') {
+      return;
+    }
+    viewport.addEventListener('resize', handleVisualViewportChange);
+    viewport.addEventListener('scroll', handleVisualViewportChange);
+    visualViewportListenersAttached = true;
+  }
+
+  function detachVisualViewportListeners() {
+    if (!visualViewportListenersAttached) {
+      return;
+    }
+    const viewport = GLOBAL_SCOPE && GLOBAL_SCOPE.visualViewport;
+    if (viewport && typeof viewport.removeEventListener === 'function') {
+      viewport.removeEventListener('resize', handleVisualViewportChange);
+      viewport.removeEventListener('scroll', handleVisualViewportChange);
+    }
+    visualViewportListenersAttached = false;
   }
 
   function ensureOverlayElements() {
@@ -5212,6 +5299,7 @@
         DOCUMENT.addEventListener('toggle', handleDialogToggle, true);
       }
     }
+    attachVisualViewportListeners();
   }
 
   function detachGlobalListeners() {
@@ -5225,6 +5313,7 @@
         DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
       }
     }
+    detachVisualViewportListeners();
   }
 
   function startTutorial(options = {}) {
