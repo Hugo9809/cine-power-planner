@@ -296,6 +296,9 @@
   }
 
   const SAFE_STORAGE = resolveStorage();
+  let storedStateCache = null;
+  let storedStateCacheRaw = null;
+  let storedStateCacheSource = null;
 
   const deviceLibraryState = {
     lastAdded: null,
@@ -1450,37 +1453,68 @@
     return snapshot;
   }
 
+  function updateStoredStateCache(nextState, rawValue, source) {
+    storedStateCache = nextState;
+    storedStateCacheRaw = typeof rawValue === 'string' ? rawValue : rawValue || null;
+    storedStateCacheSource = source || storedStateCacheSource || null;
+  }
+
   function loadStoredState() {
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.getItem !== 'function') {
-      return normalizeStateSnapshot({ version: STORAGE_VERSION });
+      if (storedStateCache && storedStateCacheSource === 'memory') {
+        return storedStateCache;
+      }
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      updateStoredStateCache(fallbackState, null, 'memory');
+      return fallbackState;
     }
+
     let raw = null;
     try {
       raw = SAFE_STORAGE.getItem(STORAGE_KEY);
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not read onboarding state.', error);
+      if (storedStateCache) {
+        return storedStateCache;
+      }
       raw = null;
     }
+
     if (typeof raw !== 'string' || !raw) {
-      return normalizeStateSnapshot({ version: STORAGE_VERSION });
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      updateStoredStateCache(fallbackState, raw, 'storage');
+      return fallbackState;
     }
+
+    if (storedStateCache && storedStateCacheSource === 'storage' && raw === storedStateCacheRaw) {
+      return storedStateCache;
+    }
+
     try {
       const parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') {
-        return normalizeStateSnapshot({ version: STORAGE_VERSION });
+        const emptyState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+        updateStoredStateCache(emptyState, raw, 'storage');
+        return emptyState;
       }
       if (parsed.version !== STORAGE_VERSION) {
-        return normalizeStateSnapshot({
+        const migratedState = normalizeStateSnapshot({
           ...parsed,
           version: STORAGE_VERSION,
           completed: false,
           skipped: false,
         });
+        updateStoredStateCache(migratedState, raw, 'storage');
+        return migratedState;
       }
-      return normalizeStateSnapshot(parsed);
+      const normalized = normalizeStateSnapshot(parsed);
+      updateStoredStateCache(normalized, raw, 'storage');
+      return normalized;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
-      return normalizeStateSnapshot({ version: STORAGE_VERSION });
+      const fallbackState = normalizeStateSnapshot({ version: STORAGE_VERSION });
+      updateStoredStateCache(fallbackState, raw, 'storage');
+      return fallbackState;
     }
   }
 
@@ -1499,11 +1533,14 @@
       ...sanitized,
       timestamp: getTimestamp(),
     };
+    const serialized = JSON.stringify(payload);
     try {
-      SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
+      SAFE_STORAGE.setItem(STORAGE_KEY, serialized);
+      updateStoredStateCache(payload, serialized, 'storage');
       return payload;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not persist onboarding state.', error);
+      updateStoredStateCache(sanitized, null, 'memory');
       return sanitized;
     }
   }
@@ -1674,7 +1711,7 @@
 
   let tourTexts = resolveTourTexts();
 
-  function getStepConfig() {
+  function createStepConfig() {
     return [
       {
         key: 'intro',
@@ -1871,6 +1908,29 @@
     ];
   }
 
+  const STEP_CONFIG = (function initializeStepConfig() {
+    const config = createStepConfig();
+    if (typeof MODULE_BASE.freezeDeep === 'function') {
+      try {
+        return MODULE_BASE.freezeDeep(config);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not freeze step config.', error);
+      }
+    }
+    if (typeof Object.freeze === 'function') {
+      try {
+        return Object.freeze(config);
+      } catch (error) {
+        void error;
+      }
+    }
+    return config;
+  }());
+
+  function getStepConfig() {
+    return STEP_CONFIG;
+  }
+
   let stepConfig = getStepConfig();
 
   let overlayRoot = null;
@@ -1889,6 +1949,8 @@
   let resumeHintEl = null;
   let interactionContainerEl = null;
   let helpStatusEl = null;
+  let helpButtonsCache = null;
+  let helpButtonsObserver = null;
   let backButton = null;
   let nextButton = null;
   let skipButton = null;
@@ -5159,6 +5221,87 @@
     applyHelpButtonLabel();
   }
 
+  function invalidateHelpButtonsCache() {
+    helpButtonsCache = null;
+  }
+
+  function nodeContainsHelpTrigger(node) {
+    if (!node) {
+      return false;
+    }
+    if (matchesHelpTrigger(node)) {
+      return true;
+    }
+    if (typeof node.querySelector === 'function') {
+      try {
+        const candidate = node.querySelector(HELP_TRIGGER_SELECTOR);
+        if (candidate) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return false;
+  }
+
+  function handleHelpButtonMutations(mutations) {
+    if (!Array.isArray(mutations) || !mutations.length) {
+      return;
+    }
+    for (let index = 0; index < mutations.length; index += 1) {
+      const mutation = mutations[index];
+      if (!mutation) {
+        continue;
+      }
+      if (mutation.type === 'attributes') {
+        if (nodeContainsHelpTrigger(mutation.target)) {
+          invalidateHelpButtonsCache();
+          return;
+        }
+      } else if (mutation.type === 'childList') {
+        const added = mutation.addedNodes || [];
+        for (let nodeIndex = 0; nodeIndex < added.length; nodeIndex += 1) {
+          const node = added[nodeIndex];
+          if (nodeContainsHelpTrigger(node)) {
+            invalidateHelpButtonsCache();
+            return;
+          }
+        }
+        const removed = mutation.removedNodes || [];
+        for (let nodeIndex = 0; nodeIndex < removed.length; nodeIndex += 1) {
+          const node = removed[nodeIndex];
+          if (nodeContainsHelpTrigger(node)) {
+            invalidateHelpButtonsCache();
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  function ensureHelpButtonObserver() {
+    if (helpButtonsObserver || typeof MutationObserver !== 'function' || !DOCUMENT) {
+      return;
+    }
+    const root = DOCUMENT.body || DOCUMENT.documentElement;
+    if (!root) {
+      return;
+    }
+    try {
+      helpButtonsObserver = new MutationObserver(handleHelpButtonMutations);
+      helpButtonsObserver.observe(root, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['data-onboarding-tour-trigger', 'id'],
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not observe help trigger mutations.', error);
+      helpButtonsObserver = null;
+    }
+  }
+
   function matchesHelpTrigger(node) {
     if (!node) {
       return false;
@@ -5189,7 +5332,31 @@
     return null;
   }
 
-  function collectHelpButtons() {
+  function collectHelpButtons(forceRefresh = false) {
+    ensureHelpButtonObserver();
+
+    const canUseCache = !forceRefresh && Array.isArray(helpButtonsCache) && helpButtonsCache.length > 0;
+    if (canUseCache) {
+      const filtered = [];
+      for (let index = 0; index < helpButtonsCache.length; index += 1) {
+        const button = helpButtonsCache[index];
+        if (!button || typeof button.addEventListener !== 'function') {
+          continue;
+        }
+        if (typeof button.isConnected === 'boolean' && !button.isConnected) {
+          continue;
+        }
+        if (!matchesHelpTrigger(button)) {
+          continue;
+        }
+        filtered.push(button);
+      }
+      if (filtered.length) {
+        helpButtonsCache = filtered;
+        return filtered;
+      }
+    }
+
     const buttons = [];
     const seen = new Set();
 
@@ -5219,6 +5386,7 @@
       }
     }
 
+    helpButtonsCache = buttons;
     return buttons;
   }
 
@@ -5406,7 +5574,10 @@
   }
 
   function applyHelpButtonLabel() {
-    const buttons = collectHelpButtons();
+    let buttons = collectHelpButtons();
+    if (!buttons.length) {
+      buttons = collectHelpButtons(true);
+    }
     if (!buttons.length) {
       applyHelpStatus();
       return;
