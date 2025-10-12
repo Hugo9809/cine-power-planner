@@ -457,7 +457,7 @@
           'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
         highlights: [
           {
-            icon: '\uE1A6',
+            icon: '\uE1A9',
             title: 'Plan safe power loads',
             body:
               'Model draw, runtime and changeovers to lock in battery safety margins with confidence.',

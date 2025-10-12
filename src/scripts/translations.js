@@ -1864,7 +1864,7 @@ const texts = {
               "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
             highlights: [
               {
-                icon: "\uE1A6",
+                icon: "\uE1A9",
                 title: "Lock in power, safety, and backups",
                 body:
                   "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.",
@@ -1882,13 +1882,13 @@ const texts = {
                   "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production can trust.",
               },
               {
-                icon: "\uE1A6",
+                icon: "\uE9D4",
                 title: "Offline-first, subscription-free PWA",
                 body:
                   "Run the planner entirely offline, install it as a mobile PWA, and keep workflows available without subscriptions or servers.",
               },
               {
-                icon: "\uE467",
+                icon: "\uE5BD",
                 title: "Data is sacred",
                 body:
                   "Autosave, backup/restore, share, and import safeguards protect every project snapshot. Restore rehearsals prove nothing is lost.",
@@ -4030,7 +4030,7 @@ const texts = {
               "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
             highlights: [
               {
-                icon: "\uE1A6",
+                icon: "\uE1A9",
                 title: "Metti al sicuro potenza, safety e backup",
                 body:
                   "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare.",
@@ -4048,13 +4048,13 @@ const texts = {
                   "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF affidabili per troupe, rental e produzione.",
               },
               {
-                icon: "\uE1A6",
+                icon: "\uE9D4",
                 title: "PWA offline e senza abbonamento",
                 body:
                   "Esegui il planner completamente offline, installalo come PWA mobile e mantieni ogni workflow disponibile senza server né abbonamenti.",
               },
               {
-                icon: "\uE467",
+                icon: "\uE5BD",
                 title: "I dati sono sacri",
                 body:
                   "Autosalvataggi, backup/ripristino, condivisione e importazione proteggono ogni snapshot del progetto. Le prove di ripristino dimostrano che nulla va perso.",
@@ -6209,7 +6209,7 @@ const texts = {
               "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, backup, restauración, compartición e importación vive en este dispositivo.",
             highlights: [
               {
-                icon: "\uE1A6",
+                icon: "\uE1A9",
                 title: "Asegura potencia, seguridad y backups",
                 body:
                   "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar.",
@@ -6227,13 +6227,13 @@ const texts = {
                   "Lleva el seguimiento de requisitos, cobertura de equipo y notas de alquiler; luego exporta paquetes PDF fiables para el equipo, las casas de renta y producción.",
               },
               {
-                icon: "\uE1A6",
+                icon: "\uE9D4",
                 title: "PWA offline y sin suscripción",
                 body:
                   "Ejecuta el planner completamente offline, instálalo como PWA móvil y mantén cada workflow disponible sin servidores ni suscripciones.",
               },
               {
-                icon: "\uE467",
+                icon: "\uE5BD",
                 title: "Los datos son sagrados",
                 body:
                   "Autosave, backup/restauración, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde.",
@@ -8401,7 +8401,7 @@ const texts = {
               "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
             highlights: [
               {
-                icon: "\uE1A6",
+                icon: "\uE1A9",
                 title: "Sécuriser puissance, sécurité et backups",
                 body:
                   "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner.",
@@ -8419,13 +8419,13 @@ const texts = {
                   "Suivez exigences, couverture équipe et notes de location puis exportez des PDF fiables pour l’équipe, les loueurs et la production.",
               },
               {
-                icon: "\uE1A6",
+                icon: "\uE9D4",
                 title: "PWA hors ligne, sans abonnement",
                 body:
                   "Utilisez le planner entièrement hors ligne, installez-le comme PWA mobile et gardez chaque workflow disponible sans serveurs ni abonnements.",
               },
               {
-                icon: "\uE467",
+                icon: "\uE5BD",
                 title: "Les données sont sacrées",
                 body:
                   "Autosave, backups/restaurations, partage et import protègent chaque instantané de projet. Les exercices de restauration prouvent qu’aucune donnée ne se perd.",
@@ -10597,7 +10597,7 @@ const texts = {
               "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
             highlights: [
               {
-                icon: "\uE1A6",
+                icon: "\uE1A9",
                 title: "Leistung, Sicherheit und Backups absichern",
                 body:
                   "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind.",
@@ -10615,13 +10615,13 @@ const texts = {
                   "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion exportieren.",
               },
               {
-                icon: "\uE1A6",
+                icon: "\uE9D4",
                 title: "Offline-first, abofreie PWA",
                 body:
                   "Den Planner komplett offline nutzen, als mobile PWA installieren und Workflows ohne Server oder Abos verfügbar halten.",
               },
               {
-                icon: "\uE467",
+                icon: "\uE5BD",
                 title: "Daten sind heilig",
                 body:
                   "Autosave-, Backup/Restore-, Teilen- und Import-Workflows schützen jede Projektsicherung. Restore-Proben zeigen, dass nichts verloren geht.",
