@@ -1861,12 +1861,17 @@ function autoBackup(options = {}) {
 
   const enforceCadence = !force && !AUTO_BACKUP_CADENCE_EXEMPT_REASONS.has(reason);
   if (enforceCadence && !enoughTimeElapsedSinceLastBackup && !enoughChangesAccumulated) {
+    const remainingIntervalMs = Math.max(0, AUTO_BACKUP_INTERVAL_MS - elapsedSinceLastAutoBackupMs);
     const skipped = {
       status: 'skipped',
       reason: 'cadence',
       context: reason,
       elapsedSinceLastAutoBackupMs,
       changesSinceSnapshot: autoBackupChangesSinceSnapshot,
+      requiredIntervalMs: AUTO_BACKUP_INTERVAL_MS,
+      requiredChangeThreshold: AUTO_BACKUP_CHANGE_THRESHOLD,
+      remainingIntervalMs,
+      remainingChanges: Math.max(0, AUTO_BACKUP_CHANGE_THRESHOLD - autoBackupChangesSinceSnapshot),
     };
     if (typeof console !== 'undefined' && typeof console.debug === 'function') {
       console.debug('Skipping auto backup because cadence requirements are not met.', skipped);
