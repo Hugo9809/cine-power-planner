@@ -7028,6 +7028,12 @@ textarea:disabled {
   margin-inline: auto;
 }
 
+.onboarding-hero-banner,
+.onboarding-hero-highlights,
+.onboarding-hero-language {
+  min-width: 0;
+}
+
 .onboarding-hero-banner {
   display: grid;
   gap: clamp(1.15rem, 0.9rem + 0.9vw, 1.8rem);
@@ -7410,6 +7416,33 @@ body.dark-mode .onboarding-hero-offline {
 
   .onboarding-overlay[data-step-list='visible'] {
     --onboarding-step-button-min-height: 3rem;
+  }
+}
+
+@media (min-width: 54rem) {
+  .onboarding-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-areas:
+      "banner language"
+      "highlights language";
+    align-items: start;
+  }
+
+  .onboarding-hero-banner {
+    grid-area: banner;
+  }
+
+  .onboarding-hero-highlights {
+    grid-area: highlights;
+    align-self: start;
+  }
+
+  .onboarding-hero-language {
+    grid-area: language;
+    align-self: start;
+    justify-self: stretch;
+    display: grid;
+    gap: clamp(0.6rem, 0.5rem + 0.45vw, 0.95rem);
   }
 }
 
