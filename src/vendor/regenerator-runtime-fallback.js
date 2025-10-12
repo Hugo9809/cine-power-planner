@@ -22,7 +22,11 @@
     return;
   }
 
-  var runtime = function createRuntime(exports) {
+  var runtimeTarget = (typeof module === "object" && module && module.exports)
+    ? module.exports
+    : {};
+
+  var runtimeFactory = function createRuntime(exports) {
     "use strict";
 
     var Op = Object.prototype;
@@ -579,7 +583,9 @@
     }
 
     return exports;
-  }((typeof module === "object" && module && module.exports) ? module.exports : {}));
+  };
+
+  var runtime = runtimeFactory(runtimeTarget);
 
   try {
     scope.regeneratorRuntime = runtime;
