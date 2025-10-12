@@ -17075,7 +17075,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
         let summary = generateSafeConnectorSummary(deviceData);
-        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+        if (summary) {
+          // Remove all HTML tags by repeatedly applying the regex until nothing matches
+          let previous;
+          do {
+            previous = summary;
+            summary = summary.replace(/<[^>]+>/g, '');
+          } while (summary !== previous);
+          summary = summary.replace(/\s+/g, ' ').trim();
+        } else {
+          summary = '';
+        }
         if (deviceData.notes) {
           summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
         }
