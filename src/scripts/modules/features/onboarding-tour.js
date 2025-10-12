@@ -445,8 +445,7 @@
   const DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
-      body:
-        'Step 1 introduces the guided tour and the safeguards that keep every project recoverable before the first shoot. Follow the prompts to learn how saves, backups, and restores work without ever risking your offline data.',
+      body: '',
       hero: {
         heading: 'Step 1 · Welcome aboard',
         subheading: 'Power planning without losing data',
