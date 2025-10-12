@@ -3552,32 +3552,70 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     themeDark.textContent = 'Dark';
     themeSelect.appendChild(themeLight);
     themeSelect.appendChild(themeDark);
-    themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
-    var syncThemeFromTarget = function syncThemeFromTarget() {
-      var expected = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
-      if (themeSelect.value !== expected) {
-        themeSelect.value = expected;
+
+    var themePreferenceBridge = GLOBAL_SCOPE && GLOBAL_SCOPE.cineThemePreference ? GLOBAL_SCOPE.cineThemePreference : null;
+
+    if (
+      themePreferenceBridge
+      && typeof themePreferenceBridge.registerControl === 'function'
+      && typeof themePreferenceBridge.getValue === 'function'
+    ) {
+      try {
+        var currentTheme = themePreferenceBridge.getValue();
+        if (typeof currentTheme === 'boolean') {
+          themeSelect.value = currentTheme ? 'dark' : 'light';
+        }
+      } catch (bridgeError) {
+        safeWarn('cine.features.onboardingTour: theme bridge getValue failed.', bridgeError);
       }
-    };
-    var syncThemeToTarget = function syncThemeToTarget() {
-      if (!darkModeToggle) {
-        return;
+
+      var unregisterThemeControl = null;
+      try {
+        unregisterThemeControl = themePreferenceBridge.registerControl(themeSelect, { type: 'select' });
+      } catch (registerError) {
+        safeWarn('cine.features.onboardingTour: theme bridge registerControl failed.', registerError);
       }
-      var shouldEnable = themeSelect.value === 'dark';
-      if (darkModeToggle.checked !== shouldEnable) {
-        darkModeToggle.checked = shouldEnable;
-        dispatchSyntheticEvent(darkModeToggle, 'change');
+
+      if (typeof unregisterThemeControl === 'function') {
+        registerCleanup(function () {
+          try {
+            unregisterThemeControl();
+          } catch (cleanupError) {
+            safeWarn('cine.features.onboardingTour: theme bridge cleanup failed.', cleanupError);
+          }
+        });
       }
-    };
-    themeSelect.addEventListener('change', syncThemeToTarget);
-    registerCleanup(function () {
-      themeSelect.removeEventListener('change', syncThemeToTarget);
-    });
-    if (darkModeToggle) {
-      darkModeToggle.addEventListener('change', syncThemeFromTarget);
+    } else {
+      themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+
+      var syncThemeFromTarget = function syncThemeFromTarget() {
+        var expected = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+        if (themeSelect.value !== expected) {
+          themeSelect.value = expected;
+        }
+      };
+
+      var syncThemeToTarget = function syncThemeToTarget() {
+        if (!darkModeToggle) {
+          return;
+        }
+        var shouldEnable = themeSelect.value === 'dark';
+        if (darkModeToggle.checked !== shouldEnable) {
+          darkModeToggle.checked = shouldEnable;
+          dispatchSyntheticEvent(darkModeToggle, 'change');
+        }
+      };
+
+      themeSelect.addEventListener('change', syncThemeToTarget);
       registerCleanup(function () {
-        darkModeToggle.removeEventListener('change', syncThemeFromTarget);
+        themeSelect.removeEventListener('change', syncThemeToTarget);
       });
+      if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', syncThemeFromTarget);
+        registerCleanup(function () {
+          darkModeToggle.removeEventListener('change', syncThemeFromTarget);
+        });
+      }
     }
     themeGroup.appendChild(themeLabel);
     themeGroup.appendChild(themeSelect);

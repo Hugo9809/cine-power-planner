@@ -292,7 +292,7 @@ const texts = {
       "Choose the interface language. Changes apply immediately and are remembered for next time.",
     darkModeSetting: "Dark mode",
     settingsDarkModeHelp:
-      "Toggle dark mode from Settings while previewing the result instantly.",
+      "Switch between light and dark themes from any control. The onboarding selector, top-bar toggle and Settings checkbox stay synchronized instantly.",
     pinkModeSetting: "Pink mode",
     settingsPinkModeHelp:
       "Enable the playful pink accent theme from Settings.",
@@ -3074,7 +3074,7 @@ const texts = {
       "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
     darkModeSetting: "Modalità scura",
     settingsDarkModeHelp:
-      "Attiva o disattiva il tema scuro dalle Impostazioni visualizzando subito il risultato.",
+      "Passa tra tema chiaro e scuro da qualsiasi controllo. Selettore onboarding, interruttore nella barra superiore e casella nelle Impostazioni restano sincronizzati all'istante.",
     pinkModeSetting: "Modalità rosa",
     settingsPinkModeHelp:
       "Attiva il tema rosa giocoso dalle Impostazioni.",
@@ -5219,7 +5219,7 @@ const texts = {
       "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
     darkModeSetting: "Modo oscuro",
     settingsDarkModeHelp:
-      "Activa o desactiva el modo oscuro desde Ajustes viendo el resultado al momento.",
+      "Cambia entre tema claro y oscuro desde cualquier control. El selector de onboarding, el interruptor de la barra superior y la casilla de Ajustes se mantienen sincronizados al instante.",
     pinkModeSetting: "Modo rosa",
     settingsPinkModeHelp:
       "Activa el tema rosa divertido desde Ajustes.",
@@ -7366,7 +7366,7 @@ const texts = {
       "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
     darkModeSetting: "Mode sombre",
     settingsDarkModeHelp:
-      "Activez ou désactivez le mode sombre depuis Paramètres et voyez le résultat immédiatement.",
+      "Basculez entre thèmes clair et sombre depuis n’importe quel contrôle. Le sélecteur d’onboarding, le bouton de la barre supérieure et la case Paramètres restent synchronisés instantanément.",
     pinkModeSetting: "Mode rose",
     settingsPinkModeHelp:
       "Activez le thème rose ludique depuis Paramètres.",
@@ -9525,7 +9525,7 @@ const texts = {
       "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",
     darkModeSetting: "Dunkelmodus",
     settingsDarkModeHelp:
-      "Schalte den Dark Mode in den Einstellungen ein oder aus und sieh das Ergebnis sofort.",
+      "Wechsle den hellen oder dunklen Modus an jeder Stelle. Onboarding-Auswahl, Schalter in der Kopfzeile und das Kontrollkästchen in den Einstellungen bleiben sofort synchron.",
     pinkModeSetting: "Pinkmodus",
     settingsPinkModeHelp:
       "Aktiviere das verspielte Pink-Theme in den Einstellungen.",

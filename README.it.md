@@ -224,7 +224,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - Link di salto, indicatore offline e branding responsive garantiscono accessibilità.
 - La ricerca si focalizza con `/` o `Ctrl+K` (`⌘K`), apre il menu laterale su mobile e si azzera con Esc.
-- Switch lingua, temi scuro/rosa e dialogo Impostazioni consentono di regolare colore di accento, dimensione e font, modalità alto contrasto, logo personalizzato e accedere a backup, ripristino e reset (sempre preceduti da backup automatico).
+- Switch lingua, temi scuro/rosa e dialogo Impostazioni consentono di regolare colore di accento, dimensione e font, modalità alto contrasto, logo personalizzato e accedere a backup, ripristino e reset (sempre preceduti da backup automatico). Tutti i controlli del tema rimangono sincronizzati automaticamente.
 - Il pulsante Aiuto apre un dialogo ricercabile e risponde a `?`, `H`, `F1` o `Ctrl+/` in qualsiasi momento.
 - Il pulsante 🔄 cancella le risorse in cache e ricarica l’app senza eliminare progetti o dati runtime. Ora il browser precarica il nuovo pacchetto mentre la pulizia è in corso così la nuova versione arriva più rapidamente senza mettere a rischio i dati.
 
@@ -372,7 +372,7 @@ Le autonomie fornite dagli utenti alimentano un modello ponderato per riflettere
 | `/`, `Ctrl+K`, `⌘K` | Focalizza la ricerca globale | Funziona anche con navigazione collassata; `Esc` svuota |
 | `Invio`, `Ctrl+S`, `⌘S` | Salva il progetto attivo | Il pulsante resta disabilitato finché non inserisci un nome |
 | `?`, `H`, `F1`, `Ctrl+/` | Apri il centro assistenza | Il dialogo resta ricercabile |
-| `D` | Attiva/disattiva il tema scuro | Disponibile anche in **Impostazioni → Temi** |
+| `D` | Attiva/disattiva il tema scuro | Disponibile anche in **Impostazioni → Temi**; interruttore in testata, selettore onboarding e casella nelle Impostazioni restano sincronizzati automaticamente. |
 | `P` | Attiva il tema rosa | Compatibile con i temi chiaro, scuro o alto contrasto |
 | 🔄 | Ricarica le risorse in cache | Anche tramite **Impostazioni → Forza ricarica** |
 

@@ -4539,6 +4539,26 @@ var appearanceContext = {
         void storageError;
         return null;
       }
+    },
+    getSafeLocalStorage: function getSafeLocalStorageWrapper() {
+      try {
+        if (typeof getSafeLocalStorage === 'function') {
+          return getSafeLocalStorage();
+        }
+      } catch (storageError) {
+        console.warn('cineSettingsAppearance: getSafeLocalStorage threw while building context', storageError);
+      }
+      return null;
+    },
+    resolveSafeLocalStorage: function resolveSafeLocalStorageWrapper() {
+      try {
+        if (typeof resolveSafeLocalStorage === 'function') {
+          return resolveSafeLocalStorage();
+        }
+      } catch (storageError) {
+        console.warn('cineSettingsAppearance: resolveSafeLocalStorage threw while building context', storageError);
+      }
+      return null;
     }
   },
   preferences: {
@@ -4632,30 +4652,144 @@ if (appearanceModule) {
 } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
   console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
 }
-var darkModeEnabled = false;
-var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
-try {
-  var stored = localStorage.getItem("darkMode");
-  if (stored !== null) {
-    darkModeEnabled = stored === "true";
-  } else if (typeof window.matchMedia === "function") {
-    darkModeEnabled = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-} catch (e) {
-  console.warn("Could not load dark mode preference", e);
-}
-applyDarkMode(darkModeEnabled);
-if (darkModeToggle) {
-  darkModeToggle.addEventListener("click", function () {
-    darkModeEnabled = !document.body.classList.contains("dark-mode");
-    applyDarkMode(darkModeEnabled);
-    try {
-      localStorage.setItem("darkMode", darkModeEnabled);
-    } catch (e) {
-      console.warn("Could not save dark mode preference", e);
+var themePreferenceController = null;
+if (appearanceModule && typeof appearanceModule.createThemePreferenceController === 'function') {
+  themePreferenceController = appearanceModule.createThemePreferenceController({
+    detectSystemPreference: function detectSystemPreference() {
+      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        return null;
+      }
+      try {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch (error) {
+        console.warn('cineSettingsAppearance: detectSystemPreference failed', error);
+      }
+      return null;
     }
   });
 }
+
+var themePreferenceGlobalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+
+function setThemePreference(value, options) {
+  var normalized = !!value;
+  var config = options && _typeof(options) === 'object' ? options : {};
+  if (themePreferenceController && typeof themePreferenceController.setValue === 'function') {
+    themePreferenceController.setValue(normalized, config);
+    return;
+  }
+  applyDarkMode(normalized);
+  var serialized = normalized ? 'true' : 'false';
+  var persistTargets = [];
+  try {
+    if (typeof resolveSafeLocalStorage === 'function') {
+      var safeStorage = resolveSafeLocalStorage();
+      if (safeStorage && typeof safeStorage.setItem === 'function') {
+        persistTargets.push({ name: 'safeLocalStorage', storage: safeStorage });
+      }
+    }
+  } catch (error) {
+    console.warn('Could not resolve SafeLocalStorage while persisting dark mode preference', error);
+  }
+  try {
+    if (typeof localStorage !== 'undefined') {
+      persistTargets.push({ name: 'localStorage', storage: localStorage });
+    }
+  } catch (error) {
+    console.warn('Could not access localStorage while persisting dark mode preference', error);
+  }
+  for (var index = 0; index < persistTargets.length; index += 1) {
+    var entry = persistTargets[index];
+    if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
+      continue;
+    }
+    try {
+      entry.storage.setItem('darkMode', serialized);
+    } catch (persistError) {
+      console.warn('Could not persist dark mode preference to ' + entry.name, persistError);
+    }
+  }
+}
+
+function getThemePreference() {
+  if (themePreferenceController && typeof themePreferenceController.getValue === 'function') {
+    return !!themePreferenceController.getValue();
+  }
+  return typeof document !== 'undefined' && document.body && document.body.classList && document.body.classList.contains('dark-mode');
+}
+
+function registerThemeControl(element, config) {
+  if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
+    return function noopUnregister() {};
+  }
+  try {
+    return themePreferenceController.registerControl(element, config);
+  } catch (registrationError) {
+    console.warn('Failed to register theme control', registrationError);
+    return function noopUnregister() {};
+  }
+}
+
+var unregisterHeaderThemeControl = function unregisterHeaderThemeControl() {};
+var unregisterSettingsThemeControl = function unregisterSettingsThemeControl() {};
+
+if (themePreferenceController) {
+  if (darkModeToggle) {
+    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+  }
+  if (settingsDarkMode) {
+    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+  }
+} else {
+  var fallbackDarkMode = false;
+  try {
+    var storedDarkPreference = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
+    if (storedDarkPreference !== null) {
+      fallbackDarkMode = storedDarkPreference === 'true';
+    } else if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      fallbackDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+  } catch (loadError) {
+    console.warn('Could not load dark mode preference', loadError);
+  }
+  applyDarkMode(fallbackDarkMode);
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', function () {
+      setThemePreference(!document.body.classList.contains('dark-mode'));
+    });
+  }
+  if (settingsDarkMode) {
+    settingsDarkMode.addEventListener('change', function () {
+      setThemePreference(settingsDarkMode.checked);
+    });
+  }
+}
+
+if (themePreferenceGlobalScope) {
+  try {
+    themePreferenceGlobalScope.cineThemePreference = themePreferenceController ? {
+      registerControl: function registerControl(element, options) {
+        return registerThemeControl(element, options);
+      },
+      setValue: function setValue(value, options) {
+        setThemePreference(value, options);
+      },
+      getValue: function getValue() {
+        return getThemePreference();
+      },
+      reloadFromStorage: function reloadFromStorage(options) {
+        if (themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function') {
+          return themePreferenceController.reloadFromStorage(options);
+        }
+        return getThemePreference();
+      }
+    } : null;
+  } catch (exposeError) {
+    console.warn('Unable to expose theme preference bridge', exposeError);
+  }
+}
+
+var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
 var highContrastEnabled = false;
 try {
   highContrastEnabled = localStorage.getItem("highContrast") === "true";
@@ -4793,7 +4927,7 @@ if (settingsButton && settingsDialog) {
       warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
     }
     if (settingsLanguage) settingsLanguage.value = currentLang;
-    if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
+    if (settingsDarkMode) settingsDarkMode.checked = getThemePreference();
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
     if (settingsReduceMotion) {
@@ -4909,13 +5043,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsDarkMode) {
-        var enabled = settingsDarkMode.checked;
-        applyDarkMode(enabled);
-        try {
-          localStorage.setItem('darkMode', enabled);
-        } catch (e) {
-          console.warn('Could not save dark mode preference', e);
-        }
+        setThemePreference(settingsDarkMode.checked, { persist: true });
       }
       if (settingsPinkMode) {
         persistPinkModePreference(settingsPinkMode.checked);
@@ -6790,7 +6918,7 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
   }
   try {
-    applyDarkMode(safeGetItem('darkMode') === 'true');
+    setThemePreference(safeGetItem('darkMode') === 'true', { persist: true });
   } catch (error) {
     console.warn('Failed to apply restored dark mode preference', error);
   }
@@ -8932,8 +9060,7 @@ if (factoryResetButton) {
         console.warn('Failed to reset planner state after factory reset', resetError);
       }
       try {
-        darkModeEnabled = false;
-        applyDarkMode(false);
+        setThemePreference(false, { persist: true });
       } catch (darkError) {
         console.warn('Failed to reset dark mode during factory reset', darkError);
       }
@@ -12430,13 +12557,7 @@ if (helpButton && helpDialog) {
       e.preventDefault();
       focusFeatureSearchInput();
     } else if (lowerKey === 'd' && !isTextField) {
-      darkModeEnabled = !document.body.classList.contains('dark-mode');
-      applyDarkMode(darkModeEnabled);
-      try {
-        localStorage.setItem('darkMode', darkModeEnabled);
-      } catch (err) {
-        console.warn('Could not save dark mode preference', err);
-      }
+      setThemePreference(!getThemePreference());
     } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       if (saveSetupBtn && !saveSetupBtn.disabled) {

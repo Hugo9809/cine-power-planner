@@ -226,7 +226,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - Lien d’évitement, indicateur hors ligne et branding responsive assurent l’accessibilité.
 - La recherche se focalise avec `/` ou `Ctrl+K` (`⌘K`), ouvre la navigation sur mobile et se vide avec Échap.
-- Les contrôles de langue, thèmes sombre/rose et le dialogue Paramètres permettent d’ajuster couleur d’accent, taille et police, contraste élevé, logo personnalisé ainsi que d’accéder aux outils de backup, restauration et réinitialisation (avec sauvegarde automatique).
+- Les contrôles de langue, thèmes sombre/rose et le dialogue Paramètres permettent d’ajuster couleur d’accent, taille et police, contraste élevé, logo personnalisé ainsi que d’accéder aux outils de backup, restauration et réinitialisation (avec sauvegarde automatique). Tous les sélecteurs de thème restent synchronisés automatiquement.
 - Le bouton d’aide ouvre un dialogue consultable et répond à `?`, `H`, `F1` ou `Ctrl+/` à tout moment.
 - Le bouton 🔄 supprime les ressources mises en cache et recharge l’application sans effacer les projets ou données d’autonomie. Le navigateur précharge désormais le nouveau lot pendant le nettoyage pour que la nouvelle version arrive plus vite sans risquer les données.
 
@@ -374,7 +374,7 @@ Les autonomies remontées par les utilisateurs alimentent un modèle pondéré r
 | `/`, `Ctrl+K`, `⌘K` | Focaliser la recherche globale | Fonctionne même navigation repliée ; `Échap` efface |
 | `Entrée`, `Ctrl+S`, `⌘S` | Sauvegarder le projet actif | Le bouton reste inactif tant qu’aucun nom n’est saisi |
 | `?`, `H`, `F1`, `Ctrl+/` | Ouvrir l’aide | La boîte de dialogue reste consultable |
-| `D` | Basculer en mode sombre | Aussi disponible dans **Paramètres → Thèmes** |
+| `D` | Basculer en mode sombre | Aussi disponible dans **Paramètres → Thèmes** ; le bouton d’en-tête, la sélection d’onboarding et la case Paramètres restent synchronisés automatiquement. |
 | `P` | Activer le thème rose | Compatible avec clair, sombre ou contraste élevé |
 | 🔄 | Recharger les ressources en cache | Également via **Paramètres → Forcer le rechargement** |
 
