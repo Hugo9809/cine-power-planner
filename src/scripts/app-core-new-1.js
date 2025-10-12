@@ -133,6 +133,97 @@ const CORE_RUNTIME_TOOLS = resolveCoreSupportModule(
   './modules/core/runtime-tools.js'
 );
 
+const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
+  let resolvedSupport = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    try {
+      resolvedSupport = resolveCoreSupportModule(
+        'cineCoreRuntimeState',
+        './modules/core/runtime-state.js'
+      );
+    } catch (runtimeStateResolveError) {
+      void runtimeStateResolveError;
+      resolvedSupport = null;
+    }
+  }
+
+  if (!resolvedSupport && typeof require === 'function') {
+    try {
+      const requiredRuntimeState = require('./modules/core/runtime-state.js');
+      if (requiredRuntimeState && typeof requiredRuntimeState === 'object') {
+        resolvedSupport = requiredRuntimeState;
+      }
+    } catch (runtimeStateRequireError) {
+      void runtimeStateRequireError;
+    }
+  }
+
+  if (resolvedSupport) {
+    return resolvedSupport;
+  }
+
+  const fallbackScopes = collectCoreRuntimeCandidateScopes(
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+  );
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const candidateScope = fallbackScopes[index];
+    if (!candidateScope || typeof candidateScope !== 'object') {
+      continue;
+    }
+
+    try {
+      const candidate = candidateScope.cineCoreRuntimeState;
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    } catch (runtimeStateLookupError) {
+      void runtimeStateLookupError;
+    }
+  }
+
+  return null;
+})();
+
+function collectCoreRuntimeCandidateScopes(primaryScope) {
+  const scopes = [];
+  const seenScopes = typeof Set === 'function' ? new Set() : null;
+
+  function registerScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (seenScopes) {
+      if (seenScopes.has(scope)) {
+        return;
+      }
+      seenScopes.add(scope);
+      scopes.push(scope);
+      return;
+    }
+
+    if (scopes.indexOf(scope) !== -1) {
+      return;
+    }
+
+    scopes.push(scope);
+  }
+
+  registerScope(primaryScope);
+  if (typeof globalThis !== 'undefined') registerScope(globalThis);
+  if (typeof window !== 'undefined') registerScope(window);
+  if (typeof self !== 'undefined') registerScope(self);
+  if (typeof global !== 'undefined') registerScope(global);
+
+  return scopes;
+}
+
+const CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
+  typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+);
+
 function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && typeof cineLocale === 'object') {
     return cineLocale;
@@ -588,8 +679,48 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
   }
 }
 
-const CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-const CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+let CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+let CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+
+const CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults() {
+  const defaults = {
+    queueKey: CORE_TEMPERATURE_QUEUE_KEY,
+    renderName: CORE_TEMPERATURE_RENDER_NAME,
+  };
+
+  if (
+    CORE_RUNTIME_STATE_SUPPORT &&
+    typeof CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults === 'function'
+  ) {
+    try {
+      const resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults();
+      if (resolvedDefaults && typeof resolvedDefaults === 'object') {
+        if (typeof resolvedDefaults.queueKey === 'string' && resolvedDefaults.queueKey) {
+          defaults.queueKey = resolvedDefaults.queueKey;
+        }
+
+        if (typeof resolvedDefaults.renderName === 'string' && resolvedDefaults.renderName) {
+          defaults.renderName = resolvedDefaults.renderName;
+        }
+      }
+    } catch (resolveTemperatureDefaultsError) {
+      void resolveTemperatureDefaultsError;
+    }
+  }
+
+  if (typeof defaults.queueKey !== 'string' || !defaults.queueKey) {
+    defaults.queueKey = '__cinePendingTemperatureNote';
+  }
+
+  if (typeof defaults.renderName !== 'string' || !defaults.renderName) {
+    defaults.renderName = 'renderTemperatureNote';
+  }
+
+  return defaults;
+})();
+
+CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
+CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 
 function getEscapeHtmlFunction() {
   try {
@@ -949,7 +1080,7 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
-function createCoreRuntimeState(initialScopes) {
+function createCoreRuntimeStateFallback(candidateScopes) {
   const scopes = [];
   const seenScopes =
     typeof Set === 'function'
@@ -977,10 +1108,10 @@ function createCoreRuntimeState(initialScopes) {
     scopes.push(scope);
   }
 
-  if (Array.isArray(initialScopes)) {
-    for (let index = 0; index < initialScopes.length; index += 1) {
+  if (Array.isArray(candidateScopes)) {
+    for (let index = 0; index < candidateScopes.length; index += 1) {
       try {
-        registerScope(initialScopes[index]);
+        registerScope(candidateScopes[index]);
       } catch (initialiseScopeError) {
         void initialiseScopeError;
       }
@@ -1188,16 +1319,32 @@ function createCoreRuntimeState(initialScopes) {
   };
 }
 
-const CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', () => {
-  const initialScopes = [
-    CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
-    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
-    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
-    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
-    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
-  ].filter(Boolean);
+function createCoreRuntimeState(candidateScopes) {
+  if (
+    CORE_RUNTIME_STATE_SUPPORT &&
+    typeof CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState === 'function'
+  ) {
+    try {
+      return CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState(candidateScopes, {
+        temperatureQueueKey: CORE_TEMPERATURE_QUEUE_KEY,
+        temperatureRenderName: CORE_TEMPERATURE_RENDER_NAME,
+      });
+    } catch (coreRuntimeStateError) {
+      void coreRuntimeStateError;
+    }
+  }
 
-  return createCoreRuntimeState(initialScopes);
+  return createCoreRuntimeStateFallback(candidateScopes);
+}
+
+const CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', () => {
+  const candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES.length
+    ? CORE_RUNTIME_CANDIDATE_SCOPES
+    : collectCoreRuntimeCandidateScopes(
+        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+      );
+
+  return createCoreRuntimeState(candidateScopes);
 });
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
