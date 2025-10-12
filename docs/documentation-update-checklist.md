@@ -33,6 +33,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Capture manual saves, auto backups, planner backups and project bundles before and after the change; confirm restores succeed in an isolated offline profile.
 - [ ] Inspect `window.__cineRuntimeIntegrity` and run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to prove every persistence safeguard documented in the guides remains available.
 - [ ] Re-open the help dialog, legal pages and device catalogs offline to ensure service-worker caches include the updated copy and locally stored Uicons.
+- [ ] Complete the [Documentation Drift Runbook](documentation-drift-runbook.md) if any help topics, localized READMEs or printable manuals changed so the offline bundle carries verified, up-to-date guidance.
 
 ## 5. Archive evidence
 

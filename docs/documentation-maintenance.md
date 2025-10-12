@@ -19,6 +19,12 @@ cycles to spot-check localized READMEs, printable manuals, help topics and Quick
 against the runtime safeguards described below. The audit keeps long-lived releases aligned with
 the current code even when no new features ship for several weeks.
 
+When you need a focused rehearsal to confirm that cached offline materials still match the runtime,
+pair this guide with the [Documentation Drift Runbook](documentation-drift-runbook.md). The drill
+walks through inventorying surfaces, validating translations, rehearsing save/share/import/backup/
+restore flows offline and archiving verification evidence so every distributed bundle carries
+documentation that is provably up to date.
+
 When features touch save/share/import/backup/restore logic or runtime safeguards,
 coordinate updates with the [Data Protection Playbook](data-protection-playbook.md).
 It captures the rehearsal cadence, guard outputs and archival artefacts that crews
