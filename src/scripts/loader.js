@@ -1601,13 +1601,100 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       return;
     }
 
-    if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
+    if (
+      typeof Object.entries !== 'function' ||
+      typeof Object.fromEntries !== 'function' ||
+      typeof Object.values !== 'function'
+    ) {
       rememberModernSupportResult(false);
       cb(false);
       return;
     }
 
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    if (typeof stringProto.padStart !== 'function') {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    if (typeof Number.isFinite !== 'function' || typeof Number.isNaN !== 'function') {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    var mapSupported = typeof Map === 'function';
+    if (mapSupported) {
+      try {
+        var mapProbe = new Map();
+        mapProbe.set('probe', 1);
+        mapSupported = typeof mapProbe.forEach === 'function' && mapProbe.get('probe') === 1;
+      } catch (mapError) {
+        void mapError;
+        mapSupported = false;
+      }
+    }
+
+    var setSupported = typeof Set === 'function';
+    if (setSupported) {
+      try {
+        var setProbe = new Set([1, 2]);
+        setSupported = typeof setProbe.forEach === 'function' && setProbe.has(2);
+      } catch (setError) {
+        void setError;
+        setSupported = false;
+      }
+    }
+
+    if (!mapSupported || !setSupported) {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    var promisePrototype = typeof Promise === 'function' ? Promise.prototype : null;
+    if (!promisePrototype || typeof promisePrototype.finally !== 'function') {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    var hasUrlSupport = typeof URL === 'function';
+    if (hasUrlSupport) {
+      try {
+        var urlProbe = new URL('https://example.com/');
+        hasUrlSupport = !!urlProbe && typeof urlProbe.toString === 'function';
+      } catch (urlError) {
+        void urlError;
+        hasUrlSupport = false;
+      }
+    }
+
+    if (!hasUrlSupport) {
+      rememberModernSupportResult(false);
+      cb(false);
+      return;
+    }
+
+    var hasUrlSearchParamsSupport = typeof URLSearchParams === 'function';
+    if (hasUrlSearchParamsSupport) {
+      try {
+        var urlSearchParamsProbe = new URLSearchParams('a=1');
+        hasUrlSearchParamsSupport =
+          !!urlSearchParamsProbe && typeof urlSearchParamsProbe.get === 'function';
+      } catch (urlSearchParamsError) {
+        void urlSearchParamsError;
+        hasUrlSearchParamsSupport = false;
+      }
+    }
+
+    if (!hasUrlSearchParamsSupport) {
       rememberModernSupportResult(false);
       cb(false);
       return;
