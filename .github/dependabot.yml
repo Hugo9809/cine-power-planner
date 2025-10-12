@@ -1,0 +1,54 @@
+# .github/dependabot.yml
+version: 2
+
+updates:
+  # App dependencies (npm / yarn / pnpm are all handled under "npm")
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    # Keeps lockfile fresh; only widens/increases ranges when needed
+    versioning-strategy: increase-if-necessary
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      # Roll up devDependency minor/patch updates into one PR
+      dev-minor-patch:
+        applies-to: version-updates
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+      # Roll up production dependency minor/patch updates
+      prod-minor-patch:
+        applies-to: version-updates
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
+      # Group patch-level security fixes
+      security-patches:
+        applies-to: security-updates
+        update-types: ["patch"]
+    # OPTIONAL: keep majors separate for risky stacks until planned upgrades
+    # ignore:
+    #   - dependency-name: "vite"
+    #     update-types: ["version-update:semver-major"]
+    #   - dependency-name: "react*"
+    #     update-types: ["version-update:semver-major"]
+
+  # Keep GitHub Actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:45"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
