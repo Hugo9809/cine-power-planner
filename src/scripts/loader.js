@@ -177,6 +177,81 @@ function resolveCriticalFallback(fallback) {
   return typeof fallback === 'function' ? fallback() : fallback;
 }
 
+function createCoreFunctionProxy(functionName, options) {
+  function computeDefault(args) {
+    if (!options || !Object.prototype.hasOwnProperty.call(options, 'defaultValue')) {
+      return undefined;
+    }
+
+    var fallback = options.defaultValue;
+    if (typeof fallback === 'function') {
+      try {
+        return fallback.apply(null, args);
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+
+    return fallback;
+  }
+
+  function invokeCore(scope, args, defaultValue, proxyRef) {
+    if (scope && typeof scope.callCoreFunctionIfAvailable === 'function') {
+      try {
+        return scope.callCoreFunctionIfAvailable(
+          functionName,
+          args,
+          typeof defaultValue === 'undefined' ? undefined : { defaultValue: defaultValue },
+        );
+      } catch (callCoreError) {
+        void callCoreError;
+      }
+    }
+
+    var target = scope && scope[functionName];
+    if (typeof target === 'function' && target !== proxyRef) {
+      try {
+        return target.apply(scope, args);
+      } catch (invokeError) {
+        void invokeError;
+      }
+    }
+
+    return undefined;
+  }
+
+  var proxy = function coreFunctionProxy() {
+    var scope = resolveCriticalGlobalScope();
+    var args = Array.prototype.slice.call(arguments);
+    var defaultValue = computeDefault(args);
+
+    var result = invokeCore(scope, args, defaultValue, proxy);
+    if (typeof result !== 'undefined') {
+      return result;
+    }
+
+    if (options && options.defer === true) {
+      var queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+      if (queue) {
+        queue.push(function deferredCoreFunctionProxy() {
+          var currentScope = resolveCriticalGlobalScope();
+          var deferredResult = invokeCore(currentScope, args, defaultValue, proxy);
+          if (typeof deferredResult !== 'undefined') {
+            return deferredResult;
+          }
+
+          return defaultValue;
+        });
+      }
+    }
+
+    return defaultValue;
+  };
+
+  return proxy;
+}
+
 function normaliseCriticalGlobalVariable(name, validator, fallback) {
   var fallbackValue = resolveCriticalFallback(fallback);
   var scope = ensureCriticalGlobalVariable(name, fallbackValue) || resolveCriticalGlobalScope();
@@ -872,6 +947,61 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return function loaderFallbackGetCurrentSetupState() {
       return {};
     };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'deriveProjectInfo',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    function cloneProjectInfoFallback(info) {
+      if (!info || typeof info !== 'object') {
+        return {};
+      }
+
+      var clone;
+      try {
+        clone = JSON.parse(JSON.stringify(info));
+        if (clone && typeof clone === 'object') {
+          return clone;
+        }
+      } catch (jsonCloneError) {
+        void jsonCloneError;
+        clone = null;
+      }
+
+      if (!clone || typeof clone !== 'object') {
+        clone = {};
+        try {
+          var keys = Object.keys(info);
+          for (var index = 0; index < keys.length; index += 1) {
+            var key = keys[index];
+            clone[key] = info[key];
+          }
+        } catch (copyError) {
+          void copyError;
+          clone = info;
+        }
+      }
+
+      return clone;
+    }
+
+    return createCoreFunctionProxy('deriveProjectInfo', {
+      defaultValue: cloneProjectInfoFallback,
+    });
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'saveAutoGearRuleFromEditor',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return createCoreFunctionProxy('saveAutoGearRuleFromEditor', { defer: true });
   },
 });
 
