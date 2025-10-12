@@ -56,6 +56,10 @@ function mergeDeviceOverrides(target, source) {
     return target;
   }
   for (const [key, value] of Object.entries(source)) {
+    // Block prototype polluting keys
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      continue;
+    }
     if (
       value &&
       typeof value === 'object' &&
