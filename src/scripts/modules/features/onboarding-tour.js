@@ -1725,19 +1725,34 @@
       },
       {
         key: 'resultsTotalDraw',
-        highlight: '#results',
+        highlight: [
+          '#powerDiagram',
+          '#totalPowerLabel',
+          '#totalPower',
+          '#totalCurrent144Label',
+          '#totalCurrent12Label',
+        ],
       },
       {
         key: 'resultsBatteryPacks',
-        highlight: '#results',
+        highlight: [
+          '#batteryLifeLabel',
+          '#batteryLife',
+          '#batteryCountLabel',
+          '#batteryCount',
+        ],
       },
       {
         key: 'resultsChangeover',
-        highlight: '#results',
+        highlight: '#breakdownList',
       },
       {
         key: 'resultsWarnings',
-        highlight: '#results',
+        highlight: [
+          '#pinWarning',
+          '#dtapWarning',
+          '#hotswapWarning',
+        ],
       },
       {
         key: 'batteryComparison',
