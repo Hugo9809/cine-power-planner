@@ -103,6 +103,130 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var HELP_BUTTON_ID = 'helpOnboardingTutorialButton';
   var HELP_TRIGGER_SELECTOR = '[data-onboarding-tour-trigger]';
   var HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
+  var MAIN_ANCHOR_ID = 'mainContent';
+  var HEADER_ANCHOR_ID = 'topBar';
+  var supportsDialogTopLayer = function detectDialogSupport() {
+    if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
+      return false;
+    }
+    try {
+      var dialog = DOCUMENT.createElement('dialog');
+      return typeof dialog.show === 'function' && typeof dialog.close === 'function';
+    } catch (error) {
+      void error;
+      return false;
+    }
+  }();
+  var DOM_POSITION_FOLLOWING = typeof Node !== 'undefined' && Node ? Node.DOCUMENT_POSITION_FOLLOWING : 4;
+  var DOM_POSITION_PRECEDING = typeof Node !== 'undefined' && Node ? Node.DOCUMENT_POSITION_PRECEDING : 2;
+  var FOCUSABLE_SELECTOR = ['button:not([disabled])', 'a[href]', 'input:not([disabled]):not([type="hidden"])', 'select:not([disabled])', 'textarea:not([disabled])', '[role="button"]:not([aria-disabled="true"])', '[tabindex]:not([tabindex="-1"])'].join(',');
+  function isElementFocusable(element) {
+    if (!element || typeof element.matches !== 'function') {
+      return false;
+    }
+    if (element.hasAttribute('disabled')) {
+      return false;
+    }
+    if (element.getAttribute && element.getAttribute('aria-disabled') === 'true') {
+      return false;
+    }
+    if (element.hidden || typeof element.getAttribute === 'function' && element.getAttribute('hidden') !== null) {
+      return false;
+    }
+    if (typeof element.closest === 'function') {
+      if (element.closest('[aria-hidden="true"]')) {
+        return false;
+      }
+      if (element.closest('[hidden]')) {
+        return false;
+      }
+    }
+    return element.matches(FOCUSABLE_SELECTOR);
+  }
+  function collectFocusableElements(root) {
+    var includeRoot = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    if (!root) {
+      return [];
+    }
+    var focusable = [];
+    if (includeRoot && isElementFocusable(root)) {
+      focusable.push(root);
+    }
+    if (typeof root.querySelectorAll !== 'function') {
+      return focusable;
+    }
+    var nodes = root.querySelectorAll(FOCUSABLE_SELECTOR);
+    for (var index = 0; index < nodes.length; index += 1) {
+      var node = nodes[index];
+      if (isElementFocusable(node)) {
+        focusable.push(node);
+      }
+    }
+    return focusable;
+  }
+  function sortFocusableByDocumentOrder(elements) {
+    if (!Array.isArray(elements)) {
+      return [];
+    }
+    return elements.slice().sort(function (a, b) {
+      if (!a || !b || a === b || typeof a.compareDocumentPosition !== 'function') {
+        return 0;
+      }
+      var position = a.compareDocumentPosition(b);
+      if (position & DOM_POSITION_FOLLOWING) {
+        return -1;
+      }
+      if (position & DOM_POSITION_PRECEDING) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+  function isDialogElement(element) {
+    return Boolean(element && typeof element.nodeName === 'string' && element.nodeName.toLowerCase() === 'dialog');
+  }
+  function bringOverlayToTopLayer() {
+    if (!overlayRoot) {
+      return;
+    }
+    if (overlayAnchor && DOCUMENT && overlayAnchor !== DOCUMENT.body) {
+      return;
+    }
+    if (supportsDialogTopLayer && isDialogElement(overlayRoot) && typeof overlayRoot.show === 'function') {
+      try {
+        if (overlayRoot.open && typeof overlayRoot.close === 'function') {
+          overlayRoot.close();
+        }
+      } catch (closeError) {
+        void closeError;
+      }
+      try {
+        overlayRoot.show();
+      } catch (showError) {
+        safeWarn('cine.features.onboardingTour could not refresh overlay top layer.', showError);
+      }
+      return;
+    }
+    if (overlayRoot.parentNode && typeof overlayRoot.parentNode.appendChild === 'function') {
+      try {
+        overlayRoot.parentNode.appendChild(overlayRoot);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not move overlay to front.', error);
+      }
+    }
+  }
+  function handleDialogToggle(event) {
+    if (!active || !event || !event.target) {
+      return;
+    }
+    var target = event.target;
+    if (target === overlayRoot) {
+      return;
+    }
+    if (isDialogElement(target) && target.open) {
+      bringOverlayToTopLayer();
+    }
+  }
   function resolveStorage() {
     if (typeof getSafeLocalStorage === 'function') {
       try {
@@ -127,6 +251,99 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var SAFE_STORAGE = resolveStorage();
+  var deviceLibraryState = {
+    lastAdded: null,
+    lastReviewed: null,
+    lastUpdated: null
+  };
+  var deviceLibrarySubscribers = [];
+  function sanitizeDeviceDescriptor(detail) {
+    if (!detail || _typeof(detail) !== 'object') {
+      return null;
+    }
+    var name = typeof detail.name === 'string' ? detail.name.trim() : '';
+    var category = typeof detail.category === 'string' ? detail.category.trim() : '';
+    var subcategory = null;
+    if (typeof detail.subcategory === 'string') {
+      var trimmed = detail.subcategory.trim();
+      if (trimmed) {
+        subcategory = trimmed;
+      }
+    }
+    if (!name || !category) {
+      return null;
+    }
+    return {
+      name: name,
+      category: category,
+      subcategory: subcategory
+    };
+  }
+  function descriptorsMatch(a, b) {
+    if (!a || !b) {
+      return false;
+    }
+    var normalize = function normalize(value) {
+      return typeof value === 'string' ? value.trim().toLowerCase() : '';
+    };
+    return normalize(a.name) === normalize(b.name) && normalize(a.category) === normalize(b.category) && normalize(a.subcategory || '') === normalize(b.subcategory || '');
+  }
+  function notifyDeviceLibrarySubscribers() {
+    if (!deviceLibrarySubscribers.length) {
+      return;
+    }
+    var snapshot = deviceLibrarySubscribers.slice();
+    for (var index = 0; index < snapshot.length; index += 1) {
+      var callback = snapshot[index];
+      if (typeof callback !== 'function') {
+        continue;
+      }
+      try {
+        callback(deviceLibraryState);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not deliver device library update.', error);
+      }
+    }
+  }
+  function subscribeDeviceLibrary(callback) {
+    if (typeof callback !== 'function') {
+      return function () {};
+    }
+    deviceLibrarySubscribers.push(callback);
+    return function () {
+      var position = deviceLibrarySubscribers.indexOf(callback);
+      if (position !== -1) {
+        deviceLibrarySubscribers.splice(position, 1);
+      }
+    };
+  }
+  if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+    DOCUMENT.addEventListener('device-library:add', function (event) {
+      var descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      deviceLibraryState.lastAdded = descriptor;
+      deviceLibraryState.lastReviewed = null;
+      deviceLibraryState.lastUpdated = null;
+      notifyDeviceLibrarySubscribers();
+    });
+    DOCUMENT.addEventListener('device-library:show-details', function (event) {
+      var descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      deviceLibraryState.lastReviewed = descriptor;
+      notifyDeviceLibrarySubscribers();
+    });
+    DOCUMENT.addEventListener('device-library:update', function (event) {
+      var descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      var original = sanitizeDeviceDescriptor(event && event.detail && event.detail.original);
+      if (!descriptor && !original) {
+        deviceLibraryState.lastUpdated = null;
+      } else {
+        deviceLibraryState.lastUpdated = {
+          current: descriptor,
+          original: original
+        };
+      }
+      notifyDeviceLibrarySubscribers();
+    });
+  }
   function clone(value) {
     if (typeof MODULE_BASE.freezeDeep === 'function') {
       try {
@@ -137,45 +354,196 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'nameProject', 'saveProject', 'addCamera', 'addPower', 'generatePlan', 'exportBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'results', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   var DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
-      body: 'This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.'
+      body: 'Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.'
     },
     userProfile: {
-      title: 'Configure your user profile',
-      body: 'Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays with your offline saves and keeps exports credited to the correct owner.'
+      title: 'Configure language and your profile',
+      body: 'Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.'
+    },
+    unitsPreferences: {
+      title: 'Tune theme and units',
+      body: 'Open Settings → General to choose the theme, optional pink highlights, focus scale and temperature units. Request persistent storage so the browser keeps preferences and safeguards saves during cleanups.'
     },
     nameProject: {
       title: 'Name your first project',
-      body: 'Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline.'
+      body: 'Give the project a descriptive name to anchor autosave, history, exports and backups. Every workflow references it so your offline library stays organized and easy to restore.'
     },
     saveProject: {
-      title: 'Save immediately',
-      body: 'Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue.'
+      title: 'Capture an immediate save',
+      body: 'Select Save (or press Ctrl+S/⌘S/Enter) to capture a complete offline snapshot—devices, power math, requirements, notes and diagnostics. The next workflow unlocks once the save finishes.'
     },
     addCamera: {
-      title: 'Add your primary camera',
-      body: 'Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected.'
+      title: 'Select the primary camera',
+      body: 'Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and diagrams.'
     },
-    addPower: {
-      title: 'Choose a power source',
-      body: 'Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot.'
+    addMonitoring: {
+      title: 'Add monitors, wireless video and FIZ',
+      body: 'Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build.'
     },
-    generatePlan: {
-      title: 'Generate your first plan',
-      body: 'Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together.'
+    selectBattery: {
+      title: 'Choose batteries',
+      body: 'Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.'
     },
-    exportBackup: {
-      title: 'Export an offline safety copy',
-      body: 'Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps.'
+    results: {
+      title: 'Review the results summary',
+      body: 'Work through Step 8 in three passes inside Power Summary: 8A confirms Total Draw and peak load, 8B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 8C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.'
+    },
+    batteryComparison: {
+      title: 'Compare battery options',
+      body: 'Open Battery Comparison to evaluate alternate packs side by side. The chart keeps calculations offline so you can test scenarios and lock in the safest runtime margin for the day.'
+    },
+    runtimeFeedback: {
+      title: 'Submit runtime feedback',
+      body: 'Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits.'
+    },
+    connectionDiagram: {
+      title: 'Inspect the connection diagram',
+      body: 'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.'
+    },
+    editDeviceDataAdd: {
+      title: 'Add a device to the library',
+      body: 'Open Device Library, pick a category, name the item and record its draw or connector data. Press Add so the new device is stored offline, included in autosave and ready for backups and exports.'
+    },
+    editDeviceDataReview: {
+      title: 'Review the device details',
+      body: 'Find the device you just saved inside Existing Devices and open its details. Confirm the draw, outputs and compatibility metadata look correct before relying on it in runtime math or shares.'
+    },
+    editDeviceDataEdit: {
+      title: 'Update and resave the device',
+      body: 'Use the Edit button on that same entry, adjust specs or notes, then save. This verifies autosave, backups and exports all carry the most current numbers without risking any loss of user data.'
+    },
+    ownGearAccess: {
+      title: 'Open the Own Gear dialog',
+      body: 'Use the Own Gear button in the sidebar to open the inventory dialog whenever you need to review equipment you already control. Opening it yourself keeps the workflow familiar when the tutorial is finished.'
+    },
+    ownGearAddDevice: {
+      title: 'Add your first owned device',
+      body: 'Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests.'
+    },
+    generateGearAndRequirements: {
+      title: 'Generate requirements and gear list',
+      body: 'Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections.'
+    },
+    autoGearRulesAccess: {
+      title: 'Open Automatic Gear Rules',
+      body: 'Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves.'
+    },
+    autoGearRulesEdit: {
+      title: 'Edit stock automatic gear rules',
+      body: 'Use the rules list to inspect factory additions. Select a stock rule to open it in the editor, adjust items or conditions, then save so the updated automation stays cached with backups and share bundles.'
+    },
+    autoGearRulesCreate: {
+      title: 'Add a new automatic gear rule',
+      body: 'Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups.'
+    },
+    projectRequirements: {
+      title: 'Refine project requirements boxes',
+      body: 'Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear.'
+    },
+    gearList: {
+      title: 'Audit the generated gear list',
+      body: 'Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs.'
+    },
+    exportImport: {
+      title: 'Export and import projects',
+      body: 'Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets.'
+    },
+    overviewAndPrint: {
+      title: 'Generate overview, PDF and printouts',
+      body: 'Generate the project overview to access PDF, print and share-ready summaries. The dialog uses saved data only, so you can print or export even while fully offline.'
+    },
+    help: {
+      title: 'Open the Help center',
+      body: 'The Help dialog includes searchable documentation, translation notes and onboarding references. Keep it pinned while working—articles stay cached offline and update when new features arrive.'
+    },
+    settingsGeneral: {
+      title: 'Revisit Settings → General',
+      body: 'Adjust language, typography, theme, pink mode, focus scale and other presentation options anytime. Preferences save locally, sync across projects and are bundled with backups.'
+    },
+    settingsData: {
+      title: 'Monitor Data & Storage',
+      body: 'Use the Data & Storage tab to request persistent storage, watch save timestamps and launch quick safeguards. These controls verify that every project snapshot remains available offline.'
+    },
+    settingsBackup: {
+      title: 'Maintain Backup & Restore',
+      body: 'The Backup & Restore tab manages full-app exports, restore rehearsals and diagnostics. Run backups before major changes, archive the files on external media and verify restores regularly.'
     },
     completion: {
-      title: "You're ready to plan",
-      body: 'Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.'
+      title: 'Tutorial complete',
+      body: 'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.'
     }
   };
+  function isPrefaceStep(step) {
+    return Boolean(step && step.preface);
+  }
+  function isCompletionStep(step) {
+    return Boolean(step && step.key === 'completion');
+  }
+  function isCountableStep(step) {
+    return Boolean(step && !isPrefaceStep(step) && !isCompletionStep(step));
+  }
+  function getCountableStepTotal(stepList) {
+    if (!Array.isArray(stepList)) {
+      return 0;
+    }
+    var total = 0;
+    for (var index = 0; index < stepList.length; index += 1) {
+      if (isCountableStep(stepList[index])) {
+        total += 1;
+      }
+    }
+    return total;
+  }
+  function getCountableStepIndex(stepList, index) {
+    if (!Array.isArray(stepList) || typeof index !== 'number') {
+      return null;
+    }
+    if (index < 0 || index >= stepList.length) {
+      return null;
+    }
+    if (!isCountableStep(stepList[index])) {
+      return null;
+    }
+    var position = -1;
+    for (var pointer = 0; pointer <= index; pointer += 1) {
+      if (isCountableStep(stepList[pointer])) {
+        position += 1;
+      }
+    }
+    return position;
+  }
+  function getCountableCompletedCount(stepList, completedSet) {
+    if (!Array.isArray(stepList) || !completedSet || typeof completedSet.has !== 'function') {
+      return 0;
+    }
+    var count = 0;
+    for (var index = 0; index < stepList.length; index += 1) {
+      var step = stepList[index];
+      if (isCountableStep(step) && completedSet.has(step.key)) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+  function getNextCountableStep(stepList, completedSet) {
+    if (!Array.isArray(stepList)) {
+      return null;
+    }
+    for (var index = 0; index < stepList.length; index += 1) {
+      var step = stepList[index];
+      if (!isCountableStep(step)) {
+        continue;
+      }
+      if (!completedSet || typeof completedSet.has !== 'function' || !completedSet.has(step.key)) {
+        return step;
+      }
+    }
+    return null;
+  }
   function getElement(selector) {
     if (typeof selector !== 'string' || !selector) {
       return null;
@@ -252,6 +620,112 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
+  function createAnyFieldCompletionRequirement(selectors, predicate, events) {
+    var normalizedSelectors = Array.isArray(selectors) ? selectors.slice() : [selectors];
+    var eventList = Array.isArray(events) && events.length ? events : ['change', 'input'];
+    var evaluator = typeof predicate === 'function' ? predicate : function (value) {
+      return Boolean(value && value !== 'None');
+    };
+    return {
+      check: function check() {
+        var elementFound = false;
+        for (var index = 0; index < normalizedSelectors.length; index += 1) {
+          var selector = normalizedSelectors[index];
+          if (!selector) {
+            continue;
+          }
+          var element = getElement(selector);
+          if (!element) {
+            continue;
+          }
+          elementFound = true;
+          try {
+            if (evaluator(getFieldValue(element), element)) {
+              return true;
+            }
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate multi-field requirement.', error);
+          }
+        }
+        return !elementFound;
+      },
+      attach: function attach(context) {
+        var removers = [];
+        var elementFound = false;
+        var evaluate = function evaluate() {
+          var matches = false;
+          for (var index = 0; index < normalizedSelectors.length; index += 1) {
+            var selector = normalizedSelectors[index];
+            if (!selector) {
+              continue;
+            }
+            var element = getElement(selector);
+            if (!element) {
+              continue;
+            }
+            elementFound = true;
+            try {
+              if (evaluator(getFieldValue(element), element)) {
+                matches = true;
+                break;
+              }
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not evaluate multi-field change.', error);
+            }
+          }
+          if (!elementFound) {
+            matches = true;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        var _loop = function _loop() {
+            var selector = normalizedSelectors[index];
+            if (!selector) {
+              return 0;
+            }
+            var element = getElement(selector);
+            if (!element) {
+              return 0;
+            }
+            elementFound = true;
+            var handler = function handler() {
+              evaluate();
+            };
+            var _loop2 = function _loop2() {
+              var eventName = eventList[eventIndex];
+              element.addEventListener(eventName, handler);
+              removers.push(function () {
+                element.removeEventListener(eventName, handler);
+              });
+            };
+            for (var eventIndex = 0; eventIndex < eventList.length; eventIndex += 1) {
+              _loop2();
+            }
+          },
+          _ret;
+        for (var index = 0; index < normalizedSelectors.length; index += 1) {
+          _ret = _loop();
+          if (_ret === 0) continue;
+        }
+        evaluate();
+        return function () {
+          for (var _index2 = 0; _index2 < removers.length; _index2 += 1) {
+            try {
+              removers[_index2]();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not detach multi-field requirement.', error);
+            }
+          }
+        };
+      }
+    };
+  }
   function createClickCompletionRequirement(selectors, options) {
     var normalized = Array.isArray(selectors) ? selectors.slice() : [selectors];
     var eventName = options && typeof options.eventName === 'string' && options.eventName ? options.eventName : 'click';
@@ -271,7 +745,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       attach: function attach(context) {
         var removers = [];
         var elementFound = false;
-        var _loop = function _loop() {
+        var _loop3 = function _loop3() {
           var selector = normalized[index];
           var node = getElement(selector);
           if (!node) {
@@ -289,7 +763,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           });
         };
         for (var index = 0; index < normalized.length; index += 1) {
-          if (_loop()) continue;
+          if (_loop3()) continue;
         }
         if (evaluate) {
           var matches = false;
@@ -308,11 +782,259 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           context.complete();
         }
         return function () {
-          for (var _index2 = 0; _index2 < removers.length; _index2 += 1) {
+          for (var _index3 = 0; _index3 < removers.length; _index3 += 1) {
             try {
-              removers[_index2]();
+              removers[_index3]();
             } catch (error) {
               safeWarn('cine.features.onboardingTour could not detach click requirement.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  function createDeviceLibraryRequirement(checker) {
+    var evaluate = typeof checker === 'function' ? checker : function () {
+      return false;
+    };
+    return {
+      check: function check() {
+        try {
+          return Boolean(evaluate());
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate device library requirement.', error);
+          return false;
+        }
+      },
+      attach: function attach(context) {
+        var handler = function handler() {
+          var matches = false;
+          try {
+            matches = Boolean(evaluate());
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate device library change.', error);
+            matches = false;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        var unsubscribe = subscribeDeviceLibrary(handler);
+        handler();
+        return function () {
+          if (typeof unsubscribe === 'function') {
+            unsubscribe();
+          }
+        };
+      }
+    };
+  }
+  function createDeviceLibraryAddRequirement() {
+    return createDeviceLibraryRequirement(function () {
+      return Boolean(deviceLibraryState.lastAdded);
+    });
+  }
+  function createDeviceLibraryReviewRequirement() {
+    return createDeviceLibraryRequirement(function () {
+      var added = deviceLibraryState.lastAdded;
+      var reviewed = deviceLibraryState.lastReviewed;
+      if (!added || !reviewed) {
+        return false;
+      }
+      return descriptorsMatch(added, reviewed);
+    });
+  }
+  function createDeviceLibraryEditRequirement() {
+    return createDeviceLibraryRequirement(function () {
+      var added = deviceLibraryState.lastAdded;
+      var updated = deviceLibraryState.lastUpdated;
+      if (!added || !updated) {
+        return false;
+      }
+      var currentMatch = updated.current ? descriptorsMatch(added, updated.current) : false;
+      var originalMatch = updated.original ? descriptorsMatch(added, updated.original) : false;
+      return currentMatch || originalMatch;
+    });
+  }
+  function evaluateOwnGearOpenState() {
+    try {
+      return isOwnGearDialogVisible();
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not evaluate Own Gear dialog visibility.', error);
+      return false;
+    }
+  }
+  function createOwnGearOpenRequirement() {
+    return {
+      check: function check() {
+        return evaluateOwnGearOpenState();
+      },
+      attach: function attach(_ref) {
+        var complete = _ref.complete,
+          incomplete = _ref.incomplete;
+        var dialog = getElement('#ownGearDialog');
+        if (!dialog) {
+          return null;
+        }
+        var observer = null;
+        var evaluate = function evaluate() {
+          if (evaluateOwnGearOpenState()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+        evaluate();
+        if (typeof MutationObserver === 'function') {
+          try {
+            observer = new MutationObserver(function () {
+              evaluate();
+            });
+            observer.observe(dialog, {
+              attributes: true,
+              attributeFilter: ['open', 'hidden', 'aria-hidden']
+            });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear dialog attributes.', error);
+            observer = null;
+          }
+        }
+        var handleDialogEvent = function handleDialogEvent() {
+          evaluate();
+        };
+        dialog.addEventListener('close', handleDialogEvent);
+        dialog.addEventListener('cancel', handleDialogEvent);
+        var trigger = getElement('[data-sidebar-action="open-own-gear"]');
+        var handleTriggerClick = function handleTriggerClick() {
+          setTimeout(evaluate, 100);
+        };
+        if (trigger) {
+          trigger.addEventListener('click', handleTriggerClick);
+        }
+        return function () {
+          dialog.removeEventListener('close', handleDialogEvent);
+          dialog.removeEventListener('cancel', handleDialogEvent);
+          if (trigger) {
+            trigger.removeEventListener('click', handleTriggerClick);
+          }
+          if (observer) {
+            try {
+              observer.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear dialog observer.', error);
+            }
+          }
+        };
+      }
+    };
+  }
+  function hasOwnGearListEntries() {
+    var list = getElement('#ownGearList');
+    if (list && typeof list.querySelector === 'function') {
+      var item = list.querySelector('.own-gear-item');
+      if (item) {
+        return true;
+      }
+    }
+    var emptyState = getElement('#ownGearEmptyState');
+    if (emptyState && emptyState.hasAttribute('hidden')) {
+      return true;
+    }
+    return false;
+  }
+  function createOwnGearItemRequirement() {
+    return {
+      check: function check() {
+        return hasOwnGearListEntries();
+      },
+      attach: function attach(_ref2) {
+        var complete = _ref2.complete,
+          incomplete = _ref2.incomplete;
+        var list = getElement('#ownGearList');
+        var emptyState = getElement('#ownGearEmptyState');
+        var evaluate = function evaluate() {
+          if (hasOwnGearListEntries()) {
+            complete();
+          } else {
+            incomplete();
+          }
+        };
+        evaluate();
+        var listObserver = null;
+        if (list && typeof MutationObserver === 'function') {
+          try {
+            listObserver = new MutationObserver(function () {
+              evaluate();
+            });
+            listObserver.observe(list, {
+              childList: true
+            });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear list changes.', error);
+            listObserver = null;
+          }
+        }
+        var handleListEvent = function handleListEvent() {
+          evaluate();
+        };
+        if (list) {
+          list.addEventListener('click', handleListEvent, true);
+        }
+        var form = getElement('#ownGearForm');
+        var handleFormSubmit = function handleFormSubmit() {
+          setTimeout(evaluate, 50);
+        };
+        if (form && typeof form.addEventListener === 'function') {
+          form.addEventListener('submit', handleFormSubmit);
+        }
+        var saveButton = getElement('#ownGearSaveButton');
+        var handleSaveClick = function handleSaveClick() {
+          setTimeout(evaluate, 50);
+        };
+        if (saveButton && typeof saveButton.addEventListener === 'function') {
+          saveButton.addEventListener('click', handleSaveClick);
+        }
+        var emptyObserver = null;
+        if (emptyState && typeof MutationObserver === 'function') {
+          try {
+            emptyObserver = new MutationObserver(function () {
+              evaluate();
+            });
+            emptyObserver.observe(emptyState, {
+              attributes: true,
+              attributeFilter: ['hidden', 'aria-hidden']
+            });
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not observe Own Gear empty state.', error);
+            emptyObserver = null;
+          }
+        }
+        return function () {
+          if (list) {
+            list.removeEventListener('click', handleListEvent, true);
+          }
+          if (form && typeof form.removeEventListener === 'function') {
+            form.removeEventListener('submit', handleFormSubmit);
+          }
+          if (saveButton && typeof saveButton.removeEventListener === 'function') {
+            saveButton.removeEventListener('click', handleSaveClick);
+          }
+          if (listObserver) {
+            try {
+              listObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear list observer.', error);
+            }
+          }
+          if (emptyObserver) {
+            try {
+              emptyObserver.disconnect();
+            } catch (error) {
+              safeWarn('cine.features.onboardingTour could not disconnect Own Gear empty state observer.', error);
             }
           }
         };
@@ -407,11 +1129,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     addCamera: createFieldCompletionRequirement('#cameraSelect', function (value) {
       return value && value !== 'None';
     }, ['change']),
-    addPower: createFieldCompletionRequirement('#batterySelect', function (value) {
+    addMonitoring: createAnyFieldCompletionRequirement(['#monitorSelect', '#videoSelect', '#motor1Select', '#controller1Select'], function (value, element) {
+      if (!value) {
+        return false;
+      }
+      if (value === 'None' || value === '__none__') {
+        return false;
+      }
+      if (element && element.multiple) {
+        return element.selectedOptions && element.selectedOptions.length > 0;
+      }
+      return true;
+    }, ['change']),
+    selectBattery: createFieldCompletionRequirement('#batterySelect', function (value) {
       return value && value !== 'None';
     }, ['change']),
-    generatePlan: createClickCompletionRequirement('#generateGearListBtn'),
-    exportBackup: createClickCompletionRequirement(['#shareSetupBtn', '#storageBackupNow'])
+    editDeviceDataAdd: createDeviceLibraryAddRequirement(),
+    editDeviceDataReview: createDeviceLibraryReviewRequirement(),
+    editDeviceDataEdit: createDeviceLibraryEditRequirement(),
+    ownGearAccess: createOwnGearOpenRequirement(),
+    ownGearAddDevice: createOwnGearItemRequirement(),
+    generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
+    exportImport: createClickCompletionRequirement(['#shareSetupBtn', '#applySharedLinkBtn']),
+    overviewAndPrint: createClickCompletionRequirement('#generateOverviewBtn')
   };
   var STEP_SIGNATURE = DEFAULT_STEP_KEYS.join('|');
   function getTimestamp() {
@@ -550,16 +1290,90 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   var storedState = loadStoredState();
+  function normalizeLanguageCandidate(rawValue, availableTexts) {
+    if (!rawValue || typeof rawValue !== 'string' && typeof rawValue !== 'number') {
+      return null;
+    }
+    var textMap = availableTexts && _typeof(availableTexts) === 'object' ? availableTexts : {};
+    var trimmed = String(rawValue).trim();
+    if (!trimmed) {
+      return null;
+    }
+    if (Object.prototype.hasOwnProperty.call(textMap, trimmed)) {
+      return trimmed;
+    }
+    var lower = trimmed.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(textMap, lower)) {
+      return lower;
+    }
+    var base = lower.split(/[-_]/)[0];
+    if (base && Object.prototype.hasOwnProperty.call(textMap, base)) {
+      return base;
+    }
+    return null;
+  }
   function resolveLanguage() {
+    var availableTexts = GLOBAL_SCOPE && GLOBAL_SCOPE.texts && _typeof(GLOBAL_SCOPE.texts) === 'object' ? GLOBAL_SCOPE.texts : {};
+    var defaultLang = Object.prototype.hasOwnProperty.call(availableTexts, 'en') ? 'en' : Object.keys(availableTexts)[0] || 'en';
+    var seen = new Set();
+    var candidates = [];
+    var pushCandidate = function pushCandidate(value) {
+      var normalized = normalizeLanguageCandidate(value, availableTexts);
+      if (!normalized || seen.has(normalized)) {
+        return;
+      }
+      seen.add(normalized);
+      candidates.push(normalized);
+    };
     try {
-      var lang = typeof GLOBAL_SCOPE.currentLang === 'string' && GLOBAL_SCOPE.texts ? GLOBAL_SCOPE.currentLang : null;
-      if (lang && GLOBAL_SCOPE.texts && GLOBAL_SCOPE.texts[lang]) {
-        return lang;
+      if (typeof GLOBAL_SCOPE.currentLang === 'string') {
+        pushCandidate(GLOBAL_SCOPE.currentLang);
       }
     } catch (error) {
       void error;
     }
-    return 'en';
+    if (DOCUMENT && DOCUMENT.documentElement && typeof DOCUMENT.documentElement.lang === 'string') {
+      pushCandidate(DOCUMENT.documentElement.lang);
+    }
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function') {
+      var headerLanguage = DOCUMENT.getElementById('languageSelect');
+      if (headerLanguage && typeof headerLanguage.value === 'string') {
+        pushCandidate(headerLanguage.value);
+      }
+      var settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+      if (settingsLanguage && typeof settingsLanguage.value === 'string') {
+        pushCandidate(settingsLanguage.value);
+      }
+    }
+    try {
+      if (GLOBAL_SCOPE && GLOBAL_SCOPE.localStorage && typeof GLOBAL_SCOPE.localStorage.getItem === 'function') {
+        pushCandidate(GLOBAL_SCOPE.localStorage.getItem('language'));
+      }
+    } catch (error) {
+      void error;
+    }
+    try {
+      var navigatorObject = GLOBAL_SCOPE && GLOBAL_SCOPE.navigator ? GLOBAL_SCOPE.navigator : null;
+      if (navigatorObject) {
+        if (Array.isArray(navigatorObject.languages)) {
+          for (var index = 0; index < navigatorObject.languages.length; index += 1) {
+            pushCandidate(navigatorObject.languages[index]);
+          }
+        }
+        if (typeof navigatorObject.language === 'string') {
+          pushCandidate(navigatorObject.language);
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+    for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
+      var candidate = candidates[_index4];
+      if (candidate && Object.prototype.hasOwnProperty.call(availableTexts, candidate)) {
+        return candidate;
+      }
+    }
+    return defaultLang;
   }
   function resolveTourTexts() {
     var lang = resolveLanguage();
@@ -581,7 +1395,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         body: resolvedBody
       };
     }
+    var prefaceIndicatorText = function () {
+      var localizedValue = localized && typeof localized.prefaceIndicator === 'string' ? localized.prefaceIndicator.trim() : '';
+      if (localizedValue) {
+        return localizedValue;
+      }
+      var fallbackValue = fallback && typeof fallback.prefaceIndicator === 'string' ? fallback.prefaceIndicator.trim() : '';
+      if (fallbackValue) {
+        return fallbackValue;
+      }
+      return 'Preface';
+    }();
     return _objectSpread(_objectSpread(_objectSpread({}, fallback), localized), {}, {
+      prefaceIndicator: prefaceIndicatorText,
       steps: steps
     });
   }
@@ -590,10 +1416,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return [{
       key: 'intro',
       highlight: null,
-      autoActions: null
+      preface: true,
+      size: 'large'
     }, {
       key: 'userProfile',
-      highlight: null
+      highlight: null,
+      forceFloating: true,
+      size: 'large'
+    }, {
+      key: 'unitsPreferences',
+      highlight: null,
+      forceFloating: true,
+      ensureSettings: {
+        tabId: 'settingsTab-general',
+        autoOpen: false
+      },
+      size: 'large'
     }, {
       key: 'nameProject',
       highlight: '#setupName',
@@ -605,15 +1443,108 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: 'addCamera',
       highlight: '#cameraSelect'
     }, {
-      key: 'addPower',
-      highlight: '#batterySelect'
+      key: 'addMonitoring',
+      highlight: ['#monitorSelectRow', '#wirelessVideoRow', '#fizFieldset'],
+      focus: '#monitorSelect'
     }, {
-      key: 'generatePlan',
+      key: 'selectBattery',
+      highlight: '#batterySelect',
+      cardOverlap: {
+        right: 1 / 3
+      }
+    }, {
+      key: 'results',
+      highlight: '#results'
+    }, {
+      key: 'batteryComparison',
+      highlight: '#batteryComparison'
+    }, {
+      key: 'runtimeFeedback',
+      highlight: '#runtimeFeedbackBtn'
+    }, {
+      key: 'connectionDiagram',
+      highlight: '#diagramArea'
+    }, {
+      key: 'editDeviceDataAdd',
+      highlight: ['#toggleDeviceManager', '#addDeviceHeading', '#addDeviceBtn'],
+      focus: '#newName',
+      ensureDeviceManager: true
+    }, {
+      key: 'editDeviceDataReview',
+      highlight: '#deviceListContainer',
+      focus: '#deviceListContainer .detail-toggle',
+      ensureDeviceManager: true
+    }, {
+      key: 'editDeviceDataEdit',
+      highlight: '#deviceListContainer',
+      focus: '#deviceListContainer .edit-btn',
+      ensureDeviceManager: true
+    }, {
+      key: 'ownGearAccess',
+      highlight: '[data-sidebar-action="open-own-gear"]',
+      focus: '[data-sidebar-action="open-own-gear"]'
+    }, {
+      key: 'ownGearAddDevice',
+      highlight: '#ownGearDialog',
+      ensureOwnGear: true,
+      focus: '#ownGearName'
+    }, {
+      key: 'generateGearAndRequirements',
       highlight: '#generateGearListBtn'
     }, {
-      key: 'exportBackup',
+      key: 'autoGearRulesAccess',
+      highlight: '#settingsPanel-autoGear',
+      ensureSettings: {
+        tabId: 'settingsTab-autoGear'
+      }
+    }, {
+      key: 'autoGearRulesEdit',
+      highlight: '#autoGearRulesList',
+      ensureSettings: {
+        tabId: 'settingsTab-autoGear'
+      }
+    }, {
+      key: 'autoGearRulesCreate',
+      highlight: '#autoGearAddRule',
+      ensureSettings: {
+        tabId: 'settingsTab-autoGear'
+      },
+      focus: '#autoGearAddRule'
+    }, {
+      key: 'projectRequirements',
+      highlight: '#projectRequirementsOutput'
+    }, {
+      key: 'gearList',
+      highlight: '#gearListOutput'
+    }, {
+      key: 'exportImport',
       highlight: '#shareSetupBtn',
-      alternateHighlight: '#storageBackupNow'
+      alternateHighlight: '#applySharedLinkBtn'
+    }, {
+      key: 'overviewAndPrint',
+      highlight: '#generateOverviewBtn'
+    }, {
+      key: 'help',
+      highlight: '#helpButton',
+      focus: '#helpButton'
+    }, {
+      key: 'settingsGeneral',
+      highlight: '#settingsPanel-general',
+      ensureSettings: {
+        tabId: 'settingsTab-general'
+      }
+    }, {
+      key: 'settingsData',
+      highlight: '#settingsPanel-data',
+      ensureSettings: {
+        tabId: 'settingsTab-data'
+      }
+    }, {
+      key: 'settingsBackup',
+      highlight: '#settingsPanel-backup',
+      ensureSettings: {
+        tabId: 'settingsTab-backup'
+      }
     }, {
       key: 'completion',
       highlight: null
@@ -621,14 +1552,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var stepConfig = getStepConfig();
   var overlayRoot = null;
+  var overlayAnchor = null;
   var highlightEl = null;
-  var activeTargetElement = null;
+  var activeTargetElements = [];
   var cardEl = null;
   var titleEl = null;
   var bodyEl = null;
   var progressEl = null;
   var progressMeterEl = null;
   var progressMeterFillEl = null;
+  var cardContentEl = null;
+  var stepListContainerEl = null;
   var stepListEl = null;
   var resumeHintEl = null;
   var interactionContainerEl = null;
@@ -645,17 +1579,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var scrollStateTimer = null;
   var autoOpenedSettings = false;
   var settingsDialogRef = null;
+  var autoOpenedContacts = false;
+  var contactsDialogRef = null;
+  var autoOpenedOwnGear = false;
+  var ownGearDialogRef = null;
+  var autoOpenedDeviceManager = false;
+  var deviceManagerSectionRef = null;
+  var deviceManagerToggleRef = null;
   var resumeHintVisible = false;
   var resumeStartIndex = null;
   var activeRequirementCleanup = null;
   var activeRequirementCompleted = false;
   var activeInteractionCleanup = null;
-  var interactionIdCounter = 0;
   var lastCardPlacement = 'floating';
-  function nextInteractionId(suffix) {
-    interactionIdCounter += 1;
-    var safeSuffix = typeof suffix === 'string' && suffix ? suffix : 'field';
-    return "onboarding-".concat(safeSuffix, "-").concat(interactionIdCounter);
+  var proxyControlId = 0;
+  function getProxyControlId(prefix) {
+    proxyControlId += 1;
+    return "onboarding-".concat(prefix, "-").concat(proxyControlId);
   }
   function setNextButtonDisabled(disabled) {
     if (!nextButton) {
@@ -790,6 +1730,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     markScrollActive();
     schedulePositionUpdate();
   }
+  function getOverlayMetrics() {
+    var fallbackWidth = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerWidth === 'number' ? GLOBAL_SCOPE.innerWidth : DOCUMENT && DOCUMENT.documentElement && DOCUMENT.documentElement.clientWidth || 0;
+    var fallbackHeight = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerHeight === 'number' ? GLOBAL_SCOPE.innerHeight : DOCUMENT && DOCUMENT.documentElement && DOCUMENT.documentElement.clientHeight || 0;
+    if (!overlayRoot || typeof overlayRoot.getBoundingClientRect !== 'function') {
+      return {
+        offsetLeft: 0,
+        offsetTop: 0,
+        viewportWidth: fallbackWidth,
+        viewportHeight: fallbackHeight
+      };
+    }
+    var rect = overlayRoot.getBoundingClientRect();
+    var width = rect && typeof rect.width === 'number' && rect.width > 0 ? rect.width : fallbackWidth;
+    var height = rect && typeof rect.height === 'number' && rect.height > 0 ? rect.height : fallbackHeight;
+    return {
+      offsetLeft: -rect.left,
+      offsetTop: -rect.top,
+      viewportWidth: width,
+      viewportHeight: height
+    };
+  }
   function schedulePositionUpdate() {
     if (!active) {
       return;
@@ -809,14 +1770,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function ensureOverlayElements() {
     if (overlayRoot && overlayRoot.parentNode) {
+      bringOverlayToTopLayer();
       return;
     }
-    overlayRoot = DOCUMENT.createElement('div');
+    if (supportsDialogTopLayer) {
+      overlayRoot = DOCUMENT.createElement('dialog');
+      overlayRoot.setAttribute('role', 'presentation');
+      overlayRoot.setAttribute('aria-modal', 'false');
+    } else {
+      overlayRoot = DOCUMENT.createElement('div');
+    }
     overlayRoot.id = OVERLAY_ID;
     overlayRoot.className = 'onboarding-overlay';
     overlayRoot.setAttribute('aria-hidden', 'true');
     clearScrollState();
-    interactionIdCounter = 0;
     highlightEl = DOCUMENT.createElement('div');
     highlightEl.className = 'onboarding-highlight';
     highlightEl.setAttribute('aria-hidden', 'true');
@@ -855,25 +1822,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       confirmSkip();
     });
     header.appendChild(skipButton);
+    cardContentEl = DOCUMENT.createElement('div');
+    cardContentEl.className = 'onboarding-card-content';
+    cardEl.appendChild(cardContentEl);
     resumeHintEl = DOCUMENT.createElement('p');
     resumeHintEl.className = 'onboarding-resume-hint';
     resumeHintEl.hidden = true;
-    cardEl.appendChild(resumeHintEl);
+    cardContentEl.appendChild(resumeHintEl);
     titleEl = DOCUMENT.createElement('h2');
     titleEl.id = 'onboardingCardTitle';
-    cardEl.appendChild(titleEl);
+    cardContentEl.appendChild(titleEl);
     bodyEl = DOCUMENT.createElement('p');
     bodyEl.id = 'onboardingCardBody';
-    cardEl.appendChild(bodyEl);
+    cardContentEl.appendChild(bodyEl);
     interactionContainerEl = DOCUMENT.createElement('div');
     interactionContainerEl.className = 'onboarding-interaction';
     interactionContainerEl.hidden = true;
-    cardEl.appendChild(interactionContainerEl);
+    cardContentEl.appendChild(interactionContainerEl);
+    stepListContainerEl = DOCUMENT.createElement('div');
+    stepListContainerEl.className = 'onboarding-step-list-container';
+    cardEl.appendChild(stepListContainerEl);
     stepListEl = DOCUMENT.createElement('ol');
     stepListEl.className = 'onboarding-step-list';
     stepListEl.setAttribute('role', 'list');
     stepListEl.addEventListener('click', handleStepListClick);
-    cardEl.appendChild(stepListEl);
+    stepListContainerEl.appendChild(stepListEl);
     var actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-card-actions';
     cardEl.appendChild(actions);
@@ -895,16 +1868,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     actions.appendChild(nextButton);
     overlayRoot.appendChild(cardEl);
     DOCUMENT.body.appendChild(overlayRoot);
+    overlayAnchor = DOCUMENT.body;
+    bringOverlayToTopLayer();
     overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
   }
   function teardownOverlayElements() {
     clearFrame();
+    clearActiveTargetElements();
     clearScrollState();
-    clearActiveTargetElement();
     if (overlayRoot && overlayRoot.parentNode) {
+      if (supportsDialogTopLayer && typeof overlayRoot.close === 'function' && overlayRoot.open) {
+        try {
+          overlayRoot.close();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not close overlay dialog.', error);
+        }
+      }
       overlayRoot.parentNode.removeChild(overlayRoot);
     }
     overlayRoot = null;
+    overlayAnchor = null;
     highlightEl = null;
     cardEl = null;
     titleEl = null;
@@ -912,6 +1895,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     progressEl = null;
     progressMeterEl = null;
     progressMeterFillEl = null;
+    cardContentEl = null;
+    stepListContainerEl = null;
     stepListEl = null;
     resumeHintEl = null;
     interactionContainerEl = null;
@@ -921,13 +1906,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     resumeHintVisible = false;
     resumeStartIndex = null;
     activeInteractionCleanup = null;
-    interactionIdCounter = 0;
     lastCardPlacement = 'floating';
   }
-  function formatStepIndicator(index, total) {
+  function formatStepIndicator(position, total) {
     var template = typeof tourTexts.stepIndicator === 'string' ? tourTexts.stepIndicator : 'Step {current} of {total}';
-    var current = index + 1;
-    return template.replace('{current}', current).replace('{total}', total);
+    var currentIndex = typeof position === 'number' ? position : -1;
+    var totalSteps = typeof total === 'number' && total > 0 ? total : 0;
+    var currentValue = currentIndex >= 0 ? currentIndex + 1 : 0;
+    return template.replace('{current}', String(currentValue)).replace('{total}', String(totalSteps));
+  }
+  function formatPrefaceIndicator() {
+    if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
+      return tourTexts.prefaceIndicator.trim();
+    }
+    return 'Preface';
   }
   function focusCard() {
     var target = getTargetElement(currentStep);
@@ -963,74 +1955,250 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
+  function toSelectorArray(value) {
+    if (typeof value === 'string') {
+      return value ? [value] : [];
+    }
+    if (Array.isArray(value)) {
+      var selectors = [];
+      for (var index = 0; index < value.length; index += 1) {
+        var entry = value[index];
+        if (typeof entry === 'string' && entry) {
+          selectors.push(entry);
+        }
+      }
+      return selectors;
+    }
+    return [];
+  }
+  function resolveSelectorElements(selectors) {
+    if (!Array.isArray(selectors) || selectors.length === 0) {
+      return [];
+    }
+    var elements = [];
+    for (var index = 0; index < selectors.length; index += 1) {
+      var selector = selectors[index];
+      if (!selector) {
+        continue;
+      }
+      var element = DOCUMENT.querySelector(selector);
+      if (element) {
+        elements.push(element);
+      }
+    }
+    return elements;
+  }
+  function getHighlightElements(step) {
+    if (!step) {
+      return [];
+    }
+    var elements = resolveSelectorElements(toSelectorArray(step.highlight));
+    if (elements.length === 0) {
+      elements = resolveSelectorElements(toSelectorArray(step.alternateHighlight));
+    }
+    return elements;
+  }
+  function resolveOverlayAnchorForElements(elements) {
+    if (!DOCUMENT) {
+      return null;
+    }
+    var list = Array.isArray(elements) ? elements : [];
+    var main = DOCUMENT.getElementById(MAIN_ANCHOR_ID);
+    var header = DOCUMENT.getElementById(HEADER_ANCHOR_ID);
+    for (var index = 0; index < list.length; index += 1) {
+      var element = list[index];
+      if (!element) {
+        continue;
+      }
+      if (typeof element.closest === 'function') {
+        var flaggedAnchor = element.closest('[data-onboarding-anchor]');
+        if (flaggedAnchor) {
+          return flaggedAnchor;
+        }
+        var dialogAnchor = element.closest('dialog');
+        if (dialogAnchor) {
+          return dialogAnchor;
+        }
+      }
+      if (main && typeof main.contains === 'function' && main.contains(element)) {
+        return main;
+      }
+      if (header && typeof header.contains === 'function' && header.contains(element)) {
+        return header;
+      }
+    }
+    return DOCUMENT.body || null;
+  }
+  function setOverlayAnchorElement(anchorElement) {
+    if (!overlayRoot || !DOCUMENT) {
+      overlayAnchor = anchorElement || overlayAnchor;
+      return;
+    }
+    var target = anchorElement || DOCUMENT.body;
+    if (!target) {
+      return;
+    }
+    if (overlayAnchor === target && overlayRoot.parentNode === target) {
+      if (target === DOCUMENT.body) {
+        overlayRoot.classList.remove('onboarding-overlay--anchored');
+        bringOverlayToTopLayer();
+      } else {
+        overlayRoot.classList.add('onboarding-overlay--anchored');
+        if (supportsDialogTopLayer && isDialogElement(overlayRoot) && !overlayRoot.open) {
+          try {
+            overlayRoot.open = true;
+          } catch (openError) {
+            void openError;
+            try {
+              overlayRoot.setAttribute('open', '');
+            } catch (attrError) {
+              void attrError;
+            }
+          }
+        }
+      }
+      return;
+    }
+    var wantsTopLayer = target === DOCUMENT.body;
+    var isDialogRoot = supportsDialogTopLayer && isDialogElement(overlayRoot);
+    if (isDialogRoot && overlayRoot.open && !wantsTopLayer && typeof overlayRoot.close === 'function') {
+      try {
+        overlayRoot.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not reset overlay dialog state.', error);
+      }
+    }
+    if (overlayRoot.parentNode !== target) {
+      try {
+        target.appendChild(overlayRoot);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not move overlay to anchor.', error);
+      }
+    }
+    overlayAnchor = target;
+    if (wantsTopLayer) {
+      overlayRoot.classList.remove('onboarding-overlay--anchored');
+      bringOverlayToTopLayer();
+      return;
+    }
+    overlayRoot.classList.add('onboarding-overlay--anchored');
+    if (isDialogRoot && !overlayRoot.open) {
+      try {
+        overlayRoot.open = true;
+      } catch (openError) {
+        void openError;
+        try {
+          overlayRoot.setAttribute('open', '');
+        } catch (attrError) {
+          void attrError;
+        }
+      }
+    }
+  }
   function getTargetElement(step) {
     if (!step) {
       return null;
     }
-    if (step.ensureSettings && (!settingsDialogRef || !isSettingsDialogVisible())) {
+    if (step.ensureSettings && step.ensureSettings.autoOpen !== false && (!settingsDialogRef || !isSettingsDialogVisible())) {
       return null;
     }
-    if (typeof step.highlight === 'string' && step.highlight) {
-      var el = DOCUMENT.querySelector(step.highlight);
-      if (el) {
-        return el;
-      }
-      if (typeof step.alternateHighlight === 'string' && step.alternateHighlight) {
-        return DOCUMENT.querySelector(step.alternateHighlight);
-      }
-    }
-    return null;
+    var elements = getHighlightElements(step);
+    return elements.length > 0 ? elements[0] : null;
   }
-  function clearActiveTargetElement() {
-    if (activeTargetElement && _typeof(activeTargetElement.classList) === 'object') {
-      activeTargetElement.classList.remove('onboarding-active-target');
+  function clearActiveTargetElements() {
+    if (!Array.isArray(activeTargetElements)) {
+      activeTargetElements = [];
+      return;
     }
-    activeTargetElement = null;
+    for (var index = 0; index < activeTargetElements.length; index += 1) {
+      var element = activeTargetElements[index];
+      if (element && element.classList && typeof element.classList.remove === 'function') {
+        element.classList.remove('onboarding-active-target');
+      }
+    }
+    activeTargetElements = [];
   }
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
     }
-    var target = getTargetElement(currentStep);
-    if (!target) {
-      if (activeTargetElement) {
-        clearActiveTargetElement();
+    var highlightElements = getHighlightElements(currentStep);
+    setOverlayAnchorElement(resolveOverlayAnchorForElements(highlightElements));
+    if (highlightElements.length === 0) {
+      if (activeTargetElements.length > 0) {
+        clearActiveTargetElements();
       }
       highlightEl.style.transform = 'scale(0)';
       highlightEl.style.opacity = '0';
       positionCard(null, null);
       return;
     }
-    if (target !== activeTargetElement) {
-      clearActiveTargetElement();
-      activeTargetElement = target;
-      if (_typeof(target.classList) === 'object') {
-        target.classList.add('onboarding-active-target');
+    clearActiveTargetElements();
+    for (var index = 0; index < highlightElements.length; index += 1) {
+      var element = highlightElements[index];
+      if (!element) {
+        continue;
       }
+      if (element.classList && typeof element.classList.add === 'function') {
+        element.classList.add('onboarding-active-target');
+      }
+      activeTargetElements.push(element);
     }
-    var rect = target.getBoundingClientRect();
+    var combinedRect = highlightElements.reduce(function (acc, element) {
+      if (!element || typeof element.getBoundingClientRect !== 'function') {
+        return acc;
+      }
+      var rect = element.getBoundingClientRect();
+      if (!acc) {
+        return {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left
+        };
+      }
+      return {
+        top: Math.min(acc.top, rect.top),
+        right: Math.max(acc.right, rect.right),
+        bottom: Math.max(acc.bottom, rect.bottom),
+        left: Math.min(acc.left, rect.left)
+      };
+    }, null);
+    if (!combinedRect) {
+      highlightEl.style.transform = 'scale(0)';
+      highlightEl.style.opacity = '0';
+      positionCard(highlightElements[0] || null, null);
+      return;
+    }
+    combinedRect.width = Math.max(0, combinedRect.right - combinedRect.left);
+    combinedRect.height = Math.max(0, combinedRect.bottom - combinedRect.top);
     var padding = 12;
-    var width = Math.max(0, rect.width + padding * 2);
-    var height = Math.max(0, rect.height + padding * 2);
-    var left = rect.left + (GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0) - padding;
-    var top = rect.top + (GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0) - padding;
+    var width = Math.max(0, combinedRect.width + padding * 2);
+    var height = Math.max(0, combinedRect.height + padding * 2);
+    var _getOverlayMetrics = getOverlayMetrics(),
+      offsetLeft = _getOverlayMetrics.offsetLeft,
+      offsetTop = _getOverlayMetrics.offsetTop;
+    var left = combinedRect.left + offsetLeft - padding;
+    var top = combinedRect.top + offsetTop - padding;
     highlightEl.style.width = "".concat(width, "px");
     highlightEl.style.height = "".concat(height, "px");
     highlightEl.style.transform = "translate(".concat(Math.max(0, left), "px, ").concat(Math.max(0, top), "px)");
     highlightEl.style.opacity = '1';
-    positionCard(target, rect);
+    positionCard(highlightElements[0] || null, combinedRect);
   }
   function positionCard(target, targetRect) {
     if (!cardEl) {
       return;
     }
-    var viewportWidth = GLOBAL_SCOPE.innerWidth || DOCUMENT.documentElement.clientWidth || 0;
-    var viewportHeight = GLOBAL_SCOPE.innerHeight || DOCUMENT.documentElement.clientHeight || 0;
+    var _getOverlayMetrics2 = getOverlayMetrics(),
+      scrollX = _getOverlayMetrics2.offsetLeft,
+      scrollY = _getOverlayMetrics2.offsetTop,
+      viewportWidth = _getOverlayMetrics2.viewportWidth,
+      viewportHeight = _getOverlayMetrics2.viewportHeight;
     var targetElement = target || getTargetElement(currentStep);
     var resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
+    var forceFloating = Boolean(currentStep && currentStep.forceFloating);
     var cardRect = cardEl.getBoundingClientRect();
-    var scrollX = GLOBAL_SCOPE.scrollX || GLOBAL_SCOPE.pageXOffset || 0;
-    var scrollY = GLOBAL_SCOPE.scrollY || GLOBAL_SCOPE.pageYOffset || 0;
     var margin = 16;
     var viewportRight = scrollX + viewportWidth;
     var viewportBottom = scrollY + viewportHeight;
@@ -1041,62 +2209,72 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var top = scrollY + Math.max(margin, (viewportHeight - cardRect.height) / 2);
     var left = scrollX + Math.max(margin, (viewportWidth - cardRect.width) / 2);
     var placement = 'floating';
-    if (targetElement && resolvedRect) {
+    if (!forceFloating && targetElement && resolvedRect) {
       var rect = resolvedRect;
       var targetTop = rect.top + scrollY;
       var targetLeft = rect.left + scrollX;
       var targetCenterX = targetLeft + rect.width / 2;
       var targetCenterY = targetTop + rect.height / 2;
+      var overlapConfig = currentStep && currentStep.cardOverlap ? currentStep.cardOverlap : null;
+      var clampOverlap = function clampOverlap(value) {
+        if (typeof value !== 'number' || Number.isNaN(value)) {
+          return 0;
+        }
+        return Math.min(Math.max(value, 0), 0.95);
+      };
+      var overlapTopFraction = overlapConfig ? clampOverlap(overlapConfig.top) : 0;
+      var overlapRightFraction = overlapConfig ? clampOverlap(overlapConfig.right) : 0;
+      var overlapBottomFraction = overlapConfig ? clampOverlap(overlapConfig.bottom) : 0;
+      var overlapLeftFraction = overlapConfig ? clampOverlap(overlapConfig.left) : 0;
+      var topOverlapOffset = rect.height * overlapTopFraction;
+      var rightOverlapOffset = rect.width * overlapRightFraction;
+      var bottomOverlapOffset = rect.height * overlapBottomFraction;
+      var leftOverlapOffset = rect.width * overlapLeftFraction;
+      var topMarginOffset = overlapTopFraction > 0 ? margin : 0;
+      var rightMarginOffset = overlapRightFraction > 0 ? margin : 0;
+      var bottomMarginOffset = overlapBottomFraction > 0 ? margin : 0;
+      var leftMarginOffset = overlapLeftFraction > 0 ? margin : 0;
       var options = [{
         name: 'bottom',
-        top: targetTop + rect.height + margin,
+        top: targetTop + rect.height + margin - bottomOverlapOffset - bottomMarginOffset,
         left: targetCenterX - cardRect.width / 2,
-        fits: targetTop + rect.height + margin + cardRect.height <= viewportBottom - margin
+        fits: targetTop + rect.height + margin + cardRect.height - bottomOverlapOffset - bottomMarginOffset <= viewportBottom - margin
       }, {
         name: 'top',
-        top: targetTop - cardRect.height - margin,
+        top: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset,
         left: targetCenterX - cardRect.width / 2,
-        fits: targetTop - cardRect.height - margin >= minTop
+        fits: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset >= minTop
       }, {
         name: 'right',
         top: targetCenterY - cardRect.height / 2,
-        left: targetLeft + rect.width + margin,
-        fits: targetLeft + rect.width + margin + cardRect.width <= viewportRight - margin
+        left: targetLeft + rect.width + margin - rightOverlapOffset - rightMarginOffset,
+        fits: targetLeft + rect.width + margin + cardRect.width - rightOverlapOffset - rightMarginOffset <= viewportRight - margin
       }, {
         name: 'left',
         top: targetCenterY - cardRect.height / 2,
-        left: targetLeft - cardRect.width - margin,
-        fits: targetLeft - cardRect.width - margin >= minLeft
+        left: targetLeft - cardRect.width - margin + leftOverlapOffset + leftMarginOffset,
+        fits: targetLeft - cardRect.width - margin + leftOverlapOffset + leftMarginOffset >= minLeft
       }];
-      var resolvedOptions = [];
-      for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
-        var option = options[optionIndex];
+      var resolvedOptions = options.map(function (option) {
         var clampedTop = Math.min(Math.max(option.top, minTop), maxTop);
         var clampedLeft = Math.min(Math.max(option.left, minLeft), maxLeft);
-        resolvedOptions.push({
-          name: option.name,
-          top: option.top,
-          left: option.left,
-          fits: option.fits,
+        var overflow = Math.abs(clampedTop - option.top) + Math.abs(clampedLeft - option.left);
+        return _objectSpread(_objectSpread({}, option), {}, {
           clampedTop: clampedTop,
           clampedLeft: clampedLeft,
-          overflow: Math.abs(clampedTop - option.top) + Math.abs(clampedLeft - option.left)
+          overflow: overflow
         });
-      }
-      var chosen = null;
-      for (var resolvedIndex = 0; resolvedIndex < resolvedOptions.length; resolvedIndex += 1) {
-        if (resolvedOptions[resolvedIndex].fits) {
-          chosen = resolvedOptions[resolvedIndex];
-          break;
-        }
-      }
+      });
+      var chosen = resolvedOptions.find(function (option) {
+        return option.fits;
+      });
       if (!chosen) {
-        for (var fallbackIndex = 0; fallbackIndex < resolvedOptions.length; fallbackIndex += 1) {
-          var candidate = resolvedOptions[fallbackIndex];
-          if (!chosen || candidate.overflow < chosen.overflow) {
-            chosen = candidate;
+        chosen = resolvedOptions.reduce(function (best, option) {
+          if (!best || option.overflow < best.overflow) {
+            return option;
           }
-        }
+          return best;
+        }, null);
       }
       if (chosen) {
         top = chosen.clampedTop;
@@ -1104,10 +2282,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         placement = chosen.name;
       }
     }
-    top = Math.min(Math.max(top, minTop), maxTop);
-    left = Math.min(Math.max(left, minLeft), maxLeft);
-    cardEl.style.top = "".concat(top, "px");
-    cardEl.style.left = "".concat(left, "px");
+    cardEl.style.top = "".concat(Math.min(Math.max(top, minTop), maxTop), "px");
+    cardEl.style.left = "".concat(Math.min(Math.max(left, minLeft), maxLeft), "px");
     if (placement !== lastCardPlacement) {
       lastCardPlacement = placement;
       cardEl.setAttribute('data-placement', placement);
@@ -1121,9 +2297,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!dialog) {
       return;
     }
+    var shouldAutoOpen = step.ensureSettings.autoOpen !== false;
     var wasOpen = typeof isDialogOpen === 'function' ? isDialogOpen(dialog) : !dialog.hasAttribute('hidden');
     settingsDialogRef = dialog;
-    if (!wasOpen) {
+    if (!wasOpen && shouldAutoOpen) {
       var trigger = DOCUMENT.getElementById('settingsButton');
       if (trigger && typeof trigger.click === 'function') {
         try {
@@ -1160,6 +2337,266 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('cine.features.onboardingTour could not activate settings tab.', error);
       }
     }
+  }
+  function ensureContactsForStep(step) {
+    if (!step || !step.ensureContacts) {
+      return;
+    }
+    if (!contactsDialogRef) {
+      contactsDialogRef = DOCUMENT.getElementById('contactsDialog');
+    }
+    var dialog = contactsDialogRef;
+    if (!dialog) {
+      return;
+    }
+    var isVisible = isContactsDialogVisible();
+    if (isVisible) {
+      return;
+    }
+    autoOpenedContacts = true;
+    var openButton = DOCUMENT.getElementById('openContactsBtn') || DOCUMENT.querySelector('[data-sidebar-action="open-contacts"]');
+    if (openButton && typeof openButton.click === 'function') {
+      try {
+        openButton.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger contacts button click.', error);
+      }
+    }
+    if (isContactsDialogVisible()) {
+      return;
+    }
+    dialog.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(dialog);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open contacts dialog.', error);
+      }
+    }
+    if (typeof dialog.showModal === 'function') {
+      try {
+        dialog.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show contacts dialog.', error);
+      }
+    }
+    dialog.setAttribute('open', '');
+  }
+  function isContactsDialogVisible() {
+    if (!contactsDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(contactsDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate contacts dialog state.', error);
+      }
+    }
+    return !contactsDialogRef.hasAttribute('hidden');
+  }
+  function closeContactsIfNeeded() {
+    if (!contactsDialogRef || !autoOpenedContacts) {
+      autoOpenedContacts = false;
+      return;
+    }
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(contactsDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close contacts dialog via closeDialog.', error);
+      }
+    } else if (typeof contactsDialogRef.close === 'function') {
+      try {
+        contactsDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close contacts dialog.', error);
+      }
+    }
+    contactsDialogRef.setAttribute('hidden', '');
+    autoOpenedContacts = false;
+  }
+  function ensureOwnGearForStep(step) {
+    if (!step || !step.ensureOwnGear) {
+      return;
+    }
+    if (!ownGearDialogRef) {
+      ownGearDialogRef = DOCUMENT.getElementById('ownGearDialog');
+    }
+    var dialog = ownGearDialogRef;
+    if (!dialog) {
+      return;
+    }
+    if (isOwnGearDialogVisible()) {
+      return;
+    }
+    autoOpenedOwnGear = true;
+    var trigger = DOCUMENT.querySelector('[data-sidebar-action="open-own-gear"]');
+    if (trigger && typeof trigger.click === 'function') {
+      try {
+        trigger.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger own gear button click.', error);
+      }
+    }
+    if (isOwnGearDialogVisible()) {
+      return;
+    }
+    dialog.removeAttribute('hidden');
+    if (typeof openDialog === 'function') {
+      try {
+        openDialog(dialog);
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open own gear dialog.', error);
+      }
+    }
+    if (typeof dialog.showModal === 'function') {
+      try {
+        dialog.showModal();
+        return;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not show own gear dialog.', error);
+      }
+    }
+    dialog.setAttribute('open', '');
+  }
+  function isOwnGearDialogVisible() {
+    if (!ownGearDialogRef) {
+      return false;
+    }
+    if (typeof isDialogOpen === 'function') {
+      try {
+        return isDialogOpen(ownGearDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not evaluate own gear dialog state.', error);
+      }
+    }
+    return !ownGearDialogRef.hasAttribute('hidden');
+  }
+  function closeOwnGearIfNeeded() {
+    if (!ownGearDialogRef || !autoOpenedOwnGear) {
+      autoOpenedOwnGear = false;
+      return;
+    }
+    if (typeof closeDialog === 'function') {
+      try {
+        closeDialog(ownGearDialogRef);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close own gear dialog via closeDialog.', error);
+      }
+    } else if (typeof ownGearDialogRef.close === 'function') {
+      try {
+        ownGearDialogRef.close();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not close own gear dialog.', error);
+      }
+    }
+    ownGearDialogRef.setAttribute('hidden', '');
+    autoOpenedOwnGear = false;
+  }
+  function isDeviceManagerVisible() {
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerSectionRef) {
+      return false;
+    }
+    return !deviceManagerSectionRef.classList.contains('hidden');
+  }
+  function ensureDeviceManagerForStep(step) {
+    if (!step || !step.ensureDeviceManager) {
+      return;
+    }
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerSectionRef) {
+      return;
+    }
+    if (isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    autoOpenedDeviceManager = true;
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.click === 'function') {
+      try {
+        deviceManagerToggleRef.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger device manager toggle.', error);
+      }
+    }
+    if (isDeviceManagerVisible()) {
+      return;
+    }
+    var showDeviceManager = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.showDeviceManagerSection === 'function' ? GLOBAL_SCOPE.showDeviceManagerSection : null;
+    if (showDeviceManager) {
+      try {
+        showDeviceManager();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open device manager via showDeviceManagerSection.', error);
+      }
+    }
+    if (isDeviceManagerVisible()) {
+      return;
+    }
+    deviceManagerSectionRef.classList.remove('hidden');
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    if (deviceManagerToggleRef) {
+      deviceManagerToggleRef.setAttribute('aria-expanded', 'true');
+    }
+    if (!isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = false;
+    }
+  }
+  function closeDeviceManagerIfNeeded() {
+    if (!autoOpenedDeviceManager) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.click === 'function') {
+      try {
+        if (!deviceManagerSectionRef) {
+          deviceManagerToggleRef.click();
+        } else if (!deviceManagerSectionRef.classList.contains('hidden')) {
+          deviceManagerToggleRef.click();
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not toggle device manager closed.', error);
+      }
+    }
+    if (isDeviceManagerVisible()) {
+      var hideDeviceManager = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.hideDeviceManagerSection === 'function' ? GLOBAL_SCOPE.hideDeviceManagerSection : null;
+      if (hideDeviceManager) {
+        try {
+          hideDeviceManager();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not close device manager via hideDeviceManagerSection.', error);
+        }
+      } else if (deviceManagerSectionRef) {
+        deviceManagerSectionRef.classList.add('hidden');
+        if (!deviceManagerToggleRef) {
+          deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+        }
+        if (deviceManagerToggleRef) {
+          deviceManagerToggleRef.setAttribute('aria-expanded', 'false');
+        }
+      }
+    }
+    autoOpenedDeviceManager = false;
   }
   function isSettingsDialogVisible() {
     if (!settingsDialogRef) {
@@ -1222,10 +2659,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       resumeHintEl.textContent = '';
       return;
     }
-    var totalSteps = stepConfig.length;
-    var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps.length : 0;
+    var totalSteps = getCountableStepTotal(stepConfig);
+    var completedRaw = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
+    var completedSet = new Set(completedRaw);
+    var completedCount = getCountableCompletedCount(stepConfig, completedSet);
+    var countableIndex = getCountableStepIndex(stepConfig, index);
+    if (countableIndex === null) {
+      var fallbackHint = tourTexts.resumeHint || '';
+      if (!fallbackHint) {
+        resumeHintEl.hidden = true;
+        resumeHintEl.textContent = '';
+        return;
+      }
+      resumeHintEl.hidden = false;
+      resumeHintEl.textContent = fallbackHint;
+      return;
+    }
     var template = tourTexts.resumeHintDetailed || tourTexts.resumeHint || 'Resuming where you left off.';
-    var hint = template.replace('{current}', String(index + 1)).replace('{total}', String(totalSteps)).replace('{completed}', String(Math.min(completedSteps, totalSteps)));
+    var hint = template.replace('{current}', String(countableIndex + 1)).replace('{total}', String(totalSteps)).replace('{completed}', String(Math.min(completedCount, totalSteps)));
     resumeHintEl.hidden = false;
     resumeHintEl.textContent = hint;
   }
@@ -1251,6 +2702,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var texts = getStepTexts(step);
       var item = DOCUMENT.createElement('li');
       item.className = 'onboarding-step-item';
+      if (index < 3) {
+        item.classList.add('onboarding-step-item--pinned');
+        if (item && item.style && typeof item.style.setProperty === 'function') {
+          item.style.setProperty('--onboarding-step-pinned-index', String(index));
+        }
+      }
       var status = void 0;
       if (step && step.key === activeKey) {
         status = 'current';
@@ -1281,38 +2738,98 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       stepListEl.appendChild(item);
     }
   }
-  function resolveLabelText(selector, fallback) {
-    if (typeof selector === 'string' && selector) {
-      var labelElement = DOCUMENT.querySelector(selector);
-      if (labelElement && typeof labelElement.textContent === 'string') {
-        var trimmed = labelElement.textContent.trim();
-        if (trimmed) {
-          return trimmed;
+  function focusHighlightedElement(step) {
+    if (!step) {
+      return false;
+    }
+    var selectors = [];
+    var focusSelectors = toSelectorArray(step.focus);
+    for (var index = 0; index < focusSelectors.length; index += 1) {
+      var selector = focusSelectors[index];
+      if (selectors.indexOf(selector) === -1) {
+        selectors.push(selector);
+      }
+    }
+    var highlightSelectors = toSelectorArray(step.highlight);
+    for (var _index5 = 0; _index5 < highlightSelectors.length; _index5 += 1) {
+      var _selector = highlightSelectors[_index5];
+      if (selectors.indexOf(_selector) === -1) {
+        selectors.push(_selector);
+      }
+    }
+    var alternateSelectors = toSelectorArray(step.alternateHighlight);
+    for (var _index6 = 0; _index6 < alternateSelectors.length; _index6 += 1) {
+      var _selector2 = alternateSelectors[_index6];
+      if (selectors.indexOf(_selector2) === -1) {
+        selectors.push(_selector2);
+      }
+    }
+    var target = null;
+    for (var _index7 = 0; _index7 < selectors.length; _index7 += 1) {
+      var _selector3 = selectors[_index7];
+      if (!_selector3) {
+        continue;
+      }
+      var element = DOCUMENT.querySelector(_selector3);
+      if (!element) {
+        continue;
+      }
+      if (typeof element.focus === 'function') {
+        target = element;
+        break;
+      }
+    }
+    if (!target) {
+      return false;
+    }
+    var applyFocus = function applyFocus() {
+      try {
+        target.focus({
+          preventScroll: true
+        });
+      } catch (error) {
+        void error;
+        try {
+          target.focus();
+        } catch (focusError) {
+          void focusError;
         }
       }
-    }
-    return typeof fallback === 'string' ? fallback : '';
-  }
-  function resolveButtonLabel(element, fallback) {
-    if (element && typeof element.textContent === 'string') {
-      var trimmed = element.textContent.trim();
-      if (trimmed) {
-        return trimmed;
+      var view = target.ownerDocument && target.ownerDocument.defaultView;
+      var isTextInput = Boolean(view && (target instanceof view.HTMLInputElement || target instanceof view.HTMLTextAreaElement));
+      if (isTextInput && typeof target.select === 'function' && target.value) {
+        try {
+          target.select();
+        } catch (selectError) {
+          void selectError;
+        }
       }
+    };
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(applyFocus);
+    } else {
+      setTimeout(applyFocus, 0);
     }
-    return typeof fallback === 'string' ? fallback : '';
+    return true;
   }
-  function dispatchEventSafe(target, type) {
-    if (!target || typeof target.dispatchEvent !== 'function') {
+  function dispatchSyntheticEvent(target, type) {
+    if (!target || !type) {
       return;
     }
     try {
       var event = new Event(type, {
-        bubbles: true
+        bubbles: true,
+        cancelable: true
       });
       target.dispatchEvent(event);
     } catch (error) {
-      safeWarn('cine.features.onboardingTour could not dispatch guided event.', error);
+      try {
+        var legacyEvent = DOCUMENT.createEvent('Event');
+        legacyEvent.initEvent(type, true, true);
+        target.dispatchEvent(legacyEvent);
+      } catch (legacyError) {
+        safeWarn('cine.features.onboardingTour could not dispatch synthetic event.', legacyError || error);
+      }
     }
   }
   function renderUserProfileInteraction(registerCleanup) {
@@ -1330,10 +2847,42 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     var avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     var avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    var languageSelect = DOCUMENT.getElementById('languageSelect');
+    var settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+    var settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
+    var applyLanguagePreference = function applyLanguagePreference(value) {
+      var candidate = typeof value === 'string' ? value.trim() : '';
+      if (!candidate) {
+        return false;
+      }
+      var applied = false;
+      var missingSentinel = {};
+      if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
+        try {
+          var result = GLOBAL_SCOPE.callCoreFunctionIfAvailable('setLanguage', [candidate], {
+            defaultValue: missingSentinel
+          });
+          if (result !== missingSentinel) {
+            applied = true;
+          }
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not route language preference via runtime bridge.', error);
+        }
+      }
+      if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
+        try {
+          GLOBAL_SCOPE.setLanguage(candidate);
+          applied = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+        }
+      }
+      return applied;
+    };
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = 'Pick your interface language and contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
     var avatarGroup = DOCUMENT.createElement('div');
     avatarGroup.className = 'onboarding-avatar-group';
@@ -1381,7 +2930,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         avatarObserver = new GLOBAL_SCOPE.MutationObserver(function () {
           return updateAvatarPreview();
         });
-        avatarObserver.observe(avatarContainer, { childList: true, subtree: true, attributes: true });
+        avatarObserver.observe(avatarContainer, {
+          childList: true,
+          subtree: true,
+          attributes: true
+        });
         registerCleanup(function () {
           try {
             avatarObserver.disconnect();
@@ -1416,40 +2969,70 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     fragment.appendChild(avatarGroup);
     var firstProxyField = null;
     var createProxyField = function createProxyField(options) {
-      var fieldKey = options && options.fieldKey ? options.fieldKey : 'field';
-      var labelText = options && options.labelText ? options.labelText : '';
-      var placeholder = options && options.placeholder ? options.placeholder : '';
-      var target = options ? options.target : null;
-      var type = options && options.type ? options.type : 'text';
-      var autocomplete = options && options.autocomplete ? options.autocomplete : '';
-      var onAfterSync = options && typeof options.onAfterSync === 'function' ? options.onAfterSync : null;
+      var _ref3 = options || {},
+        fieldKey = _ref3.fieldKey,
+        labelText = _ref3.labelText,
+        placeholder = _ref3.placeholder,
+        target = _ref3.target,
+        type = _ref3.type,
+        autocomplete = _ref3.autocomplete,
+        onAfterSync = _ref3.onAfterSync;
       var group = DOCUMENT.createElement('div');
       group.className = 'onboarding-field-group';
-      var proxyId = nextInteractionId(fieldKey);
+      var proxyId = getProxyControlId(fieldKey);
       var label = DOCUMENT.createElement('label');
       label.className = 'onboarding-field-label';
       label.setAttribute('for', proxyId);
       label.textContent = labelText;
       group.appendChild(label);
-      var proxyInput = DOCUMENT.createElement('input');
-      proxyInput.type = type;
-      proxyInput.id = proxyId;
-      proxyInput.className = 'onboarding-field-input';
-      if (placeholder) {
-        proxyInput.placeholder = placeholder;
+      var isSelectField = type === 'select';
+      var proxyControl = isSelectField ? DOCUMENT.createElement('select') : DOCUMENT.createElement('input');
+      proxyControl.id = proxyId;
+      proxyControl.className = 'onboarding-field-input';
+      if (isSelectField) {
+        proxyControl.classList.add('onboarding-field-select');
+      } else {
+        proxyControl.type = type || 'text';
+        if (typeof placeholder === 'string' && placeholder) {
+          proxyControl.placeholder = placeholder;
+        }
+        if (typeof autocomplete === 'string' && autocomplete) {
+          proxyControl.autocomplete = autocomplete;
+        }
       }
-      if (autocomplete) {
-        proxyInput.setAttribute('autocomplete', autocomplete);
+      var copySelectOptions = function copySelectOptions() {
+        if (!isSelectField) {
+          return;
+        }
+        var targetOptions = target && target.options ? Array.from(target.options) : [];
+        proxyControl.textContent = '';
+        if (targetOptions.length) {
+          targetOptions.forEach(function (option) {
+            proxyControl.appendChild(option.cloneNode(true));
+          });
+        } else if (typeof placeholder === 'string' && placeholder) {
+          var placeholderOption = DOCUMENT.createElement('option');
+          placeholderOption.value = '';
+          placeholderOption.textContent = placeholder;
+          proxyControl.appendChild(placeholderOption);
+        }
+        proxyControl.value = target && typeof target.value === 'string' ? target.value : '';
+      };
+      if (isSelectField) {
+        copySelectOptions();
+      } else {
+        proxyControl.value = target && typeof target.value === 'string' ? target.value : '';
       }
-      proxyInput.value = target && typeof target.value === 'string' ? target.value : '';
       var syncFromTarget = function syncFromTarget() {
         if (!target) {
           return;
         }
-        if (proxyInput.value !== target.value) {
-          proxyInput.value = target.value || '';
+        if (isSelectField) {
+          copySelectOptions();
+        } else if (proxyControl.value !== target.value) {
+          proxyControl.value = target.value || '';
         }
-        if (onAfterSync) {
+        if (typeof onAfterSync === 'function') {
           onAfterSync('from');
         }
       };
@@ -1457,20 +3040,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!target) {
           return;
         }
-        if (target.value !== proxyInput.value) {
-          target.value = proxyInput.value;
-          dispatchEventSafe(target, 'input');
-          dispatchEventSafe(target, 'change');
+        if (isSelectField) {
+          var nextValue = proxyControl.value;
+          if (target.value !== nextValue) {
+            target.value = nextValue;
+          }
+        } else if (target.value !== proxyControl.value) {
+          target.value = proxyControl.value;
         }
-        if (onAfterSync) {
+        dispatchSyntheticEvent(target, 'input');
+        dispatchSyntheticEvent(target, 'change');
+        if (typeof onAfterSync === 'function') {
           onAfterSync('to');
         }
       };
-      proxyInput.addEventListener('input', syncToTarget);
-      proxyInput.addEventListener('change', syncToTarget);
+      proxyControl.addEventListener('input', syncToTarget);
+      proxyControl.addEventListener('change', syncToTarget);
       registerCleanup(function () {
-        proxyInput.removeEventListener('input', syncToTarget);
-        proxyInput.removeEventListener('change', syncToTarget);
+        proxyControl.removeEventListener('input', syncToTarget);
+        proxyControl.removeEventListener('change', syncToTarget);
       });
       if (target) {
         target.addEventListener('input', syncFromTarget);
@@ -1479,19 +3067,143 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           target.removeEventListener('input', syncFromTarget);
           target.removeEventListener('change', syncFromTarget);
         });
+        if (isSelectField && typeof MutationObserver === 'function') {
+          var observer = new MutationObserver(syncFromTarget);
+          observer.observe(target, {
+            childList: true
+          });
+          registerCleanup(function () {
+            return observer.disconnect();
+          });
+        }
       } else {
-        proxyInput.disabled = true;
-        proxyInput.setAttribute('aria-disabled', 'true');
+        proxyControl.disabled = true;
+        proxyControl.setAttribute('aria-disabled', 'true');
       }
-      group.appendChild(proxyInput);
+      group.appendChild(proxyControl);
       fragment.appendChild(group);
       if (!firstProxyField) {
-        firstProxyField = proxyInput;
+        firstProxyField = proxyControl;
       }
-      return proxyInput;
+      return proxyControl;
     };
+    var languageProxy = null;
+    if (languageSelect || settingsLanguage) {
+      var languageTarget = languageSelect || settingsLanguage;
+      var resolveLanguageLabel = function resolveLanguageLabel() {
+        if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
+          var text = settingsLanguageLabel.textContent.trim();
+          if (text) {
+            return text;
+          }
+        }
+        if (languageSelect && typeof languageSelect.getAttribute === 'function') {
+          var ariaLabel = languageSelect.getAttribute('aria-label');
+          if (ariaLabel && ariaLabel.trim()) {
+            return ariaLabel.trim();
+          }
+        }
+        return 'Language';
+      };
+      var handleLanguageSync = function handleLanguageSync(direction) {
+        if (!languageProxy || direction !== 'to') {
+          return;
+        }
+        var value = languageProxy.value;
+        var applied = applyLanguagePreference(value);
+        if (applied) {
+          return;
+        }
+        if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
+          languageSelect.value = value;
+          dispatchSyntheticEvent(languageSelect, 'change');
+        }
+        if (settingsLanguage && settingsLanguage !== languageTarget && settingsLanguage.value !== value) {
+          settingsLanguage.value = value;
+          dispatchSyntheticEvent(settingsLanguage, 'change');
+        }
+      };
+      languageProxy = createProxyField({
+        fieldKey: 'user-language',
+        labelText: resolveLanguageLabel(),
+        target: languageTarget,
+        type: 'select',
+        onAfterSync: handleLanguageSync
+      });
+      var syncLanguageFromActive = function syncLanguageFromActive() {
+        if (!languageProxy) {
+          return;
+        }
+        var activeValue = '';
+        if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
+          activeValue = languageSelect.value;
+        } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
+          activeValue = settingsLanguage.value;
+        }
+        if (activeValue && languageProxy.value !== activeValue) {
+          languageProxy.value = activeValue;
+        }
+      };
+      syncLanguageFromActive();
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
+        var handleLanguageChangeEvent = function handleLanguageChangeEvent() {
+          syncLanguageFromActive();
+        };
+        try {
+          GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChangeEvent);
+          registerCleanup(function () {
+            try {
+              GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageChangeEvent);
+            } catch (removeError) {
+              void removeError;
+            }
+          });
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not observe language changes.', error);
+        }
+      }
+      var secondarySources = [];
+      if (languageSelect && languageSelect !== languageTarget) {
+        secondarySources.push(languageSelect);
+      }
+      if (settingsLanguage && settingsLanguage !== languageTarget) {
+        secondarySources.push(settingsLanguage);
+      }
+      if (secondarySources.length) {
+        var handleSecondarySourceChange = function handleSecondarySourceChange() {
+          syncLanguageFromActive();
+        };
+        for (var index = 0; index < secondarySources.length; index += 1) {
+          var source = secondarySources[index];
+          if (!source) {
+            continue;
+          }
+          source.addEventListener('change', handleSecondarySourceChange);
+          source.addEventListener('input', handleSecondarySourceChange);
+        }
+        registerCleanup(function () {
+          for (var _index8 = 0; _index8 < secondarySources.length; _index8 += 1) {
+            var _source = secondarySources[_index8];
+            if (!_source) {
+              continue;
+            }
+            _source.removeEventListener('change', handleSecondarySourceChange);
+            _source.removeEventListener('input', handleSecondarySourceChange);
+          }
+        });
+      }
+      registerCleanup(function () {
+        languageProxy = null;
+      });
+    }
     var resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string' ? profileLabel.textContent : 'Display name';
-    var resolvedNamePlaceholder = profileInput && typeof profileInput.getAttribute === 'function' && profileInput.getAttribute('placeholder') ? profileInput.getAttribute('placeholder') : 'e.g. Alex Rivera';
+    var resolvedNamePlaceholder = 'e.g. Alex Rivera';
+    if (profileInput && typeof profileInput.getAttribute === 'function') {
+      var placeholderValue = profileInput.getAttribute('placeholder');
+      if (typeof placeholderValue === 'string' && placeholderValue) {
+        resolvedNamePlaceholder = placeholderValue;
+      }
+    }
     var nameProxy = createProxyField({
       fieldKey: 'user-profile-name',
       labelText: resolvedNameLabel,
@@ -1500,21 +3212,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       type: 'text',
       autocomplete: 'name',
       onAfterSync: function onAfterSync() {
-        updateAvatarPreview();
+        return updateAvatarPreview();
       }
     });
     var resolvedRoleLabel = roleLabel && typeof roleLabel.textContent === 'string' ? roleLabel.textContent : 'Role or title';
-    var resolvedRolePlaceholder = roleInput && typeof roleInput.getAttribute === 'function' && roleInput.getAttribute('placeholder') ? roleInput.getAttribute('placeholder') : 'e.g. 1st AC';
+    var resolvedRolePlaceholder = 'Select role';
+    if (roleInput && roleInput.options && roleInput.options.length) {
+      var placeholderOption = roleInput.options[0];
+      if (placeholderOption && placeholderOption.textContent) {
+        resolvedRolePlaceholder = placeholderOption.textContent;
+      }
+    }
     createProxyField({
       fieldKey: 'user-profile-role',
       labelText: resolvedRoleLabel,
       placeholder: resolvedRolePlaceholder,
       target: roleInput,
-      type: 'text',
-      autocomplete: 'organization-title'
+      type: 'select'
     });
     var resolvedPhoneLabel = phoneLabel && typeof phoneLabel.textContent === 'string' ? phoneLabel.textContent : 'Phone number';
-    var resolvedPhonePlaceholder = phoneInput && typeof phoneInput.getAttribute === 'function' && phoneInput.getAttribute('placeholder') ? phoneInput.getAttribute('placeholder') : '';
+    var resolvedPhonePlaceholder = '';
+    if (phoneInput && typeof phoneInput.getAttribute === 'function') {
+      var phonePlaceholder = phoneInput.getAttribute('placeholder');
+      if (typeof phonePlaceholder === 'string' && phonePlaceholder) {
+        resolvedPhonePlaceholder = phonePlaceholder;
+      }
+    }
     createProxyField({
       fieldKey: 'user-profile-phone',
       labelText: resolvedPhoneLabel,
@@ -1524,7 +3247,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       autocomplete: 'tel'
     });
     var resolvedEmailLabel = emailLabel && typeof emailLabel.textContent === 'string' ? emailLabel.textContent : 'Email address';
-    var resolvedEmailPlaceholder = emailInput && typeof emailInput.getAttribute === 'function' && emailInput.getAttribute('placeholder') ? emailInput.getAttribute('placeholder') : '';
+    var resolvedEmailPlaceholder = '';
+    if (emailInput && typeof emailInput.getAttribute === 'function') {
+      var emailPlaceholder = emailInput.getAttribute('placeholder');
+      if (typeof emailPlaceholder === 'string' && emailPlaceholder) {
+        resolvedEmailPlaceholder = emailPlaceholder;
+      }
+    }
     createProxyField({
       fieldKey: 'user-profile-email',
       labelText: resolvedEmailLabel,
@@ -1546,7 +3275,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (focusTarget && typeof focusTarget.focus === 'function') {
       var focusRunner = function focusRunner() {
         try {
-          focusTarget.focus({ preventScroll: true });
+          focusTarget.focus({
+            preventScroll: true
+          });
         } catch (error) {
           void error;
           try {
@@ -1564,366 +3295,514 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
-  function renderNameProjectInteraction(registerCleanup) {
+  function renderUnitsPreferencesInteraction(registerCleanup, step) {
     if (!interactionContainerEl) {
       return false;
     }
-    var realInput = getElement('#setupName');
-    var group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
-    var inputId = nextInteractionId('project-name');
-    var label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', inputId);
-    label.textContent = resolveLabelText("label[for='setupName']", 'Project name');
-    var input = DOCUMENT.createElement('input');
-    input.type = 'text';
-    input.id = inputId;
-    input.className = 'onboarding-field-input';
-    if (realInput && typeof realInput.placeholder === 'string') {
-      input.placeholder = realInput.placeholder;
-    }
-    if (realInput && typeof realInput.maxLength === 'number' && realInput.maxLength > 0) {
-      input.maxLength = realInput.maxLength;
-    }
-    if (realInput && typeof realInput.autocomplete === 'string') {
-      input.setAttribute('autocomplete', realInput.autocomplete);
-    }
-    if (realInput && realInput.required) {
-      input.required = true;
-    }
-    input.value = typeof (realInput === null || realInput === void 0 ? void 0 : realInput.value) === 'string' ? realInput.value : '';
-    group.appendChild(label);
-    group.appendChild(input);
-    interactionContainerEl.appendChild(group);
-    interactionContainerEl.hidden = false;
-    if (!realInput) {
-      input.disabled = true;
-      input.setAttribute('aria-disabled', 'true');
-      return true;
-    }
-    var syncFromReal = function syncFromReal() {
-      if (typeof realInput.value === 'string' && input.value !== realInput.value) {
-        input.value = realInput.value;
+    var fragment = DOCUMENT.createDocumentFragment();
+    var languageSelect = DOCUMENT.getElementById('settingsLanguage');
+    if (languageSelect) {
+      var group = DOCUMENT.createElement('div');
+      group.className = 'onboarding-field-group';
+      var inputId = getProxyControlId('language');
+      var label = DOCUMENT.createElement('label');
+      label.className = 'onboarding-field-label';
+      label.setAttribute('for', inputId);
+      label.textContent = 'Language';
+      var proxySelect = DOCUMENT.createElement('select');
+      proxySelect.id = inputId;
+      proxySelect.className = 'onboarding-field-select';
+      var originalOptions = Array.from(languageSelect.options || []);
+      if (originalOptions.length === 0) {
+        var option = DOCUMENT.createElement('option');
+        option.value = languageSelect.value || 'en';
+        option.textContent = languageSelect.value || 'English';
+        proxySelect.appendChild(option);
+      } else {
+        for (var index = 0; index < originalOptions.length; index += 1) {
+          var source = originalOptions[index];
+          var _option = DOCUMENT.createElement('option');
+          _option.value = source.value;
+          _option.textContent = source.textContent || source.value;
+          proxySelect.appendChild(_option);
+        }
       }
-      if (realInput.disabled && !input.disabled) {
-        input.disabled = true;
-        input.setAttribute('aria-disabled', 'true');
-      } else if (!realInput.disabled && input.disabled) {
-        input.disabled = false;
-        input.removeAttribute('aria-disabled');
+      proxySelect.value = languageSelect.value || proxySelect.value;
+      var syncFromTarget = function syncFromTarget() {
+        if (proxySelect.value !== languageSelect.value) {
+          proxySelect.value = languageSelect.value;
+        }
+      };
+      var syncToTarget = function syncToTarget() {
+        if (languageSelect.value !== proxySelect.value) {
+          languageSelect.value = proxySelect.value;
+          dispatchSyntheticEvent(languageSelect, 'change');
+        }
+      };
+      proxySelect.addEventListener('change', syncToTarget);
+      registerCleanup(function () {
+        proxySelect.removeEventListener('change', syncToTarget);
+      });
+      languageSelect.addEventListener('change', syncFromTarget);
+      registerCleanup(function () {
+        languageSelect.removeEventListener('change', syncFromTarget);
+      });
+      group.appendChild(label);
+      group.appendChild(proxySelect);
+      fragment.appendChild(group);
+    }
+    var settingsDarkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
+    var headerDarkModeToggle = DOCUMENT.getElementById('darkModeToggle');
+    var themeGroup = DOCUMENT.createElement('div');
+    themeGroup.className = 'onboarding-field-group';
+    var themeId = getProxyControlId('theme');
+    var themeLabel = DOCUMENT.createElement('label');
+    themeLabel.className = 'onboarding-field-label';
+    themeLabel.setAttribute('for', themeId);
+    themeLabel.textContent = 'Theme';
+    var themeSelect = DOCUMENT.createElement('select');
+    themeSelect.id = themeId;
+    themeSelect.className = 'onboarding-field-select';
+    var themeLight = DOCUMENT.createElement('option');
+    themeLight.value = 'light';
+    themeLight.textContent = 'Light';
+    var themeDark = DOCUMENT.createElement('option');
+    themeDark.value = 'dark';
+    themeDark.textContent = 'Dark';
+    themeSelect.appendChild(themeLight);
+    themeSelect.appendChild(themeDark);
+    var resolveThemePreference = function resolveThemePreference() {
+      if (settingsDarkModeToggle) {
+        return settingsDarkModeToggle.checked ? 'dark' : 'light';
       }
+      var body = DOCUMENT.body;
+      if (body && typeof body.classList !== 'undefined' && body.classList.contains('dark-mode')) {
+        return 'dark';
+      }
+      return 'light';
     };
-    var syncToReal = function syncToReal() {
-      if (realInput.value !== input.value) {
-        realInput.value = input.value;
+    themeSelect.value = resolveThemePreference();
+    var persistDarkModePreference = function persistDarkModePreference(enabled) {
+      if (!SAFE_STORAGE || typeof SAFE_STORAGE.setItem !== 'function') {
+        return;
       }
-      dispatchEventSafe(realInput, 'input');
-      dispatchEventSafe(realInput, 'change');
-    };
-    input.addEventListener('input', syncToReal);
-    registerCleanup(function () {
-      input.removeEventListener('input', syncToReal);
-    });
-    realInput.addEventListener('input', syncFromReal);
-    realInput.addEventListener('change', syncFromReal);
-    registerCleanup(function () {
-      realInput.removeEventListener('input', syncFromReal);
-      realInput.removeEventListener('change', syncFromReal);
-    });
-    syncFromReal();
-    var focusInput = function focusInput() {
       try {
-        if (!input.disabled) {
-          input.focus();
-          if (input.value && typeof input.setSelectionRange === 'function') {
-            input.setSelectionRange(0, input.value.length);
+        SAFE_STORAGE.setItem('darkMode', enabled ? 'true' : 'false');
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not persist dark mode preference.', error);
+      }
+    };
+    var ensureSettingsDarkModeState = function ensureSettingsDarkModeState(enabled) {
+      if (!settingsDarkModeToggle) {
+        return;
+      }
+      var previous = settingsDarkModeToggle.checked;
+      settingsDarkModeToggle.checked = enabled;
+      if (previous !== enabled) {
+        dispatchSyntheticEvent(settingsDarkModeToggle, 'change');
+      }
+    };
+    var applyThemePreference = function applyThemePreference(value) {
+      var normalized = value === 'dark' ? 'dark' : 'light';
+      var shouldEnableDark = normalized === 'dark';
+      var currentTheme = resolveThemePreference();
+      if (currentTheme === normalized) {
+        ensureSettingsDarkModeState(shouldEnableDark);
+        persistDarkModePreference(shouldEnableDark);
+        return true;
+      }
+      if (typeof GLOBAL_SCOPE.applyDarkMode === 'function') {
+        try {
+          GLOBAL_SCOPE.applyDarkMode(shouldEnableDark);
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not apply dark mode via runtime bridge.', error);
+        }
+      }
+      if (resolveThemePreference() !== normalized && headerDarkModeToggle && typeof headerDarkModeToggle.click === 'function') {
+        try {
+          headerDarkModeToggle.click();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not toggle header dark mode control.', error);
+        }
+      }
+      ensureSettingsDarkModeState(shouldEnableDark);
+      var finalTheme = resolveThemePreference();
+      if (finalTheme === normalized) {
+        persistDarkModePreference(shouldEnableDark);
+        return true;
+      }
+      return false;
+    };
+    var syncThemeFromTarget = function syncThemeFromTarget() {
+      var expected = resolveThemePreference();
+      if (themeSelect.value !== expected) {
+        themeSelect.value = expected;
+      }
+    };
+    var syncThemeToTarget = function syncThemeToTarget() {
+      applyThemePreference(themeSelect.value);
+      syncThemeFromTarget();
+    };
+    themeSelect.addEventListener('change', syncThemeToTarget);
+    registerCleanup(function () {
+      themeSelect.removeEventListener('change', syncThemeToTarget);
+    });
+    if (settingsDarkModeToggle) {
+      settingsDarkModeToggle.addEventListener('change', syncThemeFromTarget);
+      registerCleanup(function () {
+        settingsDarkModeToggle.removeEventListener('change', syncThemeFromTarget);
+      });
+    }
+    if (headerDarkModeToggle) {
+      headerDarkModeToggle.addEventListener('click', syncThemeFromTarget);
+      registerCleanup(function () {
+        headerDarkModeToggle.removeEventListener('click', syncThemeFromTarget);
+      });
+    }
+    themeGroup.appendChild(themeLabel);
+    themeGroup.appendChild(themeSelect);
+    fragment.appendChild(themeGroup);
+    var pinkToggle = DOCUMENT.getElementById('settingsPinkMode');
+    if (pinkToggle) {
+      var pinkGroup = DOCUMENT.createElement('div');
+      pinkGroup.className = 'onboarding-field-group';
+      var pinkId = getProxyControlId('pink');
+      var pinkLabel = DOCUMENT.createElement('label');
+      pinkLabel.className = 'onboarding-field-label';
+      pinkLabel.setAttribute('for', pinkId);
+      pinkLabel.textContent = 'Pink mode accents';
+      var pinkSelect = DOCUMENT.createElement('select');
+      pinkSelect.id = pinkId;
+      pinkSelect.className = 'onboarding-field-select';
+      var pinkOff = DOCUMENT.createElement('option');
+      pinkOff.value = 'off';
+      pinkOff.textContent = 'Disabled';
+      var pinkOn = DOCUMENT.createElement('option');
+      pinkOn.value = 'on';
+      pinkOn.textContent = 'Enabled';
+      pinkSelect.appendChild(pinkOff);
+      pinkSelect.appendChild(pinkOn);
+      pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
+      var syncPinkToTarget = function syncPinkToTarget() {
+        var shouldEnable = pinkSelect.value === 'on';
+        if (pinkToggle.checked !== shouldEnable) {
+          pinkToggle.checked = shouldEnable;
+          dispatchSyntheticEvent(pinkToggle, 'change');
+        }
+      };
+      var syncPinkFromTarget = function syncPinkFromTarget() {
+        var expected = pinkToggle.checked ? 'on' : 'off';
+        if (pinkSelect.value !== expected) {
+          pinkSelect.value = expected;
+        }
+      };
+      pinkSelect.addEventListener('change', syncPinkToTarget);
+      registerCleanup(function () {
+        pinkSelect.removeEventListener('change', syncPinkToTarget);
+      });
+      pinkToggle.addEventListener('change', syncPinkFromTarget);
+      registerCleanup(function () {
+        pinkToggle.removeEventListener('change', syncPinkFromTarget);
+      });
+      pinkGroup.appendChild(pinkLabel);
+      pinkGroup.appendChild(pinkSelect);
+      fragment.appendChild(pinkGroup);
+    }
+    var focusScaleSelect = DOCUMENT.getElementById('settingsFocusScale');
+    if (focusScaleSelect) {
+      var focusGroup = DOCUMENT.createElement('div');
+      focusGroup.className = 'onboarding-field-group';
+      var focusId = getProxyControlId('focus-scale');
+      var focusLabel = DOCUMENT.createElement('label');
+      focusLabel.className = 'onboarding-field-label';
+      focusLabel.setAttribute('for', focusId);
+      var focusLabelSource = DOCUMENT.getElementById('settingsFocusScaleLabel');
+      focusLabel.textContent = focusLabelSource && typeof focusLabelSource.textContent === 'string' ? focusLabelSource.textContent : 'Focus scale';
+      var proxyFocus = DOCUMENT.createElement('select');
+      proxyFocus.id = focusId;
+      proxyFocus.className = 'onboarding-field-select';
+      var focusOptions = Array.from(focusScaleSelect.options || []);
+      if (focusOptions.length === 0) {
+        var _option2 = DOCUMENT.createElement('option');
+        _option2.value = focusScaleSelect.value || 'metric';
+        _option2.textContent = focusScaleSelect.value || 'Metric';
+        proxyFocus.appendChild(_option2);
+      } else {
+        for (var _index9 = 0; _index9 < focusOptions.length; _index9 += 1) {
+          var _source2 = focusOptions[_index9];
+          var _option3 = DOCUMENT.createElement('option');
+          _option3.value = _source2.value;
+          _option3.textContent = _source2.textContent || _source2.value;
+          proxyFocus.appendChild(_option3);
+        }
+      }
+      proxyFocus.value = focusScaleSelect.value || proxyFocus.value;
+      var syncFocusFromTarget = function syncFocusFromTarget() {
+        if (proxyFocus.value !== focusScaleSelect.value) {
+          proxyFocus.value = focusScaleSelect.value;
+        }
+      };
+      var syncFocusToTarget = function syncFocusToTarget() {
+        if (focusScaleSelect.value !== proxyFocus.value) {
+          focusScaleSelect.value = proxyFocus.value;
+          dispatchSyntheticEvent(focusScaleSelect, 'change');
+        }
+      };
+      proxyFocus.addEventListener('change', syncFocusToTarget);
+      registerCleanup(function () {
+        proxyFocus.removeEventListener('change', syncFocusToTarget);
+      });
+      focusScaleSelect.addEventListener('change', syncFocusFromTarget);
+      registerCleanup(function () {
+        focusScaleSelect.removeEventListener('change', syncFocusFromTarget);
+      });
+      focusGroup.appendChild(focusLabel);
+      focusGroup.appendChild(proxyFocus);
+      fragment.appendChild(focusGroup);
+    }
+    var tempUnitSelect = DOCUMENT.getElementById('settingsTemperatureUnit');
+    if (tempUnitSelect) {
+      var unitsGroup = DOCUMENT.createElement('div');
+      unitsGroup.className = 'onboarding-field-group';
+      var unitsId = getProxyControlId('units');
+      var unitsLabel = DOCUMENT.createElement('label');
+      unitsLabel.className = 'onboarding-field-label';
+      unitsLabel.setAttribute('for', unitsId);
+      unitsLabel.textContent = 'Temperature units';
+      var proxyUnits = DOCUMENT.createElement('select');
+      proxyUnits.id = unitsId;
+      proxyUnits.className = 'onboarding-field-select';
+      var unitOptions = Array.from(tempUnitSelect.options || []);
+      if (unitOptions.length === 0) {
+        var _option4 = DOCUMENT.createElement('option');
+        _option4.value = tempUnitSelect.value || 'celsius';
+        _option4.textContent = tempUnitSelect.value || 'Celsius';
+        proxyUnits.appendChild(_option4);
+      } else {
+        for (var _index0 = 0; _index0 < unitOptions.length; _index0 += 1) {
+          var _source3 = unitOptions[_index0];
+          var _option5 = DOCUMENT.createElement('option');
+          _option5.value = _source3.value;
+          _option5.textContent = _source3.textContent || _source3.value;
+          proxyUnits.appendChild(_option5);
+        }
+      }
+      proxyUnits.value = tempUnitSelect.value || proxyUnits.value;
+      var syncUnitsFromTarget = function syncUnitsFromTarget() {
+        if (proxyUnits.value !== tempUnitSelect.value) {
+          proxyUnits.value = tempUnitSelect.value;
+        }
+      };
+      var syncUnitsToTarget = function syncUnitsToTarget() {
+        if (tempUnitSelect.value !== proxyUnits.value) {
+          tempUnitSelect.value = proxyUnits.value;
+          dispatchSyntheticEvent(tempUnitSelect, 'change');
+        }
+      };
+      proxyUnits.addEventListener('change', syncUnitsToTarget);
+      registerCleanup(function () {
+        proxyUnits.removeEventListener('change', syncUnitsToTarget);
+      });
+      tempUnitSelect.addEventListener('change', syncUnitsFromTarget);
+      registerCleanup(function () {
+        tempUnitSelect.removeEventListener('change', syncUnitsFromTarget);
+      });
+      unitsGroup.appendChild(unitsLabel);
+      unitsGroup.appendChild(proxyUnits);
+      fragment.appendChild(unitsGroup);
+    }
+    var persistenceButton = DOCUMENT.getElementById('storagePersistenceRequest');
+    var persistenceHint = DOCUMENT.createElement('p');
+    persistenceHint.className = 'onboarding-resume-hint';
+    persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
+    fragment.appendChild(persistenceHint);
+    var statusGroup = DOCUMENT.createElement('div');
+    statusGroup.className = 'onboarding-storage-status';
+    statusGroup.setAttribute('role', 'status');
+    statusGroup.setAttribute('aria-live', 'polite');
+    statusGroup.setAttribute('data-state', 'checking');
+    var statusIcon = DOCUMENT.createElement('span');
+    statusIcon.className = 'onboarding-storage-icon';
+    statusIcon.setAttribute('aria-hidden', 'true');
+    var statusText = DOCUMENT.createElement('span');
+    statusText.className = 'onboarding-storage-text';
+    statusGroup.appendChild(statusIcon);
+    statusGroup.appendChild(statusText);
+    fragment.appendChild(statusGroup);
+    var statusSource = DOCUMENT.getElementById('storagePersistenceStatus');
+    var getPersistenceStatusText = function getPersistenceStatusText(key) {
+      if (!key || !GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE.texts) !== 'object') {
+        return '';
+      }
+      var lang = resolveLanguage();
+      var texts = GLOBAL_SCOPE.texts || {};
+      var langPack = texts[lang] && _typeof(texts[lang]) === 'object' ? texts[lang] : null;
+      var fallbackPack = texts.en && _typeof(texts.en) === 'object' ? texts.en : null;
+      var primary = langPack && typeof langPack[key] === 'string' ? langPack[key] : null;
+      if (primary && primary.trim()) {
+        return primary;
+      }
+      var fallback = fallbackPack && typeof fallbackPack[key] === 'string' ? fallbackPack[key] : null;
+      return fallback && fallback.trim() ? fallback : '';
+    };
+    var defaultStatusText = getPersistenceStatusText('storagePersistenceStatusIdle') || persistenceHint.textContent || '';
+    var applyStatus = function applyStatus(state, message) {
+      var normalizedState = typeof state === 'string' && state ? state : 'checking';
+      statusGroup.setAttribute('data-state', normalizedState);
+      statusGroup.dataset.state = normalizedState;
+      var resolved = typeof message === 'string' && message.trim() ? message.trim() : normalizedState === 'checking' ? getPersistenceStatusText('storagePersistenceStatusChecking') || defaultStatusText : defaultStatusText;
+      statusText.textContent = resolved;
+      if (resolved) {
+        statusGroup.removeAttribute('data-empty');
+      } else {
+        statusGroup.setAttribute('data-empty', 'true');
+      }
+    };
+    var updateStatus = function updateStatus(detail) {
+      var nextState = detail && typeof detail.state === 'string' ? detail.state : null;
+      var nextMessage = detail && typeof detail.message === 'string' ? detail.message : null;
+      if (statusSource) {
+        if (!nextState && typeof statusSource.getAttribute === 'function') {
+          nextState = statusSource.getAttribute('data-state');
+        }
+        if (!nextMessage && typeof statusSource.textContent === 'string') {
+          nextMessage = statusSource.textContent.trim();
+        }
+      }
+      if (!statusSource && !nextMessage) {
+        nextMessage = getPersistenceStatusText('storagePersistenceStatusChecking') || defaultStatusText;
+      }
+      if (!statusSource && !nextState) {
+        nextState = 'checking';
+      }
+      applyStatus(nextState, nextMessage);
+    };
+    updateStatus();
+    if (statusSource && typeof statusSource.addEventListener === 'function') {
+      var handleStatusChange = function handleStatusChange(event) {
+        updateStatus(event && event.detail ? event.detail : null);
+      };
+      statusSource.addEventListener('storagepersistencechange', handleStatusChange);
+      registerCleanup(function () {
+        statusSource.removeEventListener('storagepersistencechange', handleStatusChange);
+      });
+      var Observer = GLOBAL_SCOPE && (GLOBAL_SCOPE.MutationObserver || GLOBAL_SCOPE.WebKitMutationObserver || GLOBAL_SCOPE.MozMutationObserver);
+      if (Observer) {
+        var observer = null;
+        try {
+          observer = new Observer(function () {
+            updateStatus();
+          });
+          observer.observe(statusSource, {
+            characterData: true,
+            childList: true,
+            subtree: true,
+            attributes: true
+          });
+          var disconnectObserver = function disconnectObserver() {
+            if (observer && typeof observer.disconnect === 'function') {
+              observer.disconnect();
+            }
+          };
+          registerCleanup(disconnectObserver);
+        } catch (observerError) {
+          safeWarn('cine.features.onboardingTour could not observe persistent storage status.', observerError);
+          if (observer && typeof observer.disconnect === 'function') {
+            observer.disconnect();
           }
         }
-      } catch (error) {
-        void error;
       }
-    };
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(focusInput);
-    } else {
-      setTimeout(focusInput, 0);
     }
-    return true;
-  }
-  function renderSelectInteraction(config, registerCleanup) {
-    if (!interactionContainerEl) {
-      return false;
-    }
-    var realSelect = getElement(config.selector);
-    if (!realSelect) {
-      return false;
-    }
-    var group = DOCUMENT.createElement('div');
-    group.className = 'onboarding-field-group';
-    var selectId = nextInteractionId(config.suffix || 'select');
-    var label = DOCUMENT.createElement('label');
-    label.className = 'onboarding-field-label';
-    label.setAttribute('for', selectId);
-    label.textContent = resolveLabelText(config.labelSelector, config.fallbackLabel);
-    var select = DOCUMENT.createElement('select');
-    select.id = selectId;
-    select.className = 'onboarding-field-select';
-    if (realSelect && realSelect.multiple) {
-      select.multiple = true;
-    }
-    if (realSelect && typeof realSelect.size === 'number' && realSelect.size > 0) {
-      select.size = realSelect.size;
-    }
-    var syncFromReal = function syncFromReal() {
-      if (!realSelect) {
+    var actions = DOCUMENT.createElement('div');
+    actions.className = 'onboarding-interaction-actions';
+    var requestButton = DOCUMENT.createElement('button');
+    requestButton.type = 'button';
+    requestButton.className = 'onboarding-interaction-button';
+    requestButton.textContent = 'Request storage protection';
+    requestButton.disabled = !persistenceButton;
+    var handleRequest = function handleRequest() {
+      if (!persistenceButton) {
         return;
       }
-      var referenceHTML = realSelect.innerHTML;
-      if (select.innerHTML !== referenceHTML) {
-        select.innerHTML = referenceHTML;
-      }
-      if (select.value !== realSelect.value) {
-        select.value = realSelect.value;
-      }
-      if (select.disabled !== realSelect.disabled) {
-        select.disabled = realSelect.disabled;
-        if (select.disabled) {
-          select.setAttribute('aria-disabled', 'true');
-        } else {
-          select.removeAttribute('aria-disabled');
+      var originalTab = step && step.ensureSettings && step.ensureSettings.tabId ? step.ensureSettings.tabId : 'settingsTab-general';
+      if (typeof activateSettingsTab === 'function') {
+        try {
+          activateSettingsTab('settingsTab-data');
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not activate Data & Storage tab.', error);
         }
       }
-    };
-    syncFromReal();
-    var syncToReal = function syncToReal() {
-      if (!realSelect) {
-        return;
+      try {
+        persistenceButton.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not request persistent storage.', error);
       }
-      if (realSelect.value !== select.value) {
-        realSelect.value = select.value;
+      if (typeof activateSettingsTab === 'function') {
+        setTimeout(function () {
+          try {
+            activateSettingsTab(originalTab);
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not restore settings tab.', error);
+          }
+        }, 300);
       }
-      dispatchEventSafe(realSelect, 'input');
-      dispatchEventSafe(realSelect, 'change');
     };
-    select.addEventListener('change', syncToReal);
-    select.addEventListener('input', syncToReal);
+    requestButton.addEventListener('click', handleRequest);
     registerCleanup(function () {
-      select.removeEventListener('change', syncToReal);
-      select.removeEventListener('input', syncToReal);
+      requestButton.removeEventListener('click', handleRequest);
     });
-    realSelect.addEventListener('change', syncFromReal);
-    realSelect.addEventListener('input', syncFromReal);
-    registerCleanup(function () {
-      realSelect.removeEventListener('change', syncFromReal);
-      realSelect.removeEventListener('input', syncFromReal);
-    });
-    var observer = null;
-    if (typeof MutationObserver === 'function') {
-      try {
-        observer = new MutationObserver(function () {
-          syncFromReal();
-        });
-        observer.observe(realSelect, {
-          childList: true,
-          subtree: true,
-          attributes: true
-        });
-        registerCleanup(function () {
-          observer.disconnect();
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not observe select changes.', error);
-        if (observer) {
-          observer.disconnect();
-        }
-      }
+    actions.appendChild(requestButton);
+    fragment.appendChild(actions);
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
     }
-    group.appendChild(label);
-    group.appendChild(select);
-    interactionContainerEl.appendChild(group);
-    interactionContainerEl.hidden = false;
-    var focusSelect = function focusSelect() {
-      try {
-        if (!select.disabled) {
-          select.focus();
-        }
-      } catch (error) {
-        void error;
-      }
-    };
-    if (typeof queueMicrotask === 'function') {
-      queueMicrotask(focusSelect);
-    } else {
-      setTimeout(focusSelect, 0);
-    }
-    return true;
-  }
-  function createGuidedButton(selector, fallbackLabel, registerCleanup) {
-    var realButton = getElement(selector);
-    if (!realButton) {
-      return null;
-    }
-    var button = DOCUMENT.createElement('button');
-    button.type = 'button';
-    button.className = 'onboarding-interaction-button';
-    button.textContent = resolveButtonLabel(realButton, fallbackLabel);
-    var realAriaLabel = typeof realButton.getAttribute === 'function' ? realButton.getAttribute('aria-label') : null;
-    if (realAriaLabel) {
-      button.setAttribute('aria-label', realAriaLabel);
-    }
-    var handleClick = function handleClick() {
-      try {
-        if (typeof realButton.focus === 'function') {
-          realButton.focus({
-            preventScroll: true
-          });
-        }
-      } catch (error) {
-        void error;
-      }
-      try {
-        realButton.click();
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not activate guided button.', error);
-      }
-    };
-    button.addEventListener('click', handleClick);
-    registerCleanup(function () {
-      button.removeEventListener('click', handleClick);
-    });
-    var syncDisabled = function syncDisabled() {
-      var ariaDisabled = typeof realButton.getAttribute === 'function' ? realButton.getAttribute('aria-disabled') : null;
-      var disabled = !!realButton.disabled || ariaDisabled === 'true';
-      button.disabled = disabled;
-      if (disabled) {
-        button.setAttribute('aria-disabled', 'true');
-      } else {
-        button.removeAttribute('aria-disabled');
-      }
-    };
-    syncDisabled();
-    var observer = null;
-    if (typeof MutationObserver === 'function') {
-      try {
-        observer = new MutationObserver(syncDisabled);
-        observer.observe(realButton, {
-          attributes: true,
-          attributeFilter: ['disabled', 'aria-disabled']
-        });
-        registerCleanup(function () {
-          observer.disconnect();
-        });
-      } catch (error) {
-        safeWarn('cine.features.onboardingTour could not observe guided button state.', error);
-        if (observer) {
-          observer.disconnect();
-        }
-      }
-    }
-    return button;
-  }
-  function appendActionRow(buttons) {
-    if (!interactionContainerEl || !Array.isArray(buttons)) {
-      return false;
-    }
-    var row = DOCUMENT.createElement('div');
-    row.className = 'onboarding-interaction-actions';
-    var appended = false;
-    for (var index = 0; index < buttons.length; index += 1) {
-      var button = buttons[index];
-      if (button) {
-        row.appendChild(button);
-        appended = true;
-      }
-    }
-    if (!appended) {
-      return false;
-    }
-    interactionContainerEl.appendChild(row);
+    interactionContainerEl.appendChild(fragment);
     interactionContainerEl.hidden = false;
     return true;
-  }
-  function renderSaveProjectInteraction(registerCleanup) {
-    var saveButton = createGuidedButton('#saveSetupBtn', 'Save project', registerCleanup);
-    if (!saveButton) {
-      return false;
-    }
-    return appendActionRow([saveButton]);
-  }
-  function renderGeneratePlanInteraction(registerCleanup) {
-    var generateButton = createGuidedButton('#generateGearListBtn', 'Generate plan', registerCleanup);
-    if (!generateButton) {
-      return false;
-    }
-    return appendActionRow([generateButton]);
-  }
-  function renderExportBackupInteraction(registerCleanup) {
-    var exportButton = createGuidedButton('#shareSetupBtn', 'Export project', registerCleanup);
-    var backupButton = createGuidedButton('#storageBackupNow', 'Quick safeguard', registerCleanup);
-    if (!exportButton && !backupButton) {
-      return false;
-    }
-    var buttons = [];
-    if (exportButton) {
-      buttons.push(exportButton);
-    }
-    if (backupButton) {
-      buttons.push(backupButton);
-    }
-    return appendActionRow(buttons);
   }
   function renderStepInteraction(step) {
     if (!interactionContainerEl) {
       return;
     }
     teardownStepInteraction();
-    var cleanupFns = [];
-    var registerCleanup = function registerCleanup(fn) {
-      if (typeof fn === 'function') {
-        cleanupFns.push(fn);
+    var key = step && step.key;
+    var requiresDirectInteraction = Boolean(key && key !== 'intro' && key !== 'completion');
+    interactionContainerEl.hidden = true;
+    var cleanupCallbacks = [];
+    var registerCleanup = function registerCleanup(callback) {
+      if (typeof callback === 'function') {
+        cleanupCallbacks.push(callback);
       }
     };
-    var hasContent = false;
-    var key = step && step.key;
-    if (key === 'userProfile') {
-      hasContent = renderUserProfileInteraction(registerCleanup) || hasContent;
-    } else if (key === 'nameProject') {
-      hasContent = renderNameProjectInteraction(registerCleanup) || hasContent;
-    } else if (key === 'saveProject') {
-      hasContent = renderSaveProjectInteraction(registerCleanup) || hasContent;
-    } else if (key === 'addCamera') {
-      hasContent = renderSelectInteraction({
-        selector: '#cameraSelect',
-        labelSelector: "label[for='cameraSelect']",
-        fallbackLabel: 'Camera body',
-        suffix: 'camera'
-      }, registerCleanup) || hasContent;
-    } else if (key === 'addPower') {
-      hasContent = renderSelectInteraction({
-        selector: '#batterySelect',
-        labelSelector: "label[for='batterySelect']",
-        fallbackLabel: 'Power source',
-        suffix: 'power'
-      }, registerCleanup) || hasContent;
-    } else if (key === 'generatePlan') {
-      hasContent = renderGeneratePlanInteraction(registerCleanup) || hasContent;
-    } else if (key === 'exportBackup') {
-      hasContent = renderExportBackupInteraction(registerCleanup) || hasContent;
-    }
-    if (hasContent) {
+    var customRendered = function () {
+      if (key === 'userProfile') {
+        return renderUserProfileInteraction(registerCleanup);
+      }
+      if (key === 'unitsPreferences') {
+        return renderUnitsPreferencesInteraction(registerCleanup, step);
+      }
+      return false;
+    }();
+    if (customRendered) {
+      focusHighlightedElement(step);
+      schedulePositionUpdate();
       activeInteractionCleanup = function activeInteractionCleanup() {
-        for (var index = 0; index < cleanupFns.length; index += 1) {
+        for (var index = 0; index < cleanupCallbacks.length; index += 1) {
           try {
-            cleanupFns[index]();
+            cleanupCallbacks[index]();
           } catch (error) {
-            safeWarn('cine.features.onboardingTour could not clean up guided interaction.', error);
+            safeWarn('cine.features.onboardingTour could not detach custom interaction.', error);
           }
         }
+        cleanupCallbacks.length = 0;
       };
-    } else {
-      activeInteractionCleanup = null;
+      return;
     }
+    if (requiresDirectInteraction) {
+      focusHighlightedElement(step);
+      schedulePositionUpdate();
+    }
+    activeInteractionCleanup = null;
   }
   function handleStepListClick(event) {
     if (!active) {
@@ -1947,17 +3826,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!cardEl) {
       return;
     }
-    var totalSteps = stepConfig.length;
+    if (cardContentEl) {
+      cardContentEl.scrollTop = 0;
+    }
+    var totalSteps = getCountableStepTotal(stepConfig);
+    var countableIndex = getCountableStepIndex(stepConfig, index);
     var textPack = getStepTexts(step);
     var stepText = textPack.body;
+    var size = step && typeof step.size === 'string' && step.size ? step.size : 'standard';
+    cardEl.setAttribute('data-size', size);
     cardEl.setAttribute('aria-labelledby', titleEl.id);
     cardEl.setAttribute('aria-describedby', bodyEl.id);
     titleEl.textContent = textPack.title || '';
     bodyEl.textContent = stepText;
     if (step.key === 'completion') {
       progressEl.textContent = tourTexts.completionIndicator || '';
+    } else if (isPrefaceStep(step)) {
+      progressEl.textContent = formatPrefaceIndicator();
     } else {
-      progressEl.textContent = formatStepIndicator(index, totalSteps);
+      progressEl.textContent = formatStepIndicator(countableIndex, totalSteps);
     }
     updateProgressMeter(step, index);
     skipButton.textContent = tourTexts.skipLabel || 'Skip tutorial';
@@ -1984,15 +3871,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!progressMeterEl || !progressMeterFillEl) {
       return;
     }
-    var totalSteps = stepConfig.length;
+    var totalSteps = getCountableStepTotal(stepConfig);
     var completedSteps = storedState && Array.isArray(storedState.completedSteps) ? storedState.completedSteps : [];
     var completedSet = new Set(completedSteps);
-    var activeContribution = step && !completedSet.has(step.key) ? 1 : 0;
-    var progressValue = Math.min(totalSteps, Math.max(index + 1, completedSet.size + activeContribution));
+    var completedCount = getCountableCompletedCount(stepConfig, completedSet);
+    var activeCountableIndex = getCountableStepIndex(stepConfig, index);
+    var progressValue = completedCount;
+    if (typeof activeCountableIndex === 'number') {
+      progressValue = Math.max(progressValue, activeCountableIndex + 1);
+    }
+    if (isCountableStep(step) && !completedSet.has(step.key)) {
+      progressValue = Math.max(progressValue, Math.min(totalSteps, completedCount + 1));
+    }
+    if (step && step.key === 'completion') {
+      progressValue = totalSteps;
+    }
+    progressValue = Math.min(totalSteps, progressValue);
     var ratio = totalSteps > 0 ? Math.max(0, Math.min(1, progressValue / totalSteps)) : 0;
     progressMeterFillEl.style.width = "".concat(ratio * 100, "%");
     var labelTemplate = tourTexts.progressValueLabel || 'Completed {completed} of {total} steps';
-    var label = labelTemplate.replace('{completed}', String(Math.min(completedSet.size, totalSteps))).replace('{total}', String(totalSteps));
+    var label = labelTemplate.replace('{completed}', String(Math.min(completedCount, totalSteps))).replace('{total}', String(totalSteps));
     var meterLabel = tourTexts.progressMeterLabel || 'Tutorial progress';
     progressMeterEl.setAttribute('aria-label', meterLabel);
     progressMeterEl.setAttribute('aria-valuemax', String(totalSteps));
@@ -2010,6 +3908,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (previousStep && previousStep.ensureSettings && (!step.ensureSettings || step.ensureSettings.tabId !== previousStep.ensureSettings.tabId)) {
       closeSettingsIfNeeded();
     }
+    if (previousStep && previousStep.ensureContacts && !step.ensureContacts) {
+      closeContactsIfNeeded();
+    }
+    if (previousStep && previousStep.ensureOwnGear && !step.ensureOwnGear) {
+      closeOwnGearIfNeeded();
+    }
+    if (previousStep && previousStep.ensureDeviceManager && !step.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    }
     currentStep = step;
     currentIndex = index;
     autoOpenedSettings = false;
@@ -2018,20 +3925,41 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else if (previousStep && previousStep.ensureSettings) {
       closeSettingsIfNeeded();
     }
-    if (typeof step.focus === 'string' && step.focus) {
-      var focusTarget = DOCUMENT.querySelector(step.focus);
-      if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
-        try {
-          focusTarget.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
-        }
+    if (step.ensureContacts) {
+      ensureContactsForStep(step);
+    } else if (previousStep && previousStep.ensureContacts) {
+      closeContactsIfNeeded();
+    } else {
+      autoOpenedContacts = false;
+    }
+    if (step.ensureOwnGear) {
+      ensureOwnGearForStep(step);
+    } else if (previousStep && previousStep.ensureOwnGear) {
+      closeOwnGearIfNeeded();
+    } else {
+      autoOpenedOwnGear = false;
+    }
+    if (step.ensureDeviceManager) {
+      ensureDeviceManagerForStep(step);
+    } else if (previousStep && previousStep.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    } else {
+      autoOpenedDeviceManager = false;
+    }
+    var focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
+    var focusTarget = focusCandidates.length > 0 ? focusCandidates[0] : null;
+    if (focusTarget && typeof focusTarget.scrollIntoView === 'function') {
+      try {
+        focusTarget.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not scroll focus target into view.', error);
       }
-    } else if (step.highlight) {
-      var highlightTarget = DOCUMENT.querySelector(step.highlight);
+    } else {
+      var highlightCandidates = getHighlightElements(step);
+      var highlightTarget = highlightCandidates.length > 0 ? highlightCandidates[0] : null;
       if (highlightTarget && typeof highlightTarget.scrollIntoView === 'function') {
         try {
           highlightTarget.scrollIntoView({
@@ -2138,6 +4066,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function skipTutorial() {
     closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     var nextState = _objectSpread(_objectSpread({}, storedState), {}, {
       skipped: true,
@@ -2150,6 +4081,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function completeTutorial() {
     closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     var allStepKeys = stepConfig.map(function (step) {
       return step.key;
@@ -2194,19 +4128,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (key !== 'Tab') {
       return;
     }
-    var focusable = Array.from(cardEl.querySelectorAll('button:not([disabled])'));
-    if (!focusable.length) {
+    var focusableElements = [];
+    var seen = new Set();
+    var pushUnique = function pushUnique(element) {
+      if (!element) {
+        return;
+      }
+      if (seen.has(element)) {
+        return;
+      }
+      seen.add(element);
+      focusableElements.push(element);
+    };
+    var cardFocusable = collectFocusableElements(cardEl);
+    for (var _index1 = 0; _index1 < cardFocusable.length; _index1 += 1) {
+      pushUnique(cardFocusable[_index1]);
+    }
+    if (Array.isArray(activeTargetElements)) {
+      for (var targetIndex = 0; targetIndex < activeTargetElements.length; targetIndex += 1) {
+        var _target = activeTargetElements[targetIndex];
+        var targetFocusable = collectFocusableElements(_target, true);
+        for (var _index10 = 0; _index10 < targetFocusable.length; _index10 += 1) {
+          pushUnique(targetFocusable[_index10]);
+        }
+      }
+    }
+    var orderedFocusable = sortFocusableByDocumentOrder(focusableElements);
+    if (!orderedFocusable.length) {
       return;
     }
     var direction = event.shiftKey ? -1 : 1;
     var activeElement = DOCUMENT.activeElement;
-    var index = focusable.indexOf(activeElement);
+    var index = orderedFocusable.indexOf(activeElement);
     if (index === -1) {
       index = direction === 1 ? -1 : 0;
     }
-    index = (index + direction + focusable.length) % focusable.length;
+    index = (index + direction + orderedFocusable.length) % orderedFocusable.length;
     event.preventDefault();
-    var target = focusable[index];
+    var target = orderedFocusable[index];
     if (target) {
       try {
         target.focus({
@@ -2223,20 +4182,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       GLOBAL_SCOPE.addEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.addEventListener('scroll', handleGlobalScroll, true);
     }
+    if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+      DOCUMENT.addEventListener('scroll', handleGlobalScroll, true);
+      if (supportsDialogTopLayer) {
+        DOCUMENT.addEventListener('toggle', handleDialogToggle, true);
+      }
+    }
   }
   function detachGlobalListeners() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.removeEventListener === 'function') {
       GLOBAL_SCOPE.removeEventListener('resize', schedulePositionUpdate);
       GLOBAL_SCOPE.removeEventListener('scroll', handleGlobalScroll, true);
     }
+    if (DOCUMENT && typeof DOCUMENT.removeEventListener === 'function') {
+      DOCUMENT.removeEventListener('scroll', handleGlobalScroll, true);
+      if (supportsDialogTopLayer) {
+        DOCUMENT.removeEventListener('toggle', handleDialogToggle, true);
+      }
+    }
   }
   function startTutorial() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref = options || {},
-      _ref$resume = _ref.resume,
-      resume = _ref$resume === void 0 ? false : _ref$resume,
-      _ref$focusStart = _ref.focusStart,
-      focusStart = _ref$focusStart === void 0 ? true : _ref$focusStart;
+    var _ref4 = options || {},
+      _ref4$resume = _ref4.resume,
+      resume = _ref4$resume === void 0 ? false : _ref4$resume,
+      _ref4$focusStart = _ref4.focusStart,
+      focusStart = _ref4$focusStart === void 0 ? true : _ref4$focusStart;
     ensureOverlayElements();
     tourTexts = resolveTourTexts();
     stepConfig = getStepConfig();
@@ -2251,6 +4222,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var resolvedIndex = startIndex >= 0 ? startIndex : stepConfig.length - 1;
     if (overlayRoot) {
+      bringOverlayToTopLayer();
       overlayRoot.classList.add('active');
       overlayRoot.setAttribute('aria-hidden', 'false');
     }
@@ -2274,6 +4246,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     clearFrame();
     teardownStepRequirement();
     detachGlobalListeners();
+    closeSettingsIfNeeded();
+    closeContactsIfNeeded();
+    closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');
@@ -2427,19 +4403,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         completedSet.add(key);
       }
     }
-    var total = allowedKeys.length;
-    var completedCount = Math.min(completedSet.size, total);
+    var countableSteps = stepList.filter(isCountableStep);
+    var total = countableSteps.length;
+    var completedCount = Math.min(getCountableCompletedCount(stepList, completedSet), total);
     var activeKey = stored && typeof stored.activeStep === 'string' ? stored.activeStep : null;
     var activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
-    var nextIndex = -1;
-    for (var _index3 = 0; _index3 < allowedKeys.length; _index3 += 1) {
-      var _key = allowedKeys[_index3];
-      if (!completedSet.has(_key)) {
-        nextIndex = _index3;
-        break;
-      }
-    }
-    var nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
+    var nextStep = getNextCountableStep(stepList, completedSet);
+    var nextKey = nextStep ? nextStep.key : null;
     var nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
     var activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
     var lastCompletedKey = stored && typeof stored.lastCompletedStep === 'string' ? stored.lastCompletedStep : null;
@@ -2491,8 +4461,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var message = template;
     var tokens = Object.keys(replacements);
-    for (var _index4 = 0; _index4 < tokens.length; _index4 += 1) {
-      var token = tokens[_index4];
+    for (var _index11 = 0; _index11 < tokens.length; _index11 += 1) {
+      var token = tokens[_index11];
       message = message.split(token).join(replacements[token]);
     }
     var progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);
@@ -2510,31 +4480,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var state = storedState || loadStoredState();
     var steps = getStepConfig();
-    var completedCount = state && Array.isArray(state.completedSteps) ? state.completedSteps.length : 0;
+    var totalCountableSteps = getCountableStepTotal(steps);
+    var completedRaw = state && Array.isArray(state.completedSteps) ? state.completedSteps : [];
+    var completedSet = new Set(completedRaw);
+    var completedCount = getCountableCompletedCount(steps, completedSet);
     var labelTemplate = tourTexts.resumeLabelWithProgress || tourTexts.resumeLabel;
     var label;
     if (state && state.completed) {
       label = tourTexts.restartLabel || tourTexts.startLabel || 'Start guided tutorial';
     } else if (state && state.activeStep) {
       if (labelTemplate) {
-        label = labelTemplate.replace('{completed}', String(Math.min(completedCount, steps.length))).replace('{total}', String(steps.length));
+        label = labelTemplate.replace('{completed}', String(Math.min(completedCount, totalCountableSteps))).replace('{total}', String(totalCountableSteps));
       }
       if (!label) {
         label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
       }
     } else if (completedCount > 0) {
       if (labelTemplate) {
-        label = labelTemplate.replace('{completed}', String(Math.min(completedCount, steps.length))).replace('{total}', String(steps.length));
+        label = labelTemplate.replace('{completed}', String(Math.min(completedCount, totalCountableSteps))).replace('{total}', String(totalCountableSteps));
       }
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';
     }
+    var fallbackLabelSource = typeof tourTexts.startLabel === 'string' && tourTexts.startLabel.trim() ? tourTexts.startLabel.trim() : 'Start guided tutorial';
+    var normalizedLabel = typeof label === 'string' && label.trim() ? label.trim() : fallbackLabelSource;
     for (var index = 0; index < buttons.length; index += 1) {
       var button = buttons[index];
       if (!button) {
         continue;
       }
-      button.textContent = label;
+      button.textContent = normalizedLabel;
+      if (typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('aria-label', normalizedLabel);
+        } catch (error) {
+          void error;
+        }
+      }
     }
     applyHelpStatus(state, steps);
   }
@@ -2544,7 +4526,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var startFromHelp = function startFromHelp() {
       storedState = loadStoredState();
-      var resume = Boolean(storedState && storedState.activeStep);
+      var hasProgress = Boolean(storedState && Array.isArray(storedState.completedSteps) && storedState.completedSteps.length > 0);
+      var resume = hasProgress && Boolean(storedState && storedState.activeStep);
       startTutorial({
         resume: resume
       });

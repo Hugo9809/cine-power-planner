@@ -3834,7 +3834,8 @@
       fragment.appendChild(group);
     }
 
-    const darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
+    const settingsDarkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
+    const headerDarkModeToggle = DOCUMENT.getElementById('darkModeToggle');
     const themeGroup = DOCUMENT.createElement('div');
     themeGroup.className = 'onboarding-field-group';
     const themeId = getProxyControlId('theme');
@@ -3853,34 +3854,104 @@
     themeDark.textContent = 'Dark';
     themeSelect.appendChild(themeLight);
     themeSelect.appendChild(themeDark);
-    themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+    const resolveThemePreference = () => {
+      if (settingsDarkModeToggle) {
+        return settingsDarkModeToggle.checked ? 'dark' : 'light';
+      }
+      const body = DOCUMENT.body;
+      if (body && typeof body.classList !== 'undefined' && body.classList.contains('dark-mode')) {
+        return 'dark';
+      }
+      return 'light';
+    };
+
+    themeSelect.value = resolveThemePreference();
+
+    const persistDarkModePreference = enabled => {
+      if (!SAFE_STORAGE || typeof SAFE_STORAGE.setItem !== 'function') {
+        return;
+      }
+      try {
+        SAFE_STORAGE.setItem('darkMode', enabled ? 'true' : 'false');
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not persist dark mode preference.', error);
+      }
+    };
+
+    const ensureSettingsDarkModeState = enabled => {
+      if (!settingsDarkModeToggle) {
+        return;
+      }
+      const previous = settingsDarkModeToggle.checked;
+      settingsDarkModeToggle.checked = enabled;
+      if (previous !== enabled) {
+        dispatchSyntheticEvent(settingsDarkModeToggle, 'change');
+      }
+    };
+
+    const applyThemePreference = value => {
+      const normalized = value === 'dark' ? 'dark' : 'light';
+      const shouldEnableDark = normalized === 'dark';
+      const currentTheme = resolveThemePreference();
+      if (currentTheme === normalized) {
+        ensureSettingsDarkModeState(shouldEnableDark);
+        persistDarkModePreference(shouldEnableDark);
+        return true;
+      }
+
+      if (typeof GLOBAL_SCOPE.applyDarkMode === 'function') {
+        try {
+          GLOBAL_SCOPE.applyDarkMode(shouldEnableDark);
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not apply dark mode via runtime bridge.', error);
+        }
+      }
+
+      if (resolveThemePreference() !== normalized && headerDarkModeToggle && typeof headerDarkModeToggle.click === 'function') {
+        try {
+          headerDarkModeToggle.click();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not toggle header dark mode control.', error);
+        }
+      }
+
+      ensureSettingsDarkModeState(shouldEnableDark);
+
+      const finalTheme = resolveThemePreference();
+      if (finalTheme === normalized) {
+        persistDarkModePreference(shouldEnableDark);
+        return true;
+      }
+
+      return false;
+    };
 
     const syncThemeFromTarget = () => {
-      const expected = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
+      const expected = resolveThemePreference();
       if (themeSelect.value !== expected) {
         themeSelect.value = expected;
       }
     };
 
     const syncThemeToTarget = () => {
-      if (!darkModeToggle) {
-        return;
-      }
-      const shouldEnable = themeSelect.value === 'dark';
-      if (darkModeToggle.checked !== shouldEnable) {
-        darkModeToggle.checked = shouldEnable;
-        dispatchSyntheticEvent(darkModeToggle, 'change');
-      }
+      applyThemePreference(themeSelect.value);
+      syncThemeFromTarget();
     };
 
     themeSelect.addEventListener('change', syncThemeToTarget);
     registerCleanup(() => {
       themeSelect.removeEventListener('change', syncThemeToTarget);
     });
-    if (darkModeToggle) {
-      darkModeToggle.addEventListener('change', syncThemeFromTarget);
+    if (settingsDarkModeToggle) {
+      settingsDarkModeToggle.addEventListener('change', syncThemeFromTarget);
       registerCleanup(() => {
-        darkModeToggle.removeEventListener('change', syncThemeFromTarget);
+        settingsDarkModeToggle.removeEventListener('change', syncThemeFromTarget);
+      });
+    }
+    if (headerDarkModeToggle) {
+      headerDarkModeToggle.addEventListener('click', syncThemeFromTarget);
+      registerCleanup(() => {
+        headerDarkModeToggle.removeEventListener('click', syncThemeFromTarget);
       });
     }
 
