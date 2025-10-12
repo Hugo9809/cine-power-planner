@@ -985,65 +985,68 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof navigator === 'undefined' || !navigator.permissions || typeof navigator.permissions.query !== 'function') {
       return null;
     }
+    var statusPromise = null;
     try {
-      var statusPromise = navigator.permissions.query({
+      statusPromise = navigator.permissions.query({
         name: 'automatic-downloads'
       });
-      if (!statusPromise || typeof statusPromise.then !== 'function') {
-        return null;
+    } catch (error) {
+      if (!error || error.name !== 'TypeError') {
+        console.warn('Failed to query automatic download permission', error);
       }
-      var permissionStatusRef = null;
-      var monitor = {
-        state: 'unknown',
-        initial: statusPromise.then(function (status) {
-          permissionStatusRef = status;
-          if (!status || typeof status.state !== 'string') {
-            monitor.state = 'unknown';
-            return monitor.state;
-          }
-          monitor.state = status.state;
-          return monitor.state;
-        }).catch(function (error) {
-          console.warn('Failed to query automatic download permission', error);
+      return null;
+    }
+    if (!statusPromise || typeof statusPromise.then !== 'function') {
+      return null;
+    }
+    var permissionStatusRef = null;
+    var monitor = {
+      state: 'unknown',
+      initial: statusPromise.then(function (status) {
+        permissionStatusRef = status;
+        if (!status || typeof status.state !== 'string') {
           monitor.state = 'unknown';
           return monitor.state;
-        }),
-        ready: null
-      };
-      monitor.ready = monitor.initial.then(function (initialState) {
-        if (!permissionStatusRef || typeof permissionStatusRef.state !== 'string') {
-          return monitor.state;
         }
-        if (initialState === 'prompt') {
-          return new Promise(function (resolve) {
-            var _finalize = function finalize() {
-              try {
-                permissionStatusRef.removeEventListener('change', _finalize);
-              } catch (removeError) {
-                void removeError;
-              }
-              monitor.state = typeof permissionStatusRef.state === 'string' ? permissionStatusRef.state : 'unknown';
-              resolve(monitor.state);
-            };
-            try {
-              permissionStatusRef.addEventListener('change', _finalize);
-            } catch (listenerError) {
-              console.warn('Failed to observe automatic download permission changes', listenerError);
-              resolve('unknown');
-            }
-          });
-        }
-        return initialState;
+        monitor.state = status.state;
+        return monitor.state;
       }).catch(function (error) {
-        console.warn('Failed to observe automatic download permission changes', error);
+        console.warn('Failed to query automatic download permission', error);
         monitor.state = 'unknown';
         return monitor.state;
-      });
-      return monitor;
-    } catch (error) {
-      console.warn('Failed to query automatic download permission', error);
-    }
-    return null;
+      }),
+      ready: null
+    };
+    monitor.ready = monitor.initial.then(function (initialState) {
+      if (!permissionStatusRef || typeof permissionStatusRef.state !== 'string') {
+        return monitor.state;
+      }
+      if (initialState === 'prompt') {
+        return new Promise(function (resolve) {
+          var _finalize = function finalize() {
+            try {
+              permissionStatusRef.removeEventListener('change', _finalize);
+            } catch (removeError) {
+              void removeError;
+            }
+            monitor.state = typeof permissionStatusRef.state === 'string' ? permissionStatusRef.state : 'unknown';
+            resolve(monitor.state);
+          };
+          try {
+            permissionStatusRef.addEventListener('change', _finalize);
+          } catch (listenerError) {
+            console.warn('Failed to observe automatic download permission changes', listenerError);
+            resolve('unknown');
+          }
+        });
+      }
+      return initialState;
+    }).catch(function (error) {
+      console.warn('Failed to observe automatic download permission changes', error);
+      monitor.state = 'unknown';
+      return monitor.state;
+    });
+    return monitor;
   }
   function triggerBackupDownload(url, fileName) {
     if (typeof document === 'undefined') {
