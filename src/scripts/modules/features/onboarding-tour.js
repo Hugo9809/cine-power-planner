@@ -3714,7 +3714,10 @@
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    const introText = tourTexts && typeof tourTexts.userProfileInteractionIntro === 'string'
+      ? tourTexts.userProfileInteractionIntro
+      : 'Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    intro.textContent = introText;
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -3784,11 +3787,32 @@
     const rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string'
       ? avatarButtonLabel.textContent.trim()
       : '';
-    const avatarActionLabel = !rawAvatarActionLabel
-      ? 'Add profile Picture'
-      : rawAvatarActionLabel.toLowerCase() === 'change photo'
-        ? 'Add profile Picture'
-        : rawAvatarActionLabel;
+    const fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string'
+      ? tourTexts.userProfileAvatarAction
+      : 'Add profile photo';
+    const avatarChangeLabel = (() => {
+      const lang = resolveLanguage();
+      const texts = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.texts === 'object' ? GLOBAL_SCOPE.texts : {};
+      const langPack = texts && typeof texts[lang] === 'object' ? texts[lang] : null;
+      const fallbackPack = texts && typeof texts.en === 'object' ? texts.en : null;
+      const langContacts = langPack && typeof langPack.contacts === 'object' ? langPack.contacts : null;
+      const fallbackContacts = fallbackPack && typeof fallbackPack.contacts === 'object' ? fallbackPack.contacts : null;
+      const primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string'
+        ? langContacts.userProfileAvatarButton.trim()
+        : '';
+      if (primary) {
+        return primary;
+      }
+      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string'
+        ? fallbackContacts.userProfileAvatarButton.trim()
+        : '';
+    })();
+    const normalizedAvatarAction = rawAvatarActionLabel || '';
+    const avatarActionLabel = !normalizedAvatarAction
+      ? fallbackAvatarAction
+      : avatarChangeLabel && normalizedAvatarAction.toLowerCase() === avatarChangeLabel.toLowerCase()
+        ? fallbackAvatarAction
+        : normalizedAvatarAction;
     const avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
     avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
@@ -4020,7 +4044,10 @@
 
     const skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    const skipHintText = tourTexts && typeof tourTexts.userProfileInteractionSkipHint === 'string'
+      ? tourTexts.userProfileInteractionSkipHint
+      : 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    skipHint.textContent = skipHintText;
     fragment.appendChild(skipHint);
 
     while (interactionContainerEl.firstChild) {
@@ -4060,6 +4087,10 @@
     const fragment = DOCUMENT.createDocumentFragment();
 
     const languageSelect = DOCUMENT.getElementById('settingsLanguage');
+    const getTourString = (key, fallbackValue) => {
+      const raw = tourTexts && typeof tourTexts[key] === 'string' ? tourTexts[key].trim() : '';
+      return raw || fallbackValue;
+    };
     if (languageSelect) {
       const group = DOCUMENT.createElement('div');
       group.className = 'onboarding-field-group';
@@ -4067,7 +4098,7 @@
       const label = DOCUMENT.createElement('label');
       label.className = 'onboarding-field-label';
       label.setAttribute('for', inputId);
-      label.textContent = 'Language';
+      label.textContent = getTourString('unitsPreferencesLanguageLabel', 'Language');
       const proxySelect = DOCUMENT.createElement('select');
       proxySelect.id = inputId;
       proxySelect.className = 'onboarding-field-select';
@@ -4122,16 +4153,16 @@
     const themeLabel = DOCUMENT.createElement('label');
     themeLabel.className = 'onboarding-field-label';
     themeLabel.setAttribute('for', themeId);
-    themeLabel.textContent = 'Theme';
+    themeLabel.textContent = getTourString('unitsPreferencesThemeLabel', 'Theme');
     const themeSelect = DOCUMENT.createElement('select');
     themeSelect.id = themeId;
     themeSelect.className = 'onboarding-field-select';
     const themeLight = DOCUMENT.createElement('option');
     themeLight.value = 'light';
-    themeLight.textContent = 'Light';
+    themeLight.textContent = getTourString('unitsPreferencesThemeLight', 'Light');
     const themeDark = DOCUMENT.createElement('option');
     themeDark.value = 'dark';
-    themeDark.textContent = 'Dark';
+    themeDark.textContent = getTourString('unitsPreferencesThemeDark', 'Dark');
     themeSelect.appendChild(themeLight);
     themeSelect.appendChild(themeDark);
 
@@ -4214,16 +4245,16 @@
       const pinkLabel = DOCUMENT.createElement('label');
       pinkLabel.className = 'onboarding-field-label';
       pinkLabel.setAttribute('for', pinkId);
-      pinkLabel.textContent = 'Pink mode accents';
+      pinkLabel.textContent = getTourString('unitsPreferencesPinkLabel', 'Pink mode accents');
       const pinkSelect = DOCUMENT.createElement('select');
       pinkSelect.id = pinkId;
       pinkSelect.className = 'onboarding-field-select';
       const pinkOff = DOCUMENT.createElement('option');
       pinkOff.value = 'off';
-      pinkOff.textContent = 'Disabled';
+      pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
       const pinkOn = DOCUMENT.createElement('option');
       pinkOn.value = 'on';
-      pinkOn.textContent = 'Enabled';
+      pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
       pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
@@ -4324,7 +4355,7 @@
       const unitsLabel = DOCUMENT.createElement('label');
       unitsLabel.className = 'onboarding-field-label';
       unitsLabel.setAttribute('for', unitsId);
-      unitsLabel.textContent = 'Temperature units';
+      unitsLabel.textContent = getTourString('unitsPreferencesUnitsLabel', 'Temperature units');
       const proxyUnits = DOCUMENT.createElement('select');
       proxyUnits.id = unitsId;
       proxyUnits.className = 'onboarding-field-select';
@@ -4375,7 +4406,10 @@
     const persistenceButton = DOCUMENT.getElementById('storagePersistenceRequest');
     const persistenceHint = DOCUMENT.createElement('p');
     persistenceHint.className = 'onboarding-resume-hint';
-    persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
+    persistenceHint.textContent = getTourString(
+      'unitsPreferencesPersistenceHint',
+      'Request persistent storage so the browser keeps planner data even when space runs low.',
+    );
     fragment.appendChild(persistenceHint);
 
     const statusGroup = DOCUMENT.createElement('div');
@@ -4493,7 +4527,7 @@
     const requestButton = DOCUMENT.createElement('button');
     requestButton.type = 'button';
     requestButton.className = 'onboarding-interaction-button';
-    requestButton.textContent = 'Request storage protection';
+    requestButton.textContent = getTourString('unitsPreferencesPersistenceAction', 'Protect storage on this device');
     requestButton.disabled = !persistenceButton;
 
     const handleRequest = () => {
