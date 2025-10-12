@@ -1,44 +1,40 @@
 # Documentation Update Checklist
 
-Complete this checklist whenever behaviour changes or new features ship. It
-keeps documentation, translations and offline rehearsals aligned with the
-runtime.
+Use this checklist every time you change the runtime, release a new build or
+adjust translations. It ensures the offline bundle ships with accurate, tested
+instructions.
 
-## Scope the change
+## Before editing
 
-- [ ] Identify affected workflows (save, autosave, backup, restore, share,
-      import, automatic gear, translation exports, offline cache).
-- [ ] Confirm new UI strings or copy edits and note translation requirements.
-- [ ] Determine if new assets (icons, illustrations, PDFs) need to be cached
-      offline and added to `service-worker-assets.js`.
-- [ ] Review schema adjustments and update the [Schema Inventory](schema-inventory.md).
+- [ ] Confirm the latest planner backup and verification packet are stored on
+      redundant media.
+- [ ] Open the planner offline (disconnect the network) to validate current
+      behaviour.
+- [ ] Identify which docs, help topics and translations are affected.
 
-## Update artefacts
+## During edits
 
-- [ ] Edit relevant guides in `docs/` and ensure language reflects offline
-      rehearsals.
-- [ ] Refresh localized READMEs; add translator notes or placeholders when human
-      updates are pending.
-- [ ] Update in-app help strings and `src/scripts/translations.js` entries.
-- [ ] Capture updated screenshots or diagrams using bundled assets only.
-- [ ] Regenerate printable/training materials and share bundle templates.
-- [ ] Export updated translation bundles for archival.
+- [ ] Update the relevant markdown files in `docs/`.
+- [ ] Sync README translations and note pending language reviews.
+- [ ] Capture new screenshots or diagrams using local assets only.
+- [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
+      payloads changed.
+- [ ] Record interim notes in `review-findings.md`.
 
-## Verify
+## Verification
 
-- [ ] Run the app offline and rehearse each affected workflow end to end.
-- [ ] Execute relevant sections of the [Operations Checklist](operations-checklist.md)
-      and [Testing Plan](testing-plan.md).
-- [ ] Confirm `service-worker-assets.js` lists all new files and cache hashes.
-- [ ] Validate autosave/backup ledgers match the documented cadence.
+- [ ] Run the [Operations Checklist](operations-checklist.md) to confirm the
+      instructions match the UI.
+- [ ] Execute the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
+      if service worker assets or icons changed.
+- [ ] Restore backups in the rehearsal sandbox to confirm documentation for
+      backup/restore remains correct.
+- [ ] Validate translations in-app using the language switcher.
 
-## Archive
+## Finalise
 
-- [ ] Complete the [Documentation Status Report](documentation-status-report-template.md).
-- [ ] Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md).
-- [ ] Store planner backups, bundles, translation exports, verification logs and
-      updated docs on two offline media with checksums.
-- [ ] File follow-up items in [Review Tasks](review-tasks-2025-02-07.md) and track
-      them to closure.
-
-Do not mark the feature complete until this checklist is finished.
+- [ ] Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
+      and [Documentation Status Report](documentation-status-report-template.md).
+- [ ] Export a fresh verification packet and attach all updated evidence.
+- [ ] Store new backups/bundles with checksum logs on two physical media.
+- [ ] Mark follow-up work in `review-tasks-2025-02-07.md`.

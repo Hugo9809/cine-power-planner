@@ -1,59 +1,53 @@
 # Documentation Drift Runbook
 
-Use this runbook to detect and correct drift between the runtime, documentation
-and translations. Run it whenever mismatched instructions appear or after large
-feature merges.
+This runbook stops instructions from drifting away from the runtime. Follow it
+whenever QA spots mismatched wording, outdated screenshots or missing locales.
 
-## Detect
+## Detection triggers
 
-1. Compare the current app build against the last published documentation packet
-   and verification logs.
-2. Review recent commits touching `src/scripts/`, `index.html`, service worker
-   assets or translation bundles.
-3. Interview the feature owner to gather expected behaviour, safety implications
-   and rehearsal notes.
-4. Capture screenshots or screen recordings of the current UI for reference using
-   locally bundled assets only.
+- Verification packet references screenshots or logs that no longer match UI.
+- Translations lag behind the English README or in-app help strings.
+- Save/share/import/backup/restore workflows change without corresponding doc
+  updates.
+- Offline rehearsals expose missing guidance for autosave or backup recovery.
 
-## Analyse
+## Containment steps
 
-- Identify which workflows changed (save, autosave, backup, restore, share,
-  import, automatic gear, offline cache, translation exports).
-- Note every documentation surface referencing those workflows.
-- Determine which translations or localized READMEs require updates.
-- Inspect automated tests to confirm they cover the new behaviour and redundancy
-  safeguards.
+1. **Freeze distribution.** Pause bundle sharing until documentation matches the
+   runtime again.
+2. **Log the issue.** Record findings in `review-findings.md` and link any
+   supporting evidence (screenshots, console logs, backups).
+3. **Notify stakeholders.** Alert documentation, localisation and QA owners.
+4. **Secure data.** Ensure recent planner backups and verification packets are
+   stored in at least two physical locations before making edits.
 
-## Correct
+## Remediation workflow
 
-1. Update primary documentation in `docs/`, including printable guides and
-   checklists.
-2. Refresh localized READMEs, in-app help strings and translation exports.
-3. Run the [Documentation Audit Checklist](documentation-audit-checklist.md) to
-   confirm coverage.
-4. Execute the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
-   if assets or service worker entries changed.
-5. Record updates in the [Documentation Status Report](documentation-status-report-template.md)
-   and attach evidence to the verification packet.
+1. **Source of truth review**
+   - Compare UI strings from `src/scripts/translations.js` and help topics from
+     `src/scripts/modules/help.js` to the docs in question.
+   - Update `docs/schema-inventory.md` if persistence shapes changed.
+2. **Doc updates**
+   - Revise the affected markdown files, README translations and help overlay
+     topics.
+   - Update screenshots using the locally stored UI components; no external
+     assets allowed.
+3. **Localization**
+   - Follow the [Translation Guide](translation-guide.md) to sync every locale.
+   - Record translator acknowledgements in the [Documentation Coverage Matrix](documentation-coverage-matrix.md).
+4. **Verification**
+   - Run the [Operations Checklist](operations-checklist.md) and the
+     [Save, Share & Restore Reference](save-share-restore-reference.md) to
+     confirm instructions are correct.
+   - Attach fresh evidence to the verification packet.
+5. **Publish**
+   - Update the [Documentation Status Report](documentation-status-report-template.md)
+     with the change summary and new evidence locations.
+   - Distribute offline bundles only after documentation, translations and
+     verification logs align with the runtime.
 
-## Prevent recurrence
+## Preventative maintenance
 
-- Require feature owners to complete the
-  [Documentation Update Checklist](documentation-update-checklist.md) before
-  merging.
-- Add automated reminders or CI checks to verify documentation touch points and
-  translation exports.
-- Schedule periodic reviews via the [Documentation Maintenance Loop](documentation-maintenance.md).
-- Keep the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
-  current for each release.
-
-## Archive
-
-- Store the refreshed documentation packet, screenshots, translation exports and
-  verification logs alongside the rehearsed planner backup.
-- Update [Review Tasks](review-tasks-2025-02-07.md) with any follow-up actions.
-- File everything on offline media with checksums so future audits can retrace
-  the fix.
-
-Keeping this runbook handy ensures documentation drift is corrected quickly and
-transparently.
+- Schedule monthly spot checks using the [Documentation Audit Checklist](documentation-audit-checklist.md).
+- Track documentation debt in `review-tasks-2025-02-07.md`.
+- When implementing features, update docs in the same commit to avoid drift.

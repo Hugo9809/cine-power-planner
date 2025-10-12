@@ -1,42 +1,44 @@
 # Documentation Verification Packet
 
-This packet records the evidence that documentation, translations and offline
-workflows were rehearsed for a specific build. Bundle the completed packet with
-planner backups, project bundles, translation exports and repository snapshots.
+Bundle this packet with every release to prove documentation, translations and
+runtime behaviour align. Store at least two copies on physical media with the
+release backups.
 
-## Contents
+## Contents checklist
 
-1. **Documentation Status Report** – Completed template from
-   [documentation-status-report-template.md](documentation-status-report-template.md).
-2. **Coverage Matrix** – Updated [Documentation Coverage Matrix](documentation-coverage-matrix.md).
-3. **Verification Log** – Filled [Verification Log Template](verification-log-template.md).
-4. **Testing results** – Output from the [Testing Plan](testing-plan.md) commands
-   plus screenshots or logs of manual checks.
-5. **Screenshots / recordings** – Evidence of core workflows (save, autosave,
-   backup, restore, import/share, automatic gear, translation export).
-6. **Backups and bundles** – Latest `planner-backup.json`, project exports,
-   automatic gear bundles and repository snapshot.
-7. **Translation exports** – Locale JSON files or diff summaries produced during
-   the update.
+- [ ] Completed [Documentation Status Report](documentation-status-report-template.md).
+- [ ] Filled [Verification Log Template](verification-log-template.md) with
+      timestamps, operators and evidence locations.
+- [ ] Screenshots of key workflows (save, autosave ledger, backup, restore
+      sandbox, project export/import) captured from the current build.
+- [ ] Console export showing `window.__cineRuntimeIntegrity` and service worker
+      diagnostics.
+- [ ] Planner backup (`planner-backup.json`) and project bundles with checksums.
+- [ ] Updated documentation files (markdown/PDF) stored alongside the packet.
+- [ ] Translation approval records for all locales.
 
 ## Assembly steps
 
-1. Perform rehearsals defined in the [Operations Checklist](operations-checklist.md)
-   and [Offline Readiness Runbook](offline-readiness.md).
-2. Capture console output from `window.cineRuntime.verifyCriticalFlows()` and
-   include it with timestamps.
-3. Verify automatic backups, planner exports and share bundles were written
-   during the rehearsal; log filenames and checksums.
-4. Complete the templates above, highlight any translation gaps and reference the
-   follow-up tasks filed in [Review Tasks](review-tasks-2025-02-07.md).
-5. Store the packet on two offline media with matching checksums and label which
-   workstation produced it.
+1. Create a folder named `verification-<YYYYMMDD>-<revision>`.
+2. Copy documentation diffs, screenshots, backups and console logs into the
+   folder. Preserve original filenames.
+3. Generate a manifest `manifest.json` listing each artefact, checksum and
+   storage media location.
+4. Print the manifest and include it with the physical media.
+5. Update `review-findings.md` with storage locations and responsible contacts.
 
-## Review cadence
+## Review workflow
 
-- **Before releases** – Mandatory.
-- **After major feature work** – Mandatory.
-- **Quarterly** – Recommended even without feature changes.
+- QA verifies evidence completeness before release.
+- Documentation lead confirms every doc mentioned in the manifest was updated.
+- Localisation lead signs off translations and stores approvals in the packet.
+- Engineering verifies hashes for backups and bundles.
+- Store one copy with production, one off-site.
 
-Maintaining up-to-date packets keeps historical context ready for audits and
-proves that documentation matches the runtime crews rely on.
+## Post-release maintenance
+
+- Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
+  with the packet storage locations.
+- Schedule the next audit via `review-tasks-2025-02-07.md`.
+- During incident response, reference the most recent packet to assess user data
+  exposure and documentation accuracy.

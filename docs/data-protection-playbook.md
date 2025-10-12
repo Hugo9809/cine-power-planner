@@ -1,79 +1,66 @@
 # Data Protection Playbook
 
-User data is Cine Power Planner's highest priority. This refreshed playbook
-captures the policies, rehearsals and recovery steps that keep projects,
-backups, presets and documentation safe for crews working entirely offline.
+User data is the Cine Power Planner's highest priority. This playbook outlines
+the guardrails, rehearsals and escalation paths that keep save, autosave,
+backup, restore and share workflows bulletproof—especially when crews are fully
+offline.
 
 ## Principles
 
-1. **Redundancy first.** Every write path—manual save, autosave, backup,
-   restore, import, automatic gear edit or translation export—must create or
-   refresh a redundant snapshot before touching live data.
-2. **Offline parity.** The experience, documentation and translations must match
-   regardless of connectivity. Use only assets stored in the repository and keep
-   service worker caches aligned with each release.
-3. **Human-friendly audits.** Logs, prompts and documentation must be readable
-   and printable so crews can verify safeguards quickly on set.
-4. **Change transparency.** Behavioural changes ship with updated help topics,
-   verification logs, translation notes and documentation packets.
-5. **Proactive rehearsal.** Saving, sharing, importing, backup, restore and
-   translation workflows are exercised routinely—not only during incidents.
+1. **Never risk user data.** Defensive cloning, redundant mirrors and rehearsal
+   sandboxes are mandatory. When in doubt, create additional backups before
+   proceeding.
+2. **Operate offline by default.** All workflows must succeed without network
+   access. If a feature would rely on external services, redesign it so every
+   dependency ships inside the repository.
+3. **Document everything.** Help topics, translations and verification packets
+   must remain in sync with the runtime to avoid data loss caused by outdated
+   instructions.
 
-## Preventive routines
+## Core safeguards
 
-- **Daily rehearsal (active shoots).** Follow the
-  [Operations Checklist](operations-checklist.md) to exercise save, autosave,
-  backup, restore and share workflows before crews begin work.
-- **Weekly documentation sweep.** Run the
-  [Documentation Maintenance Loop](documentation-maintenance.md) to ensure every
-  change is reflected in docs and translations.
-- **Offline cache verification.** Execute the
-  [Offline Cache Verification Drill](offline-cache-verification-drill.md) after
-  updating service worker assets or bundling new icons/fonts.
-- **Translation parity.** Review the [Translation Guide](translation-guide.md)
-  whenever UI strings shift. Provide placeholders and translator notes when human
-  updates are pending.
-- **Schema checks.** Compare live data with the [Schema Inventory](schema-inventory.md)
-  whenever storage structures change to confirm migrations remain lossless.
+| Safeguard | Runtime implementation | Verification evidence |
+| --- | --- | --- |
+| Manual save | `src/scripts/app-session.js` dispatches structured save events to `modules/persistence.js`, which clones payloads and records timeline entries. | Screenshot of save confirmation, diff export. |
+| Autosave cadence | `modules/persistence.js` triggers background saves every ~50 changes or 10 minutes, logging each run in the autosave ledger. | Ledger export plus timestamped console log. |
+| Planner backup | `storage.js` serialises all projects, favorites, settings, automatic gear rules and history into `planner-backup.json`. | Hash log, verification packet attachment. |
+| Project bundle export | `modules/offline.js` packages a single project with scenario presets, runtime estimates and checksum metadata. | Bundle JSON, hash log, restore rehearsal notes. |
+| Restore sandbox | `restore-verification.js` loads backups into an isolated workspace that can be discarded or promoted. | Screenshot of sandbox prompt, before/after project list. |
 
-## Incident handling
+## Release checklist
 
-1. **Detect.** Monitor `window.__cineRuntimeIntegrity`, autosave ledgers and
-   backup rotations for anomalies. Capture screenshots and console output.
-2. **Contain.** Freeze the affected workstation, duplicate the most recent
-   planner backup and share bundle from offline media, and move to a clean
-   profile or spare device.
-3. **Recover.** Restore backups using the rehearsal sandbox, confirm autosave
-   entries replay correctly and validate checksum notes.
-4. **Review.** Update [Review Findings](review-findings.md) and the
-   [Verification Log](verification-log-template.md) with the timeline, affected
-   safeguards and recovered data.
-5. **Improve.** Patch the issue, extend automated tests, regenerate service
-   worker assets if necessary and refresh all related documentation plus
-   translations. Re-run rehearsals before returning the workstation to service.
+1. Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md)
+   after touching service worker assets, icons or persistence code.
+2. Execute the [Operations Checklist](operations-checklist.md) start-to-finish,
+   logging every save/share/import/backup/restore step.
+3. Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md),
+   [Documentation Maintenance Guide](documentation-maintenance.md) and
+   [Translation Guide](translation-guide.md) to reflect any new UI labels or
+   workflows.
+4. Export the verification packet, planner backup and project bundles. Store two
+   physical copies and log their locations in `review-findings.md`.
+5. Capture console diagnostics (`window.__cineRuntimeIntegrity`) and attach them
+   to the release archive for offline audits.
 
-## Release requirements
+## Incident response
 
-Before publishing a new build or documentation update:
+1. **Stop changes immediately.** Freeze development on the affected branch and
+   collect autosave logs plus the latest backups.
+2. **Reproduce safely.** Use the restore sandbox or a disposable workstation to
+   reproduce the issue without touching user data.
+3. **Document impact.** Update `review-findings.md` and `feature-gap-analysis.md`
+   with affected workflows, user-visible symptoms and data safety implications.
+4. **Patch with rehearsals.** Implement fixes, run full save/share/import/backup/
+   restore rehearsals, update docs and capture new evidence for the verification
+   packet.
+5. **Communicate release.** Summarise the fix, impacted versions and rehearsal
+   evidence in README translations and the documentation status report before
+   distributing updated bundles.
 
-- Execute the [Testing Plan](testing-plan.md) and archive the results.
-- Complete the [Documentation Verification Packet](documentation-verification-packet.md).
-- Export fresh planner backups, bundles, automatic gear presets and translation
-  exports; store them with release notes and checksum manifests.
-- Update the [Documentation Status Report](documentation-status-report-template.md)
-  to record what changed and which safeguards were rehearsed.
-- Verify offline readiness via the [Offline Readiness Runbook](offline-readiness.md)
-  and record outcomes in the verification packet.
+## Ongoing monitoring
 
-## Record keeping
-
-- Store verification packets, planner backups, translation exports and
-  repository snapshots on two offline media with checksums and timestamps.
-- Maintain a change log describing when documentation, translations and runtime
-  safeguards were updated, along with links to verification logs.
-- Ensure every rehearsal or incident has a completed
-  [Verification Log](verification-log-template.md) archived next to the affected
-  data.
-
-Protecting user data demands discipline. Treat this playbook as mandatory for
-all contributors and operators.
+- Review autosave and backup logs weekly.
+- Keep redundancy media rotation logs current (see `backup-rotation-guide.md`).
+- Audit help topics quarterly using the [Documentation Audit Checklist](documentation-audit-checklist.md).
+- Track outstanding risks in `review-findings.md` and link to mitigation plans in
+  `review-tasks-2025-02-07.md`.

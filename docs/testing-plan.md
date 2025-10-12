@@ -1,33 +1,37 @@
 # Testing Plan
 
-Execute this plan before releases and after significant changes to saving,
-sharing, importing, backups, restores, translations or offline behaviour.
+This plan defines the coverage required before shipping Cine Power Planner
+updates. Prioritise persistence, offline behaviour and documentation accuracy.
 
-## Automated tests
+## Automated checks
 
 | Command | Purpose | Notes |
 | --- | --- | --- |
-| `npm run test` | Run unit and DOM tests. | Ensure Node version matches `.nvmrc` if provided. |
-| `npm run lint` | Validate coding standards. | Confirms formatting for docs-related scripts. |
+| `npm test` | Run unit tests (Jest) covering storage helpers, autosave cadence and module registry invariants. | Execute offline; all dependencies are vendored. |
+| `npm run lint` | Ensure scripts adhere to ESLint rules that enforce defensive coding patterns. | Pay attention to storage and persistence warnings. |
+| `npm run build:service-worker` (if applicable) | Rebuild cache manifest and confirm hashes match `service-worker-assets.js`. | Required after modifying assets/icons. |
 
-## Manual verification
+## Manual rehearsals
 
-1. **Offline rehearsal** – Follow the [Offline Readiness Runbook](offline-readiness.md).
-2. **Operations checklist** – Complete the [Operations Checklist](operations-checklist.md).
-3. **Automatic gear** – Use the [Automatic Gear Rule Options Overview](auto-gear-rule-options.md)
-   to verify presets save, backup and restore correctly.
-4. **Service worker** – Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md).
-5. **Documentation sync** – Run the [Documentation Audit Checklist](documentation-audit-checklist.md).
-6. **Translation parity** – Review the [Translation Guide](translation-guide.md) and
-   export locale bundles to confirm no strings are missing.
+- Complete the [Operations Checklist](operations-checklist.md).
+- Run the [Offline Cache Verification Drill](offline-cache-verification-drill.md).
+- Execute backup/restore rehearsals on at least two machines.
+- Validate translations by switching locales and confirming UI text matches docs.
 
-## Reporting
+## Regression focus areas
 
-- Capture console output from `window.cineRuntime.verifyCriticalFlows()`.
-- Store automated test logs, manual checklists and translation exports with the
-  [Documentation Verification Packet](documentation-verification-packet.md).
-- Note failures in the [Review Findings Log](review-findings.md) and assign tasks
-  via the [Review Tasks Tracker](review-tasks-2025-02-07.md).
+1. **Persistence** – Verify manual saves, autosave, planner backup and project
+   export/import flows handle malformed data gracefully.
+2. **Offline readiness** – Confirm the app functions identically when opened via
+   `index.html` without a server and when served with the service worker active.
+3. **Documentation** – Ensure updated docs, help topics and READMEs align with
+   actual UI labels and timing.
+4. **Accessibility** – Check keyboard navigation for save/share dialogs and the
+   restore sandbox.
 
-Testing is complete only when automated scripts pass, manual rehearsals succeed
-offline and evidence is archived on redundant media.
+## Evidence
+
+- Store test outputs, screenshots and logs with the verification packet.
+- Record command results and hashes in `docs/verification-log-template.md`.
+- Update `review-findings.md` with any regressions and track remediation in
+  `review-tasks-2025-02-07.md`.

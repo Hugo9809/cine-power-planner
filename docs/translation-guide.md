@@ -1,52 +1,50 @@
 # Translation Guide
 
-This guide explains how to add or update translations while keeping offline
-parity and data safety intact.
+This guide describes how to update Cine Power Planner translations while keeping
+offline bundles safe and documentation consistent.
 
-## Supported locales
+## Locale files
 
-Reference the language list in `src/scripts/translations.js` and the localized
-`README.*.md` files. Add new locales to both places plus the language selector in
-`index.html`.
+- All strings live in `src/scripts/translations.js`.
+- Each locale exports the same structure (English, German, French, Italian,
+  Spanish).
+- Never rely on remote translation services; edits happen locally and are
+  reviewed offline.
 
 ## Workflow
 
-1. **Inventory strings** – Search for new or changed text in
-   `src/scripts/translations.js`, UI templates and documentation.
-2. **Update source copy** – Ensure English strings clearly describe save, share,
-   import, backup, restore and translation workflows.
-3. **Prepare translation files** – Duplicate updated English entries across all
-   locales. Use English as a placeholder until human translations are ready; add
-   translator notes for context.
-4. **Localize documentation** – Update the corresponding README and
-   workflow-specific guides. Include translator notes when additional context is
-   required.
-5. **Verify in-app rendering** – Switch to each locale, rehearse key workflows
-   offline and confirm prompts fit the layout without truncation.
-6. **Export bundles** – Use the translation export tool to archive locale JSON
-   files with checksum notes. Store exports with backups.
-7. **Archive updates** – Record the changes in the
-   [Documentation Status Report](documentation-status-report-template.md) and
-   attach translation exports to the verification packet.
+1. **Scope changes**
+   - List UI strings affected by the feature/documentation update.
+   - Identify docs (READMEs, guides) requiring translated updates.
+2. **Edit safely**
+   - Update `translations.js` entries for each locale.
+   - Keep placeholders, keyboard shortcuts and punctuation consistent.
+   - Confirm long strings still fit UI components by testing offline.
+3. **Synchronise docs**
+   - Mirror changes in `README.<locale>.md` and relevant docs if they include
+     locale-specific guidance.
+   - Update screenshots using the same locale.
+4. **Review**
+   - Use bilingual reviewers to validate accuracy.
+   - Run the planner in each locale, rehearse save/share/import/backup/restore
+     workflows and confirm text matches documentation.
+5. **Archive evidence**
+   - Store signed approval notes in the verification packet.
+   - Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
+     with review dates.
+
+## Glossary & tone
+
+| Term | Translation notes |
+| --- | --- |
+| "Backup" | Use terminology that implies redundant copies, not cloud sync. |
+| "Restore rehearsal" | Emphasise sandbox/safe preview before promotion. |
+| "Autosave ledger" | Translate to highlight timestamped log of background saves. |
+| "Bundle" | Explain as offline file transfer, never internet sharing. |
 
 ## Quality checks
 
-- Preserve placeholders (e.g. `{projectName}`) and punctuation.
-- Confirm keyboard shortcuts and UI labels remain accurate per locale.
-- Rebuild screenshots that contain textual UI elements.
-- Run `npm run lint` or relevant tests if translation files are linted.
-
-## Incident handling
-
-If a translation is missing or incorrect:
-
-1. Replace it temporarily with the English string to keep the UI usable.
-2. Update documentation to note the gap and capture it in the
-   [Review Tasks Tracker](review-tasks-2025-02-07.md).
-3. Schedule the correction with responsible translators and record progress in
-   the [Review Findings Log](review-findings.md).
-4. Archive the fix with revised documentation, translation exports and checksum
-   notes.
-
-Following this workflow keeps multilingual crews productive and confident when
-working offline.
+- Confirm no string introduces external links or network dependencies.
+- Ensure translation keeps keyboard shortcut references accurate (`Ctrl+S`, `⌘S`).
+- Validate service worker and offline instructions remain clear in each language.
+- Record any locale-specific layout adjustments in `review-findings.md`.

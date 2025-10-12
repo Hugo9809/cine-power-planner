@@ -1,58 +1,61 @@
-# Automatic Gear Rule Options Overview
+# Automatic Gear Rule Options
 
-Automatic gear rules reproduce complex rig presets without requiring crews to
-re-enter lists by hand. After inspecting the full application we refreshed this
-reference to document how rules are generated, stored and audited so presets
-remain trustworthy in every offline rehearsal.
+Automatic gear rules keep complex rigs reproducible without typing, even when
+crews are rehearsing offline. This refresh documents the current pipelines,
+validation layers and rehearsal steps so presets remain trustworthy across
+machines.
+
+## Where the logic lives
+
+- `src/scripts/modules/features/auto-gear-rules.js` orchestrates scenario
+  toggles, resolves helper builders and exposes rehearsal hooks to the runtime.
+- `src/scripts/app-setups.js` publishes change events to `cinePersistence`,
+  guaranteeing manual saves, autosave sweeps and backups pick up the latest
+  preset state.
+- `src/scripts/storage.js` mirrors rule payloads into timestamped backup slots
+  before the UI loads so every edit has a rollback point.
+- `docs/save-share-restore-reference.md` explains how preset backups integrate
+  with planner bundles—update both when behaviour changes.
 
 ## Rule generation pipeline
 
-1. **Baseline diffing.** `src/scripts/modules/features/auto-gear-rules.js`
-   renders the active project, applies each scenario and records the delta by
-   diffing rendered tables instead of raw form state. This keeps quantities and
-   categories accurate even for legacy plans.
-2. **Scenario combinations.** Overlaps such as rain gear, slider modes or
-   handheld assists trigger composite builders so toggling multiple scenarios
-   yields deterministic results.
-3. **Option triggers.** Camera handles, distribution choices and monitor
-   settings activate dedicated builders that add or remove accessories whenever
-   their toggles change.
+1. **Active project snapshot.** The module renders the current rig, applies the
+   scenario toggles and records the diff. Rendering tables instead of raw form
+   state keeps quantities accurate for legacy plans.
+2. **Scenario composition.** Multiple toggles (for example rain gear + handheld)
+   activate composite builders so overlapping presets stay deterministic.
+3. **Option triggers.** Handles, distribution choices and monitor options inject
+   or remove accessories whenever their toggles change.
 4. **Helper rules.** Tripod, onboard monitor and viewfinder helpers run on every
-   update to guarantee supporting hardware is included even when no scenario
-   explicitly references it.
-5. **Validation sweep.** Before persistence the editor validates rule payloads
-   against the schema inventory and strips unknown fields so imports from older
-   builds cannot poison new presets.
+   update so supporting hardware is never omitted.
+5. **Validation sweep.** Payloads are checked against the schema inventory. Any
+   unknown field is dropped and logged before persistence to prevent imports
+   from older builds from corrupting new presets.
 
-## Editor & storage safeguards
+## Storage & audit safeguards
 
-- **Immediate persistence.** `src/scripts/app-setups.js` emits structured save
-  events whenever a rule changes. `app-session.js` routes those events through
-  `cinePersistence`, ensuring manual saves, autosave cycles and planner backups
-  all capture the latest presets.
-- **Redundant mirrors.** `src/scripts/storage.js` mirrors every automatic gear
-  key into timestamped backup slots before the UI loads. Imports and restores
-  write a fresh mirror before touching the active copy so a rollback is always
-  possible.
-- **Restore rehearsals.** Loading presets prompts for confirmation, snapshots the
-  current rules and logs the action to the verification timeline. Crews can
-  rehearse the restore sandbox before applying presets to production projects.
-- **Bundled assets only.** Highlight overlays, rule icons and status badges rely
-  solely on the locally stored Uicons and fonts shipped with the repository, so
-  the editor behaves identically online and offline.
+- **Redundant mirrors.** Before applying changes, the runtime copies the current
+  rule set into a `auto-gear-rules-backup-<timestamp>` slot. Restores load the
+  backup first, only promoting to active rules when the operator confirms.
+- **Verification timeline.** Each change records the triggering scenarios,
+  diff summary and timestamp in the diagnostics timeline consumed by the
+  [Documentation Verification Packet](documentation-verification-packet.md).
+- **Bundle-ready exports.** Project exports include embedded automatic gear
+  payloads, checksum notes and rehearsal metadata so receiving machines can
+  prove the presets matched the source workstation.
 
-## Safe editing practices
+## Safe editing workflow
 
-1. Exercise presets in the rehearsal project before touching live scenarios.
-2. Export a planner backup after major preset changes and archive it with the
-   automatically generated rule backups.
-3. Update documentation, help topics and translation bundles for any new rule
-  controls so instructions stay accurate in every language.
-4. When importing presets from another workstation, review the diff summary,
-   confirm autosave ledgers contain the new entries and capture the results in a
+1. Exercise new rules in the rehearsal project before touching live builds.
+2. Export a planner backup, store it with the generated `auto-gear-rules-backup`
+   files and log the archive path.
+3. Update translations, help topics and the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
+   so every locale reflects the new controls.
+4. When importing from another machine, review the diff summary, confirm the
+   autosave ledger shows the update and capture console output for the
    verification log.
-5. Attach preset changes to the Documentation Coverage Matrix so future audits
-   verify that save/share/import/backup/restore flows still protect custom rules.
+5. Attach screenshots of the rule editor, the rehearsal diff and the backup
+   export to the release packet so future audits can retrace the change offline.
 
-Treat every rule edit as a workflow update: rehearse, document and store redundant
-copies so presets never endanger user data.
+Treat every preset edit like a workflow update—rehearse, document and archive
+redundant copies so crews never risk losing data.

@@ -1,53 +1,52 @@
-# Documentation Status Report Template
+# Documentation Status Report
 
-Use this template to capture the state of documentation, translations and
-offline rehearsals for a specific release or audit. File the completed report
-with the verification packet, archived backups and translation exports.
+Use this template to capture the state of help content, translations and
+workflow guides whenever you update the planner or release an offline bundle.
 
-## 1. Release details
+- **Report date:** _(YYYY-MM-DD)_
+- **Prepared by:** _(name)_
+- **Runtime revision:** _(git commit / bundle hash)_
+- **Audit scope:** _(features, workflows, locales reviewed)_
 
-- **Date:**
-- **App build / commit hash:**
-- **Workstation(s) rehearsed:** (Include browser versions and offline mode
-  confirmation.)
-- **Verification log filename:**
-- **Documentation packet filename:**
+## Summary
 
-## 2. Summary of changes
+- **Overall status:** _(green / amber / red)_
+- **Key changes:**
+  - _(e.g. Updated autosave cadence docs.)_
+  - _(e.g. Added new B-Mount runtime example.)_
+- **Outstanding risks:**
+  - _(e.g. Awaiting translation sign-off for French README.)_
 
-- **Features or safeguards touched:**
-- **Documentation updated:** (List files or help topics.)
-- **Translations updated:** (List locales and export filenames.)
-- **Testing completed:** (Reference [Testing Plan](testing-plan.md) sections.)
-- **Service worker / asset changes:**
+## Evidence
 
-## 3. Offline rehearsal evidence
-
-| Workflow | Evidence (file, screenshot, console log) | Notes |
+| Artefact | Location | Notes |
 | --- | --- | --- |
-| Manual save |  |  |
-| Autosave cadence |  |  |
-| Planner backup export |  |  |
-| Planner backup restore |  |  |
-| Project share/import |  |  |
-| Automatic gear preset save/restore |  |  |
-| Service worker cache refresh |  |  |
-| Translation export/import |  |  |
+| Verification packet | _(path/drive)_ | Includes console logs, screenshots, backup hashes. |
+| Planner backup | _(path/drive)_ | `planner-backup.json` stored on redundant media. |
+| Project bundles | _(path/drive)_ | List each file name and checksum. |
+| Screenshots | _(path/drive)_ | Annotated UI captures proving doc alignment. |
+| Translation approvals | _(path/drive)_ | Sign-off emails or signed forms. |
 
-## 4. Documentation coverage
+## Documentation surfaces reviewed
 
-Reference the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
-and note outstanding tasks or translation gaps here. Include links to the
-[Translation Guide](translation-guide.md) entries that still require human
-review.
+- [ ] README (all locales)
+- [ ] Docs folder guides
+- [ ] In-app help overlay
+- [ ] Verification templates
+- [ ] Translation assets
 
-## 5. Attachments archived
+## Rehearsals completed
 
-List every file stored with this report (backups, bundles, screenshots,
-verification logs, documentation packet, translation exports, repository
-snapshot).
+| Workflow | Result | Evidence |
+| --- | --- | --- |
+| Manual save | _(pass/fail)_ | _(log/screenshot reference)_ |
+| Autosave | _(pass/fail)_ | _(ledger reference)_ |
+| Planner backup | _(pass/fail)_ | _(hash + location)_ |
+| Project export/import | _(pass/fail)_ | _(bundle + restore notes)_ |
+| Restore sandbox | _(pass/fail)_ | _(before/after screenshot)_ |
 
-## 6. Follow-up actions
+## Follow-up tasks
 
-Document outstanding tasks, responsible owners and deadlines. Copy items to
-[Review Tasks](review-tasks-2025-02-07.md) and track them until closed.
+- [ ] Update `review-tasks-2025-02-07.md` with assigned remediation.
+- [ ] Notify localisation of any pending translations.
+- [ ] Schedule next audit using the [Documentation Audit Checklist](documentation-audit-checklist.md).

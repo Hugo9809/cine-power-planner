@@ -1,29 +1,18 @@
 # Review Findings Log
 
-Record outcomes from documentation, workflow and offline rehearsals. Keep entries
-chronological and link them to supporting evidence.
+Record discrepancies, risks and follow-up items discovered during rehearsals,
+reviews and audits. Keep this log stored with the verification packet so future
+teams can trace historical issues offline.
 
-## Entry template
+| Date | Reviewer | Area | Finding | Impact | Follow-up reference |
+| --- | --- | --- | --- | --- | --- |
+| _(YYYY-MM-DD)_ | _(Name)_ | _(e.g. Backup restore)_ | _(Description)_ | _(High/Medium/Low)_ | _(Link to review-tasks entry / commit)_ |
+|  |  |  |  |  |  |
 
-- **Date:**
-- **Review type:** (Operations checklist, offline drill, documentation audit,
-  translation review, incident response, release sign-off.)
-- **Participants:**
-- **Summary:** (Key observations, issues discovered, successes.)
-- **Evidence archived:** (Verification log filename, backup checksum, screenshot
-  bundle, translation export.)
-- **Follow-up tasks:** (List items and owners. Copy to
-  [Review Tasks](review-tasks-2025-02-07.md).)
-- **Status:** (Open / In progress / Resolved.)
+## Usage guidelines
 
-## Guidance
-
-- Keep logs factual and precise. If data was restored from a backup, note which
-  file, timestamp and checksum were used.
-- Reference relevant documentation updates, translation commits or service worker
-  changes.
-- When closing tasks, record where updated artefacts live (new planner backup
-  location, documentation packet path, translation archive).
-
-A thorough log provides traceability during audits and helps future crews
-understand how issues were resolved.
+- Log every variance discovered in docs, translations, or runtime behaviour.
+- Reference supporting evidence (screenshots, console logs, backup files).
+- Update `review-tasks-2025-02-07.md` with action items and link back to this log.
+- Close entries only after rehearsing the fix and updating relevant docs.
+- Store printed copies with the offline verification packet.

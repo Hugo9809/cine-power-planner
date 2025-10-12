@@ -1,49 +1,52 @@
 # Offline Cache & Safeguard Verification Drill
 
-Run this drill after updating service worker assets, adding icons or changing
-persistence behaviour. It confirms offline builds stay complete and that save,
-backup and restore safeguards work without connectivity.
+Run this drill whenever service-worker assets, icons or persistence code change.
+It confirms cached builds match the repository and that offline safeguards keep
+protecting user data.
 
-## Preparation
+## Prerequisites
 
-- Install dependencies and build the app if necessary.
-- Clear existing service worker caches for the app domain.
-- Ensure planner backups, project bundles and translation exports from the
-  previous release are available for comparison.
-- Note the current commit hash and browser version.
+- Local static server (e.g. `npx http-server`) to activate the service worker.
+- Latest build of the planner with updated assets.
+- Stopwatch or timer to document cadence timings.
+- Clean browser profile or private window.
 
 ## Drill steps
 
-1. **Prime the build**
-   - Load `index.html` in the browser.
-   - Open the help dialog, legal pages and settings to cache bundled assets
-     (icons, fonts, docs, translations).
-   - Confirm offline indicators report readiness.
-2. **Enter offline mode**
-   - Disconnect from the network or enable airplane mode.
-   - Reload the page and verify the UI, icons and fonts render correctly.
-3. **Exercise safeguards**
-   - Create a rehearsal project, adjust gear and trigger manual saves plus
-     autosaves.
-   - Wait for an automatic backup or force one via a project switch.
-   - Export a planner backup, project bundle and translation bundle.
-   - Restore the planner backup using **Restore rehearsal** and confirm autosave
-     ledgers replay.
-4. **Inspect storage**
-   - Run `window.cineRuntime.verifyCriticalFlows()` and save console output.
-   - Confirm recent `auto-backup-*` entries, mirrored keys for automatic gear,
-     custom gear and runtime feedback.
-   - Record storage quota usage for future comparison.
-5. **Return online**
-   - Reconnect, allow the service worker to check for updates and capture the
-     version displayed in settings.
+1. **Prime the cache**
+   - Serve the repository locally and load `http://localhost:<port>/index.html`.
+   - Wait for the service worker ready prompt; click **Stay on current version**
+     to confirm controlled updates.
+   - Capture console logs for cache population messages.
+2. **Offline validation**
+   - Disconnect the network.
+   - Refresh the app; confirm icons, fonts and modules load from the cache.
+   - Run a manual save and export a project bundle; verify no network requests
+     occur.
+3. **Autosave cadence check**
+   - Make >50 changes or wait 10 minutes to trigger autosave.
+   - Confirm the autosave ledger logs the run and the cache remains intact.
+4. **Backup/restore rehearsal**
+   - Export a planner backup.
+   - Clear application data (localStorage + caches).
+   - Restore the backup via the sandbox, then promote it.
+   - Ensure the service worker reinstalls seamlessly and logs the restore.
+5. **Cache reset test**
+   - Trigger **Settings → Offline & Cache → Reset cache** (or equivalent).
+   - Confirm the app reloads cleanly, rehydrates from storage and preserves user
+     data.
 
-## Archive results
+## Evidence to collect
 
-- Store console output, screenshots, exported backups, bundles and translation
-  files alongside the updated [Documentation Verification Packet](documentation-verification-packet.md).
-- Update the [Verification Log](verification-log-template.md) with drill results
-  and reference checksum manifests.
+- Console log capturing cache install/activate messages.
+- Screenshot of service worker diagnostics (`navigator.serviceWorker` state).
+- Autosave ledger export showing offline run.
+- Checksums for exported backups/bundles before and after cache reset.
+- Notes recorded in `docs/verification-log-template.md`.
 
-Completing this drill proves the cached build is trustworthy and that user data
-remains protected without a network connection.
+## Follow-up
+
+- Update `review-findings.md` with observed issues.
+- If behaviour changed, refresh affected docs (operations checklist, save/share
+  reference, offline readiness).
+- Store evidence with the documentation verification packet.

@@ -1,77 +1,62 @@
-# Module Registry Handbook
+# Module Registry Reference
 
-Cine Power Planner freezes the module registry at runtime so every execution
-context—main window, embedded dialog, worker, print view or verification
-sandbox—loads the same battle-tested functionality. After reviewing the full
-app we refreshed this handbook to highlight how to register new modules without
-risking data loss and how to audit the registry routinely.
+The Cine Power Planner runtime uses a guarded registry to expose services across
+modules while preserving offline determinism and data safety. This document
+summarises the registry contract, available tokens and the expectations every
+module must follow.
 
-## Registry responsibilities
+## Registry lifecycle
 
-- **Discovery.** `src/scripts/modules/registry.js` walks available scopes to find
-  the module linker, environment helpers and diagnostic loggers. Lookups are
-  guarded so tests and offline bundles succeed even when optional globals are
-  missing.
-- **Registration.** Modules call `cineModules.register(Blueprint)` with a
-  blueprint that captures name, category, exported API, dependency graph and
-  safety notes. The registry freezes blueprints immediately so consumers cannot
-  mutate them and compromise future audits.
-- **Retry queue.** When a module cannot register immediately (for example, when
-  the UI has not finished booting) the registry holds the blueprint in a deferred
-  queue. Once the runtime settles, pending blueprints are replayed until every
-  module is live—critical for offline sessions where execution order can vary.
-- **Diagnostics.** The registry powers `window.cineModules.inspect()` and feeds
-  the runtime guard with immutable snapshots of frozen exports, dependency maps
-  and offline readiness flags.
+1. `architecture-kernel.js` creates the registry, binds a hardened `define`
+   helper and records diagnostics about the caller before any module runs.
+2. `registry.js` stores module factories in an immutable map keyed by token.
+   Factories receive an isolated context object rather than raw global access.
+3. `architecture-core.js` and `architecture-helpers.js` resolve dependencies,
+   ensuring cycles are surfaced early with descriptive errors.
+4. When the runtime requests a module, `registry.js` performs a guarded
+   instantiation that logs load order, validates exports and captures failures
+   without corrupting persistence state.
 
-## Common module categories
+## Available tokens
 
-| Category | Typical files | Responsibilities |
+The following canonical tokens are available to feature modules. Reference these
+instead of importing files directly so tests and offline bundles can swap
+implementations if needed.
+
+| Token | Provides | Notes |
 | --- | --- | --- |
-| `core` | `src/scripts/modules/core/*` | Persistence guard, storage adapters, UI integration glue. |
-| `features` | `src/scripts/modules/features/*` | Automatic gear rules, print workflows, runtime calculators. |
-| `environment` | `src/scripts/modules/environment*.js` | Scope detection, bridge helpers, offline signal dispatch. |
-| `ui` | `src/scripts/modules/ui*.js`, `.../settings-and-appearance.js` | Dialog framework, theme tooling, help overlays. |
-| `offline` | `src/scripts/modules/offline.js` | Cache priming, offline indicators, service-worker helpers. |
-| `telemetry` | `src/scripts/modules/telemetry.js` | Local-only diagnostics captured for verification packets. |
+| `architecture.environment` | Safe access to `window`, `globalThis`, workers and Node-style globals. | Never mutate the returned references. |
+| `architecture.logging` | Structured console logging with offline history buffers consumed by verification logs. | Records only the last 50 entries to keep bundles lean. |
+| `architecture.persistence` | Redundant save/autosave/backup helpers that wrap `storage.js`. | All user data writes must flow through this token. |
+| `architecture.localization` | Translation catalogues, locale fallbacks and runtime text helpers. | Loads all strings from local JSON assets. |
+| `architecture.offline` | Service worker handshake, cache verification drills and bundle checksum utilities. | Works even when the service worker is unavailable. |
+| `architecture.results` | Runtime estimator functions and rig diff helpers. | Uses schema constraints defined in `docs/schema-inventory.md`. |
+| `architecture.help` | Help centre topics, documentation anchors and translation metadata. | Mirrors the docs folder so offline manuals stay in sync. |
+| `architecture.settings` | Appearance toggles, input defaults and autosave cadence configuration. | Persists values via the persistence token. |
+| `architecture.features.autoGearRules` | Automatic gear rule builder, validation logic and rehearsal checkpoints. | Stores redundant mirrors before applying changes. |
 
-Every module must avoid network dependencies, rely solely on bundled assets and
-route persistence work through `cinePersistence` so redundant backups remain in
-sync.
+> **Tip:** Add new tokens only after updating the [Documentation Coverage
+> Matrix](../documentation-coverage-matrix.md) so help, training and translation
+> surfaces reflect the new behaviour.
 
-## Adding a module safely
+## Authoring rules
 
-1. **Create the implementation** under `src/scripts/modules/`, ideally inside a
-   dedicated subdirectory when it spans multiple helpers.
-2. **Define a blueprint** with `name`, `category`, `description`, `exports`,
-   `connections` and `safetyChecks`. Keep exports immutable and never expose raw
-   storage handles or network calls.
-3. **Register during boot.** Require the module from the relevant boot file
-   (`app-core-new-1.js`, `app-core-new-2.js`, `app-session.js` or a feature
-   loader) so it runs during initialisation. The registry freezes the blueprint
-   and exposes it globally.
-4. **Verify guard output.** Exercise the runtime guard via
-   `window.cineRuntime.verifyCriticalFlows()` and capture
-   `window.__cineRuntimeIntegrity` inside the verification log. Confirm autosave,
-   backup and restore hooks still report redundant mirrors.
-5. **Document the change.** Update help topics, offline manuals and translation
-   bundles so crews rehearsing without connectivity receive accurate guidance.
-6. **Extend tests.** Cover new flows in `tests/`—especially scenarios touching
-   save, autosave, share, import, backup and restore.
+- **Immutable exports:** Module factories must return plain objects. The registry
+  freezes exports so accidental mutations cannot corrupt shared services.
+- **Dependency declaration:** Declare dependencies explicitly via the registry
+  helper. Ad-hoc `require` or `import` statements bypass safety checks and are
+  disallowed.
+- **Offline determinism:** Never fetch remote assets or rely on network state.
+  Every dependency must ship inside the repository so the same module registry
+  works on air-gapped machines.
+- **Error transparency:** Throw descriptive errors when validation fails. The
+  registry captures stack traces and attaches them to the diagnostics timeline
+  used by the [Documentation Verification Packet](../documentation-verification-packet.md).
 
-## Auditing existing modules
+## Maintenance checklist
 
-- Compare registry snapshots with the [Schema Inventory](../schema-inventory.md)
-  to confirm every stored dataset has a responsible module.
-- Ensure modules exposing UI strings appear in
-  `src/scripts/translations.js`; mirror the updates in each localized README and
-  the [Translation Guide](../translation-guide.md).
-- Review tests in `tests/unit/` and `tests/dom/` to confirm behaviours remain
-  covered, paying special attention to redundancy safeguards.
-- Regenerate `service-worker-assets.js` when modules add icons, scripts or other
-  static files so offline caches stay aligned with the repository.
-- Capture registry diffs in verification packets whenever a release ships. The
-  snapshot proves which modules safeguarded user data at that revision.
-
-A healthy registry keeps every context aligned and guarantees user data travels
-through predictable, fully rehearsed pathways.
+1. Update the table above when adding or removing tokens.
+2. Capture a screenshot or console log of `window.__cineModuleRegistry` after
+   loading the planner to attach to verification logs.
+3. Re-run the [Offline Cache Verification Drill](../offline-cache-verification-drill.md)
+   whenever registry-controlled bundles change so cached builds stay in sync.

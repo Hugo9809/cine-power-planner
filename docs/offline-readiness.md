@@ -1,60 +1,56 @@
 # Offline Readiness Runbook
 
-Use this runbook to certify a workstation or release build for offline use.
-Complete it before travelling, rehearsing with new crews or shipping
-documentation updates.
+This runbook prepares crews to operate Cine Power Planner without connectivity.
+Complete it before travel days, off-site shoots or any event requiring
+air-gapped workflows.
 
-## 1. Prepare the environment
+## Pre-travel checklist
 
-- Install dependencies and build the app if needed.
-- Clear service worker caches for the domain and remove old planner data if you
-  require a clean slate.
-- Gather the latest planner backup, project bundles, translation exports and
-  documentation packet.
+- [ ] Clone the repository or unpack the offline bundle onto two separate
+      machines.
+- [ ] Launch `index.html` once per machine to warm caches, then disconnect the
+      network and verify functionality.
+- [ ] Export planner backups and project bundles; store copies on redundant
+      physical media.
+- [ ] Print essential docs (operations checklist, save/share reference,
+      translation guide) for offline reference.
+- [ ] Verify icons, fonts and Uicons load locally by inspecting the network
+      panel while offline (should show no remote requests).
 
-## 2. Prime the build
+## Field kit inventory
 
-- Load the app with a network connection.
-- Visit settings, help, legal pages and translations to warm caches.
-- Switch through each theme and language so locally stored assets render.
-- Confirm `service-worker-assets.js` matches the service worker cache list.
+| Item | Quantity | Notes |
+| --- | --- | --- |
+| Laptops/workstations | 2+ | Each loaded with warm cache and rehearsal project. |
+| External storage | 3 | Rotating backups (primary, onsite spare, offsite). |
+| Printed docs | 1 set per crew | Include translations as needed. |
+| Power adapters & surge protection | 1 per workstation | Prevent data corruption from power loss. |
+| Offline verification packet | 2 copies | Stored with production and safety lead. |
 
-## 3. Enter offline mode
+## On-site routine
 
-- Disconnect from the network.
-- Reload the app and confirm it starts without errors, icons or fonts missing.
-- Verify offline indicators are visible and the service worker reports the cached
-  build version.
+1. **Start of day** – Run manual save, export project bundle, confirm autosave
+   ledger is healthy.
+2. **Midday** – Rotate backups to second storage device; record actions in
+   `review-findings.md`.
+3. **End of day** – Run the [Backup Rotation Guide](backup-rotation-guide.md)
+   steps, update verification logs and store evidence securely.
+4. **Incident drills** – Weekly, perform a restore rehearsal using the sandbox
+   on a spare machine to confirm backups remain healthy.
 
-## 4. Rehearse critical workflows
+## Emergency recovery
 
-1. **Manual save & compare.** Create or load a project, save manually and use the
-   compare view to review history entries.
-2. **Autosave cadence.** Make incremental changes, wait for the autosave timer
-   and confirm a new `auto-backup-*` entry.
-3. **Backup & restore.** Export a planner backup then run a restore rehearsal to
-   confirm data integrity and mirrored keys.
-4. **Share & import.** Export a project bundle, clear the selector sandbox and
-   import the bundle to verify rehydration.
-5. **Automatic gear presets.** Adjust presets, export them, clear local data and
-   re-import to confirm redundancy.
-6. **Translation export.** Export locale data if applicable and confirm it loads
-   correctly after a restart.
+- If a workstation fails, use the spare machine and restore the latest planner
+  backup. Promote sandbox data only after verifying diff logs.
+- If both primary and onsite backups fail, retrieve the offsite copy documented
+  in the verification packet.
+- Document incidents in the [Data Protection Playbook](data-protection-playbook.md)
+  incident response section and follow escalation procedures.
 
-## 5. Inspect safeguards
+## Post-mission wrap-up
 
-- Run `window.cineRuntime.verifyCriticalFlows()` and record the results.
-- Review storage keys to confirm mirrored backups exist for each dataset.
-- Check the autosave ledger for timestamps from this rehearsal.
-- Confirm help topics, tooltips and documentation match the actual flow.
-
-## 6. Archive evidence
-
-- Complete the [Documentation Status Report](documentation-status-report-template.md).
-- Update the [Verification Log](verification-log-template.md) with timestamps,
-  filenames and checksum notes.
-- Store planner backups, bundles, translation exports, screenshots and console
-  logs in two offline locations.
-
-Passing this runbook certifies that the workstation is ready for offline use and
-that no user data is at risk.
+- Consolidate backups, verification packets and updated docs into the archival
+  storage location.
+- Update README translations with lessons learned if workflows changed.
+- Schedule a documentation audit to confirm no drift occurred during the field
+  period.
