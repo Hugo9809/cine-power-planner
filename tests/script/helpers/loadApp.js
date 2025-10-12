@@ -11,10 +11,14 @@ function getBodyHtml() {
       'utf8',
     );
     const bodyMatch = template.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    cachedBodyHtml = (bodyMatch ? bodyMatch[1] : '').replace(
-      /<script[\s\S]*?<\/script>/gi,
-      '',
-    );
+    let bodyHtml = bodyMatch ? bodyMatch[1] : '';
+    // Repeat replacement until no more script tags remain
+    let previous;
+    do {
+      previous = bodyHtml;
+      bodyHtml = bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
+    } while (bodyHtml !== previous);
+    cachedBodyHtml = bodyHtml;
   }
 
   return cachedBodyHtml;
