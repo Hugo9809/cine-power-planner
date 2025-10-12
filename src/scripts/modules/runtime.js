@@ -1,5 +1,80 @@
 (function () {
+  function detectHelperScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return null;
+  }
+
+  function resolveRuntimeEnvironmentHelpers() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./runtime-environment-helpers.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+    function pushCandidate(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+
+    const primary = detectHelperScope();
+    pushCandidate(primary);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      try {
+        const helpers = candidate && candidate.cineRuntimeEnvironmentHelpers;
+        if (helpers && typeof helpers === 'object') {
+          return helpers;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  const RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
+
   function fallbackDetectGlobalScope() {
+    if (
+      RUNTIME_ENVIRONMENT_HELPERS &&
+      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
+    ) {
+      try {
+        const detected = RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -16,6 +91,19 @@
   }
 
   function fallbackCollectCandidateScopes(primary) {
+    if (
+      RUNTIME_ENVIRONMENT_HELPERS &&
+      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
+    ) {
+      try {
+        const scoped = RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primary);
+        if (Array.isArray(scoped)) {
+          return scoped;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     const scopes = [];
 
     function pushScope(scope) {
