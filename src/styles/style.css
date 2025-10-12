@@ -3209,40 +3209,18 @@ html.install-banner-visible .app-modal[open] {
   border-bottom-color: color-mix(in srgb, var(--accent-color) 35%, var(--panel-border));
 }
 
-.print-options-dialog {
-  border: none;
-  padding: 0;
-  background: transparent;
-  color: inherit;
-  width: 100vw;
-  max-width: none;
-  height: 100vh;
-  margin: 0;
-}
-
-.print-options-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.6);
-}
 
 .print-options-dialog[open] {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(16px, 4vw, 32px);
   z-index: 205;
-  overflow: hidden;
-  overscroll-behavior: contain;
 }
 
 .print-options-surface {
-  width: min(520px, calc(100vw - 2 * clamp(16px, 4vw, 32px)));
-  max-width: 520px;
+  width: min(540px, calc(100vw - 2 * var(--modal-frame-padding, clamp(16px, 4vw, 28px))));
+  max-width: 540px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: clamp(20px, 4vw, 28px);
+  gap: 0;
+  padding: clamp(22px, 5vw, 30px);
   border-color: var(--panel-border);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
   background: color-mix(in srgb, var(--surface-color) 92%, var(--panel-bg) 8%);
@@ -3256,29 +3234,8 @@ html.install-banner-visible .app-modal[open] {
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
 }
 
-.print-options-surface h2 {
-  margin: 0;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
-  font-family: var(--font-family);
-  font-weight: var(--font-weight-semibold, var(--font-weight-medium));
-  color: var(--text-color);
-}
-
-.dark-mode .print-options-surface h2,
-.print-options-dialog.dark-mode .print-options-surface h2 {
-  color: var(--inverse-text-color);
-}
-
-.print-options-surface p {
-  margin: 0;
-  color: var(--muted-text-color);
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
-  line-height: 1.5;
-}
-
-.dark-mode .print-options-surface p,
-.print-options-dialog.dark-mode .print-options-surface p {
-  color: color-mix(in srgb, var(--inverse-text-color) 70%, transparent);
+.print-options-body {
+  gap: clamp(0.9rem, 2.1vw, 1.25rem);
 }
 
 .print-options-sections,
@@ -3378,8 +3335,7 @@ html.install-banner-visible .app-modal[open] {
 }
 
 .print-options-actions {
-  display: flex;
-  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
