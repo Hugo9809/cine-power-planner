@@ -190,6 +190,12 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .device-block-grid.two-column {
   grid-template-columns: repeat(2, 1fr);
 }
+.device-block-grid.lens-device-grid {
+  align-items: stretch;
+}
+.device-block-grid.lens-device-grid .lens-device-block {
+  height: 100%;
+}
 .device-block-grid.fiz-single-column {
   grid-template-columns: 1fr;
 }
@@ -201,10 +207,23 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   box-shadow: var(--panel-shadow);
   font-size: calc(var(--font-size-base) * var(--font-scale-xxs));
 }
+.device-block.lens-device-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 .device-block strong {
   display: block;
   margin-bottom: 4px;
   font-weight: var(--font-weight-bold);
+}
+.lens-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+}
+.lens-info-grid .info-box {
+  width: 100%;
 }
 .device-category-container { display: flex; flex-wrap: wrap; gap: 10px; }
 .device-category { 
@@ -252,6 +271,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
     flex: 1 1 100%;
   }
   .device-block-grid.two-column {
+    grid-template-columns: 1fr;
+  }
+  .lens-info-grid {
     grid-template-columns: 1fr;
   }
 }
