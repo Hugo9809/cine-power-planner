@@ -6942,7 +6942,6 @@ textarea:disabled {
   position: absolute;
   border-radius: 16px;
   border: 2px solid var(--accent-color);
-  box-shadow: 0 12px 32px rgba(12, 18, 28, 0.18);
   background: transparent;
   transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
   pointer-events: none;
