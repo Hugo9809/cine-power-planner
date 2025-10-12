@@ -9859,6 +9859,34 @@ function gearListGenerateHtmlImpl() {
     rentalHouse: info && info.rentalHouse
   });
   var rentalNoteAttr = rentalToggleTexts.noteLabel && rentalToggleTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalToggleTexts.noteLabel), "\"") : '';
+  var parseNameAndContext = function parseNameAndContext(raw) {
+    var trimmed = raw == null ? '' : String(raw).trim();
+    if (!trimmed) {
+      return {
+        base: '',
+        context: ''
+      };
+    }
+    var base = trimmed;
+    var context = '';
+    if (trimmed.endsWith(')')) {
+      var openIdx = trimmed.lastIndexOf('(');
+      if (openIdx > -1) {
+        var beforeChar = openIdx > 0 ? trimmed.charAt(openIdx - 1) : '';
+        if (beforeChar === ' ') {
+          var rawContext = trimmed.slice(openIdx + 1, -1);
+          if (rawContext && rawContext.indexOf('(') === -1 && rawContext.indexOf(')') === -1) {
+            base = trimmed.slice(0, openIdx).trim();
+            context = rawContext.trim();
+          }
+        }
+      }
+    }
+    return {
+      base: base,
+      context: context
+    };
+  };
   var formatItems = function formatItems(arr) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var entries = {};
@@ -9869,9 +9897,9 @@ function gearListGenerateHtmlImpl() {
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
-      var match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-      var base = match ? match[1].trim() : namePart.trim();
-      var ctx = match && match[2] ? match[2].trim() : '';
+      var parsedName = parseNameAndContext(namePart);
+      var base = parsedName.base;
+      var ctx = parsedName.context;
       if (!base) return;
       if (!entries[base]) {
         entries[base] = {
@@ -10094,8 +10122,8 @@ function gearListGenerateHtmlImpl() {
     if (typeof registerDevice !== 'function') return;
     var entries = {};
     arr.filter(Boolean).forEach(function (item) {
-      var match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-      var base = match ? match[1].trim() : item.trim();
+      var parsedName = parseNameAndContext(item);
+      var base = parsedName.base;
       entries[base] = entries[base] || {};
     });
     if (Object.keys(entries).length) {
