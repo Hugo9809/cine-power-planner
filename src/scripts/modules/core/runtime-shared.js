@@ -89,6 +89,73 @@
     return scopes;
   }
 
+  function isScopeList(candidate) {
+    return !!candidate && typeof candidate.length === 'number';
+  }
+
+  function readCandidateScopesFromScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const candidate = scope.CORE_RUNTIME_CANDIDATE_SCOPES;
+      return isScopeList(candidate) ? candidate : null;
+    } catch (candidateLookupError) {
+      void candidateLookupError;
+    }
+
+    return null;
+  }
+
+  let cachedCandidateScopes = null;
+
+  function syncCandidateScopes(candidateScopes, primaryScope, environmentHelpers) {
+    if (!isScopeList(candidateScopes)) {
+      return candidateScopes;
+    }
+
+    cachedCandidateScopes = candidateScopes;
+
+    const referenceScope = detectScope(primaryScope);
+    const scopes = collectCandidateScopes(referenceScope, environmentHelpers);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        if (scope.CORE_RUNTIME_CANDIDATE_SCOPES !== candidateScopes) {
+          scope.CORE_RUNTIME_CANDIDATE_SCOPES = candidateScopes;
+        }
+      } catch (assignCandidateError) {
+        void assignCandidateError;
+      }
+    }
+
+    return candidateScopes;
+  }
+
+  function resolveCandidateScopes(primaryScope, environmentHelpers) {
+    const referenceScope = detectScope(primaryScope);
+
+    const existing =
+      cachedCandidateScopes || readCandidateScopesFromScope(referenceScope);
+
+    if (isScopeList(existing)) {
+      return syncCandidateScopes(existing, referenceScope, environmentHelpers);
+    }
+
+    const candidateScopes = collectCandidateScopes(
+      referenceScope,
+      environmentHelpers
+    );
+
+    return syncCandidateScopes(candidateScopes, referenceScope, environmentHelpers);
+  }
+
   function registerScope(runtimeState, scope) {
     if (!runtimeState || typeof runtimeState.registerScope !== 'function') {
       return;
@@ -294,6 +361,8 @@
 
   const namespace = {
     collectCandidateScopes,
+    resolveCandidateScopes,
+    syncCandidateScopes,
     registerScope,
     registerScopes,
     getScopesSnapshot,
