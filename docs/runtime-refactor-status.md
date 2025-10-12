@@ -93,3 +93,15 @@
 
 - App core now resolves `cineRuntimeEnvironmentHelpers` before scanning globals, letting the runtime share the centralised scope detection logic across modern and legacy bundles while preserving offline compatibility for manual fallbacks.【F:src/scripts/app-core-new-2.js†L6-L139】【F:legacy/scripts/app-core-new-2.js†L26-L126】
 - The candidate scope collector deduplicates helper results and keeps the manual global list as a safety net so autosave, backup, and restore routines still initialise correctly even when helpers are unavailable (e.g., offline restores or Node tests).【F:src/scripts/app-core-new-2.js†L61-L139】【F:legacy/scripts/app-core-new-2.js†L63-L126】
+
+## Step 8 – Runtime tools helper reuse
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/modules/core/runtime-tools.js` | 216 | 313 | +97 |
+| `legacy/scripts/modules/core/runtime-tools.js` | 179 | 269 | +90 |
+
+*Notes:*
+
+- Runtime tools now resolve `cineRuntimeEnvironmentHelpers` before falling back to local scope detection, aligning structured clone and persistence helpers with the shared environment safeguards used by app core and runtime modules.【F:src/scripts/modules/core/runtime-tools.js†L1-L104】【F:legacy/scripts/modules/core/runtime-tools.js†L5-L88】
+- The helper-aware detector keeps the manual global scan as a final fallback so autosave, backup, import, and restore flows retain their offline resilience even when the shared helper is missing (e.g., during legacy cache hydration or cold restores).【F:src/scripts/modules/core/runtime-tools.js†L63-L89】【F:legacy/scripts/modules/core/runtime-tools.js†L49-L78】

@@ -1,9 +1,5 @@
 (function () {
-  function detectScope(primary) {
-    if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
-      return primary;
-    }
-
+  function detectGlobalScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
       return globalThis;
     }
@@ -15,6 +11,107 @@
     }
     if (typeof global !== 'undefined' && global && typeof global === 'object') {
       return global;
+    }
+
+    return null;
+  }
+
+  function collectEnvironmentHelperScopes(primary) {
+    const scopes = [];
+
+    function registerScope(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    }
+
+    registerScope(primary);
+    if (typeof globalThis !== 'undefined') registerScope(globalThis);
+    if (typeof window !== 'undefined') registerScope(window);
+    if (typeof self !== 'undefined') registerScope(self);
+    if (typeof global !== 'undefined') registerScope(global);
+
+    return scopes;
+  }
+
+  const CORE_GLOBAL_SCOPE = detectGlobalScope();
+
+  function resolveEnvironmentHelpers() {
+    let helpers = null;
+
+    if (
+      typeof cineRuntimeEnvironmentHelpers !== 'undefined' &&
+      cineRuntimeEnvironmentHelpers &&
+      typeof cineRuntimeEnvironmentHelpers === 'object'
+    ) {
+      helpers = cineRuntimeEnvironmentHelpers;
+    }
+
+    if (!helpers && typeof require === 'function') {
+      try {
+        const requiredHelpers = require('../runtime-environment-helpers.js');
+        if (requiredHelpers && typeof requiredHelpers === 'object') {
+          helpers = requiredHelpers;
+        }
+      } catch (helpersRequireError) {
+        void helpersRequireError;
+      }
+    }
+
+    if (helpers) {
+      return helpers;
+    }
+
+    const candidateScopes = collectEnvironmentHelperScopes(CORE_GLOBAL_SCOPE);
+
+    for (let index = 0; index < candidateScopes.length; index += 1) {
+      const candidate = candidateScopes[index];
+      try {
+        const candidateHelpers =
+          candidate && candidate.cineRuntimeEnvironmentHelpers;
+        if (candidateHelpers && typeof candidateHelpers === 'object') {
+          return candidateHelpers;
+        }
+      } catch (candidateLookupError) {
+        void candidateLookupError;
+      }
+    }
+
+    return null;
+  }
+
+  const CORE_ENVIRONMENT_HELPERS = resolveEnvironmentHelpers();
+
+  function detectScope(primary) {
+    if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
+      return primary;
+    }
+
+    let detected = null;
+
+    if (
+      CORE_ENVIRONMENT_HELPERS &&
+      typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
+    ) {
+      try {
+        detected = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+      } catch (detectScopeError) {
+        void detectScopeError;
+        detected = null;
+      }
+    }
+
+    if (detected && (typeof detected === 'object' || typeof detected === 'function')) {
+      return detected;
+    }
+
+    const fallbackScope = CORE_GLOBAL_SCOPE || detectGlobalScope();
+    if (fallbackScope && (typeof fallbackScope === 'object' || typeof fallbackScope === 'function')) {
+      return fallbackScope;
     }
 
     return null;
