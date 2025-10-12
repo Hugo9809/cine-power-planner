@@ -6921,9 +6921,9 @@ textarea:disabled {
 .onboarding-highlight {
   position: absolute;
   border-radius: 16px;
-  border: 2px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent-color) 28%, transparent);
+  border: 0.75px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 24%, transparent);
   transition:
     transform 0.2s ease,
     width 0.2s ease,
@@ -6940,14 +6940,14 @@ textarea:disabled {
   .onboarding-highlight {
     border-color: var(--accent-color);
     background: transparent;
-    box-shadow: 0 0 0 6px var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-color);
   }
 }
 
 body.dark-mode .onboarding-highlight {
   border-color: color-mix(in srgb, var(--accent-color) 90%, rgba(255, 255, 255, 0.35));
-  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
-  box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent-color) 34%, rgba(0, 0, 0, 0.35));
+  background: color-mix(in srgb, var(--accent-color) 16%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 30%, rgba(0, 0, 0, 0.35));
 }
 
 .onboarding-overlay.onboarding-scroll-active .onboarding-highlight {
