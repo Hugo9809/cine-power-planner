@@ -365,6 +365,45 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function resolveFirstPowerInputType(device) {
+  let result;
+
+  try {
+    result = callEventsCoreFunction('firstPowerInputType', [device]);
+  } catch (error) {
+    if (eventsLogger && typeof eventsLogger.warn === 'function') {
+      try {
+        eventsLogger.warn('Failed to resolve firstPowerInputType from core', error, {
+          namespace: 'device-editor',
+        });
+      } catch (logError) {
+        void logError;
+      }
+    }
+
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to resolve firstPowerInputType from core', error);
+    }
+  }
+
+  if (typeof result === 'string') {
+    return result;
+  }
+
+  if (Array.isArray(result) && result.length) {
+    return typeof result[0] === 'string' ? result[0] : '';
+  }
+
+  if (result && typeof result === 'object') {
+    const candidate = result.type || result.portType;
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+  }
+
+  return '';
+}
+
 function resolveCoreOptionsArray(functionName, existingValues = []) {
   const fallback = Array.isArray(existingValues) ? existingValues.slice() : [];
 
@@ -2533,7 +2572,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "cameras") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(cameraFieldsDiv);
-    const tmp = firstPowerInputType(deviceData);
+    const tmp = resolveFirstPowerInputType(deviceData);
     cameraWattInput.value = deviceData.powerDrawWatts || '';
     cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
     cameraPortTypeInput.value = tmp || "";
@@ -2571,7 +2610,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
     monitorWattInput.value = deviceData.powerDrawWatts || '';
     monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-    const mpt = firstPowerInputType(deviceData);
+    const mpt = resolveFirstPowerInputType(deviceData);
     monitorPortTypeInput.value = mpt || "";
     setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
@@ -2588,7 +2627,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
     viewfinderWattInput.value = deviceData.powerDrawWatts || '';
     viewfinderVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-    const vfpt = firstPowerInputType(deviceData);
+    const vfpt = resolveFirstPowerInputType(deviceData);
     viewfinderPortTypeInput.value = vfpt || "";
     setViewfinderVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
@@ -2598,7 +2637,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "video") {
     showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = firstPowerInputType(deviceData);
+    videoPowerInput.value = resolveFirstPowerInputType(deviceData);
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
     videoFrequencyInput.value = deviceData.frequency || '';
