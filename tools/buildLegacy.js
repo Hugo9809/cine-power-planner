@@ -16,6 +16,12 @@ function createBuildContext(options = {}) {
     babelBin: options.babelBin || require.resolve('@babel/cli/bin/babel.js'),
     babelConfig: options.babelConfig || path.join(rootDir, 'babel.legacy.config.json'),
     coreJsPath: options.coreJsPath || require.resolve('core-js-bundle/minified.js'),
+    coreJsMapPath:
+      options.coreJsMapPath ||
+      path.join(
+        path.dirname(require.resolve('core-js-bundle/minified.js')),
+        'minified.js.map'
+      ),
     regeneratorPath: options.regeneratorPath || require.resolve('regenerator-runtime/runtime.js'),
     execFileSync: options.execFileSync || execFileSync,
     fs: options.fs || fs,
@@ -56,11 +62,14 @@ function runBabel(context, sourceDir, outDir, ignores) {
 }
 
 function copyPolyfills(context, destinationDir) {
-  const { fs: fsImpl, coreJsPath, regeneratorPath } = context;
+  const { fs: fsImpl, coreJsPath, coreJsMapPath, regeneratorPath } = context;
   const targetDir = destinationDir || path.join(context.legacyDir, 'polyfills');
 
   fsImpl.mkdirSync(targetDir, { recursive: true });
   fsImpl.copyFileSync(coreJsPath, path.join(targetDir, 'core-js-bundle.min.js'));
+  if (coreJsMapPath && fsImpl.existsSync(coreJsMapPath)) {
+    fsImpl.copyFileSync(coreJsMapPath, path.join(targetDir, 'minified.js.map'));
+  }
   fsImpl.copyFileSync(regeneratorPath, path.join(targetDir, 'regenerator-runtime.js'));
 }
 
