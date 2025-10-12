@@ -105,3 +105,15 @@
 
 - Runtime tools now resolve `cineRuntimeEnvironmentHelpers` before falling back to local scope detection, aligning structured clone and persistence helpers with the shared environment safeguards used by app core and runtime modules.【F:src/scripts/modules/core/runtime-tools.js†L1-L104】【F:legacy/scripts/modules/core/runtime-tools.js†L5-L88】
 - The helper-aware detector keeps the manual global scan as a final fallback so autosave, backup, import, and restore flows retain their offline resilience even when the shared helper is missing (e.g., during legacy cache hydration or cold restores).【F:src/scripts/modules/core/runtime-tools.js†L63-L89】【F:legacy/scripts/modules/core/runtime-tools.js†L49-L78】
+
+## Step 9 – Temperature key helper reuse
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-2.js` | 17962 | 18002 | +40 |
+| `legacy/scripts/app-core-new-2.js` | 16563 | 16603 | +40 |
+
+*Notes:*
+
+- Modern and legacy app core bundles now defer to `cineCoreRuntimeState.resolveTemperatureKeyDefaults` for the temperature queue and renderer identifiers, ensuring customised environments and offline restores share the same safeguards before autosave and backup hooks initialise.【F:src/scripts/app-core-new-2.js†L3-L57】【F:src/scripts/app-core-new-2.js†L143-L182】【F:legacy/scripts/app-core-new-2.js†L3-L45】【F:legacy/scripts/app-core-new-2.js†L123-L165】
+- When the helper is unavailable (e.g., cold offline boots), both bundles retain the original fallbacks so pending temperature notes continue to flush safely without risking data loss or localisation mismatches.【F:src/scripts/app-core-new-2.js†L25-L56】【F:legacy/scripts/app-core-new-2.js†L17-L44】

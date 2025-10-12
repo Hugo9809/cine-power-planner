@@ -182,6 +182,46 @@ var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   return null;
 })();
 
+var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults() {
+  var defaults = {
+    queueKey: CORE_TEMPERATURE_QUEUE_KEY,
+    renderName: CORE_TEMPERATURE_RENDER_NAME,
+  };
+
+  if (
+    CORE_RUNTIME_STATE_SUPPORT &&
+    typeof CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults === 'function'
+  ) {
+    try {
+      var resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults();
+      if (resolvedDefaults && typeof resolvedDefaults === 'object') {
+        if (typeof resolvedDefaults.queueKey === 'string' && resolvedDefaults.queueKey) {
+          defaults.queueKey = resolvedDefaults.queueKey;
+        }
+
+        if (typeof resolvedDefaults.renderName === 'string' && resolvedDefaults.renderName) {
+          defaults.renderName = resolvedDefaults.renderName;
+        }
+      }
+    } catch (resolveTemperatureDefaultsError) {
+      void resolveTemperatureDefaultsError;
+    }
+  }
+
+  if (typeof defaults.queueKey !== 'string' || !defaults.queueKey) {
+    defaults.queueKey = '__cinePendingTemperatureNote';
+  }
+
+  if (typeof defaults.renderName !== 'string' || !defaults.renderName) {
+    defaults.renderName = 'renderTemperatureNote';
+  }
+
+  return defaults;
+})();
+
+CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
+CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
+
 var CORE_SAFE_FREEZE_REGISTRY = (function resolveCoreSafeFreezeRegistry() {
   if (
     CORE_RUNTIME_STATE_SUPPORT &&
