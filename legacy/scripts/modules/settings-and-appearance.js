@@ -247,8 +247,113 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var autoBackups = context.autoBackups || {};
     var mountVoltages = context.mountVoltages || {};
     var helpers = context.helpers || {};
+    var storage = context.storage || {};
     void win;
     void helpers;
+    var themeMemoryStorage = (function createThemeMemoryStorage() {
+      var memory = Object.create(null);
+      return {
+        getItem: function getItem(key) {
+          if (Object.prototype.hasOwnProperty.call(memory, key)) {
+            return memory[key];
+          }
+          return null;
+        },
+        setItem: function setItem(key, value) {
+          memory[key] = String(value);
+        },
+        removeItem: function removeItem(key) {
+          if (Object.prototype.hasOwnProperty.call(memory, key)) {
+            delete memory[key];
+          }
+        },
+      };
+    }());
+
+    function collectThemeStorageEntries() {
+      var entries = [];
+
+      function pushEntry(name, storageRef) {
+        if (!storageRef || typeof storageRef.getItem !== 'function') {
+          return;
+        }
+        for (var entryIndex = 0; entryIndex < entries.length; entryIndex += 1) {
+          if (entries[entryIndex] && entries[entryIndex].storage === storageRef) {
+            return;
+          }
+        }
+        entries.push({ name: name, storage: storageRef });
+      }
+
+      if (storage && typeof storage.getSafeLocalStorage === 'function') {
+        try {
+          pushEntry('safeLocalStorage', storage.getSafeLocalStorage());
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: getSafeLocalStorage failed for theme preference.', error);
+        }
+      }
+
+      if (storage && typeof storage.resolveSafeLocalStorage === 'function') {
+        try {
+          pushEntry('resolvedSafeLocalStorage', storage.resolveSafeLocalStorage());
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: resolveSafeLocalStorage failed for theme preference.', error);
+        }
+      }
+
+      if (storage && typeof storage.getLocalStorage === 'function') {
+        try {
+          pushEntry('localStorage', storage.getLocalStorage());
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: getLocalStorage failed for theme preference.', error);
+        }
+      }
+
+      pushEntry('memoryStorage', themeMemoryStorage);
+
+      return entries;
+    }
+
+    function persistThemePreference(value) {
+      var entries = collectThemeStorageEntries();
+      var serialized = value ? 'true' : 'false';
+      for (var index = 0; index < entries.length; index += 1) {
+        var entry = entries[index];
+        if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
+          continue;
+        }
+        try {
+          entry.storage.setItem('darkMode', serialized);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: Unable to persist theme preference.', {
+            name: entry.name,
+            error: error,
+          });
+        }
+      }
+    }
+
+    function readStoredThemePreference() {
+      var entries = collectThemeStorageEntries();
+      for (var index = 0; index < entries.length; index += 1) {
+        var entry = entries[index];
+        if (!entry || !entry.storage || typeof entry.storage.getItem !== 'function') {
+          continue;
+        }
+        try {
+          var stored = entry.storage.getItem('darkMode');
+          if (stored === 'true' || stored === 'false') {
+            return stored === 'true';
+          }
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: Unable to read theme preference.', {
+            name: entry.name,
+            error: error,
+          });
+        }
+      }
+      return null;
+    }
     var pinkModeIconRotationTimer = null;
     var pinkModeIconIndex = 0;
     var PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
@@ -475,6 +580,267 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         settings.darkMode.checked = !!enabled;
       }
     }
+
+    function detectSystemDarkPreference() {
+      if (!win || typeof win.matchMedia !== 'function') {
+        return null;
+      }
+      try {
+        return !!win.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch (error) {
+        safeWarn('cineSettingsAppearance: matchMedia failed while detecting system theme preference.', error);
+      }
+      return null;
+    }
+
+    function detectThemeControlType(element, provided) {
+      if (provided) {
+        return provided;
+      }
+      if (!element || typeof element.tagName !== 'string') {
+        return 'button';
+      }
+      var tagName = element.tagName.toLowerCase();
+      if (tagName === 'select') {
+        return 'select';
+      }
+      if (tagName === 'input') {
+        var typeAttr = typeof element.getAttribute === 'function' ? (element.getAttribute('type') || '').toLowerCase() : '';
+        if (typeAttr === 'checkbox') {
+          return 'checkbox';
+        }
+      }
+      return 'button';
+    }
+
+    function createThemeControlReader(element, type, provided, getCurrent) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return function selectReader() {
+          return !!(element && element.value === 'dark');
+        };
+      }
+      if (type === 'checkbox') {
+        return function checkboxReader() {
+          return !!(element && element.checked);
+        };
+      }
+      return function buttonReader() {
+        return !getCurrent();
+      };
+    }
+
+    function createThemeControlWriter(element, type, provided) {
+      if (typeof provided === 'function') {
+        return provided;
+      }
+      if (type === 'select') {
+        return function selectWriter(value) {
+          if (!element) {
+            return;
+          }
+          var expected = value ? 'dark' : 'light';
+          if (element.value !== expected) {
+            element.value = expected;
+          }
+        };
+      }
+      if (type === 'checkbox') {
+        return function checkboxWriter(value) {
+          if (element) {
+            element.checked = !!value;
+          }
+        };
+      }
+      return function buttonWriter(value) {
+        if (!element || typeof element.setAttribute !== 'function') {
+          return;
+        }
+        element.setAttribute('aria-pressed', value ? 'true' : 'false');
+      };
+    }
+
+    function createThemePreferenceController(options) {
+      var controllerOptions = options && _typeof(options) === 'object' ? options : {};
+      var controls = [];
+      var applying = false;
+      var currentPreference = false;
+
+      function getCurrentPreference() {
+        return currentPreference;
+      }
+
+      function applyPreference(value, config) {
+        var optionsConfig = config && _typeof(config) === 'object' ? config : {};
+        var normalized = !!value;
+        var previous = currentPreference;
+        currentPreference = normalized;
+
+        applying = true;
+        try {
+          for (var controlIndex = 0; controlIndex < controls.length; controlIndex += 1) {
+            var control = controls[controlIndex];
+            if (!control || control === optionsConfig.source || typeof control.write !== 'function') {
+              continue;
+            }
+            try {
+              control.write(normalized, { previous: previous });
+            } catch (error) {
+              safeWarn('cineSettingsAppearance: Unable to sync theme control.', error);
+            }
+          }
+
+          try {
+            applyDarkMode(normalized);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: applyDarkMode failed during theme update.', error);
+          }
+        } finally {
+          applying = false;
+        }
+
+        if (optionsConfig.source && typeof optionsConfig.source.write === 'function') {
+          try {
+            optionsConfig.source.write(normalized, { previous: previous });
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to sync source theme control.', error);
+          }
+        }
+
+        if (optionsConfig.persist !== false) {
+          persistThemePreference(normalized);
+        }
+
+        return previous !== normalized;
+      }
+
+      function registerControl(element, controlOptions) {
+        if (!element) {
+          return function noopUnregister() {};
+        }
+
+        var configuration = controlOptions && _typeof(controlOptions) === 'object' ? controlOptions : {};
+        var type = detectThemeControlType(element, configuration.type);
+        var read = createThemeControlReader(element, type, configuration.read, getCurrentPreference);
+        var write = createThemeControlWriter(element, type, configuration.write);
+        var eventType = configuration.event || (type === 'button' ? 'click' : 'change');
+
+        var control = {
+          element: element,
+          type: type,
+          read: read,
+          write: write,
+          eventType: eventType
+        };
+
+        var handler = function handler(event) {
+          if (applying) {
+            return;
+          }
+          var nextValue;
+          try {
+            nextValue = control.read(currentPreference, event);
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: Unable to read theme control value.', error);
+            nextValue = currentPreference;
+          }
+
+          if (typeof nextValue === 'string') {
+            nextValue = nextValue === 'dark';
+          }
+
+          applyPreference(!!nextValue, { source: control });
+        };
+
+        if (typeof element.addEventListener === 'function') {
+          element.addEventListener(eventType, handler);
+        }
+
+        control.handler = handler;
+        controls.push(control);
+
+        try {
+          control.write(currentPreference);
+        } catch (error) {
+          safeWarn('cineSettingsAppearance: Unable to apply theme preference to control during registration.', error);
+        }
+
+        return function unregisterControl() {
+          for (var index = controls.length - 1; index >= 0; index -= 1) {
+            var storedControl = controls[index];
+            if (!storedControl || storedControl.element !== element) {
+              continue;
+            }
+            controls.splice(index, 1);
+            if (element && typeof element.removeEventListener === 'function') {
+              element.removeEventListener(storedControl.eventType, storedControl.handler);
+            }
+            break;
+          }
+        };
+      }
+
+      function setValue(value, optionsConfig) {
+        var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
+        applyPreference(value, { persist: config.persist !== false, source: config.source || null });
+      }
+
+      function getValue() {
+        return currentPreference;
+      }
+
+      function reloadFromStorage(optionsConfig) {
+        var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
+        var stored = readStoredThemePreference();
+        if (stored === null) {
+          if (config.persist !== false) {
+            persistThemePreference(currentPreference);
+          }
+          return currentPreference;
+        }
+        applyPreference(stored, { persist: config.persist !== false });
+        return stored;
+      }
+
+      var storedPreference = readStoredThemePreference();
+      var initialPreference = typeof storedPreference === 'boolean' ? storedPreference : null;
+      if (initialPreference === null) {
+        if (typeof controllerOptions.detectSystemPreference === 'function') {
+          try {
+            var detectedPreference = controllerOptions.detectSystemPreference();
+            if (typeof detectedPreference === 'boolean') {
+              initialPreference = detectedPreference;
+            }
+          } catch (error) {
+            safeWarn('cineSettingsAppearance: detectSystemPreference option failed.', error);
+          }
+        }
+
+        if (initialPreference === null) {
+          var systemPreference = detectSystemDarkPreference();
+          if (typeof systemPreference === 'boolean') {
+            initialPreference = systemPreference;
+          }
+        }
+      }
+
+      if (initialPreference === null) {
+        initialPreference = false;
+      }
+
+      applyPreference(initialPreference, { persist: true });
+
+      return {
+        registerControl: registerControl,
+        setValue: setValue,
+        getValue: getValue,
+        reloadFromStorage: reloadFromStorage,
+        persist: persistThemePreference
+      };
+    }
+
     function applyHighContrast(enabled) {
       var root = getRoot();
       var body = getBody();
@@ -1013,6 +1379,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       startPinkModeAnimatedIconRotation: startPinkModeAnimatedIconRotation,
       stopPinkModeAnimatedIconRotation: stopPinkModeAnimatedIconRotation,
       isPinkModeActive: isPinkModeActive,
+      createThemePreferenceController: createThemePreferenceController,
       setAccentColor: setAccentColor,
       setPrevAccentColor: setPrevAccentColor,
       getAccentColor: getAccentColor,

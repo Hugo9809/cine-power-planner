@@ -223,7 +223,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - Un enlace para saltar, el indicador offline y la marca responsiva mantienen la navegación accesible.
 - La barra de búsqueda se enfoca con `/` o `Ctrl+K` (`⌘K`), abre el menú lateral en móviles y se limpia con Escape.
-- El cambio de idioma, los modos oscuro/rosa y el diálogo de Configuración permiten ajustar color de acento, tamaño y familia de fuente, alto contraste, logotipo personalizado y acceder a herramientas de respaldo, restauración y restablecimiento (siempre con copia previa).
+- El cambio de idioma, los modos oscuro/rosa y el diálogo de Configuración permiten ajustar color de acento, tamaño y familia de fuente, alto contraste, logotipo personalizado y acceder a herramientas de respaldo, restauración y restablecimiento (siempre con copia previa). Todos los controles de tema permanecen sincronizados automáticamente.
 - El botón de ayuda abre el diálogo buscable y responde a `?`, `H`, `F1` o `Ctrl+/` en cualquier momento.
 - El botón 🔄 elimina recursos en caché y recarga la app sin borrar proyectos ni datos de autonomía. Ahora el navegador precarga el paquete actualizado mientras la limpieza termina, así la nueva versión aparece más rápido sin comprometer la seguridad de los datos.
 
@@ -371,7 +371,7 @@ Los tiempos aportados por usuarios alimentan un modelo ponderado para aproximars
 | `/`, `Ctrl+K`, `⌘K` | Enfocar la búsqueda global | Funciona incluso con navegación plegada; `Esc` limpia |
 | `Enter`, `Ctrl+S`, `⌘S` | Guardar el proyecto activo | El botón Guardar se habilita tras introducir un nombre |
 | `?`, `H`, `F1`, `Ctrl+/` | Abrir la ayuda | El diálogo sigue siendo buscable mientras escribes |
-| `D` | Cambiar a modo oscuro | También disponible en **Configuración → Temas** |
+| `D` | Cambiar a modo oscuro | También disponible en **Configuración → Temas**; el selector de onboarding, el interruptor de la barra superior y la casilla de Configuración se mantienen sincronizados automáticamente. |
 | `P` | Alternar tema rosa | Compatible con temas claro, oscuro o alto contraste |
 | 🔄 | Forzar recarga de recursos | También desde **Configuración → Forzar recarga** |
 

@@ -683,6 +683,7 @@ Use Cine Power Planner end-to-end with the following routine:
 - The global search bar focuses with `/` or `Ctrl+K` (`⌘K` on macOS), opens the
   side menu on mobile and clears with Escape.
 - Language, dark mode and pink mode toggles sit beside the Settings dialog,
+  and every theme control stays synchronized automatically.
   which exposes accent color, font size, font family, high-contrast mode, custom
   logo uploads plus backup, restore and factory reset tools that always save a
   backup first.
@@ -1090,7 +1091,7 @@ experience:
 | `/`, `Ctrl+K`, `⌘K` | Focus the global search field. | Works even when navigation is collapsed; press `Esc` to clear. |
 | `Enter`, `Ctrl+S`, `⌘S` | Save the active project. | The Save button stays disabled until a project name is entered. |
 | `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog stays searchable while you type elsewhere. |
-| `D` | Toggle dark mode. | Also available from **Settings → Themes**. |
+| `D` | Toggle dark mode. | Also available from **Settings → Themes**; all theme controls (header, onboarding and Settings) stay synchronized automatically. |
 | `P` | Toggle the pink accent theme. | Works alongside light, dark or high-contrast modes. |
 | 🔄 button | Force reload cached assets. | Also accessible via **Settings → Force reload** without erasing projects. |
 

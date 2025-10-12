@@ -224,7 +224,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - Skip-Link, Offline-Indikator und responsive Branding halten die Navigation zugänglich.
 - Globale Suche fokussiert mit `/` oder `Strg+K` (`⌘K`), öffnet auf Mobilgeräten das Menü und lässt sich mit Escape leeren.
-- Sprachwechsel, Dark/Pink-Theme und Einstellungen sitzen in der Kopfleiste; dort lassen sich Akzentfarbe, Schriftgröße, Schriftart, High-Contrast, Custom-Logo sowie Backup-, Restore- und Factory-Reset-Tools (immer mit Sicherung) steuern.
+- Sprachwechsel, Dark/Pink-Theme und Einstellungen sitzen in der Kopfleiste; dort lassen sich Akzentfarbe, Schriftgröße, Schriftart, High-Contrast, Custom-Logo sowie Backup-, Restore- und Factory-Reset-Tools (immer mit Sicherung) steuern. Alle Theme-Schalter bleiben automatisch synchron.
 - Hilfe-Button öffnet den Suchdialog und reagiert jederzeit auf `?`, `H`, `F1` oder `Strg+/`.
 - Der 🔄-Button entfernt gecachte Assets und lädt die App ohne Projektdaten zu löschen. Der Browser lädt das neue Paket jetzt parallel zur Bereinigung vor, damit die neue Version schneller erscheint und trotzdem alles gesichert bleibt.
 
@@ -372,7 +372,7 @@ Von Nutzer:innen gemeldete Laufzeiten fließen in ein gewichtetes Modell:
 | `/`, `Strg+K`, `⌘K` | Globale Suche fokussieren | Funktioniert auch bei eingeklappter Navigation, `Esc` löscht |
 | `Enter`, `Strg+S`, `⌘S` | Aktives Projekt speichern | Button bleibt deaktiviert bis ein Name gesetzt ist |
 | `?`, `H`, `F1`, `Strg+/` | Hilfe öffnen | Dialog bleibt durchsuchtbar |
-| `D` | Dark Mode umschalten | Ebenfalls in **Einstellungen → Themes** |
+| `D` | Dark Mode umschalten | Ebenfalls in **Einstellungen → Themes**; Header-Schalter, Onboarding-Auswahl und Einstellungen bleiben automatisch synchron. |
 | `P` | Pinkes Theme umschalten | Funktioniert mit Light, Dark, High-Contrast |
 | 🔄 | Gecachte Assets neu laden | Auch über **Einstellungen → Neu laden erzwingen** |
 
