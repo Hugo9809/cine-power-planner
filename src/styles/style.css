@@ -7081,6 +7081,17 @@ body.dark-mode .onboarding-hero-summary {
   color: color-mix(in srgb, var(--inverse-text-color) 84%, rgba(255, 255, 255, 0.35));
 }
 
+body.dark-mode.pink-mode .onboarding-hero-heading {
+  color: color-mix(in srgb, var(--accent-color) 92%, var(--inverse-text-color) 8%);
+}
+
+body.dark-mode.pink-mode .onboarding-hero-subheading,
+body.dark-mode.pink-mode .onboarding-hero-highlight-title,
+body.dark-mode.pink-mode .onboarding-hero-highlight-badge-label,
+body.dark-mode.pink-mode .onboarding-hero-language-label {
+  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+}
+
 .onboarding-hero-highlight--badge {
   align-items: center;
 }
@@ -8001,6 +8012,24 @@ body.dark-mode .onboarding-step-item[data-status='current'] .onboarding-step-but
 body.dark-mode .onboarding-step-item[data-status='complete'] .onboarding-step-button {
   background: color-mix(in srgb, var(--accent-color) 22%, rgba(18, 22, 28, 0.95) 78%);
   border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+}
+
+body.dark-mode.pink-mode .onboarding-step-title,
+body.dark-mode.pink-mode .onboarding-step-status {
+  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+}
+
+body:not(.dark-mode) .onboarding-hero-heading {
+  color: color-mix(in srgb, var(--accent-color) 88%, var(--text-color) 12%);
+}
+
+body:not(.dark-mode) .onboarding-hero-subheading,
+body:not(.dark-mode) .onboarding-hero-highlight-title,
+body:not(.dark-mode) .onboarding-hero-highlight-badge-label,
+body:not(.dark-mode) .onboarding-hero-language-label,
+body:not(.dark-mode) .onboarding-step-title,
+body:not(.dark-mode) .onboarding-step-status {
+  color: color-mix(in srgb, var(--accent-color) 80%, var(--text-color) 20%);
 }
 
 .onboarding-card-actions {
