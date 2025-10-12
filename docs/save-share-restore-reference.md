@@ -1,127 +1,64 @@
 # Save, Share, Import, Backup & Restore Reference
 
-This reference condenses the critical workflows that protect user data in Cine Power Planner. Use it alongside the [Operational Checklist](operations-checklist.md) and the [Offline Readiness Runbook](offline-readiness.md) whenever you need to confirm the app still saves, shares, imports, backs up and restores entirely offline.
+This reference summarises the workflows that protect user data. Pair it with the
+[Operations Checklist](operations-checklist.md) during rehearsals and store a
+printed copy with field kits.
 
-The application exposes these routines through the frozen `cinePersistence` gateway, which mirrors the storage, backup, restore and share helpers defined in code so browsers cannot mutate them accidentally.【F:src/scripts/modules/persistence.js†L90-L171】 A runtime guard records the most recent verification result on `window.__cineRuntimeIntegrity`, and the guard can be re-run manually through `window.cineRuntime.verifyCriticalFlows()` if you need a fresh report while auditing documentation or drills. The inspection now explicitly confirms that runtime feedback storage wrappers and bindings are present alongside the existing save/share/restore safeguards, and it additionally checks the auto-gear seed flag along with storage guard utilities so cache purges, retention defaults and persistent storage requests remain reachable.【F:src/scripts/script.js†L93-L184】【F:tests/dom/runtimeIntegration.test.js†L58-L87】【F:src/scripts/modules/runtime.js†L16-L80】
+## Manual save
 
-A compatibility watchdog upgrades any legacy project payloads on sight. When the reader encounters a single-project export, an array of unnamed saves, or a legacy project object, the importer now renames the recovered entry with an `-updated` suffix before persisting it in the normalized structure. Existing normalized saves keep their names, while upgraded copies automatically receive unique suffixed titles so they never overwrite recent work. This ensures every restored project inherits the modern field layout, autosave routines and backup hooks without dropping historical data.【F:src/scripts/storage.js†L2834-L2881】【F:src/scripts/storage.js†L4336-L4457】
+- Trigger via **Save**, pressing **Enter** in the project name field or using
+  `Ctrl+S` / `⌘S`.
+- The app writes the project to storage, updates the compare history and refreshes
+  the autosave ledger. A redundant mirror is created before the UI updates.
 
-A long-running editing session no longer forces frequent full-project snapshots: automatic backups now track up to 50 tracked changes between two fully saved versions before the planner captures a fresh complete copy, spreading the retention budget across more restore points without sacrificing coverage for legacy Long GOP metadata.【F:src/scripts/app-events.js†L90-L224】【F:src/scripts/storage.js†L2923-L2980】 Project switches, imports, exports and reload preparation still force an immediate snapshot so transitions cannot outrun the safety net even when that cadence has not elapsed.【F:src/scripts/app-events.js†L63-L224】 Rapid-fire immediate autosaves from slider drags are batched before they increment that counter—bursts closer than a second now reuse the latest tally so quick tuning no longer spawns dozens of `auto-backup-…` entries while still rolling into the ten-minute timer and the next distinct change.【F:src/scripts/app-session.js†L3491-L3512】【F:src/scripts/app-events.js†L99-L205】 The scheduler also skips work when the setup signature hasn't changed since the last snapshot, reusing the latest auto backup instead of rewriting identical data so background cycles stay responsive without giving up restore coverage.【F:src/scripts/app-events.js†L1500-L1638】
+## Autosave & automatic backups
 
-When the console reports `Skipping auto backup because cadence requirements are not met`, it simply means the last snapshot finished less than ten minutes ago **and** fewer than fifty tracked changes have landed since then. The guard waits until either the time interval or change threshold clears before writing a redundant copy so quota stays available for other backups; the log also spells out how many milliseconds and changes remain before the next automatic run qualifies.【F:src/scripts/app-events.js†L87-L207】【F:src/scripts/app-events.js†L1849-L1884】 Force-triggered events such as project switches, imports, exports or reload prep bypass that cadence and continue to save immediately.【F:src/scripts/app-events.js†L87-L205】
+- Autosave listens to form changes and throttles bursts to avoid duplicate
+  writes.
+- A background timer forces snapshots roughly every 10 minutes or after about 50
+  tracked changes, whichever comes first.
+- High-risk actions (project switch, import, export, restore) trigger immediate
+  backups regardless of cadence.
+- Automatic backups are stored as `auto-backup-*` entries and appear in the
+  selector for review or manual restore.
 
-Filter refinements follow that same safety-first loop. The filter detail widgets render hidden selects inside the project form, so tweaking a size drop-down or strength checkbox dispatches a change event that triggers `handleFilterDetailChange()`, immediately writes the updated gear list, and refreshes the session snapshot before re-rendering the controls.【F:src/scripts/app-session.js†L13690-L13910】 Those change events also bubble up to the project form listener, which queues an immediate autosave through `scheduleProjectAutoSave(true)` so the auto-backup change counter records the adjustment instead of risking stale filter metadata.【F:src/scripts/app-session.js†L3797-L3806】【F:src/scripts/app-session.js†L3593-L3657】 The gear list container repeats the same persistence call when its filter controls fire, guaranteeing the saved project mirrors the on-screen configuration even if the autosave run takes a moment.【F:src/scripts/app-setups.js†L6878-L6919】
+## Planner backup export
 
-A silent guard now also captures unnamed in-progress sessions: autosave writes the gear list, requirements, diagram positions and auto-gear rules to the shared project store even when no setup name has been entered, and the restore flow looks up the anonymous slot while rebuilding the form after a reload.【F:src/scripts/app-setups.js†L4976-L5037】【F:src/scripts/app-session.js†L3143-L3163】 Every setup entry now stays stored in plain JSON—regardless of when it was last active—because the persistence layer unwraps any compressed payload before saving and blocks compression at the storage layer, so reloads and exports always read the latest edits without depending on recovery logic.【F:src/scripts/storage.js†L3641-L3647】【F:src/scripts/storage.js†L8304-L8332】 Compression sweeps triggered by quota recovery also skip the live setup store and its mirrored backup whenever a hold is active, so the current session never gets wrapped mid-edit even while other keys are being compacted.【F:src/scripts/storage.js†L3283-L3332】
+1. Open **Settings → Backup & Restore**.
+2. Choose **Backup** or **Quick safeguards**.
+3. The export includes every project, autosave snapshot, automatic gear preset,
+   custom gear list, runtime feedback entry and preferences.
+4. Save the JSON file, compute a checksum and store it on two offline media.
 
-Device library entries, crew contact cards and the personal own gear catalog now follow the same rule: the writer forces those payloads to stay uncompressed and the quota recovery sweep permanently skips each key (and its backup), so the offline database, rolodex and inventory always round-trip as readable JSON even when storage is tight.【F:src/scripts/storage.js†L8322-L8384】【F:src/scripts/storage.js†L2893-L2966】【F:src/scripts/storage.js†L4023-L4054】【F:src/scripts/storage.js†L4894-L4932】【F:tests/unit/storage.test.js†L401-L468】【F:tests/unit/storage.contacts-own-gear-compression.test.js†L1-L188】
+## Planner backup restore
 
-Custom gear rows added from the new per-category controls live inside that same gear selector map, so downloads, share bundles, backups and restores replay every custom quantity and label even when crews leave a placeholder blank while drafting lists.【F:src/scripts/app-setups.js†L5042-L5082】【F:src/scripts/app-setups.js†L5084-L5098】
+1. Use **Restore rehearsal** to validate the backup in a sandbox.
+2. Inspect the restored projects, autosave ledger and presets.
+3. When satisfied, run **Restore** to replace live data. The app captures a
+   pre-restore backup automatically.
 
-The guided lens workflow now records selections as structured `lensSelections` entries alongside the legacy comma-separated `lenses` string. Autosaves, manual saves, share bundles, backups and restores persist each lens chip with its saved mount so reloading the planner rebuilds the manufacturer/series context and mount selectors without losing historical data. The hidden compatibility `<select id="lenses">` stays synchronised for overview exports and other legacy readers while the new JSON payload protects mount assignments across offline sessions and imports. Legacy saves that stored lens chips as key–value maps now migrate into the same structured selections, preserving mounts and annotations even when the old payload only tracked raw labels.【F:src/scripts/app-setups.js†L4191-L4241】【F:src/scripts/app-setups.js†L5538-L5559】【F:src/scripts/app-session.js†L14072-L14110】【F:src/scripts/storage.js†L10038-L10229】【F:tests/unit/storage.test.js†L1318-L1372】
+## Project share & import
 
-A dedicated storage guardian runs on every launch to mirror each critical key into its backup slot before the UI touches data, ensuring that even legacy entries have a redundant copy ready before rehearsals or imports begin.【F:src/scripts/storage.js†L247-L376】【F:src/scripts/app-session.js†L10017-L10024】 The latest guard report is exposed globally so you can confirm the mirroring state from diagnostics panels.【F:src/scripts/storage.js†L347-L358】【F:src/scripts/app-core-new-2.js†L6266-L6349】
+- Export individual projects from the selector for handoff.
+- The export bundles the project payload, automatic gear references and history
+  metadata.
+- Importing validates the payload, creates a backup of current data and then
+  adds the project to the selector. Duplicates receive unique names.
 
-### Auto backups versus planner exports
+## Automatic gear presets
 
-Auto backups reuse the same normalized project payload that powers planner exports. The automatic routine clones the active setup, attaches backup metadata, writes it under an `auto-backup-…` key and saves the sanitized project payload so every snapshot matches the export template byte for byte apart from its storage name.【F:src/scripts/app-events.js†L1728-L1869】【F:src/scripts/storage.js†L9542-L9598】 These runs still trigger automatically every ten minutes, after fifty tracked changes, or right before disruptive actions like project switches, imports, exports and reloads, guaranteeing that the latest edits always land without manual intervention.【F:src/scripts/app-events.js†L63-L224】【F:src/scripts/app-session.js†L3491-L3512】【F:src/scripts/app-events.js†L99-L205】
+- Presets save through the same persistence pipeline as projects.
+- Editors can export presets, clear local copies and re-import to confirm
+  redundancy.
+- Restores always capture the current presets before replacing them.
 
-Planner exports simply wrap those identical snapshots with the rest of the workspace. Choosing **Settings → Backup & Restore → Backup** calls the same data collector that reads every saved project—including the auto-backup entries—alongside devices, preferences, runtime feedback and custom resources before downloading `planner-backup.json` with fresh metadata and history records.【F:src/scripts/storage.js†L10987-L11027】【F:src/scripts/app-session.js†L7580-L7615】【F:docs/backup-rotation-guide.md†L66-L74】 Because the export pipeline executes immediately before the download completes, it also forces another auto backup so the on-disk JSON and the in-browser snapshot stay in lockstep.【F:src/scripts/app-events.js†L2906-L2938】【F:src/scripts/storage.js†L9798-L9887】
+## Verification tips
 
-Maintain both workflows: let the automated snapshots provide continuous protection, and schedule regular planner exports so an offline copy of the same data—and its audit trail—travels with the crew.【F:README.md†L800-L810】【F:docs/offline-readiness.md†L101-L110】【F:docs/verification-log-template.md†L58-L63】 Store each download redundantly so the exported file and its matching auto backup can recover user data even if a browser profile fails.
+- Run `window.cineRuntime.verifyCriticalFlows()` after rehearsals to confirm the
+  guard reports healthy storage mirrors and registry bindings.
+- Use the compare tool to review differences between manual saves and backups.
+- Keep planner backups, project bundles and verification logs together so any
+  workstation can recover the latest state offline.
 
-### End-of-day backup verification drill
-
-Every wrap should close with a documented redundancy check. Follow the same steps listed inside the Help Center’s new “How do I verify my backups before I pack up?” article so the workflow stays aligned between the UI and this reference.【F:index.html†L6314-L6371】
-
-1. Download the active project bundle via **Share → Export project bundle** and confirm the JSON lands in your redundant storage workspace before you leave.【F:index.html†L6326-L6335】
-2. Run **Settings → Backup & Restore → Backup** so the full planner snapshot joins the day’s exports and the timestamp appears in your verification log.【F:index.html†L6336-L6344】
-3. From **Device Database Editor → Export**, capture any custom gear edits you made. If no updates occurred, note the skipped export in the log so the audit trail explains the gap.【F:index.html†L6345-L6351】
-4. Enable **Settings → Data & Storage → Show auto backups in project list** and visually confirm that every touched project shows a matching auto-backup timestamp for the session.【F:index.html†L6352-L6359】
-5. Immediately rehearse a restore in **Settings → Backup & Restore → Restore rehearsal**, applying one of the fresh exports in the sandbox to prove the recovery path remains offline-ready.【F:index.html†L6360-L6367】
-
-Store the resulting files in at least two locations and record the verification outcomes in your incident or wrap report so the redundancy trail stays provable even after the crew relocates.
-
-The loader now also inspects the long-term migration backups that we capture before every normalization. When both the primary slot and its live backup go missing, the recovery routine decompresses the preserved `__legacyMigrationBackup` payload, validates it against the expected schema, rewrites the primary key (compressing the payload again when possible) and logs the recovery so the diagnostics panel documents the intervention without forcing users to re-import data manually.【F:src/scripts/storage.js†L4516-L4756】
-
-When the browser reports a quota error, the persistence layer now runs a compression sweep across existing planner keys before it ever considers downgrading to in-memory storage. The sweep skips the active key and its backup, squeezes long-lived saves down with the same UTF-16 wrapper used for new writes, prioritises the largest reclaimable entries first, and logs how many characters were reclaimed so crews can verify the reclamation in diagnostics without losing a single unique backup snapshot.【F:src/scripts/storage.js†L690-L1004】【F:src/scripts/storage.js†L1541-L1652】【F:src/scripts/storage.js†L2976-L3155】
-
-If a project save still hits the quota after that sweep, the writer now escalates the active attempt itself to the same UTF-16 compression wrapper instead of abandoning the write. The primary slot and its live backup both switch to the compressed form during that retry, guaranteeing the payload lands without deleting unique automatic snapshots and documenting the savings in diagnostics so crews can confirm the recovery succeeded offline.【F:src/scripts/storage.js†L4855-L5365】
-
-The **Diagnostics log** inside **Settings → Data & Storage** exposes those cineLogging entries in the UI. Teams can filter by severity or namespace and adjust retention, console mirroring, the default-on console capture, session persistence and global error capture without leaving the planner, keeping verification artifacts local even when offline. The panel now flags when filters hide every entry so you can confirm the quiet periods are intentional before escalating an incident.【F:index.html†L2590-L2649】【F:src/scripts/app-session.js†L6672-L6687】【F:src/scripts/translations.js†L760-L786】 Each entry now stores an ISO timestamp, millisecond marker, event ID and channel indicator so crews can correlate console fallbacks with stored diagnostics even if the structured logger cannot initialize.【F:src/scripts/overview.js†L89-L214】 Overview print and export attempts now emit their warnings and fallback usage into this log so share rehearsals record exactly when the dialog needed to open the backup window.【F:src/scripts/overview.js†L705-L824】
-
-Diagnostic stats now break down retained, emitted and trimmed entries by level so incident reviews understand whether warnings, errors or quiet debug chatter dominated the session before any history rotation. The same snapshot includes the latest drop summary with per-level counts, making it clear when trimming removed important errors instead of routine debug chatter.【F:src/scripts/modules/logging.js†L870-L1127】【F:src/scripts/modules/logging.js†L1992-L2074】
-
-**Quick safeguards** live beside that log inside **Settings → Data & Storage**, giving crews a one-click path to download a fresh full backup or jump directly to the restore workspace without leaving the dialog. Every time you press the button the planner records the action in the same storage dashboard, making it easy to archive the JSON alongside the verification note.【F:index.html†L2548-L2570】 Scan the adjacent **Latest activity** timeline to confirm when the last manual save, automatic snapshot and full planner backup landed, respond to the safety reminders that appear beneath those timestamps, and verify the **Backup guardian** row still reports a mirrored state so every critical key keeps a redundant copy before you rehearse restores.【F:index.html†L2639-L2715】【F:index.html†L4320-L4352】
-
-The **Backup & Restore** workspace mirrors the autosave status overlay so you can watch background saves land while rehearsing restores. From the same panel you can open **Compare versions**, export the diff log and launch **Restore rehearsal** without leaving the checklist, keeping audit notes, sandbox verifications and autosave telemetry aligned for offline reviews.【F:index.html†L5604-L5671】【F:index.html†L5685-L5736】
-
-The logging serializers now retain detail from Maps, Sets, typed arrays, URL parameters and regular expressions so incident reviews capture the full context without chasing down reproduced payloads. Map entries and typed array previews truncate with explicit counters when the payload is large, keeping diagnostics responsive while still documenting how much data the runtime handled.【F:src/scripts/modules/logging.js†L712-L901】
-
-## Workflow matrix
-
-| Workflow | Primary controls (UI/Keyboard) | What success looks like | Evidence to capture |
-| --- | --- | --- | --- |
-| Manual save | Project header → **Save** or `Enter` / `Ctrl+S` / `⌘S` | Project appears in selector with updated timestamp, `auto-backup-…` snapshot joins within 10 minutes or immediately after a project switch/import/export | Screenshot or timestamp log of selector, note `window.__cineRuntimeIntegrity.ok === true` |
-| Autosave confirmation | Stay on project for 10 minutes or trigger a project switch/import/export, watch selector or **Settings → Backup & Restore** overlay | New `auto-backup-…` entry listed, overlay reports latest autosave time | Capture overlay text, promote entry to manual save if needed |
-| Quick safeguards backup | **Settings → Data & Storage → Quick safeguards → Download full backup** | `planner-backup.json` downloads immediately and the storage dashboard logs the action | Store the JSON on redundant media and record the dashboard entry ID |
-| Planner backup export | **Settings → Backup & Restore → Backup** | Browser downloads `planner-backup.json` (or opens Manual download tab if blocked) | File stored on redundant media, checksum recorded, runtime guard check logged |
-| Project bundle export | **Share → Export project bundle** (rename to `.cpproject` if required) | Download includes project data, favorites and custom devices | File stored twice, verification note referencing isolation import |
-| Restore rehearsal | **Settings → Backup & Restore → Restore rehearsal** → load chosen backup | Sandbox diff shows expected changes, proceed restores data without touching live profile | Console log of rehearsal result, note pre-restore snapshot filename |
-| Full restore | **Settings → Backup & Restore → Restore** after rehearsal succeeds | App reloads with restored data, pre-restore snapshot stored automatically | Archive restored backup, pre-restore snapshot ID and post-restore verification notes |
-| Share link/application | **Share → Copy share link** or **Share → Apply shared setup** | Import prompt validates payload, offers rollback on mismatch | Note validation message, keep copy of imported payload for incident review |
-| Version comparison audit | **Settings → Backup & Restore → Compare versions** | Diff summary matches expected edits and nothing unexpected appears in the detailed list | Exported JSON log stored with backups plus verification note referencing the compared versions |
-
-Applying a shared setup removes only the `shared` query flag from the URL, preserving any other query parameters or hash fragments so language overrides and anchored navigation stay intact after import.【F:src/scripts/app-session.js†L2375-L2453】
-
-Version comparisons create a documented paper trail before archives rotate. Launch **Settings → Backup & Restore → Compare versions**, pick a baseline manual save plus the latest auto backup, confirm the summary mirrors your expectations, review each list entry for unexpected additions or removals, then record context in **Incident notes** before exporting the log. Store the JSON alongside your backups and reference the filename in your verification ledger so future audits can replay the diff offline.【F:index.html†L3684-L3754】【F:src/scripts/translations.js†L620-L657】
-
-### Factory reset safeguards
-
-Factory reset is the only workflow that clears auto backups, manual saves and preferences in one sweep, so the planner refuses to erase anything until it has captured a fresh full backup. When you confirm the reset, the runtime invokes the same `createSettingsBackup()` routine used by the **Download full backup** button. If the export is blocked or the download fails, the wipe is cancelled and your data stays put, guaranteeing a restorable copy exists before anything is deleted.【F:src/scripts/app-session.js†L6999-L7056】【F:src/scripts/app-session.js†L8765-L8797】
-
-Once the backup lands successfully, the reset proceeds to run `clearAllData()`, which now wipes every key from local storage and session storage—covering planner data, preferences, diagnostics history and any lingering session flags. Because the pre-reset export contains those entries, you can immediately reopen the planner and restore the downloaded file to recover auto backups or manual saves that were cleared from the browser profile.【F:src/scripts/storage.js†L9798-L9887】
-
-Immediately after the storage wipe the runtime fires a dedicated factory-reset event, allowing the onboarding tutorial module to repopulate its default state so the guided walkthrough restarts automatically once the planner reloads and the help button label updates to the “Start guided tutorial” copy during the same session.【F:src/scripts/app-session.js†L9373-L9393】【F:src/scripts/modules/features/onboarding-tour.js†L1141-L1151】
-
-The Help dialog’s quick start status row now records the last completed onboarding step alongside a relative timestamp (“just now”, “2 minutes ago”, etc.) so crews instantly know which workflow finished most recently and when that progress was saved offline before resuming the walkthrough.【F:src/scripts/modules/features/onboarding-tour.js†L1328-L1374】【F:src/scripts/translations.js†L1694-L1704】
-
-## Console & script checks
-
-Run these quick inspections while documenting or rehearsing the workflows above:
-
-1. `window.__cineRuntimeIntegrity` – confirms the latest integrity report and highlights any missing persistence, offline or UI safeguards, including runtime feedback storage coverage.【F:src/scripts/script.js†L121-L184】【F:src/scripts/modules/runtime.js†L16-L69】
-2. `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` – refreshes the guard and surfaces which modules or functions failed validation, matching the expectations enforced by the integration suite and catching missing feedback persistence immediately.【F:tests/dom/runtimeIntegration.test.js†L58-L87】【F:tests/unit/runtimeModule.test.js†L402-L460】
-3. `window.cineRuntime.inspectModuleConnections()` – returns a frozen report describing every registered module, their declared connections and any missing dependencies so you can audit module wiring before rehearsals.【F:src/scripts/modules/runtime.js†L1020-L1199】
-4. `window.cinePersistence.__internal.inspectAllBindings()` – snapshots every persistence wrapper, confirming autosave, backup, restore and share helpers all resolve to concrete implementations before you rehearse critical flows.【F:src/scripts/modules/persistence.js†L239-L406】【F:src/scripts/modules/runtime.js†L300-L390】
-5. `window.cinePersistence.storage.exportAllData()` – returns the same payload used for planner backups so you can sanity-check file size, project counts and timestamps without triggering a download.【F:src/scripts/modules/persistence.js†L90-L145】
-6. `window.cinePersistence.share.decodeSharedSetup(payload)` – validates bundle text before you import it into production data. Pair it with `window.cinePersistence.share.applySharedSetup()` inside a disposable profile to confirm recovery paths stay healthy.【F:src/scripts/modules/persistence.js†L152-L157】
-7. `typeof window.getMountVoltagePreferencesClone === 'function'` – confirms the runtime re-exposed the mount voltage clone helper that share/import flows depend on so every backup retains the latest mount voltage overrides.【F:src/scripts/app-core-new-1.js†L1398-L1419】【F:src/scripts/app-session.js†L11753-L11783】
-
-The Help Center’s console verification callout mirrors these commands so crews have the checklist available directly inside the offline dialog alongside export and rehearsal guidance, and it now explicitly lists the binding inspector so missing persistence wrappers surface during routine audits.【F:index.html†L4124-L4144】 A dedicated **Monthly data health check** sequence now lives beside the data safety callout so teams rehearse settings, exports, offline reloads and rehearsal restores from the same dialog without missing any safeguard.【F:index.html†L3019-L3044】【F:src/scripts/app-core-new-1.js†L10252-L10327】 Its opening step now routes through **Settings → Data & Storage → Quick safeguards → Download full backup** so the rehearsal always begins with a fresh offline snapshot before exports are reviewed.【F:index.html†L2557-L2586】【F:src/scripts/app-core-new-1.js†L10500-L10529】【F:src/scripts/translations.js†L1519-L1537】 Step three now requires exercising **Import Project** offline with the newest bundle so share rehearsals stay proven without reconnecting, and the restore drill now closes with a reminder to log filenames, timestamps, verification notes and the console guard output from `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` before leaving the sandbox.【F:index.html†L2557-L2586】【F:index.html†L3059-L3095】【F:index.html†L3238-L3269】【F:src/scripts/app-core-new-1.js†L10556-L10614】【F:src/scripts/translations.js†L1527-L1540】【F:src/scripts/translations.js†L1753-L1765】
-
-The Save hover tooltip now spells out that every manual save captures devices, requirements, notes, runtime logs and diagram layout while the autosave indicator pulses, then queues the matching auto-backup so redundancy stays in lockstep before crews move on.【F:src/scripts/translations.js†L1832-L1838】【F:src/scripts/translations.js†L3692-L3699】【F:src/scripts/translations.js†L5568-L5574】【F:src/scripts/translations.js†L7454-L7461】【F:src/scripts/translations.js†L9346-L9353】
-
-Contextual help inside **Share** now reiterates that exported bundles include custom gear, favorites, runtime feedback and devices, directs crews to store downloads with redundant backups, and highlights that the import preview runs after the planner schedules a fresh auto-backup while diagnostics record the attempt so recoveries remain provable offline.【F:src/scripts/translations.js†L1837-L1842】【F:src/scripts/translations.js†L3698-L3703】【F:src/scripts/translations.js†L5573-L5578】【F:src/scripts/translations.js†L7460-L7465】【F:src/scripts/translations.js†L9352-L9357】【F:src/scripts/app-setups.js†L1347-L1369】
-
-Project bundle exports now stamp a metadata block with the export timestamp, planner version, generator and whether automatic gear rules are included; the import dialog surfaces this summary and warns when the bundle comes from a newer or older build so crews can verify provenance before applying it offline.【F:src/scripts/app-setups.js†L2288-L2322】【F:src/scripts/app-core-new-1.js†L18772-L18833】
-
-Shared project imports that arrive without a setup name now generate a unique `-imported` title automatically, refresh the selector and persist the payload immediately so crews never lose unnamed bundles during rehearsals or cross-team handoffs.【F:src/scripts/app-session.js†L4302-L4374】
-
-Record the outputs (or screenshots) in your verification log, and store them alongside the exported files so any teammate can confirm the same safeguards were present.
-
-## 2025-02 workflow verification
-- **Autosave cadence check.** Confirmed the autosave change counter, immediate commit handling and interval scheduler still match the behaviours described in this reference.【F:src/scripts/app-events.js†L86-L224】【F:src/scripts/app-session.js†L3491-L3512】
-- **Backup guardian and storage dashboard.** Verified the Data & Storage panel continues to surface mirrored key counts, latest activity timestamps and reminders that underpin the checklist steps.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
-- **Service worker cache alignment.** Re-checked that the worker publishes the cache version from the shared module so offline rehearsals exercise the correct bundle referenced throughout this document.【F:service-worker.js†L192-L229】
-
-## When to run this checklist
-
-- **New workstation provisioning.** After cloning the repository, run every workflow in the matrix while offline to prove the local cache, locally stored Uicons and persistence helpers all loaded correctly.
-- **Pre-travel checks.** Before leaving a controlled environment, repeat the matrix to ensure the latest backups, bundles and share links travel with you and that the runtime guard still reports a clean bill of health.
-- **Post-update verification.** When documentation or translations change, run the matrix to confirm instructions still match the UI. Update help entries and localized READMEs if labels or button names shifted.
-- **Incident investigations.** If autosaves pause or imports warn about mismatches, perform each workflow in an isolated profile, export fresh backups, and attach the recorded outputs to your incident log before applying a restore.
-
-Keeping this reference near the workstation ensures crews rehearse the exact same offline workflows the application enforces in code, preserving user data at every step.
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Following these procedures ensures no user data is lost and that every workflow
+remains transparent to crews working without connectivity.

@@ -1,66 +1,87 @@
-# App Core Module Map
+# App Core Modules Overview
 
-Cine Power Planner's core modules are deliberately frozen and registered through the
-runtime linker so that every offline workflow, save path and translation hook shares
-the exact same behaviour across browsers. Each module is exposed through the global
-registry and is protected by the runtime integrity guard, making the architecture easy
-to audit during documentation runs and backup rehearsals.【F:src/scripts/modules/runtime.js†L2203-L2366】【F:src/scripts/modules/runtime-guard.js†L318-L380】
+The Cine Power Planner runtime is split across self-contained modules so crews
+can rehearse, save and restore projects without a network connection. This
+summary documents how the boot pipeline assembles those modules and which files
+own each safeguard.
 
-## 1. Shared foundation – `cineCoreShared`
-- **Purpose:** Provide deterministic helpers such as the global `APP_VERSION`, stable
-  stringification and LZString accessors that keep exports, caches and service workers
-  aligned even when crews operate fully offline.【F:src/scripts/modules/core-shared.js†L1040-L1119】
-- **Consumers:** Loader, service worker asset manifest, persistence wrappers, export
-  encoders, integrity diagnostics.【F:service-worker.js†L1-L118】
-- **Maintenance notes:** Update release documentation whenever shared helpers change so
-  cache busting, offline rehearsals and printed guides continue to match the shipped
-  runtime.【F:service-worker.js†L1-L118】
+## Boot sequence
 
-## 2. Project intelligence – `cineCoreProject`
-- **Purpose:** Derive project signatures, lookup helpers and metadata normalisers that
-  power diffing, diagnostics and auto-gear rule evaluations without touching network
-  services.【F:src/scripts/modules/core/project-intelligence.js†L244-L296】【F:src/scripts/modules/features/auto-gear-rules.js†L1-L120】
-- **Consumers:** Autosave workflows, restore comparisons, automatic gear generators and
-  runtime diagnostics that rely on reproducible calculations.【F:src/scripts/modules/persistence.js†L1036-L1100】
-- **Maintenance guardrails:** The module exposes lazy getters and a deterministic install
-  path so registry consumers always receive frozen APIs. Extend behaviour by adding new
-  export names rather than mutating live objects.【F:src/scripts/modules/core/project-intelligence.js†L244-L296】
+1. **`src/scripts/script.js`** detects capabilities, warms localisation bundles
+   and registers service-worker listeners before any UI renders. If the build is
+   already cached it defers the refresh prompt so on-set crews are never forced
+   to upgrade mid-rehearsal.
+2. **`src/scripts/loader.js`** discovers the available runtime context
+   (top-level window, worker or legacy shim) and attaches the module registry so
+   every later lookup works offline. The loader also ensures locally stored
+   Uicons and fonts are preloaded before the UI unlocks.
+3. **`src/scripts/app-core-new-1.js`** wires high level helpers such as the
+   runtime guard, logging, print workflow bootstrap and icon registry. It does
+   not touch project data directly but freezes the shared state objects that
+   other modules reuse.
+4. **`src/scripts/app-core-new-2.js`** continues the setup by registering UI
+   controls, dialog wiring and autosave overlays. It exposes the hooks that the
+   session manager uses to keep autosave, backup and restore prompts in sync
+   with the UI.
 
-## 3. Persistence guard – `cineCoreGuard`
-- **Purpose:** Coordinate autosave enforcement, restoration rehearsals and backup
-  fallbacks so manual saves, automatic backups and share/import boundaries never lose
-  data.【F:src/scripts/modules/core/persistence-guard.js†L276-L313】【F:src/scripts/modules/persistence.js†L900-L1100】
-- **Consumers:** Quick safeguard buttons, restore rehearsals and verification utilities in
-  the settings dialog that surface autosave status and backup timestamps.【F:index.html†L2722-L2799】
-- **Maintenance notes:** Register new safeguards through the guard so the runtime integrity
-  check confirms coverage before releases.【F:src/scripts/modules/runtime.js†L2203-L2366】
+## Session orchestration
 
-## 4. Experience enablement – `cineCoreExperience`
-- **Purpose:** Provide UI orchestration such as feature discovery metadata, localisation
-  bridges and experience toggles (dark mode, pink mode, accessibility) that stay bundled
-  with offline assets.【F:src/scripts/modules/core/experience.js†L290-L327】【F:index.html†L1-L120】
-- **Consumers:** Help centre, translation tables and feature search which rely on
-  experience metadata to surface guidance while offline.【F:src/scripts/translations.js†L120-L220】
-- **Maintenance notes:** Because the API is frozen and registered, update translation keys
-  and help copy alongside experience changes so runtime diagnostics remain clean.【F:src/scripts/modules/core/experience.js†L290-L327】
+- **`src/scripts/app-session.js`** owns project lifecycle management. It
+  initialises the empty workspace, rebuilds the UI when a project is restored
+  and coordinates autosave, manual saves and backups. The module talks to
+  `cinePersistence` for all storage so the same logic works in workers and
+  legacy contexts. Every destructive action captures a redundant snapshot before
+  it touches the live state.
+- **`src/scripts/app-events.js`** schedules autosave runs, throttles bursty
+  edits and coordinates forced backups before high-risk operations like imports
+  or profile switches. Its cadence logic (10 minute timer, 50 tracked changes
+  counter and immediate flush triggers) mirrors the documentation and test
+  suite.
+- **`src/scripts/app-setups.js`** renders gear selectors, automatic gear rules
+  and scenario tools. It emits structured events when presets change so the
+  session module can persist the results immediately.
+- **`src/scripts/app-core-new-2.js`** exposes convenience helpers for dialogs,
+  localisation and diagnostic overlays so session orchestration can surface
+  warnings in a human-friendly way even when the network is unavailable.
 
-## Core maintenance practices
-- Keep every module registration frozen and linked so the runtime guard can catch missing
-  bindings before a release reaches crews.【F:src/scripts/modules/runtime.js†L2203-L2366】
-- When adding persistence features, extend `cineCoreGuard` and `cinePersistence` together so
-  autosave, backups, restore rehearsals and share flows inherit identical protections across
-  browsers.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/storage.js†L1-L200】
-- Exercise the integrity checker after module changes to confirm offline workflows, save
-  guards and UI hooks still register correctly for audits.【F:src/scripts/modules/runtime.js†L2203-L2366】
+## Persistence and redundancy
 
-## 2025-02 module audit snapshot
-- **Runtime guard coverage.** Re-ran the exported `verifyCriticalFlows()` routine to confirm
-  it still inspects frozen registry entries, persistence bindings and UI controllers before
-  exposing the module APIs. The audit matches the production wiring that surfaces
-  `window.__cineRuntimeIntegrity` for diagnostics consumers.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Persistence bridge wiring.** Confirmed `cinePersistence` continues to register global
-  storage, session and setup providers so save, share, import and backup helpers resolve from
-  frozen wrappers during offline runs.【F:src/scripts/modules/persistence.js†L844-L1080】
-- **Offline bootstrap dependencies.** Verified the service worker still imports the shared
-  module to read `APP_VERSION` and expose the cache name, keeping the offline cache aligned
-  with the runtime modules documented above.【F:service-worker.js†L192-L229】
+- **`src/scripts/modules/persistence.js`** is the frozen gateway used by the UI
+  and service worker to read and write planner data. It discovers the storage
+  implementation defensively and exposes helpers such as `loadCurrentProject`,
+  `saveProject`, `exportPlannerBackup` and `restoreFromBackup`. All consumers go
+  through this layer to guarantee mirrored backups, checksum validation and
+  schema migrations run before data is exposed to the rest of the app.
+- **`src/scripts/storage.js`** implements the persistence helpers. It mirrors
+  every critical key into a backup slot, deep clones data before writes,
+  performs schema upgrades and enforces quota-friendly compression rules that
+  never touch the live workspace. Autosave snapshots, planner backups, project
+  bundles and automatic gear presets all use the same normalised format so a
+  single verification covers every workflow.
+- **`src/scripts/modules/runtime.js`** aggregates guard results from each module
+  and exposes `window.__cineRuntimeIntegrity`. The guard validates that critical
+  save/share/restore pathways are wired correctly, that backup mirrors are in
+  place and that offline caches reference the bundled assets.
+
+## Offline foundations
+
+- **Service worker (`service-worker.js`)** pre-caches HTML, scripts, styles,
+  icons, fonts and help content bundled in the repository. It never fetches
+  external resources and prompts before activating updates so teams retain a
+  known-good build until they rehearse the new one.
+- **`manifest.webmanifest` and `src/styles`** provide the offline install
+  experience and ensure the locally stored Uicons plus fonts are available on
+  first load.
+- **`src/scripts/modules/offline.js`** exposes helpers that the UI uses to show
+  offline indicators and to warm caches after large updates.
+
+## Keeping modules aligned
+
+1. Update translations (`src/scripts/translations.js`) whenever UI strings move.
+2. Add new assets to `service-worker-assets.js` so cached builds stay complete.
+3. Extend automated tests in `tests/` to cover new autosave or restore paths.
+4. Refresh the documentation suite in `docs/` whenever behaviours change so
+   crews rehearsing offline receive accurate guidance.
+
+Following this map keeps the architecture transparent and ensures future changes
+continue to protect user data first.

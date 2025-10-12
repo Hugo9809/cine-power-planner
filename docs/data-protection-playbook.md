@@ -1,102 +1,71 @@
 # Data Protection Playbook
 
-User data is the most valuable asset in Cine Power Planner. This playbook turns the save, share,
-import, backup and restore guarantees baked into the runtime into an actionable routine you can run
-before, during and after development. Every step is designed to succeed while offline using the
-bundled assets, service worker cache and defensive persistence modules.【F:src/scripts/modules/persistence.js†L900-L1100】【F:service-worker.js†L1-L118】
+User data is Cine Power Planner's highest priority. This playbook captures the
+policies, rehearsals and recovery steps that keep projects, backups and presets
+safe when crews work offline.
 
-## 1. Risk scan before touching code or copy
-1. **Map affected persistence flows.** Identify which `cinePersistence` wrappers your change touches
-   (saves, exports, backups, restore rehearsals, share helpers) so matching documentation updates stay
-   lossless.【F:src/scripts/modules/persistence.js†L900-L1100】
-2. **List runtime safeguards.** Note every checkpoint that protects those flows—manual saves, background
-   auto-backups, forced pre-restore backups, sandbox imports, diagnostics logs and the runtime guard on
-   `window.__cineRuntimeIntegrity`. Document how the update should influence each safeguard before you
-   code.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:src/scripts/modules/runtime-guard.js†L318-L380】
-3. **Cross-reference offline surfaces.** Flag sections in `README.md`, localized READMEs and in-app help
-   that describe the impacted workflows so copy ships alongside behaviour.
-4. **Plan verification artefacts.** Decide which planner backups, project bundles and diff logs you will
-   capture once development finishes. Record storage locations so redundant offline drives stay organised.【F:index.html†L2501-L2560】
+## Principles
 
-## 2. Daily guardrail rehearsal during development
-Run this sequence at least once per day while iterating on persistence, service worker or UI
-safeguards:
+1. **Redundancy first.** Every write path (manual save, autosave, backup,
+   restore, import, automatic gear edit) must create or refresh a redundant
+   snapshot before touching live data.
+2. **Offline parity.** The experience, documentation and translations must match
+   whether the workstation is connected or offline. Never rely on external
+   resources.
+3. **Human-friendly audits.** Logs, prompts and documentation must be readable so
+   crews can verify safeguards quickly in the field.
+4. **Change transparency.** Every behavioural change ships with updated help
+   topics, verification logs and translation notes.
 
-1. **Prime offline caches.** Open `index.html` from disk, launch the help dialog, visit legal pages and
-   toggle each theme so the service worker refreshes cached icons, fonts and copy.【F:index.html†L1-L120】【F:service-worker.js†L1-L118】
-2. **Exercise every save path.** Create or load a test project, trigger a manual save, wait for a fresh
-   auto-backup (threshold is 50 changes or the time cadence) and export both a planner backup and project
-   bundle. Label files with branch, timestamp and workstation.【F:src/scripts/app-events.js†L86-L145】【F:index.html†L2501-L2560】
-3. **Restore in isolation.** Import the exported backup and bundle into a private offline profile. Confirm
-   gear lists, automatic gear rules, favourites and runtime feedback survive the round-trip without
-   network access.【F:src/scripts/modules/persistence.js†L1036-L1100】
-4. **Inspect guard outputs.** In the primary profile open **Settings → Data & Storage** and **Settings →
-   Backup & Restore** to confirm dashboards, counts and safety reminders reflect the recent saves. Check
-   `window.__cineRuntimeIntegrity` or run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`
-   before committing so the runtime guard still reports every persistence hook as available.【F:index.html†L2722-L2799】【F:src/scripts/modules/runtime.js†L2203-L2368】
-5. **Archive interim artefacts.** Store the verified backup, bundle and guard output with your daily notes.
-   Even discarded branches leave a traceable breadcrumb for auditors.【F:docs/verification-log-template.md†L12-L67】
+## Preventive routines
 
-## 3. Release readiness validation
-Before tagging a release or publishing training material, run this extended rehearsal:
+- **Daily rehearsal (active shoots).** Follow the
+  [Operations Checklist](operations-checklist.md) to exercise save, autosave,
+  backup, restore and share workflows before crews begin work.
+- **Weekly documentation sweep.** Run the
+  [Documentation Maintenance Loop](documentation-maintenance.md) to ensure every
+  change is reflected in docs and translations.
+- **Offline cache verification.** Execute the
+  [Offline Cache Verification Drill](offline-cache-verification-drill.md) after
+  updating service-worker assets or adding new icons.
+- **Translation parity.** Review the [Translation Guide](translation-guide.md)
+  after adding UI strings. Keep placeholders or translator notes if human
+  translations are pending.
 
-1. **Regenerate service worker assets.** Execute `npm run generate:sw-assets` so the bundled icon and
-   documentation manifest matches the release. The script is defined in `package.json`.【F:package.json†L11-L21】
-2. **Complete the Quick Start drill.** Follow the README Quick Start sequence on a clean workstation.
-   Capture screenshots or PDFs so the rehearsal packet mirrors the offline experience exactly.
-3. **Verify redundancy.** Produce at least two planner backups, two project bundles and an automatic gear
-   rules export, then import each into separate offline profiles. Record timestamps and machine names in the
-   verification log.【F:index.html†L2501-L2560】【F:docs/verification-log-template.md†L12-L67】
-4. **Run diff audits.** Use **Compare versions** to diff the latest manual save against the newest
-   auto-backup and the fresh planner backup, then export the logs so reviewers can trace changes without
-   re-running the app.【F:index.html†L2501-L2560】
-5. **Confirm documentation parity.** Regenerate localized READMEs, help PDFs and checklists. Ensure they
-   reference the same version string surfaced in **Settings → About** and include the rehearsed save/share/
-   import/backup/restore steps.【F:index.html†L2722-L2799】
-6. **Duplicate storage.** Copy the repository snapshot, backups, bundles, diff logs, guard outputs and
-   refreshed documentation to at least two offline drives stored in different locations. Update the
-   verification log with storage locations and checksums.【F:docs/verification-log-template.md†L12-L67】
+## Incident handling
 
-## 4. Emergency response drill
-Keep this checklist close to incident playbooks so crews respond instantly:
+1. **Detect.** Monitor runtime guard output (`window.__cineRuntimeIntegrity`),
+   autosave logs and backup rotations for anomalies.
+2. **Contain.** Freeze the affected workstation, copy the most recent planner
+   backup and share bundle, and move to a clean profile or spare device.
+3. **Recover.** Restore backups, confirm autosave entries replay correctly and
+   document the timeline.
+4. **Review.** Update the [Review Findings](review-findings.md) and
+   [Verification Log](verification-log-template.md) with the incident details.
+   Note which safeguards succeeded or failed.
+5. **Improve.** Patch the issue, extend automated tests and refresh all relevant
+   documentation so future crews benefit from the fix.
 
-1. **Pause and protect.** When data drift is suspected, stop editing, note the time and export a fresh
-   planner backup plus promote relevant `auto-backup-…` entries to manual saves. This freezes the current
-   state before recovery attempts.【F:src/scripts/app-events.js†L86-L145】【F:index.html†L2501-L2560】
-2. **Open diagnostics.** In **Settings → Data & Storage**, review the **Latest activity** panel, safety
-   reminders and diagnostics log to see what changed just before the incident.【F:index.html†L2722-L2799】
-3. **Sandbox the payload.** Import the suspect bundle or backup into a private offline profile. Compare
-   gear lists, runtime dashboards, automatic gear rules and favourites against the source machine to confirm
-   whether the issue is isolated.【F:src/scripts/modules/persistence.js†L1036-L1100】
-4. **Diff and document.** Run **Compare versions** between the impacted save and the latest healthy
-   auto-backup, export the log, capture console guard output and collect screenshots into an incident folder
-   stored with redundant archives.【F:index.html†L2501-L2560】【F:src/scripts/modules/runtime.js†L2203-L2368】
-5. **Restore safely.** Apply the verified backup or bundle on the production machine. The persistence layer
-   captures a pre-restore backup automatically so you can roll back if required. Keep the snapshot until you
-   confirm stability.【F:src/scripts/modules/persistence.js†L1036-L1100】
-6. **Re-prime caches and notify crews.** Press **Force reload**, reopen help topics and legal pages to refresh
-   caches, then update the verification log with the incident summary, recovery steps and artifact locations.
-   Share the packet via offline media so every workstation receives the same guidance.【F:index.html†L1-L154】【F:docs/verification-log-template.md†L12-L67】
+## Release requirements
 
-## 5. Keep documentation and translations aligned
-After every development cycle or incident response, ensure the written record matches the behaviours you
-rehearsed:
+Before publishing a new build or documentation update:
 
-- Update `README.md`, localized READMEs and help topics with any new or adjusted safeguards.
-- Run the documentation update and verification checklists so translations, screenshots and printable
-  manuals mirror the runtime.【F:docs/documentation-update-checklist.md†L1-L112】【F:docs/documentation-verification-packet.md†L1-L52】
-- Track locales awaiting translation in the translation guide so crews always see complete instructions while
-  offline.【F:docs/translation-guide.md†L1-L134】
+- Run the [Testing Plan](testing-plan.md) and archive the results.
+- Complete the [Documentation Verification Packet](documentation-verification-packet.md).
+- Export fresh backups, bundles and automatic gear presets. Store them with the
+  release notes.
+- Update the [Documentation Status Report](documentation-status-report-template.md)
+  so future audits can trace what changed.
 
-Maintaining this playbook alongside your release process guarantees that every save, share, import, backup
-and restore path remains provably safe, keeps offline rehearsal materials synchronised and documents exactly
-how user data stayed protected at each step.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/modules/runtime.js†L2203-L2368】
+## Record keeping
 
-## 2025-02 safeguard validation
-- **Storage guardian status.** Confirmed the Data & Storage dashboard continues to report mirrored keys
-  and reminders so emergency drills can confirm redundancy without leaving the planner UI.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
-- **Quota-resilient backups.** Re-checked the critical storage guard path that mirrors planner keys and
-  compresses backups if quota errors appear, ensuring backups remain redundant even under storage
-  pressure.【F:src/scripts/storage.js†L2850-L2999】
-- **Service worker parity.** Verified the worker still imports the shared version helper and publishes
-  the cache name/logging hooks, keeping offline rehearsals consistent with documented expectations.【F:service-worker.js†L192-L229】
+- Store verification packets, planner backups and repository snapshots on two
+  offline media. Include checksums and timestamps.
+- Keep a change log describing when documentation, translations and runtime
+  safeguards were updated.
+- Ensure every rehearsal or incident has a completed
+  [Verification Log](verification-log-template.md) attached to the relevant
+  archive.
+
+Protecting user data demands discipline. Treat this playbook as mandatory for
+all contributors and operators.
