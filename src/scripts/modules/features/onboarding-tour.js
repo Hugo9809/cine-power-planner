@@ -1791,9 +1791,6 @@
       {
         key: 'selectBattery',
         highlight: '#batterySelect',
-        cardOverlap: {
-          right: 1 / 3,
-        },
       },
       {
         key: 'resultsTotalDraw',
