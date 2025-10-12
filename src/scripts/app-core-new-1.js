@@ -14552,13 +14552,87 @@ const pinkModeReduceMotionQuery =
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null;
 
+function removeUnsafeSvgContent(element) {
+  if (!element || element.nodeType !== 1) return;
+  const tagName = element.nodeName ? element.nodeName.toLowerCase() : '';
+  if (tagName === 'script' || tagName === 'foreignobject') {
+    element.remove();
+    return;
+  }
+  const { attributes } = element;
+  if (attributes) {
+    for (let i = attributes.length - 1; i >= 0; i -= 1) {
+      const attr = attributes[i];
+      const name = attr && attr.name ? attr.name : '';
+      const value = attr && typeof attr.value === 'string' ? attr.value : '';
+      if (/^on/i.test(name)) {
+        element.removeAttribute(name);
+      } else if ((name === 'href' || name === 'xlink:href') && /^\s*javascript:/i.test(value)) {
+        element.removeAttribute(name);
+      } else if (name === 'style' && /javascript:/i.test(value)) {
+        element.removeAttribute(name);
+      }
+    }
+  }
+  const childNodes = element.childNodes;
+  if (!childNodes) return;
+  for (let j = childNodes.length - 1; j >= 0; j -= 1) {
+    const child = childNodes[j];
+    if (child && child.nodeType === 1) {
+      removeUnsafeSvgContent(child);
+    } else if (child && child.nodeType === 8) {
+      element.removeChild(child);
+    }
+  }
+}
+
 function ensureSvgHasAriaHidden(markup) {
   if (typeof markup !== 'string') return '';
   const trimmed = markup.trim();
   if (!trimmed) return '';
-  if (!/^<svg\b/i.test(trimmed)) return trimmed;
-  if (/\baria-hidden\s*=\s*['"]/i.test(trimmed)) return trimmed;
-  return trimmed.replace(/<svg\b/i, match => `${match} aria-hidden="true"`);
+  if (typeof DOMParser === 'function' && typeof XMLSerializer === 'function') {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(trimmed, 'image/svg+xml');
+      const root = doc && doc.documentElement ? doc.documentElement : null;
+      if (!root || (root.nodeName && root.nodeName.toLowerCase() === 'parsererror')) {
+        return escapeHtml(trimmed);
+      }
+      removeUnsafeSvgContent(root);
+      if (root.nodeName && root.nodeName.toLowerCase() === 'svg' && !root.hasAttribute('aria-hidden')) {
+        root.setAttribute('aria-hidden', 'true');
+      }
+      const serializer = new XMLSerializer();
+      return serializer.serializeToString(root);
+    } catch (error) {
+      // Fall back to basic sanitization below.
+    }
+  }
+  if (!/^<svg\b/i.test(trimmed)) {
+    return escapeHtml(trimmed);
+  }
+  let sanitized = trimmed
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<foreignobject\b[^>]*>[\s\S]*?<\/foreignobject>/gi, '');
+  sanitized = sanitized.replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*')/gi, '');
+  sanitized = sanitized.replace(/\s(?:href|xlink:href)\s*=\s*("[^"]*"|'[^']*')/gi, (match, value) => {
+    if (!value) return '';
+    if (/^['"]?\s*javascript:/i.test(value)) {
+      return '';
+    }
+    return match;
+  });
+  sanitized = sanitized.replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, (match, value) => {
+    if (!value) return match;
+    if (/javascript:/i.test(value)) {
+      return '';
+    }
+    return match;
+  });
+  if (!/\baria-hidden\s*=\s*['"]/i.test(sanitized)) {
+    sanitized = sanitized.replace(/<svg\b/i, match => `${match} aria-hidden="true"`);
+  }
+  return sanitized;
 }
 
 function normalizePinkModeIconMarkup(markup) {
