@@ -1126,7 +1126,7 @@ function generatePrintableOverview(config = {}) {
         if (!infoBoxes.length) {
             return '';
         }
-        return `<div class="info-box-list">${infoBoxes.join('')}</div>`;
+        return `<div class="info-box-list lens-info-grid">${infoBoxes.join('')}</div>`;
     };
     const processLensesForOverview = (selectElement, headingKey) => {
         if (!selectElement) {
@@ -1143,7 +1143,7 @@ function generatePrintableOverview(config = {}) {
             const displayName = lensKey || opt.text || '';
             const safeName = escapeHtmlSafe(displayName);
             const details = lensInfo ? createLensInfoHtml(lensInfo) : '';
-            addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
+            addToSection(headingKey, `<div class="device-block lens-device-block"><strong>${safeName}</strong>${details}</div>`);
         });
     };
 
@@ -1166,7 +1166,12 @@ function generatePrintableOverview(config = {}) {
           ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
           : '';
       const isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
-      const gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : 'device-block-grid single-column';
+      const isLensList = key === 'category_lenses';
+      const gridClasses = isFizList
+        ? 'device-block-grid two-column fiz-single-column'
+        : isLensList
+          ? 'device-block-grid two-column lens-device-grid'
+          : 'device-block-grid single-column';
       deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
     });
     deviceListHtml += '</div>';

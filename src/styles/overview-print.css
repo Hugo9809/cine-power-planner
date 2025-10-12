@@ -772,6 +772,9 @@ body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Moni
 #overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: 1fr;
 }
+#overviewDialogContent .lens-info-grid {
+  grid-template-columns: 1fr;
+}
 
 .page-break {
   break-before: page;
