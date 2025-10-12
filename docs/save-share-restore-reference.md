@@ -17,8 +17,8 @@ printed copy with field kits.
   writes.
 - A background timer forces snapshots roughly every 10 minutes or after about 50
   tracked changes, whichever comes first.
-- High-risk actions (project switch, import, export, restore) trigger immediate
-  backups regardless of cadence.
+- High-risk actions (project switch, import, export, restore, translation export)
+  trigger immediate backups regardless of cadence.
 - Automatic backups are stored as `auto-backup-*` entries and appear in the
   selector for review or manual restore.
 
@@ -27,38 +27,47 @@ printed copy with field kits.
 1. Open **Settings → Backup & Restore**.
 2. Choose **Backup** or **Quick safeguards**.
 3. The export includes every project, autosave snapshot, automatic gear preset,
-   custom gear list, runtime feedback entry and preferences.
+   custom gear list, runtime feedback entry, preferences and translation bundles.
 4. Save the JSON file, compute a checksum and store it on two offline media.
 
 ## Planner backup restore
 
 1. Use **Restore rehearsal** to validate the backup in a sandbox.
-2. Inspect the restored projects, autosave ledger and presets.
+2. Inspect restored projects, autosave ledger, presets and translation bundles.
 3. When satisfied, run **Restore** to replace live data. The app captures a
    pre-restore backup automatically.
 
 ## Project share & import
 
 - Export individual projects from the selector for handoff.
-- The export bundles the project payload, automatic gear references and history
+- Exports bundle the project payload, automatic gear references and history
   metadata.
-- Importing validates the payload, creates a backup of current data and then
-  adds the project to the selector. Duplicates receive unique names.
+- Importing validates the payload, creates a backup of current data and then adds
+  the project to the selector. Duplicates receive unique names.
 
 ## Automatic gear presets
 
 - Presets save through the same persistence pipeline as projects.
 - Editors can export presets, clear local copies and re-import to confirm
   redundancy.
-- Restores always capture the current presets before replacing them.
+- Restores capture current presets before replacing them; diff summaries document
+  changes.
+
+## Translation exports
+
+- Use **Settings → Languages → Export** to archive locale bundles when strings
+  change.
+- Translation exports are stored alongside planner backups with checksum notes.
+- Importing a translation bundle snapshots existing locales before applying
+  updates.
 
 ## Verification tips
 
 - Run `window.cineRuntime.verifyCriticalFlows()` after rehearsals to confirm the
   guard reports healthy storage mirrors and registry bindings.
 - Use the compare tool to review differences between manual saves and backups.
-- Keep planner backups, project bundles and verification logs together so any
-  workstation can recover the latest state offline.
+- Keep planner backups, project bundles, translation exports and verification logs
+  together so any workstation can recover the latest state offline.
 
 Following these procedures ensures no user data is lost and that every workflow
 remains transparent to crews working without connectivity.

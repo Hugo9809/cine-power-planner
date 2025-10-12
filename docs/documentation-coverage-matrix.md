@@ -1,7 +1,8 @@
 # Documentation Coverage Matrix
 
 Track which surfaces were updated for the current release or audit. Keep a copy
-with every verification packet.
+with every verification packet so future crews can confirm parity between the
+runtime and published guidance.
 
 | Surface | Updated? | Notes |
 | --- | --- | --- |
@@ -16,13 +17,17 @@ with every verification packet.
 | Operations checklist |  |  |
 | Data protection playbook |  |  |
 | Automatic gear documentation |  |  |
-| Translation guide |  |  |
+| Translation guide & locale exports |  |  |
 | Legal disclosures |  |  |
 | Service worker instructions |  |  |
 | Testing plan |  |  |
 | Verification log template |  |  |
+| Documentation status report |  |  |
 | Screenshots or diagrams |  |  |
 | Training bundles / PDFs |  |  |
+| Backup rotation guide |  |  |
+| Schema inventory |  |  |
 
-Add extra rows for language-specific manuals or product-specific supplements.
-Mark gaps clearly and link to the follow-up task that will close them.
+Add rows for language-specific manuals or production supplements. Mark gaps
+clearly, link to the follow-up task that will close them and record which
+workstation or release the matrix covers.

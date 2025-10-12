@@ -1,15 +1,17 @@
 # Feature Gap Analysis Worksheet
 
 Use this worksheet to track discrepancies between planned functionality,
-implemented safeguards and supporting documentation.
+implemented safeguards and supporting documentation. Update it whenever rehearsals
+or audits uncover differences.
 
 ## Instructions
 
 1. List each feature or safeguard under review.
-2. Note the expected behaviour (from product specs or previous releases).
-3. Record the actual behaviour observed during rehearsal.
-4. Identify missing documentation, translation gaps or testing coverage.
-5. Assign follow-up tasks and deadlines.
+2. Note the expected behaviour (from specs, previous releases or documentation).
+3. Record the actual behaviour observed during rehearsal, including offline
+   findings.
+4. Identify missing documentation, translation gaps or automated test coverage.
+5. Assign follow-up tasks, owners and deadlines; capture evidence once closed.
 
 ## Worksheet
 
