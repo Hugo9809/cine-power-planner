@@ -1400,7 +1400,8 @@ var texts = {
       "Rigging Grip": "Rigging Grip"
     },
     gearListNoteLabel: "Note:",
-    gearListAutosaveNote: "",
+    gearListAutosaveNote:
+      "Autosaved after each rig tweak so the offline gear manifest mirrors your latest camera build.",
     gearListAddCustomItem: "Add custom item",
     gearListAddCustomItemToCategory: "Add custom item to {category}",
     gearListRemoveCustomItem: "Remove",
@@ -2488,7 +2489,8 @@ var texts = {
       "Rigging Grip": "Macchinista rigging"
     },
     gearListNoteLabel: "Nota:",
-    gearListAutosaveNote: "",
+    gearListAutosaveNote:
+      "Salvato automaticamente a ogni modifica del setup così l'inventario offline riflette l'ultimo assetto camera.",
     gearListAddCustomItem: "Aggiungi elemento personalizzato",
     gearListAddCustomItemToCategory: "Aggiungi elemento personalizzato a {category}",
     gearListRemoveCustomItem: "Rimuovi",
@@ -4296,7 +4298,8 @@ var texts = {
       "Rigging Grip": "Grip de rigging"
     },
     gearListNoteLabel: "Nota:",
-    gearListAutosaveNote: "",
+    gearListAutosaveNote:
+      "Se guarda automáticamente tras cada ajuste del rig para que el listado offline refleje el último montaje de cámara.",
     gearListAddCustomItem: "Añadir elemento personalizado",
     gearListAddCustomItemToCategory: "Añadir elemento personalizado a {category}",
     gearListRemoveCustomItem: "Eliminar",
@@ -6104,7 +6107,8 @@ var texts = {
       "Rigging Grip": "Machiniste rigging"
     },
     gearListNoteLabel: "Note :",
-    gearListAutosaveNote: "",
+    gearListAutosaveNote:
+      "Enregistré automatiquement après chaque retouche du rig pour que la feuille de matériel hors ligne reflète la dernière config caméra.",
     gearListAddCustomItem: "Ajouter un élément personnalisé",
     gearListAddCustomItemToCategory: "Ajouter un élément personnalisé à {category}",
     gearListRemoveCustomItem: "Supprimer",
@@ -7912,7 +7916,8 @@ var texts = {
       "Rigging Grip": "Rigging-Grip"
     },
     gearListNoteLabel: "Notiz:",
-    gearListAutosaveNote: "",
+    gearListAutosaveNote:
+      "Wird nach jedem Rig-Feinschliff automatisch gesichert, damit das Offline-Gear-Manifest deinen aktuellen Kamerabau widerspiegelt.",
     gearListAddCustomItem: "Benutzerdefinierten Eintrag hinzufügen",
     gearListAddCustomItemToCategory: "Benutzerdefinierten Eintrag zu {category} hinzufügen",
     gearListRemoveCustomItem: "Entfernen",
