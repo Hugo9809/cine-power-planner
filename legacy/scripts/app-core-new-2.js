@@ -15997,10 +15997,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return normalizePowerPortType;
     }], ['setMonitorVideoInputs', function () {
       return setMonitorVideoInputs;
+    }], ['getMonitorVideoInputs', function () {
+      return getMonitorVideoInputs;
     }], ['clearMonitorVideoInputs', function () {
       return clearMonitorVideoInputs;
     }], ['setMonitorVideoOutputs', function () {
       return setMonitorVideoOutputs;
+    }], ['getMonitorVideoOutputs', function () {
+      return getMonitorVideoOutputs;
     }], ['clearMonitorVideoOutputs', function () {
       return clearMonitorVideoOutputs;
     }], ['setVideoInputs', function () {
@@ -16021,10 +16025,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return clearVideoOutputsIO;
     }], ['setViewfinderVideoInputs', function () {
       return setViewfinderVideoInputs;
+    }], ['getViewfinderVideoInputs', function () {
+      return getViewfinderVideoInputs;
     }], ['clearViewfinderVideoInputs', function () {
       return clearViewfinderVideoInputs;
     }], ['setViewfinderVideoOutputs', function () {
       return setViewfinderVideoOutputs;
+    }], ['getViewfinderVideoOutputs', function () {
+      return getViewfinderVideoOutputs;
     }], ['clearViewfinderVideoOutputs', function () {
       return clearViewfinderVideoOutputs;
     }], ['getCurrentSetupKey', function () {
