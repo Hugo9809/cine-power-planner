@@ -6097,8 +6097,8 @@ body.dark-mode .help-callout {
 
 .help-target-focus,
 .feature-search-focus {
-  outline: 3px solid var(--accent-color);
-  outline-offset: 4px;
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
   border-radius: var(--border-radius);
   transition:
     outline-color 0.2s ease-in-out,
@@ -6110,29 +6110,40 @@ body.dark-mode .help-callout {
 .help-target-focus:focus-visible,
 .feature-search-focus:focus,
 .feature-search-focus:focus-visible {
-  outline: 3px solid var(--accent-color);
-  outline-offset: 4px;
+  outline: 2px solid var(--accent-color);
+  outline-offset: 3px;
+}
+
+@supports (outline-color: color-mix(in srgb, red 50%, transparent)) {
+  .help-target-focus,
+  .help-target-focus:focus,
+  .help-target-focus:focus-visible,
+  .feature-search-focus,
+  .feature-search-focus:focus,
+  .feature-search-focus:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
+  }
 }
 
 .feature-search-focus {
-  background-color: rgba(0, 0, 0, 0.04);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.02);
+  background-color: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .feature-search-focus {
-  background-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+  background-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 @supports (background-color: color-mix(in srgb, red 10%, transparent)) {
   .feature-search-focus {
-    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 24%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 12%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 24%, transparent);
   }
 
   .dark-mode .feature-search-focus {
-    background-color: color-mix(in srgb, var(--accent-color) 26%, transparent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 32%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 36%, transparent);
   }
 }
 
