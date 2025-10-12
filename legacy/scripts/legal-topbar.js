@@ -95,6 +95,32 @@
       control.setAttribute('aria-pressed', isPressed ? 'true' : 'false');
     }
   }
+  function resolveSafeDestination(rawValue) {
+    if (!rawValue || typeof rawValue !== 'string') {
+      return null;
+    }
+    var trimmed = rawValue.trim();
+    if (!trimmed) {
+      return null;
+    }
+    try {
+      var currentLocation = typeof window !== 'undefined' ? window.location : null;
+      if (!currentLocation || typeof currentLocation.href !== 'string') {
+        return trimmed.charAt(0) === '/' ? trimmed : null;
+      }
+      var resolvedUrl = new URL(trimmed, currentLocation.href);
+      if (resolvedUrl.protocol !== currentLocation.protocol) {
+        return null;
+      }
+      if (resolvedUrl.origin !== currentLocation.origin) {
+        return null;
+      }
+      return resolvedUrl.href;
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
   function initTopBarControls() {
     var root = getRoot();
     var body = getBody();
@@ -149,9 +175,9 @@
         var selectedOption = target.selectedOptions && target.selectedOptions[0];
         var destination = selectedOption ? selectedOption.value : target.value;
         if (destination) {
-          // Only allow safe relative URLs (starting with "/") to prevent XSS/open redirect
-          if (/^\//.test(destination)) {
-            window.location.href = destination;
+          var safeDestination = resolveSafeDestination(destination);
+          if (safeDestination) {
+            window.location.assign(safeDestination);
           }
         }
       });
