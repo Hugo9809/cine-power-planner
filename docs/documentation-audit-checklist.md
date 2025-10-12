@@ -1,118 +1,56 @@
-# Documentation Audit Checklist
+# Documentation audit checklist
 
-Use this checklist to run recurring documentation audits that prove every help topic,
-localized README and translation key still describes the exact offline workflows the
-application enforces. Pair it with the broader maintenance guide and pre-merge
-checklist so crews rehearsing without connectivity inherit guidance that matches the
-live runtime and cannot lose user data.
-
-## When to run this audit
-
-- Monthly while a release is in active use so the bundled manuals, in-app help and
-  translations never drift from the runtime safeguards.
-- Immediately before tagging or distributing a build alongside the
-  [Documentation Update Checklist](documentation-update-checklist.md) to confirm the
-  release packet reflects the final UI and storage contracts.【F:docs/documentation-update-checklist.md†L5-L38】
-- After landing a significant feature, translation batch or legal update to ensure the
-  offline caches, localized READMEs and verification packet all match the shipped
-  experience.【F:docs/documentation-coverage-matrix.md†L1-L63】【F:docs/documentation-verification-packet.md†L1-L52】
+Run this audit whenever a release is prepared, a persistence workflow changes or a translation batch
+lands. The goal is to prove the written guides, in-app help and offline rehearsal packets still match
+the shipped runtime so crews cannot lose user data.
 
 ## Preparation
+- Collect the latest verification log, planner backup and project bundle for the current release so you
+  can compare UI labels against previously rehearsed exports.【F:docs/verification-log-template.md†L12-L67】【F:index.html†L2501-L2573】
+- Prime the app offline: open the planner from disk, load the help dialog, visit legal pages and confirm
+  icons/fonts render from cache before starting the audit.【F:index.html†L1-L120】【F:service-worker.js†L192-L240】
+- Print or open the coverage matrix so you know which documentation surfaces cover each workflow.【F:docs/documentation-coverage-matrix.md†L1-L56】
 
-1. Update your working copy of the repository and collect the latest verification log,
-   planner backups and project bundles stored with the release so you can compare the
-   current UI against prior rehearsals.【F:docs/verification-log-template.md†L12-L41】
-2. Print or open the Documentation Coverage Matrix and highlight rows tied to the
-   features you touched since the last audit. These rows drive the spot checks below
-   and guarantee every workflow that touches user data remains documented across all
-   surfaces.【F:docs/documentation-coverage-matrix.md†L1-L56】
-3. Note the browsers, devices and offline profiles you will use. The audit should
-   include at least one fully offline session so cached help topics, locally stored
-   Uicons and service-worker data are verified without network access.【F:README.md†L216-L266】
+## Step 1 – Written guidance
+1. Review the English README sections describing saves, backups, restore rehearsal and offline drills.
+   Confirm terminology, button labels and sequence match the current UI. Note any drift for immediate
+   correction.【F:index.html†L2501-L2708】
+2. Spot-check each localized README or printable guide against the same workflows. If a locale is
+   outdated, temporarily copy the English text so offline crews never read stale instructions. Record the
+   gap in the verification log for translation follow-up.【F:docs/translation-guide.md†L1-L134】
+3. Update the documentation maintenance tracker with the audit date, reviewer, browsers used and any
+   required follow-up so future audits see the chain of custody.【F:docs/documentation-maintenance.md†L1-L140】
 
-## Step 1 – Align the written guides
+## Step 2 – In-app help and controls
+1. Open **Settings → Backup & Restore** and confirm Compare versions, Restore rehearsal and Backup actions
+   appear exactly where documentation states. Capture screenshots for the verification packet.【F:index.html†L2501-L2708】
+2. Trigger **Settings → Data & Storage → Quick safeguards → Download full backup** and ensure the **Latest
+   activity** board records the new timestamp. Note the filename and timestamp in the verification log so
+   documentation can reference a real export.【F:index.html†L2722-L2778】【F:docs/verification-log-template.md†L26-L67】
+3. Launch the help dialog, search for “backup” and “restore” and verify the contextual links land on the
+   correct controls. If any anchor changed, update the help markup before closing the audit.【F:index.html†L4401-L4413】
 
-1. Read through the primary README sections that describe rehearsals—**Quick Start**,
-   **Save, Share & Import Drill** and **Documentation, Help & Translation
-   Maintenance**—to confirm the instructions mirror the current workflows and
-   terminology. Update wording immediately if labels, safeguards or storage notes have
-   changed since the last audit.【F:README.md†L210-L337】【F:README.md†L964-L1004】
-2. Open each localized README and spot-check that the same sections reference the
-   latest safeguards. If a translation lags behind, duplicate the English copy so the
-   offline manuals stay accurate until translators provide localized wording.【F:README.md†L960-L1004】
-3. Review printable manuals and runbooks (`docs/offline-readiness.md`,
-   `docs/operations-checklist.md`, `docs/save-share-restore-reference.md`) for the same
-   terminology. Mark any drift in your verification log and schedule copy updates before
-   the audit closes.【F:docs/offline-readiness.md†L1-L109】【F:docs/operations-checklist.md†L1-L99】【F:docs/save-share-restore-reference.md†L1-L137】
+## Step 3 – Runtime evidence
+1. Run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and capture the output. Attach the
+   screenshot or console dump to the audit record so readers know the documented safeguards were active.【F:src/scripts/modules/runtime.js†L2216-L2335】
+2. Inspect `window.cinePersistence.__internal.inspectAllBindings()` to confirm every storage wrapper is
+   registered. Note any missing bindings and halt the release if one fails.【F:src/scripts/modules/persistence.js†L1013-L1119】
+3. Check `window.cineOffline.__internal.clearCacheStorage()` inside a disposable profile to confirm cache
+   recovery helpers still work. Document the run in case offline crews need the instructions.【F:src/scripts/modules/offline.js†L2555-L2606】
 
-## Step 2 – Confirm in-app help and shortcuts
+## Step 4 – Archive results
+1. Update the verification log with timestamps, browsers, commands executed and filenames captured during
+   the audit. Include hashes for backups and bundles so future crews can verify integrity.【F:docs/verification-log-template.md†L12-L67】
+2. Regenerate the documentation verification packet with refreshed screenshots, guard outputs and updated
+   manuals, then store redundant copies on the offline media noted in the packet guide.【F:docs/documentation-verification-packet.md†L9-L48】
 
-1. Launch the planner, open **Help → Quick start checklist** and run the guided tutorial
-   entry to ensure the step navigator, resume prompt and workflow notes remain aligned
-   with current UI labels.【F:index.html†L2916-L2980】
-2. Traverse the help search and contextual links for saving, backups and restores to
-   confirm button IDs and hover-help references still match the live controls. Update
-   `index.html` or help scripts immediately if you notice mismatched anchors so offline
-   crews never click into stale guidance.【F:index.html†L2540-L2600】
-3. Trigger the **Quick safeguards** actions inside **Settings → Data & Storage** and
-   confirm the activity board records the backup. The audit should log the resulting
-   filenames and timestamps alongside screenshots so downstream crews can prove the same
-   safeguard exists when they rehearse offline.【F:index.html†L2540-L2600】
+## 2025-02 spot check
+- **Backup UI parity.** Verified Backup & Restore still exposes Compare versions, Restore rehearsal and
+  Backup buttons exactly where the documentation describes.【F:index.html†L2501-L2708】
+- **Integrity diagnostics.** Confirmed `verifyCriticalFlows()` returns `ok: true` after recent persistence
+  updates, keeping the audit evidence trustworthy.【F:src/scripts/modules/runtime.js†L2216-L2335】
+- **Cache recovery.** Exercised `cineOffline.__internal.clearCacheStorage()` to ensure offline crews can
+  follow the documented recovery steps when caches need rebuilding.【F:src/scripts/modules/offline.js†L2555-L2606】
 
-## Step 3 – Translation and selector sweep
-
-1. In **Settings → General**, toggle through each language and confirm the labels, help
-   copy and settings headings render correctly without network access. Pay special
-   attention to the language selector and the accessibility notes so every locale clearly
-   describes saving, backup and restore safeguards defined in
-   `src/scripts/translations.js`.【F:src/scripts/translations.js†L140-L186】
-2. Repeat the help dialog spot checks in at least one non-English locale to confirm
-   translated strings reference the same buttons and workflow order as the English
-   source. If any locale diverges, log the gaps in your verification notes and copy the
-   English wording into the translation key as a placeholder until the localized text is
-   updated.【F:README.md†L960-L1004】【F:docs/documentation-update-checklist.md†L19-L24】
-
-## Step 4 – Persistence and diagnostics evidence
-
-1. Open the developer console and inspect `window.__cineRuntimeIntegrity`. Record the
-   output or rerun `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to
-   prove every persistence, offline and UI safeguard is still active. Attach the capture
-   to your verification log.【F:src/scripts/script.js†L316-L357】
-2. Run `window.cinePersistence.__internal.inspectAllBindings()` and
-   `window.cinePersistence.storage.exportAllData()` to confirm every storage wrapper is
-   registered and that full backups export the expected payload before you archive new
-   artifacts.【F:src/scripts/modules/persistence.js†L768-L858】
-3. While still offline, use the **Quick safeguards → Download full backup** control to
-   capture a fresh planner backup and verify the **Latest activity** board reflects the
-   new timestamp while the safety reminders switch to an all-clear message. Store the
-   JSON alongside a checksum in your verification log entry so the audit produces tangible
-   recovery artifacts.【F:index.html†L2540-L2600】【F:docs/verification-log-template.md†L26-L41】
-
-## Step 5 – Archive the results
-
-1. Update the verification log with timestamps, browsers, commands run and the filenames
-   plus hashes of every export captured during the audit. Include screenshots or console
-   transcripts that prove the help dialog, Quick safeguards and runtime guard all matched
-   the documentation.【F:docs/verification-log-template.md†L12-L67】
-2. Rebuild the documentation verification packet with the refreshed manuals, captured
-   backups, share bundles and diagnostic evidence. Store redundant copies on the offline
-  media noted in the packet guide and record the storage locations in the log so future
-   crews can retrieve the canonical documentation bundle quickly.【F:docs/documentation-verification-packet.md†L9-L48】
-
-## 2025-02 documentation verification
-- **Help centre parity.** Checked that the help dialog sections referenced in this audit still surface
-  the monthly data health check, console commands and backup guidance with the translated strings,
-  ensuring offline readers see the same workflow order documented here.【F:index.html†L3019-L3095】【F:src/scripts/translations.js†L1519-L1540】
-- **Runtime guard messaging.** Confirmed the latest build continues to expose
-  `window.__cineRuntimeIntegrity` and honours manual guard refreshes so auditors can capture evidence
-  without editing code.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Backup workflow references.** Verified Backup & Restore still renders compare versions, restore
-  rehearsal and backup export controls exactly where the checklist expects them, keeping printed
-  guidance accurate for offline drills.【F:index.html†L2501-L2574】
-
-Running this audit on a predictable schedule ensures the README family, help center,
-translations and printed manuals stay aligned with the runtime safeguards that keep every
-save, share, import, backup and restore workflow lossless—even when crews rely on the
-planner entirely offline.【F:docs/documentation-coverage-matrix.md†L1-L63】【F:README.md†L210-L337】
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Running this checklist on a predictable cadence keeps documentation aligned with the runtime safeguards
+that protect saves, shares, imports, backups and restores even when crews remain fully offline.【F:src/scripts/modules/persistence.js†L1036-L1109】【F:index.html†L2501-L2778】

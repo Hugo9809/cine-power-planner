@@ -1,65 +1,29 @@
-# Documentation Verification Packet
+# Documentation verification packet
 
-This guide explains how to assemble a release-ready documentation packet that mirrors the
-application state crews rely on in the field. The packet travels with the Cine Power Planner
-build, ensuring offline operators can validate instructions and restore data even years after the
-release. Every component reinforces the core principle that saving, sharing, importing, backing
-up and restoring must never risk user data.
+This packet bundles the evidence reviewers need to confirm the shipped documentation matches the
+runtime. Maintain one per release branch and store redundant copies on offline media.
 
-## 1. Capture the written record
+## Required artefacts
+1. **Runtime guard evidence.** Console capture of `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and the
+   resulting JSON export if saved. Shows persistence, offline and UI safeguards remained intact.【F:src/scripts/modules/runtime.js†L2216-L2335】
+2. **Planner backup & project bundle.** Latest manual backup JSON plus a project bundle captured after running the offline drill.
+   Annotate filenames and timestamps in the verification log.【F:index.html†L2501-L2573】【F:docs/verification-log-template.md†L12-L67】
+3. **Restore rehearsal transcript.** Screenshots or exported diff logs from the Restore rehearsal table proving the backup was
+   tested in a sandbox before release.【F:index.html†L2581-L2708】
+4. **Quick safeguards capture.** Screenshot of **Settings → Data & Storage** after triggering **Download full backup**, showing the
+   updated Latest activity list and safety reminders.【F:index.html†L2722-L2778】
+5. **Translation summary.** Table of locales updated plus outstanding items, referencing the translation guide entry for follow-up.【F:docs/translation-guide.md†L1-L134】
+6. **Offline cache rehearsal.** Notes from running `cineOffline.__internal.clearCacheStorage()` in a disposable profile confirming
+   cached assets repopulated successfully.【F:src/scripts/modules/offline.js†L2555-L2606】
 
-1. **Snapshot the READMEs.** Export the primary README and each localized variant to PDF or
-   plain-text archives so translations stay aligned with the code at release.
-2. **Include runbooks and manuals.** Add updated copies of the offline readiness runbook,
-   operations checklist, backup rotation guide, documentation maintenance guide and testing
-   plan. These walkthroughs teach crews how to rehearse saves, shares, imports, backups and
-   restores without network access.
-3. **Mirror in-app help.** If contextual help or legal pages changed, export the relevant HTML
-   so offline reviewers can confirm the UI still matches the documentation. Include the
-   refreshed search guidance and the Data & Storage auditing notes so every release packet
-   documents the new safety reminders about capturing autosave timestamps and navigating the
-   quick links while offline.
+## Assembly steps
+1. Capture fresh artefacts following the Documentation Update Checklist and Data Protection Playbook routines.【F:docs/documentation-update-checklist.md†L1-L60】【F:docs/data-protection-playbook.md†L1-L147】
+2. Store all files in a versioned folder named `YYYY-MM-DD_release-verification/` including checksums for each JSON or image file.
+3. Update the verification log entry with storage locations (primary drive, duplicate drive, offsite copy) and checksum manifest
+   hash so auditors can trace custody.【F:docs/verification-log-template.md†L12-L67】
+4. Zip the folder alongside the localized READMEs and print-ready PDFs. Regenerate `service-worker-assets.js` so the offline app
+   ships the refreshed documentation bundle.【F:package.json†L6-L21】
+5. Distribute the packet via offline media (two drives minimum). Record recipients and delivery dates in the verification log.
 
-## 2. Bundle verification artefacts
-
-1. **Planner backup.** Include the `planner-backup.json` generated during the final rehearsal.
-   This file proves every project, autosave, automatic gear rule, favorite and runtime note
-   survived export.
-2. **Project bundle.** Attach the `project-name.json` bundle used to validate targeted restores.
-   Pair it with any supplemental automatic gear rule exports that affect the workflow.
-3. **Runtime guard capture.** Save the console output from `window.__cineRuntimeIntegrity` or
-   `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to show the persistence
-   guard confirmed all gateways before sign-off.【F:src/scripts/script.js†L92-L183】
-4. **Checklist evidence.** Add the completed Documentation Update Checklist and the verification
-   log entry that records the workstation, browser build, timestamps and storage locations.
-
-## 3. Package for offline storage
-
-1. **Organize by release.** Place the documentation exports and artefacts in a folder named with
-   the semantic version and build hash recorded in the app header and verification logs.
-2. **Compress and checksum.** Zip the folder, compute SHA-256 and SHA-512 hashes and store the
-   manifest alongside the archive so crews can detect tampering even when offline.
-3. **Distribute redundantly.** Copy the archive and checksum manifest to at least two encrypted
-   drives that travel separately. Record the storage locations in the verification log.
-
-## 4. Verify restoration paths periodically
-
-1. **Quarterly audits.** Once per quarter, restore the archived planner backup and project bundle
-   into a fresh offline browser profile. Confirm the documentation packet still matches the UI and
-   that the runtime guard reports `{ ok: true }` with no missing safeguards.
-2. **Update when workflows change.** If a new save, share, import, backup or restore feature ships,
-   rebuild the packet immediately so offline crews never operate with stale instructions.
-
-## 2025-02 packet verification
-- **Backup parity.** Confirmed the Backup & Restore panel still exposes compare, rehearsal and export
-  actions so packet screenshots remain accurate during quarterly audits.【F:index.html†L2501-L2574】
-- **Storage evidence.** Checked the Data & Storage dashboard for the guardian and latest activity rows,
-  ensuring packet attachments continue to reflect the UI state after offline rehearsals.【F:index.html†L2722-L2799】
-- **Runtime guard capture.** Re-verified that `window.__cineRuntimeIntegrity` reports the module status
-  documented in packet templates so restoration evidence remains trustworthy.【F:src/scripts/modules/runtime.js†L2203-L2368】
-
-Maintaining a rigorous documentation verification packet keeps the written guidance, translations
-and recovery artefacts synchronized with the product, protecting user data under every offline
-scenario the planner supports.
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Maintaining the packet guarantees that every guide, translation and screenshot reflects the same runtime
+that safeguards user data offline.【F:src/scripts/modules/persistence.js†L1036-L1109】【F:index.html†L2501-L2778】

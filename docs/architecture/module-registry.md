@@ -1,84 +1,53 @@
-# Module Registry Architecture
+# Module registry operating notes
 
-The module registry keeps every critical Cine Power Planner bundle discoverable and
-immutable so offline workflows, backups and restores behave identically across devices.
-It freezes each module API, tracks metadata and exposes deterministic lookup helpers the
-runtime guard uses before any UI interaction proceeds.【F:src/scripts/modules/registry.js†L300-L358】【F:src/scripts/modules/runtime.js†L2203-L2366】
+The module registry is the shared phone book that keeps every frozen API—persistence, offline
+helpers, runtime orchestration, UI controllers—discoverable even when Cine Power Planner boots from
+disk. Understanding how registration, queuing and blueprints behave is critical to preserving the
+offline guarantees documented for saves, backups, sharing and translations.
 
-## Registry responsibilities
-- **Frozen APIs.** `cineModules.register(name, api)` normalises names, freezes the
-  supplied object by default and records category and description metadata so integrity
-  reports can prove which safeguards are active.【F:src/scripts/modules/registry.js†L300-L358】
-- **Deterministic lookups.** `registry.get(name)`, `registry.list()` and metadata helpers
-  return frozen snapshots, preventing accidental mutation when autosave or backup flows run
-  offline.【F:src/scripts/modules/registry.js†L361-L427】
-- **Pending queue.** Registrations that fail (for example while service workers hydrate)
-  are retried automatically via the hidden queue managed on the global scope. The queue uses
-  offline-safe timers so modules register even when the browser delays execution.【F:src/scripts/modules/registry.js†L600-L759】
-- **Blueprints.** `cineModules.createBlueprint()` wraps these behaviours so new modules can
-  reuse frozen defaults, queue retries and metadata normalisation in a single call.【F:src/scripts/modules/registry.js†L880-L958】
+## Registration pipeline
+- **Name normalisation.** `normalizeName()` trims and validates identifiers so modules cannot be
+  registered under ambiguous labels, preventing duplicate persistence bindings or UI controllers from
+  shadowing each other.【F:src/scripts/modules/registry.js†L245-L371】
+- **Frozen exports.** `register()` deep-freezes the exported API unless callers opt out, records
+  metadata and reuses existing entries when `replace` is not set. This ensures runtime integrity
+  checks always inspect immutable contracts.【F:src/scripts/modules/registry.js†L323-L359】
+- **Metadata.** `describe()` and `describeAll()` expose descriptions, categories and connection lists
+  so documentation tooling can surface module relationships inside checklists and audit packets without
+  touching the runtime directly.【F:src/scripts/modules/registry.js†L373-L502】
 
-## Runtime guard integration
-`cineRuntime.verifyCriticalFlows()` inspects registry entries before it checks module
-methods. Missing registrations immediately flag failed safeguards, keeping save/share,
-import, backup and restore flows from running with partial coverage. The runtime module
-also exposes `inspectModuleConnections()` so auditors can confirm dependency wiring during
-offline rehearsals.【F:src/scripts/modules/runtime.js†L2203-L2368】
+## Deferred registration and recovery
+- **Queue mirroring.** When a module registers before the registry itself is available—common during
+  boot or tests—`queueRegistrationPayload()` stores a frozen payload in a per-scope queue so nothing is
+  lost. The queue is attached using non-enumerable properties to avoid polluting global snapshots used
+  in persistence exports.【F:src/scripts/modules/registry.js†L604-L789】
+- **Flush scheduling.** `schedulePendingFlush()` and `flushPendingRegistrations()` replay queued
+  payloads with retry support. They reschedule failures to keep eventual consistency even when a module
+  temporarily throws (for example, during storage quota sweeps).【F:src/scripts/modules/registry.js†L600-L676】
 
-## Default modules
-The bundles below register automatically during startup. Each entry is frozen and exposes
-metadata that ties directly into offline rehearsals and documentation updates.
+## Blueprint helpers
+Blueprints package metadata, immutable registration options and optional factories so features can
+ship consistent APIs across builds without duplicating boilerplate:
+- `createBlueprint()` validates required metadata, freezes the descriptor and returns a `register`
+  helper that instantiates the API (or reuses a static object) before calling into the registry.【F:src/scripts/modules/registry.js†L791-L967】
+- The resulting blueprint keeps cached instances and exposes `createRegistrationOptions()` so modules
+  can override descriptions or connections while still inheriting the default freeze behaviour.【F:src/scripts/modules/registry.js†L827-L964】
 
-| Module | Responsibilities |
-| --- | --- |
-| `cineCoreShared` | Shared helpers for deterministic stringification, weight normalisation and global `APP_VERSION` exposure so caches, exports and service workers stay aligned offline.【F:src/scripts/modules/core-shared.js†L1040-L1119】 |
-| `cinePersistence` | Storage wrappers, autosave orchestrators, backup/export/import bridges and share helpers that keep user data redundant on every device.【F:src/scripts/modules/persistence.js†L900-L1100】 |
-| `cineOffline` | Service worker coordination, cache recovery helpers and reload triggers that guarantee offline parity.【F:src/scripts/modules/offline.js†L2560-L2612】 |
-| `cineUi` | Controller, interaction and help registries that keep dialogs, backups and restore rehearsals wired to localisation metadata.【F:src/scripts/modules/ui.js†L1189-L1242】 |
-| `cineCoreProject` | Project intelligence exports that feed diffing, signature checks and auto-gear calculations without network access.【F:src/scripts/modules/core/project-intelligence.js†L244-L296】 |
-| `cineCoreGuard` | Persistence guards enforcing autosave, preset, backup and restore protections before data mutates.【F:src/scripts/modules/core/persistence-guard.js†L276-L313】 |
-| `cineCoreExperience` | UI experience helpers that power feature discovery, accent modes and localisation bridges bundled with offline assets.【F:src/scripts/modules/core/experience.js†L290-L327】 |
-| `cineRuntime` | Orchestrator exposing integrity checks, registry access and connection inspections for audits and documentation runs.【F:src/scripts/modules/runtime.js†L2337-L2383】 |
-
-Additional feature modules (for example, feature search, print workflow or contacts) use the
-same blueprint to document how they protect user data. When adding new entries, record
-clear responsibilities so audit trails remain human friendly.
-
-## Registering a new module
-1. **Implement the module** under `src/scripts/modules/` following the defensive patterns:
-   guard global lookups, avoid network dependencies and freeze exported objects.
-2. **Expose metadata.** Call `cineModules.createBlueprint({ name, category, description,
-   connections, freeze })` or invoke `registry.register()` manually with the same fields so
-   integrity reports surface why the module exists.【F:src/scripts/modules/registry.js†L300-L358】【F:src/scripts/modules/registry.js†L880-L958】
-3. **Queue safe retries.** Let the blueprint defer registration on failure so worker and
-   legacy bundles replay the attempt without human intervention.【F:src/scripts/modules/registry.js†L600-L759】【F:src/scripts/modules/registry.js†L907-L947】
-4. **Expose globally when needed.** Use the module base helpers to publish frozen APIs on the
-   global scope so legacy entry points and service workers share the same reference.
-5. **Document and translate.** Update help copy and translation keys alongside the new module
-   so crews rehearsing offline receive accurate guidance via the runtime guard and help centre.
+## Global exposure
+At the end of the file the registry is attached to every available global scope (`globalThis`,
+`window`, `self`, Node globals) and any pending queue is flushed. This mirrors the behaviour relied on
+by `cineRuntime` and its integrity scan, guaranteeing documentation runs hit the same registry as the
+runtime.【F:src/scripts/modules/registry.js†L982-L1016】【F:src/scripts/modules/runtime.js†L2201-L2334】
 
 ## Maintenance checklist
-- **Verify integrity.** After edits, run `window.cineRuntime.verifyCriticalFlows()` or
-  `window.cineRuntime.inspectModuleConnections()` to confirm registry entries remain frozen
-  and connected.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Audit persistence coverage.** Ensure new modules coordinate with `cinePersistence` and
-  `cineCoreGuard` when they touch saves, shares, imports or backups so redundancy remains the
-  default.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/modules/core/persistence-guard.js†L276-L313】
-- **Keep offline assets aligned.** When registry entries ship new files, add them to the
-  service worker asset list so offline launches load the same code without network access.
-- **Prefer redundancy.** If in doubt, capture more autosave data or backup metadata rather than
-  trimming fields—user data must never be lost because of a registry change.【F:src/scripts/storage.js†L1-L200】
+1. **After adding modules,** confirm their registrations run without queue retries by watching the
+   console for warnings and by invoking `cineRuntime.verifyCriticalFlows()` during offline rehearsals.【F:src/scripts/modules/runtime.js†L2216-L2335】
+2. **When documentation references module metadata,** prefer `describeAll({ category: 'persistence' })`
+   rather than hard-coded lists so translations and printed guides stay in sync with the runtime
+   registry.【F:src/scripts/modules/registry.js†L373-L502】
+3. **Keep blueprints immutable.** If a module must register lazily, update the blueprint instead of
+   mutating the frozen API. The registry caches blueprint metadata and will queue retries automatically
+   if instantiation throws, protecting offline boots from partial registrations.【F:src/scripts/modules/registry.js†L823-L944】
 
-## 2025-02 registry verification
-- **Queue health.** Confirmed the deferred registration queue still retries failures with
-  offline-safe timers, ensuring worker and legacy bundles converge on the same frozen module
-  exports before autosave routines execute.【F:src/scripts/modules/registry.js†L600-L759】
-- **Blueprint metadata.** Re-checked the blueprint helper to ensure new modules inherit frozen
-  defaults, metadata descriptors and retry behaviour without bespoke wiring, keeping audit trails
-  consistent across features.【F:src/scripts/modules/registry.js†L880-L958】
-- **Diagnostics exposure.** Validated that service worker bootstrapping propagates the computed
-  cache name and logger so registry-driven diagnostics remain available when rehearsing offline
-  releases.【F:service-worker.js†L192-L229】
-
-Following this workflow keeps the registry authoritative and the offline, privacy-first
-experience crews rely on fully intact.
+Treating the registry as the source of truth keeps every offline safeguard discoverable and preserves
+the guarantees documented elsewhere in this folder.

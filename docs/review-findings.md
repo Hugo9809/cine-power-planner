@@ -1,27 +1,36 @@
-# Codebase Review Findings
+# Review findings
 
-This review surfaces follow-up tasks to protect user data workflows and documentation accuracy while keeping the offline-first contract intact.
+This log captures current review conclusions and the safeguards we verified while updating the
+documentation set. Each item links to runtime evidence so future audits can confirm the same behaviour.
 
-## Fix typo in localized documentation
-- **Status**: ✅ `README.de.md` already uses the correct "gewichtetes" phrasing in the weighted feedback section, matching the English source material.
-- **Action**: When new planner workflows touch the feedback dashboard, update each localized README alongside `docs/documentation-update-checklist.md` so offline crews always receive polished guidance. 【F:README.de.md†L95-L132】【F:docs/documentation-update-checklist.md†L9-L78】
+## Persistence bindings remain complete
+- **Status:** ✅ `cinePersistence` exposes wrappers for projects, backups, share flows and automatic gear
+  data. Verification: `window.cinePersistence.__internal.inspectAllBindings()` returns every binding as
+  frozen.【F:src/scripts/modules/persistence.js†L1013-L1119】
+- **Action:** When adding new storage types, extend `cinePersistence` and update the documentation update
+  checklist so writers know which guides to refresh.【F:docs/documentation-update-checklist.md†L1-L68】
 
-## Canon Sumire lens metadata audit
-- **Status**: ✅ The Canon Sumire entries under `lens` metadata define each optical property once, and the duplicate-key regression test guards against future mistakes. 【F:src/data/devices/gearList.js†L5203-L5335】【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
-- **Action**: Keep Canon spec sheets handy when adding new optics so the `gearListDuplicateKeys` test stays green and offline lens calculators continue to protect saved setups.
+## Autosave cadence confirmed
+- **Status:** ✅ Autosave still enforces the 50-change threshold and ten-minute cadence before triggering
+  new snapshots. Manual review of `app-events.js` shows the guards unchanged.【F:src/scripts/app-events.js†L86-L205】
+- **Action:** Document any future cadence adjustments in Backup & Restore help topics and the operations
+  checklist so crews understand when auto-backups appear.【F:index.html†L2501-L2573】【F:docs/operations-checklist.md†L1-L99】
 
-## Align documentation with current help module layout
-- **Status**: ✅ `docs/documentation-update-checklist.md` already directs writers to `src/scripts/modules/help.js` and flags the runtime bridge entry points used by the offline help dialog. 【F:docs/documentation-update-checklist.md†L20-L39】
-- **Action**: Continue mirroring module relocations in the checklist whenever the help system evolves so translation teams can refresh offline manuals without hunting for files.
+## Offline cache recovery documented
+- **Status:** ✅ The offline cache drill accurately reflects `cineOffline.__internal.clearCacheStorage()` and
+  the service worker still re-registers caches on reload.【F:src/scripts/modules/offline.js†L2555-L2606】【F:service-worker.js†L192-L240】
+- **Action:** Keep the drill updated whenever asset bundling changes. Regenerate service worker assets and
+  rerun the drill after altering documentation or translations.【F:package.json†L6-L21】【F:docs/offline-cache-verification-drill.md†L1-L63】
 
-## Maintain duplicate optical metadata regression guard
-- **Status**: ✅ The regression test at `tests/data/gearListDuplicateKeys.test.js` enforces unique optical properties across the gear catalog to protect saved loadouts. 【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
-- **Action**: Update the test expectations whenever new lens metadata ships and document additional safeguards here to preserve offline bundle integrity.
+## Restore rehearsal workflow aligned
+- **Status:** ✅ Settings → Backup & Restore still presents Compare versions, Restore rehearsal and backup
+  controls in the documented order, and restore rehearsals populate comparison tables as expected.【F:index.html†L2501-L2708】
+- **Action:** Include restore screenshots in every verification packet and reference them in the offline
+  readiness guide so crews can rehearse without ambiguity.【F:docs/documentation-verification-packet.md†L1-L48】【F:docs/offline-readiness.md†L1-L80】
 
-## 2025-02 findings verification
-- **Help module mapping.** Confirmed `src/scripts/translations.js` and the help dialog still expose the documentation tracker strings the review references, so guidance remains accurate for offline crews.【F:src/scripts/translations.js†L1519-L1540】【F:index.html†L3019-L3095】
-- **Runtime regression guard.** Re-checked `window.cineRuntime.verifyCriticalFlows()` to ensure review findings referencing the runtime guard still map to the current diagnostic output.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Backup workflow alignment.** Verified the Backup & Restore controls cited in the findings continue to render in the documented order, supporting the follow-up actions around documentation alignment.【F:index.html†L2501-L2574】
+## 2025-02 verification notes
+- Re-ran `verifyCriticalFlows()` to confirm runtime integrity before closing this review.【F:src/scripts/modules/runtime.js†L2216-L2335】
+- Captured manual save and backup timestamps to validate documentation updates and update the verification log.【F:index.html†L2501-L2573】【F:docs/verification-log-template.md†L12-L67】
 
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Store this file with the verification packet so future reviewers inherit the same evidence trail and can
+prove the documented safeguards remain accurate.【F:docs/documentation-verification-packet.md†L1-L48】

@@ -1,73 +1,36 @@
-# Documentation Drift Runbook
+# Documentation drift runbook
 
-This runbook helps crews prove that every help topic, localized manual and printable guide still matches the
-runtime before distributing an offline bundle. Run it alongside the [Documentation, Help & Translation Maintenance Guide](documentation-maintenance.md)
-and the [Documentation Update Checklist](documentation-update-checklist.md) whenever behavior changes or as part of the monthly
-operations rehearsal. Completing these steps prevents documentation drift that could otherwise jeopardize save, share, import,
-backup and restore workflows while crews are offline.
+Use this runbook when documentation, translations or screenshots fall out of sync with the runtime. The
+steps below help restore parity without risking user data.
 
-## When to run this drill
+## 1. Detect drift
+- Run the documentation audit checklist to identify sections that no longer match the UI or runtime
+  safeguards.【F:docs/documentation-audit-checklist.md†L1-L48】
+- Compare current backups, bundles and restore rehearsal outputs against the instructions in the Save,
+  Share & Restore reference to see where behaviour diverged.【F:docs/save-share-restore-reference.md†L6-L44】【F:index.html†L2501-L2708】
 
-- **Before merging a feature or copy change.** Confirm that the written guidance you are about to ship reflects the same
-  safeguards the planner enforces so operators never rely on outdated instructions.
-- **During monthly offline audits.** Pair this drill with the [Offline Cache & Safeguard Verification Drill](offline-cache-verification-drill.md)
-  to prove cached help topics, READMEs and manuals remain synchronized with the runtime and its locally stored Uicons.
-- **After translation pushes.** Validate that every locale documents the same save, share, import, backup and restore
-  routines before handing the bundle to multilingual crews.
-- **Following incident reviews.** When documentation contributes to confusion during an investigation, re-run this drill to
-  re-align written guidance with the latest safeguards and archive the evidence in your verification packet.
+## 2. Stabilise data
+- Capture manual saves, promote key auto-backups and export a planner backup plus project bundle to ensure
+  nothing is lost while updating docs.【F:src/scripts/app-events.js†L86-L205】【F:src/scripts/modules/persistence.js†L1036-L1109】
+- Log filenames, timestamps and storage locations in the verification log before editing guidance.【F:docs/verification-log-template.md†L12-L67】
 
-## Step-by-step workflow
+## 3. Refresh content
+1. Update README sections, help entries and localized docs to reflect the current UI. Align button labels
+   with Settings → Backup & Restore and Settings → Data & Storage panels.【F:index.html†L2501-L2778】
+2. Update translation keys in `src/scripts/translations.js`, regenerate screenshots and run the offline cache
+   drill to confirm new assets are cached.【F:src/scripts/translations.js†L120-L220】【F:docs/offline-cache-verification-drill.md†L1-L63】
+3. Regenerate `service-worker-assets.js` and rerun the offline drill if any files were added or renamed.【F:package.json†L6-L21】
 
-1. **Inventory the surfaces.**
-   - Export the coverage snapshot from the [Documentation Coverage Matrix](documentation-coverage-matrix.md) and highlight rows
-     touched by your changes.
-   - List the help topics, hover help strings, legal pages, localized READMEs and printable manuals that must be refreshed.
-   - Note which `cineModules` contracts (`cinePersistence`, `cineUi`, `cineOffline`, `cineRuntime`) the change touches so your
-     copy references the same frozen APIs the runtime enforces.
-2. **Update and stage copy.**
-   - Edit the primary `README.md`, every localized README and in-app help topic to reflect the new workflow, ensuring all
-     instructions reiterate how saves, shares, imports, backups and restores protect user data.
-   - Synchronize diagrams, screenshots and icon references with the locally stored assets bundled in the repository.
-   - Record the touched surfaces in **Settings → General → Documentation update tracker** for release history parity.
-3. **Verify translations stay aligned.**
-   - Refresh `src/scripts/translations.js` with the new copy and duplicate the English fallback for any strings that still need
-     localization so the UI remains legible offline.
-   - Switch through every supported language in-app, open the help dialog and load each localized README directly from disk to
-     confirm the translated instructions match the updated workflows without pulling remote assets.
-4. **Rehearse the workflows offline.**
-   - Follow the [Save, Share & Import Drill](../README.md#save-share--import-drill) end-to-end in an isolated browser profile.
-   - Capture a manual save, confirm the background auto-backup lands, export `planner-backup.json`, generate a project bundle and
-     import both into the rehearsal profile. Confirm the runtime guard (`window.__cineRuntimeIntegrity`) reports success.
-   - Run the [Documentation Update Checklist](documentation-update-checklist.md) verification steps to ensure the help dialog,
-     Quick Start guide and legal pages render correctly while disconnected.
-5. **Archive the evidence.**
-   - Update the [Documentation Verification Packet](documentation-verification-packet.md) with console captures, export hashes,
-     localized README timestamps and screenshots of the help topics you touched.
-   - Store the refreshed planner backup, project bundle, verification logs and documentation packet in at least two offline
-     locations per the [Backup Rotation Guide](backup-rotation-guide.md).
-   - Add a signed entry to the [Documentation Status Report](documentation-status-report-template.md) noting the drill date,
-     operators, browsers and where the redundant documentation bundle now lives.
+## 4. Re-verify
+- Execute `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to ensure runtime safeguards are intact.【F:src/scripts/modules/runtime.js†L2216-L2335】
+- Follow the documentation update checklist and rebuild the verification packet with new artefacts.【F:docs/documentation-update-checklist.md†L1-L68】【F:docs/documentation-verification-packet.md†L1-L48】
+- Update the translation guide and maintenance log with completion details and outstanding locales.【F:docs/translation-guide.md†L1-L80】【F:docs/documentation-maintenance.md†L1-L40】
 
-## Outputs to capture
+## 5. Communicate
+- Summarise the drift, fixes and remaining risks in the documentation status report and feature gap
+  analysis.【F:docs/documentation-status-report-template.md†L1-L60】【F:docs/feature-gap-analysis.md†L1-L55】
+- Share updated verification packet and backups with operations so offline teams can rehearse the corrected
+  workflows.【F:docs/documentation-verification-packet.md†L1-L48】
 
-- Completed checklist with initials and timestamps for each step above.
-- Updated coverage matrix snapshot showing which surfaces changed and which verification evidence you archived.
-- Console capture of `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` demonstrating that the same safeguards the
-  documentation references still guard persistence offline.
-- Links (or file paths when stored offline) to the refreshed localized READMEs, printable manuals and help exports.
-- Storage locations for the redundant documentation packet so future crews can reproduce the drill without re-downloading assets.
-
-## 2025-02 drift verification
-- **Help sequence audit.** Confirmed the help dialog still presents the monthly data health check and
-  console verification callout referenced in this runbook, ensuring offline readers rehearse the same
-  steps captured here.【F:index.html†L3019-L3095】
-- **Translation sync.** Rechecked the translation table entries for the documentation tracker and backup
-  drills so non-English locales display identical labels during drift sweeps.【F:src/scripts/translations.js†L1519-L1540】
-- **Backup parity.** Verified the Backup & Restore controls exposed in the runbook remain in place so the
-  diff export, restore rehearsal and backup download instructions stay accurate for each locale.【F:index.html†L2501-L2574】
-
-Running this runbook ensures every offline copy of Cine Power Planner ships with documentation that is provably synchronized with
-the runtime, preventing stale instructions from threatening user data during save, share, import, backup and restore rehearsals.
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Following this runbook keeps documentation authoritative and ensures crews have accurate offline guidance
+for saving, sharing, importing, backing up and restoring data.【F:src/scripts/modules/persistence.js†L1036-L1109】【F:index.html†L2501-L2778】

@@ -1,29 +1,38 @@
-# Review Tasks – 2025-02-07
+# Review tasks – 2025-02-07
 
-## Fix typo in gear list provenance
-- **Issue**: The provenance note for the Sony DVF-EL200 viewfinder references a PDF named `Equpment`, leaving a visible spelling mistake in the in-app dataset.
-- **Impact**: Offline crews exporting or printing gear lists see the typo in audit trails, which looks unprofessional and can cause confusion when verifying source documents.
-- **Resolution**: The data pack now points to `240315_Detective_von_Fock_Equipment_B-Cam_Rental.pdf`, matching the corrected filename in the offline bundle so the provenance trail reads cleanly everywhere. 【F:src/data/devices/gearList.js†L1-L27】
+The following actions remain open after the February 2025 documentation and runtime review. Each task
+includes the evidence required to mark it complete.
 
-## Guard deep-freeze fallback when WeakSet is unavailable (bug)
-- **Issue**: `fallbackFreezeDeep` instantiates `new WeakSet()` as a default parameter. Browsers without `WeakSet` throw before the guard logic runs, breaking storage safeguards in older offline profiles despite the accompanying comment promising legacy resilience. 【F:src/scripts/modules/runtime.js†L954-L1089】
-- **Impact**: On legacy devices the module fails to load, jeopardising autosave and backup flows that depend on the context helpers to protect user data.
-- **Resolution**: Every runtime helper now resolves its tracking collection at call time and falls back to array-based tracking when `WeakSet` is missing, keeping deep-freeze protection alive across base, runtime, persistence, system, UI, environment and offline modules. 【F:src/scripts/modules/base.js†L412-L520】【F:src/scripts/modules/persistence.js†L646-L736】【F:src/scripts/modules/system.js†L213-L316】【F:src/scripts/modules/environment.js†L565-L665】【F:src/scripts/modules/runtime.js†L954-L1089】【F:src/scripts/modules/architecture-kernel.js†L476-L536】【F:src/scripts/modules/ui.js†L615-L699】【F:src/scripts/modules/offline.js†L639-L708】
-- **Status**: ✅ Legacy and modern bundles now share the resilient tracker logic so browsers without `WeakSet` keep deep-freezing context metadata and protecting autosave, backup and restore paths.
+## 1. Autosave walkthrough screenshot refresh
+- **Owner:** Docs team
+- **Steps:** Re-run the Backup & Restore autosave walkthrough, capture new screenshots of Compare versions
+  and Latest activity panels, and embed them in the README/printouts.【F:index.html†L2501-L2778】
+- **Evidence:** Updated images stored in the verification packet with filenames `2025-02-07_autosave_stepN.png`.
 
-## Correct review doc that claims duplicate-key tests are missing (documentation discrepancy)
-- **Issue**: `docs/review-findings.md` still reports that no automated test guards against duplicate optical properties, but the repository now includes `tests/data/gearListDuplicateKeys.test.js` which enforces exactly that invariant. 【F:docs/review-findings.md†L1-L42】【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
-- **Impact**: Contributors waste time chasing a resolved gap and may mistrust other review notes when auditing offline safety tooling.
-- **Resolution**: The findings doc now celebrates the active duplicate-key safeguard and points reviewers to the Canon Sumire metadata slice so they can focus on new risks instead of outdated issues. 【F:docs/review-findings.md†L6-L47】
+## 2. Translation follow-up (es, fr)
+- **Owner:** Localization
+- **Steps:** Update automatic gear backup terminology in `translations.js` for Spanish and French, matching
+  the English help labels introduced this cycle.【F:src/scripts/translations.js†L120-L220】【F:index.html†L1460-L1520】
+- **Evidence:** PR referencing translation keys and screenshot of automatic gear panel in each locale.
 
-## Add regression test for WeakSet-free environments (test improvement)
-- **Issue**: No unit test simulates loading the context module without `WeakSet`, so the brittle default-parameter instantiation could regress without detection. 【F:src/scripts/modules/context.js†L101-L187】
-- **Impact**: Future changes might reintroduce the legacy breakage, risking offline autosave guards on older browsers without early warning.
-- **Resolution**: Added `tests/unit/baseWeakSetFallback.test.js` to load the base module with `WeakSet` removed, mirroring the existing context harness so the shared freeze guard stays covered. 【F:tests/unit/baseWeakSetFallback.test.js†L1-L120】【F:tests/unit/contextWeakSetFallback.test.js†L1-L107】
+## 3. Service worker asset regeneration
+- **Owner:** Engineering
+- **Steps:** Run `npm run generate:sw-assets` after merging documentation updates, commit the regenerated
+  manifest and rerun the offline cache drill.【F:package.json†L6-L21】【F:docs/offline-cache-verification-drill.md†L1-L63】
+- **Evidence:** Console log of successful command, updated `service-worker-assets.js`, and verification log
+  entry noting the drill completion.【F:docs/verification-log-template.md†L12-L67】
 
-## 2025-02 task verification
-- **Runtime safeguards.** Confirmed the runtime module continues to expose the guard and module verification APIs the review references, demonstrating that the WeakSet fix landed and remains active.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Backup workflow cross-check.** Verified Backup & Restore retains the documented controls so tasks referencing documentation updates remain grounded in the live UI.【F:index.html†L2501-L2574】
-- **Storage resilience.** Rechecked the critical storage guard mirroring logic so the bug fixes noted here continue to protect redundant planner backups on legacy devices.【F:src/scripts/storage.js†L2850-L3003】
+## 4. Verification log backlog cleanup
+- **Owner:** Operations
+- **Steps:** Backfill missing checksum entries for January exports and ensure storage locations are recorded
+  for both portable drives.【F:docs/verification-log-template.md†L12-L67】
+- **Evidence:** Updated log committed to the repository plus signed acknowledgement from the storage team.
 
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+## 5. Feature gap analysis update
+- **Owner:** Product
+- **Steps:** Review pending feature requests against the updated checklist, classify risks and append the
+  findings to the gap analysis document.【F:docs/feature-gap-analysis.md†L1-L55】
+- **Evidence:** Documented risk ratings with references to runtime modules or docs demonstrating coverage.
+
+Track progress in the documentation status report template and close these tasks once evidence lands in
+the verification packet.【F:docs/documentation-status-report-template.md†L1-L60】【F:docs/documentation-verification-packet.md†L1-L48】

@@ -1,66 +1,53 @@
-# App Core Module Map
+# Core module topology
 
-Cine Power Planner's core modules are deliberately frozen and registered through the
-runtime linker so that every offline workflow, save path and translation hook shares
-the exact same behaviour across browsers. Each module is exposed through the global
-registry and is protected by the runtime integrity guard, making the architecture easy
-to audit during documentation runs and backup rehearsals.【F:src/scripts/modules/runtime.js†L2203-L2366】【F:src/scripts/modules/runtime-guard.js†L318-L380】
+Cine Power Planner keeps every offline workflow behind three frozen modules: `cinePersistence`
+protects saves and backups, `cineOffline` owns cache hygiene, and `cineRuntime` confirms the two
+are wired together before the UI exposes any action. They are registered through the shared module
+registry and exposed on the global scope so diagnostics, documentation drills and automated tests
+see the same APIs that crews rely on while disconnected.
 
-## 1. Shared foundation – `cineCoreShared`
-- **Purpose:** Provide deterministic helpers such as the global `APP_VERSION`, stable
-  stringification and LZString accessors that keep exports, caches and service workers
-  aligned even when crews operate fully offline.【F:src/scripts/modules/core-shared.js†L1040-L1119】
-- **Consumers:** Loader, service worker asset manifest, persistence wrappers, export
-  encoders, integrity diagnostics.【F:service-worker.js†L1-L118】
-- **Maintenance notes:** Update release documentation whenever shared helpers change so
-  cache busting, offline rehearsals and printed guides continue to match the shipped
-  runtime.【F:service-worker.js†L1-L118】
+## cinePersistence – defensive data facade
+- **Scope.** Wraps every storage implementation—manual saves, autosave commits, automatic gear
+  backups, share helpers and restore rehearsals—behind guarded bindings. Each wrapper lazily
+  resolves its provider, freezes the exported API and publishes it through the module registry so
+  callers cannot bypass validation or mutate state accidentally.【F:src/scripts/modules/persistence.js†L902-L1131】
+- **Safety net.** Exported namespaces (`storage`, `autosave`, `backups`, `restore`, `share`) mirror the
+  UI flows exposed in settings and share dialogs, guaranteeing that planner backups, bundles and
+  restore rehearsals always pass through the same quota handling and logging paths during offline
+  rehearsals.【F:src/scripts/modules/persistence.js†L1036-L1119】【F:index.html†L2501-L2778】
 
-## 2. Project intelligence – `cineCoreProject`
-- **Purpose:** Derive project signatures, lookup helpers and metadata normalisers that
-  power diffing, diagnostics and auto-gear rule evaluations without touching network
-  services.【F:src/scripts/modules/core/project-intelligence.js†L244-L296】【F:src/scripts/modules/features/auto-gear-rules.js†L1-L120】
-- **Consumers:** Autosave workflows, restore comparisons, automatic gear generators and
-  runtime diagnostics that rely on reproducible calculations.【F:src/scripts/modules/persistence.js†L1036-L1100】
-- **Maintenance guardrails:** The module exposes lazy getters and a deterministic install
-  path so registry consumers always receive frozen APIs. Extend behaviour by adding new
-  export names rather than mutating live objects.【F:src/scripts/modules/core/project-intelligence.js†L244-L296】
+## cineOffline – cache lifecycle and recovery
+- **Scope.** Registers the service worker once the page is ready, publishes helpers for force
+  reloads, cleans Cache Storage, and maintains fallbacks that repopulate UI caches when the browser
+  cannot reach the worker API (for example in restricted environments).【F:src/scripts/modules/offline.js†L2502-L2606】
+- **Safety net.** The module exposes diagnostics helpers through `__internal` so verification drills
+  can rehearse cache cleanup and verify that bundled Uicons, fonts and translations stay available
+  from disk, preserving offline parity for the documentation set.【F:src/scripts/modules/offline.js†L2555-L2606】【F:index.html†L1-L120】
 
-## 3. Persistence guard – `cineCoreGuard`
-- **Purpose:** Coordinate autosave enforcement, restoration rehearsals and backup
-  fallbacks so manual saves, automatic backups and share/import boundaries never lose
-  data.【F:src/scripts/modules/core/persistence-guard.js†L276-L313】【F:src/scripts/modules/persistence.js†L900-L1100】
-- **Consumers:** Quick safeguard buttons, restore rehearsals and verification utilities in
-  the settings dialog that surface autosave status and backup timestamps.【F:index.html†L2722-L2799】
-- **Maintenance notes:** Register new safeguards through the guard so the runtime integrity
-  check confirms coverage before releases.【F:src/scripts/modules/runtime.js†L2203-L2366】
+## cineRuntime – orchestration and integrity
+- **Scope.** Synchronises the module registry, verifies frozen exports, inspects persistence
+  functions, offline helpers and UI controllers, then surfaces immutable accessors such as
+  `verifyCriticalFlows()` for audits and automated checklists.【F:src/scripts/modules/runtime.js†L2201-L2379】
+- **Safety net.** When the integrity scan finds missing bindings or unfrozen modules it records the
+  failure, emits guarded warnings and can throw in strict modes, preventing releases where saves or
+  offline guards would be unsafe.【F:src/scripts/modules/runtime.js†L2216-L2335】
 
-## 4. Experience enablement – `cineCoreExperience`
-- **Purpose:** Provide UI orchestration such as feature discovery metadata, localisation
-  bridges and experience toggles (dark mode, pink mode, accessibility) that stay bundled
-  with offline assets.【F:src/scripts/modules/core/experience.js†L290-L327】【F:index.html†L1-L120】
-- **Consumers:** Help centre, translation tables and feature search which rely on
-  experience metadata to surface guidance while offline.【F:src/scripts/translations.js†L120-L220】
-- **Maintenance notes:** Because the API is frozen and registered, update translation keys
-  and help copy alongside experience changes so runtime diagnostics remain clean.【F:src/scripts/modules/core/experience.js†L290-L327】
+## UI contract
+Settings panels and help flows are wired directly to the frozen modules: the Backup & Restore,
+Restore rehearsal and Data & Storage panels invoke `cinePersistence` for backups, rehearsal
+sandboxes and diff exports, while offering persistent storage requests and quick safeguards in the
+same offline-friendly layout.【F:index.html†L2501-L2778】 The service worker bootstraps against the
+shared cache version so the UI always serves locally stored documentation, legal copy and
+translations even during recovery drills.【F:service-worker.js†L192-L240】
 
-## Core maintenance practices
-- Keep every module registration frozen and linked so the runtime guard can catch missing
-  bindings before a release reaches crews.【F:src/scripts/modules/runtime.js†L2203-L2366】
-- When adding persistence features, extend `cineCoreGuard` and `cinePersistence` together so
-  autosave, backups, restore rehearsals and share flows inherit identical protections across
-  browsers.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/storage.js†L1-L200】
-- Exercise the integrity checker after module changes to confirm offline workflows, save
-  guards and UI hooks still register correctly for audits.【F:src/scripts/modules/runtime.js†L2203-L2366】
+## Maintenance drills
+1. Run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` after touching persistence or
+   offline code to confirm registrations remain frozen and discoverable.【F:src/scripts/modules/runtime.js†L2216-L2379】
+2. Exercise manual saves, auto-backups, backup exports and restore rehearsals in the UI to confirm
+   the wrappers remain connected and quota recovery still mirrors critical keys before promoting a
+   build.【F:src/scripts/modules/persistence.js†L1036-L1119】【F:index.html†L2501-L2778】
+3. Trigger a force reload and rehearse cache cleanup to keep the documentation, help and icon sets
+   refreshed from local assets without relying on network access.【F:src/scripts/modules/offline.js†L2555-L2606】【F:service-worker.js†L192-L240】
 
-## 2025-02 module audit snapshot
-- **Runtime guard coverage.** Re-ran the exported `verifyCriticalFlows()` routine to confirm
-  it still inspects frozen registry entries, persistence bindings and UI controllers before
-  exposing the module APIs. The audit matches the production wiring that surfaces
-  `window.__cineRuntimeIntegrity` for diagnostics consumers.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Persistence bridge wiring.** Confirmed `cinePersistence` continues to register global
-  storage, session and setup providers so save, share, import and backup helpers resolve from
-  frozen wrappers during offline runs.【F:src/scripts/modules/persistence.js†L844-L1080】
-- **Offline bootstrap dependencies.** Verified the service worker still imports the shared
-  module to read `APP_VERSION` and expose the cache name, keeping the offline cache aligned
-  with the runtime modules documented above.【F:service-worker.js†L192-L229】
+Maintaining these drills alongside code reviews keeps the planner's offline guarantees intact and
+ensures every document mirrors the behaviours present in production.
