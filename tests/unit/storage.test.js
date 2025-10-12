@@ -398,7 +398,7 @@ describe('device data storage', () => {
     expect(JSON.parse(restoredRaw)).toEqual(recovered);
   });
 
-  test('saveDeviceData keeps backup uncompressed when primary storage uses compression', () => {
+  test('saveDeviceData stores uncompressed payloads even for large entries', () => {
     const largeNote = 'Important storage note '.repeat(1200);
     const heavyDeviceData = JSON.parse(JSON.stringify(validDeviceData));
     heavyDeviceData.notes = largeNote;
@@ -422,14 +422,49 @@ describe('device data storage', () => {
 
     const primaryRaw = localStorage.getItem(DEVICE_KEY);
     expect(primaryRaw).not.toBeNull();
-    const parsedPrimary = JSON.parse(primaryRaw);
-    expect(parsedPrimary.__cineStorageCompressed).toBe(true);
+    expect(primaryRaw).toBe(expectedSerialized);
+    expect(primaryRaw).not.toContain('__cineStorageCompressed');
+    expect(JSON.parse(primaryRaw)).toEqual(heavyDeviceData);
 
     const backupRaw = localStorage.getItem(backupKeyFor(DEVICE_KEY));
     expect(backupRaw).toBe(expectedSerialized);
     expect(backupRaw).not.toContain('__cineStorageCompressed');
     expect(JSON.parse(backupRaw)).toEqual(heavyDeviceData);
-    expect(backupRaw.length).toBeGreaterThan(primaryRaw.length);
+  });
+
+  test('saveDeviceData rewrites legacy compressed payloads to plain JSON', () => {
+    const largeNote = 'Compressed legacy payload '.repeat(800);
+    const heavyDeviceData = JSON.parse(JSON.stringify(validDeviceData));
+    heavyDeviceData.notes = largeNote;
+
+    const serialized = JSON.stringify(heavyDeviceData);
+    const compressedPayload = global.LZString.compressToUTF16(serialized);
+    const legacyWrapper = JSON.stringify({
+      __cineStorageCompressed: true,
+      version: 1,
+      algorithm: 'lz-string',
+      namespace: 'camera-power-planner:storage-compression',
+      data: compressedPayload,
+      originalLength: serialized.length,
+      compressedPayloadLength: compressedPayload.length,
+      compressionVariant: 'utf16',
+    });
+
+    localStorage.setItem(DEVICE_KEY, legacyWrapper);
+    localStorage.setItem(backupKeyFor(DEVICE_KEY), legacyWrapper);
+
+    saveDeviceData(heavyDeviceData);
+
+    const primaryRaw = localStorage.getItem(DEVICE_KEY);
+    const backupRaw = localStorage.getItem(backupKeyFor(DEVICE_KEY));
+
+    expect(primaryRaw).toBe(serialized);
+    expect(primaryRaw).not.toContain('__cineStorageCompressed');
+    expect(JSON.parse(primaryRaw)).toEqual(heavyDeviceData);
+
+    expect(backupRaw).toBe(serialized);
+    expect(backupRaw).not.toContain('__cineStorageCompressed');
+    expect(JSON.parse(backupRaw)).toEqual(heavyDeviceData);
   });
 
   test('loadDeviceData replaces non-object categories with empty objects', () => {

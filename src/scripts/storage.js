@@ -323,6 +323,7 @@
   }
 
 var DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
+var DEVICE_STORAGE_KEY_VARIANTS = null;
 var SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
@@ -2574,6 +2575,29 @@ function getStorageKeyVariants(key) {
 
 var SETUP_STORAGE_KEY_VARIANTS = new Set(getStorageKeyVariants(SETUP_STORAGE_KEY));
 
+function getDeviceStorageKeyVariants() {
+  if (
+    !DEVICE_STORAGE_KEY_VARIANTS
+    || typeof DEVICE_STORAGE_KEY_VARIANTS.has !== 'function'
+  ) {
+    DEVICE_STORAGE_KEY_VARIANTS = new Set(getStorageKeyVariants(DEVICE_STORAGE_KEY));
+  }
+  return DEVICE_STORAGE_KEY_VARIANTS;
+}
+
+function isDeviceStorageKeyVariant(key) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+
+  const variants = getDeviceStorageKeyVariants();
+  if (variants && typeof variants.has === 'function') {
+    return variants.has(key);
+  }
+
+  return key === DEVICE_STORAGE_KEY;
+}
+
 function shouldAllowCriticalSweepPrimaryInspection(key) {
   if (typeof key !== 'string' || !key) {
     return false;
@@ -2890,7 +2914,8 @@ function ensureCriticalStorageBackups(options = {}) {
 
     const shouldAttemptCompression = typeof stringPrimaryValue === 'string'
       && stringPrimaryValue
-      && !stringPrimaryValue.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`);
+      && !stringPrimaryValue.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`)
+      && !isDeviceStorageKeyVariant(entry.key);
 
     let candidateValue = stringPrimaryValue;
     let compressionInfo = null;
@@ -4004,6 +4029,7 @@ function registerProtectedCompressionSkipKeys(skipSet) {
     CONTACTS_STORAGE_KEY,
     OWN_GEAR_STORAGE_KEY,
     USER_PROFILE_STORAGE_KEY,
+    DEVICE_STORAGE_KEY,
   ];
 
   for (let index = 0; index < keysToProtect.length; index += 1) {
@@ -4012,10 +4038,18 @@ function registerProtectedCompressionSkipKeys(skipSet) {
       continue;
     }
 
-    skipSet.add(key);
+    const variants = getStorageKeyVariants(key);
+    for (let variantIndex = 0; variantIndex < variants.length; variantIndex += 1) {
+      const variant = variants[variantIndex];
+      if (typeof variant !== 'string' || !variant) {
+        continue;
+      }
 
-    if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
-      skipSet.add(`${key}${STORAGE_BACKUP_SUFFIX}`);
+      skipSet.add(variant);
+
+      if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
+        skipSet.add(`${variant}${STORAGE_BACKUP_SUFFIX}`);
+      }
     }
   }
 }
@@ -4857,7 +4891,10 @@ function createStorageMigrationBackup(storage, key, originalValue) {
     return;
   }
 
-  const compressedCandidate = tryCreateCompressedMigrationBackupCandidate(serialized, createdAt);
+  const allowCompressedBackup = !isDeviceStorageKeyVariant(key);
+  const compressedCandidate = allowCompressedBackup
+    ? tryCreateCompressedMigrationBackupCandidate(serialized, createdAt)
+    : null;
 
   const runRecoveryWith = (candidate, options, fallbackError) => {
     const recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, () =>
@@ -8304,6 +8341,10 @@ function loadDeviceData() {
       DEVICE_STORAGE_KEY,
       data,
       "Error updating device data in localStorage during normalization:",
+      {
+        disableCompression: true,
+        forceCompressionOnQuota: false,
+      },
     );
   }
 
@@ -8335,6 +8376,10 @@ function saveDeviceData(deviceData) {
     DEVICE_STORAGE_KEY,
     dataToPersist,
     "Error saving device data to localStorage:",
+    {
+      disableCompression: true,
+      forceCompressionOnQuota: false,
+    },
   );
 }
 
