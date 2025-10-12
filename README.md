@@ -31,6 +31,9 @@ drive without phoning home.
   with the repo. Autosave, backup, restore, share and help systems run entirely
   on-device so crews can rehearse and operate in fully disconnected
   environments.
+- **Synonym-aware global search.** Safety terms such as “trash”, “archive”,
+  “safeguard”, “recover” or “rollback” now jump straight to delete, save,
+  backup and restore tools so data protection remains effortless.
 
 ## Installation
 

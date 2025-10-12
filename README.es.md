@@ -11,6 +11,7 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 - **Configuraciones personalizadas.** Mezcla cámaras, accesorios, requisitos del equipo y escenarios guardados para reflejar exactamente el montaje que usarás en el set. Exporta paquetes o copias de seguridad cuando quieras sin poner en riesgo los datos.
 - **Ensayos de seguridad y trazabilidad.** Los recorridos guiados, los registros de diferencias automáticos y los paquetes de verificación facilitan demostrar que guardar, compartir, importar, respaldar y restaurar protegen cada dato de usuario, incluso sin reconectarte.
 - **Operación offline garantizada.** Todos los iconos, fuentes, Uicons y scripts auxiliares viajan con el repositorio. El guardado automático, los respaldos, las restauraciones, el compartido y la ayuda funcionan totalmente en el dispositivo para que los equipos trabajen desconectados con confianza.
+- **Búsqueda global con sinónimos.** Términos de seguridad como «trash», «archivo», «salvaguardar», «recuperar» o «rollback» llevan ahora directamente a las acciones de borrar, guardar, hacer copia de seguridad y restaurar para proteger los datos sin esfuerzo.
 
 ## Instalación
 

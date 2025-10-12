@@ -11,6 +11,7 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
 - **Individuelle Rig-Konfigurationen.** Kombiniere Kameras, Zubehör, Crew-Anforderungen und gespeicherte Szenarien, um exakt die Builds abzubilden, die on set laufen. Exportiere Bundles oder Backups jederzeit, ohne dass Daten verloren gehen.
 - **Sicherheitsübungen & Prüfnachweise.** Geführte Drills, automatische Diff-Logs und Verifizierungspakete zeigen, dass Speichern, Teilen, Import, Backup und Restore jede Nutzerinformation schützen – selbst komplett ohne Internet.
 - **Konsequenter Offline-Betrieb.** Alle Icons, Fonts, Uicons und Hilfsskripte reisen mit dem Repository. Autosave, Backup, Restore, Teilen und Hilfe laufen vollständig lokal, damit Teams auch im isolierten Betrieb zuverlässig arbeiten.
+- **Synonymbewusste globale Suche.** Sicherheitsbegriffe wie „Trash“, „Archiv“, „Schützen“, „Wiederherstellen“ oder „Rollback“ springen direkt zu Lösch-, Speicher-, Backup- und Restore-Werkzeugen, sodass Datensicherung mühelos bleibt.
 
 ## Installation
 
