@@ -23,7 +23,107 @@ function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symb
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
-var CORE_RUNTIME_CANDIDATE_SCOPES = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
+var CORE_ENVIRONMENT_HELPERS = function resolveCoreEnvironmentHelpers() {
+  var helpers = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    helpers = resolveCoreSupportModule('cineRuntimeEnvironmentHelpers', './modules/runtime-environment-helpers.js');
+  }
+
+  if (!helpers && typeof require === 'function') {
+    try {
+      var requiredHelpers = require('./modules/runtime-environment-helpers.js');
+      if (requiredHelpers && _typeof(requiredHelpers) === 'object') {
+        helpers = requiredHelpers;
+      }
+    } catch (environmentHelpersRequireError) {
+      void environmentHelpersRequireError;
+    }
+  }
+
+  if (helpers) {
+    return helpers;
+  }
+
+  var fallbackScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+
+  for (var fallbackIndex = 0; fallbackIndex < fallbackScopes.length; fallbackIndex += 1) {
+    var candidateScope = fallbackScopes[fallbackIndex];
+    if (!candidateScope || _typeof(candidateScope) !== 'object' && typeof candidateScope !== 'function') {
+      continue;
+    }
+
+    try {
+      var candidateHelpers = candidateScope.cineRuntimeEnvironmentHelpers;
+      if (candidateHelpers && _typeof(candidateHelpers) === 'object') {
+        helpers = candidateHelpers;
+        break;
+      }
+    } catch (candidateLookupError) {
+      void candidateLookupError;
+    }
+  }
+
+  return helpers;
+}();
+
+function collectCoreRuntimeCandidateScopes(primaryScope) {
+  var scopes = [];
+
+  function registerScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+
+  if (CORE_ENVIRONMENT_HELPERS && typeof CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function') {
+    try {
+      var collectedScopes = CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primaryScope);
+      if (Array.isArray(collectedScopes)) {
+        for (var collectedIndex = 0; collectedIndex < collectedScopes.length; collectedIndex += 1) {
+          registerScope(collectedScopes[collectedIndex]);
+        }
+      }
+    } catch (collectScopeError) {
+      void collectScopeError;
+    }
+  }
+
+  registerScope(primaryScope);
+  registerScope(typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null);
+  registerScope(typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null);
+  registerScope(typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null);
+  registerScope(typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null);
+
+  var detectedScope = null;
+
+  if (CORE_ENVIRONMENT_HELPERS && typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function') {
+    try {
+      detectedScope = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+    } catch (detectScopeError) {
+      void detectScopeError;
+      detectedScope = null;
+    }
+  } else if (typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
+    detectedScope = globalThis;
+  } else if (typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
+    detectedScope = window;
+  } else if (typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
+    detectedScope = self;
+  } else if (typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
+    detectedScope = global;
+  }
+
+  registerScope(detectedScope);
+
+  return scopes;
+}
+
+var CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
 var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {

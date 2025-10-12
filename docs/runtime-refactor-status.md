@@ -81,3 +81,15 @@
 - Extracted the shared runtime state factory into `cineCoreRuntimeState` so both modern and legacy bundles can reuse safe scope registration, freeze tracking, and temperature render guards without copying boilerplate.【F:src/scripts/modules/core/runtime-state.js†L1-L239】【F:legacy/scripts/modules/core/runtime-state.js†L1-L222】
 - App core now resolves the helper module before falling back to the legacy inline implementation, ensuring autosave, backup, and restore safeguards benefit from the centralised freeze registry across browser, worker, and Node contexts.【F:src/scripts/app-core-new-2.js†L1-L205】【F:legacy/scripts/app-core-new-2.js†L1-L204】
 - Service worker assets, loader manifests, and the runtime bundler parts list include the new module so offline pre-caching continues to cover the extracted helpers for both modern and legacy builds.【F:src/scripts/script.js†L41-L50】【F:legacy/scripts/script.js†L1-L8】【F:service-worker-assets.js†L41-L118】
+
+## Step 7 – Environment helper candidate scope reuse
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-2.js` | 17841 | 17962 | +121 |
+| `legacy/scripts/app-core-new-2.js` | 16463 | 16563 | +100 |
+
+*Notes:*
+
+- App core now resolves `cineRuntimeEnvironmentHelpers` before scanning globals, letting the runtime share the centralised scope detection logic across modern and legacy bundles while preserving offline compatibility for manual fallbacks.【F:src/scripts/app-core-new-2.js†L6-L139】【F:legacy/scripts/app-core-new-2.js†L26-L126】
+- The candidate scope collector deduplicates helper results and keeps the manual global list as a safety net so autosave, backup, and restore routines still initialise correctly even when helpers are unavailable (e.g., offline restores or Node tests).【F:src/scripts/app-core-new-2.js†L61-L139】【F:legacy/scripts/app-core-new-2.js†L63-L126】

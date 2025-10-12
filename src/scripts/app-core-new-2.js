@@ -3,19 +3,140 @@
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 
+var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
+  var helpers = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    helpers = resolveCoreSupportModule(
+      'cineRuntimeEnvironmentHelpers',
+      './modules/runtime-environment-helpers.js'
+    );
+  }
+
+  if (!helpers && typeof require === 'function') {
+    try {
+      var requiredHelpers = require('./modules/runtime-environment-helpers.js');
+      if (requiredHelpers && typeof requiredHelpers === 'object') {
+        helpers = requiredHelpers;
+      }
+    } catch (environmentHelpersRequireError) {
+      void environmentHelpersRequireError;
+    }
+  }
+
+  if (helpers) {
+    return helpers;
+  }
+
+  var fallbackScopes = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ];
+
+  for (var fallbackIndex = 0; fallbackIndex < fallbackScopes.length; fallbackIndex += 1) {
+    var candidateScope = fallbackScopes[fallbackIndex];
+    if (!candidateScope || (typeof candidateScope !== 'object' && typeof candidateScope !== 'function')) {
+      continue;
+    }
+
+    try {
+      var candidateHelpers = candidateScope.cineRuntimeEnvironmentHelpers;
+      if (candidateHelpers && typeof candidateHelpers === 'object') {
+        helpers = candidateHelpers;
+        break;
+      }
+    } catch (candidateLookupError) {
+      void candidateLookupError;
+    }
+  }
+
+  return helpers;
+})();
+
+function collectCoreRuntimeCandidateScopes(primaryScope) {
+  var scopes = [];
+
+  function registerScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+
+  if (
+    CORE_ENVIRONMENT_HELPERS &&
+    typeof CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
+  ) {
+    try {
+      var collectedScopes = CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primaryScope);
+      if (Array.isArray(collectedScopes)) {
+        for (var collectedIndex = 0; collectedIndex < collectedScopes.length; collectedIndex += 1) {
+          registerScope(collectedScopes[collectedIndex]);
+        }
+      }
+    } catch (collectScopeError) {
+      void collectScopeError;
+    }
+  }
+
+  registerScope(primaryScope);
+  registerScope(
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null
+  );
+  registerScope(
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null
+  );
+  registerScope(
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null
+  );
+  registerScope(
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null
+  );
+
+  var detectedScope = null;
+
+  if (
+    CORE_ENVIRONMENT_HELPERS &&
+    typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
+  ) {
+    try {
+      detectedScope = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+    } catch (detectScopeError) {
+      void detectScopeError;
+      detectedScope = null;
+    }
+  } else if (typeof globalThis !== 'undefined' && typeof globalThis === 'object') {
+    detectedScope = globalThis;
+  } else if (typeof window !== 'undefined' && typeof window === 'object') {
+    detectedScope = window;
+  } else if (typeof self !== 'undefined' && typeof self === 'object') {
+    detectedScope = self;
+  } else if (typeof global !== 'undefined' && typeof global === 'object') {
+    detectedScope = global;
+  }
+
+  registerScope(detectedScope);
+
+  return scopes;
+}
+
 // The runtime needs a predictable list of global scopes so that background
 // workers, offline tabs and legacy frames all share the same configuration. We
 // build an ordered array here and then let the state helpers below iterate over
 // it when fetching shared utilities.
-var CORE_RUNTIME_CANDIDATE_SCOPES = [
+var CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
     ? CORE_GLOBAL_SCOPE
-    : null,
-  typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
-  typeof window !== 'undefined' && typeof window === 'object' ? window : null,
-  typeof self !== 'undefined' && typeof self === 'object' ? self : null,
-  typeof global !== 'undefined' && typeof global === 'object' ? global : null,
-].filter(Boolean);
+    : null
+);
 
 var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   var resolvedSupport = null;
