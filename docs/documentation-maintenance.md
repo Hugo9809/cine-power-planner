@@ -1,216 +1,41 @@
-# Documentation, Help & Translation Maintenance Guide
+# Documentation Maintenance Loop
 
-Cine Power Planner treats documentation as a core feature of the product. Help content,
-offline manuals and translations must reflect the current behavior of the app so crews can
-trust every save, share, import, backup and restore workflow even when they are far from an
-internet connection. Use this guide whenever you add, remove or adjust functionality. For a
-condensed run-through before code review, follow the [Documentation Update Checklist](documentation-update-checklist.md)
-alongside this guide so no surface or translation is missed.
+Keep documentation synchronized with the runtime by running this loop after
+feature work, before releases and during quarterly audits.
 
-> **Retired guides:** The transitional modularisation playbooks that referenced the older
-> “Camera Power Planner” naming have been archived. They no longer describe the current
-> module boundaries or offline safeguards, so rely on the active architecture references
-> instead—namely the [App Core Module Map](architecture/app-core-modules.md) and the
-> [Module Registry guide](architecture/module-registry.md)—when updating help or
-> translations.【F:docs/architecture/app-core-modules.md†L1-L34】【F:docs/architecture/module-registry.md†L1-L188】
+## Step 1 – Plan the update
 
-Run the recurring [Documentation Audit Checklist](documentation-audit-checklist.md) between feature
-cycles to spot-check localized READMEs, printable manuals, help topics and Quick safeguards logs
-against the runtime safeguards described below. The audit keeps long-lived releases aligned with
-the current code even when no new features ship for several weeks.
+- List all behaviours that changed (save/share/import/backup/restore, automatic
+  gear, offline cache, translation controls).
+- Identify which documentation files and help topics describe those workflows.
+- Schedule time for translation updates and screenshot refreshes.
 
-When you need a focused rehearsal to confirm that cached offline materials still match the runtime,
-pair this guide with the [Documentation Drift Runbook](documentation-drift-runbook.md). The drill
-walks through inventorying surfaces, validating translations, rehearsing save/share/import/backup/
-restore flows offline and archiving verification evidence so every distributed bundle carries
-documentation that is provably up to date.
+## Step 2 – Update content
 
-When features touch save/share/import/backup/restore logic or runtime safeguards,
-coordinate updates with the [Data Protection Playbook](data-protection-playbook.md).
-It captures the rehearsal cadence, guard outputs and archival artefacts that crews
-expect documentation to reinforce while they operate offline.
+- Edit the relevant guides in `docs/`.
+- Refresh localized READMEs and add translator notes for pending strings.
+- Capture new screenshots using the locally bundled themes and icons.
+- Regenerate PDFs or training bundles if applicable.
 
-All persistence-facing documentation should now reference the consolidated
-`cinePersistence` module so that future refactors maintain a single, lossless contract for
-saving, sharing, backups and restores.【F:src/scripts/modules/persistence.js†L1-L125】
+## Step 3 – Verify accuracy
 
-Coordinated UI flows now surface through the frozen `cineUi` registry. Update help topics,
-workflow diagrams and troubleshooting notes to reference the registered controllers,
-interactions and help entries so offline operators can cross-check the exact button or
-dialog names documented in code.【F:src/scripts/modules/ui.js†L1-L192】
+- Run the [Documentation Audit Checklist](documentation-audit-checklist.md).
+- Execute the [Operations Checklist](operations-checklist.md) in offline mode to
+  confirm the written steps match the runtime.
+- Prime caches and repeat key workflows in a fresh browser profile.
 
-Keep the command-line help reference (`tools/cliHelp.js`) aligned with these updates so crews
-running `npm run help` offline see every required script. When documentation, help topics or
-translations change, ensure the guide highlights `npm run generate:sw-assets` so operators
-rebuild the service worker manifest before packaging the offline bundle.【F:tools/cliHelp.js†L4-L113】
+## Step 4 – Archive evidence
 
-Printable overviews and PDF exports now route through the dedicated
-`cineFeaturePrint` module. When you adjust instructions for sharing power summaries or
-exporting documentation bundles, reference the module so readers understand how native
-printing and fallback windows cooperate offline.【F:src/scripts/modules/features/print-workflow.js†L1-L208】
+- Complete the [Documentation Status Report](documentation-status-report-template.md).
+- Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md).
+- Store planner backups, project bundles, verification logs and screenshots with
+  the updated documentation packet.
 
-Project intelligence, persistence guardrails and experience helpers are now surfaced
-through `cineCoreProject`, `cineCoreGuard` and `cineCoreExperience`. Reference these
-modules when documenting derived metadata, autosave safeguards or UI affordances so
-the registry-backed contracts stay aligned with user guidance.【F:src/scripts/modules/core/project-intelligence.js†L1-L229】【F:src/scripts/modules/core/persistence-guard.js†L1-L213】【F:src/scripts/modules/core/experience.js†L1-L229】
+## Step 5 – Communicate
 
-The new integration suite (`tests/dom/runtimeIntegration.test.js`) ensures these modules
-continue to cooperate. When updating help text or translations, keep the assertions in that
-test in mind—they describe the critical APIs (`cineOffline`, `cinePersistence`, `cineUi`) that
-must remain available to avoid data loss.【F:tests/dom/runtimeIntegration.test.js†L1-L64】
+- Announce the changes to the team and include links to updated manuals.
+- Note follow-up tasks in [Review Tasks](review-tasks-2025-02-07.md).
+- Schedule translation follow-ups if any locales are pending human review.
 
-The runtime bundle also stores the most recent verification result on
-`__cineRuntimeIntegrity`, giving documentation reviewers a quick signal that the
-save/share/import safeguards initialised correctly before they start editing
-copy offline.【F:src/scripts/script.js†L92-L183】
-
-## 1. Identify every surface that needs an update
-
-1. **Help dialog topics.** Review contextual help entries, FAQ answers and hover-help copy in
-   `src/scripts/modules/help.js` before landing a feature change. Update screenshots, keyboard
-   shortcuts and workflow descriptions so crews see accurate instructions while offline.
-   Capture any changes in how the help module registers with the runtime bridge documented in
-   `src/scripts/modules/environment-bridge.js` so offline caches continue to surface the latest
-   guidance.
-   Keep the console verification callout in `index.html` aligned with the commands documented
-   in the save/share reference so operators can rehearse data audits directly inside the help
-   dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】 Document
-   any new navigation tips—like the quick-link keyboard guidance surfaced through
-   `helpResultsAssist`—so translations and hover help mirror the latest behaviour.【F:index.html†L2641-L2663】【F:src/scripts/app-session.js†L8427-L8486】【F:src/scripts/translations.js†L1327-L1340】
-   The new no-results recovery callout (`#helpNoResultsSuggestions`) keeps operators pointed at
-   safe backup workflows—document each of its steps when you adjust help topics so every
-   translation and offline manual explains how to recover quickly.【F:index.html†L2784-L2804】【F:src/scripts/app-core-new-1.js†L10095-L10142】【F:src/scripts/app-session.js†L10404-L10436】
-   Highlight that the global feature search now promotes matches whose labels appear on screen
-   and anything crews used recently before keyword-only hits, that starting with `recent` or
-   `history` searches just the usage history before expanding to the full catalog, that wrapping a phrase in double
-   quotes forces an exact match, and that quoted phrases rise to the top so crews know the full
-   control name they typed will surface first even when synonyms exist. Note that conversational
-   filler words such as “how do I” are ignored automatically so natural questions still surface
-   the critical keywords. Call out the expanded typo recovery so near-miss queries up to two
-   characters off (for example, `backpu` or `savf`) still land on the intended command without
-   losing the operator's place.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
-   The guided tutorial now includes a dedicated Quick safeguards backup step. Document the
-   Settings → Data & Storage → Quick safeguards flow in every locale so crews always capture a
-   fresh offline `planner-backup.json` before the tutorial continues to Backup & Restore, and
-   reference the new `quickSafeguards` entry when updating translations or hover help so the
-   offline dialog points to the exact button labels.【F:src/scripts/modules/features/onboarding-tour.js†L188-L237】【F:src/scripts/translations.js†L188-L213】
-   Call out that the user profile tutorial step keeps crews inside the overlay with inline
-   display name, role, phone, email and photo editing that syncs directly to Contacts and saves
-   offline, and mirror the same guidance in help copy and localized docs.【F:src/scripts/modules/features/onboarding-tour.js†L1986-L2296】【F:index.html†L7381-L7417】【F:src/scripts/translations.js†L184-L195】
-   Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and
-   ARIA reference IDs), so double-check that contextual copy stays accurate for every
-   referenced control when you update docs or UI labels.【F:src/scripts/app-session.js†L8896-L8996】
-2. **README family.** Revise the primary `README.md` plus each localized README under the
-   project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
-   Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
-   safety routines. Record which locales, help topics and printable guides you just updated in
-   the in-app **Documentation update tracker** (**Settings → General**) so the release history
-   shows translation parity before offline bundles ship.
-3. **Save, Share, Import, Backup & Restore Reference.** Keep `docs/save-share-restore-reference.md`
-   synchronized with UI labels, keyboard shortcuts and verification logging guidance so crews
-   rehearse the exact workflows the code exposes through `cinePersistence`, `cineUi` and the
-   runtime guard.
-4. **Verification log template.** Update `docs/verification-log-template.md` whenever
-   diagnostic commands change or new persistence safeguards ship. The template calls for
-   console outputs from `window.__cineRuntimeIntegrity`,
-   `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and the
-   `cinePersistence` inspection helpers, so keep the references aligned with runtime and
-   persistence modules when they evolve.【F:src/scripts/script.js†L315-L357】【F:src/scripts/modules/runtime.js†L1663-L1782】【F:src/scripts/modules/persistence.js†L775-L880】
-5. **Operations manuals.** Confirm `docs/offline-readiness.md`,
-   `docs/operations-checklist.md`, `docs/backup-rotation-guide.md` and `docs/testing-plan.md`
-   include the new logic. These printable guides travel with field kits, so add or update
-   drills that prove autosave, backup rotation and restore rehearsals still behave exactly
-   as the latest build.
-6. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
-   static pages in `legal/`, mirror the update in every localized HTML file so offline
-   references stay consistent.
-7. **Data schema references.** When datasets or schema attributes change, refresh
-   `docs/schema-inventory.md`, any related help topics and translation keys so operators see
-   accurate field names when auditing backups or reconciling planner exports. Note the schema
-   revision in your verification log so crews can trace which data structures the
-   documentation describes during save, share, import, backup and restore rehearsals.
-
-## 2. Update translations in lockstep
-
-1. **Add UI strings.** Extend `src/scripts/translations.js` with any new labels. Copy the English source
-   to all supported locales if you do not have an immediate translation so the UI keeps
-   rendering legibly offline.
-2. **Localize documentation.** Translate adjustments made to each localized README and any
-   static HTML page. When time is limited, add translator notes to the relevant pull request
-   so the community can help close gaps quickly.
-3. **Verify selector entries.** Add new language options to every selector in `index.html`
-   and the settings dialog so crews can access the translation without editing storage by
-   hand.
-
-## 3. Prove offline readiness after doc updates
-
-1. **Prime caches.** Open `index.html`, launch the help dialog, visit legal pages and toggle
-   each theme so the service worker caches the updated documentation, locally stored Uicons
-   and other bundled assets.
-2. **Run the save rehearsal.** Follow the [Save, Share & Import Drill](../README.md#save-share--import-drill)
-   to confirm the documented steps still match the product. Capture manual saves, export a
-   planner backup and a shareable bundle, then rehearse the restore in an offline browser
-   profile.
-3. **Archive verification artifacts.** Store the validated backup, bundle and a ZIP of the
-   repository alongside a short verification log. Note which documentation changes shipped
-   so crews can trace when instructions last matched the product.
-4. **Re-run the offline cache drill.** Follow the
-   [Offline Cache & Safeguard Verification Drill](offline-cache-verification-drill.md) to
-   confirm cached assets, autosave safeguards and forced pre-restore backups match the
-   documentation updates you just recorded. File the resulting verification log with the
-   rest of the packet so offline operators can prove their cached bundle aligns with the
-   instructions.
-
-## 4. Testing checklist before release
-
-- `npm test` – ensures linting, data integrity checks and Jest suites continue to protect
-  persistence logic.
-- Manual offline rehearsal – confirms help topics, documentation callouts and translations
-  render correctly without connectivity.
-- Screenshot or export updates (as required) – regenerate any documentation images or
-  printable PDFs referenced in manuals so crews see the latest UI states while offline.
-
-## 5. Assemble the documentation verification packet
-
-Follow the [Documentation Verification Packet guide](documentation-verification-packet.md) to
-bundle everything reviewers need when they audit the release offline. The packet keeps the
-written guidance, supporting exports and verification artefacts together so crews can trust the
-instructions even years later when internet access is unavailable.
-
-1. **Collect updated manuals.** Export or print the primary README, localized READMEs,
-   printable runbooks and legal pages that changed. Confirm each PDF references the same
-   version string surfaced through the `cineCoreShared` module and displayed in the About
-   dialog so operators know which build the instructions cover.【F:src/scripts/modules/core-shared.js†L1056-L1104】【F:src/scripts/app-core-new-1.js†L10284-L10302】
-2. **Attach verification evidence.** Include the latest planner backup, project bundle and
-   automatic gear rules export used during rehearsal. These files prove that save, share,
-   import, backup and restore remained stable when the documentation was signed off. Pair them
-   with the console capture from `window.__cineRuntimeIntegrity` to document the runtime guard
-   status at release time.【F:src/scripts/script.js†L92-L183】
-3. **Record the checklist outcome.** Add the completed [Documentation Update
-   Checklist](documentation-update-checklist.md) with boxes ticked and initials or signatures.
-   Attach the verification log entry that lists the workstation, browser build and timestamp so
-   auditors can trace the rehearsal lineage.
-4. **Capture the status snapshot.** Fill out the
-   [Documentation Status Report](documentation-status-report-template.md) while the rehearsal is
-   fresh. Note which surfaces changed, summarize the offline drills you ran and point to the
-   stored backups, bundles and console captures so future auditors can replay the release without
-   risking user data.
-5. **Store redundantly.** Zip the packet and copy it to at least two offline drives that travel
-    separately with the release media. Note the storage locations in `docs/verification-log`
-    entries or your change log so teams know where to find the canonical documentation bundle.
-
-## 2025-02 maintenance verification
-- **Service worker cache alignment.** Verified the worker still imports the shared module to read
-  `APP_VERSION` and publish the cache name so documentation refreshes do not strand crews with stale
-  assets offline.【F:service-worker.js†L192-L229】
-- **Storage dashboard checks.** Confirmed the Data & Storage quick safeguards and guardian row continue
-  to surface the latest timestamps and mirroring status referenced in this guide for verification runs.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
-- **Persistence bindings audit.** Re-ran `window.cinePersistence.__internal.inspectAllBindings()` to
-  ensure every storage wrapper documented here remains registered from the frozen module map before
-  help copy is updated.【F:src/scripts/modules/persistence.js†L1036-L1078】
-
-Maintaining this cadence guarantees the planner’s guidance, translations and offline-first
-workflows stay in sync, keeping user data safe even in the most isolated production
-environments.
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Repeat this loop whenever behaviour changes. Documentation is part of the product
+and must be treated with the same care as code.

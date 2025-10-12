@@ -1,98 +1,34 @@
 # Schema Inventory
 
-This document summarizes the attribute schema defined in `src/data/schema.json`. It is intended as a quick reference so that accessory, camera, and subsystem records can be audited for completeness.
+Document the major storage keys, what they contain and how they are protected.
+Update this inventory when schemas change or new datasets are introduced.
 
-## Accessories
-- **Batteries**: `capacity`, `mount_type`, `pinA`, `pinV`, `weight_g`
-- **Cables**
-  - General / FIZ cables: `brand`, `compatibleCameras`, `compatibleControllers`, `compatibleDevices`, `connectors`, `from`, `kNumber`, `lengthM`, `notes`, `provenance`, `orientation`, `to`, `type`, `useCase`
-  - Power cables: `from`, `lengthM`, `to`, `connectors`
-  - Video cables: `lengthM`, `notes`, `type`
-- **Cages**: `batteryMount`, `brand`, `compatible`, `handle_extension_compatible`, `kNumber`, `material`, `mounting_points`, `notes`, `rodStandard`, `side_plates`, `top_handle_included`, `verified_source`, `weight_g`
-- **Camera stabiliser**: `brand`, `options`
-- **Camera support**: `brand`, `compatible`, `diameterMm`, `dimensionsMm`, `kNumber`, `lengthMm`, `rodStandard`
-- **Carts**: `brand`
-- **Chargers**: `chargeModes`, `chargingSpeedAmps`, `dimensions_mm`, `inputConnector`, `inputVoltageV`, `mount`, `notes`, `outputs`, `perBayCurrentA`, `provenance`, `slots`, `totalPowerW`, `weight_g`
-- **Filters**: `brand`, `kNumber`
-- **Grip**: `brand`
-- **Lenses**: `brand`, `clampOn`, `frontDiameterMm`, `imageCircleMm`, `lengthMm`, `lensType`, `minFocusMeters`, `mount`, `needsLensSupport`, `notes`, `rodLengthCm`, `rodStandard`, `tStop`, `weight_g`
-- **Matte boxes**: `brand`, `compatible`, `diameterMm`, `kNumber`, `model`, `note`, `provenance`, `sideFlags`, `stages`, `topFlag`, `traySize`, `type`
-- **Media**: `brand`, `capacityGb`, `capacityTb`, `interface`, `kNumber`, `model`
-- **Power plates**: `brand`, `kNumber`, `mount`
-- **Rigging**: `brand`
-- **Sliders**: `brand`, `bowlMount`, `dimensionsCm`, `driveType`, `features`, `material`, `model`, `motorized`, `notes`, `payloadHorizontalKg`, `payloadVerticalKg`, `travelCm`, `weightKg`
-- **Tripod heads**: `bowlSizeMm`, `brand`, `material`
-- **Tripods**: `brand`, `model`, `material`, `stages`, `bowlSizeMm`, `bowlMount`, `payloadKg`, `heightRangeCm`, `weightKg`, `spreader`, `features`, `dimensionsCm`, `sizeClass`, `notes`, `sourceUrl`
-- **Video assist (accessories)**: `brand`, `screenSizeInches`
+| Key / dataset | Description | Primary source | Mirrored backup | Notes |
+| --- | --- | --- | --- | --- |
+| `cine-current-project` | Active project payload including gear, notes, runtime
+feedback and requirements. | `src/scripts/app-session.js` via
+`cinePersistence.saveProject()` | `cine-current-project-backup` | Normalised JSON; autosave writes before UI updates. |
+| `cine-projects` | Library of saved projects. | `app-session.js` | `cine-projects-backup` | Includes manual saves and imports. |
+| `auto-backup-*` | Rolling automatic backups with timestamps. | `app-events.js`
+& `storage.js` | Implicit (each backup stored individually) | Rotation managed by cadence counter and quota guard. |
+| `planner-backup.json` | Full planner export (downloaded). | `storage.js` export
+helpers | External file | Store with checksums on offline media. |
+| `cine-automatic-gear-rules` | Automatic gear presets and editor state. |
+`app-setups.js` | `cine-automatic-gear-rules-backup` | Restores confirm before overwrite. |
+| `cine-custom-gear` | Crew-defined gear items per category. | `storage.js` | `cine-custom-gear-backup` | Stored uncompressed to keep JSON human readable. |
+| `cine-devices` | Device library with electrical specs. | `storage.js` | `cine-devices-backup` | Syncs during import/export. |
+| `cine-runtime-feedback` | Runtime notes and calculations. | `app-session.js` | `cine-runtime-feedback-backup` | Included in planner exports. |
+| `cine-preferences` | UI and localisation settings. | `storage.js` | `cine-preferences-backup` | Guards ensure language/theme persist offline. |
+| `cine-contacts` | Crew contact cards. | `storage.js` | `cine-contacts-backup` | Included in exports and share bundles. |
 
-## Standalone battery gear
-- **Batteries**: `capacity`, `dtapA`, `mount_type`, `pinA`, `weight_g`
-- **Battery hotswaps**: `capacity`, `mount_type`, `pinA`
+## Change log
 
-## Cameras
-- **Base attributes**: `fizConnectors`, `lensMount`, `power`, `powerDrawWatts`, `recordingCodecs`, `recordingMedia`, `resolutions`, `sensorModes`, `timecode`, `videoOutputs`, `viewfinder`, `weight_g`
-- **Power > Battery plate support**: `mount`, `notes`, `type`
-- **Power > Input**: `notes`, `powerDrawWatts`, `type`, `voltageRange`
-- **Power > Power distribution outputs**: `current`, `notes`, `type`, `voltage`, `wattage`
-- **FIZ connectors**: `count`, `notes`, `type`
-- **Lens mount**: `mount`, `notes`, `type`
-- **Recording media**: `notes`, `type`
-- **Timecode**: `notes`, `type`
-- **Video outputs**: `notes`, `type`, `version`
-- **Viewfinder**: `notes`, `resolution`, `size`, `type`
+Record schema changes here:
 
-## Director monitors
-- **Attributes**: `brand`, `brightnessNits`, `model`, `power`, `powerDrawWatts`, `screenSizeInches`, `videoInputs`, `videoOutputs`, `wirelessTx`, `notes`
-- **Power > Input**: `notes`, `type`, `voltageRange`
-- **Video inputs / outputs**: `notes`, `type`
+- **Date:**
+- **Change:**
+- **Files updated:**
+- **Backwards compatibility notes:**
+- **Documentation updated:**
 
-## Filter options
-- **Attributes**: *(reserved; currently empty array)*
-
-## FIZ systems
-- **Controllers**: `batteryType`, `connectivity`, `fizConnectors`, `internalController`, `notes`, `powerDrawWatts`, `powerSource`
-- **Distance units**: `accuracy`, `connectionCompatibility`, `fizConnectors`, `measurementMethod`, `measurementRange`, `notes`, `outputDisplay`, `powerDrawWatts`
-- **Hand units**: `batteryType`, `connectivity`, `fizConnectors`, `internalController`, `notes`, `powerDrawWatts`, `powerSource`
-- **Motors**: `fizConnectors`, `gearTypes`, `internalController`, `notes`, `powerDrawWatts`, `torqueNm`
-
-## iOS video systems
-- **Attributes**: `frequency`, `latencyMs`, `notes`, `power`, `powerDrawWatts`, `videoInputs`, `videoOutputs`
-- **Power > Input**: `notes`, `type`
-- **Video inputs**: `type`
-
-## Media (general)
-- **Attributes**: `brand`, `capacityGb`, `capacityTb`, `interface`, `kNumber`, `model`
-
-## Monitors (general field)
-- **Attributes**: `audioInput`, `audioIo`, `audioOutput`, `bluetooth`, `brightnessNits`, `latencyMs`, `power`, `powerDrawWatts`, `screenSizeInches`, `videoInputs`, `videoOutputs`, `wireless`, `wirelessRX`, `wirelessTx`
-- **Audio input / IO / Output**: `portType`
-- **Power > Input**: `notes`, `portType`, `voltageRange`
-- **Video inputs / outputs**: `portType`
-- **Wireless**: `portType`
-
-## Video systems
-- **Attributes**: `frequency`, `latencyMs`, `power`, `powerDrawWatts`, `videoInputs`, `videoOutputs`
-- **Power > Input**: `notes`, `type`, `voltageRange`
-- **Video inputs**: `type`
-- **Video outputs**: `notes`, `type`
-
-## Video assist (standalone)
-- **Attributes**: `brand`, `screenSizeInches`
-
-## Viewfinders
-- **Attributes**: `brand`, `compatible`, `isPersonalGear`, `kNumber`, `listOfOrigin`, `model`
-
-## Wireless receivers
-- **Attributes**: `frequency`, `latencyMs`, `power`, `powerDrawWatts`, `videoInputs`, `videoOutputs`
-- **Power > Battery plate support**: `mount`, `type`
-- **Power > Input**: `notes`, `type`, `voltageRange`
-- **Video outputs**: `type`
-
-> **Maintenance note:** When the schema in `src/data/schema.json` is updated, please refresh this inventory so that help, documentation, and translation resources stay synchronized.
-
-## 2025-02 schema verification
-- **Data module parity.** Confirmed the schema-driven device data still feeds the same loader logic and persistence wrappers, so this inventory matches the fields captured in backups and exports.【F:src/scripts/modules/persistence.js†L1036-L1078】【F:src/data/devices/gearList.js†L1-L4492】
-- **Documentation hooks.** Rechecked the Data & Storage dashboard counts and help dialog summaries so schema updates continue to reflect in the user-facing guidance documented here.【F:index.html†L2722-L2799】【F:index.html†L3019-L3095】
-- **Runtime guard awareness.** Verified the runtime guard still inspects the persistence bindings that consume schema data, providing early warnings if a future schema change drops a wrapper.【F:src/scripts/modules/runtime.js†L2203-L2368】
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+Keep the inventory with documentation packets to simplify audits and restores.

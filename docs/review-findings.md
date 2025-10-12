@@ -1,27 +1,28 @@
-# Codebase Review Findings
+# Review Findings Log
 
-This review surfaces follow-up tasks to protect user data workflows and documentation accuracy while keeping the offline-first contract intact.
+Record outcomes from documentation, workflow and offline rehearsals. Keep entries
+chronological and link them to supporting evidence.
 
-## Fix typo in localized documentation
-- **Status**: ✅ `README.de.md` already uses the correct "gewichtetes" phrasing in the weighted feedback section, matching the English source material.
-- **Action**: When new planner workflows touch the feedback dashboard, update each localized README alongside `docs/documentation-update-checklist.md` so offline crews always receive polished guidance. 【F:README.de.md†L95-L132】【F:docs/documentation-update-checklist.md†L9-L78】
+## Entry template
 
-## Canon Sumire lens metadata audit
-- **Status**: ✅ The Canon Sumire entries under `lens` metadata define each optical property once, and the duplicate-key regression test guards against future mistakes. 【F:src/data/devices/gearList.js†L5203-L5335】【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
-- **Action**: Keep Canon spec sheets handy when adding new optics so the `gearListDuplicateKeys` test stays green and offline lens calculators continue to protect saved setups.
+- **Date:**
+- **Review type:** (Operations checklist, offline drill, documentation audit,
+  incident review, release sign-off.)
+- **Participants:**
+- **Summary:** (Key observations, issues discovered, successes.)
+- **Evidence archived:** (Verification log filename, backup checksum, screenshot
+  bundle.)
+- **Follow-up tasks:** (List items and owners. Copy to
+  [Review Tasks](review-tasks-2025-02-07.md).)
+- **Status:** (Open / In progress / Resolved.)
 
-## Align documentation with current help module layout
-- **Status**: ✅ `docs/documentation-update-checklist.md` already directs writers to `src/scripts/modules/help.js` and flags the runtime bridge entry points used by the offline help dialog. 【F:docs/documentation-update-checklist.md†L20-L39】
-- **Action**: Continue mirroring module relocations in the checklist whenever the help system evolves so translation teams can refresh offline manuals without hunting for files.
+## Guidance
 
-## Maintain duplicate optical metadata regression guard
-- **Status**: ✅ The regression test at `tests/data/gearListDuplicateKeys.test.js` enforces unique optical properties across the gear catalog to protect saved loadouts. 【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
-- **Action**: Update the test expectations whenever new lens metadata ships and document additional safeguards here to preserve offline bundle integrity.
+- Keep logs factual and precise. If data was restored from a backup, note which
+  file and timestamp were used.
+- Reference relevant documentation updates or translation commits.
+- When closing tasks, record where the updated artefacts live (e.g. new planner
+  backup location, updated documentation packet path).
 
-## 2025-02 findings verification
-- **Help module mapping.** Confirmed `src/scripts/translations.js` and the help dialog still expose the documentation tracker strings the review references, so guidance remains accurate for offline crews.【F:src/scripts/translations.js†L1519-L1540】【F:index.html†L3019-L3095】
-- **Runtime regression guard.** Re-checked `window.cineRuntime.verifyCriticalFlows()` to ensure review findings referencing the runtime guard still map to the current diagnostic output.【F:src/scripts/modules/runtime.js†L2203-L2368】
-- **Backup workflow alignment.** Verified the Backup & Restore controls cited in the findings continue to render in the documented order, supporting the follow-up actions around documentation alignment.【F:index.html†L2501-L2574】
-
-
-> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+A thorough log provides traceability during audits and helps future crews
+understand how issues were resolved.
