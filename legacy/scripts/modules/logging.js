@@ -805,7 +805,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
-    captureConsole: true
+    captureConsole: true,
+    stackTraces: true
   };
   var DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
   function cloneDefaultConfig() {
@@ -816,7 +817,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       consoleOutput: DEFAULT_CONFIG_VALUES.consoleOutput,
       persistSession: DEFAULT_CONFIG_VALUES.persistSession,
       captureGlobalErrors: DEFAULT_CONFIG_VALUES.captureGlobalErrors,
-      captureConsole: DEFAULT_CONFIG_VALUES.captureConsole
+      captureConsole: DEFAULT_CONFIG_VALUES.captureConsole,
+      stackTraces: DEFAULT_CONFIG_VALUES.stackTraces
     };
   }
   var activeConfig = cloneDefaultConfig();
@@ -1202,6 +1204,83 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function normaliseStackTrace(stackValue) {
+    if (typeof stackValue !== 'string') {
+      return null;
+    }
+    var trimmed = stackValue.replace(/\r\n?/g, '\n').trim();
+    if (!trimmed) {
+      return null;
+    }
+    var maxLength = 5000;
+    var charTruncated = trimmed.length > maxLength;
+    var limitedStack = charTruncated ? trimmed.slice(0, maxLength) : trimmed;
+    var rawLines = trimmed.split('\n');
+    var frameLimit = 40;
+    var frames = [];
+    var frameTruncated = false;
+    for (var index = 0; index < rawLines.length; index += 1) {
+      var line = rawLines[index].trim();
+      if (!line) {
+        continue;
+      }
+      if (frames.length < frameLimit) {
+        frames.push(line.length > 500 ? "".concat(line.slice(0, 500), "\u2026") : line);
+      } else {
+        frameTruncated = true;
+        break;
+      }
+    }
+    return {
+      stack: limitedStack,
+      frames: frames,
+      truncated: charTruncated || frameTruncated
+    };
+  }
+  function normaliseOriginSnapshot(origin) {
+    if (!origin || _typeof(origin) !== 'object') {
+      return null;
+    }
+    var source = typeof origin.source === 'string' && origin.source ? origin.source : 'unknown';
+    var stackSummary = null;
+    if (typeof origin.stack === 'string' && origin.stack) {
+      stackSummary = normaliseStackTrace(origin.stack);
+    }
+    var frames = [];
+    if (Array.isArray(origin.frames)) {
+      for (var index = 0; index < origin.frames.length && frames.length < 40; index += 1) {
+        var frame = origin.frames[index];
+        if (typeof frame === 'string' && frame) {
+          frames.push(frame);
+        } else if (frame !== null && typeof frame !== 'undefined') {
+          frames.push(coerceMessage(frame));
+        }
+      }
+    } else if (stackSummary && Array.isArray(stackSummary.frames)) {
+      for (var _index6 = 0; _index6 < stackSummary.frames.length; _index6 += 1) {
+        frames.push(stackSummary.frames[_index6]);
+      }
+    }
+    var truncated = origin.truncated === true || (stackSummary ? stackSummary.truncated === true : false) || frames.length > 0 && frames.length >= 40;
+    var snapshot = {
+      source: source,
+      truncated: truncated
+    };
+    if (stackSummary && stackSummary.stack) {
+      snapshot.stack = stackSummary.stack;
+    } else if (typeof origin.stack === 'string' && origin.stack) {
+      snapshot.stack = origin.stack;
+    } else {
+      snapshot.stack = null;
+    }
+    if (frames.length) {
+      snapshot.frames = frames;
+    }
+    if (!snapshot.stack && (!snapshot.frames || !snapshot.frames.length)) {
+      return null;
+    }
+    return freezeDeep(snapshot);
+  }
   function getSessionStorage() {
     var scopes = fallbackCollectCandidateScopes(GLOBAL_SCOPE);
     for (var index = 0; index < scopes.length; index += 1) {
@@ -1252,7 +1331,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         consoleOutput: activeConfig.consoleOutput,
         persistSession: activeConfig.persistSession,
         captureGlobalErrors: activeConfig.captureGlobalErrors,
-        captureConsole: activeConfig.captureConsole
+        captureConsole: activeConfig.captureConsole,
+        stackTraces: activeConfig.stackTraces
       }));
     } catch (error) {
       safeWarn('cineLogging: Unable to persist logging config', error);
@@ -1531,8 +1611,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     if (meta && _typeof(meta) === 'object') {
       var metaKeys = Object.keys(meta);
-      for (var _index6 = 0; _index6 < metaKeys.length; _index6 += 1) {
-        var key = metaKeys[_index6];
+      for (var _index7 = 0; _index7 < metaKeys.length; _index7 += 1) {
+        var key = metaKeys[_index7];
         try {
           contextMeta[key] = sanitizeForLog(meta[key]);
         } catch (metaError) {
@@ -1764,6 +1844,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, setOptions || undefined);
     return isConsoleCaptureActive();
   }
+  function shouldCaptureOrigin(level, detail, context) {
+    var override = context && Object.prototype.hasOwnProperty.call(context, 'captureStack') ? context.captureStack : null;
+    if (override === true) {
+      return true;
+    }
+    if (override === false) {
+      return false;
+    }
+    if (activeConfig.stackTraces !== true) {
+      return false;
+    }
+    if (detail instanceof Error) {
+      return true;
+    }
+    return getLevelPriority(level) >= getLevelPriority('warn');
+  }
+  function captureLogOrigin(level, message, detail, context) {
+    if (!shouldCaptureOrigin(level, detail, context)) {
+      return null;
+    }
+    var stackSource = 'generated';
+    var stackValue = '';
+    if (detail instanceof Error) {
+      var detailStack = detail.stack;
+      if (typeof detailStack === 'string' && detailStack) {
+        stackSource = 'detail';
+        stackValue = detailStack;
+      }
+    }
+    if (!stackValue) {
+      try {
+        var stackMessage = typeof message === 'string' && message ? message : "Log ".concat(level);
+        var captureError = new Error(stackMessage);
+        if (typeof Error.captureStackTrace === 'function') {
+          Error.captureStackTrace(captureError, captureLogOrigin);
+        }
+        if (typeof captureError.stack === 'string' && captureError.stack) {
+          stackValue = captureError.stack;
+        }
+      } catch (stackError) {
+        void stackError;
+      }
+    }
+    var summary = normaliseStackTrace(stackValue);
+    if (!summary) {
+      return null;
+    }
+    var origin = {
+      source: stackSource,
+      stack: summary.stack,
+      truncated: summary.truncated
+    };
+    if (Array.isArray(summary.frames) && summary.frames.length) {
+      origin.frames = summary.frames;
+    }
+    return freezeDeep(origin);
+  }
   function logInternal(level, message, detail, context, options) {
     var normalizedLevel = normalizeLevel(level, 'info');
     var timestamp = Date.now();
@@ -1774,8 +1911,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       isoTimestamp = String(timestamp);
     }
-    var namespace = context && typeof context.namespace === 'string' && context.namespace ? context.namespace : null;
-    var meta = context && typeof context.meta !== 'undefined' ? sanitizeForLog(context.meta) : null;
+    var captureContext = context && _typeof(context) === 'object' ? context : null;
+    var origin = captureLogOrigin(normalizedLevel, message, detail, captureContext);
+    var namespace = captureContext && typeof captureContext.namespace === 'string' && captureContext.namespace ? context.namespace : null;
+    var meta = captureContext && typeof captureContext.meta !== 'undefined' ? sanitizeForLog(captureContext.meta) : null;
     var sanitizedDetail = typeof detail === 'undefined' ? null : sanitizeForLog(detail);
     var entry = freezeDeep({
       id: createEntryId(timestamp),
@@ -1785,7 +1924,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       detail: sanitizedDetail,
       meta: meta,
       timestamp: timestamp,
-      isoTimestamp: isoTimestamp
+      isoTimestamp: isoTimestamp,
+      origin: origin
     });
     applyLevelCounterDelta(emittedLevelCounters, normalizedLevel, 1);
     if (shouldRecord(normalizedLevel)) {
@@ -1812,6 +1952,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           meta: entry.meta
         });
       }
+      if (origin) {
+        consoleArgs.push({
+          origin: origin
+        });
+      }
       invokeConsoleMethod(methodName, consoleArgs);
     }
     return entry;
@@ -1836,7 +1981,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       consoleOutput: activeConfig.consoleOutput,
       persistSession: activeConfig.persistSession,
       captureGlobalErrors: activeConfig.captureGlobalErrors,
-      captureConsole: activeConfig.captureConsole
+      captureConsole: activeConfig.captureConsole,
+      stackTraces: activeConfig.stackTraces
     });
   }
   function getHistory(options) {
@@ -1934,8 +2080,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       merged[key] = baseMeta[key];
     }
     var metaKeys = Object.keys(meta);
-    for (var _index7 = 0; _index7 < metaKeys.length; _index7 += 1) {
-      var _key = metaKeys[_index7];
+    for (var _index8 = 0; _index8 < metaKeys.length; _index8 += 1) {
+      var _key = metaKeys[_index8];
       merged[_key] = sanitizeForLog(meta[_key]);
     }
     return merged;
@@ -2154,6 +2300,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         consoleCaptureChanged = true;
       }
     }
+    if (Object.prototype.hasOwnProperty.call(overrides, 'stackTraces')) {
+      var nextStackTraces = booleanFromValue(overrides.stackTraces, activeConfig.stackTraces);
+      if (nextStackTraces !== activeConfig.stackTraces) {
+        activeConfig.stackTraces = nextStackTraces;
+        changed = true;
+      }
+    }
     return {
       changed: changed,
       captureChanged: captureChanged,
@@ -2284,6 +2437,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (params.has('cineLogConsoleCapture')) {
         assignUpdate('captureConsole', params.get('cineLogConsoleCapture'));
       }
+      if (params.has('cineLogStackTraces')) {
+        assignUpdate('stackTraces', params.get('cineLogStackTraces'));
+      }
     } else {
       var query = search.charAt(0) === '?' ? search.slice(1) : search;
       var parts = query.split('&');
@@ -2309,6 +2465,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           assignUpdate('captureGlobalErrors', value);
         } else if (key === 'cineLogConsoleCapture') {
           assignUpdate('captureConsole', value);
+        } else if (key === 'cineLogStackTraces') {
+          assignUpdate('stackTraces', value);
         }
       }
     }
@@ -2344,7 +2502,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       detail: typeof entry.detail === 'undefined' ? null : sanitizeForLog(entry.detail),
       meta: typeof entry.meta === 'undefined' ? null : sanitizeForLog(entry.meta),
       timestamp: timestamp,
-      isoTimestamp: isoTimestamp
+      isoTimestamp: isoTimestamp,
+      origin: typeof entry.origin === 'undefined' ? null : normaliseOriginSnapshot(entry.origin)
     });
   }
   function loadPersistedHistory() {

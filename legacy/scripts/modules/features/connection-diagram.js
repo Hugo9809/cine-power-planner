@@ -140,6 +140,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var getGridSnapToggleBtn = fallbackGetter(context.getGridSnapToggleBtn, function () {
       return fallbackValue(context.gridSnapToggleBtn, document ? document.getElementById('gridSnapToggle') : null);
     });
+    var getDiagramDetailDialog = fallbackGetter(context.getDiagramDetailDialog, function () {
+      return fallbackValue(context.diagramDetailDialog, document ? document.getElementById('diagramDetailDialog') : null);
+    });
+    var getDiagramDetailContent = fallbackGetter(context.getDiagramDetailContent, function () {
+      return fallbackValue(context.diagramDetailContent, document ? document.getElementById('diagramDetailDialogContent') : null);
+    });
+    var getDiagramDetailHeading = fallbackGetter(context.getDiagramDetailHeading, function () {
+      return fallbackValue(context.diagramDetailHeading, document ? document.getElementById('diagramDetailDialogHeading') : null);
+    });
+    var getDiagramDetailBackButton = fallbackGetter(context.getDiagramDetailBackButton, function () {
+      return fallbackValue(context.diagramDetailBackButton, document ? document.getElementById('diagramDetailDialogBack') : null);
+    });
     var getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, function () {
       return false;
     });
@@ -237,6 +249,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var cleanupDiagramInteractions = null;
     var lastPopupEntries = {};
     var lastPointerPosition = null;
+    var detailDialog = null;
+    var detailDialogContent = null;
+    var detailDialogHeading = null;
+    var detailDialogBackButton = null;
+    var detailDialogSetupComplete = false;
+    var detailDialogDefaultHeading = 'Diagram details';
+    var detailDialogBackLabel = 'Back';
     var resolveSetupContainer = function resolveSetupContainer() {
       return getSetupDiagramContainer();
     };
@@ -337,6 +356,103 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (category === 'cameras') return 'diagram-popup--camera';
       return '';
     };
+    function ensureDetailDialogElements() {
+      var dialogEl = getDiagramDetailDialog();
+      var contentEl = getDiagramDetailContent();
+      var headingEl = getDiagramDetailHeading();
+      var backButtonEl = getDiagramDetailBackButton();
+      var dialogChanged = dialogEl !== detailDialog;
+      detailDialog = dialogEl || null;
+      detailDialogContent = contentEl || null;
+      detailDialogHeading = headingEl || null;
+      detailDialogBackButton = backButtonEl || null;
+      if (detailDialog && (dialogChanged || !detailDialogSetupComplete)) {
+        var handleBackdropClick = function handleBackdropClick(event) {
+          if (event && event.target === detailDialog) {
+            closeDetailDialog();
+          }
+        };
+        detailDialog.addEventListener('click', handleBackdropClick);
+        detailDialog.addEventListener('cancel', function (event) {
+          event.preventDefault();
+          closeDetailDialog();
+        });
+        detailDialog.addEventListener('close', function () {
+          if (detailDialogContent) {
+            detailDialogContent.innerHTML = '';
+          }
+          if (detailDialogHeading) {
+            detailDialogHeading.textContent = detailDialogDefaultHeading;
+          }
+          detailDialog.classList.remove('diagram-detail-dialog--camera');
+        });
+        detailDialogSetupComplete = true;
+      }
+      if (detailDialogBackButton) {
+        detailDialogBackButton.onclick = closeDetailDialog;
+        detailDialogBackButton.textContent = detailDialogBackLabel;
+        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      }
+      if (detailDialogHeading && (!detailDialog || !detailDialog.open)) {
+        detailDialogHeading.textContent = detailDialogDefaultHeading;
+      }
+    }
+    function closeDetailDialog() {
+      ensureDetailDialogElements();
+      if (!detailDialog) return;
+      if (typeof detailDialog.close === 'function') {
+        if (detailDialog.open) {
+          detailDialog.close();
+        }
+      } else {
+        detailDialog.removeAttribute('open');
+        if (detailDialogContent) {
+          detailDialogContent.innerHTML = '';
+        }
+        if (detailDialogHeading) {
+          detailDialogHeading.textContent = detailDialogDefaultHeading;
+        }
+        detailDialog.classList.remove('diagram-detail-dialog--camera');
+      }
+    }
+    function openDetailDialogWithEntry(entry) {
+      ensureDetailDialogElements();
+      if (!detailDialog || !detailDialogContent || !entry) return;
+      var ownerDoc = detailDialog.ownerDocument || document;
+      if (!ownerDoc) return;
+      detailDialogContent.innerHTML = '';
+      var wrapper = ownerDoc.createElement('div');
+      wrapper.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
+      wrapper.innerHTML = entry.content || '';
+      detailDialogContent.appendChild(wrapper);
+      var isCamera = Boolean(entry.className && entry.className.includes('diagram-popup--camera'));
+      detailDialog.classList.toggle('diagram-detail-dialog--camera', isCamera);
+      var headingText = entry.label || detailDialogDefaultHeading;
+      if (detailDialogHeading) {
+        detailDialogHeading.textContent = headingText;
+      }
+      if (detailDialogBackButton) {
+        detailDialogBackButton.textContent = detailDialogBackLabel;
+        detailDialogBackButton.setAttribute('aria-label', detailDialogBackLabel);
+      }
+      if (typeof detailDialog.showModal === 'function') {
+        if (!detailDialog.open) {
+          detailDialog.showModal();
+        }
+      } else {
+        detailDialog.setAttribute('open', '');
+      }
+      if (detailDialogBackButton && typeof detailDialogBackButton.focus === 'function') {
+        try {
+          detailDialogBackButton.focus({
+            preventScroll: true
+          });
+        } catch (focusError) {
+          detailDialogBackButton.focus();
+          void focusError;
+        }
+      }
+    }
     function normalizeDiagramPositionsInput(positions) {
       if (!positions || _typeof(positions) !== 'object') {
         return {};
@@ -439,7 +555,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       category_fiz_distance: DIAGRAM_DISTANCE_ICON
     };
     function renderSetupDiagram() {
-      var _devices$batteries2, _cam$videoOutputs;
+      var _texts$currentLang, _texts$en, _texts$currentLang2, _texts$en2, _devices$batteries2, _cam$videoOutputs;
       var setupDiagramContainer = resolveSetupContainer();
       if (!setupDiagramContainer) return;
       var texts = resolveTexts();
@@ -452,6 +568,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var batterySelect = resolveBatterySelect();
       var motorSelects = resolveMotorSelects();
       var controllerSelects = resolveControllerSelects();
+      var defaultHeadingText = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.diagramDetailDefaultHeading) || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.diagramDetailDefaultHeading) || 'Diagram details';
+      var backLabelText = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.diagramDetailBackLabel) || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.diagramDetailBackLabel) || 'Back';
+      detailDialogDefaultHeading = defaultHeadingText;
+      detailDialogBackLabel = backLabelText;
+      ensureDetailDialogElements();
       var isTouchDevice = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
       void isTouchDevice;
       var camName = cameraSelect ? cameraSelect.value : '';
@@ -1016,8 +1137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       if (nodes.length === 0) {
-        var _texts$currentLang, _texts$en;
-        setupDiagramContainer.innerHTML = "<p class=\"diagram-placeholder\">".concat(((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.setupDiagramPlaceholder) || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.setupDiagramPlaceholder) || '', "</p>");
+        var _texts$currentLang3, _texts$en3;
+        setupDiagramContainer.innerHTML = "<p class=\"diagram-placeholder\">".concat(((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.setupDiagramPlaceholder) || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.setupDiagramPlaceholder) || '', "</p>");
         return;
       }
       var xs = Object.values(pos).map(function (p) {
@@ -1246,11 +1367,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       enableDiagramInteractions();
     }
     function enableDiagramInteractions() {
+      var _texts$currentLang4, _texts$en4, _texts$currentLang5, _texts$en5, _texts$currentLang6, _texts$en6;
       var setupDiagramContainer = resolveSetupContainer();
       if (!setupDiagramContainer) return;
       var svg = setupDiagramContainer.querySelector('svg');
       if (!svg) return;
+      var texts = resolveTexts();
+      var currentLang = resolveCurrentLang();
+      var hoverNoticeText = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.diagramHoverNotice) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.diagramHoverNotice) || 'Click me for more information!';
+      detailDialogDefaultHeading = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.diagramDetailDefaultHeading) || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.diagramDetailDefaultHeading) || detailDialogDefaultHeading;
+      detailDialogBackLabel = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.diagramDetailBackLabel) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.diagramDetailBackLabel) || detailDialogBackLabel;
+      ensureDetailDialogElements();
       var popup = setupDiagramContainer.querySelector('#diagramPopup');
+      var activePopupNode = null;
+      var activePopupEntry = null;
       var hidePopup = function hidePopup() {
         if (!popup) return;
         popup.style.display = 'none';
@@ -1258,6 +1388,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         popup.innerHTML = '';
         popup.dataset.columns = '1';
         popup.style.removeProperty('--diagram-popup-dynamic-width');
+        popup.className = 'diagram-popup';
+        popup.removeAttribute('aria-label');
+        activePopupNode = null;
+        activePopupEntry = null;
       };
       hidePopup();
       if (cleanupDiagramInteractions) cleanupDiagramInteractions();
@@ -1412,66 +1546,174 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         panning = false;
         panPointerStart = null;
       };
+      var DRAG_HOLD_DELAY = 140;
+      var DRAG_MOVE_THRESHOLD = 4;
+      var DOUBLE_TAP_DELAY = 350;
+      var DOUBLE_TAP_DISTANCE = 30;
       var dragId = null;
       var dragPointerStart = null;
       var dragNode = null;
+      var dragStartPosition = null;
+      var dragMovedDuringInteraction = false;
+      var dragActivationTimer = null;
+      var pendingDragInfo = null;
+      var dragActive = false;
+      var lastTapInfo = null;
+      var clearPendingDrag = function clearPendingDrag() {
+        if (dragActivationTimer) {
+          clearTimeout(dragActivationTimer);
+          dragActivationTimer = null;
+        }
+        pendingDragInfo = null;
+      };
+      var startDragSession = function startDragSession() {
+        if (!pendingDragInfo) return false;
+        var _pendingDragInfo = pendingDragInfo,
+          node = _pendingDragInfo.node,
+          pointer = _pendingDragInfo.pointer;
+        if (!node) {
+          clearPendingDrag();
+          return false;
+        }
+        var nodeId = node.getAttribute('data-node');
+        if (!nodeId) {
+          clearPendingDrag();
+          return false;
+        }
+        var start = lastDiagramPositions[nodeId];
+        if (!start) {
+          clearPendingDrag();
+          return false;
+        }
+        dragId = nodeId;
+        dragNode = node;
+        dragPointerStart = pointer;
+        dragStartPosition = {
+          x: start.x,
+          y: start.y
+        };
+        dragMovedDuringInteraction = false;
+        dragActive = true;
+        clearPendingDrag();
+        return true;
+      };
       var onDragStart = function onDragStart(e) {
         var node = e.target.closest('.diagram-node');
         if (!node) return;
-        dragId = node.getAttribute('data-node');
-        dragNode = node;
-        dragPointerStart = getPos(e);
-        if (e.touches) e.preventDefault();
-        e.stopPropagation();
+        var pointer = getPos(e);
+        pendingDragInfo = {
+          node: node,
+          pointer: pointer,
+          time: Date.now()
+        };
         hidePopup();
+        dragMovedDuringInteraction = false;
+        dragActive = false;
+        if (dragActivationTimer) {
+          clearTimeout(dragActivationTimer);
+        }
+        dragActivationTimer = setTimeout(function () {
+          startDragSession();
+        }, DRAG_HOLD_DELAY);
+        e.stopPropagation();
+      };
+      var ensureDragSession = function ensureDragSession() {
+        if (dragActive) return true;
+        return startDragSession();
       };
       var onDragMove = function onDragMove(e) {
-        if (!dragId || !dragPointerStart) return;
-        var start = lastDiagramPositions[dragId];
-        if (!start) return;
+        if (pendingDragInfo && !dragActive) {
+          var _pos = getPos(e);
+          var _dx = Math.abs(_pos.x - pendingDragInfo.pointer.x);
+          var _dy = Math.abs(_pos.y - pendingDragInfo.pointer.y);
+          if (_dx > DRAG_MOVE_THRESHOLD || _dy > DRAG_MOVE_THRESHOLD) {
+            startDragSession();
+          }
+        }
+        if (!ensureDragSession() || !dragPointerStart || !dragStartPosition) return;
         var pos = getPos(e);
         var delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
         var dx = delta.x;
         var dy = delta.y;
-        var newX = start.x + dx;
-        var newY = start.y + dy;
+        if (!dragMovedDuringInteraction && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+          dragMovedDuringInteraction = true;
+        }
+        var newX = dragStartPosition.x + dx;
+        var newY = dragStartPosition.y + dy;
         if (getCurrentGridSnap()) {
           var g = 20;
           newX = Math.round(newX / g) * g;
           newY = Math.round(newY / g) * g;
         }
-        var tx = newX - start.x;
-        var ty = newY - start.y;
+        var tx = newX - dragStartPosition.x;
+        var ty = newY - dragStartPosition.y;
         if (dragNode) dragNode.setAttribute('transform', "translate(".concat(tx, ",").concat(ty, ")"));
-        if (e.touches) e.preventDefault();
+        if (dragActive && e.touches) e.preventDefault();
       };
       var onDragEnd = function onDragEnd(e) {
-        if (!dragId || !dragPointerStart) return;
-        var start = lastDiagramPositions[dragId];
-        if (start) {
-          var pos = getPos(e);
-          var delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
-          var newX = start.x + delta.x;
-          var newY = start.y + delta.y;
-          if (getCurrentGridSnap()) {
-            var g = 20;
-            newX = Math.round(newX / g) * g;
-            newY = Math.round(newY / g) * g;
-          }
-          manualPositions[dragId] = {
-            x: newX,
-            y: newY
-          };
+        if (!dragActive || !dragId || !dragPointerStart || !dragStartPosition) {
+          clearPendingDrag();
+          dragActive = false;
+          dragId = null;
+          dragNode = null;
+          dragPointerStart = null;
+          dragStartPosition = null;
+          return;
         }
+        var pos = getPos(e);
+        var delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+        var newX = dragStartPosition.x + delta.x;
+        var newY = dragStartPosition.y + delta.y;
+        if (getCurrentGridSnap()) {
+          var g = 20;
+          newX = Math.round(newX / g) * g;
+          newY = Math.round(newY / g) * g;
+        }
+        manualPositions[dragId] = {
+          x: newX,
+          y: newY
+        };
+        clearPendingDrag();
         dragId = null;
         dragNode = null;
         dragPointerStart = null;
+        dragStartPosition = null;
+        dragActive = false;
+        dragMovedDuringInteraction = false;
         renderSetupDiagram();
         if (scheduleProjectAutoSave) scheduleProjectAutoSave();else if (saveCurrentSession) saveCurrentSession();
         if (checkSetupChanged) checkSetupChanged();
         if (e.touches) e.preventDefault();
       };
-      var activePopupNode = null;
+      var onNodeTouchEnd = function onNodeTouchEnd(e) {
+        var node = e.target.closest('.diagram-node');
+        if (!node) {
+          lastTapInfo = null;
+          return;
+        }
+        var nodeId = node.getAttribute('data-node');
+        if (!nodeId) {
+          lastTapInfo = null;
+          return;
+        }
+        var now = Date.now();
+        var pos = getPos(e);
+        if (lastTapInfo && lastTapInfo.id === nodeId && now - lastTapInfo.time <= DOUBLE_TAP_DELAY && Math.abs(pos.x - lastTapInfo.pos.x) <= DOUBLE_TAP_DISTANCE && Math.abs(pos.y - lastTapInfo.pos.y) <= DOUBLE_TAP_DISTANCE) {
+          var entry = lastPopupEntries[nodeId];
+          if (entry) {
+            showEntryPopupForNode(node, entry);
+            if (typeof e.preventDefault === 'function') e.preventDefault();
+          }
+          lastTapInfo = null;
+          return;
+        }
+        lastTapInfo = {
+          id: nodeId,
+          pos: pos,
+          time: now
+        };
+        showHoverNoticeForNode(node);
+      };
       var adjustPopupLayout = function adjustPopupLayout(entry, viewportWidth, viewportHeight, margin) {
         if (!popup) return;
         popup.dataset.columns = '1';
@@ -1523,7 +1765,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight) ? windowObj.innerHeight : (document === null || document === void 0 || (_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
         var margin = 12;
         popup.style.visibility = 'hidden';
-        popup.style.display = 'block';
+        popup.style.display = popup.classList.contains('diagram-popup--notice') ? 'flex' : 'block';
         popup.removeAttribute('hidden');
         adjustPopupLayout(entry, viewportWidth, viewportHeight, margin);
         var popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
@@ -1579,45 +1821,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           };
         }
       };
-      var showPopupForNode = function showPopupForNode(nodeEl) {
+      var showHoverNoticeForNode = function showHoverNoticeForNode(nodeEl) {
         if (!popup || !nodeEl) return;
         var nodeId = nodeEl.getAttribute('data-node');
-        if (!nodeId) {
+        if (!nodeId || !lastPopupEntries[nodeId]) {
           hidePopup();
           return;
         }
-        var entry = lastPopupEntries[nodeId];
-        if (!entry) {
-          hidePopup();
-          return;
-        }
-        popup.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
-        popup.innerHTML = entry.content || '';
-        if (entry.label) {
-          popup.setAttribute('aria-label', entry.label);
-        } else {
-          popup.removeAttribute('aria-label');
-        }
+        var safeNotice = escapeHtml(hoverNoticeText);
+        popup.className = 'diagram-popup diagram-popup--notice';
+        popup.innerHTML = "<p class=\"diagram-popup-notice\">".concat(safeNotice, "</p>");
+        popup.setAttribute('aria-label', hoverNoticeText);
         activePopupNode = nodeEl;
-        positionPopup(nodeEl, entry);
+        activePopupEntry = null;
+        positionPopup(nodeEl, null);
       };
       var onNodeOver = function onNodeOver(e) {
         updatePointerPosition(e);
         var node = e.target.closest('.diagram-node');
         if (!node || node === activePopupNode) return;
-        showPopupForNode(node);
+        showHoverNoticeForNode(node);
       };
       var onNodeOut = function onNodeOut(e) {
         if (!activePopupNode) return;
         var related = e.relatedTarget;
         if (related && activePopupNode.contains(related)) return;
         if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
+        if (popup && (related === popup || related && popup.contains(related))) return;
         hidePopup();
-        activePopupNode = null;
       };
       var onSvgLeave = function onSvgLeave(e) {
         if (svg.contains(e.relatedTarget)) return;
-        activePopupNode = null;
+        if (popup && (e.relatedTarget === popup || popup.contains(e.relatedTarget))) return;
         hidePopup();
       };
       svg.addEventListener('mousedown', onSvgMouseDown);
@@ -1642,20 +1877,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           passive: true
         });
       }
+      var showEntryPopupForNode = function showEntryPopupForNode(node, entry) {
+        if (!entry) return;
+        if (!popup || !node) {
+          openDetailDialogWithEntry(entry);
+          return;
+        }
+        popup.className = entry.className ? "diagram-popup ".concat(entry.className) : 'diagram-popup';
+        popup.innerHTML = entry.content || '';
+        if (entry.label) {
+          popup.setAttribute('aria-label', entry.label);
+        } else {
+          popup.removeAttribute('aria-label');
+        }
+        activePopupNode = node;
+        activePopupEntry = entry;
+        positionPopup(node, entry);
+      };
+      var onNodeDoubleClick = function onNodeDoubleClick(e) {
+        var node = e.target.closest('.diagram-node');
+        if (!node) return;
+        var nodeId = node.getAttribute('data-node');
+        if (!nodeId) return;
+        var entry = lastPopupEntries[nodeId];
+        if (!entry) return;
+        hidePopup();
+        activePopupNode = null;
+        activePopupEntry = null;
+        openDetailDialogWithEntry(entry);
+        e.stopPropagation();
+        e.preventDefault();
+      };
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, {
+        passive: false
+      });
+      svg.addEventListener('touchend', onNodeTouchEnd, {
         passive: false
       });
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
       svg.addEventListener('mouseleave', onSvgLeave);
+      svg.addEventListener('dblclick', onNodeDoubleClick);
       var repositionActivePopup = function repositionActivePopup() {
         if (!activePopupNode) return;
         var nodeId = activePopupNode.getAttribute('data-node');
-        if (!nodeId) return;
-        var entry = lastPopupEntries[nodeId];
-        if (!entry) return;
-        positionPopup(activePopupNode, entry);
+        if (!nodeId || !lastPopupEntries[nodeId]) {
+          hidePopup();
+          return;
+        }
+        var entry = activePopupEntry || lastPopupEntries[nodeId];
+        positionPopup(activePopupNode, entry || null);
       };
       svg.addEventListener('mousemove', updatePointerPosition);
       svg.addEventListener('touchstart', updatePointerPosition, {
@@ -1681,32 +1953,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);
+        svg.removeEventListener('touchend', onNodeTouchEnd);
         svg.removeEventListener('mouseover', onNodeOver);
         svg.removeEventListener('mouseout', onNodeOut);
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
+        svg.removeEventListener('dblclick', onNodeDoubleClick);
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
         }
+        clearPendingDrag();
+        dragId = null;
+        dragNode = null;
+        dragPointerStart = null;
+        dragStartPosition = null;
+        dragActive = false;
+        dragMovedDuringInteraction = false;
+        lastTapInfo = null;
+        hidePopup();
       };
       apply();
     }
     function updateDiagramLegend() {
-      var _texts$currentLang2, _texts$en2, _texts$currentLang3, _texts$en3, _texts$currentLang4, _texts$en4;
+      var _texts$currentLang7, _texts$en7, _texts$currentLang8, _texts$en8, _texts$currentLang9, _texts$en9;
       var diagramLegend = resolveDiagramLegend();
       if (!diagramLegend) return;
       var texts = resolveTexts();
       var currentLang = resolveCurrentLang();
       var legendItems = [{
         cls: 'power',
-        text: ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.diagramLegendPower) || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.diagramLegendPower) || 'Power'
+        text: ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.diagramLegendPower) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.diagramLegendPower) || 'Power'
       }, {
         cls: 'video',
-        text: ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.diagramLegendVideo) || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.diagramLegendVideo) || 'Video'
+        text: ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.diagramLegendVideo) || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.diagramLegendVideo) || 'Video'
       }, {
         cls: 'fiz',
-        text: ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.diagramLegendFIZ) || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.diagramLegendFIZ) || 'FIZ'
+        text: ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.diagramLegendFIZ) || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.diagramLegendFIZ) || 'FIZ'
       }];
       diagramLegend.innerHTML = legendItems.map(function (_ref7) {
         var cls = _ref7.cls,

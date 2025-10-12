@@ -299,6 +299,96 @@ function logOverview(level, message, detail, meta) {
           void consoleError;
         }
       }
+      var resolveOverviewGearListSections = function resolveOverviewGearListSections(html) {
+        var normalizedHtml = typeof html === 'string' ? html : '';
+        if (!normalizedHtml) {
+          return {
+            projectHtml: '',
+            gearHtml: ''
+          };
+        }
+        var fallbackResult = {
+          projectHtml: '',
+          gearHtml: normalizedHtml
+        };
+        var globalScope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+        var trySplit = function trySplit(fn, source) {
+          if (typeof fn !== 'function') {
+            return null;
+          }
+          try {
+            var result = fn.call(globalScope, normalizedHtml);
+            if (!result || _typeof(result) !== 'object') {
+              return null;
+            }
+            var projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
+            var gearHtml = typeof result.gearHtml === 'string' ? result.gearHtml : projectHtml ? '' : normalizedHtml;
+            return {
+              projectHtml: projectHtml,
+              gearHtml: gearHtml
+            };
+          } catch (error) {
+            logOverview('warn', 'Unable to split gear list HTML for overview rendering.', error, {
+              action: 'split-gear-html',
+              source: source
+            });
+            return null;
+          }
+        };
+        var candidates = [];
+        if (typeof getSafeGearListHtmlSections === 'function') {
+          candidates.push({
+            fn: getSafeGearListHtmlSections,
+            source: 'global-getSafeGearListHtmlSections'
+          });
+        }
+        if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.getSafeGearListHtmlSections === 'function') {
+          candidates.push({
+            fn: globalScope.cineGearList.getSafeGearListHtmlSections,
+            source: 'cineGearList.getSafeGearListHtmlSections'
+          });
+        }
+        if (typeof splitGearListHtml === 'function') {
+          candidates.push({
+            fn: splitGearListHtml,
+            source: 'global-splitGearListHtml'
+          });
+        }
+        if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.splitGearListHtml === 'function') {
+          candidates.push({
+            fn: globalScope.cineGearList.splitGearListHtml,
+            source: 'cineGearList.splitGearListHtml'
+          });
+        }
+        for (var index = 0; index < candidates.length; index += 1) {
+          var candidate = candidates[index];
+          var sections = trySplit(candidate.fn, candidate.source);
+          if (sections) {
+            return sections;
+          }
+        }
+        return fallbackResult;
+      };
+      (function exposeOverviewGearListSections() {
+        var scopes = [];
+        if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+        if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+        if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+        if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+        for (var index = 0; index < scopes.length; index += 1) {
+          var scope = scopes[index];
+          if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+            continue;
+          }
+          try {
+            if (!scope.resolveOverviewGearListSections) {
+              scope.resolveOverviewGearListSections = resolveOverviewGearListSections;
+            }
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      })();
     }
   } else {
     loggerInvocationFailed = true;
@@ -442,6 +532,20 @@ function getPrintOptionsDialogContext() {
   var dialog = document.getElementById('printOptionsDialog');
   if (!dialog) {
     return null;
+  }
+  if (!dialog.hasAttribute('data-print-backdrop-close')) {
+    dialog.addEventListener('click', function (event) {
+      if (event && event.target === dialog) {
+        closeDialog(dialog);
+      }
+    });
+    dialog.addEventListener('cancel', function (event) {
+      if (event) {
+        event.preventDefault();
+      }
+      closeDialog(dialog);
+    });
+    dialog.setAttribute('data-print-backdrop-close', 'true');
   }
   var form = dialog.querySelector('#printOptionsForm');
   var sections = dialog.querySelector('#printOptionsSections');
@@ -1033,7 +1137,7 @@ function generatePrintableOverview() {
     if (!infoBoxes.length) {
       return '';
     }
-    return "<div class=\"info-box-list\">".concat(infoBoxes.join(''), "</div>");
+    return "<div class=\"info-box-list lens-info-grid\">".concat(infoBoxes.join(''), "</div>");
   };
   var processLensesForOverview = function processLensesForOverview(selectElement, headingKey) {
     if (!selectElement) {
@@ -1051,7 +1155,7 @@ function generatePrintableOverview() {
       var displayName = lensKey || opt.text || '';
       var safeName = escapeHtmlSafe(displayName);
       var details = lensInfo ? createLensInfoHtml(lensInfo) : '';
-      addToSection(headingKey, "<div class=\"device-block\"><strong>".concat(safeName, "</strong>").concat(details, "</div>"));
+      addToSection(headingKey, "<div class=\"device-block lens-device-block\"><strong>".concat(safeName, "</strong>").concat(details, "</div>"));
     });
   };
   processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
@@ -1072,7 +1176,8 @@ function generatePrintableOverview() {
     var icon = overviewSectionIcons[key] || '';
     var iconHtml = icon && typeof iconMarkup === 'function' ? iconMarkup(icon, 'category-icon') : icon ? "<span class=\"category-icon icon-glyph\" data-icon-font=\"uicons\" aria-hidden=\"true\">".concat(icon, "</span>") : '';
     var isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
-    var gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : 'device-block-grid single-column';
+    var isLensList = key === 'category_lenses';
+    var gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : isLensList ? 'device-block-grid two-column lens-device-grid' : 'device-block-grid single-column';
     deviceListHtml += "<div class=\"device-category\"><h3>".concat(iconHtml).concat(heading, "</h3><div class=\"").concat(gridClasses, "\">").concat(sections[key].join(''), "</div></div>");
   });
   deviceListHtml += '</div>';
@@ -1103,7 +1208,7 @@ function generatePrintableOverview() {
     }
     powerDiagramHtml = clone.outerHTML;
   }
-  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(totalPowerElem.textContent, " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(totalCurrent144Elem.textContent, " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(totalCurrent12Elem.textContent, " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(batteryLifeElem.textContent, " ").concat(batteryLifeUnitElem ? escapeHtmlSafe(batteryLifeUnitElem.textContent) : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(batteryCountElem.textContent, "</p>\n    ");
+  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(escapeHtmlSafe(totalPowerElem.textContent), " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(escapeHtmlSafe(totalCurrent144Elem.textContent), " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(escapeHtmlSafe(totalCurrent12Elem.textContent), " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(escapeHtmlSafe(batteryLifeElem.textContent), " ").concat(batteryLifeUnitElem ? escapeHtmlSafe(batteryLifeUnitElem.textContent) : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(escapeHtmlSafe(batteryCountElem.textContent), "</p>\n    ");
   var severityClassMap = {
     danger: 'status-message--danger',
     warning: 'status-message--warning',
@@ -1272,10 +1377,23 @@ function generatePrintableOverview() {
   var projectSectionHtml = '';
   var gearSectionHtml = '';
   if (gearListCombined) {
-    var parts = typeof splitGearListHtml === 'function' ? splitGearListHtml(gearListCombined) : {
-      projectHtml: '',
-      gearHtml: ''
-    };
+    var resolveGearSections = function () {
+      var localResolver = typeof resolveOverviewGearListSections === 'function' ? resolveOverviewGearListSections : null;
+      if (localResolver) {
+        return localResolver;
+      }
+      var globalScope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+      if (globalScope && typeof globalScope.resolveOverviewGearListSections === 'function') {
+        return globalScope.resolveOverviewGearListSections;
+      }
+      return function (html) {
+        return {
+          projectHtml: '',
+          gearHtml: typeof html === 'string' ? html : ''
+        };
+      };
+    }();
+    var parts = resolveGearSections(gearListCombined);
     if (parts.projectHtml) {
       projectSectionHtml = "<section id=\"projectRequirementsOutput\" class=\"print-section project-requirements-section\">".concat(parts.projectHtml, "</section>");
     }
