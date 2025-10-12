@@ -1218,6 +1218,40 @@ var rentalHouseLookup = function () {
   return map;
 }();
 var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
+function removeParentheticalSegments(value) {
+  if (!value) return '';
+  var parts = [];
+  var depth = 0;
+  var lastIndex = 0;
+  var pendingStart = -1;
+  for (var i = 0; i < value.length; i += 1) {
+    var char = value[i];
+    if (char === '(') {
+      if (depth === 0) {
+        parts.push(value.slice(lastIndex, i));
+        pendingStart = i;
+      }
+      depth += 1;
+      continue;
+    }
+    if (char === ')' && depth > 0) {
+      depth -= 1;
+      if (depth === 0) {
+        lastIndex = i + 1;
+        pendingStart = -1;
+      }
+      continue;
+    }
+  }
+  if (depth === 0) {
+    parts.push(value.slice(lastIndex));
+  } else if (pendingStart >= 0) {
+    parts.push(value.slice(pendingStart));
+  } else {
+    parts.push(value.slice(lastIndex));
+  }
+  return parts.join('');
+}
 function formatRentalHouseShortName(entryOrName) {
   if (!entryOrName) return '';
   var explicit = _typeof(entryOrName) === 'object' && entryOrName && typeof entryOrName.shortName === 'string' ? entryOrName.shortName.trim() : '';
@@ -1227,7 +1261,8 @@ function formatRentalHouseShortName(entryOrName) {
   var rawName = typeof entryOrName === 'string' ? entryOrName : entryOrName && entryOrName.name;
   var name = rawName ? String(rawName).trim() : '';
   if (!name) return '';
-  var base = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+  var base = removeParentheticalSegments(name);
+  base = base.replace(/\s+/g, ' ').trim();
   var separatorMatch = base.match(/\s*[\u2012\u2013\u2014\u2015-]\s*/);
   if (separatorMatch) {
     var index = base.indexOf(separatorMatch[0]);
