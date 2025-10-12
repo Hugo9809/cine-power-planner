@@ -1197,11 +1197,11 @@ function generatePrintableOverview(config = {}) {
     const resultsHtml = `
         <ul id="breakdownList">${breakdownHtml}</ul>
         ${powerDiagramHtml}
-        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent} W</p>
-        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
-        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
-        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}</p>
-        <p><strong>${t.batteryCountLabel}</strong> ${batteryCountElem.textContent}</p>
+        <p><strong>${t.totalPowerLabel}</strong> ${escapeHtmlSafe(totalPowerElem.textContent)} W</p>
+        <p><strong>${t.totalCurrent144Label}</strong> ${escapeHtmlSafe(totalCurrent144Elem.textContent)} A</p>
+        <p><strong>${t.totalCurrent12Label}</strong> ${escapeHtmlSafe(totalCurrent12Elem.textContent)} A</p>
+        <p><strong>${t.batteryLifeLabel}</strong> ${escapeHtmlSafe(batteryLifeElem.textContent)} ${batteryLifeUnitElem ? escapeHtmlSafe(batteryLifeUnitElem.textContent) : ''}</p>
+        <p><strong>${t.batteryCountLabel}</strong> ${escapeHtmlSafe(batteryCountElem.textContent)}</p>
     `;
 
     // Get current warning messages with their colors
