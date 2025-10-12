@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { JSDOM } = require('jsdom');
 
 let cachedBodyHtml = null;
 let cachedDevicesJson = null;
@@ -10,11 +11,12 @@ function getBodyHtml() {
       path.join(__dirname, '../../../index.html'),
       'utf8',
     );
-    const bodyMatch = template.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    cachedBodyHtml = (bodyMatch ? bodyMatch[1] : '').replace(
-      /<script[\s\S]*?<\/script>/gi,
-      '',
-    );
+    // Use jsdom to parse HTML and extract sanitized <body> innerHTML
+    const dom = new JSDOM(template);
+    const body = dom.window.document.body;
+    // Remove all <script> elements within <body>
+    body.querySelectorAll('script').forEach(script => script.remove());
+    cachedBodyHtml = body.innerHTML;
   }
 
   return cachedBodyHtml;
