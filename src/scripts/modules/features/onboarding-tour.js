@@ -265,14 +265,14 @@
         'This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.',
     },
     userProfile: {
-      title: 'Configure your user profile',
+      title: 'Configure language and your profile',
       body:
-        'Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays with your offline saves and keeps exports credited to the correct owner.',
+        'Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.',
     },
     unitsPreferences: {
-      title: 'Tune language, theme and units',
+      title: 'Tune theme and units',
       body:
-        'Use Settings → General to choose language, dark or light theme, optional pink mode highlights and default temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
+        'Use Settings → General to choose dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
@@ -302,7 +302,7 @@
     results: {
       title: 'Review the results summary',
       body:
-        'Work through Step 9 in three passes inside Power Summary: 9A confirms Total Draw and peak load, 9B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 9C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.',
+        'Work through Step 8 in three passes inside Power Summary: 8A confirms Total Draw and peak load, 8B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 8C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.',
     },
     batteryComparison: {
       title: 'Compare battery options',
@@ -400,6 +400,80 @@
         'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.',
     },
   };
+
+  function isPrefaceStep(step) {
+    return Boolean(step && step.preface);
+  }
+
+  function isCompletionStep(step) {
+    return Boolean(step && step.key === 'completion');
+  }
+
+  function isCountableStep(step) {
+    return Boolean(step && !isPrefaceStep(step) && !isCompletionStep(step));
+  }
+
+  function getCountableStepTotal(stepList) {
+    if (!Array.isArray(stepList)) {
+      return 0;
+    }
+    let total = 0;
+    for (let index = 0; index < stepList.length; index += 1) {
+      if (isCountableStep(stepList[index])) {
+        total += 1;
+      }
+    }
+    return total;
+  }
+
+  function getCountableStepIndex(stepList, index) {
+    if (!Array.isArray(stepList) || typeof index !== 'number') {
+      return null;
+    }
+    if (index < 0 || index >= stepList.length) {
+      return null;
+    }
+    if (!isCountableStep(stepList[index])) {
+      return null;
+    }
+    let position = -1;
+    for (let pointer = 0; pointer <= index; pointer += 1) {
+      if (isCountableStep(stepList[pointer])) {
+        position += 1;
+      }
+    }
+    return position;
+  }
+
+  function getCountableCompletedCount(stepList, completedSet) {
+    if (!Array.isArray(stepList) || !completedSet || typeof completedSet.has !== 'function') {
+      return 0;
+    }
+    let count = 0;
+    for (let index = 0; index < stepList.length; index += 1) {
+      const step = stepList[index];
+      if (isCountableStep(step) && completedSet.has(step.key)) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  function getNextCountableStep(stepList, completedSet) {
+    if (!Array.isArray(stepList)) {
+      return null;
+    }
+    for (let index = 0; index < stepList.length; index += 1) {
+      const step = stepList[index];
+      if (!isCountableStep(step)) {
+        continue;
+      }
+      if (!completedSet || typeof completedSet.has !== 'function' || !completedSet.has(step.key)) {
+        return step;
+      }
+    }
+    return null;
+  }
 
   function getElement(selector) {
     if (typeof selector !== 'string' || !selector) {
@@ -1169,9 +1243,26 @@
         body: resolvedBody,
       };
     }
+    const prefaceIndicatorText = (() => {
+      const localizedValue = localized && typeof localized.prefaceIndicator === 'string'
+        ? localized.prefaceIndicator.trim()
+        : '';
+      if (localizedValue) {
+        return localizedValue;
+      }
+      const fallbackValue = fallback && typeof fallback.prefaceIndicator === 'string'
+        ? fallback.prefaceIndicator.trim()
+        : '';
+      if (fallbackValue) {
+        return fallbackValue;
+      }
+      return 'Preface';
+    })();
+
     return {
       ...fallback,
       ...localized,
+      prefaceIndicator: prefaceIndicatorText,
       steps,
     };
   }
@@ -1183,6 +1274,7 @@
       {
         key: 'intro',
         highlight: null,
+        preface: true,
         size: 'large',
       },
       {
@@ -1740,14 +1832,23 @@
     lastCardPlacement = 'floating';
   }
 
-  function formatStepIndicator(index, total) {
+  function formatStepIndicator(position, total) {
     const template = typeof tourTexts.stepIndicator === 'string'
       ? tourTexts.stepIndicator
       : 'Step {current} of {total}';
-    const current = index + 1;
+    const currentIndex = typeof position === 'number' ? position : -1;
+    const totalSteps = typeof total === 'number' && total > 0 ? total : 0;
+    const currentValue = currentIndex >= 0 ? currentIndex + 1 : 0;
     return template
-      .replace('{current}', current)
-      .replace('{total}', total);
+      .replace('{current}', String(currentValue))
+      .replace('{total}', String(totalSteps));
+  }
+
+  function formatPrefaceIndicator() {
+    if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
+      return tourTexts.prefaceIndicator.trim();
+    }
+    return 'Preface';
   }
 
   function focusCard() {
@@ -2463,15 +2564,29 @@
       resumeHintEl.textContent = '';
       return;
     }
-    const totalSteps = stepConfig.length;
-    const completedSteps = storedState && Array.isArray(storedState.completedSteps)
-      ? storedState.completedSteps.length
-      : 0;
+    const totalSteps = getCountableStepTotal(stepConfig);
+    const completedRaw = storedState && Array.isArray(storedState.completedSteps)
+      ? storedState.completedSteps
+      : [];
+    const completedSet = new Set(completedRaw);
+    const completedCount = getCountableCompletedCount(stepConfig, completedSet);
+    const countableIndex = getCountableStepIndex(stepConfig, index);
+    if (countableIndex === null) {
+      const fallbackHint = tourTexts.resumeHint || '';
+      if (!fallbackHint) {
+        resumeHintEl.hidden = true;
+        resumeHintEl.textContent = '';
+        return;
+      }
+      resumeHintEl.hidden = false;
+      resumeHintEl.textContent = fallbackHint;
+      return;
+    }
     const template = tourTexts.resumeHintDetailed || tourTexts.resumeHint || 'Resuming where you left off.';
     const hint = template
-      .replace('{current}', String(index + 1))
+      .replace('{current}', String(countableIndex + 1))
       .replace('{total}', String(totalSteps))
-      .replace('{completed}', String(Math.min(completedSteps, totalSteps)));
+      .replace('{completed}', String(Math.min(completedCount, totalSteps)));
     resumeHintEl.hidden = false;
     resumeHintEl.textContent = hint;
   }
@@ -2666,12 +2781,15 @@
     const avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     const avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     const avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
+    const languageSelect = DOCUMENT.getElementById('languageSelect');
+    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+    const settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
 
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Your updates sync to Contacts instantly, stay cached offline and flow into exports so crews always know who owns the setup.';
+    intro.textContent = 'Pick your interface language and contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
     fragment.appendChild(intro);
 
     const avatarGroup = DOCUMENT.createElement('div');
@@ -2894,6 +3012,96 @@
       }
       return proxyControl;
     };
+
+    let languageProxy = null;
+    if (languageSelect || settingsLanguage) {
+      const languageTarget = languageSelect || settingsLanguage;
+      const resolveLanguageLabel = () => {
+        if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
+          const text = settingsLanguageLabel.textContent.trim();
+          if (text) {
+            return text;
+          }
+        }
+        if (languageSelect && typeof languageSelect.getAttribute === 'function') {
+          const ariaLabel = languageSelect.getAttribute('aria-label');
+          if (ariaLabel && ariaLabel.trim()) {
+            return ariaLabel.trim();
+          }
+        }
+        return 'Language';
+      };
+
+      const handleLanguageSync = (direction) => {
+        if (!languageProxy || direction !== 'to') {
+          return;
+        }
+        const value = languageProxy.value;
+        if (typeof GLOBAL_SCOPE.setLanguage === 'function') {
+          try {
+            GLOBAL_SCOPE.setLanguage(value);
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+          }
+          return;
+        }
+        if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
+          languageSelect.value = value;
+          dispatchSyntheticEvent(languageSelect, 'change');
+        }
+        if (settingsLanguage && settingsLanguage !== languageTarget && settingsLanguage.value !== value) {
+          settingsLanguage.value = value;
+          dispatchSyntheticEvent(settingsLanguage, 'change');
+        }
+      };
+
+      languageProxy = createProxyField({
+        fieldKey: 'user-language',
+        labelText: resolveLanguageLabel(),
+        target: languageTarget,
+        type: 'select',
+        onAfterSync: handleLanguageSync,
+      });
+
+      const syncLanguageFromActive = () => {
+        if (!languageProxy) {
+          return;
+        }
+        let activeValue = '';
+        if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
+          activeValue = languageSelect.value;
+        } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
+          activeValue = settingsLanguage.value;
+        }
+        if (activeValue && languageProxy.value !== activeValue) {
+          languageProxy.value = activeValue;
+        }
+      };
+
+      syncLanguageFromActive();
+
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
+        const handleLanguageChangeEvent = () => {
+          syncLanguageFromActive();
+        };
+        try {
+          GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChangeEvent);
+          registerCleanup(() => {
+            try {
+              GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageChangeEvent);
+            } catch (removeError) {
+              void removeError;
+            }
+          });
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not observe language changes.', error);
+        }
+      }
+
+      registerCleanup(() => {
+        languageProxy = null;
+      });
+    }
 
     const resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string'
       ? profileLabel.textContent
@@ -3547,7 +3755,8 @@
       cardContentEl.scrollTop = 0;
     }
 
-    const totalSteps = stepConfig.length;
+    const totalSteps = getCountableStepTotal(stepConfig);
+    const countableIndex = getCountableStepIndex(stepConfig, index);
     const textPack = getStepTexts(step);
     const stepText = textPack.body;
 
@@ -3564,8 +3773,10 @@
 
     if (step.key === 'completion') {
       progressEl.textContent = tourTexts.completionIndicator || '';
+    } else if (isPrefaceStep(step)) {
+      progressEl.textContent = formatPrefaceIndicator();
     } else {
-      progressEl.textContent = formatStepIndicator(index, totalSteps);
+      progressEl.textContent = formatStepIndicator(countableIndex, totalSteps);
     }
 
     updateProgressMeter(step, index);
@@ -3599,22 +3810,30 @@
     if (!progressMeterEl || !progressMeterFillEl) {
       return;
     }
-    const totalSteps = stepConfig.length;
+    const totalSteps = getCountableStepTotal(stepConfig);
     const completedSteps = storedState && Array.isArray(storedState.completedSteps)
       ? storedState.completedSteps
       : [];
     const completedSet = new Set(completedSteps);
-    const activeContribution = step && !completedSet.has(step.key) ? 1 : 0;
-    const progressValue = Math.min(
-      totalSteps,
-      Math.max(index + 1, completedSet.size + activeContribution),
-    );
+    const completedCount = getCountableCompletedCount(stepConfig, completedSet);
+    const activeCountableIndex = getCountableStepIndex(stepConfig, index);
+    let progressValue = completedCount;
+    if (typeof activeCountableIndex === 'number') {
+      progressValue = Math.max(progressValue, activeCountableIndex + 1);
+    }
+    if (isCountableStep(step) && !completedSet.has(step.key)) {
+      progressValue = Math.max(progressValue, Math.min(totalSteps, completedCount + 1));
+    }
+    if (step && step.key === 'completion') {
+      progressValue = totalSteps;
+    }
+    progressValue = Math.min(totalSteps, progressValue);
     const ratio = totalSteps > 0 ? Math.max(0, Math.min(1, progressValue / totalSteps)) : 0;
     progressMeterFillEl.style.width = `${ratio * 100}%`;
 
     const labelTemplate = tourTexts.progressValueLabel || 'Completed {completed} of {total} steps';
     const label = labelTemplate
-      .replace('{completed}', String(Math.min(completedSet.size, totalSteps)))
+      .replace('{completed}', String(Math.min(completedCount, totalSteps)))
       .replace('{total}', String(totalSteps));
     const meterLabel = tourTexts.progressMeterLabel || 'Tutorial progress';
     progressMeterEl.setAttribute('aria-label', meterLabel);
@@ -4135,24 +4354,17 @@
       }
     }
 
-    const total = allowedKeys.length;
-    const completedCount = Math.min(completedSet.size, total);
+    const countableSteps = stepList.filter(isCountableStep);
+    const total = countableSteps.length;
+    const completedCount = Math.min(getCountableCompletedCount(stepList, completedSet), total);
 
     const activeKey = stored && typeof stored.activeStep === 'string'
       ? stored.activeStep
       : null;
     const activeIndex = activeKey ? allowedKeys.indexOf(activeKey) : -1;
 
-    let nextIndex = -1;
-    for (let index = 0; index < allowedKeys.length; index += 1) {
-      const key = allowedKeys[index];
-      if (!completedSet.has(key)) {
-        nextIndex = index;
-        break;
-      }
-    }
-
-    const nextKey = nextIndex >= 0 ? allowedKeys[nextIndex] : null;
+    const nextStep = getNextCountableStep(stepList, completedSet);
+    const nextKey = nextStep ? nextStep.key : null;
     const nextTitle = nextKey ? resolveStepTitle(nextKey) : '';
     const activeTitle = activeIndex >= 0 ? resolveStepTitle(activeKey) : '';
     const lastCompletedKey = stored && typeof stored.lastCompletedStep === 'string'
@@ -4236,9 +4448,12 @@
     }
     const state = storedState || loadStoredState();
     const steps = getStepConfig();
-    const completedCount = state && Array.isArray(state.completedSteps)
-      ? state.completedSteps.length
-      : 0;
+    const totalCountableSteps = getCountableStepTotal(steps);
+    const completedRaw = state && Array.isArray(state.completedSteps)
+      ? state.completedSteps
+      : [];
+    const completedSet = new Set(completedRaw);
+    const completedCount = getCountableCompletedCount(steps, completedSet);
     const labelTemplate = tourTexts.resumeLabelWithProgress || tourTexts.resumeLabel;
     let label;
     if (state && state.completed) {
@@ -4246,8 +4461,8 @@
     } else if (state && state.activeStep) {
       if (labelTemplate) {
         label = labelTemplate
-          .replace('{completed}', String(Math.min(completedCount, steps.length)))
-          .replace('{total}', String(steps.length));
+          .replace('{completed}', String(Math.min(completedCount, totalCountableSteps)))
+          .replace('{total}', String(totalCountableSteps));
       }
       if (!label) {
         label = tourTexts.resumeLabel || tourTexts.startLabel || 'Resume guided tutorial';
@@ -4255,8 +4470,8 @@
     } else if (completedCount > 0) {
       if (labelTemplate) {
         label = labelTemplate
-          .replace('{completed}', String(Math.min(completedCount, steps.length)))
-          .replace('{total}', String(steps.length));
+          .replace('{completed}', String(Math.min(completedCount, totalCountableSteps)))
+          .replace('{total}', String(totalCountableSteps));
       }
     } else {
       label = tourTexts.startLabel || 'Start guided tutorial';

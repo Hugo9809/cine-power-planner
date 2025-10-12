@@ -1793,6 +1793,7 @@ const texts = {
       doneLabel: "Finish tutorial",
       stepIndicator: "Step {current} of {total}",
       completionIndicator: "First project secured offline",
+      prefaceIndicator: "Preface",
       stepListAriaLabel: "Tutorial steps",
       stepStatusCurrent: "Current step",
       stepStatusComplete: "Completed",
@@ -1836,14 +1837,14 @@ const texts = {
             "This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.",
         },
         userProfile: {
-          title: "Configure your user profile",
+          title: "Configure language and your profile",
           body:
-            "Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stays cached with your offline saves and keeps exports credited to the correct owner.",
+            "Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.",
         },
         unitsPreferences: {
-          title: "Tune language, theme and units",
+          title: "Tune theme and units",
           body:
-            "Use Settings → General to choose language, dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
+            "Use Settings → General to choose dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
         },
         nameProject: {
           title: "Name your first project",
@@ -1873,7 +1874,7 @@ const texts = {
         results: {
           title: "Review the results summary",
           body:
-            "Treat Step 9 as three quick passes through Power Summary: 9A confirms the Total Draw card and peak load, 9B drills into each battery pack for runtime projections and reserve margin highlights, and 9C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot.",
+            "Treat Step 8 as three quick passes through Power Summary: 8A confirms the Total Draw card and peak load, 8B drills into each battery pack for runtime projections and reserve margin highlights, and 8C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3864,6 +3865,7 @@ const texts = {
       doneLabel: "Termina tutorial",
       stepIndicator: "Passo {current} di {total}",
       completionIndicator: "Primo progetto salvato offline",
+      prefaceIndicator: "Prefazione",
       stepListAriaLabel: "Passaggi del tutorial",
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
@@ -3907,14 +3909,14 @@ const texts = {
             "Questo percorso ampliato illustra ogni flusso che protegge i dati della troupe, dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva i progressi offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
         },
         userProfile: {
-          title: "Configura il tuo profilo",
+          title: "Configura lingua e profilo",
           body:
-            "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono che le esportazioni accreditino il proprietario corretto.",
+            "Scegli la lingua dell'interfaccia, il nome visualizzato, il ruolo, il telefono, l'email e la foto direttamente qui. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e garantisce che le esportazioni accreditino il proprietario corretto.",
         },
         unitsPreferences: {
-          title: "Personalizza lingua, tema e unità",
+          title: "Personalizza tema e unità",
           body:
-            "Apri Impostazioni → Generale per scegliere lingua, tema chiaro o scuro, eventuale modalità rosa, scala di fuoco predefinita e unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio al sicuro anche durante le pulizie automatiche di spazio.",
+            "Apri Impostazioni → Generale per scegliere tema chiaro o scuro, l'eventuale modalità rosa, la scala di fuoco predefinita e le unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio resta protetto anche durante le pulizie automatiche di spazio.",
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
@@ -3944,7 +3946,7 @@ const texts = {
         results: {
           title: "Rivedi il riepilogo dei risultati",
           body:
-            "Tratta il passaggio 9 come tre rapide revisioni in Power Summary: 9A conferma la scheda Carico totale e il picco previsto, 9B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 9C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot.",
+            "Tratta il passaggio 8 come tre rapide revisioni in Power Summary: 8A conferma la scheda Carico totale e il picco previsto, 8B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 8C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -5948,6 +5950,7 @@ const texts = {
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
       completionIndicator: "Primer proyecto guardado sin conexión",
+      prefaceIndicator: "Prefacio",
       stepListAriaLabel: "Pasos del tutorial",
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
@@ -5991,14 +5994,14 @@ const texts = {
             "Este recorrido ampliado orienta cada flujo que protege los datos del equipo, desde el primer proyecto hasta los respaldos redundantes. Cada paso guarda el progreso sin conexión para que puedas pausar y reanudar sin perder protecciones.",
         },
         userProfile: {
-          title: "Configura tu perfil",
+          title: "Configura idioma y perfil",
           body:
-            "Completa tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
+            "Elige el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
         },
         unitsPreferences: {
-          title: "Ajusta idioma, tema y unidades",
+          title: "Ajusta tema y unidades",
           body:
-            "Usa Configuración → General para elegir idioma, tema claro u oscuro, resaltes opcionales en modo rosa, escala de enfoque predeterminada y unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
+            "Usa Configuración → General para elegir tema claro u oscuro, resaltes opcionales en modo rosa, la escala de enfoque predeterminada y las unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
@@ -6028,7 +6031,7 @@ const texts = {
         results: {
           title: "Revisa el resumen de resultados",
           body:
-            "Trata el paso 9 como tres pasadas rápidas en Power Summary: 9A confirma la tarjeta de Consumo total y el pico previsto, 9B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 9C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea.",
+            "Trata el paso 8 como tres pasadas rápidas en Power Summary: 8A confirma la tarjeta de Consumo total y el pico previsto, 8B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 8C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -8045,6 +8048,7 @@ const texts = {
       doneLabel: "Terminer le tutoriel",
       stepIndicator: "Étape {current} sur {total}",
       completionIndicator: "Premier projet sauvegardé hors ligne",
+      prefaceIndicator: "Préface",
       stepListAriaLabel: "Étapes du tutoriel",
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
@@ -8088,14 +8092,14 @@ const texts = {
             "Ce parcours étendu présente chaque flux qui protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape enregistre la progression hors ligne pour vous permettre de faire une pause et de reprendre sans perdre les garde-fous.",
         },
         userProfile: {
-          title: "Configurez votre profil",
+          title: "Configurez la langue et votre profil",
           body:
-            "Renseignez votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Les modifications se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent que les exports créditent le bon responsable.",
+            "Choisissez la langue de l’interface, votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Chaque modification se synchronise immédiatement avec Contacts, reste disponible hors ligne dans vos sauvegardes et garantit que les exports créditent le bon responsable.",
         },
         unitsPreferences: {
-          title: "Réglez langue, thème et unités",
+          title: "Réglez thème et unités",
           body:
-            "Utilisez Paramètres → Général pour choisir la langue, le thème clair ou sombre, les surbrillances optionnelles du mode rose, l’échelle de mise au point par défaut et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
+            "Utilisez Paramètres → Général pour choisir le thème clair ou sombre, les surbrillances optionnelles du mode rose, l’échelle de mise au point par défaut et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
         },
         nameProject: {
           title: "Nommez votre premier projet",
@@ -8125,7 +8129,7 @@ const texts = {
         results: {
           title: "Passez en revue le résumé des résultats",
           body:
-            "Traitez l’étape 9 comme trois passages rapides dans Power Summary : 9A confirme la carte Consommation totale et le pic prévu, 9B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 9C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané.",
+            "Traitez l’étape 8 comme trois passages rapides dans Power Summary : 8A confirme la carte Consommation totale et le pic prévu, 8B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 8C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -10146,6 +10150,7 @@ const texts = {
       doneLabel: "Tutorial abschließen",
       stepIndicator: "Schritt {current} von {total}",
       completionIndicator: "Erstes Projekt offline gesichert",
+      prefaceIndicator: "Vorwort",
       stepListAriaLabel: "Tutorial-Schritte",
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
@@ -10189,14 +10194,14 @@ const texts = {
             "Dieser erweiterte Rundgang erklärt jeden Workflow, der die Daten deines Teams schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt speichert den Fortschritt offline, damit du jederzeit pausieren und ohne Verlust der Schutzmaßnahmen fortsetzen kannst.",
         },
         userProfile: {
-          title: "Profil einrichten",
+          title: "Sprache und Profil einrichten",
           body:
-            "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt hier ein. Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Speicherungen und stellen sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
+            "Wähle die Sprache der Oberfläche, deinen Anzeigenamen, deine Rolle, Telefonnummer, E-Mail und dein Foto direkt hier. Jede Änderung wird sofort mit Kontakte synchronisiert, bleibt offline in deinen Speicherungen und stellt sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
         },
         unitsPreferences: {
-          title: "Sprache, Theme und Einheiten anpassen",
+          title: "Theme und Einheiten anpassen",
           body:
-            "Nutze Einstellungen → Allgemein, um Sprache, helles oder dunkles Theme, optionale Pink-Highlights, Standard-Fokusskala und Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
+            "Nutze Einstellungen → Allgemein, um helles oder dunkles Theme, optionale Pink-Highlights, die Standard-Fokusskala und die Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
         },
         nameProject: {
           title: "Erstes Projekt benennen",
@@ -10226,7 +10231,7 @@ const texts = {
         results: {
           title: "Ergebnisse zusammenfassen",
           body:
-            "Behandle Schritt 9 als drei kurze Durchläufe in Power Summary: 9A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 9B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 9C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln.",
+            "Behandle Schritt 8 als drei kurze Durchläufe in Power Summary: 8A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 8B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 8C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",

@@ -32,6 +32,50 @@ describe('onboarding tour manual start', () => {
 
     global.getSafeLocalStorage = () => storage;
     global.SAFE_LOCAL_STORAGE = storage;
+
+    const globalEventListeners = new Map();
+    global.addEventListener = (type, listener) => {
+      if (!type || typeof listener !== 'function') {
+        return;
+      }
+      const bucket = globalEventListeners.get(type) || [];
+      bucket.push(listener);
+      globalEventListeners.set(type, bucket);
+    };
+    global.removeEventListener = (type, listener) => {
+      if (!type || typeof listener !== 'function') {
+        return;
+      }
+      const bucket = globalEventListeners.get(type);
+      if (!bucket) {
+        return;
+      }
+      const index = bucket.indexOf(listener);
+      if (index !== -1) {
+        bucket.splice(index, 1);
+      }
+      if (!bucket.length) {
+        globalEventListeners.delete(type);
+      }
+    };
+    global.dispatchEvent = event => {
+      if (!event || !event.type) {
+        return false;
+      }
+      const bucket = globalEventListeners.get(event.type);
+      if (!bucket || !bucket.length) {
+        return true;
+      }
+      bucket.slice().forEach(listener => {
+        try {
+          listener.call(global, event);
+        } catch (error) {
+          void error;
+        }
+      });
+      return !event.defaultPrevented;
+    };
+
     global.cineModuleBase = {
       safeWarn: jest.fn(),
       freezeDeep: value => value,
@@ -60,6 +104,18 @@ describe('onboarding tour manual start', () => {
     });
 
     document.body.innerHTML = `
+      <select id="languageSelect" aria-label="Select language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+      </select>
+      <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
+      <select id="settingsLanguage">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+      </select>
+      <div id="helpOnboardingTutorialStatus"></div>
       <div id="app">
         <dialog id="helpDialog" hidden>
           <button id="helpOnboardingTutorialButton" data-onboarding-tour-trigger="primary" type="button">
@@ -86,6 +142,38 @@ describe('onboarding tour manual start', () => {
         <button id="saveSetupBtn"></button>
       </div>
     `;
+
+    const headerLanguage = document.getElementById('languageSelect');
+    const settingsLanguage = document.getElementById('settingsLanguage');
+    const updateLanguage = value => {
+      if (!value) {
+        return;
+      }
+      if (headerLanguage) {
+        headerLanguage.value = value;
+      }
+      if (settingsLanguage) {
+        settingsLanguage.value = value;
+      }
+      global.currentLang = value;
+      if (typeof global.dispatchEvent === 'function' && typeof Event === 'function') {
+        try {
+          global.dispatchEvent(new Event('languagechange'));
+        } catch (error) {
+          void error;
+        }
+      }
+    };
+
+    if (headerLanguage) {
+      headerLanguage.addEventListener('change', event => updateLanguage(event.target.value));
+    }
+    if (settingsLanguage) {
+      settingsLanguage.addEventListener('change', event => updateLanguage(event.target.value));
+    }
+
+    global.setLanguage = jest.fn(updateLanguage);
+    updateLanguage(options.currentLang || 'en');
 
     return require(modulePath);
   }
@@ -262,5 +350,56 @@ describe('onboarding tour manual start', () => {
     } finally {
       getBoundingClientRectSpy.mockRestore();
     }
+  });
+
+  test('language step counts from one and stays synchronized', async () => {
+    loadModule();
+
+    const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+    const helpDialog = document.getElementById('helpDialog');
+    expect(trigger).not.toBeNull();
+    expect(helpDialog).not.toBeNull();
+
+    helpDialog.removeAttribute('hidden');
+    helpDialog.setAttribute('open', '');
+
+    trigger.click();
+    await new Promise(resolve => setTimeout(resolve, 40));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+
+    const progress = overlay.querySelector('.onboarding-progress');
+    expect(progress).not.toBeNull();
+    expect(progress.textContent).toBe('Preface');
+
+    const nextButton = overlay.querySelector('.onboarding-next-button');
+    expect(nextButton).not.toBeNull();
+    nextButton.click();
+    await new Promise(resolve => setTimeout(resolve, 60));
+
+    expect(progress.textContent).toBe('Step 1 of 23');
+
+    const onboardingLanguage = overlay.querySelector('select[id^="onboarding-user-language"]');
+    expect(onboardingLanguage).not.toBeNull();
+    expect(onboardingLanguage.value).toBe('en');
+
+    onboardingLanguage.value = 'de';
+    onboardingLanguage.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    const headerLanguage = document.getElementById('languageSelect');
+    const settingsLanguage = document.getElementById('settingsLanguage');
+    expect(headerLanguage.value).toBe('de');
+    expect(settingsLanguage.value).toBe('de');
+    expect(global.currentLang).toBe('de');
+
+    headerLanguage.value = 'fr';
+    headerLanguage.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    expect(onboardingLanguage.value).toBe('fr');
+    expect(settingsLanguage.value).toBe('fr');
+    expect(global.currentLang).toBe('fr');
   });
 });
