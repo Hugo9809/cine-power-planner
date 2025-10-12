@@ -3,7 +3,82 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
+  function detectHelperScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return null;
+  }
+
+  function resolveRuntimeEnvironmentHelpers() {
+    if (typeof require === 'function') {
+      try {
+        var required = require('./runtime-environment-helpers.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    var candidates = [];
+    function pushCandidate(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+
+    var primary = detectHelperScope();
+    pushCandidate(primary);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      try {
+        var helpers = candidate && candidate.cineRuntimeEnvironmentHelpers;
+        if (helpers && _typeof(helpers) === 'object') {
+          return helpers;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  var RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
+
   function fallbackDetectGlobalScope() {
+    if (
+      RUNTIME_ENVIRONMENT_HELPERS &&
+      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
+    ) {
+      try {
+        var detected = RUNTIME_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -19,6 +94,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   function fallbackCollectCandidateScopes(primary) {
+    if (
+      RUNTIME_ENVIRONMENT_HELPERS &&
+      typeof RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
+    ) {
+      try {
+        var scoped = RUNTIME_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primary);
+        if (Array.isArray(scoped)) {
+          return scoped;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     var scopes = [];
     function pushScope(scope) {
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
