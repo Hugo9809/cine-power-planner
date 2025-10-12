@@ -1515,11 +1515,21 @@ var texts = {
       steps: {
         intro: {
           title: "Welcome to Cine Power Planner",
-          body: "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own."
+          body: "Cine Power Planner is your crew's mission control for locking power-safe builds, documenting project requirements and delivering automated gear kits—without subscriptions or server dependencies. Plan and look up power consumption, validate battery safety, outline requirements and prepare share-ready PDFs while AutoGear rules and the mobile PWA keep every workflow protected offline.",
+          tagline: "Plan power, requirements and automated gear handoffs entirely offline with no subscriptions or crew data risk.",
+          highlights: [
+            "Capture project requirements, power math, changeover timing and battery safety guidance with redundant offline saves.",
+            "Create and manage full gear lists automatically—AutoGear rules expand kits from shooting scenarios so you skip repetitive manual adds and fine-tune every rule to your standards.",
+            "Generate PDF handoffs for crews and rental partners, share protected projects and rely on offline autosave, backups, imports and restores to guard every detail without monthly fees.",
+            "Install the mobile PWA to keep planning on phones and tablets with the same offline safeguards—no subscriptions or servers required."
+          ],
+          languageLabel: "Interface language",
+          languageDescription: "Choose your language to translate the planner immediately. The preference stays in offline saves, backups and restores.",
+          hint: "This guided tour walks you through every workflow step-by-step while saving progress offline, so pause anytime and resume without losing your place."
         },
         userProfile: {
-          title: "Configure your user profile",
-          body: "Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stores with your offline saves and keeps exports credited to the correct owner."
+          title: "Complete your crew profile",
+          body: "Add your display name, role, phone, email and photo. Every update syncs to Contacts instantly, stores with your offline saves and keeps exports credited to the correct owner."
         },
         nameProject: {
           title: "Name your first project",
@@ -3139,11 +3149,20 @@ var texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-          body: "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente."
+          body: "Cine Power Planner protegge ogni flusso di lavoro sull’alimentazione della camera—dalla configurazione iniziale del progetto ai backup ridondanti—così la troupe può ripristinare all’istante. Questo tour illustra ogni salvaguardia mantenendo il progresso protetto offline.",
+          tagline: "Pianifica l’alimentazione della camera in modo affidabile e proteggi ogni progetto.",
+          highlights: [
+            "Mappa camere, accessori e batterie con calcoli di autonomia in tempo reale e avvisi di sicurezza.",
+            "Acquisisci ogni modifica con il salvataggio automatico offline e backup ridondanti pronti per l’esportazione.",
+            "Ripristina i progetti con un clic e condividi report pronti per la troupe senza rischiare i dati."
+          ],
+          languageLabel: "Lingua dell’interfaccia",
+          languageDescription: "Scegli ora la lingua per tradurre subito il planner. La preferenza resta nei salvataggi offline, nei backup e nei ripristini.",
+          hint: "Puoi mettere in pausa in qualsiasi momento: ogni passaggio viene salvato offline così il progresso non scompare mai."
         },
         userProfile: {
-          title: "Configura il tuo profilo",
-          body: "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono i crediti corretti."
+          title: "Completa il profilo della troupe",
+          body: "Aggiungi nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono i crediti corretti."
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
@@ -4763,11 +4782,20 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-          body: "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta."
+          body: "Cine Power Planner protege cada flujo de trabajo de energía de cámara—desde la creación inicial del proyecto hasta las copias de seguridad redundantes—para que el equipo pueda restaurar al instante. Este recorrido muestra cada medida de protección mientras mantiene el progreso seguro sin conexión.",
+          tagline: "Planifica energía fiable para cámara y protege cada proyecto.",
+          highlights: [
+            "Mapea cámaras, accesorios y baterías con cálculos de autonomía en tiempo real y alertas de seguridad.",
+            "Captura cada cambio con guardado automático sin conexión y copias de seguridad redundantes listas para exportar.",
+            "Restaura proyectos con un clic y comparte informes listos para el equipo sin poner en riesgo los datos."
+          ],
+          languageLabel: "Idioma de la interfaz",
+          languageDescription: "Elige tu idioma para traducir el planificador al instante. La preferencia permanece en los guardados sin conexión, las copias de seguridad y las restauraciones.",
+          hint: "Puedes pausar en cualquier momento: cada paso se guarda sin conexión para que el progreso nunca desaparezca."
         },
         userProfile: {
-          title: "Configura tu perfil",
-          body: "Completa tu nombre visible, rol, teléfono, correo y foto directamente en este paso. Los cambios se sincronizan con Contactos al instante, permanecen sin conexión en tus guardados y garantizan los créditos correctos."
+          title: "Completa tu perfil de equipo",
+          body: "Añade tu nombre visible, rol, teléfono, correo y foto directamente en este paso. Cada actualización se sincroniza al instante con Contactos, se conserva sin conexión y garantiza los créditos correctos."
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
@@ -6387,11 +6415,20 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-          body: "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement."
+          body: "Cine Power Planner sécurise chaque workflow d’alimentation caméra—de la création du premier projet jusqu’aux sauvegardes redondantes—afin que l’équipe puisse restaurer instantanément. Ce parcours présente chaque garde-fou tout en protégeant la progression hors ligne.",
+          tagline: "Planifiez une alimentation caméra fiable et protégez chaque projet.",
+          highlights: [
+            "Cartographiez caméras, accessoires et batteries avec des calculs d’autonomie en temps réel et des alertes de sécurité.",
+            "Enregistrez chaque changement grâce à la sauvegarde automatique hors ligne et aux sauvegardes redondantes prêtes à l’export.",
+            "Restaurez les projets en un clic et partagez des rapports prêts pour l’équipe sans risquer les données."
+          ],
+          languageLabel: "Langue de l’interface",
+          languageDescription: "Choisissez la langue pour traduire immédiatement le planificateur. La préférence est conservée dans les sauvegardes hors ligne, les copies et les restaurations.",
+          hint: "Vous pouvez faire une pause à tout moment : chaque étape est sauvegardée hors ligne pour que la progression ne disparaisse jamais."
         },
         userProfile: {
-          title: "Configurez votre profil",
-          body: "Renseignez votre nom affiché, rôle, téléphone, e-mail et photo directement ici. Les changements se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent les bons crédits."
+          title: "Complétez votre profil d’équipe",
+          body: "Ajoutez votre nom affiché, rôle, téléphone, e-mail et photo directement ici. Les changements se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent les bons crédits."
         },
         nameProject: {
           title: "Nommez votre premier projet",
@@ -8011,11 +8048,20 @@ var texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body: "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst."
+          body: "Cine Power Planner schützt jeden Workflow zur Kamerastromversorgung – vom ersten Projektsetup bis zu redundanten Backups – damit das Team sofort wiederherstellen kann. Diese Tour zeigt jede Schutzmaßnahme und hält den Fortschritt offline gesichert.",
+          tagline: "Planen Sie zuverlässige Kameraenergie und schützen Sie jedes Projekt.",
+          highlights: [
+            "Erfassen Sie Kameras, Zubehör und Akkus mit Laufzeitberechnung in Echtzeit und Sicherheitswarnungen.",
+            "Sichern Sie jede Änderung mit Offline-Autosave und redundanten Backups, die sofort exportbereit sind.",
+            "Stellen Sie Projekte mit einem Klick wieder her und teilen Sie teamfertige Reports ohne Datenrisiko."
+          ],
+          languageLabel: "Interface-Sprache",
+          languageDescription: "Wählen Sie jetzt die Sprache, um den Planner sofort zu übersetzen. Die Einstellung bleibt in Offline-Speichern, Backups und Wiederherstellungen erhalten.",
+          hint: "Sie können jederzeit pausieren – jeder Schritt wird offline gespeichert, damit der Fortschritt nie verloren geht."
         },
         userProfile: {
-          title: "Profil einrichten",
-          body: "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt in diesem Schritt ein. Die Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Sicherungen erhalten und sorgen für die richtigen Credits."
+          title: "Vervollständigen Sie Ihr Teamprofil",
+          body: "Tragen Sie Anzeigename, Rolle, Telefon, E-Mail und Foto direkt in diesem Schritt ein. Die Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in Ihren Sicherungen erhalten und sorgen für die richtigen Credits."
         },
         nameProject: {
           title: "Benenne dein erstes Projekt",

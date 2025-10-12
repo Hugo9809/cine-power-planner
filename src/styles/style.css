@@ -7132,6 +7132,88 @@ body.dark-mode .onboarding-progress-fill {
   gap: var(--spacing-xs);
 }
 
+.onboarding-intro-hero {
+  display: grid;
+  gap: clamp(0.6rem, 0.35rem + 0.6vw, 0.9rem);
+  padding-bottom: clamp(0.75rem, 0.5rem + 0.8vw, 1.1rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.onboarding-intro-tagline {
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.35rem);
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent-color) 40%, var(--text-color));
+  margin: 0;
+}
+
+.onboarding-intro-highlights {
+  display: grid;
+  gap: clamp(0.35rem, 0.25rem + 0.35vw, 0.6rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.onboarding-intro-highlights li {
+  position: relative;
+  padding-left: 1.4rem;
+  color: color-mix(in srgb, var(--text-color) 85%, var(--surface-1));
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  line-height: var(--line-height-spacious);
+}
+
+.onboarding-intro-highlights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-color) 70%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.onboarding-intro-language {
+  margin-top: clamp(0.9rem, 0.6rem + 0.8vw, 1.25rem);
+}
+
+.onboarding-intro-language-label {
+  font-weight: 600;
+}
+
+.onboarding-intro-language-note {
+  margin-top: clamp(0.6rem, 0.45rem + 0.4vw, 0.85rem);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
+  line-height: var(--line-height-spacious);
+  color: color-mix(in srgb, var(--text-color) 78%, var(--surface-1));
+}
+
+.onboarding-intro-hint {
+  margin-top: clamp(0.75rem, 0.55rem + 0.5vw, 1rem);
+}
+
+body.dark-mode .onboarding-intro-hero {
+  border-color: color-mix(in srgb, var(--accent-color) 35%, rgba(255, 255, 255, 0.14));
+}
+
+body.dark-mode .onboarding-intro-tagline {
+  color: color-mix(in srgb, var(--accent-color) 55%, var(--text-color));
+}
+
+body.dark-mode .onboarding-intro-highlights li {
+  color: color-mix(in srgb, var(--text-color) 92%, rgba(0, 0, 0, 0.1));
+}
+
+body.dark-mode .onboarding-intro-highlights li::before {
+  background: color-mix(in srgb, var(--accent-color) 70%, rgba(255, 255, 255, 0.2));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, rgba(255, 255, 255, 0.18));
+}
+
+body.dark-mode .onboarding-intro-language-note {
+  color: color-mix(in srgb, var(--text-color) 90%, rgba(0, 0, 0, 0.2));
+}
+
 .onboarding-avatar-group {
   display: flex;
   align-items: center;
