@@ -15515,7 +15515,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         lensMountContainer.appendChild(createLensMountRow());
       }
     }
-    
+
+    writeCoreScopeValue('setLensMounts', setLensMounts);
+
     function getLensMounts() {
       return Array.from(lensMountContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -15524,7 +15526,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(lm => lm.type && lm.type !== 'None');
     }
-    
+
+    writeCoreScopeValue('getLensMounts', getLensMounts);
+
     function clearLensMounts() {
       setLensMounts([]);
     }
@@ -17353,6 +17357,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['clearBatteryPlates', () => clearBatteryPlates],
       ['updateRecordingMediaOptions', () => updateRecordingMediaOptions],
       ['clearRecordingMedia', () => clearRecordingMedia],
+      ['setLensMounts', () => setLensMounts],
+      ['getLensMounts', () => getLensMounts],
       ['clearLensMounts', () => clearLensMounts],
       ['setLensDeviceMountOptions', () => setLensDeviceMountOptions],
       ['getLensDeviceMountOptions', () => getLensDeviceMountOptions],
