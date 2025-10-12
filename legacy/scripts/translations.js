@@ -1609,9 +1609,25 @@ var texts = {
           title: "Choose batteries",
           body: "Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups."
         },
-        results: {
-          title: "Review the results summary",
-          body: "Treat Step 8 as three quick passes through Power Summary: 8A confirms the Total Draw card and peak load, 8B drills into each battery pack for runtime projections and reserve margin highlights, and 8C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot."
+        resultsTotalDraw: {
+          title: "Power Summary pass: Total draw",
+          body:
+            "Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks."
+        },
+        resultsBatteryPacks: {
+          title: "Power Summary pass: Battery runtimes",
+          body:
+            "Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety."
+        },
+        resultsChangeover: {
+          title: "Power Summary pass: Changeovers",
+          body:
+            "Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot."
+        },
+        resultsWarnings: {
+          title: "Power Summary pass: Warnings and backups",
+          body:
+            "Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state."
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3376,9 +3392,25 @@ var texts = {
           title: "Scegli batterie",
           body: "Seleziona il sistema batteria che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto."
         },
-        results: {
-          title: "Rivedi il riepilogo dei risultati",
-          body: "Tratta il passaggio 8 come tre rapide revisioni in Power Summary: 8A conferma la scheda Carico totale e il picco previsto, 8B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 8C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot."
+        resultsTotalDraw: {
+          title: "Passaggio Power Summary: Carico totale",
+          body:
+            "Avvia la revisione in Power Summary confermando la scheda Carico totale e il picco previsto così i calcoli della domanda restano accurati prima di approfondire."
+        },
+        resultsBatteryPacks: {
+          title: "Passaggio Power Summary: Autonomie delle batterie",
+          body:
+            "Espandi ogni pacco batteria per verificare proiezioni di autonomia, evidenziazioni del margine di riserva e note dei dispositivi assicurandoti che l'autosalvataggio catturi le ultime scelte per la sicurezza offline."
+        },
+        resultsChangeover: {
+          title: "Passaggio Power Summary: Cambi turno",
+          body:
+            "Prosegui con i timer di cambio per confermare copertura dei caricabatterie e indicatori di stato così ogni handoff resta organizzato nello snapshot salvato."
+        },
+        resultsWarnings: {
+          title: "Passaggio Power Summary: Avvisi e backup",
+          body:
+            "Registra gli avvisi sui connettori quando i D-Tap o i pin non reggono il carico, scarica il rapporto offline per backup ridondanti e conferma il banner di autosalvataggio affinché condivisioni ed esportazioni riflettano lo stesso stato."
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -5143,9 +5175,25 @@ var texts = {
           title: "Elige baterías",
           body: "Selecciona el sistema de baterías que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto."
         },
-        results: {
-          title: "Revisa el resumen de resultados",
-          body: "Trata el paso 8 como tres pasadas rápidas en Power Summary: 8A confirma la tarjeta de Consumo total y el pico previsto, 8B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 8C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea."
+        resultsTotalDraw: {
+          title: "Pasada por Power Summary: Consumo total",
+          body:
+            "Inicia la revisión en Power Summary confirmando la tarjeta de Consumo total y la carga pico para que las matemáticas de demanda sigan precisas antes de profundizar."
+        },
+        resultsBatteryPacks: {
+          title: "Pasada por Power Summary: Autonomías de baterías",
+          body:
+            "Expande cada grupo de baterías para revisar proyecciones de autonomía, márgenes de reserva resaltados y notas de dispositivos asegurándote de que el autoguardado capture las últimas selecciones para la seguridad offline."
+        },
+        resultsChangeover: {
+          title: "Pasada por Power Summary: Cambios",
+          body:
+            "Continúa con los temporizadores de cambio para confirmar la cobertura de cargadores y los indicadores de estado de modo que cada relevo quede organizado en la instantánea guardada."
+        },
+        resultsWarnings: {
+          title: "Pasada por Power Summary: Avisos y copias",
+          body:
+            "Registra las advertencias de conectores cuando los D-Tap o los pines no soportan la carga, descarga el informe offline como copia de seguridad redundante y confirma el banner de guardado automático para que las comparticiones y exportaciones reflejen el mismo estado."
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -6910,9 +6958,25 @@ var texts = {
           title: "Choisissez les batteries",
           body: "Sélectionnez le système de batteries qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne."
         },
-        results: {
-          title: "Passez en revue le résumé des résultats",
-          body: "Traitez l’étape 8 comme trois passages rapides dans Power Summary : 8A confirme la carte Consommation totale et le pic prévu, 8B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 8C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané."
+        resultsTotalDraw: {
+          title: "Passage Power Summary : Consommation totale",
+          body:
+            "Commencez la revue dans Power Summary en confirmant la carte Consommation totale et la charge de pointe afin que le calcul de la demande reste exact avant d’aller plus loin."
+        },
+        resultsBatteryPacks: {
+          title: "Passage Power Summary : Autonomie des batteries",
+          body:
+            "Dépliez chaque groupe de batteries pour examiner les projections d’autonomie, les marges de réserve mises en évidence et les notes d’équipement en vérifiant que l’enregistrement automatique capture les derniers choix pour la sécurité hors ligne."
+        },
+        resultsChangeover: {
+          title: "Passage Power Summary : Basculements",
+          body:
+            "Poursuivez avec les minuteries de bascule pour confirmer la couverture des chargeurs et les indicateurs d’état afin que chaque relais reste organisé dans l’instantané sauvegardé."
+        },
+        resultsWarnings: {
+          title: "Passage Power Summary : Alertes et sauvegardes",
+          body:
+            "Consignez les alertes de connecteur lorsque les D-Tap ou les broches ne supportent pas la charge, téléchargez le rapport hors ligne pour des sauvegardes redondantes et vérifiez la bannière d’enregistrement automatique afin que partages et exports reflètent le même état."
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -8677,9 +8741,25 @@ var texts = {
           title: "Batterien wählen",
           body: "Wähle das Batteriesystem, das das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert."
         },
-        results: {
-          title: "Ergebnisse zusammenfassen",
-          body: "Behandle Schritt 8 als drei kurze Durchläufe in Power Summary: 8A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 8B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 8C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln."
+        resultsTotalDraw: {
+          title: "Power Summary-Durchgang: Gesamtverbrauch",
+          body:
+            "Starte die Prüfung in der Leistungsübersicht, indem du die Karte Gesamtverbrauch und die Spitzenlast bestätigst, damit die Bedarfsberechnung stimmt, bevor du tiefer einsteigst."
+        },
+        resultsBatteryPacks: {
+          title: "Power Summary-Durchgang: Batterielaufzeiten",
+          body:
+            "Klappe jede Batteriegruppe auf, um Laufzeitprognosen, hervorgehobene Reservemargen und Gerätehinweise zu prüfen und vergewissere dich, dass das Autosave die letzten Entscheidungen für die Offline-Sicherheit erfasst."
+        },
+        resultsChangeover: {
+          title: "Power Summary-Durchgang: Umschaltungen",
+          body:
+            "Gehe die Umschalt-Countdowns durch, bestätige Ladeabdeckung und Statusanzeigen, damit jeder Wechsel im gespeicherten Snapshot organisiert bleibt."
+        },
+        resultsWarnings: {
+          title: "Power Summary-Durchgang: Warnungen und Backups",
+          body:
+            "Protokolliere Anschlusswarnungen, wenn D-Tap oder Pins die Last nicht tragen können, lade den Offline-Bericht für redundante Backups herunter und prüfe das Autosave-Banner, damit Freigaben und Exporte denselben Stand widerspiegeln."
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",

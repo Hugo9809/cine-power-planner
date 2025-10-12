@@ -354,7 +354,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'results', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   var DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
@@ -388,9 +388,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       title: 'Choose batteries',
       body: 'Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.'
     },
-    results: {
-      title: 'Review the results summary',
-      body: 'Work through Step 8 in three passes inside Power Summary: 8A confirms Total Draw and peak load, 8B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 8C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.'
+    resultsTotalDraw: {
+      title: 'Power Summary pass: Total draw',
+      body:
+        'Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks.'
+    },
+    resultsBatteryPacks: {
+      title: 'Power Summary pass: Battery runtimes',
+      body:
+        'Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety.'
+    },
+    resultsChangeover: {
+      title: 'Power Summary pass: Changeovers',
+      body:
+        'Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot.'
+    },
+    resultsWarnings: {
+      title: 'Power Summary pass: Warnings and backups',
+      body:
+        'Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state.'
     },
     batteryComparison: {
       title: 'Compare battery options',
@@ -1453,7 +1469,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         right: 1 / 3
       }
     }, {
-      key: 'results',
+      key: 'resultsTotalDraw',
+      highlight: '#results'
+    }, {
+      key: 'resultsBatteryPacks',
+      highlight: '#results'
+    }, {
+      key: 'resultsChangeover',
+      highlight: '#results'
+    }, {
+      key: 'resultsWarnings',
       highlight: '#results'
     }, {
       key: 'batteryComparison',
