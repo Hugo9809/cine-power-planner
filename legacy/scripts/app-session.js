@@ -3573,7 +3573,9 @@ function applyImportedOwnedGearMarkers(markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : String(marker.ownedId).replace(/"/g, '\\"');
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
+      ? CSS.escape(marker.ownedId)
+      : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var element = root.querySelector("[data-gear-own-gear-id=\"".concat(selectorId, "\"]"));
     if (!element) {
       return;
