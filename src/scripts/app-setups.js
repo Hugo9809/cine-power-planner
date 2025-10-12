@@ -162,6 +162,22 @@ function getProjectInfoFieldLines(source, fieldKey) {
 function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     const htmlLines = [];
     const textLines = [];
+    const labelSets = getProductionCompanyLabelSets(projectLabels);
+    const knownLabelLines = new Set();
+    Object.values(labelSets).forEach((set) => {
+        if (!set) return;
+        set.forEach((value) => {
+            if (typeof value === 'string' && value) {
+                knownLabelLines.add(value);
+            }
+        });
+    });
+    const isLabelLine = (value) => {
+        if (typeof value !== 'string' || !value.trim()) {
+            return false;
+        }
+        return knownLabelLines.has(normalizeProjectFieldLabel(value));
+    };
     const addLine = (value, className, associatedFields) => {
         if (typeof value !== 'string') return;
         const trimmed = value.trim();
@@ -185,6 +201,7 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
         if (typeof line !== 'string') return;
         const trimmed = line.trim();
         if (!trimmed) return;
+        if (isLabelLine(trimmed)) return;
         const normalized = trimmed.toLowerCase();
         let entry = addressAccumulator.indexMap.get(normalized);
         if (!entry) {
@@ -11154,7 +11171,26 @@ function gearListGenerateHtmlImpl(info = {}) {
         };
         const stripEnclosingQuotes = value => {
             if (typeof value !== 'string') return '';
-            return value.replace(/^["'“”‚‘’]+/, '').replace(/["'“”‚‘’]+$/, '').trim();
+            const source = value.trim();
+            if (!source) return '';
+            const isQuoteChar = (char) => (
+                char === '"'
+                || char === '\''
+                || char === '“'
+                || char === '”'
+                || char === '‚'
+                || char === '‘'
+                || char === '’'
+            );
+            let start = 0;
+            let end = source.length;
+            while (start < end && isQuoteChar(source[start])) {
+                start += 1;
+            }
+            while (end > start && isQuoteChar(source[end - 1])) {
+                end -= 1;
+            }
+            return source.slice(start, end).trim();
         };
         const cleanupMonitorLabel = value => stripEnclosingQuotes(stripCameraLinkPrefix(value));
         const monitorSelectValue = typeof monitorSelect !== 'undefined'

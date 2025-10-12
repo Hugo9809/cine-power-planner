@@ -102,6 +102,23 @@ function getProjectInfoFieldLines(source, fieldKey) {
 function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
   var htmlLines = [];
   var textLines = [];
+  var labelSets = getProductionCompanyLabelSets(projectLabels);
+  var knownLabelLines = new Set();
+  Object.keys(labelSets || {}).forEach(function (key) {
+    var set = labelSets[key];
+    if (!set) return;
+    set.forEach(function (value) {
+      if (typeof value === 'string' && value) {
+        knownLabelLines.add(value);
+      }
+    });
+  });
+  var isLabelLine = function isLabelLine(value) {
+    if (typeof value !== 'string' || !value.trim()) {
+      return false;
+    }
+    return knownLabelLines.has(normalizeProjectFieldLabel(value));
+  };
   var addLine = function addLine(value, className, associatedFields) {
     if (typeof value !== 'string') return;
     var trimmed = value.trim();
@@ -123,6 +140,7 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     if (typeof line !== 'string') return;
     var trimmed = line.trim();
     if (!trimmed) return;
+    if (isLabelLine(trimmed)) return;
     var normalized = trimmed.toLowerCase();
     var entry = addressAccumulator.indexMap.get(normalized);
     if (!entry) {
@@ -10578,7 +10596,20 @@ function gearListGenerateHtmlImpl() {
     };
     var stripEnclosingQuotes = function stripEnclosingQuotes(value) {
       if (typeof value !== 'string') return '';
-      return value.replace(/^["'“”‚‘’]+/, '').replace(/["'“”‚‘’]+$/, '').trim();
+      var source = value.trim();
+      if (!source) return '';
+      var isQuoteChar = function isQuoteChar(char) {
+        return char === '"' || char === "'" || char === '“' || char === '”' || char === '‚' || char === '‘' || char === '’';
+      };
+      var start = 0;
+      var end = source.length;
+      while (start < end && isQuoteChar(source[start])) {
+        start += 1;
+      }
+      while (end > start && isQuoteChar(source[end - 1])) {
+        end -= 1;
+      }
+      return source.slice(start, end).trim();
     };
     var cleanupMonitorLabel = function cleanupMonitorLabel(value) {
       return stripEnclosingQuotes(stripCameraLinkPrefix(value));
