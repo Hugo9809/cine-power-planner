@@ -66,3 +66,13 @@ redundant guidance for every workflow that touches user data, even when they are
 working entirely offline.
 
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
+
+## 2025-02 matrix spot-check
+- **Storage dashboard linkage.** Validated that the Data & Storage quick safeguards and guardian row
+  continue to appear as documented in the matrix, keeping the storage references accurate across
+  printable guides and help content.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Autosave and backup cadence.** Reconfirmed the autosave scheduler still enforces the 50-change
+  threshold and ten-minute interval referenced in the matrix rows, ensuring rehearsal steps remain
+  truthful.【F:src/scripts/app-events.js†L86-L205】
+- **Registry verification hook.** Checked that `verifyCriticalFlows()` still exposes missing modules and
+  synchronisation issues, providing the evidence column’s recommended console capture during audits.【F:src/scripts/modules/runtime.js†L2203-L2368】

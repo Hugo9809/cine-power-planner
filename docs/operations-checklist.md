@@ -155,6 +155,14 @@ appears, stabilize the environment before attempting to fix it:
    restored state. Save the log into the incident folder so reviewers can trace
    the resolution path offline.
 
+## 2025-02 operations verification
+- **Autosave and backup alignment.** Confirmed the autosave scheduler still enforces the documented
+  cadence so operational saves and automatic backups remain predictable.【F:src/scripts/app-events.js†L86-L205】
+- **Dashboard cues.** Checked that the Data & Storage latest activity board and backup guardian appear
+  as expected, providing the visual confirmations referenced in daily operations.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Restore rehearsal flow.** Verified the restore rehearsal panel still renders comparison tables and
+  rule previews before final restores, keeping the incident recovery steps accurate.【F:index.html†L2602-L2699】
+
 Following this routine ensures no user data is lost, offline capabilities remain
 healthy and every team member who launches Cine Power Planner inherits a verified
 environment.

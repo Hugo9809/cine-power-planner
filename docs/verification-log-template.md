@@ -75,4 +75,12 @@ Follow-up actions: Update Spanish README gear-rule appendix, copy exports to Vau
   Repeat the drill until every field is complete so downstream teams inherit a
   provably safe environment.
 
+## 2025-02 log verification
+- **Dashboard snapshot prompts.** Confirmed the Data & Storage panel still exposes latest activity
+  timestamps and guardian reminders, validating the template fields that request those notes.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Runtime evidence field.** Rechecked that `window.cineRuntime.verifyCriticalFlows()` produces the
+  detailed module report expected in the console capture row.【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Backup export metadata.** Verified planner backup exports continue to include timestamps and version
+  markers so checksum entries in the log reflect concrete artefacts.【F:src/scripts/app-session.js†L7580-L7615】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

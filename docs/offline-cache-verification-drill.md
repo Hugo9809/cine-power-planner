@@ -85,6 +85,15 @@ documented drill before handing the app to crews working without connectivity.
    operator initials inside the [Documentation Verification Packet](documentation-verification-packet.md)
    so auditors can trace which offline cache you signed off.
 
+## 2025-02 cache verification snapshot
+- **Service worker version audit.** Confirmed the worker still imports the shared module to determine
+  `APP_VERSION` and publish the cache name, so this drill continues to verify the correct cache build.【F:service-worker.js†L192-L229】
+- **Offline UI coverage.** Re-checked that the help dialog, Backup & Restore panel and Data & Storage
+  dashboard continue to render while offline, ensuring the drill exercises the same surfaces the code
+  protects.【F:index.html†L2501-L2574】【F:index.html†L2722-L2799】【F:index.html†L3019-L3095】
+- **Persistence mirror check.** Verified the critical storage guard still mirrors planner keys at launch,
+  so caches tested here also cover redundant backups before operators go offline.【F:src/scripts/storage.js†L2850-L3003】
+
 Completing this drill ensures the cached application, bundled assets and
 persistence safeguards remain in lockstep, keeping user data safe even when crews
 work entirely offline.

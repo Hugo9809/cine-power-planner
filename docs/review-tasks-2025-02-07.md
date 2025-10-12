@@ -21,4 +21,9 @@
 - **Impact**: Future changes might reintroduce the legacy breakage, risking offline autosave guards on older browsers without early warning.
 - **Resolution**: Added `tests/unit/baseWeakSetFallback.test.js` to load the base module with `WeakSet` removed, mirroring the existing context harness so the shared freeze guard stays covered. 【F:tests/unit/baseWeakSetFallback.test.js†L1-L120】【F:tests/unit/contextWeakSetFallback.test.js†L1-L107】
 
+## 2025-02 task verification
+- **Runtime safeguards.** Confirmed the runtime module continues to expose the guard and module verification APIs the review references, demonstrating that the WeakSet fix landed and remains active.【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Backup workflow cross-check.** Verified Backup & Restore retains the documented controls so tasks referencing documentation updates remain grounded in the live UI.【F:index.html†L2501-L2574】
+- **Storage resilience.** Rechecked the critical storage guard mirroring logic so the bug fixes noted here continue to protect redundant planner backups on legacy devices.【F:src/scripts/storage.js†L2850-L3003】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

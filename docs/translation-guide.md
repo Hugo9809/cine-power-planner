@@ -80,4 +80,9 @@ npm run test:unit
 
 Commit your changes, describe the new language in the pull request summary and mention any remaining untranslated phrases so maintainers can help. Linking to this guide from your PR helps other contributors follow the same process.
 
+## 2025-02 translation verification
+- **Help dialog coverage.** Checked that the help dialog still lists the monthly data health check, backup guidance and console commands documented here, confirming the referenced strings remain live.【F:index.html†L3019-L3095】【F:src/scripts/translations.js†L1519-L1540】
+- **Storage dashboard localisation.** Verified the Data & Storage guardian, quick safeguards and latest activity rows still reference the translation keys noted in this guide, keeping offline cues localized.【F:index.html†L2722-L2799】【F:src/scripts/translations.js†L1674-L1684】
+- **Runtime guard messaging.** Reconfirmed `window.cineRuntime.verifyCriticalFlows()` continues to expose human-readable missing-binding notes so localized diagnostics remain actionable.【F:src/scripts/modules/runtime.js†L2203-L2368】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

@@ -18,5 +18,10 @@ This review surfaces follow-up tasks to protect user data workflows and document
 - **Status**: ✅ The regression test at `tests/data/gearListDuplicateKeys.test.js` enforces unique optical properties across the gear catalog to protect saved loadouts. 【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
 - **Action**: Update the test expectations whenever new lens metadata ships and document additional safeguards here to preserve offline bundle integrity.
 
+## 2025-02 findings verification
+- **Help module mapping.** Confirmed `src/scripts/translations.js` and the help dialog still expose the documentation tracker strings the review references, so guidance remains accurate for offline crews.【F:src/scripts/translations.js†L1519-L1540】【F:index.html†L3019-L3095】
+- **Runtime regression guard.** Re-checked `window.cineRuntime.verifyCriticalFlows()` to ensure review findings referencing the runtime guard still map to the current diagnostic output.【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Backup workflow alignment.** Verified the Backup & Restore controls cited in the findings continue to render in the documented order, supporting the follow-up actions around documentation alignment.【F:index.html†L2501-L2574】
+
 
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

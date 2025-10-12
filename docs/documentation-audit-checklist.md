@@ -99,6 +99,17 @@ live runtime and cannot lose user data.
   media noted in the packet guide and record the storage locations in the log so future
    crews can retrieve the canonical documentation bundle quickly.【F:docs/documentation-verification-packet.md†L9-L48】
 
+## 2025-02 documentation verification
+- **Help centre parity.** Checked that the help dialog sections referenced in this audit still surface
+  the monthly data health check, console commands and backup guidance with the translated strings,
+  ensuring offline readers see the same workflow order documented here.【F:index.html†L3019-L3095】【F:src/scripts/translations.js†L1519-L1540】
+- **Runtime guard messaging.** Confirmed the latest build continues to expose
+  `window.__cineRuntimeIntegrity` and honours manual guard refreshes so auditors can capture evidence
+  without editing code.【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Backup workflow references.** Verified Backup & Restore still renders compare versions, restore
+  rehearsal and backup export controls exactly where the checklist expects them, keeping printed
+  guidance accurate for offline drills.【F:index.html†L2501-L2574】
+
 Running this audit on a predictable schedule ensures the README family, help center,
 translations and printed manuals stay aligned with the runtime safeguards that keep every
 save, share, import, backup and restore workflow lossless—even when crews rely on the

@@ -69,5 +69,16 @@ clear responsibilities so audit trails remain human friendly.
 - **Prefer redundancy.** If in doubt, capture more autosave data or backup metadata rather than
   trimming fields—user data must never be lost because of a registry change.【F:src/scripts/storage.js†L1-L200】
 
+## 2025-02 registry verification
+- **Queue health.** Confirmed the deferred registration queue still retries failures with
+  offline-safe timers, ensuring worker and legacy bundles converge on the same frozen module
+  exports before autosave routines execute.【F:src/scripts/modules/registry.js†L600-L759】
+- **Blueprint metadata.** Re-checked the blueprint helper to ensure new modules inherit frozen
+  defaults, metadata descriptors and retry behaviour without bespoke wiring, keeping audit trails
+  consistent across features.【F:src/scripts/modules/registry.js†L880-L958】
+- **Diagnostics exposure.** Validated that service worker bootstrapping propagates the computed
+  cache name and logger so registry-driven diagnostics remain available when rehearsing offline
+  releases.【F:service-worker.js†L192-L229】
+
 Following this workflow keeps the registry authoritative and the offline, privacy-first
 experience crews rely on fully intact.

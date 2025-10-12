@@ -58,6 +58,15 @@ backup and restore workflows while crews are offline.
 - Links (or file paths when stored offline) to the refreshed localized READMEs, printable manuals and help exports.
 - Storage locations for the redundant documentation packet so future crews can reproduce the drill without re-downloading assets.
 
+## 2025-02 drift verification
+- **Help sequence audit.** Confirmed the help dialog still presents the monthly data health check and
+  console verification callout referenced in this runbook, ensuring offline readers rehearse the same
+  steps captured here.【F:index.html†L3019-L3095】
+- **Translation sync.** Rechecked the translation table entries for the documentation tracker and backup
+  drills so non-English locales display identical labels during drift sweeps.【F:src/scripts/translations.js†L1519-L1540】
+- **Backup parity.** Verified the Backup & Restore controls exposed in the runbook remain in place so the
+  diff export, restore rehearsal and backup download instructions stay accurate for each locale.【F:index.html†L2501-L2574】
+
 Running this runbook ensures every offline copy of Cine Power Planner ships with documentation that is provably synchronized with
 the runtime, preventing stale instructions from threatening user data during save, share, import, backup and restore rehearsals.
 

@@ -246,6 +246,14 @@ exported artifacts if it does not already exist) with:
   helper scripts rendered correctly while offline. A quick note here proves the service
   worker cache stayed intact.
 
+## 2025-02 readiness verification
+- **Autosave cadence inspection.** Revalidated the 50-change threshold, ten-minute timer and immediate
+  triggers so this runbook’s autosave rehearsal remains aligned with the shipped runtime.【F:src/scripts/app-events.js†L86-L205】
+- **Backup guardian status.** Checked the Data & Storage dashboard to ensure the backup guardian entry
+  still reports mirrored keys and safety reminders as described in the drills.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Service worker cache parity.** Verified the worker continues importing the shared module to resolve
+  `APP_VERSION`, guaranteeing that the offline readiness steps exercise the correct cache build.【F:service-worker.js†L192-L229】
+
 Store the log in the same folder as the verified exports on both redundant media sets. The
 auditable paper trail makes it obvious when the last offline rehearsal occurred and which
 assets were inspected, keeping save, share, import, backup and restore workflows trusted by
