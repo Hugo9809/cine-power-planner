@@ -286,6 +286,11 @@ describe('project requirements persistence to project storage', () => {
     expect(valueHtml).toContain('500 Stage Way');
     expect(valueHtml).toContain('Backlot City');
     expect(valueHtml).toContain('90002');
+    expect(valueHtml).not.toContain('Street address');
+    expect(valueHtml).not.toContain('City');
+    expect(valueHtml).not.toContain('State / Province / Region');
+    expect(valueHtml).not.toContain('Postal code');
+    expect(valueHtml).not.toContain('Country');
   });
 
   describe('when a user profile exists', () => {

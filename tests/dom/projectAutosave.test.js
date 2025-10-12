@@ -312,7 +312,7 @@ describe('project autosave', () => {
       '  <div class="requirements-grid">',
       '    <div class="requirement-box" data-field="productionCompany">',
       '      <span class="req-label">Production Company</span>',
-      '      <span class="req-value"><span class="req-primary-line">Safe Films</span><br><span class="req-sub-label">Production Company Address</span><br><span class="req-sub-line">200 Safe St, Lot B</span></span>',
+      '      <span class="req-value"><span class="req-primary-line">Safe Films</span><br><span class="req-sub-label">Production Company Address</span><br><span class="req-sub-line" data-fields="productionCompanyAddress">200 Safe St, Lot B</span></span>',
       '    </div>',
       '  </div>',
       '</section>'

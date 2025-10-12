@@ -2,13 +2,13 @@ function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -102,40 +102,81 @@ function getProjectInfoFieldLines(source, fieldKey) {
 function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
   var htmlLines = [];
   var textLines = [];
-  var addLine = function addLine(value, className) {
+  var labelSets = getProductionCompanyLabelSets(projectLabels);
+  var knownLabelLines = new Set();
+  Object.keys(labelSets || {}).forEach(function (key) {
+    var set = labelSets[key];
+    if (!set) return;
+    set.forEach(function (value) {
+      if (typeof value === 'string' && value) {
+        knownLabelLines.add(value);
+      }
+    });
+  });
+  var isLabelLine = function isLabelLine(value) {
+    if (typeof value !== 'string' || !value.trim()) {
+      return false;
+    }
+    return knownLabelLines.has(normalizeProjectFieldLabel(value));
+  };
+  var addLine = function addLine(value, className, associatedFields) {
     if (typeof value !== 'string') return;
     var trimmed = value.trim();
     if (!trimmed) return;
     var safe = escapeHtml(trimmed);
-    htmlLines.push(className ? "<span class=\"".concat(className, "\">").concat(safe, "</span>") : safe);
+    var fieldList = Array.isArray(associatedFields) ? associatedFields.filter(function (field) {
+      return typeof field === 'string' && field.trim();
+    }) : [];
+    var fieldAttr = fieldList.length ? " data-fields=\"".concat(escapeHtml(fieldList.join(' ')), "\"") : '';
+    htmlLines.push(className ? "<span class=\"".concat(className, "\"").concat(fieldAttr, ">").concat(safe, "</span>") : safe);
     textLines.push(trimmed);
   };
   var textsObj = typeof texts !== 'undefined' ? texts : null;
-  var addSection = function addSection(fieldKey, lines) {
-    var labelClass = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'req-sub-label';
-    if (!Array.isArray(lines) || !lines.length) return;
-    var label = projectLabels && projectLabels[fieldKey] || textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields[fieldKey] || fieldKey;
-    addLine(label, labelClass);
-    lines.forEach(function (line) {
-      return addLine(line, 'req-sub-line');
-    });
+  var addressAccumulator = {
+    entries: [],
+    indexMap: new Map()
+  };
+  var appendAddressEntry = function appendAddressEntry(line, fieldKey) {
+    if (typeof line !== 'string') return;
+    var trimmed = line.trim();
+    if (!trimmed) return;
+    if (isLabelLine(trimmed)) return;
+    var normalized = trimmed.toLowerCase();
+    var entry = addressAccumulator.indexMap.get(normalized);
+    if (!entry) {
+      entry = {
+        value: trimmed,
+        fields: []
+      };
+      addressAccumulator.entries.push(entry);
+      addressAccumulator.indexMap.set(normalized, entry);
+    }
+    if (typeof fieldKey === 'string' && PRODUCTION_COMPANY_FIELD_ORDER.includes(fieldKey) && !entry.fields.includes(fieldKey)) {
+      entry.fields.push(fieldKey);
+    }
   };
   var companyLines = getProjectInfoFieldLines(sourceInfo, 'productionCompany');
   companyLines.forEach(function (line) {
     return addLine(line, 'req-primary-line');
   });
-  var addressLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyAddress');
-  if (addressLines.length) {
-    addSection('productionCompanyAddress', addressLines);
+  PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (fieldKey) {
+    var lines = getProjectInfoFieldLines(sourceInfo, fieldKey);
+    if (!lines.length) return;
+    lines.forEach(function (line) {
+      return appendAddressEntry(line, fieldKey);
+    });
+  });
+  var addressEntries = addressAccumulator.entries;
+  if (addressEntries.length) {
+    var fallbackAddressLabel = Array.isArray(LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress) && LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress.length ? LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress[0] : 'Production Company Address';
+    var label = projectLabels && projectLabels.productionCompanyAddress || textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields.productionCompanyAddress || fallbackAddressLabel;
+    addLine(label, 'req-sub-label');
+    addressEntries.forEach(function (entry) {
+      var value = entry.value,
+        fields = entry.fields;
+      addLine(value, 'req-sub-line', fields);
+    });
   }
-  var streetLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet').concat(getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet2'));
-  if (streetLines.length) {
-    addSection('productionCompanyStreet', streetLines);
-  }
-  addSection('productionCompanyCity', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCity'));
-  addSection('productionCompanyRegion', getProjectInfoFieldLines(sourceInfo, 'productionCompanyRegion'));
-  addSection('productionCompanyPostalCode', getProjectInfoFieldLines(sourceInfo, 'productionCompanyPostalCode'));
-  addSection('productionCompanyCountry', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCountry'));
   if (!htmlLines.length) {
     return null;
   }
@@ -161,7 +202,7 @@ function applyCombinedProductionCompanyDisplay(targetInfo, sourceInfo, projectLa
   });
   return true;
 }
-function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+function expandCombinedProductionCompanyInfo(rawText, projectLabels, metadata) {
   if (typeof rawText !== 'string') {
     return null;
   }
@@ -180,6 +221,61 @@ function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
     rest = _normalizedText.slice(1);
   if (firstLine) {
     result.productionCompany = firstLine;
+  }
+  var metadataLines = Array.isArray(metadata === null || metadata === void 0 ? void 0 : metadata.lines) ? metadata.lines : null;
+  if (metadataLines && metadataLines.length) {
+    var collectedFromMetadata = {};
+    metadataLines.forEach(function (entry) {
+      if (!entry || typeof entry.text !== 'string') return;
+      var text = entry.text.trim();
+      if (!text) return;
+      var fields = entry.fields;
+      if (typeof fields === 'string') {
+        fields = fields.split(/\s+/);
+      }
+      if (!Array.isArray(fields) || !fields.length) return;
+      fields.map(function (field) {
+        return typeof field === 'string' ? field.trim() : '';
+      }).filter(function (field) {
+        return field && PRODUCTION_COMPANY_FIELD_ORDER.includes(field);
+      }).forEach(function (field) {
+        if (!collectedFromMetadata[field]) {
+          collectedFromMetadata[field] = [];
+        }
+        collectedFromMetadata[field].push(text);
+      });
+    });
+    if (Object.keys(collectedFromMetadata).length) {
+      if (collectedFromMetadata.productionCompanyAddress && collectedFromMetadata.productionCompanyAddress.length) {
+        result.productionCompanyAddress = collectedFromMetadata.productionCompanyAddress.join('\n');
+      }
+      if (collectedFromMetadata.productionCompanyStreet && collectedFromMetadata.productionCompanyStreet.length) {
+        var streetParts = collectedFromMetadata.productionCompanyStreet;
+        var _streetParts = _slicedToArray(streetParts, 1);
+        result.productionCompanyStreet = _streetParts[0];
+        if (streetParts.length > 1) {
+          var secondary = streetParts.slice(1).join('\n');
+          if (secondary) {
+            result.productionCompanyStreet2 = secondary;
+          }
+        }
+      }
+      if (collectedFromMetadata.productionCompanyStreet2 && collectedFromMetadata.productionCompanyStreet2.length) {
+        var streetTwo = collectedFromMetadata.productionCompanyStreet2.join('\n');
+        if (streetTwo) {
+          result.productionCompanyStreet2 = result.productionCompanyStreet2 ? "".concat(result.productionCompanyStreet2, "\n").concat(streetTwo) : streetTwo;
+        }
+      }
+      var joinCollected = function joinCollected(field) {
+        if (!collectedFromMetadata[field] || !collectedFromMetadata[field].length) return;
+        var combined = collectedFromMetadata[field].join(' ');
+        if (combined) {
+          result[field] = combined;
+        }
+      };
+      ['productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'].forEach(joinCollected);
+      return result;
+    }
   }
   var collected = {};
   var activeField = null;
@@ -216,10 +312,10 @@ function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
     result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
   }
   if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
-    var streetParts = collected.productionCompanyStreet;
-    result.productionCompanyStreet = streetParts[0];
-    if (streetParts.length > 1) {
-      result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+    var _streetParts2 = collected.productionCompanyStreet;
+    result.productionCompanyStreet = _streetParts2[0];
+    if (_streetParts2.length > 1) {
+      result.productionCompanyStreet2 = _streetParts2.slice(1).join('\n');
     }
   }
   if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
@@ -1218,40 +1314,6 @@ var rentalHouseLookup = function () {
   return map;
 }();
 var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
-function removeParentheticalSegments(value) {
-  if (!value) return '';
-  var parts = [];
-  var depth = 0;
-  var lastIndex = 0;
-  var pendingStart = -1;
-  for (var i = 0; i < value.length; i += 1) {
-    var char = value[i];
-    if (char === '(') {
-      if (depth === 0) {
-        parts.push(value.slice(lastIndex, i));
-        pendingStart = i;
-      }
-      depth += 1;
-      continue;
-    }
-    if (char === ')' && depth > 0) {
-      depth -= 1;
-      if (depth === 0) {
-        lastIndex = i + 1;
-        pendingStart = -1;
-      }
-      continue;
-    }
-  }
-  if (depth === 0) {
-    parts.push(value.slice(lastIndex));
-  } else if (pendingStart >= 0) {
-    parts.push(value.slice(pendingStart));
-  } else {
-    parts.push(value.slice(lastIndex));
-  }
-  return parts.join('');
-}
 function formatRentalHouseShortName(entryOrName) {
   if (!entryOrName) return '';
   var explicit = _typeof(entryOrName) === 'object' && entryOrName && typeof entryOrName.shortName === 'string' ? entryOrName.shortName.trim() : '';
@@ -1261,8 +1323,7 @@ function formatRentalHouseShortName(entryOrName) {
   var rawName = typeof entryOrName === 'string' ? entryOrName : entryOrName && entryOrName.name;
   var name = rawName ? String(rawName).trim() : '';
   if (!name) return '';
-  var base = removeParentheticalSegments(name);
-  base = base.replace(/\s+/g, ' ').trim();
+  var base = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
   var separatorMatch = base.match(/\s*[\u2012\u2013\u2014\u2015-]\s*/);
   if (separatorMatch) {
     var index = base.indexOf(separatorMatch[0]);
@@ -2372,11 +2433,7 @@ function applyOwnedGearMarkersToHtml(html, markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    // Properly escape backslashes and double quotes for use in CSS attribute selectors.
-   var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
-       ? CSS.escape(marker.ownedId)
-       // Fallback: escape backslash first, then double quotes.
-       : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var selector = "[data-gear-own-gear-id=\"".concat(selectorId, "\"]");
     var element = doc.body.querySelector(selector);
     if (!element) {
@@ -5004,11 +5061,13 @@ function analyzeAutoGearSegment(nodes) {
   nodes.forEach(function (node) {
     return wrapper.appendChild(node.cloneNode(true));
   });
-  var selects = wrapper.querySelectorAll('select');
-  selects.forEach(function (select) {
-    return select.remove();
-  });
-  var text = (wrapper.textContent || '').replace(/\s+/g, ' ').trim();
+  var html = wrapper.innerHTML.replace(/<select[\s\S]*?<\/select>/gi, '');
+  var prev;
+  do {
+    prev = html;
+    html = html.replace(/<[^>]+>/g, '');
+  } while (html !== prev);
+  var text = html.trim();
   if (!text) return null;
   var match = text.match(/^(\d+)x\s+/);
   var count = 1;
@@ -9851,7 +9910,7 @@ function gearListGenerateHtmlImpl() {
       extraAttrs.push('data-has-address="true"');
     }
     var attrHtml = extraAttrs.length ? " ".concat(extraAttrs.join(' ')) : '';
-    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\"").concat(attrHtml, ">" + iconHtml + "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
+    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\"").concat(attrHtml, ">").concat(iconHtml, "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
   }).join('') + '</div>' : '';
   var requirementsHeading = projectFormTexts.heading || 'Project Requirements';
   var infoHtml = infoEntries.length ? "<h3>".concat(escapeHtml(requirementsHeading), "</h3>").concat(boxesHtml) : '';
@@ -9859,34 +9918,6 @@ function gearListGenerateHtmlImpl() {
     rentalHouse: info && info.rentalHouse
   });
   var rentalNoteAttr = rentalToggleTexts.noteLabel && rentalToggleTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalToggleTexts.noteLabel), "\"") : '';
-  var parseNameAndContext = function parseNameAndContext(raw) {
-    var trimmed = raw == null ? '' : String(raw).trim();
-    if (!trimmed) {
-      return {
-        base: '',
-        context: ''
-      };
-    }
-    var base = trimmed;
-    var context = '';
-    if (trimmed.endsWith(')')) {
-      var openIdx = trimmed.lastIndexOf('(');
-      if (openIdx > -1) {
-        var beforeChar = openIdx > 0 ? trimmed.charAt(openIdx - 1) : '';
-        if (beforeChar === ' ') {
-          var rawContext = trimmed.slice(openIdx + 1, -1);
-          if (rawContext && rawContext.indexOf('(') === -1 && rawContext.indexOf(')') === -1) {
-            base = trimmed.slice(0, openIdx).trim();
-            context = rawContext.trim();
-          }
-        }
-      }
-    }
-    return {
-      base: base,
-      context: context
-    };
-  };
   var formatItems = function formatItems(arr) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var entries = {};
@@ -9897,9 +9928,9 @@ function gearListGenerateHtmlImpl() {
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
-      var parsedName = parseNameAndContext(namePart);
-      var base = parsedName.base;
-      var ctx = parsedName.context;
+      var match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+      var base = match ? match[1].trim() : namePart.trim();
+      var ctx = match && match[2] ? match[2].trim() : '';
       if (!base) return;
       if (!entries[base]) {
         entries[base] = {
@@ -10122,8 +10153,8 @@ function gearListGenerateHtmlImpl() {
     if (typeof registerDevice !== 'function') return;
     var entries = {};
     arr.filter(Boolean).forEach(function (item) {
-      var parsedName = parseNameAndContext(item);
-      var base = parsedName.base;
+      var match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+      var base = match ? match[1].trim() : item.trim();
       entries[base] = entries[base] || {};
     });
     if (Object.keys(entries).length) {
@@ -10551,19 +10582,142 @@ function gearListGenerateHtmlImpl() {
   var monitorSizes = [];
   if (selectedNames.monitor) {
     var _devices;
-    var size = (_devices = devices) === null || _devices === void 0 || (_devices = _devices.monitors) === null || _devices === void 0 || (_devices = _devices[selectedNames.monitor]) === null || _devices === void 0 ? void 0 : _devices.screenSizeInches;
-    if (size) monitorSizes.push(size);
-    var sizeHtml = size ? "".concat(escapeHtml(String(size)), "&quot; - ") : '';
     var monitorLabel = 'Onboard Monitor';
-    var monitorName = addArriKNumber(selectedNames.monitor);
-    var displayHtml = "1x <strong>".concat(monitorLabel, "</strong> - ").concat(sizeHtml).concat(escapeHtml(monitorName), " - incl. Sunhood");
+    var monitorsDb = ((_devices = devices) === null || _devices === void 0 ? void 0 : _devices.monitors) || {};
+    var stripCameraLinkPrefix = function stripCameraLinkPrefix(label) {
+      if (typeof label !== 'string') return '';
+      var trimmed = label.trim();
+      if (!trimmed) return '';
+      var lower = trimmed.toLowerCase();
+      var words = ['linked', 'to', 'camera'];
+      var NBSP_CHAR = String.fromCharCode(160);
+      var isWhitespaceChar = function isWhitespaceChar(char) {
+        return char === ' ' || char === '\t' || char === '\n' || char === '\r' || char === '\f' || char === '\v' || char === NBSP_CHAR;
+      };
+      var skipWhitespace = function skipWhitespace(position) {
+        var idx = position;
+        while (idx < lower.length && isWhitespaceChar(lower[idx])) {
+          idx += 1;
+        }
+        return idx;
+      };
+      var index = 0;
+      for (var w = 0; w < words.length; w += 1) {
+        index = skipWhitespace(index);
+        var word = words[w];
+        if (lower.slice(index, index + word.length) !== word) {
+          return trimmed;
+        }
+        index += word.length;
+      }
+      var gapStart = index;
+      index = skipWhitespace(index);
+      var consumedWhitespace = index > gapStart;
+      if (index >= trimmed.length) {
+        return trimmed;
+      }
+      var separators = {
+        '—': true,
+        '–': true,
+        '-': true,
+        ':': true
+      };
+      var usedSeparator = false;
+      if (separators[trimmed[index]]) {
+        index += 1;
+        usedSeparator = true;
+      }
+      index = skipWhitespace(index);
+      if (!consumedWhitespace && !usedSeparator) {
+        return trimmed;
+      }
+      if (index >= trimmed.length) {
+        return trimmed;
+      }
+      return trimmed.slice(index).trim();
+    };
+    var stripEnclosingQuotes = function stripEnclosingQuotes(value) {
+      if (typeof value !== 'string') return '';
+      var source = value.trim();
+      if (!source) return '';
+      var isQuoteChar = function isQuoteChar(char) {
+        return char === '"' || char === "'" || char === '“' || char === '”' || char === '‚' || char === '‘' || char === '’';
+      };
+      var start = 0;
+      var end = source.length;
+      while (start < end && isQuoteChar(source[start])) {
+        start += 1;
+      }
+      while (end > start && isQuoteChar(source[end - 1])) {
+        end -= 1;
+      }
+      return source.slice(start, end).trim();
+    };
+    var cleanupMonitorLabel = function cleanupMonitorLabel(value) {
+      return stripEnclosingQuotes(stripCameraLinkPrefix(value));
+    };
+    var monitorSelectValue = typeof monitorSelect !== 'undefined' && monitorSelect && monitorSelect.value && monitorSelect.value !== 'None' ? monitorSelect.value : '';
+    var storedMonitorSelectionRaw = typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
+    var candidateValues = [];
+    var addCandidate = function addCandidate(value) {
+      var trimmed = typeof value === 'string' ? value.trim() : '';
+      if (!trimmed) return;
+      if (!candidateValues.includes(trimmed)) {
+        candidateValues.push(trimmed);
+      }
+      var cleaned = cleanupMonitorLabel(trimmed);
+      if (cleaned && !candidateValues.includes(cleaned)) {
+        candidateValues.push(cleaned);
+      }
+    };
+    addCandidate(monitorSelectValue);
+    addCandidate(storedMonitorSelectionRaw);
+    addCandidate(selectedNames.monitor);
+    var monitorDatasetKey = '';
+    var monitorDatasetEntry = null;
+    candidateValues.some(function (name) {
+      if (Object.prototype.hasOwnProperty.call(monitorsDb, name)) {
+        monitorDatasetKey = name;
+        monitorDatasetEntry = monitorsDb[name];
+        return true;
+      }
+      return false;
+    });
+    var sizeValue = monitorDatasetEntry && typeof monitorDatasetEntry.screenSizeInches !== 'undefined' ? Number(monitorDatasetEntry.screenSizeInches) : NaN;
+    if (!Number.isFinite(sizeValue)) {
+      var _monitorDatasetEntry$, _monitorDatasetEntry;
+      var parsedSize = parseFloat(String((_monitorDatasetEntry$ = (_monitorDatasetEntry = monitorDatasetEntry) === null || _monitorDatasetEntry === void 0 ? void 0 : _monitorDatasetEntry.screenSizeInches) !== null && _monitorDatasetEntry$ !== void 0 ? _monitorDatasetEntry$ : ''));
+      sizeValue = Number.isFinite(parsedSize) ? parsedSize : NaN;
+    }
+    if (!Number.isFinite(sizeValue)) {
+      sizeValue = NaN;
+    }
+    if (Number.isFinite(sizeValue)) {
+      monitorSizes.push(sizeValue);
+    }
+    var formatSizeValue = function formatSizeValue(value) {
+      if (!Number.isFinite(value)) return '';
+      var normalized = Number(value.toFixed(2));
+      return Number.isInteger(normalized) ? String(normalized) : String(normalized).replace(/\.0+$/, '');
+    };
+    var sizeText = formatSizeValue(sizeValue);
+    var sizeSegment = sizeText ? "".concat(escapeHtml(sizeText), "&quot;") : '';
+    var monitorDisplayBase = cleanupMonitorLabel(selectedNames.monitor) || monitorDatasetKey || cleanupMonitorLabel(storedMonitorSelectionRaw) || cleanupMonitorLabel(monitorSelectValue);
+    var monitorDisplayName = monitorDisplayBase ? addArriKNumber(monitorDisplayBase) : '';
+    var monitorNameHtml = monitorDisplayName ? "&quot;".concat(escapeHtml(monitorDisplayName), "&quot;") : '';
+    var displaySegments = ["1x <strong>".concat(monitorLabel, "</strong>")];
+    if (sizeSegment) displaySegments.push(sizeSegment);
+    if (monitorNameHtml) displaySegments.push(monitorNameHtml);
+    displaySegments.push('incl. Sunhood');
+    var displayHtml = displaySegments.join(' - ');
     var attributeParts = [];
-    if (size) attributeParts.push("".concat(size, "\""));
-    if (monitorName) attributeParts.push(monitorName);
+    if (sizeText) attributeParts.push("".concat(sizeText, "\""));
+    if (monitorDisplayName) attributeParts.push(monitorDisplayName);
     attributeParts.push('incl. Sunhood');
     var attributeText = attributeParts.filter(Boolean).join(' - ');
     var _dataName = attributeText ? "".concat(monitorLabel, " (").concat(attributeText, ")") : monitorLabel;
-    var monitorExtraAttributes = hasCameraForLinking ? buildCameraLinkAttributes(selectedNames.monitor) : '';
+    var monitorCameraLinkLabel = monitorDisplayName || cleanupMonitorLabel(selectedNames.monitor) || cleanupMonitorLabel(storedMonitorSelectionRaw) || cleanupMonitorLabel(monitorSelectValue) || '';
+    var monitorExtraAttributes = hasCameraForLinking ? buildCameraLinkAttributes(monitorCameraLinkLabel || undefined) : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
       name: _dataName,
       quantity: 1,
@@ -10753,9 +10907,9 @@ function gearListGenerateHtmlImpl() {
   });
   if (hasMotor) {
     var _monitorsDb$defaultNa, _monitorsDb$candidate;
-    var monitorsDb = devices && devices.monitors ? devices.monitors : {};
-    var names = Object.keys(monitorsDb).filter(function (n) {
-      return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
+    var _monitorsDb = devices && devices.monitors ? devices.monitors : {};
+    var names = Object.keys(_monitorsDb).filter(function (n) {
+      return !_monitorsDb[n].wirelessTx || _monitorsDb[n].wirelessRX;
     }).sort(localeSort);
     var manualFlag = !!info.focusMonitorManual;
     var infoValue = typeof info.focusMonitor === 'string' ? info.focusMonitor.trim() : '';
@@ -10811,7 +10965,7 @@ function gearListGenerateHtmlImpl() {
     }) ? optionValues.find(function (value) {
       return value && value.toLowerCase() === (defaultName || '').toLowerCase();
     }) : defaultName;
-    var selectedSize = resolvedName && monitorsDb[resolvedName] ? monitorsDb[resolvedName].screenSizeInches : ((_monitorsDb$defaultNa = monitorsDb[defaultName]) === null || _monitorsDb$defaultNa === void 0 ? void 0 : _monitorsDb$defaultNa.screenSizeInches) || ((_monitorsDb$candidate = monitorsDb[candidate]) === null || _monitorsDb$candidate === void 0 ? void 0 : _monitorsDb$candidate.screenSizeInches) || '';
+    var selectedSize = resolvedName && _monitorsDb[resolvedName] ? _monitorsDb[resolvedName].screenSizeInches : ((_monitorsDb$defaultNa = _monitorsDb[defaultName]) === null || _monitorsDb$defaultNa === void 0 ? void 0 : _monitorsDb$defaultNa.screenSizeInches) || ((_monitorsDb$candidate = _monitorsDb[candidate]) === null || _monitorsDb$candidate === void 0 ? void 0 : _monitorsDb$candidate.screenSizeInches) || '';
     var displayLabel = 'Focus Monitor';
     var sizeSpanHtml = "<span id=\"monitorSizeFocus\">".concat(escapeHtml(selectedSize ? String(selectedSize) : ''), "&quot;</span>");
     var selectHtml = "<select id=\"gearListFocusMonitor\" data-auto-gear-manual=\"".concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select>");
@@ -11732,7 +11886,37 @@ function collectProjectInfoFromRequirementsGrid() {
       info[field] = text;
     }
     if (field === 'productionCompany') {
-      var expanded = expandCombinedProductionCompanyInfo(text, projectLabels);
+      var metadata = null;
+      var lineNodes = Array.from(valueEl.querySelectorAll('.req-sub-line'));
+      if (lineNodes.length) {
+        var lines = lineNodes.map(function (node) {
+          if (!node || typeof node.textContent !== 'string') {
+            return null;
+          }
+          var textContent = node.textContent.replace(/\s+/g, ' ').trim();
+          if (!textContent) {
+            return null;
+          }
+          var fieldsAttr = typeof node.getAttribute === 'function' ? node.getAttribute('data-fields') || node.getAttribute('data-field') || '' : '';
+          var fields = fieldsAttr.split(/\s+/).map(function (part) {
+            return part.trim();
+          }).filter(function (part) {
+            return part;
+          });
+          return {
+            text: textContent,
+            fields: fields
+          };
+        }).filter(function (entry) {
+          return entry;
+        });
+        if (lines.length) {
+          metadata = {
+            lines: lines
+          };
+        }
+      }
+      var expanded = expandCombinedProductionCompanyInfo(text, projectLabels, metadata);
       if (expanded && _typeof(expanded) === 'object') {
         Object.entries(expanded).forEach(function (_ref94) {
           var _ref95 = _slicedToArray(_ref94, 2),

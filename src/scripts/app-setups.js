@@ -162,42 +162,86 @@ function getProjectInfoFieldLines(source, fieldKey) {
 function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
     const htmlLines = [];
     const textLines = [];
-    const addLine = (value, className) => {
+    const labelSets = getProductionCompanyLabelSets(projectLabels);
+    const knownLabelLines = new Set();
+    Object.values(labelSets).forEach((set) => {
+        if (!set) return;
+        set.forEach((value) => {
+            if (typeof value === 'string' && value) {
+                knownLabelLines.add(value);
+            }
+        });
+    });
+    const isLabelLine = (value) => {
+        if (typeof value !== 'string' || !value.trim()) {
+            return false;
+        }
+        return knownLabelLines.has(normalizeProjectFieldLabel(value));
+    };
+    const addLine = (value, className, associatedFields) => {
         if (typeof value !== 'string') return;
         const trimmed = value.trim();
         if (!trimmed) return;
         const safe = escapeHtml(trimmed);
-        htmlLines.push(className ? `<span class="${className}">${safe}</span>` : safe);
+        const fieldList = Array.isArray(associatedFields)
+            ? associatedFields.filter((field) => typeof field === 'string' && field.trim())
+            : [];
+        const fieldAttr = fieldList.length
+            ? ` data-fields="${escapeHtml(fieldList.join(' '))}"`
+            : '';
+        htmlLines.push(className ? `<span class="${className}"${fieldAttr}>${safe}</span>` : safe);
         textLines.push(trimmed);
     };
     const textsObj = typeof texts !== 'undefined' ? texts : null;
-    const addSection = (fieldKey, lines, labelClass = 'req-sub-label') => {
-        if (!Array.isArray(lines) || !lines.length) return;
-        const label = (projectLabels && projectLabels[fieldKey])
-            || (textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields[fieldKey])
-            || fieldKey;
-        addLine(label, labelClass);
-        lines.forEach((line) => addLine(line, 'req-sub-line'));
+    const addressAccumulator = {
+        entries: [],
+        indexMap: new Map()
+    };
+    const appendAddressEntry = (line, fieldKey) => {
+        if (typeof line !== 'string') return;
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        if (isLabelLine(trimmed)) return;
+        const normalized = trimmed.toLowerCase();
+        let entry = addressAccumulator.indexMap.get(normalized);
+        if (!entry) {
+            entry = { value: trimmed, fields: [] };
+            addressAccumulator.entries.push(entry);
+            addressAccumulator.indexMap.set(normalized, entry);
+        }
+        if (
+            typeof fieldKey === 'string'
+            && PRODUCTION_COMPANY_FIELD_ORDER.includes(fieldKey)
+            && !entry.fields.includes(fieldKey)
+        ) {
+            entry.fields.push(fieldKey);
+        }
     };
 
     const companyLines = getProjectInfoFieldLines(sourceInfo, 'productionCompany');
     companyLines.forEach((line) => addLine(line, 'req-primary-line'));
 
-    const addressLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyAddress');
-    if (addressLines.length) {
-        addSection('productionCompanyAddress', addressLines);
-    }
+    PRODUCTION_COMPANY_FIELD_ORDER.forEach((fieldKey) => {
+        const lines = getProjectInfoFieldLines(sourceInfo, fieldKey);
+        if (!lines.length) return;
+        lines.forEach((line) => appendAddressEntry(line, fieldKey));
+    });
 
-    const streetLines = getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet')
-        .concat(getProjectInfoFieldLines(sourceInfo, 'productionCompanyStreet2'));
-    if (streetLines.length) {
-        addSection('productionCompanyStreet', streetLines);
+    const { entries: addressEntries } = addressAccumulator;
+    if (addressEntries.length) {
+        const fallbackAddressLabel = Array.isArray(LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress)
+            && LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress.length
+            ? LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress[0]
+            : 'Production Company Address';
+        const label = (projectLabels && projectLabels.productionCompanyAddress)
+            || (textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields.productionCompanyAddress)
+            || fallbackAddressLabel;
+        addLine(label, 'req-sub-label');
+        addressEntries.forEach((entry) => {
+            const { value, fields } = entry;
+            addLine(value, 'req-sub-line', fields);
+        });
     }
-
-    addSection('productionCompanyCity', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCity'));
-    addSection('productionCompanyRegion', getProjectInfoFieldLines(sourceInfo, 'productionCompanyRegion'));
-    addSection('productionCompanyPostalCode', getProjectInfoFieldLines(sourceInfo, 'productionCompanyPostalCode'));
-    addSection('productionCompanyCountry', getProjectInfoFieldLines(sourceInfo, 'productionCompanyCountry'));
 
     if (!htmlLines.length) {
         return null;
@@ -227,7 +271,7 @@ function applyCombinedProductionCompanyDisplay(targetInfo, sourceInfo, projectLa
     return true;
 }
 
-function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
+function expandCombinedProductionCompanyInfo(rawText, projectLabels, metadata) {
     if (typeof rawText !== 'string') {
         return null;
     }
@@ -244,6 +288,62 @@ function expandCombinedProductionCompanyInfo(rawText, projectLabels) {
     const [firstLine, ...rest] = normalizedText;
     if (firstLine) {
         result.productionCompany = firstLine;
+    }
+    const metadataLines = Array.isArray(metadata?.lines) ? metadata.lines : null;
+    if (metadataLines && metadataLines.length) {
+        const collectedFromMetadata = {};
+        metadataLines.forEach((entry) => {
+            if (!entry || typeof entry.text !== 'string') return;
+            const text = entry.text.trim();
+            if (!text) return;
+            let fields = entry.fields;
+            if (typeof fields === 'string') {
+                fields = fields.split(/\s+/);
+            }
+            if (!Array.isArray(fields) || !fields.length) return;
+            fields
+                .map((field) => (typeof field === 'string' ? field.trim() : ''))
+                .filter((field) => field && PRODUCTION_COMPANY_FIELD_ORDER.includes(field))
+                .forEach((field) => {
+                    if (!collectedFromMetadata[field]) {
+                        collectedFromMetadata[field] = [];
+                    }
+                    collectedFromMetadata[field].push(text);
+                });
+        });
+        if (Object.keys(collectedFromMetadata).length) {
+            if (collectedFromMetadata.productionCompanyAddress && collectedFromMetadata.productionCompanyAddress.length) {
+                result.productionCompanyAddress = collectedFromMetadata.productionCompanyAddress.join('\n');
+            }
+            if (collectedFromMetadata.productionCompanyStreet && collectedFromMetadata.productionCompanyStreet.length) {
+                const streetParts = collectedFromMetadata.productionCompanyStreet;
+                [result.productionCompanyStreet] = streetParts;
+                if (streetParts.length > 1) {
+                    const secondary = streetParts.slice(1).join('\n');
+                    if (secondary) {
+                        result.productionCompanyStreet2 = secondary;
+                    }
+                }
+            }
+            if (collectedFromMetadata.productionCompanyStreet2 && collectedFromMetadata.productionCompanyStreet2.length) {
+                const streetTwo = collectedFromMetadata.productionCompanyStreet2.join('\n');
+                if (streetTwo) {
+                    result.productionCompanyStreet2 = result.productionCompanyStreet2
+                        ? `${result.productionCompanyStreet2}\n${streetTwo}`
+                        : streetTwo;
+                }
+            }
+            const joinCollected = (field) => {
+                if (!collectedFromMetadata[field] || !collectedFromMetadata[field].length) return;
+                const combined = collectedFromMetadata[field].join(' ');
+                if (combined) {
+                    result[field] = combined;
+                }
+            };
+            ['productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry']
+                .forEach(joinCollected);
+            return result;
+        }
     }
     const collected = {};
     let activeField = null;
@@ -11059,19 +11159,81 @@ function gearListGenerateHtmlImpl(info = {}) {
     if (selectedNames.monitor) {
         const monitorLabel = 'Onboard Monitor';
         const monitorsDb = devices?.monitors || {};
-        const stripCameraLinkPrefix = label => {
+        const stripCameraLinkPrefix = (label) => {
             if (typeof label !== 'string') return '';
             const trimmed = label.trim();
             if (!trimmed) return '';
-            const match = trimmed.match(/^(linked\s+to\s+camera)(?:\s*[—–-]\s*|\s*:\s*|\s+)(.+)$/i);
-            if (match && match[2]) {
-                return match[2].trim();
+            const lower = trimmed.toLowerCase();
+            const words = ['linked', 'to', 'camera'];
+            const NBSP_CHAR = String.fromCharCode(160);
+            const isWhitespaceChar = (char) => (
+                char === ' '
+                || char === '\t'
+                || char === '\n'
+                || char === '\r'
+                || char === '\f'
+                || char === '\v'
+                || char === NBSP_CHAR
+            );
+            const skipWhitespace = (position) => {
+                let idx = position;
+                while (idx < lower.length && isWhitespaceChar(lower[idx])) {
+                    idx += 1;
+                }
+                return idx;
+            };
+            let index = 0;
+            for (let w = 0; w < words.length; w += 1) {
+                index = skipWhitespace(index);
+                const word = words[w];
+                if (lower.slice(index, index + word.length) !== word) {
+                    return trimmed;
+                }
+                index += word.length;
             }
-            return trimmed;
+            const gapStart = index;
+            index = skipWhitespace(index);
+            const consumedWhitespace = index > gapStart;
+            if (index >= trimmed.length) {
+                return trimmed;
+            }
+            const separators = new Set(['—', '–', '-', ':']);
+            let usedSeparator = false;
+            if (separators.has(trimmed[index])) {
+                index += 1;
+                usedSeparator = true;
+            }
+            index = skipWhitespace(index);
+            if (!consumedWhitespace && !usedSeparator) {
+                return trimmed;
+            }
+            if (index >= trimmed.length) {
+                return trimmed;
+            }
+            return trimmed.slice(index).trim();
         };
         const stripEnclosingQuotes = value => {
             if (typeof value !== 'string') return '';
-            return value.replace(/^["'“”‚‘’]+/, '').replace(/["'“”‚‘’]+$/, '').trim();
+            const source = value.trim();
+            if (!source) return '';
+            const isQuoteChar = (char) => (
+                char === '"'
+                || char === '\''
+                || char === '“'
+                || char === '”'
+                || char === '‚'
+                || char === '‘'
+                || char === '’'
+            );
+            let start = 0;
+            let end = source.length;
+            while (start < end && isQuoteChar(source[start])) {
+                start += 1;
+            }
+            while (end > start && isQuoteChar(source[end - 1])) {
+                end -= 1;
+            }
+            return source.slice(start, end).trim();
         };
         const cleanupMonitorLabel = value => stripEnclosingQuotes(stripCameraLinkPrefix(value));
         const monitorSelectValue = typeof monitorSelect !== 'undefined'
@@ -12313,7 +12475,31 @@ function collectProjectInfoFromRequirementsGrid() {
             info[field] = text;
         }
         if (field === 'productionCompany') {
-            const expanded = expandCombinedProductionCompanyInfo(text, projectLabels);
+            let metadata = null;
+            const lineNodes = Array.from(valueEl.querySelectorAll('.req-sub-line'));
+            if (lineNodes.length) {
+                const lines = lineNodes.map((node) => {
+                    if (!node || typeof node.textContent !== 'string') {
+                        return null;
+                    }
+                    const textContent = node.textContent.replace(/\s+/g, ' ').trim();
+                    if (!textContent) {
+                        return null;
+                    }
+                    const fieldsAttr = typeof node.getAttribute === 'function'
+                        ? (node.getAttribute('data-fields') || node.getAttribute('data-field') || '')
+                        : '';
+                    const fields = fieldsAttr
+                        .split(/\s+/)
+                        .map((part) => part.trim())
+                        .filter((part) => part);
+                    return { text: textContent, fields };
+                }).filter((entry) => entry);
+                if (lines.length) {
+                    metadata = { lines };
+                }
+            }
+            const expanded = expandCombinedProductionCompanyInfo(text, projectLabels, metadata);
             if (expanded && typeof expanded === 'object') {
                 Object.entries(expanded).forEach(([expandedField, expandedValue]) => {
                     if (expandedField === 'productionCompany') {
