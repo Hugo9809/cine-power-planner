@@ -381,6 +381,15 @@
       } else {
         detailDialog.setAttribute('open', '');
       }
+
+      if (detailDialogBackButton && typeof detailDialogBackButton.focus === 'function') {
+        try {
+          detailDialogBackButton.focus({ preventScroll: true });
+        } catch (focusError) {
+          detailDialogBackButton.focus();
+          void focusError;
+        }
+      }
     }
 
     function normalizeDiagramPositionsInput(positions) {
@@ -1710,7 +1719,10 @@
         if (!nodeId) return;
         const entry = lastPopupEntries[nodeId];
         if (!entry) return;
-        showEntryPopupForNode(node, entry);
+        hidePopup();
+        activePopupNode = null;
+        activePopupEntry = null;
+        openDetailDialogWithEntry(entry);
         e.stopPropagation();
         e.preventDefault();
       };
