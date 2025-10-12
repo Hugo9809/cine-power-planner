@@ -1697,7 +1697,7 @@
       if (fallbackValue) {
         return fallbackValue;
       }
-      return 'Preface';
+      return 'Welcome';
     })();
 
     return {
@@ -2382,7 +2382,7 @@
     if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
       return tourTexts.prefaceIndicator.trim();
     }
-    return 'Preface';
+    return 'Welcome';
   }
 
   function focusCard() {
