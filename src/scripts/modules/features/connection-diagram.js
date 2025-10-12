@@ -197,6 +197,7 @@
     let cleanupDiagramInteractions = null;
     let lastPopupEntries = {};
     let lastPointerPosition = null;
+    let activePopupIsCamera = false;
 
     const resolveSetupContainer = () => getSetupDiagramContainer();
     const resolveDiagramLegend = () => getDiagramLegend();
@@ -1065,6 +1066,15 @@
       if (!svg) return;
 
       const popup = setupDiagramContainer.querySelector('#diagramPopup');
+      let isPointerOverPopup = false;
+      let hidePopupTimeout = null;
+
+      const clearHidePopupTimeout = () => {
+        if (!hidePopupTimeout) return;
+        clearTimeout(hidePopupTimeout);
+        hidePopupTimeout = null;
+      };
+
       const hidePopup = () => {
         if (!popup) return;
         popup.style.display = 'none';
@@ -1072,6 +1082,9 @@
         popup.innerHTML = '';
         popup.dataset.columns = '1';
         popup.style.removeProperty('--diagram-popup-dynamic-width');
+        clearHidePopupTimeout();
+        isPointerOverPopup = false;
+        activePopupIsCamera = false;
       };
       hidePopup();
 
@@ -1381,6 +1394,7 @@
 
       const showPopupForNode = (nodeEl) => {
         if (!popup || !nodeEl) return;
+        clearHidePopupTimeout();
         const nodeId = nodeEl.getAttribute('data-node');
         if (!nodeId) {
           hidePopup();
@@ -1391,7 +1405,8 @@
           hidePopup();
           return;
         }
-        popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+        const resolvedClassName = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+        popup.className = resolvedClassName;
         popup.innerHTML = entry.content || '';
         if (entry.label) {
           popup.setAttribute('aria-label', entry.label);
@@ -1399,6 +1414,10 @@
           popup.removeAttribute('aria-label');
         }
         activePopupNode = nodeEl;
+        activePopupIsCamera = typeof resolvedClassName === 'string' && resolvedClassName.includes('diagram-popup--camera');
+        if (!activePopupIsCamera) {
+          isPointerOverPopup = false;
+        }
         positionPopup(nodeEl, entry);
       };
 
@@ -1414,15 +1433,55 @@
         const related = e.relatedTarget;
         if (related && activePopupNode.contains(related)) return;
         if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
+        if (activePopupIsCamera) {
+          if (related && popup && popup.contains(related)) return;
+          if (isPointerOverPopup) return;
+          clearHidePopupTimeout();
+          hidePopupTimeout = setTimeout(() => {
+            if (isPointerOverPopup || !activePopupIsCamera) return;
+            hidePopup();
+            activePopupNode = null;
+          }, 100);
+          return;
+        }
         hidePopup();
         activePopupNode = null;
+        activePopupIsCamera = false;
       };
 
       const onSvgLeave = e => {
         if (svg.contains(e.relatedTarget)) return;
         activePopupNode = null;
         hidePopup();
+        activePopupIsCamera = false;
       };
+
+      if (popup && !popup.dataset.hoverHandlersAttached) {
+        popup.addEventListener('mouseenter', () => {
+          if (!activePopupIsCamera) return;
+          clearHidePopupTimeout();
+          isPointerOverPopup = true;
+        });
+        popup.addEventListener('mouseleave', event => {
+          if (!activePopupIsCamera) return;
+          isPointerOverPopup = false;
+          const related = event.relatedTarget;
+          if (related && typeof related.closest === 'function') {
+            const relatedNode = related.closest('.diagram-node');
+            if (relatedNode && relatedNode === activePopupNode) {
+              clearHidePopupTimeout();
+              return;
+            }
+          }
+          clearHidePopupTimeout();
+          hidePopupTimeout = setTimeout(() => {
+            if (isPointerOverPopup) return;
+            hidePopup();
+            activePopupNode = null;
+          }, 80);
+        });
+        popup.dataset.hoverHandlersAttached = 'true';
+      }
 
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, { passive: false });
