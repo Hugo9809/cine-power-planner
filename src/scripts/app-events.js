@@ -62,6 +62,16 @@ const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
 
+// Some editor update routines depend on cached option lists. In legacy builds
+// these lived in the global scope, so we eagerly create the arrays here to
+// avoid ReferenceErrors while the modern modules initialise.
+if (typeof viewfinderTypeOptions === 'undefined' || !Array.isArray(viewfinderTypeOptions)) {
+  viewfinderTypeOptions = [];
+}
+if (typeof viewfinderConnectorOptions === 'undefined' || !Array.isArray(viewfinderConnectorOptions)) {
+  viewfinderConnectorOptions = [];
+}
+
 // We frequently need a safe reference to the global scope to access runtime
 // helpers. This tiny utility keeps that logic readable so future maintainers do
 // not have to remember every possible environment in which the planner runs.
