@@ -970,6 +970,7 @@
     persistSession: true,
     captureGlobalErrors: true,
     captureConsole: true,
+    stackTraces: true,
   };
 
   const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
@@ -983,6 +984,7 @@
       persistSession: DEFAULT_CONFIG_VALUES.persistSession,
       captureGlobalErrors: DEFAULT_CONFIG_VALUES.captureGlobalErrors,
       captureConsole: DEFAULT_CONFIG_VALUES.captureConsole,
+      stackTraces: DEFAULT_CONFIG_VALUES.stackTraces,
     };
   }
 
@@ -1414,6 +1416,102 @@
     return null;
   }
 
+  function normaliseStackTrace(stackValue) {
+    if (typeof stackValue !== 'string') {
+      return null;
+    }
+
+    const trimmed = stackValue.replace(/\r\n?/g, '\n').trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    const maxLength = 5000;
+    const charTruncated = trimmed.length > maxLength;
+    const limitedStack = charTruncated ? trimmed.slice(0, maxLength) : trimmed;
+
+    const rawLines = trimmed.split('\n');
+    const frameLimit = 40;
+    const frames = [];
+    let frameTruncated = false;
+    for (let index = 0; index < rawLines.length; index += 1) {
+      const line = rawLines[index].trim();
+      if (!line) {
+        continue;
+      }
+      if (frames.length < frameLimit) {
+        frames.push(line.length > 500 ? `${line.slice(0, 500)}\u2026` : line);
+      } else {
+        frameTruncated = true;
+        break;
+      }
+    }
+
+    return {
+      stack: limitedStack,
+      frames,
+      truncated: charTruncated || frameTruncated,
+    };
+  }
+
+  function normaliseOriginSnapshot(origin) {
+    if (!origin || typeof origin !== 'object') {
+      return null;
+    }
+
+    const source = typeof origin.source === 'string' && origin.source
+      ? origin.source
+      : 'unknown';
+
+    let stackSummary = null;
+    if (typeof origin.stack === 'string' && origin.stack) {
+      stackSummary = normaliseStackTrace(origin.stack);
+    }
+
+    const frames = [];
+    if (Array.isArray(origin.frames)) {
+      for (let index = 0; index < origin.frames.length && frames.length < 40; index += 1) {
+        const frame = origin.frames[index];
+        if (typeof frame === 'string' && frame) {
+          frames.push(frame);
+        } else if (frame !== null && typeof frame !== 'undefined') {
+          frames.push(coerceMessage(frame));
+        }
+      }
+    } else if (stackSummary && Array.isArray(stackSummary.frames)) {
+      for (let index = 0; index < stackSummary.frames.length; index += 1) {
+        frames.push(stackSummary.frames[index]);
+      }
+    }
+
+    const truncated = origin.truncated === true
+      || (stackSummary ? stackSummary.truncated === true : false)
+      || (frames.length > 0 && frames.length >= 40);
+
+    const snapshot = {
+      source,
+      truncated,
+    };
+
+    if (stackSummary && stackSummary.stack) {
+      snapshot.stack = stackSummary.stack;
+    } else if (typeof origin.stack === 'string' && origin.stack) {
+      snapshot.stack = origin.stack;
+    } else {
+      snapshot.stack = null;
+    }
+
+    if (frames.length) {
+      snapshot.frames = frames;
+    }
+
+    if (!snapshot.stack && (!snapshot.frames || !snapshot.frames.length)) {
+      return null;
+    }
+
+    return freezeDeep(snapshot);
+  }
+
   function getSessionStorage() {
     const scopes = fallbackCollectCandidateScopes(GLOBAL_SCOPE);
     for (let index = 0; index < scopes.length; index += 1) {
@@ -1471,6 +1569,7 @@
           persistSession: activeConfig.persistSession,
           captureGlobalErrors: activeConfig.captureGlobalErrors,
           captureConsole: activeConfig.captureConsole,
+          stackTraces: activeConfig.stackTraces,
         }),
       );
     } catch (error) {
@@ -2060,6 +2159,81 @@
     return isConsoleCaptureActive();
   }
 
+  function shouldCaptureOrigin(level, detail, context) {
+    const override = context && Object.prototype.hasOwnProperty.call(context, 'captureStack')
+      ? context.captureStack
+      : null;
+
+    if (override === true) {
+      return true;
+    }
+
+    if (override === false) {
+      return false;
+    }
+
+    if (activeConfig.stackTraces !== true) {
+      return false;
+    }
+
+    if (detail instanceof Error) {
+      return true;
+    }
+
+    return getLevelPriority(level) >= getLevelPriority('warn');
+  }
+
+  function captureLogOrigin(level, message, detail, context) {
+    if (!shouldCaptureOrigin(level, detail, context)) {
+      return null;
+    }
+
+    let stackSource = 'generated';
+    let stackValue = '';
+
+    if (detail instanceof Error) {
+      const detailStack = detail.stack;
+      if (typeof detailStack === 'string' && detailStack) {
+        stackSource = 'detail';
+        stackValue = detailStack;
+      }
+    }
+
+    if (!stackValue) {
+      try {
+        const stackMessage = typeof message === 'string' && message
+          ? message
+          : `Log ${level}`;
+        const captureError = new Error(stackMessage);
+        if (typeof Error.captureStackTrace === 'function') {
+          Error.captureStackTrace(captureError, captureLogOrigin);
+        }
+        if (typeof captureError.stack === 'string' && captureError.stack) {
+          stackValue = captureError.stack;
+        }
+      } catch (stackError) {
+        void stackError;
+      }
+    }
+
+    const summary = normaliseStackTrace(stackValue);
+    if (!summary) {
+      return null;
+    }
+
+    const origin = {
+      source: stackSource,
+      stack: summary.stack,
+      truncated: summary.truncated,
+    };
+
+    if (Array.isArray(summary.frames) && summary.frames.length) {
+      origin.frames = summary.frames;
+    }
+
+    return freezeDeep(origin);
+  }
+
   function logInternal(level, message, detail, context, options) {
     const normalizedLevel = normalizeLevel(level, 'info');
     const timestamp = Date.now();
@@ -2071,12 +2245,15 @@
       isoTimestamp = String(timestamp);
     }
 
-    const namespace = context && typeof context.namespace === 'string' && context.namespace
+    const captureContext = context && typeof context === 'object' ? context : null;
+    const origin = captureLogOrigin(normalizedLevel, message, detail, captureContext);
+
+    const namespace = captureContext && typeof captureContext.namespace === 'string' && captureContext.namespace
       ? context.namespace
       : null;
 
-    const meta = context && typeof context.meta !== 'undefined'
-      ? sanitizeForLog(context.meta)
+    const meta = captureContext && typeof captureContext.meta !== 'undefined'
+      ? sanitizeForLog(captureContext.meta)
       : null;
 
     const sanitizedDetail = typeof detail === 'undefined'
@@ -2092,6 +2269,7 @@
       meta,
       timestamp,
       isoTimestamp,
+      origin,
     });
 
     applyLevelCounterDelta(emittedLevelCounters, normalizedLevel, 1);
@@ -2119,6 +2297,9 @@
       }
       if (entry.meta !== null) {
         consoleArgs.push({ meta: entry.meta });
+      }
+      if (origin) {
+        consoleArgs.push({ origin });
       }
       invokeConsoleMethod(methodName, consoleArgs);
     }
@@ -2151,6 +2332,7 @@
       persistSession: activeConfig.persistSession,
       captureGlobalErrors: activeConfig.captureGlobalErrors,
       captureConsole: activeConfig.captureConsole,
+      stackTraces: activeConfig.stackTraces,
     });
   }
 
@@ -2540,6 +2722,14 @@
       }
     }
 
+    if (Object.prototype.hasOwnProperty.call(overrides, 'stackTraces')) {
+      const nextStackTraces = booleanFromValue(overrides.stackTraces, activeConfig.stackTraces);
+      if (nextStackTraces !== activeConfig.stackTraces) {
+        activeConfig.stackTraces = nextStackTraces;
+        changed = true;
+      }
+    }
+
     return { changed, captureChanged, limitChanged, consoleCaptureChanged };
   }
 
@@ -2686,6 +2876,9 @@
       if (params.has('cineLogConsoleCapture')) {
         assignUpdate('captureConsole', params.get('cineLogConsoleCapture'));
       }
+      if (params.has('cineLogStackTraces')) {
+        assignUpdate('stackTraces', params.get('cineLogStackTraces'));
+      }
     } else {
       const query = search.charAt(0) === '?' ? search.slice(1) : search;
       const parts = query.split('&');
@@ -2711,6 +2904,8 @@
           assignUpdate('captureGlobalErrors', value);
         } else if (key === 'cineLogConsoleCapture') {
           assignUpdate('captureConsole', value);
+        } else if (key === 'cineLogStackTraces') {
+          assignUpdate('stackTraces', value);
         }
       }
     }
@@ -2763,6 +2958,7 @@
       meta: typeof entry.meta === 'undefined' ? null : sanitizeForLog(entry.meta),
       timestamp,
       isoTimestamp,
+      origin: typeof entry.origin === 'undefined' ? null : normaliseOriginSnapshot(entry.origin),
     });
   }
 

@@ -84,5 +84,35 @@ describe('cineLogging module stats', () => {
       }),
     );
   });
+
+  it('captures stack traces for error entries by default', () => {
+    logging.clearHistory({ persist: false });
+    logging.setConfig({ historyLevel: 'debug', stackTraces: true, historyLimit: 10 }, { persist: false });
+
+    const capturedError = new Error('stack capture test');
+    logging.error('Testing stack capture', capturedError);
+
+    const history = logging.getHistory({ limit: 1 });
+    expect(history.length).toBe(1);
+    const entry = history[0];
+    expect(entry.origin).not.toBeNull();
+    expect(entry.origin.source).toBe('detail');
+    expect(typeof entry.origin.stack).toBe('string');
+    expect(entry.origin.stack.length).toBeGreaterThan(0);
+    expect(Array.isArray(entry.origin.frames)).toBe(true);
+    expect(entry.origin.frames.length).toBeGreaterThan(0);
+  });
+
+  it('allows stack trace capture to be disabled via config', () => {
+    logging.clearHistory({ persist: false });
+    logging.setConfig({ stackTraces: false }, { persist: false });
+
+    logging.error('Stack capture disabled', new Error('no capture'));
+
+    const history = logging.getHistory({ limit: 1 });
+    expect(history.length).toBe(1);
+    const entry = history[0];
+    expect(entry.origin).toBeNull();
+  });
 });
 
