@@ -1,3 +1,4 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function fallbackDetectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
@@ -14,33 +15,27 @@
     }
     return {};
   }
-
   function fallbackCollectCandidateScopes(primary) {
     var scopes = [];
-
     function pushScope(scope) {
-      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         return;
       }
       if (scopes.indexOf(scope) === -1) {
         scopes.push(scope);
       }
     }
-
     pushScope(primary);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
     if (typeof global !== 'undefined') pushScope(global);
-
     return scopes;
   }
-
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
-
     try {
       return require(modulePath);
     } catch (error) {
@@ -48,144 +43,115 @@
       return null;
     }
   }
-
   function fallbackLoadModuleEnvironment(scope) {
     var required = fallbackTryRequire('./environment.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
     var candidates = fallbackCollectCandidateScopes(scope);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
-      if (candidate && typeof candidate.cineModuleEnvironment === 'object') {
+      if (candidate && _typeof(candidate.cineModuleEnvironment) === 'object') {
         return candidate.cineModuleEnvironment;
       }
     }
-
     return null;
   }
-
   function fallbackLoadEnvironmentBridge(scope) {
     var required = fallbackTryRequire('./environment-bridge.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
     var candidates = fallbackCollectCandidateScopes(scope);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
-      if (candidate && typeof candidate.cineEnvironmentBridge === 'object') {
+      if (candidate && _typeof(candidate.cineEnvironmentBridge) === 'object') {
         return candidate.cineEnvironmentBridge;
       }
     }
-
     return null;
   }
-
   function fallbackResolveModuleGlobals(scope) {
     var required = fallbackTryRequire('./globals.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
     var candidates = fallbackCollectCandidateScopes(scope);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
-      if (candidate && typeof candidate.cineModuleGlobals === 'object') {
+      if (candidate && _typeof(candidate.cineModuleGlobals) === 'object') {
         return candidate.cineModuleGlobals;
       }
     }
-
     return null;
   }
-
   function resolveEnvironmentContext(scope) {
     var required = fallbackTryRequire('./environment-context.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
     var candidates = fallbackCollectCandidateScopes(scope);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
-      if (candidate && typeof candidate.cineModuleEnvironmentContext === 'object') {
+      if (candidate && _typeof(candidate.cineModuleEnvironmentContext) === 'object') {
         return candidate.cineModuleEnvironmentContext;
       }
     }
-
     return null;
   }
-
   function resolveModuleLinker(scope) {
     var required = fallbackTryRequire('./helpers/module-linker.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
     var candidates = fallbackCollectCandidateScopes(scope);
-
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = candidates[index];
       try {
         var linker = candidate && candidate.cineModuleLinker;
-        if (linker && typeof linker === 'object') {
+        if (linker && _typeof(linker) === 'object') {
           return linker;
         }
       } catch (error) {
         void error;
       }
     }
-
     return null;
   }
-
   function resolveModuleSystem(scope, detectScope) {
     var targetScope = scope || (typeof detectScope === 'function' ? detectScope() : fallbackDetectGlobalScope());
-
     var required = fallbackTryRequire('./system.js');
-    if (required && typeof required === 'object') {
+    if (required && _typeof(required) === 'object') {
       return required;
     }
-
-    if (targetScope && typeof targetScope.cineModuleSystem === 'object') {
+    if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
       return targetScope.cineModuleSystem;
     }
-
     return null;
   }
-
   function defineHiddenProperty(target, name, value) {
-    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+    if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
       return false;
     }
-
     try {
       Object.defineProperty(target, name, {
         configurable: true,
         enumerable: false,
         value: value,
-        writable: true,
+        writable: true
       });
       return true;
     } catch (error) {
       void error;
     }
-
     try {
       target[name] = value;
       return true;
     } catch (assignmentError) {
       void assignmentError;
     }
-
     return false;
   }
-
   var helpers = {
     fallbackCollectCandidateScopes: fallbackCollectCandidateScopes,
     fallbackDetectGlobalScope: fallbackDetectGlobalScope,
@@ -195,18 +161,11 @@
     fallbackTryRequire: fallbackTryRequire,
     resolveEnvironmentContext: resolveEnvironmentContext,
     resolveModuleLinker: resolveModuleLinker,
-    resolveModuleSystem: resolveModuleSystem,
+    resolveModuleSystem: resolveModuleSystem
   };
-
   var globalScope = fallbackDetectGlobalScope();
-
   if (typeof module !== 'undefined' && module && module.exports) {
-    if (
-      module.exports &&
-      module.exports !== helpers &&
-      typeof module.exports === 'object' &&
-      Object.keys(module.exports).length > 0
-    ) {
+    if (module.exports && module.exports !== helpers && _typeof(module.exports) === 'object' && Object.keys(module.exports).length > 0) {
       try {
         defineHiddenProperty(module.exports, 'cineRuntimeEnvironmentHelpers', helpers);
       } catch (attachmentError) {
@@ -216,8 +175,7 @@
       module.exports = helpers;
     }
   }
-
-  if (globalScope && typeof globalScope === 'object') {
+  if (globalScope && _typeof(globalScope) === 'object') {
     if (globalScope.cineRuntimeEnvironmentHelpers !== helpers) {
       defineHiddenProperty(globalScope, 'cineRuntimeEnvironmentHelpers', helpers);
     }

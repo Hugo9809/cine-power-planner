@@ -1,5 +1,4 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-/* global cineRuntimeEnvironmentHelpers */
 (function () {
   function detectGlobalScope() {
     if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
@@ -16,79 +15,62 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-
   function collectEnvironmentHelperScopes(primary) {
     var scopes = [];
-
     function registerScope(scope) {
-      if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
         return;
       }
-
       if (scopes.indexOf(scope) === -1) {
         scopes.push(scope);
       }
     }
-
     registerScope(primary);
     if (typeof globalThis !== 'undefined') registerScope(globalThis);
     if (typeof window !== 'undefined') registerScope(window);
     if (typeof self !== 'undefined') registerScope(self);
     if (typeof global !== 'undefined') registerScope(global);
-
     return scopes;
   }
-
   var CORE_GLOBAL_SCOPE = detectGlobalScope();
-
   function resolveEnvironmentHelpers() {
     var helpers = null;
-
     if (typeof cineRuntimeEnvironmentHelpers !== 'undefined' && cineRuntimeEnvironmentHelpers && (typeof cineRuntimeEnvironmentHelpers === "undefined" ? "undefined" : _typeof(cineRuntimeEnvironmentHelpers)) === 'object') {
       helpers = cineRuntimeEnvironmentHelpers;
     }
-
     if (!helpers && typeof require === 'function') {
       try {
         var requiredHelpers = require('../runtime-environment-helpers.js');
-        if (requiredHelpers && (typeof requiredHelpers === "undefined" ? "undefined" : _typeof(requiredHelpers)) === 'object') {
+        if (requiredHelpers && _typeof(requiredHelpers) === 'object') {
           helpers = requiredHelpers;
         }
       } catch (helpersRequireError) {
         void helpersRequireError;
       }
     }
-
     if (helpers) {
       return helpers;
     }
-
     var candidateScopes = collectEnvironmentHelperScopes(CORE_GLOBAL_SCOPE);
-
     for (var index = 0; index < candidateScopes.length; index += 1) {
       var candidate = candidateScopes[index];
       try {
         var candidateHelpers = candidate && candidate.cineRuntimeEnvironmentHelpers;
-        if (candidateHelpers && (typeof candidateHelpers === "undefined" ? "undefined" : _typeof(candidateHelpers)) === 'object') {
+        if (candidateHelpers && _typeof(candidateHelpers) === 'object') {
           return candidateHelpers;
         }
       } catch (candidateLookupError) {
         void candidateLookupError;
       }
     }
-
     return null;
   }
-
   var CORE_ENVIRONMENT_HELPERS = resolveEnvironmentHelpers();
-
   function detectScope(primary) {
     if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
       return primary;
     }
-
     var detected = null;
-
     if (CORE_ENVIRONMENT_HELPERS && typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function') {
       try {
         detected = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
@@ -97,16 +79,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         detected = null;
       }
     }
-
     if (detected && (_typeof(detected) === 'object' || typeof detected === 'function')) {
       return detected;
     }
-
     var fallbackScope = CORE_GLOBAL_SCOPE || detectGlobalScope();
     if (fallbackScope && (_typeof(fallbackScope) === 'object' || typeof fallbackScope === 'function')) {
       return fallbackScope;
     }
-
     return null;
   }
   function jsonDeepClone(value) {

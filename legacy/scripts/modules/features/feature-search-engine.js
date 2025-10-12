@@ -1,3 +1,4 @@
+var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5;
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
@@ -8,6 +9,7 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -173,23 +175,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
   var SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
-  var MEASUREMENT_VALUE_PATTERN = '\\d+(?:\\s*[.,/-]\\s*\\d+)*(?:\\s+\\d+(?:\\s*[.,/-]\\s*\\d+)*)*';
-  var MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:feet|foot|ft\\.?)(?![a-z])'),
-    'gi',
-  );
-  var MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ")\\s*['’](?=\\s|[\\d\"”″'-]|$)"),
-    'g',
-  );
-  var MEASUREMENT_INCH_WORD_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:inches|inch|in\\.?)(?![a-z])'),
-    'gi',
-  );
-  var MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')\\s*["”″](?=\\s|[\\d\'’"-]|$)'),
-    'g',
-  );
+  var MEASUREMENT_VALUE_PATTERN = String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["d+(?:s*[.,/-]s*d+)*(?:s+d+(?:s*[.,/-]s*d+)*)*"], ["\\d+(?:\\s*[.,/-]\\s*\\d+)*(?:\\s+\\d+(?:\\s*[.,/-]\\s*\\d+)*)*"])));
+  var MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["(", ")[s-]*(?:feet|foot|ft.?)(?![a-z])"], ["(", ")[\\s-]*(?:feet|foot|ft\\.?)(?![a-z])"])), MEASUREMENT_VALUE_PATTERN), 'gi');
+  var MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["(", ")s*['\u2019](?=s|[d\"\u201D\u2033'-]|$)"], ["(", ")\\s*['\u2019](?=\\s|[\\d\"\u201D\u2033'-]|$)"])), MEASUREMENT_VALUE_PATTERN), 'g');
+  var MEASUREMENT_INCH_WORD_PATTERN = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["(", ")[s-]*(?:inches|inch|in.?)(?![a-z])"], ["(", ")[\\s-]*(?:inches|inch|in\\.?)(?![a-z])"])), MEASUREMENT_VALUE_PATTERN), 'gi');
+  var MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(String.raw(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["(", ")s*[\"\u201D\u2033](?=s|[d'\u2019\"-]|$)"], ["(", ")\\s*[\"\u201D\u2033](?=\\s|[\\d'\u2019\"-]|$)"])), MEASUREMENT_VALUE_PATTERN), 'g');
   function cleanMeasurementValue(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
   }
@@ -259,6 +249,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) || hasAllGroups([['frame', 'frames'], ['per', 'persecond', 'persec'], ['second', 'seconds', 'sec']]) || hasAllGroups([['frame', 'frames'], ['rate']])) {
       addAll(['fps', 'framerate', 'framepersecond', 'framespersecond', 'frame', 'frames', 'second', 'seconds']);
     }
+    ensureSynonymGroup(['delete', 'remove', 'clear', 'trash', 'bin', 'discard', 'erase', 'wipe'], ['delete', 'remove', 'clear', 'trash', 'bin', 'discard', 'erase', 'wipe']);
+    ensureSynonymGroup(['save', 'backup', 'store', 'archive', 'preserve', 'safeguard', 'protect'], ['save', 'backup', 'store', 'archive', 'preserve', 'safeguard', 'protect']);
+    ensureSynonymGroup(['restore', 'recover', 'load', 'import', 'rollback', 'return', 'reopen'], ['restore', 'recover', 'load', 'import', 'rollback', 'return', 'reopen']);
+    ensureSynonymGroup(['share', 'export', 'send', 'distribute', 'forward', 'deliver', 'publish'], ['share', 'export', 'send', 'distribute', 'forward', 'deliver', 'publish']);
+    ensureSynonymGroup(['duplicate', 'copy', 'clone', 'replicate', 'mirror'], ['duplicate', 'copy', 'clone', 'replicate', 'mirror']);
+    ensureSynonymGroup(['autosave', 'autobackup', 'autosync', 'autosynchronize'], ['autosave', 'autobackup', 'autosync', 'autosynchronize'], [['auto', 'automatic'], ['save', 'backup', 'sync', 'synchronise', 'synchronize']]);
     if (hasAny(['wh', 'watthour', 'watthours'])) {
       addAll(['wh', 'watthour', 'watthours', 'watt', 'watts', 'hour', 'hours']);
     } else if (hasAllGroups([['watt', 'watts'], ['hour', 'hours', 'hr', 'hrs']])) {
