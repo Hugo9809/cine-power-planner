@@ -112,7 +112,33 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   if (typeof global !== 'undefined') registerScope(global);
   return scopes;
 }
-var CORE_RUNTIME_CANDIDATE_SCOPES = typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' ? CORE_RUNTIME_CANDIDATE_SCOPES : collectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+var CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = function () {
+  if (typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' && CORE_RUNTIME_CANDIDATE_SCOPES && typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number') {
+    return CORE_RUNTIME_CANDIDATE_SCOPES;
+  }
+
+  return collectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+}();
+
+(function syncCoreRuntimeCandidateScopes(resolvedScopes) {
+  var scope = (typeof globalThis !== 'undefined' && globalThis) || (typeof window !== 'undefined' && window) || (typeof self !== 'undefined' && self) || (typeof global !== 'undefined' && global) || null;
+
+  if (scope && (!scope.CORE_RUNTIME_CANDIDATE_SCOPES || scope.CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes)) {
+    try {
+      scope.CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  try {
+    if (typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' || CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes) {
+      CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    }
+  } catch (candidateAssignError) {
+    void candidateAssignError;
+  }
+})(CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED);
 function fallbackResolveLocaleModule(scope) {
   if (typeof cineLocale !== 'undefined' && cineLocale && (typeof cineLocale === "undefined" ? "undefined" : _typeof(cineLocale)) === 'object') {
     return cineLocale;
@@ -946,7 +972,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return createCoreRuntimeStateFallback(candidateScopes);
   }
   var CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', function () {
-    var candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES.length ? CORE_RUNTIME_CANDIDATE_SCOPES : collectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+    var candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED : collectCoreRuntimeCandidateScopes(_typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
     return createCoreRuntimeState(candidateScopes);
   });
   if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
