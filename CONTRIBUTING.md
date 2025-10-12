@@ -1,6 +1,7 @@
 # Contributing to Cine Power Planner
 
-Thank you for your interest in improving Cine Power Planner!
+Contributions are welcome! 🎉 If you have ideas for new features or find a bug, please let us know. Simply open an issue to discuss the improvement or bug, or check out the CONTRIBUTING.md to see how you can contribute. We gladly accept pull requests from the community.
+When contributing, please follow our code style and testing guidelines, and be sure to abide by our Code of Conduct to keep our community friendly and professional.
 
 ## Development setup
 
