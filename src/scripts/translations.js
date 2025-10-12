@@ -1891,10 +1891,20 @@ const texts = {
           body:
             "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.",
         },
-        editDeviceData: {
-          title: "Edit device data",
+        editDeviceDataAdd: {
+          title: "Add a device to the library",
           body:
-            "Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.",
+            "Open Device Library, choose the correct category, enter the draw and connector details, then press Add. This stores the gear in the offline catalog so autosave, backups and shares all capture the new entry.",
+        },
+        editDeviceDataReview: {
+          title: "Review the device details",
+          body:
+            "Locate the device you just saved under Existing Devices and expand its details panel. Confirm the draw, outputs and compatibility information look right before relying on the data for runtime math or exports.",
+        },
+        editDeviceDataEdit: {
+          title: "Update and resave the device",
+          body:
+            "Use the Edit button on that entry, adjust specs or notes, and save again. This verifies the autosave timeline, backups and exports are refreshed with the latest numbers without risking any user data.",
         },
         ownGearAccess: {
           title: "Open the Own Gear dialog",
@@ -3963,10 +3973,20 @@ const texts = {
           body:
             "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, quindi salva così disposizione e annotazioni restano in esportazioni e ripristini.",
         },
-        editDeviceData: {
-          title: "Modifica i dati dei dispositivi",
+        editDeviceDataAdd: {
+          title: "Aggiungi un dispositivo alla libreria",
           body:
-            "Apri l'editor della Libreria dispositivi per aggiungere o modificare camere, batterie e accessori. Gli aggiornamenti vengono archiviati localmente, inclusi nei backup e trasportati in ogni export o pacchetto condiviso.",
+            "Apri Libreria dispositivi, scegli la categoria corretta, inserisci assorbimento e connettori e premi Aggiungi. Il dispositivo viene salvato offline così autosalvataggi, backup e condivisioni includono il nuovo elemento.",
+        },
+        editDeviceDataReview: {
+          title: "Rivedi i dettagli del dispositivo",
+          body:
+            "Individua il dispositivo appena salvato in Dispositivi esistenti e apri il pannello dei dettagli. Controlla che assorbimento, uscite e informazioni di compatibilità siano corretti prima di usarli per calcoli o esportazioni.",
+        },
+        editDeviceDataEdit: {
+          title: "Aggiorna e salva nuovamente il dispositivo",
+          body:
+            "Premi Modifica su quella voce, aggiorna specifiche o note e salva di nuovo. In questo modo autosalvataggi, backup ed esportazioni vengono aggiornati con gli ultimi dati senza rischiare la perdita di informazioni.",
         },
         ownGearAccess: {
           title: "Apri la finestra Attrezzatura propria",
@@ -6048,10 +6068,20 @@ const texts = {
           body:
             "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones.",
         },
-        editDeviceData: {
-          title: "Edita datos de dispositivos",
+        editDeviceDataAdd: {
+          title: "Añade un dispositivo a la biblioteca",
           body:
-            "Abre el editor de la Biblioteca de dispositivos para añadir o ajustar cámaras, baterías y accesorios. Las actualizaciones se guardan localmente, se incluyen en los respaldos y viajan en cada exportación o paquete compartido.",
+            "Abre la Biblioteca de dispositivos, elige la categoría adecuada, introduce consumo y conectores y pulsa Añadir. Así el equipo queda guardado sin conexión y los autoguardados, las copias de seguridad y las comparticiones incluyen el nuevo registro.",
+        },
+        editDeviceDataReview: {
+          title: "Revisa los detalles del dispositivo",
+          body:
+            "Busca el dispositivo que acabas de guardar en Dispositivos existentes y despliega sus detalles. Confirma que consumo, salidas e información de compatibilidad sean correctos antes de usar los datos en cálculos o exportaciones.",
+        },
+        editDeviceDataEdit: {
+          title: "Actualiza y vuelve a guardar el dispositivo",
+          body:
+            "Pulsa Editar en esa entrada, ajusta especificaciones o notas y guarda otra vez. Esto verifica que el autosave, las copias de seguridad y las exportaciones se actualicen con los valores más recientes sin poner en riesgo los datos.",
         },
         ownGearAccess: {
           title: "Abre el cuadro de Equipo propio",
@@ -8146,10 +8176,20 @@ const texts = {
           body:
             "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations.",
         },
-        editDeviceData: {
-          title: "Modifiez les données des appareils",
+        editDeviceDataAdd: {
+          title: "Ajoutez un appareil à la bibliothèque",
           body:
-            "Ouvrez l’éditeur de la bibliothèque d’appareils pour ajouter ou ajuster caméras, batteries et accessoires. Les mises à jour sont stockées localement, incluses dans les sauvegardes et intégrées à chaque export ou lot partagé.",
+            "Ouvrez la bibliothèque des appareils, choisissez la catégorie appropriée, renseignez la consommation et les connecteurs puis cliquez sur Ajouter. L’appareil est ainsi enregistré hors ligne et pris en compte par l’autosauvegarde, les sauvegardes et les partages.",
+        },
+        editDeviceDataReview: {
+          title: "Consultez les détails de l’appareil",
+          body:
+            "Repérez l’appareil que vous venez d’enregistrer dans Appareils existants et déployez son panneau de détails. Vérifiez que consommation, sorties et informations de compatibilité sont correctes avant de les utiliser pour les calculs ou les exports.",
+        },
+        editDeviceDataEdit: {
+          title: "Mettez à jour et resauvegardez l’appareil",
+          body:
+            "Cliquez sur Modifier pour cette entrée, ajustez les spécifications ou les notes puis enregistrez à nouveau. Vous confirmez ainsi que l’autosauvegarde, les sauvegardes et les exports sont actualisés avec les dernières valeurs sans risque pour les données.",
         },
         ownGearAccess: {
           title: "Ouvrez la fenêtre Matériel personnel",
@@ -10248,10 +10288,20 @@ const texts = {
           body:
             "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben.",
         },
-        editDeviceData: {
-          title: "Gerätedaten bearbeiten",
+        editDeviceDataAdd: {
+          title: "Gerät zur Bibliothek hinzufügen",
           body:
-            "Öffne den Gerätekatalog-Editor, um Kameras, Akkus und Zubehör hinzuzufügen oder anzupassen. Aktualisierungen werden lokal gespeichert, in Backups aufgenommen und in jeden Export oder Share-Bundel übernommen.",
+            "Öffne die Gerätebibliothek, wähle die passende Kategorie, trage Leistungsaufnahme und Anschlüsse ein und klicke auf Hinzufügen. So wird das Gerät offline gespeichert und Autosave, Backups sowie Freigaben übernehmen den neuen Eintrag.",
+        },
+        editDeviceDataReview: {
+          title: "Gerätedetails überprüfen",
+          body:
+            "Suche das soeben gespeicherte Gerät unter Vorhandene Geräte und klappe die Details aus. Prüfe, ob Leistungsaufnahme, Ausgänge und Kompatibilitätsinfos stimmen, bevor du sie für Berechnungen oder Exporte verwendest.",
+        },
+        editDeviceDataEdit: {
+          title: "Gerät aktualisieren und erneut speichern",
+          body:
+            "Nutze bei diesem Eintrag die Schaltfläche Bearbeiten, passe Spezifikationen oder Notizen an und speichere erneut. Dadurch stellst du sicher, dass Autosave, Backups und Exporte mit den aktuellen Werten arbeiten, ohne Nutzerdaten zu gefährden.",
         },
         ownGearAccess: {
           title: "Dialog Eigenes Equipment öffnen",

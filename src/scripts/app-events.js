@@ -2302,6 +2302,21 @@ function toggleDeviceDetails(button) {
     button.textContent = texts[currentLang].hideDetails;
     button.setAttribute('aria-expanded', 'true');
     button.setAttribute('data-help', texts[currentLang].hideDetails);
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+      const rawName = typeof button.dataset.name === 'string' ? button.dataset.name : '';
+      const rawCategory = typeof button.dataset.category === 'string' ? button.dataset.category : '';
+      const rawSubcategory = typeof button.dataset.subcategory === 'string' ? button.dataset.subcategory : '';
+      const detail = {
+        name: rawName.trim(),
+        category: rawCategory.trim(),
+        subcategory: rawSubcategory.trim() || null,
+      };
+      try {
+        document.dispatchEvent(new CustomEvent('device-library:show-details', { detail }));
+      } catch (error) {
+        console.warn('Failed to dispatch device-library:show-details event', error);
+      }
+    }
   }
 }
 
@@ -3126,6 +3141,34 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   updateFizConnectorOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
+
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+    const normalizedSubcategory =
+      category === "accessories.cables" && subcategory ? subcategory.trim() || null : null;
+    const detail = {
+      name,
+      category,
+      subcategory: normalizedSubcategory,
+    };
+    if (isEditing) {
+      detail.original = {
+        name: originalName || '',
+        category: storedOriginalCategory || '',
+        subcategory:
+          storedOriginalCategory === "accessories.cables"
+            ? (storedOriginalSubcategory ? storedOriginalSubcategory : null)
+            : null,
+      };
+    }
+    try {
+      document.dispatchEvent(new CustomEvent(
+        isEditing ? 'device-library:update' : 'device-library:add',
+        { detail },
+      ));
+    } catch (error) {
+      console.warn('Failed to dispatch device library mutation event', error);
+    }
+  }
 
   let categoryKey = category.replace(".", "_");
   let categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;

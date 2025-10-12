@@ -216,6 +216,101 @@
 
   const SAFE_STORAGE = resolveStorage();
 
+  const deviceLibraryState = {
+    lastAdded: null,
+    lastReviewed: null,
+    lastUpdated: null,
+  };
+
+  const deviceLibrarySubscribers = [];
+
+  function sanitizeDeviceDescriptor(detail) {
+    if (!detail || typeof detail !== 'object') {
+      return null;
+    }
+    const name = typeof detail.name === 'string' ? detail.name.trim() : '';
+    const category = typeof detail.category === 'string' ? detail.category.trim() : '';
+    let subcategory = null;
+    if (typeof detail.subcategory === 'string') {
+      const trimmed = detail.subcategory.trim();
+      if (trimmed) {
+        subcategory = trimmed;
+      }
+    }
+    if (!name || !category) {
+      return null;
+    }
+    return { name, category, subcategory };
+  }
+
+  function descriptorsMatch(a, b) {
+    if (!a || !b) {
+      return false;
+    }
+    const normalize = value => (typeof value === 'string' ? value.trim().toLowerCase() : '');
+    return (
+      normalize(a.name) === normalize(b.name)
+      && normalize(a.category) === normalize(b.category)
+      && normalize(a.subcategory || '') === normalize(b.subcategory || '')
+    );
+  }
+
+  function notifyDeviceLibrarySubscribers() {
+    if (!deviceLibrarySubscribers.length) {
+      return;
+    }
+    const snapshot = deviceLibrarySubscribers.slice();
+    for (let index = 0; index < snapshot.length; index += 1) {
+      const callback = snapshot[index];
+      if (typeof callback !== 'function') {
+        continue;
+      }
+      try {
+        callback(deviceLibraryState);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not deliver device library update.', error);
+      }
+    }
+  }
+
+  function subscribeDeviceLibrary(callback) {
+    if (typeof callback !== 'function') {
+      return () => {};
+    }
+    deviceLibrarySubscribers.push(callback);
+    return () => {
+      const position = deviceLibrarySubscribers.indexOf(callback);
+      if (position !== -1) {
+        deviceLibrarySubscribers.splice(position, 1);
+      }
+    };
+  }
+
+  if (DOCUMENT && typeof DOCUMENT.addEventListener === 'function') {
+    DOCUMENT.addEventListener('device-library:add', event => {
+      const descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      deviceLibraryState.lastAdded = descriptor;
+      deviceLibraryState.lastReviewed = null;
+      deviceLibraryState.lastUpdated = null;
+      notifyDeviceLibrarySubscribers();
+    });
+    DOCUMENT.addEventListener('device-library:show-details', event => {
+      const descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      deviceLibraryState.lastReviewed = descriptor;
+      notifyDeviceLibrarySubscribers();
+    });
+    DOCUMENT.addEventListener('device-library:update', event => {
+      const descriptor = sanitizeDeviceDescriptor(event && event.detail);
+      const original = sanitizeDeviceDescriptor(event && event.detail && event.detail.original);
+      if (!descriptor && !original) {
+        deviceLibraryState.lastUpdated = null;
+      } else {
+        deviceLibraryState.lastUpdated = { current: descriptor, original };
+      }
+      notifyDeviceLibrarySubscribers();
+    });
+  }
+
   function clone(value) {
     if (typeof MODULE_BASE.freezeDeep === 'function') {
       try {
@@ -240,7 +335,9 @@
     'batteryComparison',
     'runtimeFeedback',
     'connectionDiagram',
-    'editDeviceData',
+    'editDeviceDataAdd',
+    'editDeviceDataReview',
+    'editDeviceDataEdit',
     'ownGearAccess',
     'ownGearAddDevice',
     'generateGearAndRequirements',
@@ -319,10 +416,20 @@
       body:
         'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.',
     },
-    editDeviceData: {
-      title: 'Edit device data',
+    editDeviceDataAdd: {
+      title: 'Add a device to the library',
       body:
-        'Open the Device Library editor to add or adjust cameras, batteries and accessories. Updates are stored locally, included in backups and carried into every export or share bundle.',
+        'Open Device Library, pick a category, name the item and record its draw or connector data. Press Add so the new device is stored offline, included in autosave and ready for backups and exports.',
+    },
+    editDeviceDataReview: {
+      title: 'Review the device details',
+      body:
+        'Find the device you just saved inside Existing Devices and open its details. Confirm the draw, outputs and compatibility metadata look correct before relying on it in runtime math or shares.',
+    },
+    editDeviceDataEdit: {
+      title: 'Update and resave the device',
+      body:
+        'Use the Edit button on that same entry, adjust specs or notes, then save. This verifies autosave, backups and exports all carry the most current numbers without risking any loss of user data.',
     },
     ownGearAccess: {
       title: 'Open the Own Gear dialog',
@@ -726,6 +833,73 @@
     };
   }
 
+  function createDeviceLibraryRequirement(checker) {
+    const evaluate = typeof checker === 'function' ? checker : (() => false);
+    return {
+      check() {
+        try {
+          return Boolean(evaluate());
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not evaluate device library requirement.', error);
+          return false;
+        }
+      },
+      attach(context) {
+        const handler = () => {
+          let matches = false;
+          try {
+            matches = Boolean(evaluate());
+          } catch (error) {
+            safeWarn('cine.features.onboardingTour could not evaluate device library change.', error);
+            matches = false;
+          }
+          if (matches) {
+            if (typeof context.complete === 'function') {
+              context.complete();
+            }
+          } else if (typeof context.incomplete === 'function') {
+            context.incomplete();
+          }
+        };
+        const unsubscribe = subscribeDeviceLibrary(handler);
+        handler();
+        return () => {
+          if (typeof unsubscribe === 'function') {
+            unsubscribe();
+          }
+        };
+      },
+    };
+  }
+
+  function createDeviceLibraryAddRequirement() {
+    return createDeviceLibraryRequirement(() => Boolean(deviceLibraryState.lastAdded));
+  }
+
+  function createDeviceLibraryReviewRequirement() {
+    return createDeviceLibraryRequirement(() => {
+      const added = deviceLibraryState.lastAdded;
+      const reviewed = deviceLibraryState.lastReviewed;
+      if (!added || !reviewed) {
+        return false;
+      }
+      return descriptorsMatch(added, reviewed);
+    });
+  }
+
+  function createDeviceLibraryEditRequirement() {
+    return createDeviceLibraryRequirement(() => {
+      const added = deviceLibraryState.lastAdded;
+      const updated = deviceLibraryState.lastUpdated;
+      if (!added || !updated) {
+        return false;
+      }
+      const currentMatch = updated.current ? descriptorsMatch(added, updated.current) : false;
+      const originalMatch = updated.original ? descriptorsMatch(added, updated.original) : false;
+      return currentMatch || originalMatch;
+    });
+  }
+
   function evaluateOwnGearOpenState() {
     try {
       return isOwnGearDialogVisible();
@@ -1044,6 +1218,9 @@
       value => value && value !== 'None',
       ['change'],
     ),
+    editDeviceDataAdd: createDeviceLibraryAddRequirement(),
+    editDeviceDataReview: createDeviceLibraryReviewRequirement(),
+    editDeviceDataEdit: createDeviceLibraryEditRequirement(),
     ownGearAccess: createOwnGearOpenRequirement(),
     ownGearAddDevice: createOwnGearItemRequirement(),
     generateGearAndRequirements: createClickCompletionRequirement('#generateGearListBtn'),
@@ -1335,8 +1512,22 @@
         highlight: '#diagramArea',
       },
       {
-        key: 'editDeviceData',
-        highlight: '#toggleDeviceManager',
+        key: 'editDeviceDataAdd',
+        highlight: ['#toggleDeviceManager', '#addDeviceHeading', '#addDeviceBtn'],
+        focus: '#newName',
+        ensureDeviceManager: true,
+      },
+      {
+        key: 'editDeviceDataReview',
+        highlight: '#deviceListContainer',
+        focus: '#deviceListContainer .detail-toggle',
+        ensureDeviceManager: true,
+      },
+      {
+        key: 'editDeviceDataEdit',
+        highlight: '#deviceListContainer',
+        focus: '#deviceListContainer .edit-btn',
+        ensureDeviceManager: true,
       },
       {
         key: 'ownGearAccess',
@@ -1460,6 +1651,9 @@
   let contactsDialogRef = null;
   let autoOpenedOwnGear = false;
   let ownGearDialogRef = null;
+  let autoOpenedDeviceManager = false;
+  let deviceManagerSectionRef = null;
+  let deviceManagerToggleRef = null;
   let resumeHintVisible = false;
   let resumeStartIndex = null;
 
@@ -2502,6 +2696,129 @@
     }
     ownGearDialogRef.setAttribute('hidden', '');
     autoOpenedOwnGear = false;
+  }
+
+  function isDeviceManagerVisible() {
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerSectionRef) {
+      return false;
+    }
+    return !deviceManagerSectionRef.classList.contains('hidden');
+  }
+
+  function ensureDeviceManagerForStep(step) {
+    if (!step || !step.ensureDeviceManager) {
+      return;
+    }
+
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+    if (!deviceManagerSectionRef) {
+      return;
+    }
+
+    if (isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+
+    autoOpenedDeviceManager = true;
+
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.click === 'function') {
+      try {
+        deviceManagerToggleRef.click();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not trigger device manager toggle.', error);
+      }
+    }
+
+    if (isDeviceManagerVisible()) {
+      return;
+    }
+
+    const showDeviceManager = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.showDeviceManagerSection === 'function'
+      ? GLOBAL_SCOPE.showDeviceManagerSection
+      : null;
+    if (showDeviceManager) {
+      try {
+        showDeviceManager();
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not open device manager via showDeviceManagerSection.', error);
+      }
+    }
+
+    if (isDeviceManagerVisible()) {
+      return;
+    }
+
+    deviceManagerSectionRef.classList.remove('hidden');
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+    if (deviceManagerToggleRef) {
+      deviceManagerToggleRef.setAttribute('aria-expanded', 'true');
+    }
+
+    if (!isDeviceManagerVisible()) {
+      autoOpenedDeviceManager = false;
+    }
+  }
+
+  function closeDeviceManagerIfNeeded() {
+    if (!autoOpenedDeviceManager) {
+      autoOpenedDeviceManager = false;
+      return;
+    }
+
+    if (!deviceManagerSectionRef) {
+      deviceManagerSectionRef = DOCUMENT.getElementById('device-manager');
+    }
+
+    if (!deviceManagerToggleRef) {
+      deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+    }
+
+    if (deviceManagerToggleRef && typeof deviceManagerToggleRef.click === 'function') {
+      try {
+        if (!deviceManagerSectionRef) {
+          deviceManagerToggleRef.click();
+        } else if (!deviceManagerSectionRef.classList.contains('hidden')) {
+          deviceManagerToggleRef.click();
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not toggle device manager closed.', error);
+      }
+    }
+
+    if (isDeviceManagerVisible()) {
+      const hideDeviceManager = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.hideDeviceManagerSection === 'function'
+        ? GLOBAL_SCOPE.hideDeviceManagerSection
+        : null;
+      if (hideDeviceManager) {
+        try {
+          hideDeviceManager();
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not close device manager via hideDeviceManagerSection.', error);
+        }
+      } else if (deviceManagerSectionRef) {
+        deviceManagerSectionRef.classList.add('hidden');
+        if (!deviceManagerToggleRef) {
+          deviceManagerToggleRef = DOCUMENT.getElementById('toggleDeviceManager');
+        }
+        if (deviceManagerToggleRef) {
+          deviceManagerToggleRef.setAttribute('aria-expanded', 'false');
+        }
+      }
+    }
+
+    autoOpenedDeviceManager = false;
   }
 
   function isSettingsDialogVisible() {
@@ -3861,6 +4178,9 @@
     if (previousStep && previousStep.ensureOwnGear && !step.ensureOwnGear) {
       closeOwnGearIfNeeded();
     }
+    if (previousStep && previousStep.ensureDeviceManager && !step.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    }
 
     currentStep = step;
     currentIndex = index;
@@ -3884,6 +4204,13 @@
       closeOwnGearIfNeeded();
     } else {
       autoOpenedOwnGear = false;
+    }
+    if (step.ensureDeviceManager) {
+      ensureDeviceManagerForStep(step);
+    } else if (previousStep && previousStep.ensureDeviceManager) {
+      closeDeviceManagerIfNeeded();
+    } else {
+      autoOpenedDeviceManager = false;
     }
 
     const focusCandidates = resolveSelectorElements(toSelectorArray(step.focus));
@@ -4018,6 +4345,7 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     const nextState = {
       ...storedState,
@@ -4034,6 +4362,7 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     endTutorial();
     const allStepKeys = stepConfig.map(step => step.key);
     const timestamp = getTimestamp();
@@ -4178,6 +4507,7 @@
     closeSettingsIfNeeded();
     closeContactsIfNeeded();
     closeOwnGearIfNeeded();
+    closeDeviceManagerIfNeeded();
     if (overlayRoot) {
       overlayRoot.classList.remove('active');
       overlayRoot.setAttribute('aria-hidden', 'true');
