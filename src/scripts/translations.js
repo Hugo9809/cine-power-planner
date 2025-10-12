@@ -1834,32 +1834,32 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.",
+            "Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.",
         },
         userProfile: {
           title: "Configure language and your profile",
           body:
-            "Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.",
+            "Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.",
         },
         unitsPreferences: {
           title: "Tune theme and units",
           body:
-            "Use Settings → General to choose dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.",
+            "Open Settings → General to choose the theme, optional pink highlights, focus scale and temperature units. Request persistent storage so the browser keeps preferences and safeguards saves during cleanups.",
         },
         nameProject: {
           title: "Name your first project",
           body:
-            "Enter a descriptive project name to anchor autosave, history, exports and backups. Every subsequent workflow references this name so your offline library stays organized and easy to restore.",
+            "Give the project a descriptive name to anchor autosave, history, exports and backups. Every workflow references it so your offline library stays organized and easy to restore.",
         },
         saveProject: {
           title: "Capture an immediate save",
           body:
-            "Press Save (or use Ctrl+S/⌘S/Enter) to write a complete offline snapshot—devices, runtime math, requirements, notes and diagnostics. The planner confirms completion before enabling the next workflow.",
+            "Select Save (or press Ctrl+S/⌘S/Enter) to capture a complete offline snapshot—devices, power math, requirements, notes and diagnostics. The next workflow unlocks once the save finishes.",
         },
         addCamera: {
           title: "Select the primary camera",
           body:
-            "Choose the camera body you are planning for. Offline search is available inside the dropdown. Selecting a body unlocks accessories, power draws and diagrams tailored to that choice.",
+            "Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and diagrams.",
         },
         addMonitoring: {
           title: "Add monitors, wireless video and FIZ",
@@ -3916,32 +3916,32 @@ const texts = {
         intro: {
           title: "Benvenuto in Cine Power Planner",
           body:
-            "Questo percorso ampliato illustra ogni flusso che protegge i dati della troupe, dalla configurazione del primo progetto ai backup ridondanti. Ogni passaggio salva i progressi offline così puoi metterti in pausa e riprendere senza perdere le protezioni.",
+            "Segui questo tour guidato per conoscere i flussi che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere senza perdere nulla.",
         },
         userProfile: {
           title: "Configura lingua e profilo",
           body:
-            "Scegli la lingua dell'interfaccia, il nome visualizzato, il ruolo, il telefono, l'email e la foto direttamente qui. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e garantisce che le esportazioni accreditino il proprietario corretto.",
+            "Imposta la lingua dell’interfaccia, il nome visibile, il ruolo, telefono, e-mail e foto. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e appare negli export.",
         },
         unitsPreferences: {
           title: "Personalizza tema e unità",
           body:
-            "Apri Impostazioni → Generale per scegliere tema chiaro o scuro, l'eventuale modalità rosa, la scala di fuoco predefinita e le unità di temperatura predefinite. Richiedi l'archiviazione persistente così il browser conserva queste preferenze e ogni salvataggio resta protetto anche durante le pulizie automatiche di spazio.",
+            "Apri Impostazioni → Generale per scegliere tema, eventuali accenti rosa, scala di fuoco e unità di temperatura. Richiedi l’archiviazione persistente così il browser conserva preferenze e salvataggi in sicurezza.",
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
           body:
-            "Scrivi un nome progetto descrittivo per ancorare salvataggio automatico, cronologia, esportazioni e backup. Tutti i flussi successivi fanno riferimento a questo nome così la libreria offline resta organizzata e facile da ripristinare.",
+            "Assegna al progetto un nome descrittivo che funga da base per salvataggio automatico, cronologia, export e backup. Ogni flusso lo utilizza per mantenere ordinata la libreria offline.",
         },
         saveProject: {
           title: "Salva subito",
           body:
-            "Premi Salva (o usa Ctrl+S/⌘S/Invio) per registrare un'istantanea offline completa—dispositivi, calcoli di autonomia, requisiti, note e diagnostica. Il planner conferma il completamento prima di abilitare il flusso successivo.",
+            "Premi Salva (o Ctrl+S/⌘S/Invio) per catturare uno snapshot completo offline: dispositivi, calcoli di potenza, requisiti, note e diagnostica. Il passaggio successivo si sblocca al termine del salvataggio.",
         },
         addCamera: {
           title: "Aggiungi la camera principale",
           body:
-            "Scegli il corpo macchina che stai pianificando. La ricerca offline è disponibile nel menu. La selezione sblocca accessori, assorbimenti e diagrammi dedicati.",
+            "Scegli il corpo macchina che stai pianificando. La ricerca all’interno del menu funziona offline. In questo modo si attivano accessori, assorbimenti e diagrammi corrispondenti.",
         },
         addMonitoring: {
           title: "Aggiungi monitor, video wireless e FIZ",
@@ -6011,32 +6011,32 @@ const texts = {
         intro: {
           title: "Bienvenido a Cine Power Planner",
           body:
-            "Este recorrido ampliado orienta cada flujo que protege los datos del equipo, desde el primer proyecto hasta los respaldos redundantes. Cada paso guarda el progreso sin conexión para que puedas pausar y reanudar sin perder protecciones.",
+            "Usa este recorrido guiado para aprender los flujos que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar sin perder nada.",
         },
         userProfile: {
           title: "Configura idioma y perfil",
           body:
-            "Elige el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto directamente aquí. Los cambios se sincronizan con Contactos al instante, permanecen en tus guardados offline y aseguran que las exportaciones acrediten al propietario correcto.",
+            "Define el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto. Los cambios se sincronizan al instante con Contactos, se conservan en los guardados sin conexión y aparecen en las exportaciones.",
         },
         unitsPreferences: {
           title: "Ajusta tema y unidades",
           body:
-            "Usa Configuración → General para elegir tema claro u oscuro, resaltes opcionales en modo rosa, la escala de enfoque predeterminada y las unidades de temperatura predeterminadas. Solicita almacenamiento persistente para que el navegador conserve estas preferencias y cada guardado protegido durante limpiezas por poco espacio.",
+            "Ve a Configuración → General para elegir tema, resaltes rosas opcionales, escala de foco y unidades de temperatura. Solicita almacenamiento persistente para que el navegador mantenga las preferencias y proteja los guardados.",
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
           body:
-            "Escribe un nombre descriptivo de proyecto para anclar el guardado automático, el historial, las exportaciones y los respaldos. Todos los flujos posteriores hacen referencia a este nombre para que tu biblioteca offline se mantenga organizada y fácil de restaurar.",
+            "Ponle al proyecto un nombre descriptivo que sirva como base para el autoguardado, el historial, las exportaciones y las copias de seguridad. Cada flujo lo usa para que tu biblioteca sin conexión siga ordenada.",
         },
         saveProject: {
           title: "Guarda de inmediato",
           body:
-            "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para escribir una instantánea offline completa: dispositivos, cálculos de autonomía, requisitos, notas y diagnósticos. El planner confirma la finalización antes de habilitar el siguiente flujo.",
+            "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para capturar una instantánea completa sin conexión: dispositivos, cálculos de energía, requisitos, notas y diagnósticos. El siguiente paso se desbloquea cuando termina el guardado.",
         },
         addCamera: {
           title: "Añade la cámara principal",
           body:
-            "Elige el cuerpo de cámara que estás planificando. La búsqueda sin conexión está disponible dentro del menú. Al seleccionar un cuerpo se desbloquean accesorios, consumos y diagramas adaptados.",
+            "Elige el cuerpo de cámara que estás planificando. La búsqueda dentro del menú funciona sin conexión. Así se habilitan accesorios, consumos y diagramas correspondientes.",
         },
         addMonitoring: {
           title: "Añade monitores, video inalámbrico y FIZ",
@@ -8119,32 +8119,32 @@ const texts = {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
           body:
-            "Ce parcours étendu présente chaque flux qui protège les données de l’équipe, de la configuration du premier projet aux sauvegardes redondantes. Chaque étape enregistre la progression hors ligne pour vous permettre de faire une pause et de reprendre sans perdre les garde-fous.",
+            "Suivez ce guide pour découvrir les workflows qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez sans rien perdre.",
         },
         userProfile: {
           title: "Configurez la langue et votre profil",
           body:
-            "Choisissez la langue de l’interface, votre nom affiché, votre rôle, votre téléphone, votre e-mail et votre photo directement ici. Chaque modification se synchronise immédiatement avec Contacts, reste disponible hors ligne dans vos sauvegardes et garantit que les exports créditent le bon responsable.",
+            "Définissez la langue de l’interface, votre nom d’affichage, rôle, téléphone, e-mail et photo. Chaque modification se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et figure dans les exports.",
         },
         unitsPreferences: {
           title: "Réglez thème et unités",
           body:
-            "Utilisez Paramètres → Général pour choisir le thème clair ou sombre, les surbrillances optionnelles du mode rose, l’échelle de mise au point par défaut et les unités de température par défaut. Demandez le stockage persistant afin que le navigateur conserve ces préférences et chaque sauvegarde, même lors des nettoyages automatiques d’espace.",
+            "Ouvrez Paramètres → Général pour choisir le thème, les accents roses facultatifs, l’échelle de mise au point et les unités de température. Demandez le stockage persistant afin que le navigateur conserve les préférences et sécurise les sauvegardes.",
         },
         nameProject: {
           title: "Nommez votre premier projet",
           body:
-            "Saisissez un nom de projet descriptif pour ancrer la sauvegarde automatique, l’historique, les exports et les sauvegardes. Tous les flux suivants s’y réfèrent pour que votre bibliothèque hors ligne reste organisée et facile à restaurer.",
+            "Donnez au projet un nom explicite pour ancrer l’enregistrement automatique, l’historique, les exports et les sauvegardes. Tous les workflows s’y réfèrent pour garder votre bibliothèque hors ligne organisée.",
         },
         saveProject: {
           title: "Enregistrez immédiatement",
           body:
-            "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour écrire une capture hors ligne complète : appareils, calculs d’autonomie, exigences, notes et diagnostics. Le planner confirme la fin avant d’activer le flux suivant.",
+            "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour capturer un instantané complet hors ligne : équipements, calculs de puissance, exigences, notes et diagnostics. L’étape suivante se débloque une fois l’enregistrement terminé.",
         },
         addCamera: {
           title: "Ajoutez la caméra principale",
           body:
-            "Choisissez le boîtier que vous préparez. La recherche hors ligne est disponible dans la liste déroulante. Sélectionner un boîtier déverrouille les accessoires, consommations et diagrammes adaptés.",
+            "Sélectionnez le boîtier que vous planifiez. La recherche dans le menu fonctionne hors ligne. Vous débloquez ainsi les accessoires, consommations et diagrammes correspondants.",
         },
         addMonitoring: {
           title: "Ajoutez moniteurs, vidéo sans fil et FIZ",
@@ -10231,32 +10231,32 @@ const texts = {
         intro: {
           title: "Willkommen bei Cine Power Planner",
           body:
-            "Dieser erweiterte Rundgang erklärt jeden Workflow, der die Daten deines Teams schützt – von der ersten Projekteinstellung bis zu redundanten Backups. Jeder Schritt speichert den Fortschritt offline, damit du jederzeit pausieren und ohne Verlust der Schutzmaßnahmen fortsetzen kannst.",
+            "Nutze diese geführte Tour, um die Abläufe kennenzulernen, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und nahtlos fortsetzen kannst.",
         },
         userProfile: {
           title: "Sprache und Profil einrichten",
           body:
-            "Wähle die Sprache der Oberfläche, deinen Anzeigenamen, deine Rolle, Telefonnummer, E-Mail und dein Foto direkt hier. Jede Änderung wird sofort mit Kontakte synchronisiert, bleibt offline in deinen Speicherungen und stellt sicher, dass Exporte den richtigen Verantwortlichen ausweisen.",
+            "Lege Sprache der Oberfläche sowie Anzeigename, Rolle, Telefon, E‑Mail und Foto fest. Änderungen werden sofort mit Kontakte synchronisiert, bleiben in Offline-Sicherungen erhalten und erscheinen in Exporten.",
         },
         unitsPreferences: {
           title: "Theme und Einheiten anpassen",
           body:
-            "Nutze Einstellungen → Allgemein, um helles oder dunkles Theme, optionale Pink-Highlights, die Standard-Fokusskala und die Standard-Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit Browser diese Präferenzen und jeden Speicherstand auch bei Speicherbereinigungen bewahren.",
+            "Öffne Einstellungen → Allgemein, um Theme, optionale Pink-Akzente, Fokus-Skala und Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit der Browser Einstellungen und Sicherungen zuverlässig bewahrt.",
         },
         nameProject: {
           title: "Erstes Projekt benennen",
           body:
-            "Gib einen aussagekräftigen Projektnamen ein, um Autosave, Verlauf, Exporte und Backups zu verankern. Alle weiteren Workflows verweisen auf diesen Namen, damit deine Offline-Bibliothek organisiert und leicht wiederherzustellen bleibt.",
+            "Gib dem Projekt einen aussagekräftigen Namen. Er verankert Autosave, Verlauf, Exporte und Backups – und hält deine Offline-Bibliothek sortiert.",
         },
         saveProject: {
           title: "Sofort speichern",
           body:
-            "Drücke Speichern (oder verwende Strg+S/⌘S/Eingabe), um einen vollständigen Offline-Snapshot zu schreiben – Geräte, Laufzeitberechnung, Anforderungen, Notizen und Diagnosen. Der Planner bestätigt den Abschluss, bevor der nächste Workflow aktiviert wird.",
+            "Klicke auf Speichern (oder drücke Strg+S/⌘S/Eingabe), um einen vollständigen Offline-Schnappschuss – Geräte, Leistungsberechnung, Anforderungen, Notizen und Diagnosen – festzuhalten. Der nächste Schritt wird freigegeben, sobald das Speichern abgeschlossen ist.",
         },
         addCamera: {
           title: "Kamera auswählen",
           body:
-            "Wähle das Kameragehäuse, das du planen möchtest. Offline-Suche steht direkt im Dropdown bereit. Mit der Auswahl werden Zubehör, Leistungsaufnahmen und Diagramme freigeschaltet, die zu dieser Kamera passen.",
+            "Wähle den Kamerabody, den du planst. Die Suche im Menü funktioniert offline. Dadurch werden passende Zubehörteile, Leistungswerte und Diagramme aktiviert.",
         },
         addMonitoring: {
           title: "Monitore, Funkvideo und FIZ hinzufügen",
