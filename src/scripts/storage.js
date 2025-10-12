@@ -8989,7 +8989,13 @@ function decodeHtmlEntities(value) {
 
 function stripHtmlTags(value) {
   if (typeof value !== 'string') return '';
-  return value.replace(/<[^>]*>/g, '');
+  // Remove all HTML tags by repeatedly applying the regex until no tags remain.
+  let previous;
+  do {
+    previous = value;
+    value = value.replace(/<[^>]*>/g, '');
+  } while (value !== previous);
+  return value;
 }
 
 function normalizeRequirementValueFromHtml(rawHtml, fieldName) {
