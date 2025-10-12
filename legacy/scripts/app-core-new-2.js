@@ -11011,7 +11011,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function buildFontFamilyValue(name) {
       if (!name) return fontFamily;
-      var escaped = name.replace(/\\/g, '\\').replace(/'/g, "\\'");
+      var escaped = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       return "'".concat(escaped, "', ").concat(guessFontFallback(name));
     }
     function extractFontLabel(value) {
