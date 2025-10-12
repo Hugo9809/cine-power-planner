@@ -529,6 +529,20 @@ function getPrintOptionsDialogContext() {
     if (!dialog) {
         return null;
     }
+    if (!dialog.hasAttribute('data-print-backdrop-close')) {
+        dialog.addEventListener('click', (event) => {
+            if (event && event.target === dialog) {
+                closeDialog(dialog);
+            }
+        });
+        dialog.addEventListener('cancel', (event) => {
+            if (event) {
+                event.preventDefault();
+            }
+            closeDialog(dialog);
+        });
+        dialog.setAttribute('data-print-backdrop-close', 'true');
+    }
     const form = dialog.querySelector('#printOptionsForm');
     const sections = dialog.querySelector('#printOptionsSections');
     const selectAllBtn = dialog.querySelector('#printOptionsSelectAllBtn');
