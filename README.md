@@ -621,6 +621,12 @@ Use Cine Power Planner end-to-end with the following routine:
   import it, review the `Updated at` timestamps in the sidebar and archive the
   previous JSON (or `.cpproject`) bundle in your storage system to maintain a
   clear history.
+- **Document every transfer.** Treat exports and imports as audit events. Append
+  a new entry to the [`docs/verification-log-template.md`](docs/verification-log-template.md)
+  worksheet while you are still offline, note who created or received the
+  bundle, capture checksum or hash details from the saved JSON and store the log
+  beside the transfer. The practice keeps the share → import chain traceable and
+  proves no user data left unmanaged storage without redundant backups in place.
 - **Share without losing context.** Bundles remember language, theme, custom
   logo and other personalization choices so the recipient opens the project in a
   familiar state even if they stay offline.
@@ -873,6 +879,14 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Compare before overwriting** – when restoring from an older file, download a
   fresh backup of the current state first. Use a JSON-aware diff tool to review
   differences so you can merge notes manually if needed.
+- **Archive the paper trail with backups** – whenever you create
+  `planner-backup.json`, attach the updated
+  [`docs/verification-log-template.md`](docs/verification-log-template.md)
+  packet and a copy of the
+  [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md)
+  excerpt you followed. Storing the documentation beside the archive keeps
+  offline crews confident that the save → backup → restore routine they rehearse
+  matches the evidence filed for audits.
 
 ## Data Integrity Drills
 
