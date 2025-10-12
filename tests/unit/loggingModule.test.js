@@ -162,5 +162,39 @@ describe('cineLogging module stats', () => {
     );
     expect(entry.detail.errorsTruncated || 0).toBeGreaterThanOrEqual(0);
   });
+
+  it('reports level enablement for console mirroring and history capture', () => {
+    logging.clearHistory({ persist: false });
+    logging.setConfig(
+      { level: 'error', historyLevel: 'debug', consoleOutput: true },
+      { persist: false },
+    );
+
+    const debugState = logging.getLevelState('debug');
+
+    expect(debugState).toEqual(
+      expect.objectContaining({
+        level: 'debug',
+        console: false,
+        history: true,
+        enabled: true,
+      }),
+    );
+    expect(debugState.thresholds).toEqual(
+      expect.objectContaining({ console: 'error', history: 'debug' }),
+    );
+
+    expect(logging.isLevelEnabled('debug')).toBe(true);
+    expect(logging.isLevelEnabled('debug', { console: true, history: false })).toBe(false);
+    expect(logging.isLevelEnabled('debug', { console: false, history: true })).toBe(true);
+    expect(logging.isLevelEnabled('debug', { requireAll: true })).toBe(false);
+
+    const namespaced = logging.createLogger('unit-tests', { meta: { source: 'harness' } });
+    expect(namespaced.isLevelEnabled('error')).toBe(true);
+    expect(namespaced.isLevelEnabled('debug', { console: true, history: false })).toBe(false);
+    expect(namespaced.getLevelState('error')).toEqual(
+      expect.objectContaining({ level: 'error', console: true, history: true }),
+    );
+  });
 });
 
