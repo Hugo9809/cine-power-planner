@@ -1,6 +1,4 @@
 (function () {
-  const REGISTRY_NAME = 'cineCoreRuntimeStateModules';
-
   function detectAmbientScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
       return globalThis;
@@ -29,120 +27,109 @@
     return detectAmbientScope();
   }
 
-  function fallbackHasArrayEntry(array, value) {
-    if (!Array.isArray(array)) {
-      return false;
-    }
+  function resolveScopeUtils() {
+    let scopeUtils = null;
 
-    for (let index = 0; index < array.length; index += 1) {
-      if (array[index] === value) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function fallbackRegisterSafeFreezeEntry(registry, value) {
-    if (!registry || !value) {
-      return registry;
-    }
-
-    if (typeof registry.add === 'function') {
+    if (typeof require === 'function') {
       try {
-        registry.add(value);
-      } catch (registryAddError) {
-        void registryAddError;
+        scopeUtils = require('./scope-utils.js');
+      } catch (scopeUtilsRequireError) {
+        void scopeUtilsRequireError;
       }
-      return registry;
     }
 
-    if (!fallbackHasArrayEntry(registry, value) && Array.isArray(registry)) {
-      registry.push(value);
+    if (scopeUtils) {
+      return scopeUtils;
     }
 
-    return registry;
-  }
-
-  function fallbackCreateSafeFreezeRegistry(initialValues) {
-    const registry = typeof WeakSet === 'function' ? new WeakSet() : [];
-
-    if (Array.isArray(initialValues)) {
-      for (let index = 0; index < initialValues.length; index += 1) {
-        try {
-          fallbackRegisterSafeFreezeEntry(registry, initialValues[index]);
-        } catch (initialisationError) {
-          void initialisationError;
+    const scope = detectAmbientScope();
+    if (scope && typeof scope === 'object') {
+      try {
+        const registry = scope.cineCoreRuntimeStateModules;
+        if (registry && typeof registry === 'object' && registry.scopeUtils) {
+          return registry.scopeUtils;
         }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
       }
     }
 
-    return registry;
+    return null;
   }
 
-  function fallbackEnsureSafeFreezeRegistry(registry, initialValues) {
-    if (registry && (typeof registry.add === 'function' || Array.isArray(registry))) {
-      return registry;
-    }
+  const scopeUtils = resolveScopeUtils();
+  const detectScope =
+    scopeUtils && typeof scopeUtils.detectScope === 'function'
+      ? scopeUtils.detectScope
+      : fallbackDetectScope;
 
-    return fallbackCreateSafeFreezeRegistry(initialValues);
-  }
+  function resolveTemperatureKeysModule() {
+    let temperatureKeys = null;
 
-  function fallbackHasSafeFreezeEntry(registry, value) {
-    if (!registry || !value) {
-      return false;
-    }
-
-    if (typeof registry.has === 'function') {
+    if (typeof require === 'function') {
       try {
-        return registry.has(value);
-      } catch (registryHasError) {
-        void registryHasError;
-        return false;
+        temperatureKeys = require('./temperature-keys.js');
+      } catch (temperatureKeysRequireError) {
+        void temperatureKeysRequireError;
       }
     }
 
-    return fallbackHasArrayEntry(registry, value);
+    if (temperatureKeys) {
+      return temperatureKeys;
+    }
+
+    const scope = detectAmbientScope();
+    if (scope && typeof scope === 'object') {
+      try {
+        const registry = scope.cineCoreRuntimeStateModules;
+        if (registry && typeof registry === 'object' && registry.temperatureKeys) {
+          return registry.temperatureKeys;
+        }
+      } catch (scopeLookupError) {
+        void scopeLookupError;
+      }
+    }
+
+    return null;
   }
 
-  function fallbackResolveTemperatureKeyDefaults() {
-    const defaults = {
-      queueKey: '__cinePendingTemperatureNote',
-      renderName: 'renderTemperatureNote',
-    };
+  const temperatureKeysModule = resolveTemperatureKeysModule();
+  const resolveTemperatureKeyDefaults =
+    temperatureKeysModule && typeof temperatureKeysModule.resolveTemperatureKeyDefaults === 'function'
+      ? temperatureKeysModule.resolveTemperatureKeyDefaults
+      : function fallbackResolveTemperatureKeyDefaults() {
+          const defaults = {
+            queueKey: '__cinePendingTemperatureNote',
+            renderName: 'renderTemperatureNote',
+          };
 
-    const scope = fallbackDetectScope();
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return defaults;
-    }
+          const scope = detectScope();
+          if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            return defaults;
+          }
 
-    try {
-      if (typeof scope.CORE_TEMPERATURE_QUEUE_KEY === 'string') {
-        defaults.queueKey = scope.CORE_TEMPERATURE_QUEUE_KEY;
-      }
-    } catch (readQueueKeyError) {
-      void readQueueKeyError;
-    }
+          try {
+            if (typeof scope.CORE_TEMPERATURE_QUEUE_KEY === 'string') {
+              defaults.queueKey = scope.CORE_TEMPERATURE_QUEUE_KEY;
+            }
+          } catch (readQueueKeyError) {
+            void readQueueKeyError;
+          }
 
-    try {
-      if (typeof scope.CORE_TEMPERATURE_RENDER_NAME === 'string') {
-        defaults.renderName = scope.CORE_TEMPERATURE_RENDER_NAME;
-      }
-    } catch (readRenderNameError) {
-      void readRenderNameError;
-    }
+          try {
+            if (typeof scope.CORE_TEMPERATURE_RENDER_NAME === 'string') {
+              defaults.renderName = scope.CORE_TEMPERATURE_RENDER_NAME;
+            }
+          } catch (readRenderNameError) {
+            void readRenderNameError;
+          }
 
-    return defaults;
-  }
+          return defaults;
+        };
 
-  function fallbackCreateLocalRuntimeState(candidateScopes, options, temperatureResolver) {
-    const resolveTemperatureKeys =
-      typeof temperatureResolver === 'function'
-        ? temperatureResolver
-        : fallbackResolveTemperatureKeyDefaults;
-
+  function createLocalRuntimeState(candidateScopes, options) {
     const configuration = options && typeof options === 'object' ? options : {};
-    const resolvedTemperatureKeys = resolveTemperatureKeys();
+    const resolvedTemperatureKeys = resolveTemperatureKeyDefaults();
     const temperatureQueueKey =
       typeof configuration.temperatureQueueKey === 'string'
         ? configuration.temperatureQueueKey
@@ -389,122 +376,34 @@
     };
   }
 
-  function loadModuleFromRegistry(name) {
+  function assignToGlobal(namespace) {
     const scope = detectAmbientScope();
     if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return null;
+      return;
     }
+
+    const registryName = 'cineCoreRuntimeStateModules';
+    const existing =
+      scope[registryName] && typeof scope[registryName] === 'object'
+        ? scope[registryName]
+        : {};
+
+    existing.localRuntimeState = namespace;
 
     try {
-      const registry = scope[REGISTRY_NAME];
-      if (registry && typeof registry === 'object') {
-        const module = registry[name];
-        if (module && typeof module === 'object') {
-          return module;
-        }
-      }
-    } catch (registryLookupError) {
-      void registryLookupError;
-    }
-
-    return null;
-  }
-
-  function loadModule(name, requirePath) {
-    let resolved = null;
-
-    if (typeof require === 'function') {
-      try {
-        resolved = require(requirePath);
-      } catch (moduleRequireError) {
-        void moduleRequireError;
-      }
-    }
-
-    if (!resolved) {
-      resolved = loadModuleFromRegistry(name);
-    }
-
-    return resolved || null;
-  }
-
-  const scopeUtilsModule = loadModule('scopeUtils', './runtime-state/scope-utils.js') || {};
-  const safeFreezeModule = loadModule('safeFreezeRegistry', './runtime-state/safe-freeze-registry.js') || {};
-  const temperatureKeysModule = loadModule('temperatureKeys', './runtime-state/temperature-keys.js') || {};
-  const localRuntimeStateModule = loadModule('localRuntimeState', './runtime-state/local-runtime-state.js') || {};
-
-  const detectScope =
-    typeof scopeUtilsModule.detectScope === 'function'
-      ? scopeUtilsModule.detectScope
-      : fallbackDetectScope;
-
-  const registerSafeFreezeEntry =
-    typeof safeFreezeModule.registerSafeFreezeEntry === 'function'
-      ? safeFreezeModule.registerSafeFreezeEntry
-      : fallbackRegisterSafeFreezeEntry;
-
-  const createSafeFreezeRegistry =
-    typeof safeFreezeModule.createSafeFreezeRegistry === 'function'
-      ? safeFreezeModule.createSafeFreezeRegistry
-      : fallbackCreateSafeFreezeRegistry;
-
-  const ensureSafeFreezeRegistry =
-    typeof safeFreezeModule.ensureSafeFreezeRegistry === 'function'
-      ? safeFreezeModule.ensureSafeFreezeRegistry
-      : fallbackEnsureSafeFreezeRegistry;
-
-  const hasSafeFreezeEntry =
-    typeof safeFreezeModule.hasSafeFreezeEntry === 'function'
-      ? safeFreezeModule.hasSafeFreezeEntry
-      : fallbackHasSafeFreezeEntry;
-
-  const resolveTemperatureKeyDefaults =
-    typeof temperatureKeysModule.resolveTemperatureKeyDefaults === 'function'
-      ? temperatureKeysModule.resolveTemperatureKeyDefaults
-      : fallbackResolveTemperatureKeyDefaults;
-
-  const createLocalRuntimeState =
-    typeof localRuntimeStateModule.createLocalRuntimeState === 'function'
-      ? localRuntimeStateModule.createLocalRuntimeState
-      : function fallbackCreateLocalRuntimeStateWrapper(candidateScopes, options) {
-          return fallbackCreateLocalRuntimeState(
-            candidateScopes,
-            options,
-            resolveTemperatureKeyDefaults,
-          );
-        };
-
-  const namespace = {
-    detectScope,
-    createSafeFreezeRegistry,
-    ensureSafeFreezeRegistry,
-    hasSafeFreezeEntry,
-    registerSafeFreezeEntry,
-    resolveTemperatureKeyDefaults,
-    createLocalRuntimeState,
-  };
-
-  const globalScope = detectScope();
-  const targetName = 'cineCoreRuntimeState';
-  const existing =
-    globalScope && typeof globalScope[targetName] === 'object'
-      ? globalScope[targetName]
-      : {};
-
-  const target = existing;
-  for (const key of Object.keys(namespace)) {
-    target[key] = namespace[key];
-  }
-
-  if (globalScope && typeof globalScope === 'object') {
-    try {
-      globalScope[targetName] = target;
+      scope[registryName] = existing;
     } catch (assignError) {
       void assignError;
     }
   }
 
+  const namespace = {
+    createLocalRuntimeState,
+  };
+
+  assignToGlobal(namespace);
+
   if (typeof module === 'object' && module && module.exports) {
-    module.exports = target;
+    module.exports = namespace;
   }
 })();
