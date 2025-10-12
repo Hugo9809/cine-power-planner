@@ -95,6 +95,38 @@
       control.setAttribute('aria-pressed', isPressed ? 'true' : 'false');
     }
   }
+  function resolveSafeDestination(rawValue) {
+    if (typeof rawValue !== 'string') {
+      return null;
+    }
+
+    var trimmed = rawValue.trim();
+    if (!trimmed || /[<>]/.test(trimmed)) {
+      return null;
+    }
+
+    if (typeof window === 'undefined' || !window.location) {
+      return null;
+    }
+
+    var baseHref = window.location.href;
+    try {
+      var targetUrl = new URL(trimmed, baseHref);
+      var baseUrl = new URL(baseHref);
+      var sameOrigin = targetUrl.origin === baseUrl.origin || targetUrl.origin === 'null' && baseUrl.origin === 'null';
+      var allowedProtocols = targetUrl.protocol === 'http:' || targetUrl.protocol === 'https:' || targetUrl.protocol === 'file:';
+      if (sameOrigin && allowedProtocols) {
+        return targetUrl.href;
+      }
+    } catch (error) {
+      void error;
+      if (!/[:]/.test(trimmed) && /^[\w./-]+(?:\?[\w=&.-]*)?(?:#[\w.-]*)?$/.test(trimmed)) {
+        return trimmed;
+      }
+    }
+
+    return null;
+  }
   function initTopBarControls() {
     var root = getRoot();
     var body = getBody();
@@ -147,9 +179,10 @@
         var target = event.target;
         if (!target) return;
         var selectedOption = target.selectedOptions && target.selectedOptions[0];
-        var destination = selectedOption ? selectedOption.value : target.value;
-        if (destination) {
-          window.location.href = destination;
+        var rawDestination = selectedOption ? selectedOption.value : target.value;
+        var safeDestination = resolveSafeDestination(rawDestination);
+        if (safeDestination) {
+          window.location.href = safeDestination;
         }
       });
     }
