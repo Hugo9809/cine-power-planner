@@ -2523,6 +2523,59 @@ function getStorageKeyVariants(key) {
   return Array.from(variants);
 }
 
+var SETUP_STORAGE_KEY_VARIANTS = new Set(getStorageKeyVariants(SETUP_STORAGE_KEY));
+
+function shouldAllowCriticalSweepPrimaryInspection(key) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+
+  if (!SETUP_STORAGE_KEY_VARIANTS || typeof SETUP_STORAGE_KEY_VARIANTS.has !== 'function') {
+    return false;
+  }
+
+  if (!SETUP_STORAGE_KEY_VARIANTS.has(key)) {
+    return false;
+  }
+
+  if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+    return false;
+  }
+
+  return true;
+}
+
+function inspectSetupStorageForQuotaRecovery(storage, skipKeysSet) {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return;
+  }
+
+  if (!SETUP_STORAGE_KEY_VARIANTS || typeof SETUP_STORAGE_KEY_VARIANTS.forEach !== 'function') {
+    return;
+  }
+
+  const visited = new Set();
+  const skipSet = skipKeysSet && typeof skipKeysSet.has === 'function' ? skipKeysSet : null;
+
+  SETUP_STORAGE_KEY_VARIANTS.forEach((key) => {
+    if (typeof key !== 'string' || !key || visited.has(key)) {
+      return;
+    }
+
+    visited.add(key);
+
+    if (skipSet && skipSet.has(key)) {
+      return;
+    }
+
+    try {
+      storage.getItem(key);
+    } catch (inspectionError) {
+      void inspectionError;
+    }
+  });
+}
+
 var STORAGE_BACKUP_SUFFIX = '__backup';
 var MAX_SAVE_ATTEMPTS = 3;
 var MAX_QUOTA_RECOVERY_STEPS = 100;
@@ -2810,8 +2863,22 @@ function ensureCriticalStorageBackups(options = {}) {
       }
 
       if (!writeResult.success && writeResult.error && isQuotaExceededError(writeResult.error)) {
-        const skipKeys = [entry.key, entry.backupKey];
-        const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys });
+        const skipKeys = new Set();
+
+        if (typeof entry.backupKey === 'string' && entry.backupKey) {
+          skipKeys.add(entry.backupKey);
+        }
+
+        const shouldInspectPrimaryDuringSweep = shouldAllowCriticalSweepPrimaryInspection(entry.key);
+        if (!shouldInspectPrimaryDuringSweep && typeof entry.key === 'string' && entry.key) {
+          skipKeys.add(entry.key);
+        }
+
+        if (!shouldInspectPrimaryDuringSweep && !ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+          inspectSetupStorageForQuotaRecovery(storage, skipKeys);
+        }
+
+        const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys: Array.from(skipKeys) });
         if (sweepResult && sweepResult.success) {
           writeResult = tryStoreBackup(candidateValue);
         }
