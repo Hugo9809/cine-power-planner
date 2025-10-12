@@ -6097,9 +6097,9 @@ body.dark-mode .help-callout {
 
 .help-target-focus,
 .feature-search-focus {
-  outline: 3px solid var(--accent-color);
+  outline: 2px solid var(--accent-color);
   outline-offset: 4px;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
   transition:
     outline-color 0.2s ease-in-out,
     background-color 0.2s ease-in-out,
@@ -6110,7 +6110,7 @@ body.dark-mode .help-callout {
 .help-target-focus:focus-visible,
 .feature-search-focus:focus,
 .feature-search-focus:focus-visible {
-  outline: 3px solid var(--accent-color);
+  outline: 2px solid var(--accent-color);
   outline-offset: 4px;
 }
 
@@ -6514,21 +6514,25 @@ body.high-contrast #hoverHelpTooltip .hover-help-hint {
 }
 
 .hover-help-highlight {
-  outline: 2px solid color-mix(in srgb, var(--accent-color) 75%, transparent);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 18%, transparent);
+  --hover-help-highlight-border: color-mix(in srgb, var(--accent-color) 82%, transparent);
+  outline: 2px solid var(--hover-help-highlight-border);
+  outline-offset: 0;
   border-radius: 6px;
-  transition: outline-color 120ms ease, box-shadow 120ms ease;
+  transition: outline-color 120ms ease;
+}
+
+@supports not (color-mix(in srgb, black 50%, white 50%)) {
+  .hover-help-highlight {
+    outline: 2px solid var(--accent-color);
+  }
 }
 
 body.dark-mode .hover-help-highlight {
-  outline-color: color-mix(in srgb, var(--accent-color) 80%, black 20%);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 30%, transparent);
+  --hover-help-highlight-border: color-mix(in srgb, var(--accent-color) 90%, rgba(255, 255, 255, 0.35));
 }
 
 body.high-contrast .hover-help-highlight {
-  outline-color: var(--accent-color);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 40%, transparent);
+  --hover-help-highlight-border: var(--accent-color);
 }
 
 /* Force help cursor when hover help is active */
@@ -6927,8 +6931,8 @@ textarea:disabled {
 
 .onboarding-highlight {
   position: absolute;
-  border-radius: 16px;
-  border: 3px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
+  border-radius: 6px;
+  border: 2px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
   background: color-mix(in srgb, var(--accent-color) 10%, transparent);
   transition:
     transform 0.2s ease,
@@ -6943,7 +6947,7 @@ textarea:disabled {
 
 @supports not (color-mix(in srgb, black 50%, white 50%)) {
   .onboarding-highlight {
-    border-width: 3px;
+    border-width: 2px;
     border-color: var(--accent-color);
     background: transparent;
   }
