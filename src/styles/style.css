@@ -6881,10 +6881,12 @@ textarea:disabled {
   display: none;
   pointer-events: none;
   border: none;
+  box-shadow: none;
   background: transparent;
   padding: 0;
   margin: 0;
   color: inherit;
+  outline: none;
 }
 
 .onboarding-overlay[open] {
@@ -6893,6 +6895,10 @@ textarea:disabled {
 
 .onboarding-overlay.active {
   display: block;
+}
+
+.onboarding-overlay::backdrop {
+  background: transparent;
 }
 
 .onboarding-overlay--anchored {
