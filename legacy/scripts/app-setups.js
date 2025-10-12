@@ -4965,7 +4965,11 @@ function analyzeAutoGearSegment(nodes) {
   nodes.forEach(function (node) {
     return wrapper.appendChild(node.cloneNode(true));
   });
-  var text = wrapper.innerHTML.replace(/<select[\s\S]*?<\/select>/gi, '').replace(/<[^>]+>/g, '').trim();
+  var selects = wrapper.querySelectorAll('select');
+  selects.forEach(function (select) {
+    return select.remove();
+  });
+  var text = (wrapper.textContent || '').replace(/\s+/g, ' ').trim();
   if (!text) return null;
   var match = text.match(/^(\d+)x\s+/);
   var count = 1;
