@@ -24,10 +24,67 @@ function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 var CORE_RUNTIME_CANDIDATE_SCOPES = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-var CORE_SAFE_FREEZE_REGISTRY = typeof WeakSet === 'function' ? new WeakSet() : [];
+var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
+  var resolvedSupport = null;
+  if (typeof resolveCoreSupportModule === 'function') {
+    resolvedSupport = resolveCoreSupportModule('cineCoreRuntimeState', './modules/core/runtime-state.js');
+  }
+  if (!resolvedSupport && typeof require === 'function') {
+    try {
+      var requiredRuntimeState = require('./modules/core/runtime-state.js');
+      if (requiredRuntimeState && _typeof(requiredRuntimeState) === 'object') {
+        resolvedSupport = requiredRuntimeState;
+      }
+    } catch (runtimeStateRequireError) {
+      void runtimeStateRequireError;
+    }
+  }
+  if (resolvedSupport) {
+    return resolvedSupport;
+  }
+  for (var supportIndex = 0; supportIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; supportIndex += 1) {
+    var supportScope = CORE_RUNTIME_CANDIDATE_SCOPES[supportIndex];
+    if (!supportScope || _typeof(supportScope) !== 'object' && typeof supportScope !== 'function') {
+      continue;
+    }
+    try {
+      var candidate = supportScope.cineCoreRuntimeState;
+      if (candidate && _typeof(candidate) === 'object') {
+        return candidate;
+      }
+    } catch (supportLookupError) {
+      void supportLookupError;
+    }
+  }
+  return null;
+}();
+var CORE_SAFE_FREEZE_REGISTRY = function resolveCoreSafeFreezeRegistry() {
+  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry === 'function') {
+    try {
+      return CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry();
+    } catch (ensureRegistryError) {
+      void ensureRegistryError;
+    }
+  }
+  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry === 'function') {
+    try {
+      return CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry();
+    } catch (createRegistryError) {
+      void createRegistryError;
+    }
+  }
+  return typeof WeakSet === 'function' ? new WeakSet() : [];
+}();
 function coreSafeFreezeRegistryHas(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return false;
+  }
+  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry === 'function') {
+    try {
+      return CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
+    } catch (coreRegistryHasError) {
+      void coreRegistryHasError;
+    }
   }
   if (typeof CORE_SAFE_FREEZE_REGISTRY.has === 'function') {
     try {
@@ -48,6 +105,14 @@ function coreSafeFreezeRegistryAdd(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return;
   }
+  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry === 'function') {
+    try {
+      CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
+      return;
+    } catch (coreRegistryAddError) {
+      void coreRegistryAddError;
+    }
+  }
   if (typeof CORE_SAFE_FREEZE_REGISTRY.add === 'function') {
     try {
       CORE_SAFE_FREEZE_REGISTRY.add(value);
@@ -63,7 +128,7 @@ function coreSafeFreezeRegistryAdd(value) {
   }
   CORE_SAFE_FREEZE_REGISTRY.push(value);
 }
-function createLocalRuntimeState(candidateScopes) {
+function createLocalRuntimeStateFallback(candidateScopes) {
   var scopes = [];
   var seenScopes = typeof Set === 'function' ? new Set() : null;
   function registerScope(scope) {
@@ -249,6 +314,19 @@ function createLocalRuntimeState(candidateScopes) {
     autoGearGuards: autoGearGuards,
     setAutoGearGuards: setAutoGearGuards
   };
+}
+function createLocalRuntimeState(candidateScopes) {
+  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState === 'function') {
+    try {
+      return CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState(candidateScopes, {
+        temperatureQueueKey: CORE_TEMPERATURE_QUEUE_KEY,
+        temperatureRenderName: CORE_TEMPERATURE_RENDER_NAME
+      });
+    } catch (coreRuntimeStateError) {
+      void coreRuntimeStateError;
+    }
+  }
+  return createLocalRuntimeStateFallback(candidateScopes);
 }
 var CORE_RUNTIME_STATE = function resolveCoreRuntimeState() {
   var resolvedState = null;

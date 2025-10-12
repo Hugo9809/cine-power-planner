@@ -22,6 +22,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/core/runtime-tools.js',
+    'modules/core/runtime-state.js',
     'modules/core/localization-bridge.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
