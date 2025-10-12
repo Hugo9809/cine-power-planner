@@ -1507,7 +1507,31 @@ function generatePrintableOverview(config = {}) {
     let projectSectionHtml = '';
     let gearSectionHtml = '';
     if (gearListCombined) {
-        const parts = resolveOverviewGearListSections(gearListCombined);
+        const resolveGearSections = (() => {
+            const localResolver = (typeof resolveOverviewGearListSections === 'function')
+                ? resolveOverviewGearListSections
+                : null;
+            if (localResolver) {
+                return localResolver;
+            }
+
+            const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+                || (typeof window !== 'undefined' && window)
+                || (typeof self !== 'undefined' && self)
+                || (typeof global !== 'undefined' && global)
+                || null;
+
+            if (globalScope && typeof globalScope.resolveOverviewGearListSections === 'function') {
+                return globalScope.resolveOverviewGearListSections;
+            }
+
+            return (html) => ({
+                projectHtml: '',
+                gearHtml: typeof html === 'string' ? html : '',
+            });
+        })();
+
+        const parts = resolveGearSections(gearListCombined);
         if (parts.projectHtml) {
             projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
