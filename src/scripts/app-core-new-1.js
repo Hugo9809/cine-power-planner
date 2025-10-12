@@ -3416,556 +3416,249 @@ try {
 
 updateGlobalFocusScalePreference(focusScalePreference);
 
-var SUPPORTED_MOUNT_VOLTAGE_TYPES = (function resolveSupportedMounts() {
-  if (
-    CORE_GLOBAL_SCOPE &&
-    Array.isArray(CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES) &&
-    CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0
-  ) {
-    return CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES;
-  }
+const CORE_MOUNT_VOLTAGE = (function resolveCoreMountVoltageModule() {
+  let moduleApi = null;
 
-  const created = Object.freeze(['V-Mount', 'Gold-Mount', 'B-Mount']);
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  if (typeof resolveCoreSupportModule === 'function') {
     try {
-      CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES = created;
-    } catch (assignError) {
-      void assignError;
+      moduleApi = resolveCoreSupportModule(
+        'cineCoreMountVoltage',
+        './modules/core/mount-voltage.js'
+      );
+    } catch (mountVoltageResolveError) {
+      void mountVoltageResolveError;
+      moduleApi = null;
     }
   }
-  return created;
+
+  if (!moduleApi && typeof require === 'function') {
+    try {
+      const requiredModule = require('./modules/core/mount-voltage.js');
+      if (requiredModule && typeof requiredModule === 'object') {
+        moduleApi = requiredModule;
+      }
+    } catch (mountVoltageRequireError) {
+      void mountVoltageRequireError;
+    }
+  }
+
+  if (!moduleApi) {
+    const fallbackScopes = collectCoreRuntimeCandidateScopes(CORE_GLOBAL_SCOPE);
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const candidateScope = fallbackScopes[index];
+      if (!candidateScope || typeof candidateScope !== 'object') {
+        continue;
+      }
+
+      try {
+        const candidateModule = candidateScope.cineCoreMountVoltage;
+        if (candidateModule && typeof candidateModule === 'object') {
+          moduleApi = candidateModule;
+          break;
+        }
+      } catch (candidateScopeError) {
+        void candidateScopeError;
+      }
+    }
+  }
+
+  return moduleApi;
 })();
 
-  const MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
-  let cachedMountVoltagePrimaryKey = '';
-  let cachedMountVoltageBackupKey = '';
-  let mountVoltageKeysResolved = false;
-
-  const readGlobalMountVoltageKey = (property) => {
-    if (!CORE_GLOBAL_SCOPE || typeof CORE_GLOBAL_SCOPE !== 'object') {
-      return '';
-    }
-    const value = CORE_GLOBAL_SCOPE[property];
-    return typeof value === 'string' && value ? value : '';
-  };
-
-  const assignGlobalMountVoltageKey = (property, value) => {
-    if (!CORE_GLOBAL_SCOPE || typeof CORE_GLOBAL_SCOPE !== 'object') {
-      return;
-    }
-    if (typeof value !== 'string' || !value) {
-      return;
-    }
-
-    let descriptor = null;
-    try {
-      descriptor = Object.getOwnPropertyDescriptor(CORE_GLOBAL_SCOPE, property);
-    } catch (descriptorError) {
-      descriptor = null;
-      void descriptorError;
-    }
-
-    if (descriptor && descriptor.configurable === false && descriptor.writable === false) {
-      return;
-    }
-
-    try {
-      CORE_GLOBAL_SCOPE[property] = value;
-    } catch (assignError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn(`Unable to expose ${property} globally`, assignError);
-      }
-    }
-  };
-
-  const resolveMountVoltageStorageKeys = () => {
-    if (mountVoltageKeysResolved) {
-      return;
-    }
-
-    let resolvedPrimary =
-      readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY') ||
-      readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED');
-
-    if (!resolvedPrimary && typeof getMountVoltageStorageKeyName === 'function') {
-      try {
-        const resolvedKey = getMountVoltageStorageKeyName();
-        if (typeof resolvedKey === 'string' && resolvedKey) {
-          resolvedPrimary = resolvedKey;
-        }
-      } catch (mountVoltageKeyError) {
-        console.warn('Unable to resolve mount voltage storage key name', mountVoltageKeyError);
-      }
-    }
-
-    if (!resolvedPrimary && typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' && MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
-      resolvedPrimary = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
-    }
-
-    if (!resolvedPrimary) {
-      resolvedPrimary = MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
-    }
-
-    let resolvedBackup =
-      readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY') ||
-      readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED');
-
-    if (!resolvedBackup && typeof getMountVoltageStorageBackupKeyName === 'function') {
-      try {
-        const backupKeyName = getMountVoltageStorageBackupKeyName();
-        if (typeof backupKeyName === 'string' && backupKeyName) {
-          resolvedBackup = backupKeyName;
-        }
-      } catch (backupKeyError) {
-        console.warn('Unable to resolve mount voltage storage backup key name', backupKeyError);
-      }
-    }
-
-    if (!resolvedBackup && resolvedPrimary) {
-      resolvedBackup = `${resolvedPrimary}__backup`;
-    }
-
-    cachedMountVoltagePrimaryKey = resolvedPrimary || MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
-    cachedMountVoltageBackupKey = resolvedBackup || `${cachedMountVoltagePrimaryKey}__backup`;
-    mountVoltageKeysResolved = true;
-
-    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY', cachedMountVoltagePrimaryKey);
-    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED', cachedMountVoltagePrimaryKey);
-    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY', cachedMountVoltageBackupKey);
-    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED', cachedMountVoltageBackupKey);
-  };
-
-  const getMountVoltagePrimaryStorageKey = () => {
-    if (!mountVoltageKeysResolved) {
-      resolveMountVoltageStorageKeys();
-    }
-    return cachedMountVoltagePrimaryKey || MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
-  };
-
-  const getMountVoltageBackupStorageKey = () => {
-    if (!mountVoltageKeysResolved) {
-      resolveMountVoltageStorageKeys();
-    }
-    return cachedMountVoltageBackupKey || `${getMountVoltagePrimaryStorageKey()}__backup`;
-  };
-
-var DEFAULT_MOUNT_VOLTAGES = (function resolveDefaultMountVoltages() {
-  if (
-    CORE_GLOBAL_SCOPE &&
-    CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES &&
-    typeof CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES === 'object'
-  ) {
-    return CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES;
-  }
-
+function createMountVoltageFallbackModule() {
+  const supported = Object.freeze(['V-Mount', 'Gold-Mount', 'B-Mount']);
   const defaults = Object.freeze({
     'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
     'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
     'B-Mount': Object.freeze({ high: 33.6, low: 21.6 }),
   });
 
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-    try {
-      CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES = defaults;
-    } catch (assignError) {
-      void assignError;
+  function fallbackParseVoltageValue(value, fallback) {
+    let numeric = Number.NaN;
+    if (typeof value === 'number') {
+      numeric = value;
+    } else if (typeof value === 'string') {
+      const normalized = value.replace(',', '.');
+      numeric = Number.parseFloat(normalized);
     }
-  }
-
-  return defaults;
-})();
-const TOTAL_CURRENT_LABEL_FALLBACK = 'Total Current (at {voltage}V):';
-const TOTAL_CURRENT_HELP_HIGH_FALLBACK = 'Current draw at the battery\'s main output ({voltage}V).';
-const TOTAL_CURRENT_HELP_LOW_FALLBACK = 'Current draw at auxiliary outputs ({voltage}V).';
-
-let mountVoltagePreferences = cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
-let mountVoltageInputs = null;
-let mountVoltageSectionElem = null;
-let mountVoltageHeadingElem = null;
-let mountVoltageDescriptionElem = null;
-let mountVoltageNoteElem = null;
-let mountVoltageResetButton =
-  (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.mountVoltageResetButton)
-    ? CORE_GLOBAL_SCOPE.mountVoltageResetButton
-    : (typeof globalThis !== 'undefined' && globalThis && globalThis.mountVoltageResetButton)
-      ? globalThis.mountVoltageResetButton
-      : null;
-let mountVoltageTitleElems = null;
-
-function syncMountVoltageResetButtonGlobal(value) {
-  const targetScope =
-    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
-      ? CORE_GLOBAL_SCOPE
-      : (typeof globalThis !== 'undefined' && globalThis)
-        ? globalThis
-        : (typeof window !== 'undefined' && window)
-          ? window
-          : (typeof self !== 'undefined' && self)
-            ? self
-            : (typeof global !== 'undefined' && global)
-              ? global
-              : null;
-  if (!targetScope || typeof targetScope !== 'object') {
-    return;
-  }
-  try {
-    targetScope.mountVoltageResetButton = value;
-  } catch (assignError) {
-    void assignError;
-    targetScope.mountVoltageResetButton = value;
-  }
-}
-
-syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
-
-function parseVoltageValue(value, fallback) {
-  let numeric = Number.NaN;
-  if (typeof value === 'number') {
-    numeric = value;
-  } else if (typeof value === 'string') {
-    const normalized = value.replace(',', '.');
-    numeric = Number.parseFloat(normalized);
-  }
-  if (!Number.isFinite(numeric)) {
-    return fallback;
-  }
-  if (numeric <= 0) {
-    return fallback;
-  }
-  const clamped = Math.min(1000, Math.max(0.1, numeric));
-  return Math.round(clamped * 100) / 100;
-}
-
-function cloneMountVoltageMap(source = DEFAULT_MOUNT_VOLTAGES) {
-  const result = {};
-  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
-    const entry = source && source[type] ? source[type] : DEFAULT_MOUNT_VOLTAGES[type];
-    const high = parseVoltageValue(entry && entry.high, DEFAULT_MOUNT_VOLTAGES[type].high);
-    const low = parseVoltageValue(entry && entry.low, DEFAULT_MOUNT_VOLTAGES[type].low);
-    result[type] = { high, low };
-  });
-  return result;
-}
-
-function normalizeMountVoltageSource(source) {
-  if (!source || typeof source !== 'object') {
-    return cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
-  }
-  return cloneMountVoltageMap(source);
-}
-
-function parseStoredMountVoltages(raw) {
-  if (!raw) {
-    return null;
-  }
-  try {
-    if (typeof raw === 'string') {
-      const parsed = JSON.parse(raw);
-      return normalizeMountVoltageSource(parsed);
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return fallback;
     }
-    return normalizeMountVoltageSource(raw);
-  } catch (error) {
-    console.warn('Could not parse stored mount voltages', error);
-    return null;
+    const clamped = Math.min(1000, Math.max(0.1, numeric));
+    return Math.round(clamped * 100) / 100;
   }
-}
 
-function getDefaultMountKey(mount) {
-  if (SUPPORTED_MOUNT_VOLTAGE_TYPES.includes(mount)) {
-    return mount;
+  function fallbackCloneMountVoltageMap(source = defaults) {
+    const result = {};
+    supported.forEach(type => {
+      const entry = source && source[type] ? source[type] : defaults[type];
+      const high = fallbackParseVoltageValue(entry && entry.high, defaults[type].high);
+      const low = fallbackParseVoltageValue(entry && entry.low, defaults[type].low);
+      result[type] = { high, low };
+    });
+    return result;
   }
-  return 'V-Mount';
-}
 
-function getMountVoltageConfig(mount) {
-  const key = getDefaultMountKey(mount);
-  const entry = mountVoltagePreferences[key] || DEFAULT_MOUNT_VOLTAGES[key];
-  return {
-    high: parseVoltageValue(entry && entry.high, DEFAULT_MOUNT_VOLTAGES[key].high),
-    low: parseVoltageValue(entry && entry.low, DEFAULT_MOUNT_VOLTAGES[key].low),
-  };
-}
-
-function getActiveMountVoltageConfig() {
-  const plate = getSelectedPlate();
-  return getMountVoltageConfig(plate);
-}
-
-function formatVoltageForDisplay(voltage, lang = currentLang) {
-  const numeric = Number(voltage);
-  if (!Number.isFinite(numeric)) {
-    return '';
+  function fallbackNormaliseMountVoltageSource(source) {
+    if (!source || typeof source !== 'object') {
+      return fallbackCloneMountVoltageMap(defaults);
+    }
+    return fallbackCloneMountVoltageMap(source);
   }
-  const options = {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: numeric % 1 === 0 ? 0 : 1,
-  };
-  if (typeof formatNumberForLang === 'function') {
+
+  function fallbackParseStoredMountVoltages(raw) {
+    if (!raw) {
+      return null;
+    }
     try {
-      return formatNumberForLang(lang, numeric, options);
+      if (typeof raw === 'string') {
+        const parsed = JSON.parse(raw);
+        return fallbackNormaliseMountVoltageSource(parsed);
+      }
+      return fallbackNormaliseMountVoltageSource(raw);
     } catch (error) {
-      console.warn('formatNumberForLang failed for voltage display', error);
+      void error;
+      return null;
     }
   }
-  try {
-    const formatter = new Intl.NumberFormat(lang, options);
-    return formatter.format(numeric);
-  } catch (intlError) {
-    void intlError;
-  }
-  return numeric.toFixed(options.minimumFractionDigits);
-}
 
-function getMountVoltagePreferencesClone() {
-  return cloneMountVoltageMap(mountVoltagePreferences);
-}
+  let preferences = fallbackCloneMountVoltageMap(defaults);
 
-function persistMountVoltagePreferences(preferences) {
-  if (typeof localStorage === 'undefined') {
-    return;
+  function fallbackGetMountVoltagePreferencesClone() {
+    return fallbackCloneMountVoltageMap(preferences);
   }
 
-  let serialized;
-  try {
-    serialized = JSON.stringify(preferences);
-  } catch (serializationError) {
-    console.warn('Could not serialize mount voltage preferences', serializationError);
-    return;
+  function fallbackGetMountVoltageConfig(mount) {
+    const key = supported.includes(mount) ? mount : 'V-Mount';
+    const entry = preferences[key] || defaults[key];
+    return {
+      high: fallbackParseVoltageValue(entry && entry.high, defaults[key].high),
+      low: fallbackParseVoltageValue(entry && entry.low, defaults[key].low),
+    };
   }
 
-    const primaryMountVoltageKey = getMountVoltagePrimaryStorageKey();
-    try {
-      localStorage.setItem(primaryMountVoltageKey, serialized);
-    } catch (storageError) {
-      console.warn('Could not save mount voltage preferences', storageError);
-    }
+  function fallbackGetActiveMountVoltageConfig() {
+    const plate = typeof getSelectedPlate === 'function' ? getSelectedPlate() : 'V-Mount';
+    return fallbackGetMountVoltageConfig(plate);
+  }
 
-    const backupMountVoltageKey = getMountVoltageBackupStorageKey();
-    try {
-      localStorage.setItem(backupMountVoltageKey, serialized);
-    } catch (backupError) {
-      console.warn('Could not save mount voltage backup copy', backupError);
-    }
+  function fallbackApplyMountVoltagePreferences(preferencesInput, options = {}) {
+    void options;
+    preferences = fallbackNormaliseMountVoltageSource(preferencesInput);
+  }
+
+  function fallbackResetMountVoltagePreferences(options = {}) {
+    void options;
+    fallbackApplyMountVoltagePreferences(defaults);
+  }
+
+  const noop = () => {};
+
+  const runtimeExports = {
+    SUPPORTED_MOUNT_VOLTAGE_TYPES: supported,
+    DEFAULT_MOUNT_VOLTAGES: defaults,
+    parseVoltageValue: fallbackParseVoltageValue,
+    cloneMountVoltageMap: fallbackCloneMountVoltageMap,
+    getMountVoltagePreferencesClone: fallbackGetMountVoltagePreferencesClone,
+    applyMountVoltagePreferences: fallbackApplyMountVoltagePreferences,
+    parseStoredMountVoltages: fallbackParseStoredMountVoltages,
+    resetMountVoltagePreferences: fallbackResetMountVoltagePreferences,
+    updateMountVoltageInputsFromState: noop,
+    persistMountVoltagePreferences: noop,
+  };
+
+  Object.defineProperty(runtimeExports, 'mountVoltageInputs', {
+    enumerable: true,
+    get: () => null,
+  });
+
+  Object.freeze(runtimeExports);
+
+  const api = {
+    SUPPORTED_MOUNT_VOLTAGE_TYPES: supported,
+    DEFAULT_MOUNT_VOLTAGES: defaults,
+    parseVoltageValue: fallbackParseVoltageValue,
+    cloneMountVoltageMap: fallbackCloneMountVoltageMap,
+    getMountVoltagePreferencesClone: fallbackGetMountVoltagePreferencesClone,
+    applyMountVoltagePreferences: fallbackApplyMountVoltagePreferences,
+    parseStoredMountVoltages: fallbackParseStoredMountVoltages,
+    resetMountVoltagePreferences: fallbackResetMountVoltagePreferences,
+    updateMountVoltageInputsFromState: noop,
+    persistMountVoltagePreferences: noop,
+    refreshTotalCurrentLabels: noop,
+    updateMountVoltageSettingLabels: noop,
+    getMountVoltageConfig: fallbackGetMountVoltageConfig,
+    getActiveMountVoltageConfig: fallbackGetActiveMountVoltageConfig,
+    syncMountVoltageResetButtonGlobal: noop,
+    setMountVoltageDomReferences: () => ({}),
+    reloadMountVoltagePreferencesFromStorage: noop,
+    runtimeExports,
+  };
+
+  Object.defineProperty(api, 'mountVoltageInputs', {
+    enumerable: true,
+    get: () => null,
+  });
+
+  return api;
 }
 
-const MOUNT_VOLTAGE_RUNTIME_EXPORTS = Object.freeze({
-  // Mount voltage helpers must stay globally accessible for autosave/share flows.
-  SUPPORTED_MOUNT_VOLTAGE_TYPES,
-  DEFAULT_MOUNT_VOLTAGES,
-  mountVoltageInputs,
-  parseVoltageValue,
-  cloneMountVoltageMap,
-  getMountVoltagePreferencesClone,
-  applyMountVoltagePreferences,
-  parseStoredMountVoltages,
-  resetMountVoltagePreferences,
-  updateMountVoltageInputsFromState,
-  persistMountVoltagePreferences,
-});
+const CORE_MOUNT_VOLTAGE_API =
+  CORE_MOUNT_VOLTAGE && typeof CORE_MOUNT_VOLTAGE === 'object'
+    ? CORE_MOUNT_VOLTAGE
+    : createMountVoltageFallbackModule();
+
+const SUPPORTED_MOUNT_VOLTAGE_TYPES = CORE_MOUNT_VOLTAGE_API.SUPPORTED_MOUNT_VOLTAGE_TYPES;
+const DEFAULT_MOUNT_VOLTAGES = CORE_MOUNT_VOLTAGE_API.DEFAULT_MOUNT_VOLTAGES;
+const parseVoltageValue = CORE_MOUNT_VOLTAGE_API.parseVoltageValue;
+const cloneMountVoltageMap = CORE_MOUNT_VOLTAGE_API.cloneMountVoltageMap;
+const getMountVoltagePreferencesClone = CORE_MOUNT_VOLTAGE_API.getMountVoltagePreferencesClone;
+const applyMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.applyMountVoltagePreferences;
+const parseStoredMountVoltages = CORE_MOUNT_VOLTAGE_API.parseStoredMountVoltages;
+const resetMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.resetMountVoltagePreferences;
+const updateMountVoltageInputsFromState = CORE_MOUNT_VOLTAGE_API.updateMountVoltageInputsFromState;
+const persistMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.persistMountVoltagePreferences;
+const refreshTotalCurrentLabels = CORE_MOUNT_VOLTAGE_API.refreshTotalCurrentLabels;
+const updateMountVoltageSettingLabels = CORE_MOUNT_VOLTAGE_API.updateMountVoltageSettingLabels;
+const getMountVoltageConfig = CORE_MOUNT_VOLTAGE_API.getMountVoltageConfig;
+const getActiveMountVoltageConfig = CORE_MOUNT_VOLTAGE_API.getActiveMountVoltageConfig;
+const syncMountVoltageResetButtonGlobal = CORE_MOUNT_VOLTAGE_API.syncMountVoltageResetButtonGlobal;
+const setMountVoltageDomReferences = CORE_MOUNT_VOLTAGE_API.setMountVoltageDomReferences;
+const reloadMountVoltagePreferencesFromStorage =
+  typeof CORE_MOUNT_VOLTAGE_API.reloadMountVoltagePreferencesFromStorage === 'function'
+    ? CORE_MOUNT_VOLTAGE_API.reloadMountVoltagePreferencesFromStorage
+    : () => {};
+
+const MOUNT_VOLTAGE_RUNTIME_EXPORTS =
+  CORE_MOUNT_VOLTAGE_API.runtimeExports && typeof CORE_MOUNT_VOLTAGE_API.runtimeExports === 'object'
+    ? CORE_MOUNT_VOLTAGE_API.runtimeExports
+    : (function createMountVoltageRuntimeExportsFallback() {
+        const exports = {
+          SUPPORTED_MOUNT_VOLTAGE_TYPES,
+          DEFAULT_MOUNT_VOLTAGES,
+          parseVoltageValue,
+          cloneMountVoltageMap,
+          getMountVoltagePreferencesClone,
+          applyMountVoltagePreferences,
+          parseStoredMountVoltages,
+          resetMountVoltagePreferences,
+          updateMountVoltageInputsFromState,
+          persistMountVoltagePreferences,
+        };
+        Object.defineProperty(exports, 'mountVoltageInputs', {
+          enumerable: true,
+          get: () =>
+            (CORE_MOUNT_VOLTAGE_API && CORE_MOUNT_VOLTAGE_API.mountVoltageInputs) || null,
+        });
+        return Object.freeze(exports);
+      })();
+
+reloadMountVoltagePreferencesFromStorage();
 
 // Immediately expose mount voltage helpers so downstream layers can recover even if
 // subsequent refactors adjust the consolidated runtime export list. This keeps
 // autosave/share/backup flows functional when the runtime is split across files.
 exposeCoreRuntimeConstants(MOUNT_VOLTAGE_RUNTIME_EXPORTS);
-
-function applyMountVoltagePreferences(preferences, options = {}) {
-  const { persist = true, triggerUpdate = true } = options || {};
-  mountVoltagePreferences = normalizeMountVoltageSource(preferences);
-  if (persist) {
-    persistMountVoltagePreferences(mountVoltagePreferences);
-  }
-  if (triggerUpdate) {
-    updateMountVoltageInputsFromState();
-    refreshTotalCurrentLabels(currentLang);
-    if (typeof updateCalculations === 'function') {
-      try {
-        updateCalculations();
-      } catch (calcError) {
-        console.warn('Failed to refresh calculations after voltage change', calcError);
-      }
-    }
-  }
-}
-
-function resetMountVoltagePreferences(options = {}) {
-  applyMountVoltagePreferences(DEFAULT_MOUNT_VOLTAGES, options);
-}
-
-function formatVoltageInputValue(value) {
-  return Number.isFinite(value) ? String(Math.round(Number(value) * 100) / 100) : '';
-}
-
-function updateMountVoltageInputsFromState() {
-  if (!mountVoltageInputs) {
-    return;
-  }
-  const preferences = mountVoltagePreferences || DEFAULT_MOUNT_VOLTAGES;
-  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
-    const fields = mountVoltageInputs[type];
-    if (!fields) return;
-    const entry = preferences[type] || DEFAULT_MOUNT_VOLTAGES[type];
-    if (fields.high) {
-      fields.high.value = formatVoltageInputValue(entry && entry.high);
-    }
-    if (fields.low) {
-      fields.low.value = formatVoltageInputValue(entry && entry.low);
-    }
-  });
-}
-
-function getTemplateString(lang, key, fallback) {
-  const localeTexts = getLanguageTexts(lang);
-  const defaultTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-  if (localeTexts && typeof localeTexts[key] === 'string') {
-    return localeTexts[key];
-  }
-  if (defaultTexts && typeof defaultTexts[key] === 'string') {
-    return defaultTexts[key];
-  }
-  return fallback;
-}
-
-function renderVoltageTemplate(template, voltage, lang, fallback) {
-  const formatted = formatVoltageForDisplay(voltage, lang);
-  const source = typeof template === 'string' && template.includes('{voltage}')
-    ? template
-    : fallback;
-  if (typeof source !== 'string') {
-    return formatted ? `${formatted} V` : '';
-  }
-  return source.replace('{voltage}', formatted);
-}
-
-function refreshTotalCurrentLabels(lang = currentLang, mount = null, voltages = null) {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const highLabelElem = document.getElementById('totalCurrent144Label');
-  const lowLabelElem = document.getElementById('totalCurrent12Label');
-  if (!highLabelElem || !lowLabelElem) {
-    return;
-  }
-  const effectiveMount = mount || getSelectedPlate();
-  const config = voltages || getMountVoltageConfig(effectiveMount);
-  const highTemplate = getTemplateString(lang, 'totalCurrentHighLabelTemplate', TOTAL_CURRENT_LABEL_FALLBACK);
-  const lowTemplate = getTemplateString(lang, 'totalCurrentLowLabelTemplate', TOTAL_CURRENT_LABEL_FALLBACK);
-  const highHelpTemplate = getTemplateString(lang, 'totalCurrentHighHelpTemplate', TOTAL_CURRENT_HELP_HIGH_FALLBACK);
-  const lowHelpTemplate = getTemplateString(lang, 'totalCurrentLowHelpTemplate', TOTAL_CURRENT_HELP_LOW_FALLBACK);
-  highLabelElem.textContent = renderVoltageTemplate(highTemplate, config.high, lang, TOTAL_CURRENT_LABEL_FALLBACK);
-  lowLabelElem.textContent = renderVoltageTemplate(lowTemplate, config.low, lang, TOTAL_CURRENT_LABEL_FALLBACK);
-  highLabelElem.setAttribute(
-    'data-help',
-    renderVoltageTemplate(highHelpTemplate, config.high, lang, TOTAL_CURRENT_HELP_HIGH_FALLBACK)
-  );
-  lowLabelElem.setAttribute(
-    'data-help',
-    renderVoltageTemplate(lowHelpTemplate, config.low, lang, TOTAL_CURRENT_HELP_LOW_FALLBACK)
-  );
-}
-
-  function updateMountVoltageSettingLabels(lang = currentLang) {
-    const localeTexts = getLanguageTexts(lang);
-    const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-    if (!localeTexts && !fallbackTexts) return;
-    if (mountVoltageHeadingElem) {
-      mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading
-        || fallbackTexts.mountVoltageSettingsHeading
-        || 'Battery mount voltages';
-      const helpText = localeTexts.mountVoltageSettingsHelp
-        || fallbackTexts.mountVoltageSettingsHelp
-        || '';
-    if (helpText) {
-      mountVoltageHeadingElem.setAttribute('data-help', helpText);
-    }
-  }
-    if (mountVoltageDescriptionElem) {
-      mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription
-        || fallbackTexts.mountVoltageDescription
-        || '';
-  }
-  if (mountVoltageNoteElem) {
-    mountVoltageNoteElem.textContent = localeTexts.mountVoltageNote
-      || texts.en?.mountVoltageNote
-      || '';
-  }
-  if (mountVoltageResetButton) {
-    mountVoltageResetButton.textContent = localeTexts.mountVoltageReset
-      || texts.en?.mountVoltageReset
-      || 'Restore defaults';
-    const resetHelp = localeTexts.mountVoltageResetHelp
-      || texts.en?.mountVoltageResetHelp
-      || '';
-    if (resetHelp) {
-      mountVoltageResetButton.setAttribute('data-help', resetHelp);
-    }
-  }
-  if (mountVoltageTitleElems) {
-    if (mountVoltageTitleElems.V) {
-      mountVoltageTitleElems.V.textContent = localeTexts.mountVoltageCardLabelV
-        || texts.en?.mountVoltageCardLabelV
-        || 'V-Mount';
-    }
-    if (mountVoltageTitleElems.Gold) {
-      mountVoltageTitleElems.Gold.textContent = localeTexts.mountVoltageCardLabelGold
-        || texts.en?.mountVoltageCardLabelGold
-        || 'Gold Mount';
-    }
-    if (mountVoltageTitleElems.B) {
-      mountVoltageTitleElems.B.textContent = localeTexts.mountVoltageCardLabelB
-        || texts.en?.mountVoltageCardLabelB
-        || 'B-Mount';
-    }
-  }
-  if (mountVoltageInputs) {
-    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
-      const fields = mountVoltageInputs[type];
-      if (!fields) return;
-      if (fields.highLabel) {
-        fields.highLabel.textContent = localeTexts.mountVoltageHighLabel
-          || texts.en?.mountVoltageHighLabel
-          || 'High-voltage output';
-        const highHelp = localeTexts.mountVoltageHighHelp
-          || texts.en?.mountVoltageHighHelp
-          || '';
-        if (highHelp) {
-          fields.highLabel.setAttribute('data-help', highHelp);
-          fields.high?.setAttribute('data-help', highHelp);
-        }
-      }
-      if (fields.lowLabel) {
-        fields.lowLabel.textContent = localeTexts.mountVoltageLowLabel
-          || texts.en?.mountVoltageLowLabel
-          || 'Low-voltage output';
-        const lowHelp = localeTexts.mountVoltageLowHelp
-          || texts.en?.mountVoltageLowHelp
-          || '';
-        if (lowHelp) {
-          fields.lowLabel.setAttribute('data-help', lowHelp);
-          fields.low?.setAttribute('data-help', lowHelp);
-        }
-      }
-    });
-  }
-}
-
-try {
-  if (typeof localStorage !== 'undefined') {
-    const storedVoltages = localStorage.getItem(getMountVoltagePrimaryStorageKey());
-    const parsedVoltages = parseStoredMountVoltages(storedVoltages);
-    if (parsedVoltages) {
-      mountVoltagePreferences = parsedVoltages;
-    } else {
-      const backupVoltages = localStorage.getItem(getMountVoltageBackupStorageKey());
-      const parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
-      if (parsedBackupVoltages) {
-        mountVoltagePreferences = parsedBackupVoltages;
-        persistMountVoltagePreferences(parsedBackupVoltages);
-      }
-    }
-  }
-} catch (error) {
-  console.warn('Could not load mount voltage preferences', error);
-}
 
 const schemaStorage = (() => {
   if (typeof window === 'undefined') return null;
@@ -21246,18 +20939,18 @@ var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
 const iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
 const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
 const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
-mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
-mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
-mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
-mountVoltageNoteElem = document.getElementById('mountVoltageNote');
-mountVoltageResetButton = document.getElementById('mountVoltageReset');
+const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
+const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
+const mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
+const mountVoltageNoteElem = document.getElementById('mountVoltageNote');
+const mountVoltageResetButton = document.getElementById('mountVoltageReset');
 syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
-mountVoltageTitleElems = {
+const mountVoltageTitleElems = {
   V: document.getElementById('mountVoltageVTitle'),
   Gold: document.getElementById('mountVoltageGoldTitle'),
   B: document.getElementById('mountVoltageBTitle'),
 };
-mountVoltageInputs = {
+const mountVoltageInputs = {
   'V-Mount': {
     high: document.getElementById('mountVoltageVHigh'),
     low: document.getElementById('mountVoltageVLow'),
@@ -21277,8 +20970,31 @@ mountVoltageInputs = {
     lowLabel: document.getElementById('mountVoltageBLowLabel'),
   },
 };
-updateMountVoltageInputsFromState();
-updateMountVoltageSettingLabels(currentLang);
+
+if (typeof setMountVoltageDomReferences === 'function') {
+  setMountVoltageDomReferences({
+    section: mountVoltageSectionElem,
+    heading: mountVoltageHeadingElem,
+    description: mountVoltageDescriptionElem,
+    note: mountVoltageNoteElem,
+    resetButton: mountVoltageResetButton,
+    titles: mountVoltageTitleElems,
+    inputs: mountVoltageInputs,
+  });
+} else if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  try {
+    CORE_GLOBAL_SCOPE.mountVoltageInputs = mountVoltageInputs;
+  } catch (mountVoltageInputsAssignError) {
+    void mountVoltageInputsAssignError;
+  }
+}
+
+if (typeof updateMountVoltageInputsFromState === 'function') {
+  updateMountVoltageInputsFromState();
+}
+if (typeof updateMountVoltageSettingLabels === 'function') {
+  updateMountVoltageSettingLabels(currentLang);
+}
 const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
 const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
 
