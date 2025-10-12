@@ -12225,7 +12225,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
             if (deviceInfo) {
               var summary = generateSafeConnectorSummary(deviceInfo);
-              summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+              summary = summary ? (function stripTags(s) { let prev; do { prev = s; s = s.replace(/<[^>]+>/g, ''); } while (s !== prev); return s.replace(/\s+/g, ' ').trim(); })(summary) : '';
               if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
               if (summary) parts.push(summary);
             }
