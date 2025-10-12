@@ -7484,6 +7484,137 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       'carts',
     ];
     const MAX_DEVICE_IMPORT_ERRORS = 5;
+
+    function normalizeDeviceEntryCollection(collection) {
+      if (isPlainObjectValue(collection)) {
+        return { ...collection };
+      }
+
+      if (!Array.isArray(collection)) {
+        return undefined;
+      }
+
+      if (!collection.length) {
+        return {};
+      }
+
+      const converted = {};
+      for (const entry of collection) {
+        if (Array.isArray(entry) && entry.length >= 2) {
+          const [name, value] = entry;
+          if (typeof name === 'string' && isPlainObjectValue(value)) {
+            converted[name] = value;
+            continue;
+          }
+        }
+
+        if (!isPlainObjectValue(entry)) {
+          continue;
+        }
+
+        const name = typeof entry.name === 'string'
+          ? entry.name
+          : typeof entry.label === 'string'
+            ? entry.label
+            : typeof entry.title === 'string'
+              ? entry.title
+              : typeof entry.id === 'string'
+                ? entry.id
+                : null;
+
+        let value = null;
+        if (isPlainObjectValue(entry.data)) {
+          value = entry.data;
+        } else if (name) {
+          const clone = { ...entry };
+          delete clone.name;
+          delete clone.label;
+          delete clone.title;
+          delete clone.id;
+          if (isPlainObjectValue(clone) && Object.keys(clone).length) {
+            value = clone;
+          }
+        }
+
+        if (name && isPlainObjectValue(value)) {
+          converted[name] = value;
+        }
+      }
+
+      if (Object.keys(converted).length) {
+        return converted;
+      }
+
+      return undefined;
+    }
+
+    function ensureNestedDeviceCollections(source, expectedKeys = []) {
+      const target = {};
+      if (isPlainObjectValue(source)) {
+        for (const [key, value] of Object.entries(source)) {
+          const normalized = normalizeDeviceEntryCollection(value);
+          if (normalized !== undefined) {
+            target[key] = normalized;
+          } else if (value === undefined || value === null) {
+            target[key] = {};
+          } else if (isPlainObjectValue(value)) {
+            target[key] = { ...value };
+          } else {
+            target[key] = value;
+          }
+        }
+      }
+
+      for (const key of expectedKeys) {
+        if (Object.prototype.hasOwnProperty.call(target, key) && isPlainObjectValue(target[key])) {
+          continue;
+        }
+        const normalized = normalizeDeviceEntryCollection(source && source[key]);
+        if (normalized !== undefined) {
+          target[key] = normalized;
+        } else if (!Object.prototype.hasOwnProperty.call(target, key) || target[key] == null) {
+          target[key] = {};
+        }
+      }
+
+      return target;
+    }
+
+    function upgradeDeviceDatabaseSchema(candidate) {
+      if (!isPlainObjectValue(candidate)) {
+        return candidate;
+      }
+
+      const upgraded = { ...candidate };
+
+      for (const category of REQUIRED_DEVICE_CATEGORIES) {
+        if (category === 'fiz') {
+          const expectedFizKeys = collectReferenceFizKeys();
+          upgraded.fiz = ensureNestedDeviceCollections(candidate.fiz, expectedFizKeys);
+          continue;
+        }
+
+        if (category === 'accessories') {
+          const expectedAccessoryKeys = collectReferenceAccessoryKeys();
+          upgraded.accessories = ensureNestedDeviceCollections(candidate.accessories, expectedAccessoryKeys);
+          continue;
+        }
+
+        const source = candidate[category];
+        const normalized = normalizeDeviceEntryCollection(source);
+        if (normalized !== undefined) {
+          upgraded[category] = normalized;
+        } else if (source === undefined || source === null) {
+          upgraded[category] = {};
+        } else if (isPlainObjectValue(source)) {
+          upgraded[category] = { ...source };
+        } else {
+          upgraded[category] = source;
+        }
+      }
+
+      return upgraded;
+    }
     
     function isDeviceEntryObject(value) {
       if (!isPlainObjectValue(value)) {
@@ -7685,7 +7816,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { devices: null, errors: ['Could not find a device database in the selected file.'] };
       }
     
-      return validateDeviceDatabaseStructure(candidate);
+      const normalizedCandidate = upgradeDeviceDatabaseSchema(candidate);
+      return validateDeviceDatabaseStructure(normalizedCandidate);
     }
     
     function formatDeviceImportErrors(errors) {
