@@ -18,3 +18,5 @@ This review surfaces follow-up tasks to protect user data workflows and document
 - **Status**: ✅ The regression test at `tests/data/gearListDuplicateKeys.test.js` enforces unique optical properties across the gear catalog to protect saved loadouts. 【F:tests/data/gearListDuplicateKeys.test.js†L1-L86】
 - **Action**: Update the test expectations whenever new lens metadata ships and document additional safeguards here to preserve offline bundle integrity.
 
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

@@ -45,3 +45,5 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Note the storage locations for the packet inside the verification log so future crews can retrieve the canonical manuals and rehearsal artefacts without reconnecting to the network.
 
 Running this checklist alongside the full maintenance guide keeps documentation, translations and offline workflows in sync with the product while protecting user data across every save, share, import, backup and restore path.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

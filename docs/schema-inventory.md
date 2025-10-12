@@ -89,3 +89,5 @@ This document summarizes the attribute schema defined in `src/data/schema.json`.
 - **Video outputs**: `type`
 
 > **Maintenance note:** When the schema in `src/data/schema.json` is updated, please refresh this inventory so that help, documentation, and translation resources stay synchronized.
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

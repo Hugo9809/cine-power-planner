@@ -20,3 +20,5 @@
 - **Issue**: No unit test simulates loading the context module without `WeakSet`, so the brittle default-parameter instantiation could regress without detection. 【F:src/scripts/modules/context.js†L101-L187】
 - **Impact**: Future changes might reintroduce the legacy breakage, risking offline autosave guards on older browsers without early warning.
 - **Resolution**: Added `tests/unit/baseWeakSetFallback.test.js` to load the base module with `WeakSet` removed, mirroring the existing context harness so the shared freeze guard stays covered. 【F:tests/unit/baseWeakSetFallback.test.js†L1-L120】【F:tests/unit/contextWeakSetFallback.test.js†L1-L107】
+
+> _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
