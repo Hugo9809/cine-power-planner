@@ -230,6 +230,138 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   }
 }
 
+function detectPrimaryGlobalScope() {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return null;
+}
+
+function whenGlobalValueAvailable(name, validator, onResolve, options = {}) {
+  if (typeof name !== 'string' || !name) {
+    return false;
+  }
+  if (typeof validator !== 'function' || typeof onResolve !== 'function') {
+    return false;
+  }
+
+  const scope = detectPrimaryGlobalScope();
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return false;
+  }
+
+  const attemptsLimit = typeof options.maxAttempts === 'number' ? options.maxAttempts : 150;
+  const continueIndefinitely = attemptsLimit < 0;
+  const interval = typeof options.interval === 'number' && options.interval > 0 ? options.interval : 200;
+
+  const invokeResolve = value => {
+    try {
+      onResolve(value);
+    } catch (handlerError) {
+      if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+        console.error(`whenGlobalValueAvailable: handler for ${name} threw.`, handlerError);
+      }
+    }
+  };
+
+  const attempt = value => {
+    if (!validator(value)) {
+      return false;
+    }
+    invokeResolve(value);
+    return true;
+  };
+
+  const initialCandidate = (() => {
+    try {
+      return scope[name];
+    } catch (accessError) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn(`whenGlobalValueAvailable: unable to read ${name} during initial attempt.`, accessError);
+      }
+      return undefined;
+    }
+  })();
+
+  if (attempt(initialCandidate)) {
+    return true;
+  }
+
+  let attempts = 0;
+  let cancelled = false;
+  const timers = [];
+
+  const clearTimers = () => {
+    cancelled = true;
+    for (let index = 0; index < timers.length; index += 1) {
+      try {
+        clearTimeout(timers[index]);
+      } catch (clearError) {
+        void clearError;
+      }
+    }
+    timers.length = 0;
+  };
+
+  const handleTimeout = () => {
+    if (typeof options.onTimeout === 'function') {
+      try {
+        options.onTimeout();
+      } catch (timeoutError) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn(`whenGlobalValueAvailable: timeout handler for ${name} failed.`, timeoutError);
+        }
+      }
+    }
+  };
+
+  const poll = () => {
+    if (cancelled) {
+      return;
+    }
+
+    attempts += 1;
+
+    let candidate = undefined;
+    try {
+      candidate = scope[name];
+    } catch (accessError) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn(`whenGlobalValueAvailable: unable to read ${name} during polling.`, accessError);
+      }
+      candidate = undefined;
+    }
+
+    if (attempt(candidate)) {
+      clearTimers();
+      return;
+    }
+
+    if (!continueIndefinitely && attempts >= attemptsLimit) {
+      clearTimers();
+      handleTimeout();
+      return;
+    }
+
+    const handle = setTimeout(poll, interval);
+    timers.push(handle);
+  };
+
+  const initialHandle = setTimeout(poll, interval);
+  timers.push(initialHandle);
+
+  return true;
+}
+
 function getSessionRuntimeScopes() {
   const scopes = [];
 
@@ -5066,6 +5198,135 @@ const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
   () => null,
 );
 
+let appearanceModule = null;
+let themePreferenceController = null;
+
+function detectSystemThemePreference() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return null;
+  }
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance: detectSystemPreference failed', error);
+    }
+  }
+  return null;
+}
+
+function buildThemePreferenceController(module) {
+  if (!module || typeof module.createThemePreferenceController !== 'function') {
+    return null;
+  }
+
+  try {
+    return module.createThemePreferenceController({
+      detectSystemPreference: detectSystemThemePreference,
+    });
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance: failed to create theme preference controller.', error);
+    }
+  }
+
+  return null;
+}
+
+function applyAppearanceModuleBindings(module) {
+  if (!module || typeof module !== 'object') {
+    return false;
+  }
+
+  appearanceModule = module;
+
+  updateThemeColor = module.updateThemeColor || updateThemeColor;
+  setToggleIcon = module.setToggleIcon || setToggleIcon;
+  applyDarkMode = module.applyDarkMode || applyDarkMode;
+  applyHighContrast = module.applyHighContrast || applyHighContrast;
+  applyReduceMotion = module.applyReduceMotion || applyReduceMotion;
+  applyRelaxedSpacing = module.applyRelaxedSpacing || applyRelaxedSpacing;
+  applyPinkMode = module.applyPinkMode || applyPinkMode;
+  persistPinkModePreference = module.persistPinkModePreference || persistPinkModePreference;
+  rememberSettingsPinkModeBaseline = module.rememberSettingsPinkModeBaseline || rememberSettingsPinkModeBaseline;
+  revertSettingsPinkModeIfNeeded = module.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
+  rememberSettingsTemperatureUnitBaseline = module.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
+  revertSettingsTemperatureUnitIfNeeded = module.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  rememberSettingsFocusScaleBaseline = module.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
+  revertSettingsFocusScaleIfNeeded = module.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
+  applyShowAutoBackupsPreference = module.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
+  rememberSettingsShowAutoBackupsBaseline = module.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
+  revertSettingsShowAutoBackupsIfNeeded = module.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
+  rememberSettingsMountVoltagesBaseline = module.rememberSettingsMountVoltagesBaseline || rememberSettingsMountVoltagesBaseline;
+  revertSettingsMountVoltagesIfNeeded = module.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
+  handlePinkModeIconPress = module.handlePinkModeIconPress || handlePinkModeIconPress;
+  triggerPinkModeIconAnimation = module.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
+  startPinkModeIconRotation = module.startPinkModeIconRotation || startPinkModeIconRotation;
+  stopPinkModeIconRotation = module.stopPinkModeIconRotation || stopPinkModeIconRotation;
+  startPinkModeAnimatedIconRotation = module.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
+  stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
+  applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
+  isPinkModeActive = module.isPinkModeActive || isPinkModeActive;
+
+  const controller = buildThemePreferenceController(module);
+  if (controller) {
+    themePreferenceController = controller;
+  }
+
+  return true;
+}
+
+function initializeAppearanceModule(factory) {
+  if (!factory || typeof factory.initialize !== 'function') {
+    return false;
+  }
+
+  let module = null;
+  try {
+    module = factory.initialize(appearanceContext) || null;
+  } catch (error) {
+    if (typeof console !== 'undefined' && console && typeof console.error === 'function') {
+      console.error('cineSettingsAppearance: initialize() threw.', error);
+    }
+    return false;
+  }
+
+  if (!module || typeof module !== 'object') {
+    return false;
+  }
+
+  return applyAppearanceModuleBindings(module);
+}
+
+const appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
+
+if (!appearanceModuleReady) {
+  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+  }
+
+  whenGlobalValueAvailable(
+    'cineSettingsAppearance',
+    candidate => !!candidate && typeof candidate.initialize === 'function',
+    candidate => {
+      if (initializeAppearanceModule(candidate)) {
+        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
+          console.info('cineSettingsAppearance module became available after deferred load.');
+        }
+      }
+    },
+    {
+      interval: 200,
+      maxAttempts: 300,
+      onTimeout: () => {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
+        }
+      },
+    },
+  );
+}
+
 const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
 
@@ -5402,58 +5663,6 @@ const appearanceContext = {
   },
 };
 
-const appearanceModule = appearanceModuleFactory && typeof appearanceModuleFactory.initialize === 'function'
-  ? appearanceModuleFactory.initialize(appearanceContext)
-  : null;
-
-if (appearanceModule) {
-  updateThemeColor = appearanceModule.updateThemeColor || updateThemeColor;
-  setToggleIcon = appearanceModule.setToggleIcon || setToggleIcon;
-  applyDarkMode = appearanceModule.applyDarkMode || applyDarkMode;
-  applyHighContrast = appearanceModule.applyHighContrast || applyHighContrast;
-  applyReduceMotion = appearanceModule.applyReduceMotion || applyReduceMotion;
-  applyRelaxedSpacing = appearanceModule.applyRelaxedSpacing || applyRelaxedSpacing;
-  applyPinkMode = appearanceModule.applyPinkMode || applyPinkMode;
-  persistPinkModePreference = appearanceModule.persistPinkModePreference || persistPinkModePreference;
-  rememberSettingsPinkModeBaseline = appearanceModule.rememberSettingsPinkModeBaseline || rememberSettingsPinkModeBaseline;
-  revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
-  rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
-  revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
-  rememberSettingsFocusScaleBaseline = appearanceModule.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
-  revertSettingsFocusScaleIfNeeded = appearanceModule.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
-  applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
-  rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
-  revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
-  rememberSettingsMountVoltagesBaseline = appearanceModule.rememberSettingsMountVoltagesBaseline || rememberSettingsMountVoltagesBaseline;
-  revertSettingsMountVoltagesIfNeeded = appearanceModule.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
-  handlePinkModeIconPress = appearanceModule.handlePinkModeIconPress || handlePinkModeIconPress;
-  triggerPinkModeIconAnimation = appearanceModule.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
-  startPinkModeIconRotation = appearanceModule.startPinkModeIconRotation || startPinkModeIconRotation;
-  stopPinkModeIconRotation = appearanceModule.stopPinkModeIconRotation || stopPinkModeIconRotation;
-  startPinkModeAnimatedIconRotation = appearanceModule.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
-  stopPinkModeAnimatedIconRotation = appearanceModule.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
-  applyPinkModeIcon = appearanceModule.applyPinkModeIcon || applyPinkModeIcon;
-  isPinkModeActive = appearanceModule.isPinkModeActive || isPinkModeActive;
-} else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-  console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-}
-
-let themePreferenceController = null;
-if (appearanceModule && typeof appearanceModule.createThemePreferenceController === 'function') {
-  themePreferenceController = appearanceModule.createThemePreferenceController({
-    detectSystemPreference: () => {
-      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-        return null;
-      }
-      try {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-      } catch (error) {
-        console.warn('cineSettingsAppearance: detectSystemPreference failed', error);
-      }
-      return null;
-    },
-  });
-}
 
 const themePreferenceGlobalScope = (typeof globalThis !== 'undefined'
   ? globalThis
@@ -6166,16 +6375,57 @@ const resolveResetAutoGearRulesHandler = () => {
 };
 
 if (autoGearResetFactoryButton) {
-  const resetAutoGearRulesHandler = resolveResetAutoGearRulesHandler();
+  const enableResetButton = () => {
+    autoGearResetFactoryButton.disabled = false;
+    autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
+  };
 
-  if (resetAutoGearRulesHandler) {
-    autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesHandler);
-  } else {
+  const disableResetButton = () => {
     autoGearResetFactoryButton.disabled = true;
     autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
+  };
+
+  let resetHandlerAttached = false;
+
+  const attachResetHandler = (handler) => {
+    if (resetHandlerAttached || typeof handler !== 'function') {
+      return false;
+    }
+
+    autoGearResetFactoryButton.addEventListener('click', handler);
+    enableResetButton();
+    resetHandlerAttached = true;
+    return true;
+  };
+
+  const initialHandler = resolveResetAutoGearRulesHandler();
+
+  if (!attachResetHandler(initialHandler)) {
+    disableResetButton();
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Automatic gear reset action unavailable: reset handler missing.');
     }
+
+    whenGlobalValueAvailable(
+      'resetAutoGearRulesToFactoryAdditions',
+      candidate => typeof candidate === 'function',
+      candidate => {
+        if (attachResetHandler(candidate)) {
+          if (typeof console !== 'undefined' && typeof console.info === 'function') {
+            console.info('Automatic gear reset action re-enabled after deferred module load.');
+          }
+        }
+      },
+      {
+        interval: 200,
+        maxAttempts: 300,
+        onTimeout: () => {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
+          }
+        },
+      },
+    );
   }
 }
 if (autoGearExportButton) {
