@@ -7014,6 +7014,183 @@ textarea:disabled {
   gap: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
 }
 
+.onboarding-card[data-size='hero'] {
+  width: min(44rem, calc(100vw - 1.5rem));
+  inline-size: min(44rem, calc(100vw - 1.5rem));
+  --onboarding-card-padding: clamp(1.5rem, 1.15rem + 2vw, 2.25rem);
+  gap: clamp(1.35rem, 1.1rem + 1.5vw, 2rem);
+}
+
+.onboarding-interaction--hero {
+  gap: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+}
+
+.onboarding-hero {
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1vw, 1.85rem);
+}
+
+.onboarding-hero-badge {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: clamp(0.75rem, 0.6rem + 0.6vw, 1rem);
+  padding: clamp(0.85rem, 0.65rem + 0.9vw, 1.35rem);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--accent-color) 10%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 60%, var(--accent-color) 40%);
+  color: color-mix(in srgb, var(--text-color) 92%, var(--accent-color) 8%);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.16);
+}
+
+body.dark-mode .onboarding-hero-badge {
+  background: color-mix(in srgb, rgba(16, 22, 32, 0.92) 78%, var(--accent-color) 22%);
+  border-color: color-mix(in srgb, var(--accent-color) 58%, rgba(255, 255, 255, 0.18));
+  color: color-mix(in srgb, var(--inverse-text-color) 88%, var(--accent-color) 12%);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.55);
+}
+
+.onboarding-hero-badge-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent-color) 82%, var(--text-color) 18%);
+}
+
+body.dark-mode .onboarding-hero-badge-icon {
+  color: color-mix(in srgb, var(--accent-color) 85%, var(--inverse-text-color) 15%);
+}
+
+.onboarding-hero-badge-text {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.onboarding-hero-badge-label {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-weight: var(--font-weight-semibold);
+}
+
+.onboarding-hero-badge-description {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  color: color-mix(in srgb, var(--text-color) 72%, rgba(0, 0, 0, 0.4));
+}
+
+body.dark-mode .onboarding-hero-badge-description {
+  color: color-mix(in srgb, var(--inverse-text-color) 72%, rgba(255, 255, 255, 0.38));
+}
+
+.onboarding-hero-highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(1rem, 0.85rem + 0.8vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+}
+
+.onboarding-hero-highlight {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(0.8rem, 0.65rem + 0.6vw, 1rem);
+  align-items: start;
+  padding: clamp(0.85rem, 0.7rem + 0.7vw, 1.25rem);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-color) 94%, var(--accent-color) 6%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 68%, var(--accent-color) 32%);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14);
+}
+
+body.dark-mode .onboarding-hero-highlight {
+  background: color-mix(in srgb, rgba(16, 22, 32, 0.92) 82%, var(--accent-color) 18%);
+  border-color: color-mix(in srgb, var(--accent-color) 52%, rgba(255, 255, 255, 0.18));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.6);
+}
+
+.onboarding-hero-highlight-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent-color) 78%, var(--text-color) 22%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode .onboarding-hero-highlight-icon {
+  color: color-mix(in srgb, var(--accent-color) 82%, var(--inverse-text-color) 18%);
+}
+
+.onboarding-hero-highlight-text {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.onboarding-hero-highlight-title {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+  font-weight: var(--font-weight-semibold);
+}
+
+.onboarding-hero-highlight-body {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  color: color-mix(in srgb, var(--text-color) 82%, rgba(0, 0, 0, 0.35));
+}
+
+body.dark-mode .onboarding-hero-highlight-body {
+  color: color-mix(in srgb, var(--inverse-text-color) 80%, rgba(255, 255, 255, 0.35));
+}
+
+.onboarding-hero-language {
+  display: grid;
+  gap: clamp(0.55rem, 0.45rem + 0.4vw, 0.9rem);
+}
+
+.onboarding-hero-language-label {
+  font-weight: var(--font-weight-semibold);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  color: color-mix(in srgb, var(--text-color) 88%, rgba(0, 0, 0, 0.22));
+}
+
+body.dark-mode .onboarding-hero-language-label {
+  color: color-mix(in srgb, var(--inverse-text-color) 88%, rgba(255, 255, 255, 0.24));
+}
+
+.onboarding-hero-language-select {
+  max-width: min(22rem, 100%);
+}
+
+.onboarding-hero-language-hint {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  color: color-mix(in srgb, var(--text-color) 76%, rgba(0, 0, 0, 0.4));
+}
+
+body.dark-mode .onboarding-hero-language-hint {
+  color: color-mix(in srgb, var(--inverse-text-color) 76%, rgba(255, 255, 255, 0.36));
+}
+
+.onboarding-hero-offline {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  line-height: var(--line-height-relaxed);
+  color: color-mix(in srgb, var(--text-color) 82%, rgba(0, 0, 0, 0.35));
+}
+
+body.dark-mode .onboarding-hero-offline {
+  color: color-mix(in srgb, var(--inverse-text-color) 80%, rgba(255, 255, 255, 0.35));
+}
+
+@media (max-width: 40rem) {
+  .onboarding-card[data-size='hero'] {
+    width: min(100%, calc(100vw - 1.25rem));
+    inline-size: min(100%, calc(100vw - 1.25rem));
+  }
+
+  .onboarding-hero-highlights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 body.dark-mode .onboarding-card {
   --onboarding-card-border: color-mix(in srgb, var(--accent-color) 55%, rgba(255, 255, 255, 0.16));
   background: rgba(18, 22, 28, 0.95);

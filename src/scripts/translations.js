@@ -1834,12 +1834,43 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "Use this guided tour to practice the safeguards that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and resume exactly where you stopped.",
+            "Begin with the offline-first power planner built for crews. This guided tour highlights the safeguards that keep every project ready to restore before the first shoot.",
+          hero: {
+            badgeIcon: "\uE9C3",
+            badgeLabel: "Offline · Subscription-free",
+            badgeDescription:
+              "No servers, no accounts. Saves, autosaves, backups, restores, shares and imports all stay on this device.",
+            highlights: [
+              {
+                icon: "\uE1A6",
+                title: "Plan safe power loads",
+                body:
+                  "Model draw, runtime and changeovers to lock in battery safety margins with confidence.",
+              },
+              {
+                icon: "\uE467",
+                title: "AutoGear builds reusable kits",
+                body:
+                  "Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.",
+              },
+              {
+                icon: "\uE469",
+                title: "Share requirements with context",
+                body:
+                  "Capture deliverables, crew coverage and rental notes, then export PDFs crews and houses can trust.",
+              },
+            ],
+            languageLabel: "Language",
+            languageHint:
+              "Choose the interface language. The tutorial, help and exports update instantly across offline saves.",
+            offlineSummary:
+              "Cine Power Planner runs entirely offline with an installable mobile PWA—bringing the same safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.",
+          },
         },
         userProfile: {
-          title: "Configure language and your profile",
+          title: "Complete your crew profile",
           body:
-            "Set your interface language plus display name, role, phone, email and photo. Each change syncs to Contacts immediately, stays in offline saves and appears on exports.",
+            "Set your display name, role, phone, email and photo. Each update syncs to Contacts immediately, stays in offline saves and appears on exports.",
         },
         unitsPreferences: {
           title: "Tune theme and units",
@@ -3918,13 +3949,44 @@ const texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-            body:
-              "Segui questo tour guidato per allenare le procedure che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere esattamente da dove avevi interrotto.",
+          body:
+            "Inizia con il planner dell’alimentazione progettato offline-first per le troupe. Questo tour guidato evidenzia le salvaguardie che mantengono ogni progetto pronto al ripristino prima della prima ripresa.",
+          hero: {
+            badgeIcon: "\uE9C3",
+            badgeLabel: "Offline · Senza abbonamento",
+            badgeDescription:
+              "Nessun server, nessun account. Salvataggi, autosalvataggi, backup, ripristini, condivisioni e importazioni restano su questo dispositivo.",
+            highlights: [
+              {
+                icon: "\uE1A6",
+                title: "Pianifica carichi di potenza sicuri",
+                body:
+                  "Modella assorbimenti, runtime e cambi turno per fissare i margini di sicurezza delle batterie con sicurezza.",
+              },
+              {
+                icon: "\uE467",
+                title: "AutoGear crea kit riutilizzabili",
+                body:
+                  "Assembla liste complete, regola al volo le regole di automazione e riusa i preset tra i progetti.",
+              },
+              {
+                icon: "\uE469",
+                title: "Condividi requisiti con contesto",
+                body:
+                  "Raccogli deliverable, copertura crew e note per il noleggio, poi esporta PDF affidabili per troupe e rental.",
+              },
+            ],
+            languageLabel: "Lingua",
+            languageHint:
+              "Scegli la lingua dell’interfaccia. Tutorial, guida ed export si aggiornano subito in tutti i salvataggi offline.",
+            offlineSummary:
+              "Cine Power Planner funziona interamente offline con una PWA mobile installabile: le stesse salvaguardie per salvataggi, backup, condivisioni e prove di ripristino arrivano sul set senza abbonamenti.",
+          },
         },
         userProfile: {
-          title: "Configura lingua e profilo",
+          title: "Completa il profilo della troupe",
           body:
-            "Imposta la lingua dell’interfaccia, il nome visibile, il ruolo, telefono, e-mail e foto. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e appare negli export.",
+            "Imposta nome visibile, ruolo, telefono, e-mail e foto. Ogni aggiornamento si sincronizza subito con Contatti, resta nei salvataggi offline e appare negli export.",
         },
         unitsPreferences: {
           title: "Personalizza tema e unità",
@@ -6016,13 +6078,44 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-            body:
-              "Usa este recorrido guiado para practicar las salvaguardas que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar exactamente donde lo dejaste.",
+          body:
+            "Comienza con el planificador de energía pensado para trabajar sin conexión. Este recorrido guiado destaca las salvaguardas que mantienen cada proyecto listo para restaurarse antes del primer día de rodaje.",
+          hero: {
+            badgeIcon: "\uE9C3",
+            badgeLabel: "Sin conexión · Sin suscripción",
+            badgeDescription:
+              "Sin servidores ni cuentas. Los guardados, autoguardados, copias, restauraciones, compartidos e importaciones permanecen en este dispositivo.",
+            highlights: [
+              {
+                icon: "\uE1A6",
+                title: "Planifica cargas seguras de energía",
+                body:
+                  "Modela consumos, autonomías y relevos para asegurar márgenes de seguridad de las baterías con confianza.",
+              },
+              {
+                icon: "\uE467",
+                title: "AutoGear arma kits reutilizables",
+                body:
+                  "Arma listas completas, ajusta reglas automáticas al vuelo y reutiliza preajustes entre proyectos.",
+              },
+              {
+                icon: "\uE469",
+                title: "Comparte requisitos con contexto",
+                body:
+                  "Registra entregables, cobertura del equipo y notas para rental, luego exporta PDFs confiables para la crew y las casas de alquiler.",
+              },
+            ],
+            languageLabel: "Idioma",
+            languageHint:
+              "Elige el idioma de la interfaz. El tutorial, la ayuda y los exportes se actualizan al instante en todos los guardados sin conexión.",
+            offlineSummary:
+              "Cine Power Planner funciona totalmente sin conexión con una PWA móvil instalable: las mismas salvaguardas para guardados, copias, compartidos y ensayos de restauración te acompañan en el set sin suscripciones.",
+          },
         },
         userProfile: {
-          title: "Configura idioma y perfil",
+          title: "Completa el perfil del equipo",
           body:
-            "Define el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto. Los cambios se sincronizan al instante con Contactos, se conservan en los guardados sin conexión y aparecen en las exportaciones.",
+            "Define nombre visible, rol, teléfono, correo y foto. Cada actualización se sincroniza al instante con Contactos, permanece en los guardados sin conexión y aparece en los exportes.",
         },
         unitsPreferences: {
           title: "Ajusta tema y unidades",
@@ -8127,13 +8220,44 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-            body:
-              "Suivez ce guide pour vous entraîner aux mesures qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez exactement où vous vous étiez arrêté.",
+          body:
+            "Commencez avec le planificateur d’énergie conçu pour fonctionner hors ligne. Ce tutoriel guidé met en avant les garde-fous qui gardent chaque projet prêt à être restauré avant le premier jour de tournage.",
+          hero: {
+            badgeIcon: "\uE9C3",
+            badgeLabel: "Hors ligne · Sans abonnement",
+            badgeDescription:
+              "Sans serveur ni compte. Les enregistrements, auto-sauvegardes, sauvegardes, restaurations, partages et importations restent sur cet appareil.",
+            highlights: [
+              {
+                icon: "\uE1A6",
+                title: "Planifiez des charges d’alimentation sûres",
+                body:
+                  "Modélisez consommation, autonomie et relèves pour verrouiller les marges de sécurité des batteries en toute confiance.",
+              },
+              {
+                icon: "\uE467",
+                title: "AutoGear compose des kits réutilisables",
+                body:
+                  "Assemblez des listes complètes, ajustez les règles automatiques à la volée et réutilisez les préréglages d’un projet à l’autre.",
+              },
+              {
+                icon: "\uE469",
+                title: "Partagez les exigences avec le contexte",
+                body:
+                  "Consignez livrables, couverture d’équipe et notes location, puis exportez des PDF fiables pour l’équipe et les loueurs.",
+              },
+            ],
+            languageLabel: "Langue",
+            languageHint:
+              "Choisissez la langue de l’interface. Le tutoriel, l’aide et les exports se mettent à jour instantanément dans toutes les sauvegardes hors ligne.",
+            offlineSummary:
+              "Cine Power Planner fonctionne entièrement hors ligne avec une PWA mobile installable : les mêmes sauvegardes, partages et répétitions de restauration vous accompagnent sur le plateau sans abonnement.",
+          },
         },
         userProfile: {
-          title: "Configurez la langue et votre profil",
+          title: "Complétez le profil de l’équipe",
           body:
-            "Définissez la langue de l’interface, votre nom d’affichage, rôle, téléphone, e-mail et photo. Chaque modification se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et figure dans les exports.",
+            "Définissez nom affiché, rôle, téléphone, e-mail et photo. Chaque mise à jour se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et apparaît dans les exports.",
         },
         unitsPreferences: {
           title: "Réglez thème et unités",
@@ -10242,13 +10366,44 @@ const texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-            body:
-              "Nutze diese geführte Tour, um die Schutzmaßnahmen zu trainieren, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und exakt dort fortsetzen kannst.",
+          body:
+            "Starte mit dem offline-first Power-Planer für Crews. Diese geführte Tour zeigt die Schutzmechanismen, die jedes Projekt noch vor dem ersten Drehtag wiederherstellbar halten.",
+          hero: {
+            badgeIcon: "\uE9C3",
+            badgeLabel: "Offline · Ohne Abonnement",
+            badgeDescription:
+              "Keine Server, keine Konten. Speichern, Autosaves, Backups, Wiederherstellungen, Freigaben und Importe bleiben auf diesem Gerät.",
+            highlights: [
+              {
+                icon: "\uE1A6",
+                title: "Sichere Leistungsbudgets planen",
+                body:
+                  "Simuliere Verbrauch, Laufzeit und Wechsel, um Batteriereserven mit Vertrauen abzusichern.",
+              },
+              {
+                icon: "\uE467",
+                title: "AutoGear baut wiederverwendbare Kits",
+                body:
+                  "Stelle komplette Listen zusammen, passe Regeln unterwegs an und nutze Presets mehrfach.",
+              },
+              {
+                icon: "\uE469",
+                title: "Anforderungen mit Kontext teilen",
+                body:
+                  "Erfasse Deliverables, Crew-Abdeckung und Rental-Notizen und exportiere PDFs, denen Team und Verleiher vertrauen.",
+              },
+            ],
+            languageLabel: "Sprache",
+            languageHint:
+              "Wähle die Oberflächensprache. Tutorial, Hilfe und Exporte aktualisieren sich sofort in allen Offline-Sicherungen.",
+            offlineSummary:
+              "Cine Power Planner läuft vollständig offline und bietet eine installierbare mobile PWA – dieselben gesicherten Speicherstände, Backups, Freigaben und Wiederherstellungsproben auch am Set, ganz ohne Abonnement.",
+          },
         },
         userProfile: {
-          title: "Sprache und Profil einrichten",
+          title: "Profil des Teams vervollständigen",
           body:
-            "Lege Sprache der Oberfläche sowie Anzeigename, Rolle, Telefon, E‑Mail und Foto fest. Änderungen werden sofort mit Kontakte synchronisiert, bleiben in Offline-Sicherungen erhalten und erscheinen in Exporten.",
+            "Lege Anzeigename, Rolle, Telefon, E‑Mail und Foto fest. Jede Aktualisierung synchronisiert sich sofort mit Kontakte, bleibt in Offline-Sicherungen und erscheint in Exporten.",
         },
         unitsPreferences: {
           title: "Theme und Einheiten anpassen",
