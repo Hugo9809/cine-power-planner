@@ -60,3 +60,14 @@ Highlighting remains optional: with the toggle enabled, stacked automatic gear c
 multicolour overlay while the default positive/negative borders remain available for quieter audits.
 Because both behaviours run locally, switching between them does not risk data loss or require
 network access.【F:index.html†L1485-L1519】
+
+## 2025-02 rule integrity spot-check
+- **Retention summary surfaced in settings.** Verified the automatic gear panel still renders the
+  retention summary, backup toggle and restore controls alongside the editor, ensuring offline
+  crews can inspect snapshots before loading them.【F:index.html†L2501-L2574】【F:src/scripts/app-core-new-2.js†L2138-L2958】
+- **Backup mirroring.** Confirmed the critical storage guard mirrors automatic gear keys into backup
+  slots before the UI loads, so rule presets stay redundant across sessions and during quota
+  recovery sweeps.【F:src/scripts/storage.js†L2850-L2999】
+- **Persistence bindings.** Re-checked that `cinePersistence` exposes dedicated load/save wrappers for
+  rules, presets, backups and monitor defaults, keeping exports, imports and autosave hooks aligned
+  with the documented workflows.【F:src/scripts/modules/persistence.js†L1036-L1076】

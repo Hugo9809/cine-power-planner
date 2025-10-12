@@ -90,4 +90,9 @@ This document summarizes the attribute schema defined in `src/data/schema.json`.
 
 > **Maintenance note:** When the schema in `src/data/schema.json` is updated, please refresh this inventory so that help, documentation, and translation resources stay synchronized.
 
+## 2025-02 schema verification
+- **Data module parity.** Confirmed the schema-driven device data still feeds the same loader logic and persistence wrappers, so this inventory matches the fields captured in backups and exports.【F:src/scripts/modules/persistence.js†L1036-L1078】【F:src/data/devices/gearList.js†L1-L4492】
+- **Documentation hooks.** Rechecked the Data & Storage dashboard counts and help dialog summaries so schema updates continue to reflect in the user-facing guidance documented here.【F:index.html†L2722-L2799】【F:index.html†L3019-L3095】
+- **Runtime guard awareness.** Verified the runtime guard still inspects the persistence bindings that consume schema data, providing early warnings if a future schema change drops a wrapper.【F:src/scripts/modules/runtime.js†L2203-L2368】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

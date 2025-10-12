@@ -17,4 +17,13 @@
 - Extend the diagnostics dashboard to host checksum verification and incident capture flows, keeping data integrity tooling in one offline workspace.
 - Update the documentation guides once new features land so rehearsals, translations and help topics stay synchronized with the enhanced safeguards.
 
+## 2025-02 validation snapshot
+- **Current safeguards confirmed.** Verified that the autosave cadence, backup guardian row and runtime
+  guard still operate as documented so the “Current strengths” section reflects the live build.【F:src/scripts/app-events.js†L86-L205】【F:src/scripts/app-core-new-2.js†L9640-L9750】【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Documentation workflow state.** Checked that the documentation update tracker strings and help
+  entries continue to expose their checklists, reinforcing the opportunity to consolidate tracking
+  in-app.【F:src/scripts/translations.js†L1519-L1540】【F:index.html†L3019-L3095】
+- **Checksum tooling gap.** Confirmed that Data & Storage currently lists storage counts but does not yet
+  provide checksum helpers, supporting the identified improvement path.【F:index.html†L2722-L2799】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

@@ -91,3 +91,12 @@ rehearsed:
 Maintaining this playbook alongside your release process guarantees that every save, share, import, backup
 and restore path remains provably safe, keeps offline rehearsal materials synchronised and documents exactly
 how user data stayed protected at each step.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/modules/runtime.js†L2203-L2368】
+
+## 2025-02 safeguard validation
+- **Storage guardian status.** Confirmed the Data & Storage dashboard continues to report mirrored keys
+  and reminders so emergency drills can confirm redundancy without leaving the planner UI.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Quota-resilient backups.** Re-checked the critical storage guard path that mirrors planner keys and
+  compresses backups if quota errors appear, ensuring backups remain redundant even under storage
+  pressure.【F:src/scripts/storage.js†L2850-L2999】
+- **Service worker parity.** Verified the worker still imports the shared version helper and publishes
+  the cache name/logging hooks, keeping offline rehearsals consistent with documented expectations.【F:service-worker.js†L192-L229】

@@ -85,6 +85,15 @@ you prepare a release candidate or validate a workstation:
    release managers can trace which rehearsal proved the save → share → import
    loop remained reliable.
 
+## 2025-02 testing verification
+- **Autosave instrumentation.** Confirmed the autosave change counter and scheduling utilities
+  continue to log commits and reset counters as documented, providing reliable signals during the
+  drill.【F:src/scripts/app-events.js†L86-L205】
+- **Storage dashboard cues.** Rechecked the Data & Storage latest activity timestamps and guardian
+  reminders to ensure testers can capture screenshots proving the drill succeeded.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Runtime diagnostics.** Verified `window.cineRuntime.verifyCriticalFlows()` still reports frozen
+  bindings, giving the console capture step the same confidence in persistence coverage.【F:src/scripts/modules/runtime.js†L2203-L2368】
+
 Document the drill results alongside your automated test logs so every release
 carries evidence that saving, sharing, importing, backup and restore routines
 were validated end-to-end.

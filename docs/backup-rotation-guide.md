@@ -86,3 +86,13 @@ protected archive tier:
 
 Following this guide ensures every workstation keeps redundant backups, every export is validated in
 isolation and user data remains intact even when crews travel or hand projects to another team.
+
+## 2025-02 rotation verification
+- **Storage dashboard alignment.** Confirmed the Data & Storage panel continues to surface project,
+  auto-backup and full-backup timestamps plus the backup guardian status so operators can validate
+  rotations before retiring media.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Autosave cadence check.** Revalidated the 50-change threshold and ten-minute cadence that trigger
+  automatic snapshots so daily tiers capture enough history without manual intervention.【F:src/scripts/app-events.js†L86-L205】
+- **Critical backup mirroring.** Verified the storage guard still mirrors planner keys and reports
+  successes to the console, giving rotation logs an immediate health signal even when storage recovery
+  sweeps run.【F:src/scripts/storage.js†L2850-L3003】

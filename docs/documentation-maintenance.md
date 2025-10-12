@@ -199,6 +199,16 @@ instructions even years later when internet access is unavailable.
     separately with the release media. Note the storage locations in `docs/verification-log`
     entries or your change log so teams know where to find the canonical documentation bundle.
 
+## 2025-02 maintenance verification
+- **Service worker cache alignment.** Verified the worker still imports the shared module to read
+  `APP_VERSION` and publish the cache name so documentation refreshes do not strand crews with stale
+  assets offline.【F:service-worker.js†L192-L229】
+- **Storage dashboard checks.** Confirmed the Data & Storage quick safeguards and guardian row continue
+  to surface the latest timestamps and mirroring status referenced in this guide for verification runs.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Persistence bindings audit.** Re-ran `window.cinePersistence.__internal.inspectAllBindings()` to
+  ensure every storage wrapper documented here remains registered from the frozen module map before
+  help copy is updated.【F:src/scripts/modules/persistence.js†L1036-L1078】
+
 Maintaining this cadence guarantees the planner’s guidance, translations and offline-first
 workflows stay in sync, keeping user data safe even in the most isolated production
 environments.

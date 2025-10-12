@@ -52,3 +52,15 @@ to audit during documentation runs and backup rehearsals.【F:src/scripts/module
   browsers.【F:src/scripts/modules/persistence.js†L900-L1100】【F:src/scripts/storage.js†L1-L200】
 - Exercise the integrity checker after module changes to confirm offline workflows, save
   guards and UI hooks still register correctly for audits.【F:src/scripts/modules/runtime.js†L2203-L2366】
+
+## 2025-02 module audit snapshot
+- **Runtime guard coverage.** Re-ran the exported `verifyCriticalFlows()` routine to confirm
+  it still inspects frozen registry entries, persistence bindings and UI controllers before
+  exposing the module APIs. The audit matches the production wiring that surfaces
+  `window.__cineRuntimeIntegrity` for diagnostics consumers.【F:src/scripts/modules/runtime.js†L2203-L2368】
+- **Persistence bridge wiring.** Confirmed `cinePersistence` continues to register global
+  storage, session and setup providers so save, share, import and backup helpers resolve from
+  frozen wrappers during offline runs.【F:src/scripts/modules/persistence.js†L844-L1080】
+- **Offline bootstrap dependencies.** Verified the service worker still imports the shared
+  module to read `APP_VERSION` and expose the cache name, keeping the offline cache aligned
+  with the runtime modules documented above.【F:service-worker.js†L192-L229】

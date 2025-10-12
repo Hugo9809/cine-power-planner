@@ -50,6 +50,14 @@ up and restoring must never risk user data.
 2. **Update when workflows change.** If a new save, share, import, backup or restore feature ships,
    rebuild the packet immediately so offline crews never operate with stale instructions.
 
+## 2025-02 packet verification
+- **Backup parity.** Confirmed the Backup & Restore panel still exposes compare, rehearsal and export
+  actions so packet screenshots remain accurate during quarterly audits.【F:index.html†L2501-L2574】
+- **Storage evidence.** Checked the Data & Storage dashboard for the guardian and latest activity rows,
+  ensuring packet attachments continue to reflect the UI state after offline rehearsals.【F:index.html†L2722-L2799】
+- **Runtime guard capture.** Re-verified that `window.__cineRuntimeIntegrity` reports the module status
+  documented in packet templates so restoration evidence remains trustworthy.【F:src/scripts/modules/runtime.js†L2203-L2368】
+
 Maintaining a rigorous documentation verification packet keeps the written guidance, translations
 and recovery artefacts synchronized with the product, protecting user data under every offline
 scenario the planner supports.

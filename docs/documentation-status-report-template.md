@@ -115,4 +115,14 @@ offline persistence safeguards. Auditors can trace exactly which instructions
 shipped, prove that locally stored Uicons and assets remained available offline
 and confirm that no user data was ever put at risk.
 
+## 2025-02 template verification
+- **Dashboard references.** Checked that the fields referenced in the template (Backup & Restore,
+  Data & Storage, Quick safeguards) remain in the UI so status summaries map cleanly onto actual
+  controls during offline rehearsals.【F:index.html†L2501-L2574】【F:index.html†L2722-L2799】
+- **Runtime evidence capture.** Confirmed `window.__cineRuntimeIntegrity` and the backup diff export
+  continue to provide the audit artefacts the template expects crews to attach, keeping status entries
+  actionable.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L3684-L3754】
+- **Persistence metadata.** Re-checked that planner backups and exports still include the metadata
+  recorded in the report (timestamps, counts) so sign-off rows remain truthful.【F:src/scripts/app-session.js†L7580-L7615】
+
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】

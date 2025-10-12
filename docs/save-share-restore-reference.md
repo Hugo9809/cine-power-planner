@@ -108,6 +108,11 @@ Shared project imports that arrive without a setup name now generate a unique `-
 
 Record the outputs (or screenshots) in your verification log, and store them alongside the exported files so any teammate can confirm the same safeguards were present.
 
+## 2025-02 workflow verification
+- **Autosave cadence check.** Confirmed the autosave change counter, immediate commit handling and interval scheduler still match the behaviours described in this reference.【F:src/scripts/app-events.js†L86-L224】【F:src/scripts/app-session.js†L3491-L3512】
+- **Backup guardian and storage dashboard.** Verified the Data & Storage panel continues to surface mirrored key counts, latest activity timestamps and reminders that underpin the checklist steps.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Service worker cache alignment.** Re-checked that the worker publishes the cache version from the shared module so offline rehearsals exercise the correct bundle referenced throughout this document.【F:service-worker.js†L192-L229】
+
 ## When to run this checklist
 
 - **New workstation provisioning.** After cloning the repository, run every workflow in the matrix while offline to prove the local cache, locally stored Uicons and persistence helpers all loaded correctly.

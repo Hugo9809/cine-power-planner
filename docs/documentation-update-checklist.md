@@ -44,6 +44,11 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 - [ ] Assemble the release documentation packet following `docs/documentation-verification-packet.md` and record where redundant offline copies live.
 - [ ] Note the storage locations for the packet inside the verification log so future crews can retrieve the canonical manuals and rehearsal artefacts without reconnecting to the network.
 
+## 2025-02 checklist verification
+- **Backup workflow placement.** Confirmed Backup & Restore still presents compare, backup and rehearsal controls in the documented order so checklist steps map directly to the UI during offline reviews.【F:index.html†L2501-L2574】
+- **Storage quick safeguards.** Verified the Data & Storage quick safeguards, guardian row and latest activity board remain available, supporting the evidence capture steps outlined above.【F:index.html†L2722-L2799】【F:src/scripts/app-core-new-2.js†L9640-L9750】
+- **Runtime guard capture.** Rechecked that `window.__cineRuntimeIntegrity` remains exposed and reflects the latest module verification so console captures attached to the checklist prove the runtime state.【F:src/scripts/modules/runtime.js†L2203-L2368】
+
 Running this checklist alongside the full maintenance guide keeps documentation, translations and offline workflows in sync with the product while protecting user data across every save, share, import, backup and restore path.
 
 > _2025-02 alignment:_ Verified instructions against the current runtime guard and Backup & Restore UI so offline rehearsals match the shipped safeguards.【F:src/scripts/modules/runtime.js†L2203-L2368】【F:index.html†L2501-L2560】
