@@ -1799,18 +1799,18 @@ const texts = {
       stepStatusComplete: "Completed",
       stepStatusUpcoming: "Up next",
       resumeHint:
-        "Resuming where you left off. Use the step navigator to revisit earlier workflows without losing progress.",
+        "Picking up right where you paused. Use the step navigator to revisit earlier workflows without clearing offline progress.",
       resumeHintDetailed:
-        "Resuming at step {current} of {total}. {completed} steps are already complete and saved offline.",
+        "Resuming at step {current} of {total}. {completed} steps are already complete and locked into your offline saves.",
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
       helpStatusNotStarted:
-        "Guided tutorial progress saves offline as you advance. Next step: {next}.",
+        "Guided tutorial progress saves offline as you advance. Up next: {next}.",
       helpStatusInProgress:
-        "Offline progress saved: {completed} steps completed out of {total}. Next: {next}.",
+        "Offline progress saved: {completed} steps completed out of {total}. Next workflow: {next}.",
       helpStatusResume:
-        "Paused on {current}. {completed} of {total} steps already saved offline.",
+        "Paused on {current}. {completed} of {total} steps already secured offline.",
       helpStatusSkipped:
         "Tutorial skipped. Restart whenever you're ready—saved progress stays available offline.",
       helpStatusCompleted:
@@ -1834,12 +1834,12 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.",
+            "Use this guided tour to practice the safeguards that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and resume exactly where you stopped.",
         },
         userProfile: {
           title: "Configure language and your profile",
           body:
-            "Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.",
+            "Set your interface language plus display name, role, phone, email and photo. Each change syncs to Contacts immediately, stays in offline saves and appears on exports.",
         },
         unitsPreferences: {
           title: "Tune theme and units",
@@ -1874,7 +1874,7 @@ const texts = {
         results: {
           title: "Review the results summary",
           body:
-            "Treat Step 8 as three quick passes through Power Summary: 8A confirms the Total Draw card and peak load, 8B drills into each battery pack for runtime projections and reserve margin highlights, and 8C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot.",
+            "Treat Step 8 as three focused passes through Power Summary. 8A confirms the Total Draw card and peak load, 8B reviews each battery pack for runtime projections and reserve margin highlights, and 8C checks changeover countdown timers plus charger coverage. Finish by logging warnings, downloading the offline report for redundant backups and confirming the autosave banner so shares and exports mirror the same snapshot.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -3880,19 +3880,19 @@ const texts = {
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
       stepStatusUpcoming: "In arrivo",
-      resumeHint:
-        "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza perdere i progressi.",
-      resumeHintDetailed:
-        "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già stati completati e salvati offline.",
+        resumeHint:
+          "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
+        resumeHintDetailed:
+          "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
       helpStatusNotStarted:
         "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
-      helpStatusInProgress:
-        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
-      helpStatusResume:
-        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
+        helpStatusInProgress:
+          "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo flusso: {next}.",
+        helpStatusResume:
+          "In pausa su {current}. {completed} passaggi su {total} già messi al sicuro offline.",
       helpStatusSkipped:
         "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
       helpStatusCompleted:
@@ -3915,8 +3915,8 @@ const texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-          body:
-            "Segui questo tour guidato per conoscere i flussi che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere senza perdere nulla.",
+            body:
+              "Segui questo tour guidato per allenare le procedure che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere esattamente da dove avevi interrotto.",
         },
         userProfile: {
           title: "Configura lingua e profilo",
@@ -3955,8 +3955,8 @@ const texts = {
         },
         results: {
           title: "Rivedi il riepilogo dei risultati",
-          body:
-            "Tratta il passaggio 8 come tre rapide revisioni in Power Summary: 8A conferma la scheda Carico totale e il picco previsto, 8B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 8C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot.",
+            body:
+              "Tratta il passaggio 8 come tre revisioni mirate in Power Summary. 8A conferma la scheda Carico totale e il picco previsto, 8B rivede ogni pacco batteria per le proiezioni di autonomia e i margini di riserva, e 8C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando gli avvisi, scaricando il rapporto offline per backup ridondanti e verificando il banner di salvataggio automatico così condivisioni ed esportazioni riflettono lo stesso snapshot.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -5975,19 +5975,19 @@ const texts = {
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
       stepStatusUpcoming: "A continuación",
-      resumeHint:
-        "Retomas justo donde lo dejaste. Usa el navegador de pasos para revisar flujos anteriores sin perder el progreso.",
-      resumeHintDetailed:
-        "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y guardados sin conexión.",
+        resumeHint:
+          "Retomas justo donde hiciste la pausa. Usa el navegador de pasos para repasar flujos anteriores sin borrar el progreso guardado sin conexión.",
+        resumeHintDetailed:
+          "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y asegurados en tus guardados sin conexión.",
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
       helpStatusNotStarted:
         "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
-      helpStatusInProgress:
-        "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
-      helpStatusResume:
-        "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
+        helpStatusInProgress:
+          "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente flujo: {next}.",
+        helpStatusResume:
+          "En pausa en {current}. {completed} de {total} pasos ya quedan protegidos sin conexión.",
       helpStatusSkipped:
         "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
       helpStatusCompleted:
@@ -6010,8 +6010,8 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-          body:
-            "Usa este recorrido guiado para aprender los flujos que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar sin perder nada.",
+            body:
+              "Usa este recorrido guiado para practicar las salvaguardas que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar exactamente donde lo dejaste.",
         },
         userProfile: {
           title: "Configura idioma y perfil",
@@ -6050,8 +6050,8 @@ const texts = {
         },
         results: {
           title: "Revisa el resumen de resultados",
-          body:
-            "Trata el paso 8 como tres pasadas rápidas en Power Summary: 8A confirma la tarjeta de Consumo total y el pico previsto, 8B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 8C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea.",
+            body:
+              "Trata el paso 8 como tres pasadas enfocadas en Power Summary. 8A confirma la tarjeta de Consumo total y el pico previsto, 8B revisa cada paquete de baterías para las proyecciones de autonomía y los márgenes de reserva, y 8C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando los avisos, descargando el informe sin conexión para copias de seguridad redundantes y comprobando el banner de guardado automático para que las comparticiones y exportaciones reflejen la misma instantánea.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -8083,19 +8083,19 @@ const texts = {
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
       stepStatusUpcoming: "À suivre",
-      resumeHint:
-        "Vous reprenez là où vous vous étiez arrêté. Utilisez le navigateur d'étapes pour revoir les flux précédents sans perdre votre progression.",
-      resumeHintDetailed:
-        "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et sauvegardées hors ligne.",
+        resumeHint:
+          "Vous reprenez exactement là où vous avez fait pause. Utilisez le navigateur d'étapes pour revoir les workflows précédents sans effacer la progression sauvegardée hors ligne.",
+        resumeHintDetailed:
+          "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et verrouillées dans vos sauvegardes hors ligne.",
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
       helpStatusNotStarted:
         "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
-      helpStatusInProgress:
-        "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
-      helpStatusResume:
-        "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
+        helpStatusInProgress:
+          "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. Prochain workflow : {next}.",
+        helpStatusResume:
+          "En pause sur {current}. {completed} étape(s) sur {total} déjà sécurisées hors ligne.",
       helpStatusSkipped:
         "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
       helpStatusCompleted:
@@ -8118,8 +8118,8 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-          body:
-            "Suivez ce guide pour découvrir les workflows qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez sans rien perdre.",
+            body:
+              "Suivez ce guide pour vous entraîner aux mesures qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez exactement où vous vous étiez arrêté.",
         },
         userProfile: {
           title: "Configurez la langue et votre profil",
@@ -8158,8 +8158,8 @@ const texts = {
         },
         results: {
           title: "Passez en revue le résumé des résultats",
-          body:
-            "Traitez l’étape 8 comme trois passages rapides dans Power Summary : 8A confirme la carte Consommation totale et le pic prévu, 8B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 8C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané.",
+            body:
+              "Traitez l’étape 8 comme trois passages ciblés dans Power Summary. 8A confirme la carte Consommation totale et le pic prévu, 8B passe en revue chaque pack batterie pour les estimations d’autonomie et les marges de réserve, et 8C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant les avertissements, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique reflète la même capture pour les partages et exports.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -10195,19 +10195,19 @@ const texts = {
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
       stepStatusUpcoming: "Als nächstes",
-      resumeHint:
-        "Du machst dort weiter, wo du aufgehört hast. Mit dem Schritt-Navigator kannst du abgeschlossene Abläufe erneut ansehen, ohne Fortschritt zu verlieren.",
-      resumeHintDetailed:
-        "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und offline gesichert.",
+        resumeHint:
+          "Du machst genau dort weiter, wo du pausiert hast. Mit dem Schritt-Navigator kannst du frühere Abläufe erneut ansehen, ohne den offline gespeicherten Fortschritt zu löschen.",
+        resumeHintDetailed:
+          "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und fest in deinen Offline-Sicherungen verankert.",
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
       helpStatusNotStarted:
         "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
-      helpStatusInProgress:
-        "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
-      helpStatusResume:
-        "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
+        helpStatusInProgress:
+          "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Nächster Ablauf: {next}.",
+        helpStatusResume:
+          "Pausiert bei {current}. {completed} von {total} Schritten bereits offline abgesichert.",
       helpStatusSkipped:
         "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
       helpStatusCompleted:
@@ -10230,8 +10230,8 @@ const texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body:
-            "Nutze diese geführte Tour, um die Abläufe kennenzulernen, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und nahtlos fortsetzen kannst.",
+            body:
+              "Nutze diese geführte Tour, um die Schutzmaßnahmen zu trainieren, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und exakt dort fortsetzen kannst.",
         },
         userProfile: {
           title: "Sprache und Profil einrichten",
@@ -10270,8 +10270,8 @@ const texts = {
         },
         results: {
           title: "Ergebnisse zusammenfassen",
-          body:
-            "Behandle Schritt 8 als drei kurze Durchläufe in Power Summary: 8A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 8B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 8C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln.",
+            body:
+              "Behandle Schritt 8 als drei fokussierte Durchläufe in Power Summary. 8A bestätigt die Karte Gesamtverbrauch und die Spitzenlast, 8B prüft jedes Batteriepack auf Laufzeitprognosen und Reservemargen, und 8C kontrolliert Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und das Autosave-Banner prüfst, damit Freigaben und Exporte denselben Stand widerspiegeln.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",
