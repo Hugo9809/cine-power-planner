@@ -1803,6 +1803,22 @@ const texts = {
         "Picking up right where you paused. Use the step navigator to revisit earlier workflows without clearing offline progress.",
       resumeHintDetailed:
         "Resuming at step {current} of {total}. {completed} steps are already complete and locked into your offline saves.",
+      userProfileInteractionIntro:
+        "Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.",
+      userProfileInteractionSkipHint:
+        "Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.",
+      userProfileAvatarAction: "Add profile photo",
+      unitsPreferencesLanguageLabel: "Language",
+      unitsPreferencesThemeLabel: "Theme",
+      unitsPreferencesThemeLight: "Light",
+      unitsPreferencesThemeDark: "Dark",
+      unitsPreferencesPinkLabel: "Pink mode accents",
+      unitsPreferencesPinkOff: "Disabled",
+      unitsPreferencesPinkOn: "Enabled",
+      unitsPreferencesUnitsLabel: "Temperature units",
+      unitsPreferencesPersistenceHint:
+        "Request persistent storage so the browser keeps planner data even when space runs low.",
+      unitsPreferencesPersistenceAction: "Protect storage on this device",
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
@@ -3947,10 +3963,26 @@ const texts = {
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
       stepStatusUpcoming: "In arrivo",
-        resumeHint:
-          "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
-        resumeHintDetailed:
-          "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
+      resumeHint:
+        "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
+      resumeHintDetailed:
+        "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
+      userProfileInteractionIntro:
+        "Inserisci una volta i dettagli della troupe. Ogni aggiornamento si sincronizza subito con Contatti, resta salvato offline e confluisce nelle esportazioni così la troupe sa sempre chi possiede il setup.",
+      userProfileInteractionSkipHint:
+        "Premi Avanti quando sei pronto: la sezione Contatti nella barra laterale mostra sempre questi dettagli salvati senza azzerare i progressi del tutorial.",
+      userProfileAvatarAction: "Aggiungi foto profilo",
+      unitsPreferencesLanguageLabel: "Lingua",
+      unitsPreferencesThemeLabel: "Tema",
+      unitsPreferencesThemeLight: "Chiaro",
+      unitsPreferencesThemeDark: "Scuro",
+      unitsPreferencesPinkLabel: "Accenti modalità rosa",
+      unitsPreferencesPinkOff: "Disattivati",
+      unitsPreferencesPinkOn: "Attivati",
+      unitsPreferencesUnitsLabel: "Unità di temperatura",
+      unitsPreferencesPersistenceHint:
+        "Richiedi l'archiviazione persistente così il browser mantiene i dati del planner anche quando lo spazio si esaurisce.",
+      unitsPreferencesPersistenceAction: "Proteggi l'archiviazione su questo dispositivo",
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
@@ -6108,10 +6140,26 @@ const texts = {
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
       stepStatusUpcoming: "A continuación",
-        resumeHint:
-          "Retomas justo donde hiciste la pausa. Usa el navegador de pasos para repasar flujos anteriores sin borrar el progreso guardado sin conexión.",
-        resumeHintDetailed:
-          "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y asegurados en tus guardados sin conexión.",
+      resumeHint:
+        "Retomas justo donde hiciste la pausa. Usa el navegador de pasos para repasar flujos anteriores sin borrar el progreso guardado sin conexión.",
+      resumeHintDetailed:
+        "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y asegurados en tus guardados sin conexión.",
+      userProfileInteractionIntro:
+        "Introduce los datos de tu equipo una sola vez. Cada actualización se sincroniza al instante con Contactos, permanece guardada sin conexión y se refleja en las exportaciones para que el equipo siempre sepa quién es el responsable del set.",
+      userProfileInteractionSkipHint:
+        "Pulsa Siguiente cuando estés listo: Contactos en la barra lateral siempre muestra estos datos guardados sin reiniciar el progreso del tutorial.",
+      userProfileAvatarAction: "Añadir foto de perfil",
+      unitsPreferencesLanguageLabel: "Idioma",
+      unitsPreferencesThemeLabel: "Tema",
+      unitsPreferencesThemeLight: "Claro",
+      unitsPreferencesThemeDark: "Oscuro",
+      unitsPreferencesPinkLabel: "Acentos del modo rosa",
+      unitsPreferencesPinkOff: "Desactivados",
+      unitsPreferencesPinkOn: "Activados",
+      unitsPreferencesUnitsLabel: "Unidades de temperatura",
+      unitsPreferencesPersistenceHint:
+        "Solicita almacenamiento persistente para que el navegador conserve los datos del planificador incluso cuando haya poco espacio.",
+      unitsPreferencesPersistenceAction: "Proteger almacenamiento en este dispositivo",
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
@@ -8282,10 +8330,26 @@ const texts = {
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
       stepStatusUpcoming: "À suivre",
-        resumeHint:
-          "Vous reprenez exactement là où vous avez fait pause. Utilisez le navigateur d'étapes pour revoir les workflows précédents sans effacer la progression sauvegardée hors ligne.",
-        resumeHintDetailed:
-          "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et verrouillées dans vos sauvegardes hors ligne.",
+      resumeHint:
+        "Vous reprenez exactement là où vous avez fait pause. Utilisez le navigateur d'étapes pour revoir les workflows précédents sans effacer la progression sauvegardée hors ligne.",
+      resumeHintDetailed:
+        "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et verrouillées dans vos sauvegardes hors ligne.",
+      userProfileInteractionIntro:
+        "Saisissez une fois les informations de votre équipe. Chaque mise à jour se synchronise immédiatement avec Contacts, reste mise en cache hors ligne et se retrouve dans les exports pour que l’équipe sache toujours qui possède le setup.",
+      userProfileInteractionSkipHint:
+        "Appuyez sur Suivant quand vous êtes prêt : Contacts dans la barre latérale affiche toujours ces informations sauvegardées sans réinitialiser la progression du tutoriel.",
+      userProfileAvatarAction: "Ajouter une photo de profil",
+      unitsPreferencesLanguageLabel: "Langue",
+      unitsPreferencesThemeLabel: "Thème",
+      unitsPreferencesThemeLight: "Clair",
+      unitsPreferencesThemeDark: "Sombre",
+      unitsPreferencesPinkLabel: "Accents du mode rose",
+      unitsPreferencesPinkOff: "Désactivés",
+      unitsPreferencesPinkOn: "Activés",
+      unitsPreferencesUnitsLabel: "Unités de température",
+      unitsPreferencesPersistenceHint:
+        "Demandez un stockage persistant pour que le navigateur conserve les données du planner même lorsque l’espace est limité.",
+      unitsPreferencesPersistenceAction: "Protéger le stockage sur cet appareil",
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
@@ -10460,10 +10524,26 @@ const texts = {
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
       stepStatusUpcoming: "Als nächstes",
-        resumeHint:
-          "Du machst genau dort weiter, wo du pausiert hast. Mit dem Schritt-Navigator kannst du frühere Abläufe erneut ansehen, ohne den offline gespeicherten Fortschritt zu löschen.",
-        resumeHintDetailed:
-          "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und fest in deinen Offline-Sicherungen verankert.",
+      resumeHint:
+        "Du machst genau dort weiter, wo du pausiert hast. Mit dem Schritt-Navigator kannst du frühere Abläufe erneut ansehen, ohne den offline gespeicherten Fortschritt zu löschen.",
+      resumeHintDetailed:
+        "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und fest in deinen Offline-Sicherungen verankert.",
+      userProfileInteractionIntro:
+        "Erfasse die Crew-Daten einmalig. Jede Aktualisierung synchronisiert sich sofort mit Kontakte, bleibt offline zwischengespeichert und fließt in Exporte ein, damit das Team immer weiß, wem das Setup gehört.",
+      userProfileInteractionSkipHint:
+        "Drücke Weiter, sobald du bereit bist – Kontakte in der Seitenleiste zeigt diese gespeicherten Details jederzeit an, ohne den Tutorial-Fortschritt zurückzusetzen.",
+      userProfileAvatarAction: "Profilfoto hinzufügen",
+      unitsPreferencesLanguageLabel: "Sprache",
+      unitsPreferencesThemeLabel: "Design",
+      unitsPreferencesThemeLight: "Hell",
+      unitsPreferencesThemeDark: "Dunkel",
+      unitsPreferencesPinkLabel: "Pinkmodus-Akzente",
+      unitsPreferencesPinkOff: "Deaktiviert",
+      unitsPreferencesPinkOn: "Aktiviert",
+      unitsPreferencesUnitsLabel: "Temperatureinheiten",
+      unitsPreferencesPersistenceHint:
+        "Fordere dauerhaften Speicher an, damit der Browser die Planner-Daten selbst bei wenig Platz behält.",
+      unitsPreferencesPersistenceAction: "Speicher auf diesem Gerät schützen",
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
