@@ -499,7 +499,7 @@ textarea {
   display: none !important;
 }
 
-.status-message {
+.status-message { 
   margin-top: 0.75em;
 }
 
@@ -517,6 +517,13 @@ textarea {
   border: 1px solid var(--status-border-color);
   background-color: var(--panel-bg);
   display: block;
+}
+
+#results #pinWarning,
+#results #dtapWarning,
+#results #hotswapWarning {
+  display: inline-block;
+  max-width: min(36rem, 100%);
 }
 
 .status-message--info {
