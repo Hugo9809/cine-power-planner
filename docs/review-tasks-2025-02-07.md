@@ -9,10 +9,12 @@ archived.
 
 ## Notes
 
-- Reference verification logs, documentation commits or backup filenames in the
-  evidence column.
-- If a task involves changes to save/share/import/backup/restore workflows,
-  ensure the [Documentation Update Checklist](documentation-update-checklist.md)
-  is completed before closure.
-- Keep the tracker in the same repository as the documentation so offline crews
-  can review it without connectivity.
+- Reference verification logs, documentation commits, translation exports or
+  backup filenames in the evidence column.
+- If a task touches save/share/import/backup/restore workflows or translations,
+  complete the [Documentation Update Checklist](documentation-update-checklist.md)
+  before closure.
+- Keep the tracker in the repository so offline crews can review it without
+  connectivity.
+- When closing tasks, update the [Review Findings Log](review-findings.md) with
+  the resolution details.
