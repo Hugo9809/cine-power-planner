@@ -22,7 +22,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/core/runtime-tools.js',
+    'modules/core/runtime-shared.js',
     'modules/core/runtime-state.js',
+    'modules/core/mount-voltage.js',
     'modules/core/localization-bridge.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
@@ -105,7 +107,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
   ensureModule('modules/core/runtime-tools.js');
+  ensureModule('modules/core/runtime-shared.js');
   ensureModule('modules/core/localization-bridge.js');
+  ensureModule('modules/core/mount-voltage.js');
   ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');

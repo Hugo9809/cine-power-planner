@@ -129,3 +129,19 @@
 - Part one of app core now resolves `cineCoreRuntimeState` before falling back to its local implementation, sharing the candidate scope collector so both halves reuse the same module while keeping offline guards intact.【F:src/scripts/app-core-new-1.js†L136-L225】
 - Temperature queue and renderer keys derive from the shared helper, keeping customised runtime overrides aligned across autosave, backup, and restore flows even when profiles reload from offline caches.【F:src/scripts/app-core-new-1.js†L682-L723】
 - The runtime state bootstrap delegates to `createLocalRuntimeState` when available, ensuring the freeze registry and renderer assignment protections match the module’s implementation while preserving the legacy fallback path for cold starts.【F:src/scripts/app-core-new-1.js†L1083-L1334】
+
+## Step 11 – Mount voltage helper bootstrapping
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/script.js` | 191 | 195 | +4 |
+| `legacy/scripts/script.js` | 95 | 96 | +1 |
+| `src/scripts/loader.js` | 2341 | 2343 | +2 |
+| `legacy/scripts/loader.js` | 1887 | 1887 | +0 |
+| `service-worker-assets.js` | 232 | 235 | +3 |
+
+*Notes:*
+
+- Modern bundler startup now executes the shared runtime helpers before app core, registering both `cineCoreRuntimeShared` and `cineCoreMountVoltage` so mount voltage persistence stays resilient across autosave, share, and restore flows.【F:src/scripts/script.js†L19-L53】【F:src/scripts/script.js†L85-L97】
+- Loader bundles preload the same helpers in modern and legacy stacks, keeping runtime scope detection and voltage preference wiring consistent even when the UI falls back to the legacy bundle offline.【F:src/scripts/loader.js†L2178-L2203】【F:legacy/scripts/loader.js†L1796-L1807】
+- The service worker manifest now caches the helper modules, ensuring offline installs retain the mount voltage runtime safeguards without relying on network fetches.【F:service-worker-assets.js†L41-L71】【F:service-worker-assets.js†L176-L203】

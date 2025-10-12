@@ -15,11 +15,15 @@ own each safeguard.
    (top-level window, worker or legacy shim) and attaches the module registry so
    every later lookup works offline. The loader also ensures locally stored
    Uicons and fonts are preloaded before the UI unlocks.
-3. **`src/scripts/app-core-new-1.js`** wires high level helpers such as the
+3. **`src/scripts/modules/core/mount-voltage.js`** initialises mount voltage
+   preferences, dual-write storage keys and helper exports so autosave, backup
+   and restore routines always have the latest voltages before the UI binds to
+   form fields.【F:src/scripts/modules/core/mount-voltage.js†L137-L208】【F:src/scripts/modules/core/mount-voltage.js†L571-L706】
+4. **`src/scripts/app-core-new-1.js`** wires high level helpers such as the
    runtime guard, logging, print workflow bootstrap and icon registry. It does
    not touch project data directly but freezes the shared state objects that
    other modules reuse.
-4. **`src/scripts/app-core-new-2.js`** continues the setup by registering UI
+5. **`src/scripts/app-core-new-2.js`** continues the setup by registering UI
    controls, dialog wiring and autosave overlays. It exposes the hooks that the
    session manager uses to keep autosave, backup and restore prompts in sync
    with the UI.
