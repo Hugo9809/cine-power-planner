@@ -16001,9 +16001,26 @@ try {
 
 setButtonLabelWithIcon = function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
   if (!button) return;
-  const safeLabel = escapeButtonLabelSafely(typeof label === 'string' ? label : '');
+  // Clear all children
+  while (button.firstChild) button.removeChild(button.firstChild);
+  // Insert icon markup, if present and environment supports it
   const iconHtml = resolveButtonIconMarkup(glyph);
-  button.innerHTML = `${iconHtml}${safeLabel}`;
+  if (iconHtml && typeof globalThis !== 'undefined' && globalThis.document) {
+    // Insert icon using innerHTML, but in an isolated element for safety
+    const tmp = document.createElement('span');
+    tmp.innerHTML = iconHtml;
+    while (tmp.firstChild) {
+      button.appendChild(tmp.firstChild);
+    }
+  }
+  // Insert label as a text node only, never as HTML
+  const safeLabel = typeof label === 'string' ? label : '';
+  if (typeof globalThis !== 'undefined' && globalThis.document) {
+    button.appendChild(document.createTextNode(safeLabel));
+  } else {
+    // fallback for non-DOM environment
+    button.textContent = safeLabel;
+  }
 };
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
