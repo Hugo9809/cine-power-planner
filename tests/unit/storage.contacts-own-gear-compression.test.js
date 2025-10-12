@@ -1,4 +1,5 @@
 const CONTACTS_KEY = 'cameraPowerPlanner_contacts';
+const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const OWN_GEAR_KEY = 'cameraPowerPlanner_ownGear';
 const USER_PROFILE_KEY = 'cameraPowerPlanner_userProfile';
 const PROJECT_KEY = 'cameraPowerPlanner_project';
@@ -61,7 +62,7 @@ const bootstrapStorageModule = (storage) => {
 const containsCompressionFlag = (value) =>
   typeof value === 'string' && value.includes('"__cineStorageCompressed":true');
 
-describe('contacts, own gear and user profile storage bypass compression', () => {
+describe('contacts, own gear, device library and user profile storage bypass compression', () => {
   afterEach(() => {
     delete global.window;
     delete global.localStorage;
@@ -91,6 +92,41 @@ describe('contacts, own gear and user profile storage bypass compression', () =>
     expect(containsCompressionFlag(backup)).toBe(false);
   });
 
+  test('saveDeviceData stores plain JSON snapshots', () => {
+    const { storage, data } = createMockStorage();
+    const api = bootstrapStorageModule(storage);
+
+    const heavyDevice = {
+      cameras: { 'Camera A': { draw: '50W', notes: 'x'.repeat(256) } },
+      monitors: {},
+      video: {},
+      viewfinders: {},
+      directorMonitors: {},
+      iosVideo: {},
+      videoAssist: {},
+      media: {},
+      lenses: {},
+      batteries: {},
+      batteryHotswaps: {},
+      wirelessReceivers: {},
+      accessories: { chargers: {}, cages: {}, powerPlates: {}, cameraSupport: {}, matteboxes: {}, filters: {}, rigging: {}, batteries: {}, cables: {}, videoAssist: {}, media: {}, tripodHeads: {}, tripods: {}, sliders: {}, cameraStabiliser: {}, grip: {}, carts: {} },
+      fiz: { motors: {}, handUnits: {}, controllers: {}, distance: {} },
+      filterOptions: [],
+    };
+
+    api.saveDeviceData(heavyDevice);
+
+    const primary = data.get(DEVICE_KEY);
+    const backup = data.get(`${DEVICE_KEY}${BACKUP_SUFFIX}`);
+
+    expect(primary).toBeDefined();
+    expect(() => JSON.parse(primary)).not.toThrow();
+    expect(containsCompressionFlag(primary)).toBe(false);
+    expect(backup).toBeDefined();
+    expect(() => JSON.parse(backup)).not.toThrow();
+    expect(containsCompressionFlag(backup)).toBe(false);
+  });
+
   test('saveUserProfile stores plain JSON snapshots', () => {
     const { storage, data } = createMockStorage();
     const api = bootstrapStorageModule(storage);
@@ -114,12 +150,13 @@ describe('contacts, own gear and user profile storage bypass compression', () =>
     expect(containsCompressionFlag(backup)).toBe(false);
   });
 
-  test('compression sweep skips contacts and own gear entries', () => {
+  test('compression sweep skips contacts, own gear, device and user profile entries', () => {
     const { storage, data, setItemCalls } = createMockStorage({ quotaOnProjectBackup: true });
 
     data.set(PROJECT_KEY, JSON.stringify({ Active: { gearList: 'x'.repeat(2048) } }));
     data.set(CONTACTS_KEY, JSON.stringify([{ id: 'contact-1', name: 'DP' }]));
     data.set(OWN_GEAR_KEY, JSON.stringify([{ id: 'gear-1', name: 'Meter', notes: 'x'.repeat(256) }]));
+    data.set(DEVICE_KEY, JSON.stringify({ cameras: { Aria: { draw: '45W' } } }));
     data.set('otherKey', JSON.stringify({ payload: 'x'.repeat(8192) }));
     data.set(USER_PROFILE_KEY, JSON.stringify({
       name: 'Alex DP',
@@ -129,6 +166,7 @@ describe('contacts, own gear and user profile storage bypass compression', () =>
 
     const backupKey = `${USER_PROFILE_KEY}${BACKUP_SUFFIX}`;
     data.set(backupKey, JSON.stringify({ name: 'Alex DP' }));
+    data.set(`${DEVICE_KEY}${BACKUP_SUFFIX}`, JSON.stringify({ cameras: { Aria: { draw: '45W' } } }));
 
     const api = bootstrapStorageModule(storage);
 
@@ -141,6 +179,8 @@ describe('contacts, own gear and user profile storage bypass compression', () =>
     expect(containsCompressionFlag(data.get(`${CONTACTS_KEY}${BACKUP_SUFFIX}`))).toBe(false);
     expect(containsCompressionFlag(data.get(OWN_GEAR_KEY))).toBe(false);
     expect(containsCompressionFlag(data.get(`${OWN_GEAR_KEY}${BACKUP_SUFFIX}`))).toBe(false);
+    expect(containsCompressionFlag(data.get(DEVICE_KEY))).toBe(false);
+    expect(containsCompressionFlag(data.get(`${DEVICE_KEY}${BACKUP_SUFFIX}`))).toBe(false);
     expect(containsCompressionFlag(data.get(USER_PROFILE_KEY))).toBe(false);
     expect(containsCompressionFlag(data.get(backupKey))).toBe(false);
     expect(containsCompressionFlag(data.get(`${PROJECT_KEY}${BACKUP_SUFFIX}`))).toBe(true);
