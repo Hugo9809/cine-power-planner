@@ -1,16 +1,17 @@
-/* global cineRuntimeEnvironmentHelpers */
-
 (function () {
-  function detectGlobalScope() {
+  function detectAmbientScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
       return globalThis;
     }
+
     if (typeof window !== 'undefined' && window && typeof window === 'object') {
       return window;
     }
+
     if (typeof self !== 'undefined' && self && typeof self === 'object') {
       return self;
     }
+
     if (typeof global !== 'undefined' && global && typeof global === 'object') {
       return global;
     }
@@ -18,108 +19,47 @@
     return null;
   }
 
-  function collectEnvironmentHelperScopes(primary) {
-    const scopes = [];
-
-    function registerScope(scope) {
-      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-        return;
-      }
-
-      if (scopes.indexOf(scope) === -1) {
-        scopes.push(scope);
-      }
-    }
-
-    registerScope(primary);
-    if (typeof globalThis !== 'undefined') registerScope(globalThis);
-    if (typeof window !== 'undefined') registerScope(window);
-    if (typeof self !== 'undefined') registerScope(self);
-    if (typeof global !== 'undefined') registerScope(global);
-
-    return scopes;
-  }
-
-  const CORE_GLOBAL_SCOPE = detectGlobalScope();
-
-  function resolveEnvironmentHelpers() {
-    let helpers = null;
-
-    if (
-      typeof cineRuntimeEnvironmentHelpers !== 'undefined' &&
-      cineRuntimeEnvironmentHelpers &&
-      typeof cineRuntimeEnvironmentHelpers === 'object'
-    ) {
-      helpers = cineRuntimeEnvironmentHelpers;
-    }
-
-    if (!helpers && typeof require === 'function') {
+  function resolveRuntimeToolsModule(fileName, registryKey) {
+    if (typeof require === 'function') {
       try {
-        const requiredHelpers = require('../runtime-environment-helpers.js');
-        if (requiredHelpers && typeof requiredHelpers === 'object') {
-          helpers = requiredHelpers;
-        }
-      } catch (helpersRequireError) {
-        void helpersRequireError;
+        return require('./runtime-tools/' + fileName);
+      } catch (moduleRequireError) {
+        void moduleRequireError;
       }
     }
 
-    if (helpers) {
-      return helpers;
-    }
-
-    const candidateScopes = collectEnvironmentHelperScopes(CORE_GLOBAL_SCOPE);
-
-    for (let index = 0; index < candidateScopes.length; index += 1) {
-      const candidate = candidateScopes[index];
+    const scope = detectAmbientScope();
+    if (scope && typeof scope === 'object') {
       try {
-        const candidateHelpers =
-          candidate && candidate.cineRuntimeEnvironmentHelpers;
-        if (candidateHelpers && typeof candidateHelpers === 'object') {
-          return candidateHelpers;
+        const registry = scope.cineCoreRuntimeToolsModules;
+        if (registry && typeof registry === 'object') {
+          const candidate = registry[registryKey];
+          if (candidate && typeof candidate === 'object') {
+            return candidate;
+          }
         }
-      } catch (candidateLookupError) {
-        void candidateLookupError;
+      } catch (moduleLookupError) {
+        void moduleLookupError;
       }
     }
 
     return null;
   }
 
-  const CORE_ENVIRONMENT_HELPERS = resolveEnvironmentHelpers();
-
-  function detectScope(primary) {
+  function fallbackDetectScope(primary) {
     if (primary && (typeof primary === 'object' || typeof primary === 'function')) {
       return primary;
     }
 
-    let detected = null;
-
-    if (
-      CORE_ENVIRONMENT_HELPERS &&
-      typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
-    ) {
-      try {
-        detected = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
-      } catch (detectScopeError) {
-        void detectScopeError;
-        detected = null;
-      }
-    }
-
-    if (detected && (typeof detected === 'object' || typeof detected === 'function')) {
-      return detected;
-    }
-
-    const fallbackScope = CORE_GLOBAL_SCOPE || detectGlobalScope();
-    if (fallbackScope && (typeof fallbackScope === 'object' || typeof fallbackScope === 'function')) {
-      return fallbackScope;
+    const scope = detectAmbientScope();
+    if (scope && (typeof scope === 'object' || typeof scope === 'function')) {
+      return scope;
     }
 
     return null;
   }
 
-  function jsonDeepClone(value) {
+  function fallbackJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
     }
@@ -133,12 +73,12 @@
     return value;
   }
 
-  function resolveStructuredClone(primary) {
+  function fallbackResolveStructuredClone(primary, detectScopeFn) {
     if (typeof structuredClone === 'function') {
       return structuredClone;
     }
 
-    const scope = detectScope(primary);
+    const scope = detectScopeFn(primary);
     if (scope && typeof scope.structuredClone === 'function') {
       try {
         return scope.structuredClone.bind(scope);
@@ -170,14 +110,14 @@
     return null;
   }
 
-  function createResilientDeepClone(primary) {
-    const structuredCloneImpl = resolveStructuredClone(primary);
+  function fallbackCreateResilientDeepClone(primary, detectScopeFn) {
+    const structuredCloneImpl = fallbackResolveStructuredClone(primary, detectScopeFn);
 
     if (!structuredCloneImpl) {
-      return jsonDeepClone;
+      return fallbackJsonDeepClone;
     }
 
-    return function resilientDeepClone(value) {
+    return function fallbackResilientDeepClone(value) {
       if (value === null || typeof value !== 'object') {
         return value;
       }
@@ -188,98 +128,93 @@
         void structuredCloneError;
       }
 
-      return jsonDeepClone(value);
+      return fallbackJsonDeepClone(value);
     };
   }
 
-  function ensureGlobalValue(name, fallbackValue, primary) {
+  function fallbackEnsureGlobalValue(name, fallbackValue) {
     const fallbackProvider =
-      typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
-        return fallbackValue;
-      };
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
 
-    if (typeof name !== 'string' || !name) {
-      try {
-        return fallbackProvider();
-      } catch (fallbackError) {
-        void fallbackError;
-        return undefined;
-      }
-    }
-
-    const scope = detectScope(primary);
-    if (!scope || typeof scope !== 'object') {
+    try {
       return fallbackProvider();
+    } catch (fallbackError) {
+      void fallbackError;
+      return undefined;
     }
-
-    let existing;
-    try {
-      existing = scope[name];
-    } catch (readError) {
-      existing = undefined;
-      void readError;
-    }
-
-    if (typeof existing !== 'undefined') {
-      return existing;
-    }
-
-    const value = fallbackProvider();
-
-    try {
-      scope[name] = value;
-      return scope[name];
-    } catch (assignError) {
-      void assignError;
-    }
-
-    try {
-      Object.defineProperty(scope, name, {
-        configurable: true,
-        writable: true,
-        value,
-      });
-    } catch (defineError) {
-      void defineError;
-    }
-
-    try {
-      return scope[name];
-    } catch (finalReadError) {
-      void finalReadError;
-    }
-
-    return value;
   }
 
-  function ensureDeepClone(primary) {
-    const scope = detectScope(primary);
-    if (scope && typeof scope.__cineDeepClone === 'function') {
-      return scope.__cineDeepClone;
-    }
+  const scopeDetectionModule = resolveRuntimeToolsModule('scope-detection.js', 'scopeDetection');
+  const cloneToolsModule = resolveRuntimeToolsModule('clone-tools.js', 'cloneTools');
+  const ensureGlobalValueModule = resolveRuntimeToolsModule(
+    'ensure-global-value.js',
+    'ensureGlobalValue',
+  );
 
-    const clone = createResilientDeepClone(scope);
+  const detectScope =
+    scopeDetectionModule && typeof scopeDetectionModule.detectScope === 'function'
+      ? scopeDetectionModule.detectScope
+      : fallbackDetectScope;
 
-    if (scope && typeof scope === 'object') {
-      try {
-        Object.defineProperty(scope, '__cineDeepClone', {
-          configurable: true,
-          writable: true,
-          value: clone,
-        });
-      } catch (defineError) {
-        void defineError;
+  const jsonDeepClone =
+    cloneToolsModule && typeof cloneToolsModule.jsonDeepClone === 'function'
+      ? cloneToolsModule.jsonDeepClone
+      : fallbackJsonDeepClone;
 
-        try {
-          scope.__cineDeepClone = clone;
-        } catch (assignError) {
-          void assignError;
-        }
-      }
-    }
+  const resolveStructuredClone =
+    cloneToolsModule && typeof cloneToolsModule.resolveStructuredClone === 'function'
+      ? cloneToolsModule.resolveStructuredClone
+      : function fallbackResolveStructuredCloneWrapper(primary) {
+          return fallbackResolveStructuredClone(primary, detectScope);
+        };
 
-    return clone;
-  }
+  const createResilientDeepClone =
+    cloneToolsModule && typeof cloneToolsModule.createResilientDeepClone === 'function'
+      ? cloneToolsModule.createResilientDeepClone
+      : function fallbackCreateResilientDeepCloneWrapper(primary) {
+          return fallbackCreateResilientDeepClone(primary, detectScope);
+        };
+
+  const ensureDeepClone =
+    cloneToolsModule && typeof cloneToolsModule.ensureDeepClone === 'function'
+      ? cloneToolsModule.ensureDeepClone
+      : function fallbackEnsureDeepClone(primary) {
+          const scope = detectScope(primary);
+          if (scope && typeof scope.__cineDeepClone === 'function') {
+            return scope.__cineDeepClone;
+          }
+
+          const clone = fallbackCreateResilientDeepClone(scope, detectScope);
+
+          if (scope && typeof scope === 'object') {
+            try {
+              Object.defineProperty(scope, '__cineDeepClone', {
+                configurable: true,
+                writable: true,
+                value: clone,
+              });
+            } catch (defineError) {
+              void defineError;
+
+              try {
+                scope.__cineDeepClone = clone;
+              } catch (assignError) {
+                void assignError;
+              }
+            }
+          }
+
+          return clone;
+        };
+
+  const ensureGlobalValue =
+    ensureGlobalValueModule && typeof ensureGlobalValueModule.ensureGlobalValue === 'function'
+      ? ensureGlobalValueModule.ensureGlobalValue
+      : fallbackEnsureGlobalValue;
 
   const namespace = {
     detectScope,
@@ -290,7 +225,7 @@
     ensureDeepClone,
   };
 
-  const globalScope = detectScope();
+  const globalScope = detectAmbientScope();
   const targetName = 'cineCoreRuntimeTools';
   const existing = globalScope && typeof globalScope[targetName] === 'object'
     ? globalScope[targetName]
