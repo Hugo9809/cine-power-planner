@@ -1191,6 +1191,77 @@
       if (typeof value.details !== 'undefined') {
         errorOutput.details = sanitizeForLog(value.details, nextDepth + 1, visited);
       }
+      if (typeof value.errors !== 'undefined' && value.errors !== null) {
+        const collectedErrors = [];
+        const maxErrors = 10;
+        let truncatedErrors = 0;
+
+        const appendErrorDetail = function appendErrorDetail(candidate) {
+          if (collectedErrors.length >= maxErrors) {
+            truncatedErrors += 1;
+            return;
+          }
+          try {
+            collectedErrors.push(sanitizeForLog(candidate, nextDepth + 1, visited));
+          } catch (error) {
+            collectedErrors.push(
+              error && error.message ? `[Unserializable error: ${error.message}]` : '[Unserializable error]'
+            );
+          }
+        };
+
+        const rawErrors = value.errors;
+        if (Array.isArray(rawErrors)) {
+          for (let index = 0; index < rawErrors.length; index += 1) {
+            appendErrorDetail(rawErrors[index]);
+          }
+          if (rawErrors.length > collectedErrors.length) {
+            truncatedErrors += rawErrors.length - collectedErrors.length;
+          }
+        } else if (rawErrors && typeof rawErrors === 'object') {
+          let iterator = null;
+          try {
+            const symbolIterator = typeof Symbol === 'function' ? Symbol.iterator : null;
+            if (symbolIterator && typeof rawErrors[symbolIterator] === 'function') {
+              iterator = rawErrors[symbolIterator].call(rawErrors);
+            }
+          } catch (iteratorError) {
+            iterator = null;
+            void iteratorError;
+          }
+
+          if (iterator && typeof iterator.next === 'function') {
+            let result = iterator.next();
+            let count = 0;
+            while (!result.done) {
+              if (count < maxErrors) {
+                appendErrorDetail(result.value);
+              } else {
+                truncatedErrors += 1;
+              }
+              count += 1;
+              try {
+                result = iterator.next();
+              } catch (iterationError) {
+                truncatedErrors += 1;
+                void iterationError;
+                break;
+              }
+            }
+          } else {
+            appendErrorDetail(rawErrors);
+          }
+        } else {
+          appendErrorDetail(rawErrors);
+        }
+
+        if (collectedErrors.length) {
+          errorOutput.errors = collectedErrors;
+          if (truncatedErrors > 0) {
+            errorOutput.errorsTruncated = truncatedErrors;
+          }
+        }
+      }
       return errorOutput;
     }
 
