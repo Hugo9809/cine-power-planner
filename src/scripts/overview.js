@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getSafeGearListHtmlSections, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getSafeGearListHtmlSections, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference, resolveOverviewGearListSections */
 
 let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
@@ -356,7 +356,8 @@ function logOverview(level, message, detail, meta) {
     }
 }
 
-function resolveOverviewGearListSections(html) {
+/* exported resolveOverviewGearListSections */
+var resolveOverviewGearListSections = function resolveOverviewGearListSections(html) {
     const normalizedHtml = typeof html === 'string' ? html : '';
     if (!normalizedHtml) {
         return { projectHtml: '', gearHtml: '' };
@@ -416,7 +417,30 @@ function resolveOverviewGearListSections(html) {
     }
 
     return fallbackResult;
-}
+};
+
+(function exposeOverviewGearListSections() {
+    const scopes = [];
+    if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+        }
+
+        try {
+            if (!scope.resolveOverviewGearListSections) {
+                scope.resolveOverviewGearListSections = resolveOverviewGearListSections;
+            }
+        } catch (assignError) {
+            void assignError;
+        }
+    }
+})();
 
         }
     } else {

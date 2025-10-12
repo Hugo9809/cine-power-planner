@@ -1,3 +1,5 @@
+/* global cineRuntimeEnvironmentHelpers */
+
 (function () {
   function detectGlobalScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {

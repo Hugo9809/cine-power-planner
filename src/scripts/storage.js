@@ -8974,10 +8974,10 @@ function expandCombinedProductionCompanyInfo(rawText, projectLabels, metadata) {
     result.productionCompanyAddress = collected.productionCompanyAddress.join('\n');
   }
   if (collected.productionCompanyStreet && collected.productionCompanyStreet.length) {
-    var streetParts = collected.productionCompanyStreet;
-    result.productionCompanyStreet = streetParts[0];
-    if (streetParts.length > 1) {
-      result.productionCompanyStreet2 = streetParts.slice(1).join('\n');
+    var streetLines = collected.productionCompanyStreet;
+    result.productionCompanyStreet = streetLines[0];
+    if (streetLines.length > 1) {
+      result.productionCompanyStreet2 = streetLines.slice(1).join('\n');
     }
   }
   if (collected.productionCompanyCity && collected.productionCompanyCity.length) {
