@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getSafeGearListHtmlSections, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, focusScalePreference */
 
 let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
@@ -354,6 +354,68 @@ function logOverview(level, message, detail, meta) {
                 } catch (consoleError) {
                     void consoleError;
     }
+}
+
+function resolveOverviewGearListSections(html) {
+    const normalizedHtml = typeof html === 'string' ? html : '';
+    if (!normalizedHtml) {
+        return { projectHtml: '', gearHtml: '' };
+    }
+
+    const fallbackResult = { projectHtml: '', gearHtml: normalizedHtml };
+
+    const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+    const trySplit = (fn, source) => {
+        if (typeof fn !== 'function') {
+            return null;
+        }
+        try {
+            const result = fn.call(globalScope, normalizedHtml);
+            if (!result || typeof result !== 'object') {
+                return null;
+            }
+            const projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
+            const gearHtml = typeof result.gearHtml === 'string'
+                ? result.gearHtml
+                : (projectHtml ? '' : normalizedHtml);
+            return { projectHtml, gearHtml };
+        } catch (error) {
+            logOverview('warn', 'Unable to split gear list HTML for overview rendering.', error, {
+                action: 'split-gear-html',
+                source,
+            });
+            return null;
+        }
+    };
+
+    const candidates = [];
+    if (typeof getSafeGearListHtmlSections === 'function') {
+        candidates.push({ fn: getSafeGearListHtmlSections, source: 'global-getSafeGearListHtmlSections' });
+    }
+    if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.getSafeGearListHtmlSections === 'function') {
+        candidates.push({ fn: globalScope.cineGearList.getSafeGearListHtmlSections, source: 'cineGearList.getSafeGearListHtmlSections' });
+    }
+    if (typeof splitGearListHtml === 'function') {
+        candidates.push({ fn: splitGearListHtml, source: 'global-splitGearListHtml' });
+    }
+    if (globalScope && globalScope.cineGearList && typeof globalScope.cineGearList.splitGearListHtml === 'function') {
+        candidates.push({ fn: globalScope.cineGearList.splitGearListHtml, source: 'cineGearList.splitGearListHtml' });
+    }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        const sections = trySplit(candidate.fn, candidate.source);
+        if (sections) {
+            return sections;
+        }
+    }
+
+    return fallbackResult;
 }
 
         }
@@ -1421,9 +1483,7 @@ function generatePrintableOverview(config = {}) {
     let projectSectionHtml = '';
     let gearSectionHtml = '';
     if (gearListCombined) {
-        const parts = typeof splitGearListHtml === 'function'
-            ? splitGearListHtml(gearListCombined)
-            : { projectHtml: '', gearHtml: '' };
+        const parts = resolveOverviewGearListSections(gearListCombined);
         if (parts.projectHtml) {
             projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
