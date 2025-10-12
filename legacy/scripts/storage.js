@@ -7496,7 +7496,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function stripHtmlTags(value) {
     if (typeof value !== 'string') return '';
-    return value.replace(/<[^>]*>/g, '');
+    let prev;
+    do {
+      prev = value;
+      value = value.replace(/<[^>]*>/g, '');
+    } while (value !== prev);
+    return value;
   }
   function normalizeRequirementValueFromHtml(rawHtml, fieldName) {
     if (typeof rawHtml !== 'string') {
