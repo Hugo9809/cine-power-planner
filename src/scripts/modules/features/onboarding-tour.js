@@ -1661,7 +1661,7 @@
       if (fallbackValue) {
         return fallbackValue;
       }
-      return 'Step 1';
+      return 'Preface';
     })();
 
     return {
@@ -2297,7 +2297,7 @@
     if (tourTexts && typeof tourTexts.prefaceIndicator === 'string' && tourTexts.prefaceIndicator.trim()) {
       return tourTexts.prefaceIndicator.trim();
     }
-    return 'Step 1';
+    return 'Preface';
   }
 
   function focusCard() {
@@ -3414,44 +3414,43 @@
     const hero = DOCUMENT.createElement('div');
     hero.className = 'onboarding-hero';
 
-    const heroBanner = DOCUMENT.createElement('div');
-    heroBanner.className = 'onboarding-hero-banner';
-    let heroBannerHasContent = false;
-
+    let badgeHighlight = null;
     if (badgeLabel || badgeDescription) {
-      const badge = DOCUMENT.createElement('div');
-      badge.className = 'onboarding-hero-badge';
+      const badgeItem = DOCUMENT.createElement('li');
+      badgeItem.className = 'onboarding-hero-highlight onboarding-hero-highlight--badge';
 
       const badgeIconEl = DOCUMENT.createElement('span');
-      badgeIconEl.className = 'icon-glyph onboarding-hero-badge-icon';
+      badgeIconEl.className = 'icon-glyph onboarding-hero-highlight-icon onboarding-hero-highlight-icon--badge';
       badgeIconEl.setAttribute('data-icon-font', 'uicons');
       badgeIconEl.setAttribute('aria-hidden', 'true');
       badgeIconEl.textContent = badgeIcon;
-      badge.appendChild(badgeIconEl);
+      badgeItem.appendChild(badgeIconEl);
 
       const badgeText = DOCUMENT.createElement('div');
-      badgeText.className = 'onboarding-hero-badge-text';
+      badgeText.className = 'onboarding-hero-highlight-text onboarding-hero-highlight-text--badge';
 
       if (badgeLabel) {
         const labelEl = DOCUMENT.createElement('span');
-        labelEl.className = 'onboarding-hero-badge-label';
+        labelEl.className = 'onboarding-hero-highlight-badge-label';
         labelEl.textContent = badgeLabel;
         badgeText.appendChild(labelEl);
       }
 
       if (badgeDescription) {
         const descriptionEl = DOCUMENT.createElement('span');
-        descriptionEl.className = 'onboarding-hero-badge-description';
+        descriptionEl.className = 'onboarding-hero-highlight-badge-description';
         descriptionEl.textContent = badgeDescription;
         badgeText.appendChild(descriptionEl);
       }
 
-      badge.appendChild(badgeText);
-      heroBanner.appendChild(badge);
-      heroBannerHasContent = true;
+      badgeItem.appendChild(badgeText);
+      badgeHighlight = badgeItem;
     }
 
     if (heroHeading || heroSubheading || heroSummary) {
+      const heroBanner = DOCUMENT.createElement('div');
+      heroBanner.className = 'onboarding-hero-banner';
+
       const headerWrap = DOCUMENT.createElement('div');
       headerWrap.className = 'onboarding-hero-header';
 
@@ -3477,16 +3476,16 @@
       }
 
       heroBanner.appendChild(headerWrap);
-      heroBannerHasContent = true;
-    }
-
-    if (heroBannerHasContent) {
       hero.appendChild(heroBanner);
     }
 
-    if (highlights.length) {
+    if (highlights.length || badgeHighlight) {
       const listEl = DOCUMENT.createElement('ul');
       listEl.className = 'onboarding-hero-highlights';
+
+      if (badgeHighlight) {
+        listEl.appendChild(badgeHighlight);
+      }
 
       for (let index = 0; index < highlights.length; index += 1) {
         const entry = highlights[index] && typeof highlights[index] === 'object'
