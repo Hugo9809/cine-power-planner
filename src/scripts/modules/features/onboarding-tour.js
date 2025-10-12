@@ -132,6 +132,87 @@
     }
   }());
 
+  const DOM_POSITION_FOLLOWING = typeof Node !== 'undefined' && Node
+    ? Node.DOCUMENT_POSITION_FOLLOWING
+    : 4;
+  const DOM_POSITION_PRECEDING = typeof Node !== 'undefined' && Node
+    ? Node.DOCUMENT_POSITION_PRECEDING
+    : 2;
+
+  const FOCUSABLE_SELECTOR = [
+    'button:not([disabled])',
+    'a[href]',
+    'input:not([disabled]):not([type="hidden"])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[role="button"]:not([aria-disabled="true"])',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(',');
+
+  function isElementFocusable(element) {
+    if (!element || typeof element.matches !== 'function') {
+      return false;
+    }
+    if (element.hasAttribute('disabled')) {
+      return false;
+    }
+    if (element.getAttribute && element.getAttribute('aria-disabled') === 'true') {
+      return false;
+    }
+    if (element.hidden || (typeof element.getAttribute === 'function' && element.getAttribute('hidden') !== null)) {
+      return false;
+    }
+    if (typeof element.closest === 'function') {
+      if (element.closest('[aria-hidden="true"]')) {
+        return false;
+      }
+      if (element.closest('[hidden]')) {
+        return false;
+      }
+    }
+    return element.matches(FOCUSABLE_SELECTOR);
+  }
+
+  function collectFocusableElements(root, includeRoot = false) {
+    if (!root) {
+      return [];
+    }
+    const focusable = [];
+    if (includeRoot && isElementFocusable(root)) {
+      focusable.push(root);
+    }
+    if (typeof root.querySelectorAll !== 'function') {
+      return focusable;
+    }
+    const nodes = root.querySelectorAll(FOCUSABLE_SELECTOR);
+    for (let index = 0; index < nodes.length; index += 1) {
+      const node = nodes[index];
+      if (isElementFocusable(node)) {
+        focusable.push(node);
+      }
+    }
+    return focusable;
+  }
+
+  function sortFocusableByDocumentOrder(elements) {
+    if (!Array.isArray(elements)) {
+      return [];
+    }
+    return elements.slice().sort((a, b) => {
+      if (!a || !b || a === b || typeof a.compareDocumentPosition !== 'function') {
+        return 0;
+      }
+      const position = a.compareDocumentPosition(b);
+      if (position & DOM_POSITION_FOLLOWING) {
+        return -1;
+      }
+      if (position & DOM_POSITION_PRECEDING) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
   function isDialogElement(element) {
     return Boolean(
       element
@@ -4563,19 +4644,47 @@
     if (key !== 'Tab') {
       return;
     }
-    const focusable = Array.from(cardEl.querySelectorAll('button:not([disabled])'));
-    if (!focusable.length) {
+    const focusableElements = [];
+    const seen = new Set();
+    const pushUnique = element => {
+      if (!element) {
+        return;
+      }
+      if (seen.has(element)) {
+        return;
+      }
+      seen.add(element);
+      focusableElements.push(element);
+    };
+
+    const cardFocusable = collectFocusableElements(cardEl);
+    for (let index = 0; index < cardFocusable.length; index += 1) {
+      pushUnique(cardFocusable[index]);
+    }
+
+    if (Array.isArray(activeTargetElements)) {
+      for (let targetIndex = 0; targetIndex < activeTargetElements.length; targetIndex += 1) {
+        const target = activeTargetElements[targetIndex];
+        const targetFocusable = collectFocusableElements(target, true);
+        for (let index = 0; index < targetFocusable.length; index += 1) {
+          pushUnique(targetFocusable[index]);
+        }
+      }
+    }
+
+    const orderedFocusable = sortFocusableByDocumentOrder(focusableElements);
+    if (!orderedFocusable.length) {
       return;
     }
     const direction = event.shiftKey ? -1 : 1;
     const activeElement = DOCUMENT.activeElement;
-    let index = focusable.indexOf(activeElement);
+    let index = orderedFocusable.indexOf(activeElement);
     if (index === -1) {
       index = direction === 1 ? -1 : 0;
     }
-    index = (index + direction + focusable.length) % focusable.length;
+    index = (index + direction + orderedFocusable.length) % orderedFocusable.length;
     event.preventDefault();
-    const target = focusable[index];
+    const target = orderedFocusable[index];
     if (target) {
       try {
         target.focus({ preventScroll: true });
