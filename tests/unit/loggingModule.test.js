@@ -114,5 +114,53 @@ describe('cineLogging module stats', () => {
     const entry = history[0];
     expect(entry.origin).toBeNull();
   });
+
+  it('sanitizes nested errors exposed through error.errors for diagnostics', () => {
+    logging.clearHistory({ persist: false });
+    logging.setConfig(
+      { historyLevel: 'debug', historyLimit: 10, stackTraces: false },
+      { persist: false },
+    );
+
+    class WrappedAggregateError extends Error {
+      constructor(errors) {
+        super('aggregate failure');
+        this.name = 'WrappedAggregateError';
+        this.errors = errors;
+      }
+    }
+
+    const aggregate = new WrappedAggregateError([
+      new Error('first issue'),
+      'second issue',
+      { code: 42, reason: 'third issue' },
+    ]);
+
+    logging.error('Aggregate capture', aggregate);
+
+    const history = logging.getHistory({ limit: 1 });
+    expect(history.length).toBe(1);
+    const entry = history[0];
+
+    expect(entry.detail).toEqual(
+      expect.objectContaining({
+        name: 'WrappedAggregateError',
+        message: 'aggregate failure',
+      }),
+    );
+
+    expect(Array.isArray(entry.detail.errors)).toBe(true);
+    expect(entry.detail.errors.length).toBeGreaterThanOrEqual(3);
+    expect(entry.detail.errors[0]).toEqual(
+      expect.objectContaining({ message: 'first issue' }),
+    );
+    expect(entry.detail.errors).toEqual(
+      expect.arrayContaining([
+        'second issue',
+        expect.objectContaining({ code: 42, reason: 'third issue' }),
+      ]),
+    );
+    expect(entry.detail.errorsTruncated || 0).toBeGreaterThanOrEqual(0);
+  });
 });
 
