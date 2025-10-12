@@ -284,21 +284,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   function resolveEnvironmentContext(scope) {
-    var targetScope = scope || LOCAL_SCOPE;
-    if (typeof require === 'function') {
-      try {
-        var required = require('./environment-context.js');
+    return invokeEnvironmentHelper(
+      'resolveEnvironmentContext',
+      [scope || LOCAL_SCOPE],
+      function localFallback() {
+        var targetScope = scope || LOCAL_SCOPE;
+        var required = fallbackTryRequire('./environment-context.js');
+
         if (required && _typeof(required) === 'object') {
           return required;
         }
-      } catch (error) {
-        void error;
+
+        if (targetScope && _typeof(targetScope.cineModuleEnvironmentContext) === 'object') {
+          return targetScope.cineModuleEnvironmentContext;
+        }
+
+        return null;
       }
-    }
-    if (targetScope && _typeof(targetScope.cineModuleEnvironmentContext) === 'object') {
-      return targetScope.cineModuleEnvironmentContext;
-    }
-    return null;
+    );
   }
   var ENVIRONMENT_CONTEXT = resolveEnvironmentContext(LOCAL_SCOPE);
   function detectWithContext() {

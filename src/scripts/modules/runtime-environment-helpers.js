@@ -103,6 +103,24 @@
     return null;
   }
 
+  function resolveEnvironmentContext(scope) {
+    const required = fallbackTryRequire('./environment-context.js');
+    if (required && typeof required === 'object') {
+      return required;
+    }
+
+    const candidates = fallbackCollectCandidateScopes(scope);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && typeof candidate.cineModuleEnvironmentContext === 'object') {
+        return candidate.cineModuleEnvironmentContext;
+      }
+    }
+
+    return null;
+  }
+
   function resolveModuleLinker(scope) {
     const required = fallbackTryRequire('./helpers/module-linker.js');
     if (required && typeof required === 'object') {
@@ -175,6 +193,7 @@
     fallbackLoadModuleEnvironment,
     fallbackResolveModuleGlobals,
     fallbackTryRequire,
+    resolveEnvironmentContext,
     resolveModuleLinker,
     resolveModuleSystem,
   };

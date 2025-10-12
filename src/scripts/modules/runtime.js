@@ -298,24 +298,24 @@
   const MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
 
   function resolveEnvironmentContext(scope) {
-    const targetScope = scope || LOCAL_SCOPE;
+    return invokeEnvironmentHelper(
+      'resolveEnvironmentContext',
+      [scope || LOCAL_SCOPE],
+      function localFallback() {
+        const targetScope = scope || LOCAL_SCOPE;
+        const required = fallbackTryRequire('./environment-context.js');
 
-    if (typeof require === 'function') {
-      try {
-        const required = require('./environment-context.js');
         if (required && typeof required === 'object') {
           return required;
         }
-      } catch (error) {
-        void error;
+
+        if (targetScope && typeof targetScope.cineModuleEnvironmentContext === 'object') {
+          return targetScope.cineModuleEnvironmentContext;
+        }
+
+        return null;
       }
-    }
-
-    if (targetScope && typeof targetScope.cineModuleEnvironmentContext === 'object') {
-      return targetScope.cineModuleEnvironmentContext;
-    }
-
-    return null;
+    );
   }
 
   const ENVIRONMENT_CONTEXT = resolveEnvironmentContext(LOCAL_SCOPE);
