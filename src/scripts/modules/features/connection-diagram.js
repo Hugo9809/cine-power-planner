@@ -1585,23 +1585,6 @@
         windowObj.addEventListener('mousemove', updatePointerPosition);
         windowObj.addEventListener('touchmove', updatePointerPosition, { passive: true });
       }
-      svg.addEventListener('mousedown', onDragStart);
-      svg.addEventListener('touchstart', onDragStart, { passive: false });
-      svg.addEventListener('mouseover', onNodeOver);
-      svg.addEventListener('mouseout', onNodeOut);
-      svg.addEventListener('mouseleave', onSvgLeave);
-      svg.addEventListener('click', onNodeClick);
-      const repositionActivePopup = () => {
-        if (!activePopupNode) return;
-        const nodeId = activePopupNode.getAttribute('data-node');
-        if (!nodeId || !lastPopupEntries[nodeId]) {
-          hidePopup();
-          activePopupNode = null;
-          return;
-        }
-        positionPopup(activePopupNode, null);
-      };
-
       const onNodeClick = e => {
         const node = e.target.closest('.diagram-node');
         if (!node) return;
@@ -1617,6 +1600,23 @@
         activePopupNode = null;
         openDetailDialogWithEntry(entry);
         e.stopPropagation();
+      };
+
+      svg.addEventListener('mousedown', onDragStart);
+      svg.addEventListener('touchstart', onDragStart, { passive: false });
+      svg.addEventListener('mouseover', onNodeOver);
+      svg.addEventListener('mouseout', onNodeOut);
+      svg.addEventListener('mouseleave', onSvgLeave);
+      svg.addEventListener('click', onNodeClick);
+      const repositionActivePopup = () => {
+        if (!activePopupNode) return;
+        const nodeId = activePopupNode.getAttribute('data-node');
+        if (!nodeId || !lastPopupEntries[nodeId]) {
+          hidePopup();
+          activePopupNode = null;
+          return;
+        }
+        positionPopup(activePopupNode, null);
       };
 
       svg.addEventListener('mousemove', updatePointerPosition);
