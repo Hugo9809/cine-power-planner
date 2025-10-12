@@ -149,10 +149,7 @@
         var selectedOption = target.selectedOptions && target.selectedOptions[0];
         var destination = selectedOption ? selectedOption.value : target.value;
         if (destination) {
-          // Only allow safe relative URLs (starting with "/") to prevent XSS/open redirect
-          if (/^\//.test(destination)) {
-            window.location.href = destination;
-          }
+          window.location.href = destination;
         }
       });
     }

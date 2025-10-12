@@ -250,7 +250,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var storage = context.storage || {};
     void win;
     void helpers;
-    var themeMemoryStorage = (function createThemeMemoryStorage() {
+    var themeMemoryStorage = function createThemeMemoryStorage() {
       var memory = Object.create(null);
       return {
         getItem: function getItem(key) {
@@ -266,25 +266,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (Object.prototype.hasOwnProperty.call(memory, key)) {
             delete memory[key];
           }
-        },
+        }
       };
-    }());
-
+    }();
     function collectThemeStorageEntries() {
       var entries = [];
-
       function pushEntry(name, storageRef) {
         if (!storageRef || typeof storageRef.getItem !== 'function') {
           return;
         }
-        for (var entryIndex = 0; entryIndex < entries.length; entryIndex += 1) {
-          if (entries[entryIndex] && entries[entryIndex].storage === storageRef) {
+        for (var _index = 0; _index < entries.length; _index += 1) {
+          if (entries[_index] && entries[_index].storage === storageRef) {
             return;
           }
         }
-        entries.push({ name: name, storage: storageRef });
+        entries.push({
+          name: name,
+          storage: storageRef
+        });
       }
-
       if (storage && typeof storage.getSafeLocalStorage === 'function') {
         try {
           pushEntry('safeLocalStorage', storage.getSafeLocalStorage());
@@ -292,7 +292,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeWarn('cineSettingsAppearance: getSafeLocalStorage failed for theme preference.', error);
         }
       }
-
       if (storage && typeof storage.resolveSafeLocalStorage === 'function') {
         try {
           pushEntry('resolvedSafeLocalStorage', storage.resolveSafeLocalStorage());
@@ -300,7 +299,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeWarn('cineSettingsAppearance: resolveSafeLocalStorage failed for theme preference.', error);
         }
       }
-
       if (storage && typeof storage.getLocalStorage === 'function') {
         try {
           pushEntry('localStorage', storage.getLocalStorage());
@@ -308,17 +306,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeWarn('cineSettingsAppearance: getLocalStorage failed for theme preference.', error);
         }
       }
-
       pushEntry('memoryStorage', themeMemoryStorage);
-
       return entries;
     }
-
     function persistThemePreference(value) {
       var entries = collectThemeStorageEntries();
       var serialized = value ? 'true' : 'false';
-      for (var index = 0; index < entries.length; index += 1) {
-        var entry = entries[index];
+      for (var _index2 = 0; _index2 < entries.length; _index2 += 1) {
+        var entry = entries[_index2];
         if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
           continue;
         }
@@ -327,16 +322,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } catch (error) {
           safeWarn('cineSettingsAppearance: Unable to persist theme preference.', {
             name: entry.name,
-            error: error,
+            error: error
           });
         }
       }
     }
-
     function readStoredThemePreference() {
       var entries = collectThemeStorageEntries();
-      for (var index = 0; index < entries.length; index += 1) {
-        var entry = entries[index];
+      for (var _index3 = 0; _index3 < entries.length; _index3 += 1) {
+        var entry = entries[_index3];
         if (!entry || !entry.storage || typeof entry.storage.getItem !== 'function') {
           continue;
         }
@@ -348,7 +342,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } catch (error) {
           safeWarn('cineSettingsAppearance: Unable to read theme preference.', {
             name: entry.name,
-            error: error,
+            error: error
           });
         }
       }
@@ -580,7 +574,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         settings.darkMode.checked = !!enabled;
       }
     }
-
     function detectSystemDarkPreference() {
       if (!win || typeof win.matchMedia !== 'function') {
         return null;
@@ -592,7 +585,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return null;
     }
-
     function detectThemeControlType(element, provided) {
       if (provided) {
         return provided;
@@ -612,32 +604,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return 'button';
     }
-
     function createThemeControlReader(element, type, provided, getCurrent) {
       if (typeof provided === 'function') {
         return provided;
       }
       if (type === 'select') {
-        return function selectReader() {
+        return function () {
           return !!(element && element.value === 'dark');
         };
       }
       if (type === 'checkbox') {
-        return function checkboxReader() {
+        return function () {
           return !!(element && element.checked);
         };
       }
-      return function buttonReader() {
+      return function () {
         return !getCurrent();
       };
     }
-
     function createThemeControlWriter(element, type, provided) {
       if (typeof provided === 'function') {
         return provided;
       }
       if (type === 'select') {
-        return function selectWriter(value) {
+        return function (value) {
           if (!element) {
             return;
           }
@@ -648,50 +638,47 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
       }
       if (type === 'checkbox') {
-        return function checkboxWriter(value) {
+        return function (value) {
           if (element) {
             element.checked = !!value;
           }
         };
       }
-      return function buttonWriter(value) {
+      return function (value) {
         if (!element || typeof element.setAttribute !== 'function') {
           return;
         }
         element.setAttribute('aria-pressed', value ? 'true' : 'false');
       };
     }
-
     function createThemePreferenceController(options) {
       var controllerOptions = options && _typeof(options) === 'object' ? options : {};
       var controls = [];
       var applying = false;
       var currentPreference = false;
-
-      function getCurrentPreference() {
+      var getCurrentPreference = function getCurrentPreference() {
         return currentPreference;
-      }
-
+      };
       function applyPreference(value, config) {
         var optionsConfig = config && _typeof(config) === 'object' ? config : {};
         var normalized = !!value;
         var previous = currentPreference;
         currentPreference = normalized;
-
         applying = true;
         try {
-          for (var controlIndex = 0; controlIndex < controls.length; controlIndex += 1) {
-            var control = controls[controlIndex];
+          for (var _index4 = 0; _index4 < controls.length; _index4 += 1) {
+            var control = controls[_index4];
             if (!control || control === optionsConfig.source || typeof control.write !== 'function') {
               continue;
             }
             try {
-              control.write(normalized, { previous: previous });
+              control.write(normalized, {
+                previous: previous
+              });
             } catch (error) {
               safeWarn('cineSettingsAppearance: Unable to sync theme control.', error);
             }
           }
-
           try {
             applyDarkMode(normalized);
           } catch (error) {
@@ -700,33 +687,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } finally {
           applying = false;
         }
-
         if (optionsConfig.source && typeof optionsConfig.source.write === 'function') {
           try {
-            optionsConfig.source.write(normalized, { previous: previous });
+            optionsConfig.source.write(normalized, {
+              previous: previous
+            });
           } catch (error) {
             safeWarn('cineSettingsAppearance: Unable to sync source theme control.', error);
           }
         }
-
         if (optionsConfig.persist !== false) {
           persistThemePreference(normalized);
         }
-
         return previous !== normalized;
       }
-
       function registerControl(element, controlOptions) {
         if (!element) {
-          return function noopUnregister() {};
+          return function () {};
         }
-
         var configuration = controlOptions && _typeof(controlOptions) === 'object' ? controlOptions : {};
         var type = detectThemeControlType(element, configuration.type);
         var read = createThemeControlReader(element, type, configuration.read, getCurrentPreference);
         var write = createThemeControlWriter(element, type, configuration.write);
         var eventType = configuration.event || (type === 'button' ? 'click' : 'change');
-
         var control = {
           element: element,
           type: type,
@@ -734,7 +717,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           write: write,
           eventType: eventType
         };
-
         var handler = function handler(event) {
           if (applying) {
             return;
@@ -746,34 +728,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             safeWarn('cineSettingsAppearance: Unable to read theme control value.', error);
             nextValue = currentPreference;
           }
-
           if (typeof nextValue === 'string') {
             nextValue = nextValue === 'dark';
           }
-
-          applyPreference(!!nextValue, { source: control });
+          applyPreference(!!nextValue, {
+            source: control
+          });
         };
-
         if (typeof element.addEventListener === 'function') {
           element.addEventListener(eventType, handler);
         }
-
         control.handler = handler;
         controls.push(control);
-
         try {
           control.write(currentPreference);
         } catch (error) {
           safeWarn('cineSettingsAppearance: Unable to apply theme preference to control during registration.', error);
         }
-
         return function unregisterControl() {
-          for (var index = controls.length - 1; index >= 0; index -= 1) {
-            var storedControl = controls[index];
+          for (var _index5 = controls.length - 1; _index5 >= 0; _index5 -= 1) {
+            var storedControl = controls[_index5];
             if (!storedControl || storedControl.element !== element) {
               continue;
             }
-            controls.splice(index, 1);
+            controls.splice(_index5, 1);
             if (element && typeof element.removeEventListener === 'function') {
               element.removeEventListener(storedControl.eventType, storedControl.handler);
             }
@@ -781,16 +759,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         };
       }
-
       function setValue(value, optionsConfig) {
         var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
-        applyPreference(value, { persist: config.persist !== false, source: config.source || null });
+        applyPreference(value, {
+          persist: config.persist !== false,
+          source: config.source || null
+        });
       }
-
       function getValue() {
         return currentPreference;
       }
-
       function reloadFromStorage(optionsConfig) {
         var config = optionsConfig && _typeof(optionsConfig) === 'object' ? optionsConfig : {};
         var stored = readStoredThemePreference();
@@ -800,38 +778,37 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return currentPreference;
         }
-        applyPreference(stored, { persist: config.persist !== false });
+        applyPreference(stored, {
+          persist: config.persist !== false
+        });
         return stored;
       }
-
       var storedPreference = readStoredThemePreference();
       var initialPreference = typeof storedPreference === 'boolean' ? storedPreference : null;
       if (initialPreference === null) {
         if (typeof controllerOptions.detectSystemPreference === 'function') {
           try {
-            var detectedPreference = controllerOptions.detectSystemPreference();
-            if (typeof detectedPreference === 'boolean') {
-              initialPreference = detectedPreference;
+            var detected = controllerOptions.detectSystemPreference();
+            if (typeof detected === 'boolean') {
+              initialPreference = detected;
             }
           } catch (error) {
             safeWarn('cineSettingsAppearance: detectSystemPreference option failed.', error);
           }
         }
-
         if (initialPreference === null) {
-          var systemPreference = detectSystemDarkPreference();
-          if (typeof systemPreference === 'boolean') {
-            initialPreference = systemPreference;
+          var _detected = detectSystemDarkPreference();
+          if (typeof _detected === 'boolean') {
+            initialPreference = _detected;
           }
         }
       }
-
       if (initialPreference === null) {
         initialPreference = false;
       }
-
-      applyPreference(initialPreference, { persist: true });
-
+      applyPreference(initialPreference, {
+        persist: true
+      });
       return {
         registerControl: registerControl,
         setValue: setValue,
@@ -840,7 +817,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         persist: persistThemePreference
       };
     }
-
     function applyHighContrast(enabled) {
       var root = getRoot();
       var body = getBody();
@@ -959,7 +935,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return;
       }
       var _loop = function _loop() {
-        var target = targets[_index];
+        var target = targets[_index6];
         try {
           target.classList.remove(PINK_MODE_ICON_ANIMATION_CLASS);
           if (typeof target.getBoundingClientRect === 'function') {
@@ -979,7 +955,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }, PINK_MODE_ICON_ANIMATION_RESET_DELAY);
         }
       };
-      for (var _index = 0; _index < targets.length; _index += 1) {
+      for (var _index6 = 0; _index6 < targets.length; _index6 += 1) {
         _loop();
       }
     }
@@ -1219,10 +1195,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         callOptional(preferences.ensureAutoBackupsFromProjects);
       }
       if (persist) {
-        var storage = getLocalStorage(context);
-        if (storage) {
+        var _storage = getLocalStorage(context);
+        if (_storage) {
           try {
-            storage.setItem('showAutoBackups', normalized);
+            _storage.setItem('showAutoBackups', normalized);
           } catch (error) {
             safeWarn('cineSettingsAppearance: Could not save auto backup visibility preference.', error);
           }

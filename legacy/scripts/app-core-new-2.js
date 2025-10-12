@@ -6750,6 +6750,302 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return target;
     }
+    var LEGACY_DEVICE_CATEGORY_ALIASES = {
+      batteryadapters: 'batteryHotswaps',
+      batteryadapter: 'batteryHotswaps',
+      batterieshotswap: 'batteryHotswaps',
+      director: 'directorMonitors',
+      directormonitors: 'directorMonitors',
+      directorsmonitor: 'directorMonitors',
+      ios: 'iosVideo',
+      iosvideo: 'iosVideo',
+      iosdevices: 'iosVideo',
+      ios_video: 'iosVideo',
+      iosmonitor: 'iosVideo',
+      wireless: 'wirelessReceivers',
+      wirelessvideo: 'wirelessReceivers',
+      wirelessreceiver: 'wirelessReceivers'
+    };
+    var DEVICE_CATEGORY_NORMALIZED_LOOKUP = REQUIRED_DEVICE_CATEGORIES.map(function (category) {
+      return {
+        key: category,
+        normalized: category.replace(/[^a-z0-9]+/gi, '').toLowerCase()
+      };
+    });
+    function normalizeLegacyDeviceCategoryKey(rawKey) {
+      if (typeof rawKey !== 'string') {
+        return null;
+      }
+      var trimmed = rawKey.trim();
+      if (!trimmed) {
+        return null;
+      }
+      if (REQUIRED_DEVICE_CATEGORIES.includes(trimmed)) {
+        return trimmed;
+      }
+      var normalized = trimmed.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(LEGACY_DEVICE_CATEGORY_ALIASES, normalized)) {
+        return LEGACY_DEVICE_CATEGORY_ALIASES[normalized];
+      }
+      for (var index = 0; index < DEVICE_CATEGORY_NORMALIZED_LOOKUP.length; index += 1) {
+        var entry = DEVICE_CATEGORY_NORMALIZED_LOOKUP[index];
+        if (entry.normalized === normalized) {
+          return entry.key;
+        }
+      }
+      if (!trimmed) {
+        return null;
+      }
+      return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+    }
+    var LEGACY_CATEGORY_VALUE_KEYS = ['devices', 'entries', 'items', 'values', 'collection', 'collections', 'data', 'value'];
+    function convertLegacyDeviceCategoryValue(value) {
+      if (value === null || value === undefined) {
+        return value;
+      }
+      if (isMapLike(value)) {
+        var converted = convertMapLikeToObject(value);
+        if (converted) {
+          return convertLegacyDeviceCategoryValue(converted);
+        }
+      }
+      var normalizedCollection = normalizeDeviceEntryCollection(value);
+      if (normalizedCollection !== undefined) {
+        return normalizedCollection;
+      }
+      if (Array.isArray(value)) {
+        var nested = {};
+        var hasNestedAssignments = false;
+        value.forEach(function (entry) {
+          if (Array.isArray(entry) && entry.length >= 2) {
+            var _nestedKey = normalizeLegacyDeviceCategoryKey(entry[0]);
+            if (!_nestedKey) {
+              return;
+            }
+            nested[_nestedKey] = convertLegacyDeviceCategoryValue(entry[1]);
+            hasNestedAssignments = true;
+            return;
+          }
+          if (!isPlainObjectValue(entry)) {
+            return;
+          }
+          var nestedKey = null;
+          if (typeof entry.category === 'string') {
+            nestedKey = entry.category;
+          } else if (typeof entry.key === 'string') {
+            nestedKey = entry.key;
+          } else if (typeof entry.name === 'string') {
+            nestedKey = entry.name;
+          } else if (typeof entry.id === 'string') {
+            nestedKey = entry.id;
+          } else if (typeof entry.type === 'string') {
+            nestedKey = entry.type;
+          } else if (typeof entry.section === 'string') {
+            nestedKey = entry.section;
+          } else if (typeof entry.title === 'string') {
+            nestedKey = entry.title;
+          }
+          var nestedValue = null;
+          for (var i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+            var key = LEGACY_CATEGORY_VALUE_KEYS[i];
+            if (Object.prototype.hasOwnProperty.call(entry, key)) {
+              nestedValue = entry[key];
+              break;
+            }
+          }
+          if (nestedValue === null || nestedValue === undefined) {
+            var clone = _objectSpread({}, entry);
+            delete clone.category;
+            delete clone.key;
+            delete clone.name;
+            delete clone.id;
+            delete clone.type;
+            delete clone.section;
+            delete clone.title;
+            if (Object.keys(clone).length) {
+              nestedValue = clone;
+            }
+          }
+          var resolvedNestedKey = normalizeLegacyDeviceCategoryKey(nestedKey);
+          if (!resolvedNestedKey) {
+            return;
+          }
+          nested[resolvedNestedKey] = convertLegacyDeviceCategoryValue(nestedValue);
+          hasNestedAssignments = true;
+        });
+        if (hasNestedAssignments) {
+          return nested;
+        }
+        return value;
+      }
+      if (isPlainObjectValue(value)) {
+        for (var i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+          var key = LEGACY_CATEGORY_VALUE_KEYS[i];
+          if (Array.isArray(value[key])) {
+            var normalized = normalizeDeviceEntryCollection(value[key]);
+            if (normalized !== undefined) {
+              return normalized;
+            }
+          }
+          if (isMapLike(value[key])) {
+            var _converted = convertMapLikeToObject(value[key]);
+            if (_converted) {
+              return convertLegacyDeviceCategoryValue(_converted);
+            }
+          }
+        }
+        var nestedKeys = ['categories', 'sections', 'collections'];
+        for (var _i2 = 0; _i2 < nestedKeys.length; _i2 += 1) {
+          var _key4 = nestedKeys[_i2];
+          if (Array.isArray(value[_key4])) {
+            var _normalized2 = convertLegacyDeviceCategoryValue(value[_key4]);
+            if (_normalized2 && _typeof(_normalized2) === 'object') {
+              return _normalized2;
+            }
+          }
+        }
+      }
+      return value;
+    }
+    function convertLegacyDeviceDatabaseArray(entries) {
+      if (!Array.isArray(entries)) {
+        return null;
+      }
+      var converted = {};
+      var assignments = 0;
+      entries.forEach(function (entry) {
+        if (entry === null || entry === undefined) {
+          return;
+        }
+        if (Array.isArray(entry) && entry.length >= 2) {
+          var _key5 = normalizeLegacyDeviceCategoryKey(entry[0]);
+          if (!_key5) {
+            return;
+          }
+          converted[_key5] = convertLegacyDeviceCategoryValue(entry[1]);
+          assignments += 1;
+          return;
+        }
+        if (!isPlainObjectValue(entry)) {
+          return;
+        }
+        var key = null;
+        if (typeof entry.category === 'string') {
+          key = entry.category;
+        } else if (typeof entry.key === 'string') {
+          key = entry.key;
+        } else if (typeof entry.name === 'string') {
+          key = entry.name;
+        } else if (typeof entry.id === 'string') {
+          key = entry.id;
+        } else if (typeof entry.type === 'string') {
+          key = entry.type;
+        } else if (typeof entry.section === 'string') {
+          key = entry.section;
+        } else if (typeof entry.title === 'string') {
+          key = entry.title;
+        }
+        var value = null;
+        for (var i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+          var candidateKey = LEGACY_CATEGORY_VALUE_KEYS[i];
+          if (Object.prototype.hasOwnProperty.call(entry, candidateKey)) {
+            value = entry[candidateKey];
+            break;
+          }
+        }
+        if (value === null || value === undefined) {
+          var clone = _objectSpread({}, entry);
+          delete clone.category;
+          delete clone.key;
+          delete clone.name;
+          delete clone.id;
+          delete clone.type;
+          delete clone.section;
+          delete clone.title;
+          if (Object.keys(clone).length) {
+            value = clone;
+          }
+        }
+        var resolvedKey = normalizeLegacyDeviceCategoryKey(key);
+        if (!resolvedKey) {
+          return;
+        }
+        converted[resolvedKey] = convertLegacyDeviceCategoryValue(value);
+        assignments += 1;
+      });
+      return assignments ? converted : null;
+    }
+    function mergeLegacyDeviceCategoryAssignments(target, source) {
+      if (!source || _typeof(source) !== 'object') {
+        return false;
+      }
+      var merged = false;
+      Object.entries(source).forEach(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+          key = _ref4[0],
+          value = _ref4[1];
+        if (value === undefined) {
+          return;
+        }
+        if (!Object.prototype.hasOwnProperty.call(target, key)) {
+          target[key] = value;
+          merged = true;
+          return;
+        }
+        if (isPlainObjectValue(target[key]) && isPlainObjectValue(value)) {
+          target[key] = _objectSpread(_objectSpread({}, value), target[key]);
+          merged = true;
+        }
+      });
+      return merged;
+    }
+    function convertLegacyDeviceDatabaseContainer(candidate) {
+      if (candidate === null || candidate === undefined) {
+        return candidate;
+      }
+      if (isMapLike(candidate)) {
+        var converted = convertMapLikeToObject(candidate);
+        if (converted) {
+          return convertLegacyDeviceDatabaseContainer(converted);
+        }
+      }
+      if (Array.isArray(candidate)) {
+        var convertedArray = convertLegacyDeviceDatabaseArray(candidate);
+        return convertedArray || candidate;
+      }
+      if (!isPlainObjectValue(candidate)) {
+        return candidate;
+      }
+      var base = _objectSpread({}, candidate);
+      var changed = false;
+      var arrayKeys = ['categories', 'sections', 'collections'];
+      for (var i = 0; i < arrayKeys.length; i += 1) {
+        var key = arrayKeys[i];
+        if (Array.isArray(candidate[key])) {
+          var _converted2 = convertLegacyDeviceDatabaseArray(candidate[key]);
+          if (_converted2 && mergeLegacyDeviceCategoryAssignments(base, _converted2)) {
+            changed = true;
+          }
+        }
+      }
+      var nestedKeys = ['data', 'dataset', 'values', 'entries'];
+      for (var _i3 = 0; _i3 < nestedKeys.length; _i3 += 1) {
+        var _key6 = nestedKeys[_i3];
+        if (!Object.prototype.hasOwnProperty.call(candidate, _key6)) {
+          continue;
+        }
+        var nested = convertLegacyDeviceDatabaseContainer(candidate[_key6]);
+        if (nested && isPlainObjectValue(nested) && looksLikeDeviceDatabase(nested)) {
+          if (mergeLegacyDeviceCategoryAssignments(base, nested)) {
+            changed = true;
+          }
+        }
+      }
+      if (changed) {
+        return base;
+      }
+      return candidate;
+    }
     function upgradeDeviceDatabaseSchema(candidate) {
       if (!isPlainObjectValue(candidate)) {
         return candidate;
@@ -6802,8 +7098,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return 0;
       }
       var total = 0;
-      for (var _i2 = 0, _Object$entries2 = Object.entries(collection); _i2 < _Object$entries2.length; _i2++) {
-        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+      for (var _i4 = 0, _Object$entries2 = Object.entries(collection); _i4 < _Object$entries2.length; _i4++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2),
           name = _Object$entries2$_i[0],
           value = _Object$entries2$_i[1];
         if (name === 'filterOptions' || name === 'None') {
@@ -6919,8 +7215,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(candidate.accessories)) {
           errors.push('Accessory collections must be objects.');
         } else {
-          for (var _i3 = 0, _Object$entries3 = Object.entries(candidate.accessories); _i3 < _Object$entries3.length; _i3++) {
-            var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
+          for (var _i5 = 0, _Object$entries3 = Object.entries(candidate.accessories); _i5 < _Object$entries3.length; _i5++) {
+            var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i5], 2),
               subKey = _Object$entries3$_i[0],
               subValue = _Object$entries3$_i[1];
             if (!isPlainObjectValue(subValue)) {
@@ -6933,8 +7229,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('Filter options must be provided as an array.');
       }
       if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
-        for (var _i4 = 0, _Object$entries4 = Object.entries(candidate.fiz); _i4 < _Object$entries4.length; _i4++) {
-          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
+        for (var _i6 = 0, _Object$entries4 = Object.entries(candidate.fiz); _i6 < _Object$entries4.length; _i6++) {
+          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i6], 2),
             _subKey = _Object$entries4$_i[0],
             _subValue = _Object$entries4$_i[1];
           if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
@@ -6948,8 +7244,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(collection)) {
           return;
         }
-        for (var _i5 = 0, _Object$entries5 = Object.entries(collection); _i5 < _Object$entries5.length; _i5++) {
-          var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
+        for (var _i7 = 0, _Object$entries5 = Object.entries(collection); _i7 < _Object$entries5.length; _i7++) {
+          var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i7], 2),
             name = _Object$entries5$_i[0],
             value = _Object$entries5$_i[1];
           if (name === 'None' || name === 'filterOptions') {
@@ -6975,8 +7271,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('The imported database does not contain any devices.');
       }
       var uniqueErrors = [];
-      for (var _i6 = 0, _errors = errors; _i6 < _errors.length; _i6++) {
-        var message = _errors[_i6];
+      for (var _i8 = 0, _errors = errors; _i8 < _errors.length; _i8++) {
+        var message = _errors[_i8];
         if (message && !uniqueErrors.includes(message)) {
           uniqueErrors.push(message);
         }
@@ -6991,10 +7287,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function parseDeviceDatabaseImport(rawData) {
       if (Array.isArray(rawData)) {
-        return {
-          devices: null,
-          errors: ['Import file must contain a JSON object, but found an array.']
-        };
+        var converted = convertLegacyDeviceDatabaseContainer(rawData);
+        if (!isPlainObjectValue(converted)) {
+          return {
+            devices: null,
+            errors: ['Import file must contain a JSON object, but found an array.']
+          };
+        }
+        rawData = converted;
       }
       if (!isPlainObjectValue(rawData)) {
         return {
@@ -7009,6 +7309,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         };
       }
       var candidate = Object.prototype.hasOwnProperty.call(rawData, 'devices') && isPlainObjectValue(rawData.devices) ? rawData.devices : looksLikeDeviceDatabase(rawData) ? rawData : null;
+      if (!candidate) {
+        var convertedLegacy = convertLegacyDeviceDatabaseContainer(rawData);
+        if (convertedLegacy && looksLikeDeviceDatabase(convertedLegacy)) {
+          candidate = convertedLegacy;
+        }
+      }
       if (!candidate) {
         return {
           devices: null,
@@ -7050,8 +7356,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
       }
       var entries = [];
-      for (var _i7 = 0, _Object$entries6 = Object.entries(options); _i7 < _Object$entries6.length; _i7++) {
-        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
+      for (var _i9 = 0, _Object$entries6 = Object.entries(options); _i9 < _Object$entries6.length; _i9++) {
+        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i9], 2),
           key = _Object$entries6$_i[0],
           value = _Object$entries6$_i[1];
         if (typeof value === 'undefined') continue;
@@ -7225,13 +7531,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function formatTemperatureForDisplay(celsius) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var _ref3 = options || {},
-        _ref3$unit = _ref3.unit,
-        unit = _ref3$unit === void 0 ? temperatureUnit : _ref3$unit,
-        _ref3$lang = _ref3.lang,
-        lang = _ref3$lang === void 0 ? currentLang : _ref3$lang,
-        _ref3$includeSign = _ref3.includeSign,
-        includeSign = _ref3$includeSign === void 0 ? true : _ref3$includeSign;
+      var _ref5 = options || {},
+        _ref5$unit = _ref5.unit,
+        unit = _ref5$unit === void 0 ? temperatureUnit : _ref5$unit,
+        _ref5$lang = _ref5.lang,
+        lang = _ref5$lang === void 0 ? currentLang : _ref5$lang,
+        _ref5$includeSign = _ref5.includeSign,
+        includeSign = _ref5$includeSign === void 0 ? true : _ref5$includeSign;
       var resolvedUnit = normalizeTemperatureUnit(unit);
       var converted = convertCelsiusToUnit(celsius, resolvedUnit);
       if (!Number.isFinite(converted)) {
@@ -7282,16 +7588,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var categories = [];
       var total = 0;
-      Object.entries(diff).forEach(function (_ref4) {
-        var _ref5 = _slicedToArray(_ref4, 2),
-          cat = _ref5[0],
-          entries = _ref5[1];
+      Object.entries(diff).forEach(function (_ref6) {
+        var _ref7 = _slicedToArray(_ref6, 2),
+          cat = _ref7[0],
+          entries = _ref7[1];
         if (!isPlainObjectValue(entries)) return;
         if (cat === 'fiz') {
-          Object.entries(entries).forEach(function (_ref6) {
-            var _ref7 = _slicedToArray(_ref6, 2),
-              sub = _ref7[0],
-              subEntries = _ref7[1];
+          Object.entries(entries).forEach(function (_ref8) {
+            var _ref9 = _slicedToArray(_ref8, 2),
+              sub = _ref9[0],
+              subEntries = _ref9[1];
             if (!isPlainObjectValue(subEntries)) return;
             var keys = Object.keys(subEntries);
             if (!keys.length) return;
@@ -7361,20 +7667,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addCount(key, entry);
         });
       } else if (isPlainObjectValue(projectData)) {
-        Object.entries(projectData).forEach(function (_ref8) {
-          var _ref9 = _slicedToArray(_ref8, 2),
-            name = _ref9[0],
-            entry = _ref9[1];
+        Object.entries(projectData).forEach(function (_ref0) {
+          var _ref1 = _slicedToArray(_ref0, 2),
+            name = _ref1[0],
+            entry = _ref1[1];
           addCount(name, entry);
         });
       } else {
         addCount('', projectData);
       }
       if (isPlainObjectValue(setupsData)) {
-        Object.entries(setupsData).forEach(function (_ref0) {
-          var _ref1 = _slicedToArray(_ref0, 2),
-            name = _ref1[0],
-            setup = _ref1[1];
+        Object.entries(setupsData).forEach(function (_ref10) {
+          var _ref11 = _slicedToArray(_ref10, 2),
+            name = _ref11[0],
+            setup = _ref11[1];
           addCount(name, setup);
         });
       }
@@ -7412,10 +7718,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       if (isPlainObjectValue(value)) {
         var result = {};
-        Object.entries(value).forEach(function (_ref10) {
-          var _ref11 = _slicedToArray(_ref10, 2),
-            key = _ref11[0],
-            val = _ref11[1];
+        Object.entries(value).forEach(function (_ref12) {
+          var _ref13 = _slicedToArray(_ref12, 2),
+            key = _ref13[0],
+            val = _ref13[1];
           var pruned = pruneValueForImportantBackup(val);
           if (pruned !== undefined) {
             result[key] = pruned;
@@ -7497,10 +7803,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return undefined;
       }
       var reduced = {};
-      Object.entries(collection).forEach(function (_ref12) {
-        var _ref13 = _slicedToArray(_ref12, 2),
-          name = _ref13[0],
-          entry = _ref13[1];
+      Object.entries(collection).forEach(function (_ref14) {
+        var _ref15 = _slicedToArray(_ref14, 2),
+          name = _ref15[0],
+          entry = _ref15[1];
         var important = extractImportantProjectEntry(entry);
         if (important) {
           reduced[name] = important;
@@ -7511,10 +7817,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function createImportantProjectData(data) {
       var importantData = {};
       if (isPlainObjectValue(data)) {
-        Object.entries(data).forEach(function (_ref14) {
-          var _ref15 = _slicedToArray(_ref14, 2),
-            key = _ref15[0],
-            value = _ref15[1];
+        Object.entries(data).forEach(function (_ref16) {
+          var _ref17 = _slicedToArray(_ref16, 2),
+            key = _ref17[0],
+            value = _ref17[1];
           if (key === 'project' || key === 'setups' || key === 'autoGearRules') {
             return;
           }
@@ -7604,9 +7910,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var lookup = typeof categoryNames !== 'undefined' && categoryNames || {};
       var localized = lookup[resolved] || lookup.en || {};
       var fallback = lookup.en || {};
-      var items = categories.map(function (_ref16) {
-        var key = _ref16.key,
-          count = _ref16.count;
+      var items = categories.map(function (_ref18) {
+        var key = _ref18.key,
+          count = _ref18.count;
         var label = localized[key] || fallback[key] || key;
         var formattedCount = formatNumberForLang(resolved, count, {
           maximumFractionDigits: 0
@@ -7711,10 +8017,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
           continue;
         }
-        Object.entries(current).forEach(function (_ref17) {
-          var _ref18 = _slicedToArray(_ref17, 2),
-            key = _ref18[0],
-            val = _ref18[1];
+        Object.entries(current).forEach(function (_ref19) {
+          var _ref20 = _slicedToArray(_ref19, 2),
+            key = _ref20[0],
+            val = _ref20[1];
           var normalizedKey = typeof key === 'string' ? key.toLowerCase() : '';
           if (typeof val === 'string') {
             var _trimmed = val.trim();
@@ -7742,10 +8048,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!isPlainObjectValue(setups)) {
         return result;
       }
-      Object.entries(setups).forEach(function (_ref19) {
-        var _ref20 = _slicedToArray(_ref19, 2),
-          name = _ref20[0],
-          entry = _ref20[1];
+      Object.entries(setups).forEach(function (_ref21) {
+        var _ref22 = _slicedToArray(_ref21, 2),
+          name = _ref22[0],
+          entry = _ref22[1];
         if (!name || typeof name !== 'string') {
           return;
         }
@@ -9624,8 +9930,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           helpCandidates.push(text);
         });
       }
-      for (var _i8 = 0, _helpCandidates = helpCandidates; _i8 < _helpCandidates.length; _i8++) {
-        var candidate = _helpCandidates[_i8];
+      for (var _i0 = 0, _helpCandidates = helpCandidates; _i0 < _helpCandidates.length; _i0++) {
+        var candidate = _helpCandidates[_i0];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail && (!base || detail.toLowerCase() !== base)) {
           return detail;
@@ -9654,8 +9960,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           candidates.push(firstListItem.textContent);
         }
       }
-      for (var _i9 = 0, _candidates = candidates; _i9 < _candidates.length; _i9++) {
-        var candidate = _candidates[_i9];
+      for (var _i1 = 0, _candidates = candidates; _i1 < _candidates.length; _i1++) {
+        var candidate = _candidates[_i1];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail) return detail;
       }
@@ -9691,10 +9997,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     };
-    var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref21) {
-      var label = _ref21.label,
-        _ref21$keywords = _ref21.keywords,
-        keywords = _ref21$keywords === void 0 ? '' : _ref21$keywords;
+    var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref23) {
+      var label = _ref23.label,
+        _ref23$keywords = _ref23.keywords,
+        keywords = _ref23$keywords === void 0 ? '' : _ref23$keywords;
       if (!element || !label) return null;
       var baseLabel = label.trim();
       if (!baseLabel) return null;
@@ -10188,9 +10494,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return computeRelativeLuminance(pinkRgb);
     }();
     function shouldEnableDarkModeAccentBoost() {
-      var _ref22 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        color = _ref22.color,
-        highContrast = _ref22.highContrast;
+      var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        color = _ref24.color,
+        highContrast = _ref24.highContrast;
       if (typeof document === 'undefined') return false;
       if (!document.body || !document.body.classList.contains('dark-mode')) return false;
       if (document.body.classList.contains('pink-mode')) return false;
@@ -10681,8 +10987,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee7(name, dataUrl) {
-        var _ref46,
-          _ref46$persist,
+        var _ref48,
+          _ref48$persist,
           persist,
           uniqueName,
           value,
@@ -10695,7 +11001,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.n) {
             case 0:
-              _ref46 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref46$persist = _ref46.persist, persist = _ref46$persist === void 0 ? true : _ref46$persist;
+              _ref48 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref48$persist = _ref48.persist, persist = _ref48$persist === void 0 ? true : _ref48$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -10742,7 +11048,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee8(fileList) {
-        var added, unsupported, failed, persistFailure, _i10, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i12, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
         return _regenerator().w(function (_context8) {
           while (1) switch (_context8.p = _context8.n) {
             case 0:
@@ -10760,13 +11066,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               unsupported = [];
               failed = [];
               persistFailure = false;
-              _i10 = 0, _Array$from = Array.from(fileList);
+              _i12 = 0, _Array$from = Array.from(fileList);
             case 2:
-              if (!(_i10 < _Array$from.length)) {
+              if (!(_i12 < _Array$from.length)) {
                 _context8.n = 9;
                 break;
               }
-              file = _Array$from[_i10];
+              file = _Array$from[_i12];
               if (isSupportedFontFile(file)) {
                 _context8.n = 3;
                 break;
@@ -10802,7 +11108,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               console.warn('Failed to import custom font', _t7);
               failed.push(file && typeof file.name === 'string' ? file.name : '');
             case 8:
-              _i10++;
+              _i12++;
               _context8.n = 2;
               break;
             case 9:
@@ -10942,7 +11248,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof window === 'undefined') return null;
       if (typeof window.queryLocalFonts === 'function') {
         return function () {
-          var _ref23 = _asyncToGenerator(_regenerator().m(function _callee(options) {
+          var _ref25 = _asyncToGenerator(_regenerator().m(function _callee(options) {
             var _t;
             return _regenerator().w(function (_context) {
               while (1) switch (_context.n) {
@@ -10956,7 +11262,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee);
           }));
           return function (_x9) {
-            return _ref23.apply(this, arguments);
+            return _ref25.apply(this, arguments);
           };
         }();
       }
@@ -10964,7 +11270,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var _navigator = navigator,
           fonts = _navigator.fonts;
         return function () {
-          var _ref24 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
+          var _ref26 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
             var _t2;
             return _regenerator().w(function (_context2) {
               while (1) switch (_context2.n) {
@@ -10978,7 +11284,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee2);
           }));
           return function (_x0) {
-            return _ref24.apply(this, arguments);
+            return _ref26.apply(this, arguments);
           };
         }();
       }
@@ -12178,8 +12484,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   categoryPath: path
                 };
               }
-              for (var _i0 = 0, _Object$entries7 = Object.entries(node); _i0 < _Object$entries7.length; _i0++) {
-                var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i0], 2),
+              for (var _i10 = 0, _Object$entries7 = Object.entries(node); _i10 < _Object$entries7.length; _i10++) {
+                var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i10], 2),
                   key = _Object$entries7$_i[0],
                   _value3 = _Object$entries7$_i[1];
                 if (!isPlainObjectValue(_value3)) continue;
@@ -12202,12 +12508,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               categoryPath: []
             };
           };
-          var buildGearItemHelp = function buildGearItemHelp(_ref25) {
-            var name = _ref25.name,
-              countText = _ref25.countText,
-              deviceInfo = _ref25.deviceInfo,
-              libraryCategory = _ref25.libraryCategory,
-              tableCategory = _ref25.tableCategory;
+          var buildGearItemHelp = function buildGearItemHelp(_ref27) {
+            var name = _ref27.name,
+              countText = _ref27.countText,
+              deviceInfo = _ref27.deviceInfo,
+              libraryCategory = _ref27.libraryCategory,
+              tableCategory = _ref27.tableCategory;
             var parts = [];
             var label = "".concat(countText || '').concat(name).trim();
             if (label) parts.push(label);
@@ -12225,7 +12531,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
             if (deviceInfo) {
               var summary = generateSafeConnectorSummary(deviceInfo);
-              summary = summary ? (function stripTags(s) { let prev; do { prev = s; s = s.replace(/<[^>]+>/g, ''); } while (s !== prev); return s.replace(/\s+/g, ' ').trim(); })(summary) : '';
+              summary = summary ? function stripTags(s) {
+                var prev;
+                do {
+                  prev = s;
+                  s = s.replace(/<[^>]+>/g, '');
+                } while (s !== prev);
+                return s.replace(/\s+/g, ' ').trim();
+              }(summary) : '';
               if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
               if (summary) parts.push(summary);
             }
@@ -12379,10 +12692,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function sanitizeProjectInfo(info) {
       if (!info || _typeof(info) !== 'object') return null;
       var result = {};
-      Object.entries(info).forEach(function (_ref26) {
-        var _ref27 = _slicedToArray(_ref26, 2),
-          key = _ref27[0],
-          value = _ref27[1];
+      Object.entries(info).forEach(function (_ref28) {
+        var _ref29 = _slicedToArray(_ref28, 2),
+          key = _ref29[0],
+          value = _ref29[1];
         var sanitized = sanitizeProjectInfoValue(value);
         if (sanitized !== undefined) {
           result[key] = sanitized;
@@ -13723,11 +14036,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref28 = item || {},
-            _ref28$type = _ref28.type,
-            type = _ref28$type === void 0 ? '' : _ref28$type,
-            _ref28$notes = _ref28.notes,
-            notes = _ref28$notes === void 0 ? '' : _ref28$notes;
+          var _ref30 = item || {},
+            _ref30$type = _ref30.type,
+            type = _ref30$type === void 0 ? '' : _ref30$type,
+            _ref30$notes = _ref30.notes,
+            notes = _ref30$notes === void 0 ? '' : _ref30$notes;
           cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
         });
       } else {
@@ -13949,13 +14262,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref29 = item || {},
-            _ref29$type = _ref29.type,
-            type = _ref29$type === void 0 ? '' : _ref29$type,
-            _ref29$mount = _ref29.mount,
-            mount = _ref29$mount === void 0 ? 'native' : _ref29$mount,
-            _ref29$notes = _ref29.notes,
-            notes = _ref29$notes === void 0 ? '' : _ref29$notes;
+          var _ref31 = item || {},
+            _ref31$type = _ref31.type,
+            type = _ref31$type === void 0 ? '' : _ref31$type,
+            _ref31$mount = _ref31.mount,
+            mount = _ref31$mount === void 0 ? 'native' : _ref31$mount,
+            _ref31$notes = _ref31.notes,
+            notes = _ref31$notes === void 0 ? '' : _ref31$notes;
           batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
         });
       } else {
@@ -14093,15 +14406,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref30 = item || {},
-            _ref30$type = _ref30.type,
-            type = _ref30$type === void 0 ? '' : _ref30$type,
-            _ref30$resolution = _ref30.resolution,
-            resolution = _ref30$resolution === void 0 ? '' : _ref30$resolution,
-            _ref30$connector = _ref30.connector,
-            connector = _ref30$connector === void 0 ? '' : _ref30$connector,
-            _ref30$notes = _ref30.notes,
-            notes = _ref30$notes === void 0 ? '' : _ref30$notes;
+          var _ref32 = item || {},
+            _ref32$type = _ref32.type,
+            type = _ref32$type === void 0 ? '' : _ref32$type,
+            _ref32$resolution = _ref32.resolution,
+            resolution = _ref32$resolution === void 0 ? '' : _ref32$resolution,
+            _ref32$connector = _ref32.connector,
+            connector = _ref32$connector === void 0 ? '' : _ref32$connector,
+            _ref32$notes = _ref32.notes,
+            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
           viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
         });
       } else {
@@ -14249,17 +14562,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref31 = item || {},
-            _ref31$type = _ref31.type,
-            type = _ref31$type === void 0 ? '' : _ref31$type,
-            _ref31$mount = _ref31.mount,
-            mount = _ref31$mount === void 0 ? 'native' : _ref31$mount;
+          var _ref33 = item || {},
+            _ref33$type = _ref33.type,
+            type = _ref33$type === void 0 ? '' : _ref33$type,
+            _ref33$mount = _ref33.mount,
+            mount = _ref33$mount === void 0 ? 'native' : _ref33$mount;
           lensMountContainer.appendChild(createLensMountRow(type, mount));
         });
       } else {
         lensMountContainer.appendChild(createLensMountRow());
       }
     }
+    writeCoreScopeValue('setLensMounts', setLensMounts);
     function getLensMounts() {
       return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(function (row) {
         var _row$querySelectorAll7 = row.querySelectorAll('select'),
@@ -14274,6 +14588,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return lm.type && lm.type !== 'None';
       });
     }
+    writeCoreScopeValue('getLensMounts', getLensMounts);
     function clearLensMounts() {
       setLensMounts([]);
     }
@@ -14525,17 +14840,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref32 = item || {},
-            _ref32$type = _ref32.type,
-            type = _ref32$type === void 0 ? '' : _ref32$type,
-            _ref32$voltage = _ref32.voltage,
-            voltage = _ref32$voltage === void 0 ? '' : _ref32$voltage,
-            _ref32$current = _ref32.current,
-            current = _ref32$current === void 0 ? '' : _ref32$current,
-            _ref32$wattage = _ref32.wattage,
-            wattage = _ref32$wattage === void 0 ? '' : _ref32$wattage,
-            _ref32$notes = _ref32.notes,
-            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
+          var _ref34 = item || {},
+            _ref34$type = _ref34.type,
+            type = _ref34$type === void 0 ? '' : _ref34$type,
+            _ref34$voltage = _ref34.voltage,
+            voltage = _ref34$voltage === void 0 ? '' : _ref34$voltage,
+            _ref34$current = _ref34.current,
+            current = _ref34$current === void 0 ? '' : _ref34$current,
+            _ref34$wattage = _ref34.wattage,
+            wattage = _ref34$wattage === void 0 ? '' : _ref34$wattage,
+            _ref34$notes = _ref34.notes,
+            notes = _ref34$notes === void 0 ? '' : _ref34$notes;
           powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
         });
       } else {
@@ -14651,11 +14966,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref33 = item || {},
-            _ref33$type = _ref33.type,
-            type = _ref33$type === void 0 ? '' : _ref33$type,
-            _ref33$notes = _ref33.notes,
-            notes = _ref33$notes === void 0 ? '' : _ref33$notes;
+          var _ref35 = item || {},
+            _ref35$type = _ref35.type,
+            type = _ref35$type === void 0 ? '' : _ref35$type,
+            _ref35$notes = _ref35.notes,
+            notes = _ref35$notes === void 0 ? '' : _ref35$notes;
           timecodeContainer.appendChild(createTimecodeRow(type, notes));
         });
       } else {
@@ -14950,9 +15265,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       initFavoritableSelect(selectElem);
     }
     function populateMonitorSelect() {
-      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref34) {
-        var _ref35 = _slicedToArray(_ref34, 2),
-          data = _ref35[1];
+      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref36) {
+        var _ref37 = _slicedToArray(_ref36, 2),
+          data = _ref37[1];
         return !(data.wirelessRX && !data.wirelessTx);
       }));
       populateSelect(monitorSelect, filtered, true);
@@ -14963,9 +15278,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!cameraName || cameraName === 'None') {
         return allCages;
       }
-      return Object.fromEntries(Object.entries(allCages).filter(function (_ref36) {
-        var _ref37 = _slicedToArray(_ref36, 2),
-          cage = _ref37[1];
+      return Object.fromEntries(Object.entries(allCages).filter(function (_ref38) {
+        var _ref39 = _slicedToArray(_ref38, 2),
+          cage = _ref39[1];
         if (!cage || _typeof(cage) !== 'object') {
           return true;
         }
@@ -15135,9 +15450,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref38) {
-        var list = _ref38.list,
-          filterInput = _ref38.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref40) {
+        var list = _ref40.list,
+          filterInput = _ref40.filterInput;
         if (!list) return;
         var value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
@@ -15751,17 +16066,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return d.toISOString().split('T')[0];
     }
     function renderDeviceList(categoryKey, ulElement) {
-      // Helper to more thoroughly strip HTML tags by repeatedly applying the regex.
-      function stripHtmlTagsRepeatedly(input) {
-        if (!input) return '';
-        let previous;
-        do {
-          previous = input;
-          input = input.replace(/<[^>]+>/g, '');
-        } while (input !== previous);
-        return input;
-      }
-
       ulElement.innerHTML = "";
       var categoryDevices = devices[categoryKey];
       if (categoryKey.includes('.')) {
@@ -15780,7 +16084,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var nameSpan = document.createElement("span");
         nameSpan.textContent = name;
         var summary = generateSafeConnectorSummary(deviceData);
-        summary = summary ? stripHtmlTagsRepeatedly(summary).replace(/\s+/g, ' ').trim() : '';
+        if (summary) {
+          var previous;
+          do {
+            previous = summary;
+            summary = summary.replace(/<[^>]+>/g, '');
+          } while (summary !== previous);
+          summary = summary.replace(/\s+/g, ' ').trim();
+        } else {
+          summary = '';
+        }
         if (deviceData.notes) {
           summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
         }
@@ -15824,8 +16137,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
       if (categoryKey === "accessories.cables") {
-        for (var _i1 = 0, _Object$entries8 = Object.entries(categoryDevices); _i1 < _Object$entries8.length; _i1++) {
-          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i1], 2),
+        for (var _i11 = 0, _Object$entries8 = Object.entries(categoryDevices); _i11 < _Object$entries8.length; _i11++) {
+          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i11], 2),
             subcat = _Object$entries8$_i[0],
             devs = _Object$entries8$_i[1];
           for (var name in devs) {
@@ -15841,9 +16154,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref39, categoryKey) {
-        var list = _ref39.list,
-          filterInput = _ref39.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref41, categoryKey) {
+        var list = _ref41.list,
+          filterInput = _ref41.filterInput;
         if (!list) return;
         renderDeviceList(categoryKey, list);
         var filterValue = filterInput ? filterInput.value : '';
@@ -15968,6 +16281,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return updateBatteryPlateVisibility;
     }], ['updateBatteryOptions', function () {
       return updateBatteryOptions;
+    }], ['updatePlateTypeOptions', function () {
+      return updatePlateTypeOptions;
+    }], ['setPowerDistribution', function () {
+      return setPowerDistribution;
+    }], ['getPowerDistribution', function () {
+      return getPowerDistribution;
     }], ['renderSetupDiagram', function () {
       return renderSetupDiagram;
     }], ['enableDiagramInteractions', function () {
@@ -16178,6 +16497,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return updateRecordingMediaOptions;
     }], ['clearRecordingMedia', function () {
       return clearRecordingMedia;
+    }], ['setLensMounts', function () {
+      return setLensMounts;
+    }], ['getLensMounts', function () {
+      return getLensMounts;
     }], ['clearLensMounts', function () {
       return clearLensMounts;
     }], ['setLensDeviceMountOptions', function () {
@@ -16211,10 +16534,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }], ['storeLoadedSetupState', function () {
       return storeLoadedSetupState;
     }]];
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref40) {
-      var _ref41 = _slicedToArray(_ref40, 2),
-        exportName = _ref41[0],
-        getter = _ref41[1];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref42) {
+      var _ref43 = _slicedToArray(_ref42, 2),
+        exportName = _ref43[0],
+        getter = _ref43[1];
       try {
         var _value4 = getter();
         if (typeof _value4 !== 'undefined') {
@@ -16312,10 +16635,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
         cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
-      Object.entries(MODULE_EXPORTS).forEach(function (_ref42) {
-        var _ref43 = _slicedToArray(_ref42, 2),
-          moduleName = _ref43[0],
-          exportNames = _ref43[1];
+      Object.entries(MODULE_EXPORTS).forEach(function (_ref44) {
+        var _ref45 = _slicedToArray(_ref44, 2),
+          moduleName = _ref45[0],
+          exportNames = _ref45[1];
         var moduleRef = scope[moduleName];
         if (!moduleRef || typeof moduleRef.install !== 'function') {
           return;
@@ -16357,10 +16680,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref44) {
-      var _ref45 = _slicedToArray(_ref44, 2),
-        name = _ref45[0],
-        value = _ref45[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref46) {
+      var _ref47 = _slicedToArray(_ref46, 2),
+        name = _ref47[0],
+        value = _ref47[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }

@@ -1,3 +1,5 @@
+var _templateObject, _templateObject2, _templateObject3, _templateObject4, _templateObject5;
+function _taggedTemplateLiteral(e, t) { return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, { raw: { value: Object.freeze(t) } })); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function detectGlobalScope() {
@@ -63,23 +65,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
   var MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
   var MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
-  var MEASUREMENT_VALUE_PATTERN = '\\d+(?:\\s*[.,/-]\\s*\\d+)*(?:\\s+\\d+(?:\\s*[.,/-]\\s*\\d+)*)*';
-  var MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:feet|foot|ft\\.?)(?![a-z])'),
-    'gi',
-  );
-  var MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ")\\s*['’](?=\\s|[\\d\"”″'-]|$)"),
-    'g',
-  );
-  var MEASUREMENT_INCH_WORD_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:inches|inch|in\\.?)(?![a-z])'),
-    'gi',
-  );
-  var MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(
-    '('.concat(MEASUREMENT_VALUE_PATTERN, ')\\s*["”″](?=\\s|[\\d\'’"-]|$)'),
-    'g',
-  );
+  var MEASUREMENT_VALUE_PATTERN = String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["d+(?:s*[.,/-]s*d+)*(?:s+d+(?:s*[.,/-]s*d+)*)*"], ["\\d+(?:\\s*[.,/-]\\s*\\d+)*(?:\\s+\\d+(?:\\s*[.,/-]\\s*\\d+)*)*"])));
+  var MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["(", ")[s-]*(?:feet|foot|ft.?)(?![a-z])"], ["(", ")[\\s-]*(?:feet|foot|ft\\.?)(?![a-z])"])), MEASUREMENT_VALUE_PATTERN), 'gi');
+  var MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["(", ")s*['\u2019](?=s|[d\"\u201D\u2033'-]|$)"], ["(", ")\\s*['\u2019](?=\\s|[\\d\"\u201D\u2033'-]|$)"])), MEASUREMENT_VALUE_PATTERN), 'g');
+  var MEASUREMENT_INCH_WORD_PATTERN = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["(", ")[s-]*(?:inches|inch|in.?)(?![a-z])"], ["(", ")[\\s-]*(?:inches|inch|in\\.?)(?![a-z])"])), MEASUREMENT_VALUE_PATTERN), 'gi');
+  var MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(String.raw(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["(", ")s*[\"\u201D\u2033](?=s|[d'\u2019\"-]|$)"], ["(", ")\\s*[\"\u201D\u2033](?=\\s|[\\d'\u2019\"-]|$)"])), MEASUREMENT_VALUE_PATTERN), 'g');
   function cleanMeasurementValue(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
   }

@@ -1218,40 +1218,6 @@ var rentalHouseLookup = function () {
   return map;
 }();
 var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
-function removeParentheticalSegments(value) {
-  if (!value) return '';
-  var parts = [];
-  var depth = 0;
-  var lastIndex = 0;
-  var pendingStart = -1;
-  for (var i = 0; i < value.length; i += 1) {
-    var char = value[i];
-    if (char === '(') {
-      if (depth === 0) {
-        parts.push(value.slice(lastIndex, i));
-        pendingStart = i;
-      }
-      depth += 1;
-      continue;
-    }
-    if (char === ')' && depth > 0) {
-      depth -= 1;
-      if (depth === 0) {
-        lastIndex = i + 1;
-        pendingStart = -1;
-      }
-      continue;
-    }
-  }
-  if (depth === 0) {
-    parts.push(value.slice(lastIndex));
-  } else if (pendingStart >= 0) {
-    parts.push(value.slice(pendingStart));
-  } else {
-    parts.push(value.slice(lastIndex));
-  }
-  return parts.join('');
-}
 function formatRentalHouseShortName(entryOrName) {
   if (!entryOrName) return '';
   var explicit = _typeof(entryOrName) === 'object' && entryOrName && typeof entryOrName.shortName === 'string' ? entryOrName.shortName.trim() : '';
@@ -1261,8 +1227,7 @@ function formatRentalHouseShortName(entryOrName) {
   var rawName = typeof entryOrName === 'string' ? entryOrName : entryOrName && entryOrName.name;
   var name = rawName ? String(rawName).trim() : '';
   if (!name) return '';
-  var base = removeParentheticalSegments(name);
-  base = base.replace(/\s+/g, ' ').trim();
+  var base = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
   var separatorMatch = base.match(/\s*[\u2012\u2013\u2014\u2015-]\s*/);
   if (separatorMatch) {
     var index = base.indexOf(separatorMatch[0]);
@@ -2372,11 +2337,7 @@ function applyOwnedGearMarkersToHtml(html, markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    // Properly escape backslashes and double quotes for use in CSS attribute selectors.
-   var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
-       ? CSS.escape(marker.ownedId)
-       // Fallback: escape backslash first, then double quotes.
-       : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var selector = "[data-gear-own-gear-id=\"".concat(selectorId, "\"]");
     var element = doc.body.querySelector(selector);
     if (!element) {
@@ -5004,11 +4965,13 @@ function analyzeAutoGearSegment(nodes) {
   nodes.forEach(function (node) {
     return wrapper.appendChild(node.cloneNode(true));
   });
-  var selects = wrapper.querySelectorAll('select');
-  selects.forEach(function (select) {
-    return select.remove();
-  });
-  var text = (wrapper.textContent || '').replace(/\s+/g, ' ').trim();
+  var html = wrapper.innerHTML.replace(/<select[\s\S]*?<\/select>/gi, '');
+  var prev;
+  do {
+    prev = html;
+    html = html.replace(/<[^>]+>/g, '');
+  } while (html !== prev);
+  var text = html.trim();
   if (!text) return null;
   var match = text.match(/^(\d+)x\s+/);
   var count = 1;
@@ -9851,7 +9814,7 @@ function gearListGenerateHtmlImpl() {
       extraAttrs.push('data-has-address="true"');
     }
     var attrHtml = extraAttrs.length ? " ".concat(extraAttrs.join(' ')) : '';
-    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\"").concat(attrHtml, ">" + iconHtml + "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
+    return "<div class=\"requirement-box\" data-field=\"".concat(k, "\"").concat(attrHtml, ">").concat(iconHtml, "<span class=\"req-label\">").concat(escapeHtml(label), "</span><span class=\"req-value\">").concat(value, "</span></div>");
   }).join('') + '</div>' : '';
   var requirementsHeading = projectFormTexts.heading || 'Project Requirements';
   var infoHtml = infoEntries.length ? "<h3>".concat(escapeHtml(requirementsHeading), "</h3>").concat(boxesHtml) : '';
@@ -9859,34 +9822,6 @@ function gearListGenerateHtmlImpl() {
     rentalHouse: info && info.rentalHouse
   });
   var rentalNoteAttr = rentalToggleTexts.noteLabel && rentalToggleTexts.noteLabel.trim() ? " data-rental-note=\"".concat(escapeHtml(rentalToggleTexts.noteLabel), "\"") : '';
-  var parseNameAndContext = function parseNameAndContext(raw) {
-    var trimmed = raw == null ? '' : String(raw).trim();
-    if (!trimmed) {
-      return {
-        base: '',
-        context: ''
-      };
-    }
-    var base = trimmed;
-    var context = '';
-    if (trimmed.endsWith(')')) {
-      var openIdx = trimmed.lastIndexOf('(');
-      if (openIdx > -1) {
-        var beforeChar = openIdx > 0 ? trimmed.charAt(openIdx - 1) : '';
-        if (beforeChar === ' ') {
-          var rawContext = trimmed.slice(openIdx + 1, -1);
-          if (rawContext && rawContext.indexOf('(') === -1 && rawContext.indexOf(')') === -1) {
-            base = trimmed.slice(0, openIdx).trim();
-            context = rawContext.trim();
-          }
-        }
-      }
-    }
-    return {
-      base: base,
-      context: context
-    };
-  };
   var formatItems = function formatItems(arr) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var entries = {};
@@ -9897,9 +9832,9 @@ function gearListGenerateHtmlImpl() {
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
-      var parsedName = parseNameAndContext(namePart);
-      var base = parsedName.base;
-      var ctx = parsedName.context;
+      var match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+      var base = match ? match[1].trim() : namePart.trim();
+      var ctx = match && match[2] ? match[2].trim() : '';
       if (!base) return;
       if (!entries[base]) {
         entries[base] = {
@@ -10122,8 +10057,8 @@ function gearListGenerateHtmlImpl() {
     if (typeof registerDevice !== 'function') return;
     var entries = {};
     arr.filter(Boolean).forEach(function (item) {
-      var parsedName = parseNameAndContext(item);
-      var base = parsedName.base;
+      var match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+      var base = match ? match[1].trim() : item.trim();
       entries[base] = entries[base] || {};
     });
     if (Object.keys(entries).length) {
@@ -10551,19 +10486,87 @@ function gearListGenerateHtmlImpl() {
   var monitorSizes = [];
   if (selectedNames.monitor) {
     var _devices;
-    var size = (_devices = devices) === null || _devices === void 0 || (_devices = _devices.monitors) === null || _devices === void 0 || (_devices = _devices[selectedNames.monitor]) === null || _devices === void 0 ? void 0 : _devices.screenSizeInches;
-    if (size) monitorSizes.push(size);
-    var sizeHtml = size ? "".concat(escapeHtml(String(size)), "&quot; - ") : '';
     var monitorLabel = 'Onboard Monitor';
-    var monitorName = addArriKNumber(selectedNames.monitor);
-    var displayHtml = "1x <strong>".concat(monitorLabel, "</strong> - ").concat(sizeHtml).concat(escapeHtml(monitorName), " - incl. Sunhood");
+    var monitorsDb = ((_devices = devices) === null || _devices === void 0 ? void 0 : _devices.monitors) || {};
+    var stripCameraLinkPrefix = function stripCameraLinkPrefix(label) {
+      if (typeof label !== 'string') return '';
+      var trimmed = label.trim();
+      if (!trimmed) return '';
+      var match = trimmed.match(/^(linked\s+to\s+camera)(?:\s*[—–-]\s*|\s*:\s*|\s+)(.+)$/i);
+      if (match && match[2]) {
+        return match[2].trim();
+      }
+      return trimmed;
+    };
+    var stripEnclosingQuotes = function stripEnclosingQuotes(value) {
+      if (typeof value !== 'string') return '';
+      return value.replace(/^["'“”‚‘’]+/, '').replace(/["'“”‚‘’]+$/, '').trim();
+    };
+    var cleanupMonitorLabel = function cleanupMonitorLabel(value) {
+      return stripEnclosingQuotes(stripCameraLinkPrefix(value));
+    };
+    var monitorSelectValue = typeof monitorSelect !== 'undefined' && monitorSelect && monitorSelect.value && monitorSelect.value !== 'None' ? monitorSelect.value : '';
+    var storedMonitorSelectionRaw = typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
+    var candidateValues = [];
+    var addCandidate = function addCandidate(value) {
+      var trimmed = typeof value === 'string' ? value.trim() : '';
+      if (!trimmed) return;
+      if (!candidateValues.includes(trimmed)) {
+        candidateValues.push(trimmed);
+      }
+      var cleaned = cleanupMonitorLabel(trimmed);
+      if (cleaned && !candidateValues.includes(cleaned)) {
+        candidateValues.push(cleaned);
+      }
+    };
+    addCandidate(monitorSelectValue);
+    addCandidate(storedMonitorSelectionRaw);
+    addCandidate(selectedNames.monitor);
+    var monitorDatasetKey = '';
+    var monitorDatasetEntry = null;
+    candidateValues.some(function (name) {
+      if (Object.prototype.hasOwnProperty.call(monitorsDb, name)) {
+        monitorDatasetKey = name;
+        monitorDatasetEntry = monitorsDb[name];
+        return true;
+      }
+      return false;
+    });
+    var sizeValue = monitorDatasetEntry && typeof monitorDatasetEntry.screenSizeInches !== 'undefined' ? Number(monitorDatasetEntry.screenSizeInches) : NaN;
+    if (!Number.isFinite(sizeValue)) {
+      var _monitorDatasetEntry$, _monitorDatasetEntry;
+      var parsedSize = parseFloat(String((_monitorDatasetEntry$ = (_monitorDatasetEntry = monitorDatasetEntry) === null || _monitorDatasetEntry === void 0 ? void 0 : _monitorDatasetEntry.screenSizeInches) !== null && _monitorDatasetEntry$ !== void 0 ? _monitorDatasetEntry$ : ''));
+      sizeValue = Number.isFinite(parsedSize) ? parsedSize : NaN;
+    }
+    if (!Number.isFinite(sizeValue)) {
+      sizeValue = NaN;
+    }
+    if (Number.isFinite(sizeValue)) {
+      monitorSizes.push(sizeValue);
+    }
+    var formatSizeValue = function formatSizeValue(value) {
+      if (!Number.isFinite(value)) return '';
+      var normalized = Number(value.toFixed(2));
+      return Number.isInteger(normalized) ? String(normalized) : String(normalized).replace(/\.0+$/, '');
+    };
+    var sizeText = formatSizeValue(sizeValue);
+    var sizeSegment = sizeText ? "".concat(escapeHtml(sizeText), "&quot;") : '';
+    var monitorDisplayBase = cleanupMonitorLabel(selectedNames.monitor) || monitorDatasetKey || cleanupMonitorLabel(storedMonitorSelectionRaw) || cleanupMonitorLabel(monitorSelectValue);
+    var monitorDisplayName = monitorDisplayBase ? addArriKNumber(monitorDisplayBase) : '';
+    var monitorNameHtml = monitorDisplayName ? "&quot;".concat(escapeHtml(monitorDisplayName), "&quot;") : '';
+    var displaySegments = ["1x <strong>".concat(monitorLabel, "</strong>")];
+    if (sizeSegment) displaySegments.push(sizeSegment);
+    if (monitorNameHtml) displaySegments.push(monitorNameHtml);
+    displaySegments.push('incl. Sunhood');
+    var displayHtml = displaySegments.join(' - ');
     var attributeParts = [];
-    if (size) attributeParts.push("".concat(size, "\""));
-    if (monitorName) attributeParts.push(monitorName);
+    if (sizeText) attributeParts.push("".concat(sizeText, "\""));
+    if (monitorDisplayName) attributeParts.push(monitorDisplayName);
     attributeParts.push('incl. Sunhood');
     var attributeText = attributeParts.filter(Boolean).join(' - ');
     var _dataName = attributeText ? "".concat(monitorLabel, " (").concat(attributeText, ")") : monitorLabel;
-    var monitorExtraAttributes = hasCameraForLinking ? buildCameraLinkAttributes(selectedNames.monitor) : '';
+    var monitorCameraLinkLabel = monitorDisplayName || cleanupMonitorLabel(selectedNames.monitor) || cleanupMonitorLabel(storedMonitorSelectionRaw) || cleanupMonitorLabel(monitorSelectValue) || '';
+    var monitorExtraAttributes = hasCameraForLinking ? buildCameraLinkAttributes(monitorCameraLinkLabel || undefined) : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + wrapGearItemHtml(displayHtml, {
       name: _dataName,
       quantity: 1,
@@ -10753,9 +10756,9 @@ function gearListGenerateHtmlImpl() {
   });
   if (hasMotor) {
     var _monitorsDb$defaultNa, _monitorsDb$candidate;
-    var monitorsDb = devices && devices.monitors ? devices.monitors : {};
-    var names = Object.keys(monitorsDb).filter(function (n) {
-      return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
+    var _monitorsDb = devices && devices.monitors ? devices.monitors : {};
+    var names = Object.keys(_monitorsDb).filter(function (n) {
+      return !_monitorsDb[n].wirelessTx || _monitorsDb[n].wirelessRX;
     }).sort(localeSort);
     var manualFlag = !!info.focusMonitorManual;
     var infoValue = typeof info.focusMonitor === 'string' ? info.focusMonitor.trim() : '';
@@ -10811,7 +10814,7 @@ function gearListGenerateHtmlImpl() {
     }) ? optionValues.find(function (value) {
       return value && value.toLowerCase() === (defaultName || '').toLowerCase();
     }) : defaultName;
-    var selectedSize = resolvedName && monitorsDb[resolvedName] ? monitorsDb[resolvedName].screenSizeInches : ((_monitorsDb$defaultNa = monitorsDb[defaultName]) === null || _monitorsDb$defaultNa === void 0 ? void 0 : _monitorsDb$defaultNa.screenSizeInches) || ((_monitorsDb$candidate = monitorsDb[candidate]) === null || _monitorsDb$candidate === void 0 ? void 0 : _monitorsDb$candidate.screenSizeInches) || '';
+    var selectedSize = resolvedName && _monitorsDb[resolvedName] ? _monitorsDb[resolvedName].screenSizeInches : ((_monitorsDb$defaultNa = _monitorsDb[defaultName]) === null || _monitorsDb$defaultNa === void 0 ? void 0 : _monitorsDb$defaultNa.screenSizeInches) || ((_monitorsDb$candidate = _monitorsDb[candidate]) === null || _monitorsDb$candidate === void 0 ? void 0 : _monitorsDb$candidate.screenSizeInches) || '';
     var displayLabel = 'Focus Monitor';
     var sizeSpanHtml = "<span id=\"monitorSizeFocus\">".concat(escapeHtml(selectedSize ? String(selectedSize) : ''), "&quot;</span>");
     var selectHtml = "<select id=\"gearListFocusMonitor\" data-auto-gear-manual=\"".concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select>");
