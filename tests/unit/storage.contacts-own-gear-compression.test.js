@@ -1,5 +1,6 @@
 const CONTACTS_KEY = 'cameraPowerPlanner_contacts';
 const OWN_GEAR_KEY = 'cameraPowerPlanner_ownGear';
+const USER_PROFILE_KEY = 'cameraPowerPlanner_userProfile';
 const PROJECT_KEY = 'cameraPowerPlanner_project';
 const BACKUP_SUFFIX = '__backup';
 
@@ -60,7 +61,7 @@ const bootstrapStorageModule = (storage) => {
 const containsCompressionFlag = (value) =>
   typeof value === 'string' && value.includes('"__cineStorageCompressed":true');
 
-describe('contacts and own gear storage bypass compression', () => {
+describe('contacts, own gear and user profile storage bypass compression', () => {
   afterEach(() => {
     delete global.window;
     delete global.localStorage;
@@ -90,6 +91,29 @@ describe('contacts and own gear storage bypass compression', () => {
     expect(containsCompressionFlag(backup)).toBe(false);
   });
 
+  test('saveUserProfile stores plain JSON snapshots', () => {
+    const { storage, data } = createMockStorage();
+    const api = bootstrapStorageModule(storage);
+
+    api.saveUserProfile({
+      name: 'Casey Lighting',
+      role: 'Gaffer',
+      phone: '+1 555 0100',
+      email: 'casey@example.test',
+      avatar: 'data:image/png;base64,xyz',
+    });
+
+    const primary = data.get(USER_PROFILE_KEY);
+    const backup = data.get(`${USER_PROFILE_KEY}${BACKUP_SUFFIX}`);
+
+    expect(primary).toBeDefined();
+    expect(() => JSON.parse(primary)).not.toThrow();
+    expect(containsCompressionFlag(primary)).toBe(false);
+    expect(backup).toBeDefined();
+    expect(() => JSON.parse(backup)).not.toThrow();
+    expect(containsCompressionFlag(backup)).toBe(false);
+  });
+
   test('compression sweep skips contacts and own gear entries', () => {
     const { storage, data, setItemCalls } = createMockStorage({ quotaOnProjectBackup: true });
 
@@ -97,6 +121,14 @@ describe('contacts and own gear storage bypass compression', () => {
     data.set(CONTACTS_KEY, JSON.stringify([{ id: 'contact-1', name: 'DP' }]));
     data.set(OWN_GEAR_KEY, JSON.stringify([{ id: 'gear-1', name: 'Meter', notes: 'x'.repeat(256) }]));
     data.set('otherKey', JSON.stringify({ payload: 'x'.repeat(8192) }));
+    data.set(USER_PROFILE_KEY, JSON.stringify({
+      name: 'Alex DP',
+      role: 'Director of Photography',
+      email: 'alex@example.test',
+    }));
+
+    const backupKey = `${USER_PROFILE_KEY}${BACKUP_SUFFIX}`;
+    data.set(backupKey, JSON.stringify({ name: 'Alex DP' }));
 
     const api = bootstrapStorageModule(storage);
 
@@ -109,6 +141,8 @@ describe('contacts and own gear storage bypass compression', () => {
     expect(containsCompressionFlag(data.get(`${CONTACTS_KEY}${BACKUP_SUFFIX}`))).toBe(false);
     expect(containsCompressionFlag(data.get(OWN_GEAR_KEY))).toBe(false);
     expect(containsCompressionFlag(data.get(`${OWN_GEAR_KEY}${BACKUP_SUFFIX}`))).toBe(false);
+    expect(containsCompressionFlag(data.get(USER_PROFILE_KEY))).toBe(false);
+    expect(containsCompressionFlag(data.get(backupKey))).toBe(false);
     expect(containsCompressionFlag(data.get(`${PROJECT_KEY}${BACKUP_SUFFIX}`))).toBe(true);
   });
 });

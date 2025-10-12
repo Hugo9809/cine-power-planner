@@ -3954,6 +3954,7 @@ function registerProtectedCompressionSkipKeys(skipSet) {
   const keysToProtect = [
     CONTACTS_STORAGE_KEY,
     OWN_GEAR_STORAGE_KEY,
+    USER_PROFILE_STORAGE_KEY,
   ];
 
   for (let index = 0; index < keysToProtect.length; index += 1) {
@@ -11114,6 +11115,10 @@ function saveUserProfile(profile) {
     USER_PROFILE_STORAGE_KEY,
     normalized,
     'Error saving user profile to localStorage:',
+    {
+      disableCompression: true,
+      enableCompressionSweep: false,
+    },
   );
 }
 
