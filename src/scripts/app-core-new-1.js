@@ -8035,7 +8035,14 @@ function escapeHtml(str) {
   if (!escapeDiv && typeof globalThis !== 'undefined' && globalThis.document) {
     escapeDiv = globalThis.document.createElement('div');
   }
-  if (!escapeDiv) return String(str);
+  if (!escapeDiv) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
   escapeDiv.textContent = str;
   return escapeDiv.innerHTML;
 }
