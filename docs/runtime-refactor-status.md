@@ -43,7 +43,26 @@
 - Runtime fallback now leans on `fallbackTryRequire`, trimming duplicate `require` scaffolding while keeping the defensive checks that prevent unsanitised globals from overriding autosave, backup, or restore contexts.
 - The helper continues to register through CommonJS and the `cineRuntimeEnvironmentHelpers` global, preserving offline cache hydration and ensuring environment context detection remains available even when modules are preloaded from backups.
 
+## Step 4 – Data & storage dashboard localisation
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 25011 | 25067 | +56 |
+| `src/scripts/translations.js` | 11258 | 11263 | +5 |
+| `src/styles/style.css` | 11868 | 11876 | +8 |
+
+*Notes:*
+
+- The Data & Storage dashboard now sources its headings, button labels, and helper copy from the shared localisation tables so every language mirrors the storage protections overview and quick safeguard actions.【F:src/scripts/app-core-new-1.js†L12544-L12619】【F:src/scripts/translations.js†L878-L909】
+- README entries across languages highlight the refreshed Storage & Media grid behaviour so offline crews know duplicate buttons and media presets are available during the refactor.【F:README.md†L512-L528】【F:README.es.md†L154-L158】【F:README.fr.md†L154-L158】【F:README.it.md†L154-L158】【F:README.de.md†L154-L158】
+- The storage summary layout gained dedicated utility classes to keep the requirement key/value rows legible while the runtime split continues, preserving readability in offline builds without introducing new assets.【F:src/styles/style.css†L5433-L5484】
+
+## Step 5 – Regression checks
+
+- Ran the runtime module unit suite with the new helper wiring. The tests continue to surface the pre-existing registry duplication failures (modules registering twice), confirming the refactor did not introduce new breakages but the baseline still needs follow-up before the suite can pass.【b04db0†L1-L74】
+- Manual offline smoke, storage persistence rehearsal, and import/export drills remain pending for a contributor with a browser profile; we captured the outstanding work in the release checklist so the next refactor iteration can record evidence alongside the automated runs.
+
 ## Test summary
 
-- Attempted `node tools/runUnitTests.js tests/unit/runtimeModule.test.js` (fails in baseline with registry warnings; change does not introduce new regression).
+- Re-ran `node tools/runUnitTests.js tests/unit/runtimeModule.test.js` (still fails in baseline with registry warnings; no new regressions detected).
 - Pending: full suite (`npm run test:unit`, `npm run test:script`).
