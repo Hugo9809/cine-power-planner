@@ -15751,6 +15751,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return d.toISOString().split('T')[0];
     }
     function renderDeviceList(categoryKey, ulElement) {
+      // Helper to more thoroughly strip HTML tags by repeatedly applying the regex.
+      function stripHtmlTagsRepeatedly(input) {
+        if (!input) return '';
+        let previous;
+        do {
+          previous = input;
+          input = input.replace(/<[^>]+>/g, '');
+        } while (input !== previous);
+        return input;
+      }
+
       ulElement.innerHTML = "";
       var categoryDevices = devices[categoryKey];
       if (categoryKey.includes('.')) {
@@ -15769,7 +15780,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var nameSpan = document.createElement("span");
         nameSpan.textContent = name;
         var summary = generateSafeConnectorSummary(deviceData);
-        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+        summary = summary ? stripHtmlTagsRepeatedly(summary).replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
         }
