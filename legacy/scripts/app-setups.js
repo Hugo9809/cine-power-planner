@@ -2337,7 +2337,11 @@ function applyOwnedGearMarkersToHtml(html, markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : marker.ownedId.replace(/"/g, '\\"');
+    // Properly escape backslashes and double quotes for use in CSS attribute selectors.
+   var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
+       ? CSS.escape(marker.ownedId)
+       // Fallback: escape backslash first, then double quotes.
+       : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var selector = "[data-gear-own-gear-id=\"".concat(selectorId, "\"]");
     var element = doc.body.querySelector(selector);
     if (!element) {
