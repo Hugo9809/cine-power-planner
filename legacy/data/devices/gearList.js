@@ -21,7 +21,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "kNumber": "DVF-EL200",
         "compatible": ["Sony Venice", "Sony Venice 2", "Sony F55"],
         "isPersonalGear": false,
-        "listOfOrigin": "240315_Detective_von_Fock_Equpment_B-Cam_Rental.pdf"
+        "listOfOrigin": "240315_Detective_von_Fock_Equipment_B-Cam_Rental.pdf"
       }
     },
     "directorMonitors": {

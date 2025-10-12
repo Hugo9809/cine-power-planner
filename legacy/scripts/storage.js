@@ -192,8 +192,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
   var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
   var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+  var CONTACTS_STORAGE_KEY = 'cameraPowerPlanner_contacts';
   var OWN_GEAR_STORAGE_KEY = 'cameraPowerPlanner_ownGear';
   var USER_PROFILE_STORAGE_KEY = 'cameraPowerPlanner_userProfile';
+  var DOCUMENTATION_TRACKER_STORAGE_KEY = 'cameraPowerPlanner_documentationTracker';
   var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
   var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
   var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
@@ -215,15 +217,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var AUTO_BACKUP_COMPRESSION_CACHE = typeof Map === 'function' ? new Map() : null;
   var AUTO_BACKUP_COMPRESSION_CACHE_KEYS = [];
   var AUTO_BACKUP_COMPRESSION_CACHE_LIMIT = 16;
-    function cloneAutoBackupCompressionValue(value) {
-      if (!value || _typeof(value) !== 'object') {
-        return value;
-      }
-
-      if (Array.isArray(value)) {
-        return value.slice();
-      }
-
+  function cloneAutoBackupCompressionValue(value) {
+    if (!value || _typeof(value) !== 'object') {
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
     var clone = {};
     var keys = Object.keys(value);
     for (var index = 0; index < keys.length; index += 1) {
@@ -283,19 +283,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
-}
-
-function resetAutoBackupCompressionCache() {
-  if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
-    try {
-      AUTO_BACKUP_COMPRESSION_CACHE.clear();
-    } catch (cacheClearError) {
-      void cacheClearError;
+  function resetAutoBackupCompressionCache() {
+    if (AUTO_BACKUP_COMPRESSION_CACHE && typeof AUTO_BACKUP_COMPRESSION_CACHE.clear === 'function') {
+      try {
+        AUTO_BACKUP_COMPRESSION_CACHE.clear();
+      } catch (cacheClearError) {
+        void cacheClearError;
+      }
     }
+    AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
   }
-
-  AUTO_BACKUP_COMPRESSION_CACHE_KEYS.length = 0;
-}
   var COMPRESSION_WARNING_LIMIT = Number.POSITIVE_INFINITY;
   var COMPRESSION_WARNING_BATCH_SIZE = 8;
   var COMPRESSION_LOG_SUMMARY_WINDOW_MS = 60 * 1000;
@@ -1170,8 +1167,9 @@ function resetAutoBackupCompressionCache() {
   var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
   var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
   var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
-  var PROJECT_ACTIVITY_WINDOW_MS = 10 * 60 * 1000;
+  var PROJECT_ACTIVITY_WINDOW_MS = 30 * 60 * 1000;
   var projectActivityTimestamps = new Map();
+  var forcedCompressedProjectKeys = typeof Set === 'function' ? new Set() : null;
   var AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH = 2048;
   function isAutoBackupStorageKey(name) {
     return typeof name === 'string' && (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX) || name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX));
@@ -1197,7 +1195,7 @@ function resetAutoBackupCompressionCache() {
   var MAX_AUTO_BACKUPS = 240;
   var MAX_DELETION_BACKUPS = 20;
   var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
-  var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
+  var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 36;
   var AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
   var AUTO_GEAR_BACKUP_RETENTION_MAX = 120;
   function ensureGlobalAutoGearBackupDefaults() {
@@ -2006,11 +2004,51 @@ function resetAutoBackupCompressionCache() {
     }
     return Array.from(variants);
   }
+  var SETUP_STORAGE_KEY_VARIANTS = new Set(getStorageKeyVariants(SETUP_STORAGE_KEY));
+  function shouldAllowCriticalSweepPrimaryInspection(key) {
+    if (typeof key !== 'string' || !key) {
+      return false;
+    }
+    if (!SETUP_STORAGE_KEY_VARIANTS || typeof SETUP_STORAGE_KEY_VARIANTS.has !== 'function') {
+      return false;
+    }
+    if (!SETUP_STORAGE_KEY_VARIANTS.has(key)) {
+      return false;
+    }
+    if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+      return false;
+    }
+    return true;
+  }
+  function inspectSetupStorageForQuotaRecovery(storage, skipKeysSet) {
+    if (!storage || typeof storage.getItem !== 'function') {
+      return;
+    }
+    if (!SETUP_STORAGE_KEY_VARIANTS || typeof SETUP_STORAGE_KEY_VARIANTS.forEach !== 'function') {
+      return;
+    }
+    var visited = new Set();
+    var skipSet = skipKeysSet && typeof skipKeysSet.has === 'function' ? skipKeysSet : null;
+    SETUP_STORAGE_KEY_VARIANTS.forEach(function (key) {
+      if (typeof key !== 'string' || !key || visited.has(key)) {
+        return;
+      }
+      visited.add(key);
+      if (skipSet && skipSet.has(key)) {
+        return;
+      }
+      try {
+        storage.getItem(key);
+      } catch (inspectionError) {
+        void inspectionError;
+      }
+    });
+  }
   var STORAGE_BACKUP_SUFFIX = '__backup';
   var MAX_SAVE_ATTEMPTS = 3;
   var MAX_QUOTA_RECOVERY_STEPS = 100;
   var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
-  var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, OWN_GEAR_STORAGE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME, FOCUS_SCALE_STORAGE_KEY_NAME]);
+  var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, OWN_GEAR_STORAGE_KEY, DOCUMENTATION_TRACKER_STORAGE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME, FOCUS_SCALE_STORAGE_KEY_NAME]);
   Array.from(RAW_STORAGE_BACKUP_KEYS).forEach(function (key) {
     getStorageKeyVariants(key).forEach(function (variant) {
       if (typeof variant === 'string' && variant) {
@@ -2045,6 +2083,10 @@ function resetAutoBackupCompressionCache() {
   }, function () {
     return {
       key: OWN_GEAR_STORAGE_KEY
+    };
+  }, function () {
+    return {
+      key: DOCUMENTATION_TRACKER_STORAGE_KEY
     };
   }, function () {
     return {
@@ -2366,9 +2408,19 @@ function resetAutoBackupCompressionCache() {
             }
           }
           if (!writeResult.success && writeResult.error && isQuotaExceededError(writeResult.error)) {
-            var skipKeys = [entry.key, entry.backupKey];
+            var skipKeys = new Set();
+            if (typeof entry.backupKey === 'string' && entry.backupKey) {
+              skipKeys.add(entry.backupKey);
+            }
+            var shouldInspectPrimaryDuringSweep = shouldAllowCriticalSweepPrimaryInspection(entry.key);
+            if (!shouldInspectPrimaryDuringSweep && typeof entry.key === 'string' && entry.key) {
+              skipKeys.add(entry.key);
+            }
+            if (!shouldInspectPrimaryDuringSweep && !ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+              inspectSetupStorageForQuotaRecovery(storage, skipKeys);
+            }
             var sweepResult = attemptStorageCompressionSweep(storage, {
-              skipKeys: skipKeys
+              skipKeys: Array.from(skipKeys)
             });
             if (sweepResult && sweepResult.success) {
               writeResult = tryStoreBackup(candidateValue);
@@ -2929,26 +2981,128 @@ function resetAutoBackupCompressionCache() {
       return;
     }
     var recordTime = typeof timestamp === 'number' && Number.isFinite(timestamp) ? timestamp : Date.now();
+    var normalized = normalizeProjectStorageKey(name);
+    if (normalized) {
+      projectActivityTimestamps.set(normalized, recordTime);
+      if (normalized !== name) {
+        projectActivityTimestamps.set(name, recordTime);
+      }
+      return;
+    }
     projectActivityTimestamps.set(name, recordTime);
   }
   function removeProjectActivity(name) {
     if (typeof name !== 'string') {
       return;
     }
+    var normalized = normalizeProjectStorageKey(name);
     projectActivityTimestamps.delete(name);
+    if (normalized && normalized !== name) {
+      projectActivityTimestamps.delete(normalized);
+    }
+  }
+  function getProjectActivityTimestamp(name) {
+    if (!projectActivityTimestamps || typeof projectActivityTimestamps.get !== 'function' || typeof name !== 'string') {
+      return null;
+    }
+    if (projectActivityTimestamps.has(name)) {
+      var direct = projectActivityTimestamps.get(name);
+      if (Number.isFinite(direct)) {
+        return direct;
+      }
+    }
+    var normalized = normalizeProjectStorageKey(name);
+    if (normalized && projectActivityTimestamps.has(normalized)) {
+      var normalizedTimestamp = projectActivityTimestamps.get(normalized);
+      if (Number.isFinite(normalizedTimestamp)) {
+        return normalizedTimestamp;
+      }
+    }
+    return null;
   }
   function pruneProjectActivityCache(validKeys) {
     if (!projectActivityTimestamps || typeof projectActivityTimestamps.forEach !== 'function') {
       return;
     }
     projectActivityTimestamps.forEach(function (timestamp, key) {
-      var hasKey = validKeys && typeof validKeys.has === 'function' ? validKeys.has(key) : true;
+      var normalized = normalizeProjectStorageKey(key);
+      var hasKey = validKeys && typeof validKeys.has === 'function' ? validKeys.has(key) || normalized && validKeys.has(normalized) : true;
       if (!hasKey) {
         projectActivityTimestamps.delete(key);
         return;
       }
       if (!Number.isFinite(timestamp) || timestamp < 0) {
         projectActivityTimestamps.delete(key);
+      }
+    });
+  }
+  function normalizeForcedProjectCompressionKey(name) {
+    if (typeof name !== 'string') {
+      return '';
+    }
+    var normalized = normalizeProjectStorageKey(name);
+    return typeof normalized === 'string' && normalized ? normalized : '';
+  }
+  function isForcedProjectCompressionLocked(name) {
+    if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.has !== 'function') {
+      return false;
+    }
+    var normalized = normalizeForcedProjectCompressionKey(name);
+    if (!normalized) {
+      return false;
+    }
+    try {
+      return forcedCompressedProjectKeys.has(normalized);
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
+  function registerForcedProjectCompressionKey(name) {
+    if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.add !== 'function') {
+      clearActiveProjectCompressionHold(name);
+      if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
+        projectActivityTimestamps.delete(name);
+      }
+      return;
+    }
+    var normalized = normalizeForcedProjectCompressionKey(name);
+    if (!normalized) {
+      return;
+    }
+    try {
+      forcedCompressedProjectKeys.add(normalized);
+    } catch (error) {
+      void error;
+    }
+    if (projectActivityTimestamps && typeof projectActivityTimestamps.delete === 'function') {
+      projectActivityTimestamps.delete(name);
+      if (normalized !== name) {
+        projectActivityTimestamps.delete(normalized);
+      }
+    }
+    clearActiveProjectCompressionHold(normalized);
+  }
+  function purgeForcedProjectCompressionKeys(validKeys) {
+    if (!forcedCompressedProjectKeys || typeof forcedCompressedProjectKeys.forEach !== 'function') {
+      return;
+    }
+    var validSet = validKeys && typeof validKeys.has === 'function' ? validKeys : null;
+    forcedCompressedProjectKeys.forEach(function (key) {
+      if (!key) {
+        try {
+          forcedCompressedProjectKeys.delete(key);
+        } catch (error) {
+          void error;
+        }
+        return;
+      }
+      if (validSet && !validSet.has(key)) {
+        try {
+          forcedCompressedProjectKeys.delete(key);
+        } catch (error) {
+          void error;
+        }
       }
     });
   }
@@ -3020,13 +3174,14 @@ function resetAutoBackupCompressionCache() {
     pruneProjectActivityCache(validKeys);
     keys.forEach(function (key) {
       var normalizedKey = normalizeProjectStorageKey(key);
-      var isActiveHold = activeCompressionHoldKey && normalizedKey === activeCompressionHoldKey;
-      var timestamp = projectActivityTimestamps.has(key) ? projectActivityTimestamps.get(key) : null;
-      var keepUncompressed = isActiveHold || Number.isFinite(timestamp) && timestamp >= threshold;
+      var forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
+      var isActiveHold = !forcedCompressionLocked && activeCompressionHoldKey && normalizedKey === activeCompressionHoldKey;
+      var timestamp = getProjectActivityTimestamp(key);
+      var keepUncompressed = !forcedCompressionLocked && (isActiveHold || Number.isFinite(timestamp) && timestamp >= threshold);
       if (keepUncompressed) {
         container[key] = ensureProjectEntryUncompressed(container[key], key);
         if (isActiveHold && Number.isFinite(now)) {
-          markProjectActivity(normalizedKey, now);
+          markProjectActivity(normalizedKey || key, now);
         }
       } else {
         container[key] = ensureProjectEntryCompressed(container[key], key);
@@ -3044,14 +3199,39 @@ function resetAutoBackupCompressionCache() {
     }
     var context = options || {};
     var compressedKeys = [];
+    var now = Date.now();
+    var threshold = Number.isFinite(now) ? now - PROJECT_ACTIVITY_WINDOW_MS : Number.NEGATIVE_INFINITY;
+    var activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY : '';
+    var normalizedValidKeys = new Set();
     Object.keys(container).forEach(function (key) {
+      var normalizedKey = normalizeProjectStorageKey(key);
+      if (normalizedKey) {
+        normalizedValidKeys.add(normalizedKey);
+      }
+      var isActiveHold = activeCompressionHoldKey && normalizedKey === activeCompressionHoldKey;
+      var timestamp = getProjectActivityTimestamp(key);
+      var withinActivityWindow = Number.isFinite(timestamp) && timestamp >= threshold;
+      var forcedCompressionLocked = isForcedProjectCompressionLocked(normalizedKey || key);
+      if ((isActiveHold || withinActivityWindow) && !forcedCompressionLocked) {
+        var _currentValue = container[key];
+        var uncompressedValue = ensureProjectEntryUncompressed(_currentValue, key);
+        if (uncompressedValue !== _currentValue) {
+          container[key] = uncompressedValue;
+        }
+        if (isActiveHold && Number.isFinite(now)) {
+          markProjectActivity(normalizedKey || key, now);
+        }
+        return;
+      }
       var currentValue = container[key];
       var compressedValue = ensureProjectEntryCompressed(currentValue, key);
       if (compressedValue !== currentValue) {
         container[key] = compressedValue;
         compressedKeys.push(key);
+        registerForcedProjectCompressionKey(normalizedKey || key);
       }
     });
+    purgeForcedProjectCompressionKeys(normalizedValidKeys);
     if (compressedKeys.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
       var reason = typeof context.reason === 'string' ? context.reason : 'quota-recovery';
       console.warn("Forced compression for ".concat(compressedKeys.length, " project entr").concat(compressedKeys.length === 1 ? 'y' : 'ies', " while recovering storage quota."), {
@@ -3121,6 +3301,22 @@ function resetAutoBackupCompressionCache() {
       }
     }
   }
+  function registerProtectedCompressionSkipKeys(skipSet) {
+    if (!skipSet || typeof skipSet.add !== 'function') {
+      return;
+    }
+    var keysToProtect = [CONTACTS_STORAGE_KEY, OWN_GEAR_STORAGE_KEY];
+    for (var index = 0; index < keysToProtect.length; index += 1) {
+      var key = keysToProtect[index];
+      if (typeof key !== 'string' || !key) {
+        continue;
+      }
+      skipSet.add(key);
+      if (typeof STORAGE_BACKUP_SUFFIX === 'string' && STORAGE_BACKUP_SUFFIX) {
+        skipSet.add("".concat(key).concat(STORAGE_BACKUP_SUFFIX));
+      }
+    }
+  }
   function maybeDecompressStoredString(raw, options) {
     if (typeof raw !== 'string') {
       return raw;
@@ -3167,6 +3363,7 @@ function resetAutoBackupCompressionCache() {
     if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
       registerActiveSetupStorageSkipKeys(skipSet);
     }
+    registerProtectedCompressionSkipKeys(skipSet);
     if (Array.isArray(skipKeys)) {
       for (var i = 0; i < skipKeys.length; i += 1) {
         var key = skipKeys[i];
@@ -7110,9 +7307,9 @@ function resetAutoBackupCompressionCache() {
     return label.trim().replace(/[:：]\s*$/, '').trim();
   }
   function getProductionCompanyLabelSets(projectLabels) {
-    var textsObj = typeof texts !== 'undefined' ? texts : null;
     var labelSets = {};
-    var fallbackProjectLabels = textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
+    var textsObj = typeof texts !== 'undefined' ? texts : null;
+    var fallbackProjectLabels = textsObj && textsObj.en && textsObj.en.projectFields || {};
     var allKeys = ['productionCompany'].concat(PRODUCTION_COMPANY_FIELD_ORDER);
     allKeys.forEach(function (key) {
       var set = new Set();
@@ -7152,13 +7349,12 @@ function resetAutoBackupCompressionCache() {
     var labelSets = getProductionCompanyLabelSets(projectLabels);
     var result = {};
     var firstLine = normalizedText[0];
-    var rest = normalizedText.slice(1);
     if (firstLine) {
       result.productionCompany = firstLine;
     }
     var collected = {};
     var activeField = null;
-    rest.forEach(function (line) {
+    normalizedText.slice(1).forEach(function (line) {
       var normalizedLine = normalizeProjectFieldLabel(line);
       var matchedField = null;
       PRODUCTION_COMPANY_FIELD_ORDER.forEach(function (field) {
@@ -7318,10 +7514,10 @@ function resetAutoBackupCompressionCache() {
       }
     }
     var boxRegex = /<div[^>]*class=["'][^"']*requirement-box[^"']*["'][^>]*>[\s\S]*?<\/div>/gi;
-    var textsObj = typeof texts !== 'undefined' ? texts : null;
-    var activeLang = typeof currentLang === 'string' && textsObj && textsObj[currentLang] ? currentLang : 'en';
-    var projectLabels = textsObj && textsObj[activeLang] && textsObj[activeLang].projectFields ? textsObj[activeLang].projectFields : textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
     var match;
+    var textsObj = typeof texts !== 'undefined' ? texts : null;
+    var lang = typeof currentLang === 'string' && textsObj && textsObj[currentLang] ? currentLang : 'en';
+    var projectLabels = textsObj && textsObj[lang] && textsObj[lang].projectFields ? textsObj[lang].projectFields : textsObj && textsObj.en && textsObj.en.projectFields ? textsObj.en.projectFields : {};
     while (match = boxRegex.exec(gridHtml)) {
       var boxHtml = match[0];
       var fieldMatch = boxHtml.match(/data-field=["']([^"']+)["']/i);
@@ -7372,10 +7568,10 @@ function resetAutoBackupCompressionCache() {
     }
     if (isPlainObject(value)) {
       var clone = {};
-      Object.entries(value).forEach(function (_ref15) {
-        var _ref16 = _slicedToArray(_ref15, 2),
-          key = _ref16[0],
-          val = _ref16[1];
+      Object.entries(value).forEach(function (_ref17) {
+        var _ref18 = _slicedToArray(_ref17, 2),
+          key = _ref18[0],
+          val = _ref18[1];
         clone[key] = cloneProjectData(val);
       });
       return clone;
@@ -7425,8 +7621,9 @@ function resetAutoBackupCompressionCache() {
         result.email = email;
       }
       var websiteValue = typeof entry.website === 'string' ? entry.website.trim() : typeof entry.url === 'string' ? entry.url.trim() : '';
-      if (websiteValue) {
-        result.website = websiteValue;
+      var website = websiteValue;
+      if (website) {
+        result.website = website;
       }
       var note = typeof entry.text === 'string' ? entry.text.trim() : '';
       if (note) {
@@ -7474,10 +7671,10 @@ function resetAutoBackupCompressionCache() {
       return null;
     }
     var normalized = {};
-    Object.entries(info).forEach(function (_ref17) {
-      var _ref18 = _slicedToArray(_ref17, 2),
-        key = _ref18[0],
-        raw = _ref18[1];
+    Object.entries(info).forEach(function (_ref19) {
+      var _ref20 = _slicedToArray(_ref19, 2),
+        key = _ref20[0],
+        raw = _ref20[1];
       if (raw === null || raw === undefined) {
         return;
       }
@@ -7791,10 +7988,10 @@ function resetAutoBackupCompressionCache() {
         return serialized || '';
       }
       var _entries = [];
-      Object.entries(value).forEach(function (_ref19) {
-        var _ref20 = _slicedToArray(_ref19, 2),
-          key = _ref20[0],
-          candidate = _ref20[1];
+      Object.entries(value).forEach(function (_ref21) {
+        var _ref22 = _slicedToArray(_ref21, 2),
+          key = _ref22[0],
+          candidate = _ref22[1];
         var normalized = normalizeImportedFilterEntry(candidate, key);
         if (normalized) {
           _entries.push(normalized);
@@ -7849,10 +8046,10 @@ function resetAutoBackupCompressionCache() {
       }
       if (isPlainObject(value)) {
         var nested = {};
-        Object.entries(value).forEach(function (_ref21) {
-          var _ref22 = _slicedToArray(_ref21, 2),
-            key = _ref22[0],
-            nestedValue = _ref22[1];
+        Object.entries(value).forEach(function (_ref23) {
+          var _ref24 = _slicedToArray(_ref23, 2),
+            key = _ref24[0],
+            nestedValue = _ref24[1];
           if (typeof key !== 'string' || !key) {
             return;
           }
@@ -7880,10 +8077,10 @@ function resetAutoBackupCompressionCache() {
       return '';
     };
     var clone = {};
-    Object.entries(selectors).forEach(function (_ref23) {
-      var _ref24 = _slicedToArray(_ref23, 2),
-        id = _ref24[0],
-        value = _ref24[1];
+    Object.entries(selectors).forEach(function (_ref25) {
+      var _ref26 = _slicedToArray(_ref25, 2),
+        id = _ref26[0],
+        value = _ref26[1];
       if (typeof id !== 'string' || !id) {
         return;
       }
@@ -8298,6 +8495,11 @@ function resetAutoBackupCompressionCache() {
       return '';
     }
     var normalized = normalizeProjectStorageKey(name);
+    if (isForcedProjectCompressionLocked(normalized)) {
+      ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
+      ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+      return normalized;
+    }
     ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = normalized;
     ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = true;
     return normalized;
@@ -8368,13 +8570,13 @@ function resetAutoBackupCompressionCache() {
   }
   function readAllProjectsFromStorage() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var _ref25 = options || {},
-      _ref25$forceRefresh = _ref25.forceRefresh,
-      forceRefresh = _ref25$forceRefresh === void 0 ? false : _ref25$forceRefresh,
-      _ref25$forMutation = _ref25.forMutation,
-      forMutation = _ref25$forMutation === void 0 ? false : _ref25$forMutation,
-      _ref25$skipAutoBackup = _ref25.skipAutoBackupExpansion,
-      skipAutoBackupExpansion = _ref25$skipAutoBackup === void 0 ? false : _ref25$skipAutoBackup;
+    var _ref27 = options || {},
+      _ref27$forceRefresh = _ref27.forceRefresh,
+      forceRefresh = _ref27$forceRefresh === void 0 ? false : _ref27$forceRefresh,
+      _ref27$forMutation = _ref27.forMutation,
+      forMutation = _ref27$forMutation === void 0 ? false : _ref27$forMutation,
+      _ref27$skipAutoBackup = _ref27.skipAutoBackupExpansion,
+      skipAutoBackupExpansion = _ref27$skipAutoBackup === void 0 ? false : _ref27$skipAutoBackup;
     applyLegacyStorageMigrations();
     var shouldUseCache = !skipAutoBackupExpansion;
     if (shouldUseCache && !forceRefresh) {
@@ -8574,9 +8776,9 @@ function resetAutoBackupCompressionCache() {
   }
   function persistAllProjects(projects) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var _ref26 = options || {},
-      _ref26$skipCompressio = _ref26.skipCompression,
-      skipCompression = _ref26$skipCompressio === void 0 ? false : _ref26$skipCompressio;
+    var _ref28 = options || {},
+      _ref28$skipCompressio = _ref28.skipCompression,
+      skipCompression = _ref28$skipCompressio === void 0 ? false : _ref28$skipCompressio;
     var safeStorage = getSafeLocalStorage();
     enforceAutoBackupLimits(projects);
     var serializedProjects = serializeAutoBackupEntries(projects, {
@@ -8611,6 +8813,14 @@ function resetAutoBackupCompressionCache() {
           if (derivedCachesClearedForQuota) {
             return true;
           }
+        }
+        var removedKey = removeOldestAutoBackupEntry(projects);
+        if (removedKey) {
+          delete serializedProjects[removedKey];
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
+          }
+          return true;
         }
         if (typeof console !== 'undefined' && typeof console.warn === 'function') {
           console.warn('Storage quota exceeded while saving projects. Preserved automatic backups and will attempt a compression sweep before retrying.', {
@@ -9099,9 +9309,9 @@ function resetAutoBackupCompressionCache() {
       }
       var _importProject = ensureImporter();
       var count = 0;
-      entries.forEach(function (_ref27) {
-        var name = _ref27.name,
-          project = _ref27.project;
+      entries.forEach(function (_ref29) {
+        var name = _ref29.name,
+          project = _ref29.project;
         if (project === null || project === undefined) {
           return;
         }
@@ -9120,10 +9330,10 @@ function resetAutoBackupCompressionCache() {
     }
     if (isPlainObject(collection)) {
       var _importProject2 = ensureImporter();
-      Object.entries(collection).forEach(function (_ref28) {
-        var _ref29 = _slicedToArray(_ref28, 2),
-          name = _ref29[0],
-          proj = _ref29[1];
+      Object.entries(collection).forEach(function (_ref30) {
+        var _ref31 = _slicedToArray(_ref30, 2),
+          name = _ref31[0],
+          proj = _ref31[1];
         var normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
         _importProject2(typeof normalizedName === 'string' ? normalizedName : '', proj);
       });
@@ -9205,7 +9415,9 @@ function resetAutoBackupCompressionCache() {
     }
     var normalized = items.map(normalizeOwnGearItem).filter(Boolean);
     ensurePreWriteMigrationBackup(safeStorage, OWN_GEAR_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, OWN_GEAR_STORAGE_KEY, normalized, 'Error saving own gear to localStorage:');
+    saveJSONToStorage(safeStorage, OWN_GEAR_STORAGE_KEY, normalized, 'Error saving own gear to localStorage:', {
+      disableCompression: true
+    });
   }
   function normalizeUserProfile(entry) {
     if (!entry || _typeof(entry) !== 'object') {
@@ -9408,6 +9620,305 @@ function resetAutoBackupCompressionCache() {
     }
     return [];
   }
+  var DOCUMENTATION_TRACKER_SCHEMA_VERSION = 1;
+  function generateDocumentationTrackerId() {
+    var now = 0;
+    if (typeof Date !== 'undefined' && Date && typeof Date.now === 'function') {
+      now = Date.now();
+    } else {
+      try {
+        now = new Date().getTime();
+      } catch (timeError) {
+        now = Math.floor(Math.random() * 1e9);
+        void timeError;
+      }
+    }
+    var random = 0;
+    try {
+      random = Math.floor(Math.random() * 1e6);
+    } catch (randomError) {
+      random = now % 1e6;
+      void randomError;
+    }
+    return 'doc-tracker-' + now.toString(36) + '-' + random.toString(36);
+  }
+  function normalizeDocumentationTrackerStatusEntry(entry) {
+    var completed = false;
+    var updatedAt = null;
+    if (entry && _typeof(entry) === 'object') {
+      if (typeof entry.completed === 'boolean') {
+        completed = entry.completed;
+      } else if (typeof entry.checked === 'boolean') {
+        completed = entry.checked;
+      } else if (typeof entry.value === 'boolean') {
+        completed = entry.value;
+      } else if (entry.done === true) {
+        completed = true;
+      }
+      var timestampCandidate = null;
+      if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
+        timestampCandidate = entry.updatedAt.trim();
+      } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
+        timestampCandidate = entry.timestamp.trim();
+      } else if (typeof entry.completedAt === 'string' && entry.completedAt.trim()) {
+        timestampCandidate = entry.completedAt.trim();
+      }
+      if (timestampCandidate) {
+        updatedAt = timestampCandidate;
+      }
+    } else if (typeof entry === 'boolean') {
+      completed = entry;
+    } else if (typeof entry === 'string') {
+      var normalized = entry.trim().toLowerCase();
+      if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'done') {
+        completed = true;
+      }
+    }
+    return {
+      completed: completed === true,
+      updatedAt: typeof updatedAt === 'string' ? updatedAt : null
+    };
+  }
+  function normalizeDocumentationTrackerStatusMap(map) {
+    var normalized = {};
+    if (Array.isArray(map)) {
+      for (var index = 0; index < map.length; index += 1) {
+        var item = map[index];
+        if (item === null || item === undefined) {
+          continue;
+        }
+        if (typeof item === 'string' && item.trim()) {
+          normalized[item.trim()] = {
+            completed: true,
+            updatedAt: null
+          };
+          continue;
+        }
+        if (_typeof(item) === 'object') {
+          var key = null;
+          if (typeof item.id === 'string' && item.id.trim()) {
+            key = item.id.trim();
+          } else if (typeof item.key === 'string' && item.key.trim()) {
+            key = item.key.trim();
+          } else if (typeof item.name === 'string' && item.name.trim()) {
+            key = item.name.trim();
+          }
+          if (!key) {
+            continue;
+          }
+          normalized[key] = normalizeDocumentationTrackerStatusEntry(item);
+        }
+      }
+      return normalized;
+    }
+    if (map && (_typeof(map) === 'object' || typeof map === 'function')) {
+      var keys = Object.keys(map);
+      for (var i = 0; i < keys.length; i += 1) {
+        var rawKey = keys[i];
+        if (rawKey === null || rawKey === undefined) {
+          continue;
+        }
+        var keyString = typeof rawKey === 'string' ? rawKey : String(rawKey);
+        if (!keyString) {
+          continue;
+        }
+        var trimmedKey = keyString.trim();
+        if (!trimmedKey) {
+          continue;
+        }
+        normalized[trimmedKey] = normalizeDocumentationTrackerStatusEntry(map[rawKey]);
+      }
+    }
+    return normalized;
+  }
+  function normalizeDocumentationTrackerStatuses(value) {
+    var normalized = {};
+    if (value && (_typeof(value) === 'object' || typeof value === 'function')) {
+      var keys = Object.keys(value);
+      for (var i = 0; i < keys.length; i += 1) {
+        var key = keys[i];
+        if (!key) continue;
+        normalized[key] = normalizeDocumentationTrackerStatusMap(value[key]);
+      }
+    }
+    if (!normalized.locales) {
+      normalized.locales = {};
+    }
+    if (!normalized.helpTopics) {
+      normalized.helpTopics = {};
+    }
+    if (!normalized.printGuides) {
+      normalized.printGuides = {};
+    }
+    return normalized;
+  }
+  function normalizeDocumentationTrackerRelease(entry) {
+    if (!entry || _typeof(entry) !== 'object' && typeof entry !== 'function') {
+      return null;
+    }
+    var id = null;
+    if (typeof entry.id === 'string' && entry.id.trim()) {
+      id = entry.id.trim();
+    }
+    if (!id && typeof entry.key === 'string' && entry.key.trim()) {
+      id = entry.key.trim();
+    }
+    if (!id) {
+      id = generateDocumentationTrackerId();
+    }
+    var name = '';
+    if (typeof entry.name === 'string') {
+      name = entry.name.trim();
+    } else if (typeof entry.title === 'string') {
+      name = entry.title.trim();
+    }
+    var targetDate = '';
+    if (typeof entry.targetDate === 'string' && entry.targetDate.trim()) {
+      targetDate = entry.targetDate.trim();
+    } else if (typeof entry.releaseDate === 'string' && entry.releaseDate.trim()) {
+      targetDate = entry.releaseDate.trim();
+    }
+    var createdAt = '';
+    if (typeof entry.createdAt === 'string' && entry.createdAt.trim()) {
+      createdAt = entry.createdAt.trim();
+    } else if (typeof entry.generatedAt === 'string' && entry.generatedAt.trim()) {
+      createdAt = entry.generatedAt.trim();
+    }
+    if (!createdAt) {
+      try {
+        createdAt = new Date().toISOString();
+      } catch (isoError) {
+        createdAt = '';
+        void isoError;
+      }
+    }
+    var updatedAt = null;
+    if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
+      updatedAt = entry.updatedAt.trim();
+    } else if (typeof entry.modifiedAt === 'string' && entry.modifiedAt.trim()) {
+      updatedAt = entry.modifiedAt.trim();
+    } else if (typeof entry.lastUpdated === 'string' && entry.lastUpdated.trim()) {
+      updatedAt = entry.lastUpdated.trim();
+    } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
+      updatedAt = entry.timestamp.trim();
+    }
+    if (!updatedAt) {
+      updatedAt = createdAt || null;
+    }
+    var notes = '';
+    if (typeof entry.notes === 'string') {
+      notes = entry.notes.trim();
+    } else if (typeof entry.summary === 'string') {
+      notes = entry.summary.trim();
+    }
+    if (notes && notes.length > 8000) {
+      notes = notes.slice(0, 8000);
+    }
+    var archived = false;
+    if (typeof entry.archived === 'boolean') {
+      archived = entry.archived;
+    } else if (typeof entry.status === 'string') {
+      var normalizedStatus = entry.status.trim().toLowerCase();
+      if (normalizedStatus === 'archived' || normalizedStatus === 'closed' || normalizedStatus === 'complete') {
+        archived = true;
+      }
+    }
+    var statuses = normalizeDocumentationTrackerStatuses(entry.statuses);
+    return {
+      id: id,
+      name: name,
+      targetDate: targetDate,
+      createdAt: typeof createdAt === 'string' ? createdAt : '',
+      updatedAt: typeof updatedAt === 'string' ? updatedAt : null,
+      statuses: statuses,
+      notes: notes,
+      archived: archived === true
+    };
+  }
+  function normalizeDocumentationTrackerState(state) {
+    var normalized = {
+      version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+      releases: []
+    };
+    if (state === null || state === undefined) {
+      return normalized;
+    }
+    var rawState = state;
+    if (Array.isArray(rawState)) {
+      normalized.releases = rawState.map(normalizeDocumentationTrackerRelease).filter(Boolean);
+      return normalized;
+    }
+    if (_typeof(rawState) !== 'object' && typeof rawState !== 'function') {
+      return normalized;
+    }
+    if (typeof rawState.version === 'number' && Number.isFinite(rawState.version)) {
+      normalized.version = rawState.version;
+    }
+    var sourceList = null;
+    if (Array.isArray(rawState.releases)) {
+      sourceList = rawState.releases;
+    } else if (Array.isArray(rawState.entries)) {
+      sourceList = rawState.entries;
+    } else if (Array.isArray(rawState.logs)) {
+      sourceList = rawState.logs;
+    }
+    if (!sourceList && rawState && _typeof(rawState) === 'object') {
+      var values = Object.values(rawState);
+      if (values.length && values.every(function (value) {
+        return value && _typeof(value) === 'object' && !Array.isArray(value);
+      })) {
+        sourceList = values;
+      }
+    }
+    if (!sourceList || !Array.isArray(sourceList)) {
+      normalized.releases = [];
+    } else {
+      normalized.releases = sourceList.map(normalizeDocumentationTrackerRelease).filter(Boolean);
+    }
+    return normalized;
+  }
+  function loadDocumentationTracker() {
+    applyLegacyStorageMigrations();
+    var safeStorage = getSafeLocalStorage();
+    var parsed = loadJSONFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, 'Error loading documentation tracker from localStorage:', null, {
+      validate: function validate(value) {
+        return value === null || isPlainObject(value) || Array.isArray(value);
+      }
+    });
+    if (!parsed) {
+      return {
+        version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+        releases: []
+      };
+    }
+    var normalized = normalizeDocumentationTrackerState(parsed);
+    if (!normalized || !Array.isArray(normalized.releases)) {
+      return {
+        version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+        releases: []
+      };
+    }
+    return normalized;
+  }
+  function saveDocumentationTracker(state) {
+    var safeStorage = getSafeLocalStorage();
+    if (state === null || state === undefined) {
+      deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, 'Error deleting documentation tracker from localStorage:');
+      return;
+    }
+    var normalized = normalizeDocumentationTrackerState(state);
+    if (!normalized.releases.length) {
+      deleteFromStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, 'Error deleting documentation tracker from localStorage:');
+      return;
+    }
+    ensurePreWriteMigrationBackup(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY);
+    saveJSONToStorage(safeStorage, DOCUMENTATION_TRACKER_STORAGE_KEY, {
+      version: DOCUMENTATION_TRACKER_SCHEMA_VERSION,
+      releases: normalized.releases
+    }, 'Error saving documentation tracker to localStorage:', {
+      disableCompression: true
+    });
+  }
   function loadAutoGearRules() {
     applyLegacyStorageMigrations();
     var safeStorage = getSafeLocalStorage();
@@ -9464,11 +9975,11 @@ function resetAutoBackupCompressionCache() {
     var _opts$skipNormalizati2 = opts.skipNormalization,
       skipNormalization = _opts$skipNormalizati2 === void 0 ? false : _opts$skipNormalizati2;
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
-    var _ref30 = skipNormalization ? {
+    var _ref32 = skipNormalization ? {
         normalized: safeBackups,
         changed: false
       } : normalizeLegacyLongGopBackups(safeBackups),
-      normalizedBackups = _ref30.normalized;
+      normalizedBackups = _ref32.normalized;
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
     var attemptedMigrationCleanup = false;
@@ -10205,6 +10716,10 @@ function resetAutoBackupCompressionCache() {
       autoGearBackupRetention: loadAutoGearBackupRetention(),
       fullBackupHistory: loadFullBackupHistory()
     };
+    var documentationTracker = loadDocumentationTracker();
+    if (documentationTracker && Array.isArray(documentationTracker.releases) && documentationTracker.releases.length) {
+      payload.documentationTracker = documentationTracker;
+    }
     var preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;
@@ -10432,10 +10947,10 @@ function resetAutoBackupCompressionCache() {
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref31) {
-      var _ref32 = _slicedToArray(_ref31, 2),
-        key = _ref32[0],
-        val = _ref32[1];
+    Object.entries(value).forEach(function (_ref33) {
+      var _ref34 = _slicedToArray(_ref33, 2),
+        key = _ref34[0],
+        val = _ref34[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -10671,6 +11186,7 @@ function resetAutoBackupCompressionCache() {
     assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
     assignJSONValue(OWN_GEAR_STORAGE_KEY, 'ownGear');
     assignJSONValue(USER_PROFILE_STORAGE_KEY, 'userProfile');
+    assignJSONValue(DOCUMENTATION_TRACKER_STORAGE_KEY, 'documentationTracker');
     assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
     assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
     assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
@@ -10795,9 +11311,9 @@ function resetAutoBackupCompressionCache() {
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref33 = options || {},
-      _ref33$skipSnapshotCo = _ref33.skipSnapshotConversion,
-      skipSnapshotConversion = _ref33$skipSnapshotCo === void 0 ? false : _ref33$skipSnapshotCo;
+    var _ref35 = options || {},
+      _ref35$skipSnapshotCo = _ref35.skipSnapshotConversion,
+      skipSnapshotConversion = _ref35$skipSnapshotCo === void 0 ? false : _ref35$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {
@@ -10967,6 +11483,18 @@ function resetAutoBackupCompressionCache() {
         }
       }
     }
+    if (Object.prototype.hasOwnProperty.call(allData, 'documentationTracker')) {
+      var trackerState = normalizeDocumentationTrackerState(allData.documentationTracker);
+      saveDocumentationTracker(trackerState);
+    } else if (Object.prototype.hasOwnProperty.call(allData, 'documentationLogs')) {
+      var trackerFromLogs = normalizeDocumentationTrackerState({
+        releases: allData.documentationLogs
+      });
+      saveDocumentationTracker(trackerFromLogs);
+    } else if (Object.prototype.hasOwnProperty.call(allData, 'documentationUpdateLog')) {
+      var trackerFromLegacy = normalizeDocumentationTrackerState(allData.documentationUpdateLog);
+      saveDocumentationTracker(trackerFromLegacy);
+    }
     if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
       var rules = normalizeImportedAutoGearRules(allData.autoGearRules);
       saveAutoGearRules(rules);
@@ -11061,6 +11589,8 @@ function resetAutoBackupCompressionCache() {
     saveOwnGear: saveOwnGear,
     loadUserProfile: loadUserProfile,
     saveUserProfile: saveUserProfile,
+    loadDocumentationTracker: loadDocumentationTracker,
+    saveDocumentationTracker: saveDocumentationTracker,
     loadAutoGearBackups: loadAutoGearBackups,
     saveAutoGearBackups: saveAutoGearBackups,
     loadFeedback: loadFeedback,
@@ -11097,25 +11627,23 @@ function resetAutoBackupCompressionCache() {
     setActiveProjectCompressionHold: setActiveProjectCompressionHold,
     clearActiveProjectCompressionHold: clearActiveProjectCompressionHold
   };
-
-    var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {
-      flag: AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG,
-      read: readAutoBackupCompressionCache,
-      write: writeAutoBackupCompressionCache,
-      clear: resetAutoBackupCompressionCache
-    };
-
-    try {
-      Object.defineProperty(STORAGE_API, '__testAutoBackupCompressionCache', {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE
-      });
-    } catch (testHelperDefinitionError) {
-      STORAGE_API.__testAutoBackupCompressionCache = TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE;
-      void testHelperDefinitionError;
-    }
+  var TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE = {
+    flag: AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG,
+    read: readAutoBackupCompressionCache,
+    write: writeAutoBackupCompressionCache,
+    clear: resetAutoBackupCompressionCache
+  };
+  try {
+    Object.defineProperty(STORAGE_API, '__testAutoBackupCompressionCache', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE
+    });
+  } catch (testHelperDefinitionError) {
+    STORAGE_API.__testAutoBackupCompressionCache = TEST_ONLY_AUTO_BACKUP_COMPRESSION_CACHE;
+    void testHelperDefinitionError;
+  }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = STORAGE_API;
   }

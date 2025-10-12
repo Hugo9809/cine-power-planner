@@ -178,31 +178,36 @@
       "capacity": 196,
       "pinA": 10,
       "dtapA": 10.4,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 1578
     },
     "Swit CIMO-98S (V-Mount)": {
       "capacity": 98,
       "pinA": 12,
       "dtapA": 12,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 642
     },
     "Swit CIMO-160S (V-Mount)": {
       "capacity": 160,
       "pinA": 16,
       "dtapA": 16,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 950
     },
     "Swit CIMO-200S (V-Mount)": {
       "capacity": 196,
       "pinA": 16,
       "dtapA": 16,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 1085
     },
     "Swit CIMO-290S (V-Mount)": {
       "capacity": 290,
       "pinA": 20,
       "dtapA": 20,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 1509
     },
     "Anton/Bauer Titon 90 (V-Mount)": {
       "capacity": 92,
@@ -250,13 +255,15 @@
       "capacity": 98,
       "pinA": 12,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 930
     },
     "Anton/Bauer Dionic 26V 240Wh (B-Mount)": {
       "capacity": 240,
       "pinA": 12,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 1360
     },
     "Core SWX NANO Micro 98Wh (V-Mount)": {
       "capacity": 98,
@@ -283,14 +290,15 @@
       "capacity": 98,
       "pinA": 20,
       "dtapA": 7.14,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 800
     },
     "Core SWX Helix Max 150Wh (V-Mount)": {
       "capacity": 147,
       "pinA": 20,
       "dtapA": 7.14,
       "mount_type": "V-Mount",
-      "weight_g": 998
+      "weight_g": 1000
     },
     "Core SWX Helix Max 360Wh (V-Mount)": {
       "capacity": 360,
@@ -303,13 +311,15 @@
       "capacity": 98,
       "pinA": 10,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 800
     },
     "Core SWX Helix Max 150Wh (B-Mount)": {
       "capacity": 147,
       "pinA": 10,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 1000
     },
     "Core SWX Apex 150 (V-Mount)": {
       "capacity": 150,
@@ -321,7 +331,8 @@
       "capacity": 360,
       "pinA": 16,
       "dtapA": 12,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 1633
     },
     "FXLion Nano One (V-Mount)": {
       "capacity": 50,
@@ -439,7 +450,8 @@
       "capacity": 97,
       "pinA": 10,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 640
     },
     "IDX DUO-C150 (V-Mount)": {
       "capacity": 143,
@@ -473,7 +485,8 @@
       "capacity": 146,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 1000
     },
     "IDX CUE-J150 (V-Mount)": {
       "capacity": 146,
@@ -486,13 +499,15 @@
       "capacity": 160,
       "pinA": 15,
       "dtapA": 10,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 1030
     },
     "IDX HV-320B (B-Mount)": {
       "capacity": 320,
       "pinA": 15,
       "dtapA": 10,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "weight_g": 1600
     },
     "PAG PAGlink HC-PL150T (Gold Mount)": {
       "capacity": 150,
@@ -547,14 +562,15 @@
       "capacity": 50,
       "pinA": 8,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 330
     },
     "SmallRig VB99 mini (V-Mount)": {
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
       "mount_type": "V-Mount",
-      "weight_g": 585
+      "weight_g": 540
     },
     "SmallRig VB155 mini (V-Mount)": {
       "capacity": 155,
@@ -573,7 +589,8 @@
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 570
     },
     "SmallRig VB212 mini (V-Mount)": {
       "capacity": 212,
@@ -593,7 +610,8 @@
       "capacity": 50,
       "pinA": 6,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "weight_g": 300
     },
     "Hawk-Woods Mini V-Lok 98Wh (V-Mount)": {
       "capacity": 98,
@@ -655,7 +673,8 @@
       "capacity": 92,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 800
     },
     "Anton/Bauer Titon 240 (Gold-Mount)": {
       "capacity": 238,
@@ -668,19 +687,29 @@
       "capacity": 99,
       "pinA": 12,
       "dtapA": 12,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 800
+    },
+    "Anton/Bauer Dionic 26V 98Wh (Gold-Mount)": {
+      "capacity": 98,
+      "pinA": 12,
+      "dtapA": 0,
+      "mount_type": "Gold-Mount",
+      "weight_g": 930
     },
     "Anton/Bauer Dionic 26V 240 (Gold-Mount)": {
       "capacity": 240,
       "pinA": 12,
       "dtapA": 0,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 1360
     },
     "Anton/Bauer Titon Micro 90 (Gold-Mount)": {
       "capacity": 94,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 570
     },
     "Core SWX Hypercore NEO 150 Mini (Gold-Mount)": {
       "capacity": 147,
@@ -693,7 +722,15 @@
       "capacity": 98,
       "pinA": 20,
       "dtapA": 20,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 800
+    },
+    "Core SWX Helix Max 150 (Gold-Mount)": {
+      "capacity": 147,
+      "pinA": 20,
+      "dtapA": 20,
+      "mount_type": "Gold-Mount",
+      "weight_g": 1000
     },
     "Core SWX NANO Micro 98Wh (Gold-Mount)": {
       "capacity": 98,
@@ -718,13 +755,22 @@
       "capacity": 95,
       "pinA": 12,
       "dtapA": 10,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 700
+    },
+    "BLUESHAPE BV190HDplus (V-Mount)": {
+      "capacity": 190,
+      "pinA": 20,
+      "dtapA": 12,
+      "mount_type": "V-Mount",
+      "weight_g": 1190
     },
     "BLUESHAPE BV190HDplus (Gold-Mount)": {
       "capacity": 190,
       "pinA": 20,
       "dtapA": 12,
-      "mount_type": "Gold-Mount"
+      "mount_type": "Gold-Mount",
+      "weight_g": 1190
     },
     "bebob A98micro (Gold-Mount)": {
       "capacity": 95,

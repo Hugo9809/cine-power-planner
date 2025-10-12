@@ -440,22 +440,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     };
   }();
-
-
   function isNodeProcessReference(value) {
     if (!value) {
       return false;
     }
-
     if (typeof process === 'undefined' || !process) {
       return false;
     }
-
     if (value === process) {
       return true;
     }
-
-    if (value && _typeof(value) === 'object') {
+    if (_typeof(value) === 'object') {
       try {
         if (value.constructor && value.constructor.name === 'process') {
           return true;
@@ -463,17 +458,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (processInspectionError) {
         void processInspectionError;
       }
-
       if (typeof value.pid === 'number' && typeof value.nextTick === 'function' && typeof value.emit === 'function' && typeof value.binding === 'function') {
         return true;
       }
     }
-
     if (typeof value === 'function') {
       if (value === process.binding || value === process._linkedBinding || value === process.dlopen) {
         return true;
       }
-
       try {
         var functionName = value.name || '';
         if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
@@ -486,23 +478,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void functionInspectionError;
       }
     }
-
     return false;
   }
-
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object') {
       return true;
     }
-
     if (isNodeProcessReference(value)) {
       return true;
     }
-
     if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
       return true;
     }
-
     var ctor = value.constructor;
     if (!ctor) {
       return false;
@@ -717,6 +704,94 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   };
   var LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
+  var LEVEL_COUNTER_KEYS = Object.freeze(Object.keys(LOG_LEVEL_MAP).concat(['other']));
+  function createLevelCounters() {
+    var counters = Object.create(null);
+    for (var index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      var key = LEVEL_COUNTER_KEYS[index];
+      counters[key] = 0;
+    }
+    return counters;
+  }
+  function resetLevelCounters(counters) {
+    if (!counters || _typeof(counters) !== 'object') {
+      return;
+    }
+    for (var index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      var key = LEVEL_COUNTER_KEYS[index];
+      counters[key] = 0;
+    }
+  }
+  function resolveLevelKey(level) {
+    if (typeof level === 'string' && level) {
+      if (Object.prototype.hasOwnProperty.call(LOG_LEVEL_MAP, level)) {
+        return level;
+      }
+      var trimmed = level.trim().toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(LOG_LEVEL_MAP, trimmed)) {
+        return trimmed;
+      }
+    }
+    return 'other';
+  }
+  function getCounterValue(counters, key) {
+    if (!counters || _typeof(counters) !== 'object') {
+      return 0;
+    }
+    var value = counters[key];
+    return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
+  }
+  function applyLevelCounterDelta(counters, level, delta) {
+    if (!counters || _typeof(counters) !== 'object') {
+      return;
+    }
+    if (typeof delta !== 'number' || !Number.isFinite(delta) || delta === 0) {
+      return;
+    }
+    var key = resolveLevelKey(level);
+    var current = getCounterValue(counters, key);
+    var next = current + delta;
+    counters[key] = next > 0 ? next : 0;
+  }
+  function applyLevelCounterDeltaForEntries(counters, entries, delta) {
+    if (!Array.isArray(entries) || !entries.length) {
+      return;
+    }
+    if (typeof delta !== 'number' || !Number.isFinite(delta) || delta === 0) {
+      return;
+    }
+    for (var index = 0; index < entries.length; index += 1) {
+      var entry = entries[index];
+      var level = entry && entry.level;
+      applyLevelCounterDelta(counters, level, delta);
+    }
+  }
+  function summariseEntriesByLevel(entries) {
+    var summary = createLevelCounters();
+    applyLevelCounterDeltaForEntries(summary, entries, 1);
+    return summary;
+  }
+  function accumulateLevelSummary(target, summary) {
+    if (!target || _typeof(target) !== 'object' || !summary || _typeof(summary) !== 'object') {
+      return;
+    }
+    for (var index = 0; index < LEVEL_COUNTER_KEYS.length; index += 1) {
+      var key = LEVEL_COUNTER_KEYS[index];
+      var increment = getCounterValue(summary, key);
+      if (increment) {
+        var current = getCounterValue(target, key);
+        target[key] = current + increment;
+      }
+    }
+  }
+  function cloneLevelSummary(summary) {
+    var clone = createLevelCounters();
+    accumulateLevelSummary(clone, summary);
+    return clone;
+  }
+  function freezeLevelSummary(summary) {
+    return freezeDeep(cloneLevelSummary(summary));
+  }
   var HISTORY_MIN_LIMIT = 50;
   var HISTORY_ABSOLUTE_MIN_LIMIT = 1;
   var HISTORY_MAX_LIMIT = 5000;
@@ -730,7 +805,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     consoleOutput: true,
     persistSession: true,
     captureGlobalErrors: true,
-    captureConsole: false
+    captureConsole: true
   };
   var DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
   function cloneDefaultConfig() {
@@ -750,6 +825,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var configSubscribers = new Set();
   var attachedErrorTargets = typeof WeakSet === 'function' ? new WeakSet() : [];
   var runtimeEntryCount = 0;
+  var emittedLevelCounters = createLevelCounters();
+  var retainedLevelCounters = createLevelCounters();
+  var droppedLevelCounters = createLevelCounters();
   var totalEntriesDropped = 0;
   var lastHistoryDrop = null;
   function normalizeLevel(value, fallbackLevel) {
@@ -1201,9 +1279,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function recordHistoryDrop(removedEntries, limit, options) {
     if (!Array.isArray(removedEntries) || removedEntries.length === 0) {
-      return;
+      return null;
     }
     totalEntriesDropped += removedEntries.length;
+    var removedSummary = summariseEntriesByLevel(removedEntries);
     var source = options && typeof options.source === 'string' && options.source.trim() ? options.source.trim() : 'enforce';
     var oldestEntry = removedEntries[0] || null;
     var newestEntry = removedEntries[removedEntries.length - 1] || null;
@@ -1226,13 +1305,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       oldestEntryIsoTimestamp: oldestEntry && typeof oldestEntry.isoTimestamp === 'string' ? oldestEntry.isoTimestamp : null,
       newestEntryId: newestEntry && typeof newestEntry.id === 'string' ? newestEntry.id : null,
       newestEntryTimestamp: newestEntry && typeof newestEntry.timestamp === 'number' ? newestEntry.timestamp : null,
-      newestEntryIsoTimestamp: newestEntry && typeof newestEntry.isoTimestamp === 'string' ? newestEntry.isoTimestamp : null
+      newestEntryIsoTimestamp: newestEntry && typeof newestEntry.isoTimestamp === 'string' ? newestEntry.isoTimestamp : null,
+      levels: freezeLevelSummary(removedSummary)
     });
     safeWarn('cineLogging: history trimmed to enforce retention limit', {
       limit: limit,
       removed: removedEntries.length,
-      source: source
+      source: source,
+      levels: cloneLevelSummary(removedSummary)
     });
+    return removedSummary;
   }
   function enforceHistoryLimit(options) {
     var limit = getEffectiveHistoryLimit();
@@ -1241,7 +1323,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var overflow = logHistory.length - limit;
     var removedEntries = logHistory.splice(0, overflow);
-    recordHistoryDrop(removedEntries, limit, options);
+    applyLevelCounterDeltaForEntries(retainedLevelCounters, removedEntries, -1);
+    var removedSummary = recordHistoryDrop(removedEntries, limit, options);
+    if (removedSummary) {
+      accumulateLevelSummary(droppedLevelCounters, removedSummary);
+    }
     return overflow;
   }
   function shouldRecord(level) {
@@ -1256,8 +1342,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function createEntryId(timestamp) {
     return "log-".concat(timestamp, "-").concat(Math.random().toString(36).slice(2, 10));
   }
-  function appendEntry(entry) {
+  function pushEntryToHistory(entry) {
+    if (!entry) {
+      return;
+    }
     logHistory.push(entry);
+    applyLevelCounterDelta(retainedLevelCounters, entry.level, 1);
+  }
+  function appendEntry(entry) {
+    pushEntryToHistory(entry);
     runtimeEntryCount += 1;
     enforceHistoryLimit({
       source: 'append'
@@ -1694,6 +1787,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       timestamp: timestamp,
       isoTimestamp: isoTimestamp
     });
+    applyLevelCounterDelta(emittedLevelCounters, normalizedLevel, 1);
     if (shouldRecord(normalizedLevel)) {
       appendEntry(entry);
     }
@@ -1764,7 +1858,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       oldestEntryIsoTimestamp: typeof lastHistoryDrop.oldestEntryIsoTimestamp === 'string' ? lastHistoryDrop.oldestEntryIsoTimestamp : null,
       newestEntryId: typeof lastHistoryDrop.newestEntryId === 'string' ? lastHistoryDrop.newestEntryId : null,
       newestEntryTimestamp: typeof lastHistoryDrop.newestEntryTimestamp === 'number' ? lastHistoryDrop.newestEntryTimestamp : null,
-      newestEntryIsoTimestamp: typeof lastHistoryDrop.newestEntryIsoTimestamp === 'string' ? lastHistoryDrop.newestEntryIsoTimestamp : null
+      newestEntryIsoTimestamp: typeof lastHistoryDrop.newestEntryIsoTimestamp === 'string' ? lastHistoryDrop.newestEntryIsoTimestamp : null,
+      levels: lastHistoryDrop.levels ? freezeLevelSummary(lastHistoryDrop.levels) : freezeLevelSummary(createLevelCounters())
     });
   }
   function getStats() {
@@ -1774,6 +1869,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       droppedEntries: totalEntriesDropped,
       historyLimit: getEffectiveHistoryLimit(),
       lastDrop: cloneLastDropSnapshot(),
+      levels: freezeDeep({
+        emitted: freezeLevelSummary(emittedLevelCounters),
+        retained: freezeLevelSummary(retainedLevelCounters),
+        dropped: freezeLevelSummary(droppedLevelCounters)
+      }),
       consoleCapture: freezeDeep({
         configured: activeConfig.captureConsole === true,
         installed: consoleProxyInstalled,
@@ -1784,6 +1884,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function clearHistory(options) {
     logHistory.length = 0;
+    resetLevelCounters(retainedLevelCounters);
     if (!options || options.persist !== false) {
       persistHistorySafe();
     }
@@ -2272,7 +2373,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       for (var index = 0; index < parsed.length; index += 1) {
         var entry = normaliseStoredEntry(parsed[index]);
         if (entry) {
-          logHistory.push(entry);
+          pushEntryToHistory(entry);
         }
       }
       enforceHistoryLimit({

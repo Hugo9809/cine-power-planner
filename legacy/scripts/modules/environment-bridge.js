@@ -58,22 +58,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-
-
   function isNodeProcessReference(value) {
     if (!value) {
       return false;
     }
-
     if (typeof process === 'undefined' || !process) {
       return false;
     }
-
     if (value === process) {
       return true;
     }
-
-    if (value && _typeof(value) === 'object') {
+    if (_typeof(value) === 'object') {
       try {
         if (value.constructor && value.constructor.name === 'process') {
           return true;
@@ -81,17 +76,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (processInspectionError) {
         void processInspectionError;
       }
-
       if (typeof value.pid === 'number' && typeof value.nextTick === 'function' && typeof value.emit === 'function' && typeof value.binding === 'function') {
         return true;
       }
     }
-
     if (typeof value === 'function') {
       if (value === process.binding || value === process._linkedBinding || value === process.dlopen) {
         return true;
       }
-
       try {
         var functionName = value.name || '';
         if (functionName && (functionName === 'binding' || functionName === 'dlopen')) {
@@ -104,23 +96,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void functionInspectionError;
       }
     }
-
     return false;
   }
-
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
-
     if (isNodeProcessReference(value)) {
       return true;
     }
-
     if (typeof process !== 'undefined' && process && process.release && process.release.name === 'node') {
       return true;
     }
-
     if (isEthereumProviderCandidate(value)) {
       return true;
     }

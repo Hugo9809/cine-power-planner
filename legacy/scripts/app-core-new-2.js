@@ -6652,6 +6652,143 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var DEFAULT_FIZ_COLLECTIONS = ['motors', 'handUnits', 'controllers', 'distance'];
     var DEFAULT_ACCESSORY_COLLECTIONS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'cardReaders', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
     var MAX_DEVICE_IMPORT_ERRORS = 5;
+    function normalizeDeviceEntryCollection(collection) {
+      if (isPlainObjectValue(collection)) {
+        return _objectSpread({}, collection);
+      }
+      if (!Array.isArray(collection)) {
+        return undefined;
+      }
+      if (!collection.length) {
+        return {};
+      }
+      var converted = {};
+      var _iterator2 = _createForOfIteratorHelper(collection),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var entry = _step2.value;
+          if (Array.isArray(entry) && entry.length >= 2) {
+            var _entry = _slicedToArray(entry, 2),
+              _name = _entry[0],
+              _value = _entry[1];
+            if (typeof _name === 'string' && isPlainObjectValue(_value)) {
+              converted[_name] = _value;
+              continue;
+            }
+          }
+          if (!isPlainObjectValue(entry)) {
+            continue;
+          }
+          var name = typeof entry.name === 'string' ? entry.name : typeof entry.label === 'string' ? entry.label : typeof entry.title === 'string' ? entry.title : typeof entry.id === 'string' ? entry.id : null;
+          var value = null;
+          if (isPlainObjectValue(entry.data)) {
+            value = entry.data;
+          } else if (name) {
+            var clone = _objectSpread({}, entry);
+            delete clone.name;
+            delete clone.label;
+            delete clone.title;
+            delete clone.id;
+            if (isPlainObjectValue(clone) && Object.keys(clone).length) {
+              value = clone;
+            }
+          }
+          if (name && isPlainObjectValue(value)) {
+            converted[name] = value;
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      if (Object.keys(converted).length) {
+        return converted;
+      }
+      return undefined;
+    }
+    function ensureNestedDeviceCollections(source) {
+      var expectedKeys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+      var target = {};
+      if (isPlainObjectValue(source)) {
+        for (var _i = 0, _Object$entries = Object.entries(source); _i < _Object$entries.length; _i++) {
+          var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+            key = _Object$entries$_i[0],
+            value = _Object$entries$_i[1];
+          var normalized = normalizeDeviceEntryCollection(value);
+          if (normalized !== undefined) {
+            target[key] = normalized;
+          } else if (value === undefined || value === null) {
+            target[key] = {};
+          } else if (isPlainObjectValue(value)) {
+            target[key] = _objectSpread({}, value);
+          } else {
+            target[key] = value;
+          }
+        }
+      }
+      var _iterator3 = _createForOfIteratorHelper(expectedKeys),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var _key3 = _step3.value;
+          if (Object.prototype.hasOwnProperty.call(target, _key3) && isPlainObjectValue(target[_key3])) {
+            continue;
+          }
+          var _normalized = normalizeDeviceEntryCollection(source && source[_key3]);
+          if (_normalized !== undefined) {
+            target[_key3] = _normalized;
+          } else if (!Object.prototype.hasOwnProperty.call(target, _key3) || target[_key3] == null) {
+            target[_key3] = {};
+          }
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+      return target;
+    }
+    function upgradeDeviceDatabaseSchema(candidate) {
+      if (!isPlainObjectValue(candidate)) {
+        return candidate;
+      }
+      var upgraded = _objectSpread({}, candidate);
+      var _iterator4 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var category = _step4.value;
+          if (category === 'fiz') {
+            var expectedFizKeys = collectReferenceFizKeys();
+            upgraded.fiz = ensureNestedDeviceCollections(candidate.fiz, expectedFizKeys);
+            continue;
+          }
+          if (category === 'accessories') {
+            var expectedAccessoryKeys = collectReferenceAccessoryKeys();
+            upgraded.accessories = ensureNestedDeviceCollections(candidate.accessories, expectedAccessoryKeys);
+            continue;
+          }
+          var source = candidate[category];
+          var normalized = normalizeDeviceEntryCollection(source);
+          if (normalized !== undefined) {
+            upgraded[category] = normalized;
+          } else if (source === undefined || source === null) {
+            upgraded[category] = {};
+          } else if (isPlainObjectValue(source)) {
+            upgraded[category] = _objectSpread({}, source);
+          } else {
+            upgraded[category] = source;
+          }
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      return upgraded;
+    }
     function isDeviceEntryObject(value) {
       if (!isPlainObjectValue(value)) {
         return false;
@@ -6665,10 +6802,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return 0;
       }
       var total = 0;
-      for (var _i = 0, _Object$entries = Object.entries(collection); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-          name = _Object$entries$_i[0],
-          value = _Object$entries$_i[1];
+      for (var _i2 = 0, _Object$entries2 = Object.entries(collection); _i2 < _Object$entries2.length; _i2++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+          name = _Object$entries2$_i[0],
+          value = _Object$entries2$_i[1];
         if (name === 'filterOptions' || name === 'None') {
           continue;
         }
@@ -6688,19 +6825,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return false;
       }
       var matched = 0;
-      var _iterator2 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-        _step2;
+      var _iterator5 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+        _step5;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var key = _step2.value;
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var key = _step5.value;
           if (Object.prototype.hasOwnProperty.call(candidate, key)) {
             matched += 1;
           }
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator5.e(err);
       } finally {
-        _iterator2.f();
+        _iterator5.f();
       }
       return matched >= 3;
     }
@@ -6733,11 +6870,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var errors = [];
       var missing = [];
-      var _iterator3 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-        _step3;
+      var _iterator6 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+        _step6;
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var category = _step3.value;
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var category = _step6.value;
           if (category === 'fiz') {
             if (!isPlainObjectValue(candidate.fiz)) {
               missing.push('fiz');
@@ -6771,9 +6908,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator6.e(err);
       } finally {
-        _iterator3.f();
+        _iterator6.f();
       }
       if (missing.length) {
         errors.push("Missing categories: ".concat(missing.join(', ')));
@@ -6782,10 +6919,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(candidate.accessories)) {
           errors.push('Accessory collections must be objects.');
         } else {
-          for (var _i2 = 0, _Object$entries2 = Object.entries(candidate.accessories); _i2 < _Object$entries2.length; _i2++) {
-            var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-              subKey = _Object$entries2$_i[0],
-              subValue = _Object$entries2$_i[1];
+          for (var _i3 = 0, _Object$entries3 = Object.entries(candidate.accessories); _i3 < _Object$entries3.length; _i3++) {
+            var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
+              subKey = _Object$entries3$_i[0],
+              subValue = _Object$entries3$_i[1];
             if (!isPlainObjectValue(subValue)) {
               errors.push("Accessory category \"".concat(subKey, "\" must be an object."));
             }
@@ -6796,10 +6933,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('Filter options must be provided as an array.');
       }
       if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
-        for (var _i3 = 0, _Object$entries3 = Object.entries(candidate.fiz); _i3 < _Object$entries3.length; _i3++) {
-          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
-            _subKey = _Object$entries3$_i[0],
-            _subValue = _Object$entries3$_i[1];
+        for (var _i4 = 0, _Object$entries4 = Object.entries(candidate.fiz); _i4 < _Object$entries4.length; _i4++) {
+          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
+            _subKey = _Object$entries4$_i[0],
+            _subValue = _Object$entries4$_i[1];
           if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
             errors.push("FIZ category \"".concat(_subKey, "\" must be an object."));
           }
@@ -6811,10 +6948,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(collection)) {
           return;
         }
-        for (var _i4 = 0, _Object$entries4 = Object.entries(collection); _i4 < _Object$entries4.length; _i4++) {
-          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
-            name = _Object$entries4$_i[0],
-            value = _Object$entries4$_i[1];
+        for (var _i5 = 0, _Object$entries5 = Object.entries(collection); _i5 < _Object$entries5.length; _i5++) {
+          var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
+            name = _Object$entries5$_i[0],
+            value = _Object$entries5$_i[1];
           if (name === 'None' || name === 'filterOptions') {
             continue;
           }
@@ -6838,8 +6975,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('The imported database does not contain any devices.');
       }
       var uniqueErrors = [];
-      for (var _i5 = 0, _errors = errors; _i5 < _errors.length; _i5++) {
-        var message = _errors[_i5];
+      for (var _i6 = 0, _errors = errors; _i6 < _errors.length; _i6++) {
+        var message = _errors[_i6];
         if (message && !uniqueErrors.includes(message)) {
           uniqueErrors.push(message);
         }
@@ -6878,7 +7015,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           errors: ['Could not find a device database in the selected file.']
         };
       }
-      return validateDeviceDatabaseStructure(candidate);
+      var normalizedCandidate = upgradeDeviceDatabaseSchema(candidate);
+      return validateDeviceDatabaseStructure(normalizedCandidate);
     }
     function formatDeviceImportErrors(errors) {
       if (!Array.isArray(errors) || !errors.length) {
@@ -6912,10 +7050,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
       }
       var entries = [];
-      for (var _i6 = 0, _Object$entries5 = Object.entries(options); _i6 < _Object$entries5.length; _i6++) {
-        var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i6], 2),
-          key = _Object$entries5$_i[0],
-          value = _Object$entries5$_i[1];
+      for (var _i7 = 0, _Object$entries6 = Object.entries(options); _i7 < _Object$entries6.length; _i7++) {
+        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
+          key = _Object$entries6$_i[0],
+          value = _Object$entries6$_i[1];
         if (typeof value === 'undefined') continue;
         var normalizedValue = void 0;
         if (value && _typeof(value) === 'object') {
@@ -8288,20 +8426,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     var cleanupFeatureSearchHistory = function cleanupFeatureSearchHistory() {
       var changed = false;
-      var _iterator4 = _createForOfIteratorHelper(featureSearchHistory.keys()),
-        _step4;
+      var _iterator7 = _createForOfIteratorHelper(featureSearchHistory.keys()),
+        _step7;
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var key = _step4.value;
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var key = _step7.value;
           if (!featureSearchEntryIndex.has(key)) {
             featureSearchHistory.delete(key);
             changed = true;
           }
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator7.e(err);
       } finally {
-        _iterator4.f();
+        _iterator7.f();
       }
       if (changed) {
         scheduleFeatureSearchHistorySave();
@@ -8339,11 +8477,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!recentEntries.length) return [];
       var options = [];
       var seen = new Set();
-      var _iterator5 = _createForOfIteratorHelper(recentEntries),
-        _step5;
+      var _iterator8 = _createForOfIteratorHelper(recentEntries),
+        _step8;
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var entry = _step5.value;
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var entry = _step8.value;
           var option = buildFeatureSearchOptionData(entry);
           if (!option || !option.value || seen.has(option.value)) continue;
           seen.add(option.value);
@@ -8351,9 +8489,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (options.length >= MAX_FEATURE_SEARCH_RECENTS) break;
         }
       } catch (err) {
-        _iterator5.e(err);
+        _iterator8.e(err);
       } finally {
-        _iterator5.f();
+        _iterator8.f();
       }
       return options;
     };
@@ -8365,11 +8503,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       var results = [];
       var seen = new Set();
-      var _iterator6 = _createForOfIteratorHelper(entries),
-        _step6;
+      var _iterator9 = _createForOfIteratorHelper(entries),
+        _step9;
       try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var item = _step6.value;
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var item = _step9.value;
           if (!item || !item.key) continue;
           if (seen.has(item.key)) continue;
           seen.add(item.key);
@@ -8379,9 +8517,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (results.length >= MAX_FEATURE_SEARCH_HISTORY) break;
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator9.e(err);
       } finally {
-        _iterator6.f();
+        _iterator9.f();
       }
       return results;
     };
@@ -8677,11 +8815,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var normalized = [];
       var fragment = featureList ? document.createDocumentFragment() : null;
-      var _iterator7 = _createForOfIteratorHelper(values),
-        _step7;
+      var _iterator0 = _createForOfIteratorHelper(values),
+        _step0;
       try {
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var value = _step7.value;
+        for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+          var value = _step0.value;
           var optionData = normalizeFeatureSearchOption(value);
           if (!optionData || !optionData.value) continue;
           normalized.push(optionData);
@@ -8698,9 +8836,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           fragment.appendChild(option);
         }
       } catch (err) {
-        _iterator7.e(err);
+        _iterator0.e(err);
       } finally {
-        _iterator7.f();
+        _iterator0.f();
       }
       if (featureList) {
         featureList.innerHTML = '';
@@ -8714,33 +8852,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var values = [];
       var seen = new Set();
       var recentOptions = resolveRecentFeatureSearchOptions();
-      var _iterator8 = _createForOfIteratorHelper(recentOptions),
-        _step8;
+      var _iterator1 = _createForOfIteratorHelper(recentOptions),
+        _step1;
       try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var option = _step8.value;
+        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+          var option = _step1.value;
           if (!option || !option.value || seen.has(option.value)) continue;
           seen.add(option.value);
           values.push(option);
         }
       } catch (err) {
-        _iterator8.e(err);
+        _iterator1.e(err);
       } finally {
-        _iterator8.f();
+        _iterator1.f();
       }
-      var _iterator9 = _createForOfIteratorHelper(featureSearchDefaultOptions),
-        _step9;
+      var _iterator10 = _createForOfIteratorHelper(featureSearchDefaultOptions),
+        _step10;
       try {
-        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-          var _option = _step9.value;
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var _option = _step10.value;
           if (!_option || !_option.value || seen.has(_option.value)) continue;
           seen.add(_option.value);
           values.push(_option);
         }
       } catch (err) {
-        _iterator9.e(err);
+        _iterator10.e(err);
       } finally {
-        _iterator9.f();
+        _iterator10.f();
       }
       renderFeatureListOptions(values.length ? values : featureSearchDefaultOptions);
     }
@@ -9014,11 +9152,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         var _values2 = [];
         var _seen = new Set();
-        var _iterator0 = _createForOfIteratorHelper(recentEntries),
-          _step0;
+        var _iterator11 = _createForOfIteratorHelper(recentEntries),
+          _step11;
         try {
-          for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-            var entry = _step0.value;
+          for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+            var entry = _step11.value;
             if (_values2.length >= FEATURE_SEARCH_MAX_RESULTS) break;
             var optionData = buildFeatureSearchOptionData(entry);
             if (!optionData || !optionData.value || _seen.has(optionData.value)) continue;
@@ -9026,9 +9164,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             _values2.push(optionData);
           }
         } catch (err) {
-          _iterator0.e(err);
+          _iterator11.e(err);
         } finally {
-          _iterator0.f();
+          _iterator11.f();
         }
         renderFeatureListOptions(_values2);
         return;
@@ -9045,11 +9183,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }).filter(Boolean).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator1 = _createForOfIteratorHelper(scored),
-        _step1;
+      var _iterator12 = _createForOfIteratorHelper(scored),
+        _step12;
       try {
-        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-          var item = _step1.value;
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var item = _step12.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
           var _optionData2 = buildFeatureSearchOptionData(item.entry);
           if (!_optionData2 || !_optionData2.value || seen.has(_optionData2.value)) continue;
@@ -9057,9 +9195,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           values.push(_optionData2);
         }
       } catch (err) {
-        _iterator1.e(err);
+        _iterator12.e(err);
       } finally {
-        _iterator1.f();
+        _iterator12.f();
       }
       if (values.length === 0) {
         var fallback = filteredEntries.slice().sort(function (a, b) {
@@ -9067,21 +9205,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             sensitivity: 'base'
           });
         });
-        var _iterator10 = _createForOfIteratorHelper(fallback),
-          _step10;
+        var _iterator13 = _createForOfIteratorHelper(fallback),
+          _step13;
         try {
-          for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-            var _entry = _step10.value;
+          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+            var _entry2 = _step13.value;
             if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
-            var _optionData = buildFeatureSearchOptionData(_entry);
+            var _optionData = buildFeatureSearchOptionData(_entry2);
             if (!_optionData || !_optionData.value || seen.has(_optionData.value)) continue;
             seen.add(_optionData.value);
             values.push(_optionData);
           }
         } catch (err) {
-          _iterator10.e(err);
+          _iterator13.e(err);
         } finally {
-          _iterator10.f();
+          _iterator13.f();
         }
       }
       renderFeatureListOptions(values);
@@ -9147,11 +9285,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var candidates = (meaningful.length > 0 ? meaningful : enforceQuotedMatches).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator11 = _createForOfIteratorHelper(candidates),
-        _step11;
+      var _iterator14 = _createForOfIteratorHelper(candidates),
+        _step14;
       try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var item = _step11.value;
+        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+          var item = _step14.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
           var optionData = buildFeatureSearchOptionData(item.entry);
           if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
@@ -9159,9 +9297,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           values.push(optionData);
         }
       } catch (err) {
-        _iterator11.e(err);
+        _iterator14.e(err);
       } finally {
-        _iterator11.f();
+        _iterator14.f();
       }
       if (values.length === 0) {
         if (filterType) {
@@ -9486,8 +9624,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           helpCandidates.push(text);
         });
       }
-      for (var _i7 = 0, _helpCandidates = helpCandidates; _i7 < _helpCandidates.length; _i7++) {
-        var candidate = _helpCandidates[_i7];
+      for (var _i8 = 0, _helpCandidates = helpCandidates; _i8 < _helpCandidates.length; _i8++) {
+        var candidate = _helpCandidates[_i8];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail && (!base || detail.toLowerCase() !== base)) {
           return detail;
@@ -9516,8 +9654,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           candidates.push(firstListItem.textContent);
         }
       }
-      for (var _i8 = 0, _candidates = candidates; _i8 < _candidates.length; _i8++) {
-        var candidate = _candidates[_i8];
+      for (var _i9 = 0, _candidates = candidates; _i9 < _candidates.length; _i9++) {
+        var candidate = _candidates[_i9];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail) return detail;
       }
@@ -9529,20 +9667,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!select) return '';
       var base = normalizeFeatureSearchDetail(entry.label || '').toLowerCase();
       var helpTexts = collectFeatureSearchHelpTexts(select);
-      var _iterator12 = _createForOfIteratorHelper(helpTexts),
-        _step12;
+      var _iterator15 = _createForOfIteratorHelper(helpTexts),
+        _step15;
       try {
-        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-          var text = _step12.value;
+        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+          var text = _step15.value;
           var detail = normalizeFeatureSearchDetail(text);
           if (detail && (!base || detail.toLowerCase() !== base)) {
             return detail;
           }
         }
       } catch (err) {
-        _iterator12.e(err);
+        _iterator15.e(err);
       } finally {
-        _iterator12.f();
+        _iterator15.f();
       }
       var contexts = collectFeatureContexts(select, base);
       if (contexts.length) {
@@ -9736,11 +9874,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var score = 0;
       var matched = false;
       if (normalizedQuery) {
-        var _iterator13 = _createForOfIteratorHelper(texts),
-          _step13;
+        var _iterator16 = _createForOfIteratorHelper(texts),
+          _step16;
         try {
-          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-            var text = _step13.value;
+          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+            var text = _step16.value;
             if (text.includes(normalizedQuery)) {
               matched = true;
               score = Math.max(score, Math.max(1, normalizedQuery.length));
@@ -9748,20 +9886,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
           }
         } catch (err) {
-          _iterator13.e(err);
+          _iterator16.e(err);
         } finally {
-          _iterator13.f();
+          _iterator16.f();
         }
       }
       if (validTokens.length > 1) {
         var pattern = validTokens.map(escapeFeatureSearchRegExp).join('[\\s\\-_/·›>]*');
         if (pattern) {
           var regex = new RegExp("\\b".concat(pattern), 'i');
-          var _iterator14 = _createForOfIteratorHelper(texts),
-            _step14;
+          var _iterator17 = _createForOfIteratorHelper(texts),
+            _step17;
           try {
-            for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-              var _text3 = _step14.value;
+            for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+              var _text3 = _step17.value;
               if (regex.test(_text3)) {
                 matched = true;
                 score = Math.max(score, validTokens.length * 6);
@@ -9769,9 +9907,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
             }
           } catch (err) {
-            _iterator14.e(err);
+            _iterator17.e(err);
           } finally {
-            _iterator14.f();
+            _iterator17.f();
           }
         }
       }
@@ -9810,20 +9948,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var score = 0;
       normalizedPhrases.forEach(function (phrase) {
         var found = false;
-        var _iterator15 = _createForOfIteratorHelper(texts),
-          _step15;
+        var _iterator18 = _createForOfIteratorHelper(texts),
+          _step18;
         try {
-          for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-            var text = _step15.value;
+          for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+            var text = _step18.value;
             if (text.includes(phrase)) {
               found = true;
               break;
             }
           }
         } catch (err) {
-          _iterator15.e(err);
+          _iterator18.e(err);
         } finally {
-          _iterator15.f();
+          _iterator18.f();
         }
         if (found) {
           matched += 1;
@@ -10202,20 +10340,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
           baseFontSize = computedFontSize;
         }
-        var _iterator16 = _createForOfIteratorHelper(uiScaleProperties),
-          _step16;
+        var _iterator19 = _createForOfIteratorHelper(uiScaleProperties),
+          _step19;
         try {
-          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-            var prop = _step16.value;
+          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+            var prop = _step19.value;
             var value = parseFloat(computedStyle.getPropertyValue(prop));
             if (Number.isFinite(value) && value > 0) {
               baseUIScaleValues[prop] = value;
             }
           }
         } catch (err) {
-          _iterator16.e(err);
+          _iterator19.e(err);
         } finally {
-          _iterator16.f();
+          _iterator19.f();
         }
       } catch (error) {
         console.warn('Unable to read computed styles for UI scaling', error);
@@ -10400,7 +10538,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _loadStoredCustomFonts() {
       _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee6() {
-        var stored, _iterator19, _step19, entry, normalized, _t5, _t6;
+        var stored, _iterator22, _step22, entry, normalized, _t5, _t6;
         return _regenerator().w(function (_context6) {
           while (1) switch (_context6.p = _context6.n) {
             case 0:
@@ -10411,15 +10549,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
               return _context6.a(2);
             case 1:
-              _iterator19 = _createForOfIteratorHelper(stored);
+              _iterator22 = _createForOfIteratorHelper(stored);
               _context6.p = 2;
-              _iterator19.s();
+              _iterator22.s();
             case 3:
-              if ((_step19 = _iterator19.n()).done) {
+              if ((_step22 = _iterator22.n()).done) {
                 _context6.n = 8;
                 break;
               }
-              entry = _step19.value;
+              entry = _step22.value;
               normalized = {
                 id: entry.id,
                 name: sanitizeCustomFontName(entry.name),
@@ -10445,10 +10583,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 9:
               _context6.p = 9;
               _t6 = _context6.v;
-              _iterator19.e(_t6);
+              _iterator22.e(_t6);
             case 10:
               _context6.p = 10;
-              _iterator19.f();
+              _iterator22.f();
               return _context6.f(10);
             case 11:
               return _context6.a(2);
@@ -10604,7 +10742,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee8(fileList) {
-        var added, unsupported, failed, persistFailure, _i1, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i10, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
         return _regenerator().w(function (_context8) {
           while (1) switch (_context8.p = _context8.n) {
             case 0:
@@ -10622,13 +10760,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               unsupported = [];
               failed = [];
               persistFailure = false;
-              _i1 = 0, _Array$from = Array.from(fileList);
+              _i10 = 0, _Array$from = Array.from(fileList);
             case 2:
-              if (!(_i1 < _Array$from.length)) {
+              if (!(_i10 < _Array$from.length)) {
                 _context8.n = 9;
                 break;
               }
-              file = _Array$from[_i1];
+              file = _Array$from[_i10];
               if (isSupportedFontFile(file)) {
                 _context8.n = 3;
                 break;
@@ -10664,7 +10802,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               console.warn('Failed to import custom font', _t7);
               failed.push(file && typeof file.name === 'string' ? file.name : '');
             case 8:
-              _i1++;
+              _i10++;
               _context8.n = 2;
               break;
             case 9:
@@ -10960,7 +11098,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _requestLocalFonts() {
       _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee0() {
-        var fonts, added, duplicates, seenValues, _iterator20, _step20, font, rawName, name, _value4, _ensureFontFamilyOpti3, option, created, _t9, _t0;
+        var fonts, added, duplicates, seenValues, _iterator23, _step23, font, rawName, name, _value5, _ensureFontFamilyOpti3, option, created, _t9, _t0;
         return _regenerator().w(function (_context0) {
           while (1) switch (_context0.p = _context0.n) {
             case 0:
@@ -10986,15 +11124,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               added = [];
               duplicates = [];
               seenValues = new Set();
-              _iterator20 = _createForOfIteratorHelper(fonts);
+              _iterator23 = _createForOfIteratorHelper(fonts);
               _context0.p = 5;
-              _iterator20.s();
+              _iterator23.s();
             case 6:
-              if ((_step20 = _iterator20.n()).done) {
+              if ((_step23 = _iterator23.n()).done) {
                 _context0.n = 11;
                 break;
               }
-              font = _step20.value;
+              font = _step23.value;
               rawName = font && (font.family || font.fullName || font.postscriptName);
               name = rawName ? String(rawName).trim() : '';
               if (name) {
@@ -11003,15 +11141,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
               return _context0.a(3, 10);
             case 7:
-              _value4 = buildFontFamilyValue(name);
-              if (!seenValues.has(_value4)) {
+              _value5 = buildFontFamilyValue(name);
+              if (!seenValues.has(_value5)) {
                 _context0.n = 8;
                 break;
               }
               duplicates.push(name);
               return _context0.a(3, 10);
             case 8:
-              _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value4, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
+              _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value5, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
               if (option) {
                 _context0.n = 9;
                 break;
@@ -11036,10 +11174,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 12:
               _context0.p = 12;
               _t9 = _context0.v;
-              _iterator20.e(_t9);
+              _iterator23.e(_t9);
             case 13:
               _context0.p = 13;
-              _iterator20.f();
+              _iterator23.f();
               return _context0.f(13);
             case 14:
               if (added.length > 0) {
@@ -11118,19 +11256,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       var scale = numericSize / baseFontSize;
-      var _iterator17 = _createForOfIteratorHelper(uiScaleProperties),
-        _step17;
+      var _iterator20 = _createForOfIteratorHelper(uiScaleProperties),
+        _step20;
       try {
-        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-          var _prop = _step17.value;
+        for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+          var _prop = _step20.value;
           var baseValue = baseUIScaleValues[_prop];
           if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
           document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
         }
       } catch (err) {
-        _iterator17.e(err);
+        _iterator20.e(err);
       } finally {
-        _iterator17.f();
+        _iterator20.f();
       }
       document.documentElement.style.setProperty('--ui-scale', String(scale));
     }
@@ -11529,11 +11667,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var overviewCandidates = getOverviewTitleCandidates();
       var lowerText = textValue.toLowerCase();
-      var _iterator18 = _createForOfIteratorHelper(overviewCandidates),
-        _step18;
+      var _iterator21 = _createForOfIteratorHelper(overviewCandidates),
+        _step21;
       try {
-        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-          var label = _step18.value;
+        for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+          var label = _step21.value;
           var normalizedLabel = label.trim();
           if (!normalizedLabel) continue;
           var lowerLabel = normalizedLabel.toLowerCase();
@@ -11549,9 +11687,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       } catch (err) {
-        _iterator18.e(err);
+        _iterator21.e(err);
       } finally {
-        _iterator18.f();
+        _iterator21.f();
       }
       if (overviewCandidates.some(function (label) {
         return lowerText === label.toLowerCase();
@@ -11963,10 +12101,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             return;
           }
           if (name === 'href' || name === 'xlink:href' || name === 'src' || name === 'srcset') {
-            var _value = attribute.value || '';
-            var parts = name === 'srcset' ? _value.split(',').map(function (part) {
+            var _value2 = attribute.value || '';
+            var parts = name === 'srcset' ? _value2.split(',').map(function (part) {
               return part.trim().split(/\s+/)[0];
-            }).filter(Boolean) : [_value];
+            }).filter(Boolean) : [_value2];
             if (!parts.every(isSafeSharedUrl)) {
               element.removeAttribute(attribute.name);
             }
@@ -12040,12 +12178,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   categoryPath: path
                 };
               }
-              for (var _i9 = 0, _Object$entries6 = Object.entries(node); _i9 < _Object$entries6.length; _i9++) {
-                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i9], 2),
-                  key = _Object$entries6$_i[0],
-                  _value2 = _Object$entries6$_i[1];
-                if (!isPlainObjectValue(_value2)) continue;
-                var _result = _search(_value2, path.concat(key));
+              for (var _i0 = 0, _Object$entries7 = Object.entries(node); _i0 < _Object$entries7.length; _i0++) {
+                var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i0], 2),
+                  key = _Object$entries7$_i[0],
+                  _value3 = _Object$entries7$_i[1];
+                if (!isPlainObjectValue(_value3)) continue;
+                var _result = _search(_value3, path.concat(key));
                 if (_result) return _result;
               }
               return null;
@@ -15646,6 +15784,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         toggleBtn.setAttribute("aria-expanded", "false");
         toggleBtn.textContent = texts[currentLang].showDetails;
         toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
+        toggleBtn.dataset.name = name;
+        toggleBtn.dataset.category = categoryKey;
+        if (subcategory) toggleBtn.dataset.subcategory = subcategory;
         header.appendChild(toggleBtn);
         var editBtn = document.createElement("button");
         editBtn.className = "edit-btn";
@@ -15672,17 +15813,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
       if (categoryKey === "accessories.cables") {
-        for (var _i0 = 0, _Object$entries7 = Object.entries(categoryDevices); _i0 < _Object$entries7.length; _i0++) {
-          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i0], 2),
-            subcat = _Object$entries7$_i[0],
-            devs = _Object$entries7$_i[1];
+        for (var _i1 = 0, _Object$entries8 = Object.entries(categoryDevices); _i1 < _Object$entries8.length; _i1++) {
+          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i1], 2),
+            subcat = _Object$entries8$_i[0],
+            devs = _Object$entries8$_i[1];
           for (var name in devs) {
             buildItem(name, devs[name], subcat);
           }
         }
       } else {
-        for (var _name in categoryDevices) {
-          buildItem(_name, categoryDevices[_name]);
+        for (var _name2 in categoryDevices) {
+          buildItem(_name2, categoryDevices[_name2]);
         }
       }
     }
@@ -16056,9 +16197,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         exportName = _ref41[0],
         getter = _ref41[1];
       try {
-        var _value3 = getter();
-        if (typeof _value3 !== 'undefined') {
-          acc[exportName] = _value3;
+        var _value4 = getter();
+        if (typeof _value4 !== 'undefined') {
+          acc[exportName] = _value4;
         }
       } catch (error) {
         void error;
