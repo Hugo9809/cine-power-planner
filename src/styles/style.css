@@ -7061,7 +7061,11 @@ body.dark-mode .onboarding-hero-banner {
 
 .onboarding-hero-heading {
   margin: 0;
-  font-size: clamp(2.35rem, 1.75rem + 2.1vw, 3.35rem);
+  font-size: clamp(
+    calc(var(--font-size-relative-base, 1em) * 2.35),
+    calc(var(--font-size-relative-base, 1em) * 1.75 + 2.1vw),
+    calc(var(--font-size-relative-base, 1em) * 3.35)
+  );
   line-height: clamp(1.05, 1.02 + 0.03vw, 1.1);
   font-weight: var(--font-weight-extrabold, 800);
   letter-spacing: -0.01em;
@@ -7074,7 +7078,11 @@ body.dark-mode .onboarding-hero-heading {
 
 .onboarding-hero-subheading {
   margin: 0;
-  font-size: clamp(1.1rem, 0.95rem + 0.65vw, 1.5rem);
+  font-size: clamp(
+    calc(var(--font-size-relative-base, 1em) * 1.1),
+    calc(var(--font-size-relative-base, 1em) * 0.95 + 0.65vw),
+    calc(var(--font-size-relative-base, 1em) * 1.5)
+  );
   font-weight: var(--font-weight-semibold);
   color: color-mix(in srgb, var(--text-color) 88%, rgba(0, 0, 0, 0.25));
   letter-spacing: 0.02em;
@@ -7100,7 +7108,7 @@ body.dark-mode .onboarding-hero-summary {
 }
 
 .onboarding-hero-highlight-icon--badge {
-  font-size: 1.8rem;
+  font-size: calc(var(--font-size-relative-base, 1em) * 1.8);
   line-height: 1;
   color: color-mix(in srgb, var(--accent-color) 82%, var(--text-color) 18%);
 }
@@ -7156,7 +7164,7 @@ body.dark-mode .onboarding-hero-highlight {
 }
 
 .onboarding-hero-highlight-icon {
-  font-size: 1.6rem;
+  font-size: calc(var(--font-size-relative-base, 1em) * 1.6);
   line-height: 1;
   color: color-mix(in srgb, var(--accent-color) 78%, var(--text-color) 22%);
   display: inline-flex;
