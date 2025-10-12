@@ -73,6 +73,11 @@ drive without phoning home.
   assets that shipped. Maintaining these records keeps help topics, translation
   notes and workflow screenshots provably in sync with the builds crews run
   offline.
+- **Stop documentation drift.** Follow the new
+  [Documentation Drift Runbook](docs/documentation-drift-runbook.md) to verify
+  help topics, localized READMEs and printable manuals mirror the same
+  save/share/import/backup/restore safeguards enforced in the runtime before
+  distributing offline bundles.
 - **File a status snapshot.** Complete the new
   [Documentation Status Report](docs/documentation-status-report-template.md)
   whenever you update help topics, translations or manuals. It captures which
@@ -1238,6 +1243,9 @@ coverage and recovery instructions. Each update should:
   offline locations. Attach the packet location to your verification notes so future crews know where
   to retrieve the canonical documentation bundle when rehearsing saves, shares, imports, backups and
   restores.
+- Run the [Documentation Drift Runbook](docs/documentation-drift-runbook.md) whenever you update
+  copy or translations to confirm cached help topics, localized READMEs and printable guides match the
+  live safeguards before the offline bundle ships.
 - Schedule recurring [documentation audits](docs/documentation-audit-checklist.md) so the README family,
   help center, translations and printable manuals are regularly spot-checked against the runtime
   safeguards, Quick safeguards exports and verification evidence captured in the planner.
