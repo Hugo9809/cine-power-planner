@@ -1865,7 +1865,7 @@ const texts = {
           title: "Welcome to Cine Power Planner",
           body: "",
           hero: {
-            heading: "Welcome to Cine Power Planner",
+            heading: "",
             subheading: "Crew-first power, gear, and handoff planning — fully offline.",
             summary:
               "Plan safe power loads, generate AutoGear kits, and capture handoffs while every save stays local. Follow the checkpoints to see how we protect your data before the first shoot day.",
