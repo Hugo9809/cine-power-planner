@@ -355,6 +355,31 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function resolveCoreOptionsArray(functionName, existingValues = []) {
+  const fallback = Array.isArray(existingValues) ? existingValues.slice() : [];
+
+  try {
+    const result = callEventsCoreFunction(functionName);
+    if (Array.isArray(result)) {
+      return result.slice();
+    }
+  } catch (coreError) {
+    if (eventsLogger && typeof eventsLogger.warn === 'function') {
+      try {
+        eventsLogger.warn(`Failed to resolve ${functionName}`, coreError);
+      } catch (logError) {
+        void logError;
+      }
+    }
+
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn(`Failed to resolve ${functionName}`, coreError);
+    }
+  }
+
+  return fallback;
+}
+
 function readCoreDeviceSelectionHelper() {
   if (typeof globalThis !== 'undefined' && typeof globalThis.hasAnyDeviceSelection === 'function') {
     return globalThis.hasAnyDeviceSelection;
@@ -2613,8 +2638,8 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
         delete devices[categoryKey][name];
       }
       storeDevices(devices);
-      viewfinderTypeOptions = getAllViewfinderTypes();
-      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
       updateMountTypeOptions();
       // Re-populate all dropdowns and update calculations
@@ -3120,8 +3145,8 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   resetDeviceForm();
 
   storeDevices(devices);
-  viewfinderTypeOptions = getAllViewfinderTypes();
-  viewfinderConnectorOptions = getAllViewfinderConnectors();
+  viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
+  viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
   updatePlateTypeOptions();
   updatePowerPortOptions();
   updatePowerDistTypeOptions();
@@ -3297,8 +3322,8 @@ if (exportAndRevertBtn) {
       }
       unifyDevices(devices);
       storeDevices(devices);
-      viewfinderTypeOptions = getAllViewfinderTypes();
-      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      viewfinderTypeOptions = resolveCoreOptionsArray('getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = resolveCoreOptionsArray('getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists(); // Update device manager lists
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
