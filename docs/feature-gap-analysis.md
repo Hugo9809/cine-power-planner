@@ -1,30 +1,38 @@
-# Feature Gap Analysis Worksheet
+# Feature Gap Analysis
 
-Use this worksheet to track discrepancies between planned functionality,
-implemented safeguards and supporting documentation. Update it whenever rehearsals
-or audits uncover differences.
+Use this worksheet to capture differences between field requirements and the
+current Cine Power Planner runtime. Always prioritise gaps that could risk user
+data or offline operation.
 
-## Instructions
+## Current version
 
-1. List each feature or safeguard under review.
-2. Note the expected behaviour (from specs, previous releases or documentation).
-3. Record the actual behaviour observed during rehearsal, including offline
-   findings.
-4. Identify missing documentation, translation gaps or automated test coverage.
-5. Assign follow-up tasks, owners and deadlines; capture evidence once closed.
+- **Runtime revision:** _(git commit / bundle hash)_
+- **Analysis date:** _(YYYY-MM-DD)_
+- **Prepared by:** _(name)_
 
-## Worksheet
+## Identified gaps
 
-| Feature / Safeguard | Expected behaviour | Actual behaviour | Documentation gap | Translation gap | Tests needed | Owner | Due date |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | Description | Impact on user data/offline workflows | Proposed mitigation | Owner | Status |
+| --- | --- | --- | --- | --- | --- |
+| GAP-001 | _(e.g. Missing checksum display in restore sandbox)_ | _(High/Medium/Low)_ | _(Add checksum column + doc update.)_ | _(Name)_ | _(Open)_ |
+| GAP-002 |  |  |  |  |  |
 
-## Follow-up log
+## Evaluation criteria
 
-Use this section to note when gaps were closed and where evidence is stored.
+1. **Data protection risk** – Could the gap cause data loss, overwrite or failure
+   to restore backups?
+2. **Offline readiness** – Does the workflow require connectivity, external
+   services or assets not bundled in the repo?
+3. **Documentation accuracy** – Are help topics, translations or checklists
+   misleading because of the gap?
+4. **User impact** – How frequently will crews encounter the issue in rehearsals
+   or on set?
 
-- **Date:**
-- **Gap resolved:**
-- **Evidence archived at:** (Verification log, backup filename, PR link.)
-- **Notes:**
+## Action plan
 
-Keep the worksheet with the documentation packet until all gaps are resolved.
+- [ ] Add mitigations to `review-tasks-2025-02-07.md` with priority levels.
+- [ ] Update relevant docs (operations checklist, save/share reference,
+      translation guide) once mitigations ship.
+- [ ] Capture rehearsal evidence demonstrating the gap is closed and store it in
+      the verification packet.
+- [ ] Notify crews relying on offline bundles about resolved gaps.

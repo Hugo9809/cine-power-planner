@@ -1,49 +1,44 @@
 # Documentation Audit Checklist
 
-Use this checklist to confirm the documentation suite matches the current
-runtime. Run it before every release, after major feature work and during
-workstation audits to keep offline crews aligned with the product.
+Run this checklist quarterly or whenever core workflows change. The goal is to
+prove that every doc, translation and in-app help surface mirrors the current
+save/share/import/backup/restore behaviour.
 
 ## Preparation
 
-- Pull the latest repository revision and install dependencies locally.
-- Serve or open the app, load the dashboard, help dialog and legal pages to
-  prime offline caches.
-- Gather the most recent planner backup, project bundles, translation exports
-  and verification logs for reference.
+- [ ] Clone the repository or unpack the offline bundle on the audit machine.
+- [ ] Load `index.html` once to warm the cache; then disconnect the network.
+- [ ] Export the latest planner backup and verification packet for reference.
+- [ ] Create a fresh copy of `docs/verification-log-template.md` to record
+      evidence.
 
-## Checklist
+## Audit steps
 
-1. **Feature inventory**
-   - Review merged pull requests and release notes.
-   - Map each change to save/share/import/backup/restore workflows, automatic gear
-     features and documentation surfaces.
-   - Update the [Feature Gap Analysis](feature-gap-analysis.md) if gaps remain.
-2. **Help & manuals**
-   - Read all relevant in-app help topics, printable guides in `docs/` and
-     localized READMEs. Confirm language matches the current UI sequence and
-     button labels.
-   - Capture updated screenshots or diagrams using only locally stored assets.
-3. **Localization parity**
-   - Ensure every `README.*.md` reflects the latest instructions. Record open
-     translation tasks in the [Documentation Coverage Matrix](documentation-coverage-matrix.md)
-     and [Translation Guide](translation-guide.md).
-4. **Offline verification**
-   - Enable airplane mode, rehearse save/share/import/backup/restore workflows and
-     confirm prompts plus autosave cadence match the docs.
-   - Verify service worker logs match `service-worker-assets.js` hashes.
-5. **Storage & schema alignment**
-   - Compare `src/scripts/storage.js` and `src/scripts/modules/persistence.js`
-     with the [Schema Inventory](schema-inventory.md). Update field descriptions
-     and migration notes if anything changed.
-6. **Testing evidence**
-   - Run the [Testing Plan](testing-plan.md) commands. Attach results to the
-     [Documentation Verification Packet](documentation-verification-packet.md) and
-     archive logs with backups.
-7. **Sign-off**
-   - Complete the [Documentation Status Report](documentation-status-report-template.md).
-   - File updated guides, verification logs, backups, translation exports and
-     share bundles together on offline media.
+1. **Help centre parity**
+   - [ ] Open the in-app help overlay and compare each topic to the matching doc
+         in `docs/` and the translated READMEs.
+   - [ ] Capture screenshots for any deviations.
+2. **Workflow rehearsal**
+   - [ ] Follow the [Operations Checklist](operations-checklist.md). Ensure every
+         UI label matches the documentation wording.
+   - [ ] Verify autosave, backup and restore logs record the run.
+3. **Translation alignment**
+   - [ ] Review `src/scripts/translations.js` and confirm every string referenced
+         in documentation exists and is current.
+   - [ ] Update `docs/translation-guide.md` with any locale-specific nuances.
+4. **Asset integrity**
+   - [ ] Ensure all referenced icons and fonts exist in the repo and are loaded
+         locally (no CDN links).
+   - [ ] Run `npm run lint:docs` (or applicable script) if available to catch
+         broken anchors.
+5. **Schema validation**
+   - [ ] Compare `docs/schema-inventory.md` against `modules/helpers/schema/`.
+   - [ ] Note any mismatches in `review-findings.md` and link to follow-up tasks.
 
-Consistently running this checklist keeps offline teams confident that written
-instructions and the runtime never drift apart.
+## Completion tasks
+
+- [ ] Update `docs/documentation-status-report-template.md` with audit scope,
+      findings and stored evidence locations.
+- [ ] Attach screenshots, backups and logs to the verification packet archive.
+- [ ] Brief the localisation team on any string changes.
+- [ ] Commit doc updates and rerun the [Documentation Maintenance Guide](documentation-maintenance.md).

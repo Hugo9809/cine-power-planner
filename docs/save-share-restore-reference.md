@@ -1,73 +1,64 @@
 # Save, Share, Import, Backup & Restore Reference
 
-This reference summarises the workflows that protect user data. Pair it with the
-[Operations Checklist](operations-checklist.md) during rehearsals and store a
-printed copy with field kits.
+This reference details every safeguard that protects user data across save,
+autosave, share, import, backup and restore workflows. Use it alongside the
+[Operations Checklist](operations-checklist.md) when training crews or auditing
+workstations.
 
-## Manual save
+## Save & autosave
 
-- Trigger via **Save**, pressing **Enter** in the project name field or using
-  `Ctrl+S` / `⌘S`.
-- The app writes the project to storage, updates the compare history and refreshes
-  the autosave ledger. A redundant mirror is created before the UI updates.
+- **Manual save trigger:** Press **Save**, **Enter** on focused inputs, or
+  `Ctrl+S` / `⌘S`. `app-session.js` dispatches a structured save event which
+  `modules/persistence.js` clones and persists.
+- **Autosave cadence:** Fires after ~50 changes or 10 minutes of inactivity.
+  Each run logs to the autosave ledger accessible from **Settings → Safeguards**.
+- **Redundant mirrors:** `storage.js` keeps timestamped mirrors so reverting to a
+  previous autosave never touches live data directly.
 
-## Autosave & automatic backups
+## Backup
 
-- Autosave listens to form changes and throttles bursts to avoid duplicate
-  writes.
-- A background timer forces snapshots roughly every 10 minutes or after about 50
-  tracked changes, whichever comes first.
-- High-risk actions (project switch, import, export, restore, translation export)
-  trigger immediate backups regardless of cadence.
-- Automatic backups are stored as `auto-backup-*` entries and appear in the
-  selector for review or manual restore.
+- **Planner backup:** **Settings → Backup & Restore → Backup** exports
+  `planner-backup.json`, capturing all projects, favorites, automatic gear rules
+  and preferences.
+- **Checksum discipline:** Generate SHA-256 hashes for each backup and store them
+  with physical copies.
+- **Archive storage:** Keep at least two copies (primary + offsite). Log
+  locations in `review-findings.md` and the verification packet manifest.
 
-## Planner backup export
+## Share & import
 
-1. Open **Settings → Backup & Restore**.
-2. Choose **Backup** or **Quick safeguards**.
-3. The export includes every project, autosave snapshot, automatic gear preset,
-   custom gear list, runtime feedback entry, preferences and translation bundles.
-4. Save the JSON file, compute a checksum and store it on two offline media.
-
-## Planner backup restore
-
-1. Use **Restore rehearsal** to validate the backup in a sandbox.
-2. Inspect restored projects, autosave ledger, presets and translation bundles.
-3. When satisfied, run **Restore** to replace live data. The app captures a
-   pre-restore backup automatically.
-
-## Project share & import
-
-- Export individual projects from the selector for handoff.
-- Exports bundle the project payload, automatic gear references and history
+- **Project export:** From the selector, choose **Export Project**. The bundle
+  includes project data, automatic gear rules, runtime estimates and rehearsal
   metadata.
-- Importing validates the payload, creates a backup of current data and then adds
-  the project to the selector. Duplicates receive unique names.
+- **Share workflow:** Copy the bundle to the receiving workstation via physical
+  media. No network transfer is required.
+- **Import path:** Use **Settings → Backup & Restore → Restore rehearsal** to
+  load bundles into the sandbox before promoting.
+- **Diff review:** The restore sandbox displays differences; capture screenshots
+  and attach them to the verification log.
 
-## Automatic gear presets
+## Restore
 
-- Presets save through the same persistence pipeline as projects.
-- Editors can export presets, clear local copies and re-import to confirm
-  redundancy.
-- Restores capture current presets before replacing them; diff summaries document
-  changes.
+- **Sandbox first:** All imports land in the sandbox. Operators must explicitly
+  promote data to avoid overwriting live projects.
+- **Promotion safety:** Before promotion the runtime clones current live data to
+  a timestamped backup slot. Reverting is always possible.
+- **Verification:** After promotion, confirm autosave ledger logs the restore and
+  manual save to cement the state.
 
-## Translation exports
+## Failure recovery
 
-- Use **Settings → Languages → Export** to archive locale bundles when strings
-  change.
-- Translation exports are stored alongside planner backups with checksum notes.
-- Importing a translation bundle snapshots existing locales before applying
-  updates.
+| Scenario | Response |
+| --- | --- |
+| Autosave missing | Load the latest planner backup, restore via sandbox, then check timestamped mirrors for newer data. |
+| Bundle corrupt | Use checksum log to identify mismatch, fetch redundant copy from offsite media. |
+| Restore mismatch | Compare schema using `modules/helpers/schema/`; update docs and contact engineering before retrying. |
+| Service worker stale | Run cache reset (Settings → Offline & Cache), reload offline and repeat restore. |
 
-## Verification tips
+## Documentation alignment
 
-- Run `window.cineRuntime.verifyCriticalFlows()` after rehearsals to confirm the
-  guard reports healthy storage mirrors and registry bindings.
-- Use the compare tool to review differences between manual saves and backups.
-- Keep planner backups, project bundles, translation exports and verification logs
-  together so any workstation can recover the latest state offline.
-
-Following these procedures ensures no user data is lost and that every workflow
-remains transparent to crews working without connectivity.
+- Update this reference whenever persistence logic, UI labels or rehearsal
+  behaviour changes.
+- Sync instructions with README translations and help topics.
+- Store the updated doc in the verification packet alongside the evidence listed
+  above.
