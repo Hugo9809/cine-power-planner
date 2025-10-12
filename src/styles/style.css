@@ -7732,36 +7732,33 @@ body.dark-mode .onboarding-field-select {
 
 .onboarding-interaction-button {
   flex: 1 1 220px;
-  margin: 0;
-  border-radius: var(--border-radius);
-  background: color-mix(in srgb, var(--accent-color) 88%, rgba(255, 255, 255, 0.06) 12%);
-  color: var(--inverse-text-color);
-  font-weight: var(--font-weight-medium);
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  padding-block: calc(var(--button-padding-block) + 6px);
+  padding-inline: calc(var(--button-padding-inline) + 6px);
+  text-align: center;
+  box-shadow: var(--panel-shadow);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .onboarding-interaction-button:hover,
 .onboarding-interaction-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 96%, rgba(255, 255, 255, 0.12) 4%);
   transform: translateY(-1px);
-  box-shadow: 0 22px 38px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-interaction-button:active {
   transform: translateY(0);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 }
 
 body.dark-mode .onboarding-interaction-button {
-  background: color-mix(in srgb, var(--accent-color) 82%, rgba(18, 22, 28, 0.95) 18%);
-  color: var(--inverse-text-color);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.45);
 }
 
 body.dark-mode .onboarding-interaction-button:hover,
 body.dark-mode .onboarding-interaction-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 94%, rgba(255, 255, 255, 0.12) 6%);
+  box-shadow: 0 22px 38px rgba(0, 0, 0, 0.5);
 }
 
 .onboarding-resume-hint {
@@ -8017,21 +8014,20 @@ body.dark-mode
   width: 100%;
   --onboarding-step-button-min-height: 3.4rem;
   min-height: var(--onboarding-step-button-min-height);
-  padding: 0.7rem 0.95rem 0.9rem;
-  border-radius: 12px 12px 10px 10px;
-  border: 1px solid color-mix(in srgb, var(--text-color) 20%, transparent);
-  background: color-mix(in srgb, var(--surface-color) 85%, rgba(255, 255, 255, 0.08) 15%);
-  color: inherit;
-  font: inherit;
+  padding-block: 0.75rem;
+  padding-inline: calc(var(--button-padding-inline) + 0.35rem);
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
+  background: var(--control-bg);
   text-align: left;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .onboarding-step-button:hover,
 .onboarding-step-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 18%, var(--surface-color) 82%);
-  border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+  background: var(--control-hover-bg);
+  border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
   transform: translateY(-1px);
   outline: none;
 }
@@ -8058,19 +8054,19 @@ body.dark-mode
   align-self: flex-start;
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--text-color) 12%, transparent);
+  background: color-mix(in srgb, var(--panel-border) 55%, transparent);
 }
 
 .onboarding-step-item[data-status='current'] .onboarding-step-button {
-  border-color: color-mix(in srgb, var(--accent-color) 70%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 22%, var(--surface-color) 78%);
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  background: color-mix(in srgb, var(--accent-color) 22%, var(--control-bg) 78%);
   box-shadow: 0 2px 10px color-mix(in srgb, var(--accent-color) 16%, transparent);
   transform: translateY(-1px);
 }
 
 .onboarding-step-item[data-status='complete'] .onboarding-step-button {
-  border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 15%, var(--surface-color) 85%);
+  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--panel-border));
+  background: color-mix(in srgb, var(--accent-color) 12%, var(--control-bg) 88%);
 }
 
 .onboarding-step-item[data-status='complete'] .onboarding-step-status {
@@ -8079,7 +8075,7 @@ body.dark-mode
 }
 
 .onboarding-step-item[data-status='upcoming'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--surface-color) 92%, rgba(255, 255, 255, 0.12) 8%);
+  background: color-mix(in srgb, var(--control-bg) 94%, transparent);
   border-style: dashed;
   opacity: 0.9;
 }
@@ -8096,34 +8092,34 @@ body.dark-mode
 }
 
 .onboarding-step-item[data-status='upcoming'] .onboarding-step-button[disabled] {
-  color: color-mix(in srgb, var(--text-color) 65%, transparent);
+  color: color-mix(in srgb, var(--control-text) 65%, transparent);
 }
 
 body.dark-mode .onboarding-step-button {
-  background: color-mix(in srgb, rgba(26, 30, 36, 0.95) 85%, rgba(255, 255, 255, 0.12) 15%);
-  border-color: color-mix(in srgb, var(--inverse-text-color) 18%, transparent);
-  color: var(--inverse-text-color);
+  background: color-mix(in srgb, var(--control-bg) 92%, rgba(0, 0, 0, 0.28) 8%);
+  border-color: color-mix(in srgb, var(--panel-border) 70%, transparent);
+  color: var(--control-text);
 }
 
 body.dark-mode .onboarding-step-status {
-  background: color-mix(in srgb, var(--inverse-text-color) 18%, transparent);
-  color: var(--inverse-text-color);
+  background: color-mix(in srgb, var(--panel-border) 45%, transparent);
+  color: var(--control-text);
 }
 
 body.dark-mode .onboarding-step-button:hover,
 body.dark-mode .onboarding-step-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 28%, rgba(26, 30, 36, 0.95) 72%);
-  border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 30%, var(--control-bg) 70%);
+  border-color: color-mix(in srgb, var(--accent-color) 65%, var(--panel-border));
 }
 
 body.dark-mode .onboarding-step-item[data-status='current'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--accent-color) 35%, rgba(18, 22, 28, 0.95) 65%);
-  border-color: color-mix(in srgb, var(--accent-color) 80%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 36%, var(--control-bg) 64%);
+  border-color: color-mix(in srgb, var(--accent-color) 80%, var(--panel-border));
 }
 
 body.dark-mode .onboarding-step-item[data-status='complete'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--accent-color) 22%, rgba(18, 22, 28, 0.95) 78%);
-  border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 24%, var(--control-bg) 76%);
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
 }
 
 body.dark-mode.pink-mode .onboarding-step-title,
@@ -8151,8 +8147,63 @@ body:not(.dark-mode) .onboarding-step-status {
   flex-wrap: wrap;
 }
 
-.onboarding-card-actions button {
+.onboarding-card-actions button,
+.onboarding-interaction-button,
+.onboarding-step-button,
+.onboarding-skip {
   margin: 0;
+  background: var(--control-bg);
+  color: var(--control-text);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  min-height: var(--button-size);
+  line-height: var(--button-line-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--button-icon-gap);
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.onboarding-card-actions button:hover,
+.onboarding-card-actions button:focus-visible,
+.onboarding-interaction-button:hover,
+.onboarding-interaction-button:focus-visible,
+.onboarding-step-button:hover,
+.onboarding-step-button:focus-visible,
+.onboarding-skip:hover,
+.onboarding-skip:focus-visible {
+  background: var(--control-hover-bg);
+  color: var(--control-text);
+  box-shadow: var(--panel-shadow-hover);
+}
+
+.onboarding-card-actions button:active,
+.onboarding-interaction-button:active,
+.onboarding-step-button:active,
+.onboarding-skip:active {
+  background: var(--control-active-bg);
+  box-shadow: none;
+}
+
+.onboarding-card-actions button:disabled,
+.onboarding-interaction-button:disabled,
+.onboarding-step-button:disabled,
+.onboarding-skip:disabled {
+  background: var(--control-disabled-bg);
+  color: color-mix(in srgb, var(--control-text) 70%, transparent);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.onboarding-card-actions button {
   min-width: 130px;
 }
 
@@ -8168,44 +8219,37 @@ body:not(.dark-mode) .onboarding-step-status {
 }
 
 .onboarding-back-button {
-  background: color-mix(in srgb, var(--control-bg) 85%, rgba(0, 0, 0, 0.05) 15%);
-}
-
-body.dark-mode .onboarding-back-button {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--inverse-text-color);
+  font-weight: var(--font-weight-medium);
 }
 
 .onboarding-next-button {
   background: var(--accent-color);
   color: var(--inverse-text-color);
-}
-
-.onboarding-next-button[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: color-mix(in srgb, var(--accent-color) 70%, rgba(0, 0, 0, 0.2) 30%);
+  box-shadow: var(--panel-shadow);
 }
 
 .onboarding-next-button:hover,
 .onboarding-next-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 85%, #ffffff 15%);
+  background: color-mix(in srgb, var(--accent-color) 88%, #ffffff 12%);
   color: var(--inverse-text-color);
 }
 
-body.dark-mode .onboarding-next-button:hover,
-body.dark-mode .onboarding-next-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 90%, rgba(255, 255, 255, 0.1) 10%);
+.onboarding-next-button:active {
+  background: color-mix(in srgb, var(--accent-color) 76%, var(--control-active-bg) 24%);
+  box-shadow: none;
+}
+
+.onboarding-next-button[disabled] {
+  background: color-mix(in srgb, var(--control-disabled-bg) 55%, var(--accent-color) 45%);
+  color: color-mix(in srgb, var(--inverse-text-color) 80%, rgba(255, 255, 255, 0.45) 20%);
+  box-shadow: none;
 }
 
 .onboarding-skip {
   padding-inline: var(--spacing-md);
   white-space: nowrap;
-}
-
-.onboarding-overlay .onboarding-skip,
-.onboarding-overlay .onboarding-skip:visited {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-regular);
 }
 
 @media (max-width: 640px) {
