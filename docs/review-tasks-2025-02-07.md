@@ -9,6 +9,7 @@
 - **Issue**: `fallbackFreezeDeep` instantiates `new WeakSet()` as a default parameter. Browsers without `WeakSet` throw before the guard logic runs, breaking storage safeguards in older offline profiles despite the accompanying comment promising legacy resilience. 【F:src/scripts/modules/context.js†L101-L136】
 - **Impact**: On legacy devices the module fails to load, jeopardising autosave and backup flows that depend on the context helpers to protect user data.
 - **Recommended task**: Lazily create the tracking collection inside the function, falling back to a simple array when `WeakSet` is missing so the freeze helper keeps working on older browsers.
+- **Status**: ✅ Completed by rebuilding the legacy bundle after porting the tracker helper. `legacy/scripts/modules/context.js` now defers to `fallbackResolveSeenTracker` so browsers without `WeakSet` keep deep-freezing context metadata and protecting autosave, backup and restore paths. 【F:legacy/scripts/modules/context.js†L66-L118】
 
 ## Correct review doc that claims duplicate-key tests are missing (documentation discrepancy)
 - **Issue**: `docs/review-findings.md` still reports that no automated test guards against duplicate optical properties, but the repository now includes `tests/data/gearListDuplicateKeys.test.js` which enforces exactly that invariant. 【F:docs/review-findings.md†L10-L23】【F:tests/data/gearListDuplicateKeys.test.js†L1-L90】

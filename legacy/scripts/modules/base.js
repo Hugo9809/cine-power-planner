@@ -260,8 +260,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-
-
   function isNodeProcessReference(value) {
     if (!value) {
       return false;
@@ -272,7 +270,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (value === process) {
       return true;
     }
-    if (value && _typeof(value) === 'object') {
+    if (_typeof(value) === 'object') {
       try {
         if (value.constructor && value.constructor.name === 'process') {
           return true;

@@ -4,12 +4,12 @@ function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { 
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
-function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -3469,6 +3469,166 @@ function restoreSessionState() {
     scheduleProjectAutoSave();
   }
 }
+function ensureImportedProjectBaseNameSession(rawName) {
+  var trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  if (!trimmed) {
+    return 'Project-imported';
+  }
+  if (trimmed.toLowerCase().endsWith('-imported')) {
+    return trimmed;
+  }
+  return "".concat(trimmed, "-imported");
+}
+function generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames) {
+  var normalized = normalizedNames || new Set(_toConsumableArray(usedNames).map(function (name) {
+    return typeof name === 'string' ? name.trim().toLowerCase() : '';
+  }).filter(function (name) {
+    return name;
+  }));
+  var base = ensureImportedProjectBaseNameSession(baseName);
+  var candidate = base.trim();
+  if (!candidate) {
+    candidate = 'Project-imported';
+  }
+  var normalizedCandidate = candidate.toLowerCase();
+  var suffix = 2;
+  while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    candidate = "".concat(base, "-").concat(suffix++);
+    normalizedCandidate = candidate.trim().toLowerCase();
+  }
+  usedNames.add(candidate);
+  if (normalizedCandidate) {
+    normalized.add(normalizedCandidate);
+  }
+  return candidate;
+}
+function persistImportedProjectWithFallback(payload, nameCandidates) {
+  if (!payload || typeof saveProject !== 'function') {
+    return '';
+  }
+  var usedNames = new Set();
+  var normalizedNames = new Set();
+  if (typeof loadProject === 'function') {
+    try {
+      var existingProjects = loadProject();
+      if (existingProjects && _typeof(existingProjects) === 'object') {
+        var entries = Object.keys(existingProjects);
+        usedNames = new Set(entries);
+        normalizedNames = new Set(entries.map(function (name) {
+          return typeof name === 'string' ? name.trim().toLowerCase() : '';
+        }).filter(function (name) {
+          return name;
+        }));
+      }
+    } catch (projectReadError) {
+      console.warn('Unable to read existing projects while generating fallback name for imported project', projectReadError);
+    }
+  }
+  var candidates = Array.isArray(nameCandidates) ? nameCandidates : [];
+  var baseName = '';
+  for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
+    var candidate = typeof candidates[_index6] === 'string' ? candidates[_index6].trim() : '';
+    if (candidate) {
+      baseName = candidate;
+      break;
+    }
+  }
+  if (!baseName) {
+    baseName = 'Imported project';
+  }
+  var storageKey = generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames);
+  saveProject(storageKey, payload, {
+    skipOverwriteBackup: true
+  });
+  return storageKey;
+}
+function clearOwnedGearExportArtifacts(element) {
+  if (!element || typeof element.querySelectorAll !== 'function') {
+    return;
+  }
+  element.removeAttribute('data-gear-owned-export-label');
+  var badges = element.querySelectorAll('[data-gear-owned-export]');
+  badges.forEach(function (badge) {
+    if (badge && badge.parentElement) {
+      badge.parentElement.removeChild(badge);
+    }
+  });
+}
+function applyImportedOwnedGearMarkers(markers) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!Array.isArray(markers) || !markers.length) {
+    return false;
+  }
+  var root = options && options.root ? options.root : gearListOutput;
+  if (!root || typeof root.querySelector !== 'function') {
+    return false;
+  }
+  var userProfile = typeof getUserProfileSnapshot === 'function' ? getUserProfileSnapshot() : null;
+  var importerProfileName = userProfile && typeof userProfile.name === 'string' ? userProfile.name.trim() : '';
+  var importerProfileNameLower = importerProfileName ? importerProfileName.toLowerCase() : '';
+  var importerDisplayName = typeof formatUserProfileProviderName === 'function' ? formatUserProfileProviderName(importerProfileName) : importerProfileName;
+  var importerDisplayNameLower = importerDisplayName ? importerDisplayName.toLowerCase() : '';
+  var applied = false;
+  markers.forEach(function (marker) {
+    if (!marker || !marker.ownedId) {
+      return;
+    }
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : String(marker.ownedId).replace(/"/g, '\\"');
+    var element = root.querySelector("[data-gear-own-gear-id=\"".concat(selectorId, "\"]"));
+    if (!element) {
+      return;
+    }
+    clearOwnedGearExportArtifacts(element);
+    var ownerDisplayName = typeof marker.ownerDisplayName === 'string' ? marker.ownerDisplayName.trim() : '';
+    var ownerDisplayLower = ownerDisplayName ? ownerDisplayName.toLowerCase() : '';
+    var ownerProfileName = typeof marker.ownerProfileName === 'string' ? marker.ownerProfileName.trim() : '';
+    var ownerProfileLower = ownerProfileName ? ownerProfileName.toLowerCase() : '';
+    var providerLabelFallback = typeof marker.providerLabel === 'string' ? marker.providerLabel.trim() : ownerDisplayName;
+    var matchesImporter = Boolean(importerProfileNameLower && ownerProfileLower && importerProfileNameLower === ownerProfileLower || importerDisplayNameLower && ownerDisplayLower && importerDisplayNameLower === ownerDisplayLower || importerProfileNameLower && ownerDisplayLower && importerProfileNameLower === ownerDisplayLower);
+    var providerValue = '';
+    var providerLabel = providerLabelFallback;
+    if (matchesImporter) {
+      providerValue = 'user';
+      providerLabel = '';
+    } else if (marker.ownerType === 'contact' || ownerDisplayName) {
+      var ensuredContact = typeof ensureContactForImportedOwner === 'function' ? ensureContactForImportedOwner(ownerDisplayName || providerLabelFallback, {
+        contactId: marker.contactId,
+        fallbackLabel: providerLabelFallback
+      }) : null;
+      if (ensuredContact && ensuredContact.value) {
+        providerValue = ensuredContact.value;
+        providerLabel = ensuredContact.label || providerLabelFallback;
+      } else if (typeof marker.providerValue === 'string' && marker.providerValue.startsWith('contact:')) {
+        providerValue = marker.providerValue;
+      } else if (marker.providerValue && marker.providerValue !== 'user') {
+        providerValue = marker.providerValue;
+      }
+    } else if (typeof marker.providerValue === 'string' && marker.providerValue) {
+      providerValue = marker.providerValue;
+    }
+    if (typeof setGearItemProvider === 'function') {
+      setGearItemProvider(element, providerValue, {
+        label: providerLabel
+      });
+    } else {
+      if (providerValue) {
+        element.setAttribute('data-gear-provider', providerValue);
+      } else {
+        element.removeAttribute('data-gear-provider');
+      }
+      if (providerLabel) {
+        element.setAttribute('data-gear-provider-label', providerLabel);
+      } else {
+        element.removeAttribute('data-gear-provider-label');
+      }
+    }
+    applied = true;
+  });
+  if (applied && typeof dispatchGearProviderDataChanged === 'function') {
+    dispatchGearProviderDataChanged('owned-gear-import');
+  }
+  return applied;
+}
 function applySharedSetup(shared) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   try {
@@ -3623,6 +3783,11 @@ function applySharedSetup(shared) {
     if (decoded.gearSelectors && gearDisplayed) {
       applyGearListSelectors(decoded.gearSelectors);
     }
+    if (gearDisplayed && Array.isArray(decoded.ownedGearMarkers) && decoded.ownedGearMarkers.length) {
+      applyImportedOwnedGearMarkers(decoded.ownedGearMarkers, {
+        root: gearListOutput
+      });
+    }
     if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList || Object.prototype.hasOwnProperty.call(decoded, 'gearListAndProjectRequirementsGenerated')) {
       var currentGearList = getCurrentGearListHtml();
       var payload = {
@@ -3654,6 +3819,25 @@ function applySharedSetup(shared) {
         saveProject(storageKey, payload, {
           skipOverwriteBackup: true
         });
+      } else if (payload && (payload.projectInfo || hasSelectors || payload.gearListAndProjectRequirementsGenerated || hasAutoRules || payload.diagramPositions)) {
+        if (!hasAutoRules) {
+          delete payload.autoGearRules;
+        }
+        var fallbackNames = [decoded.setupName, decoded.projectInfo && decoded.projectInfo.projectName, payload.projectInfo && payload.projectInfo.projectName];
+        var generatedKey = persistImportedProjectWithFallback(payload, fallbackNames);
+        if (generatedKey) {
+          if (setupNameInput && setupNameInput.value !== generatedKey) {
+            setupNameInput.value = generatedKey;
+            setupNameInput.dispatchEvent(new Event('input'));
+          }
+          if (typeof populateSetupSelect === 'function') {
+            try {
+              populateSetupSelect();
+            } catch (refreshError) {
+              console.warn('Unable to refresh project selector after saving imported project without a provided name', refreshError);
+            }
+          }
+        }
       }
     }
   } catch (e) {
@@ -3731,8 +3915,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var _index6 = 0; _index6 < pairs.length; _index6 += 1) {
-    var pair = pairs[_index6];
+  for (var _index7 = 0; _index7 < pairs.length; _index7 += 1) {
+    var pair = pairs[_index7];
     if (!pair) {
       continue;
     }
@@ -4053,6 +4237,182 @@ var isPinkModeActive = function isPinkModeActive() {
 var appearanceModuleFactory = ensureSessionRuntimePlaceholder('cineSettingsAppearance', function () {
   return null;
 });
+var CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
+var CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
+function normalizeCameraColorValue(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^#[0-9a-f]{6}$/i.test(trimmed)) {
+    return trimmed.toLowerCase();
+  }
+  if (/^[0-9a-f]{6}$/i.test(trimmed)) {
+    return "#".concat(trimmed.toLowerCase());
+  }
+  return '';
+}
+function generateDefaultCameraColor(letter) {
+  if (letter !== 'E') {
+    return '';
+  }
+  var generateChannel = function generateChannel() {
+    var value = 0;
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      var array = new Uint8Array(1);
+      crypto.getRandomValues(array);
+      value = array[0] / 255;
+    } else {
+      value = Math.random();
+    }
+    var channel = Math.floor(value * 200) + 28;
+    return Math.max(24, Math.min(232, channel));
+  };
+  var components = [generateChannel(), generateChannel(), generateChannel()];
+  return "#".concat(components.map(function (component) {
+    return component.toString(16).padStart(2, '0');
+  }).join(''));
+}
+function getDefaultCameraLetterColors() {
+  var defaults = {
+    A: '#d32f2f',
+    B: '#1e88e5',
+    C: '#fdd835',
+    D: '#43a047',
+    E: '#7b1fa2'
+  };
+  var generated = generateDefaultCameraColor('E');
+  if (generated) {
+    defaults.E = generated;
+  }
+  return defaults;
+}
+var cachedCameraLetterColors = null;
+function loadCameraLetterColors() {
+  if (cachedCameraLetterColors) {
+    return cachedCameraLetterColors;
+  }
+  var defaults = getDefaultCameraLetterColors();
+  var stored = null;
+  try {
+    var raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY_SESSION);
+    if (raw) {
+      stored = JSON.parse(raw);
+    }
+  } catch (error) {
+    console.warn('Failed to read stored camera colors', error);
+    stored = null;
+  }
+  var resolved = _objectSpread({}, defaults);
+  if (stored && _typeof(stored) === 'object') {
+    CAMERA_LETTERS.forEach(function (letter) {
+      var incoming = stored[letter] || stored[letter.toLowerCase()];
+      var normalized = normalizeCameraColorValue(incoming);
+      if (normalized) {
+        resolved[letter] = normalized;
+      }
+    });
+  } else {
+    try {
+      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(resolved));
+    } catch (persistError) {
+      console.warn('Unable to persist default camera colors', persistError);
+    }
+  }
+  cachedCameraLetterColors = resolved;
+  return resolved;
+}
+function getCameraLetterColorsSafeSession() {
+  var colors = loadCameraLetterColors();
+  return _objectSpread({}, colors);
+}
+function setCameraLetterColors() {
+  var newColors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var current = _objectSpread({}, loadCameraLetterColors());
+  var changed = false;
+  CAMERA_LETTERS.forEach(function (letter) {
+    var incoming = newColors[letter] || newColors[letter.toLowerCase()];
+    var normalized = normalizeCameraColorValue(incoming);
+    if (normalized && current[letter] !== normalized) {
+      current[letter] = normalized;
+      changed = true;
+    }
+  });
+  if (!changed) {
+    return current;
+  }
+  cachedCameraLetterColors = current;
+  try {
+    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(current));
+  } catch (storeError) {
+    console.warn('Failed to persist camera color preferences', storeError);
+  }
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('camera-colors-changed'));
+    } catch (dispatchError) {
+      console.warn('Failed to broadcast camera color change', dispatchError);
+    }
+  }
+  return current;
+}
+function getCameraColorInputElements() {
+  if (typeof document === 'undefined') {
+    return [];
+  }
+  return CAMERA_LETTERS.map(function (letter) {
+    var id = "cameraColor".concat(letter);
+    var element = null;
+    try {
+      element = typeof window !== 'undefined' && window[id] ? window[id] : document.getElementById(id);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+    return element ? {
+      letter: letter,
+      element: element
+    } : null;
+  }).filter(Boolean);
+}
+function updateCameraColorInputsFromState() {
+  var colors = getCameraLetterColorsSafeSession();
+  getCameraColorInputElements().forEach(function (entry) {
+    if (!entry || !entry.element) {
+      return;
+    }
+    var value = colors[entry.letter] || '';
+    if (value) {
+      entry.element.value = value;
+    }
+  });
+}
+function collectCameraColorInputValues() {
+  var result = {};
+  getCameraColorInputElements().forEach(function (entry) {
+    if (!entry || !entry.element) return;
+    var normalized = normalizeCameraColorValue(entry.element.value || '');
+    if (normalized) {
+      result[entry.letter] = normalized;
+    }
+  });
+  return result;
+}
+try {
+  if (typeof window !== 'undefined') {
+    window.getCameraLetterColors = function () {
+      return getCameraLetterColorsSafeSession();
+    };
+    window.setCameraLetterColors = function (palette) {
+      return setCameraLetterColors(palette);
+    };
+  }
+} catch (cameraColorExposeError) {
+  console.warn('Unable to expose camera color helpers', cameraColorExposeError);
+}
 var appearanceContext = {
   document: typeof document !== 'undefined' ? document : null,
   window: typeof window !== 'undefined' ? window : null,
@@ -4151,6 +4511,14 @@ var appearanceContext = {
     }(function () {
       return typeof isHighContrastActive === 'function' ? isHighContrastActive() : false;
     })
+  },
+  cameraColors: {
+    getColors: function getColors() {
+      return getCameraLetterColorsSafeSession();
+    },
+    setColors: function setColors(palette) {
+      return setCameraLetterColors(palette);
+    }
   },
   icons: {
     registry: (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? ICON_GLYPHS : null,
@@ -4359,8 +4727,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var _index7 = 0; _index7 < candidateScopes.length; _index7 += 1) {
-    var scope = candidateScopes[_index7];
+  for (var _index8 = 0; _index8 < candidateScopes.length; _index8 += 1) {
+    var scope = candidateScopes[_index8];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -4444,6 +4812,7 @@ if (settingsButton && settingsDialog) {
         updateAccentColorResetButtonState();
       }
     }
+    updateCameraColorInputsFromState();
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
@@ -4605,6 +4974,15 @@ if (settingsButton && settingsDialog) {
           updateAccentColorResetButtonState();
         }
       }
+      var cameraPalette = collectCameraColorInputValues();
+      var normalizedPalette = setCameraLetterColors(cameraPalette);
+      var colorEntries = getCameraColorInputElements();
+      colorEntries.forEach(function (entry) {
+        var normalized = normalizedPalette[entry.letter];
+        if (normalized) {
+          entry.element.value = normalized;
+        }
+      });
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
@@ -4976,11 +5354,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var _index8 = list.findIndex(function (item) {
+        var _index9 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (_index8 >= 0) {
-          list.splice(_index8, 1);
+        if (_index9 >= 0) {
+          list.splice(_index9, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -5749,12 +6127,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index9 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index9) || _index9 < 0) {
+    var _index0 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index0) || _index0 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index9 + 1));
+    return template.replace('%s', formatNumberForComparison(_index0 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -5938,26 +6316,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index0 = 0; _index0 < maxLength; _index0 += 1) {
-        var hasBase = _index0 < baseValue.length;
-        var hasCompare = _index0 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index0, "]"));
+      for (var _index1 = 0; _index1 < maxLength; _index1 += 1) {
+        var hasBase = _index1 < baseValue.length;
+        var hasCompare = _index1 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index1, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index0]
+            after: compareValue[_index1]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index0],
+            before: baseValue[_index1],
             after: undefined
           });
         } else {
-          walk(baseValue[_index0], compareValue[_index0], nextPath);
+          walk(baseValue[_index1], compareValue[_index1], nextPath);
         }
       }
       return;
@@ -6585,6 +6963,15 @@ var backupFallbackLoaders = [{
     return typeof loadFavorites === 'function' ? loadFavorites() : undefined;
   }
 }, {
+  key: 'documentationTracker',
+  loaderName: 'loadDocumentationTracker',
+  isValid: function isValid(value) {
+    return value === null || isPlainObject(value) && Array.isArray(value.releases) || Array.isArray(value);
+  },
+  loader: function loader() {
+    return typeof loadDocumentationTracker === 'function' ? loadDocumentationTracker() : undefined;
+  }
+}, {
   key: 'autoGearBackups',
   loaderName: 'loadAutoGearBackups',
   isValid: function isValid(value) {
@@ -7083,8 +7470,8 @@ function resolveLoggingApi() {
   if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
   if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
   if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
-  for (var _index1 = 0; _index1 < scopes.length; _index1 += 1) {
-    var _scope = scopes[_index1];
+  for (var _index10 = 0; _index10 < scopes.length; _index10 += 1) {
+    var _scope = scopes[_index10];
     if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
       continue;
     }
@@ -7545,19 +7932,27 @@ function renderStoragePersistenceStatus() {
     langTexts = _getStoragePersistenc2.langTexts,
     fallbackTexts = _getStoragePersistenc2.fallbackTexts;
   var message = '';
+  var state = 'idle';
   if (storagePersistenceState.requestInFlight) {
+    state = 'requesting';
     message = langTexts.storagePersistenceStatusRequesting || fallbackTexts.storagePersistenceStatusRequesting || '';
   } else if (storagePersistenceState.checking) {
+    state = 'checking';
     message = langTexts.storagePersistenceStatusChecking || fallbackTexts.storagePersistenceStatusChecking || '';
   } else if (storagePersistenceState.supported === false) {
+    state = 'unsupported';
     message = langTexts.storagePersistenceStatusUnsupported || fallbackTexts.storagePersistenceStatusUnsupported || '';
   } else if (storagePersistenceState.persisted) {
+    state = 'granted';
     message = langTexts.storagePersistenceStatusGranted || fallbackTexts.storagePersistenceStatusGranted || '';
   } else if (storagePersistenceState.lastError) {
+    state = 'error';
     message = langTexts.storagePersistenceStatusError || fallbackTexts.storagePersistenceStatusError || '';
   } else if (storagePersistenceState.requestAttempted && storagePersistenceState.lastRequestDenied) {
+    state = 'denied';
     message = langTexts.storagePersistenceStatusDenied || fallbackTexts.storagePersistenceStatusDenied || '';
   } else {
+    state = 'idle';
     message = langTexts.storagePersistenceStatusIdle || fallbackTexts.storagePersistenceStatusIdle || '';
   }
   var parts = [message];
@@ -7587,6 +7982,8 @@ function renderStoragePersistenceStatus() {
   var combined = parts.filter(Boolean).join(' ').trim();
   var output = combined || message || '';
   storagePersistenceStatusEl.textContent = output;
+  storagePersistenceStatusEl.dataset.state = state;
+  storagePersistenceStatusEl.setAttribute('data-state', state);
   if (output) {
     storagePersistenceStatusEl.setAttribute('data-help', output);
   } else {
@@ -7602,6 +7999,29 @@ function renderStoragePersistenceStatus() {
       storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
       storagePersistenceRequestButton.setAttribute('title', requestHelp);
       storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+    }
+  }
+  if (typeof storagePersistenceStatusEl.dispatchEvent === 'function') {
+    try {
+      var event;
+      var detail = {
+        state: state,
+        message: output,
+        rawMessage: message
+      };
+      if (typeof CustomEvent === 'function') {
+        event = new CustomEvent('storagepersistencechange', {
+          detail: detail
+        });
+      } else if (storagePersistenceStatusEl.ownerDocument && typeof storagePersistenceStatusEl.ownerDocument.createEvent === 'function') {
+        event = storagePersistenceStatusEl.ownerDocument.createEvent('CustomEvent');
+        event.initCustomEvent('storagepersistencechange', false, false, detail);
+      }
+      if (event) {
+        storagePersistenceStatusEl.dispatchEvent(event);
+      }
+    } catch (eventError) {
+      console.warn('Unable to broadcast storage persistence status change', eventError);
     }
   }
 }
@@ -8742,8 +9162,8 @@ function clearUiCacheEntriesFallback() {
 var CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
 function resolveCineCacheNameForReload() {
   var scopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var _index10 = 0; _index10 < scopes.length; _index10 += 1) {
-    var _scope2 = scopes[_index10];
+  for (var _index11 = 0; _index11 < scopes.length; _index11 += 1) {
+    var _scope2 = scopes[_index11];
     if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
       continue;
     }
@@ -8766,8 +9186,8 @@ function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
     return true;
   }
   var lowerKey = key.toLowerCase();
-  for (var _index11 = 0; _index11 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index11 += 1) {
-    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index11])) {
+  for (var _index12 = 0; _index12 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index12 += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index12])) {
       return true;
     }
   }
@@ -8899,10 +9319,10 @@ function buildForceReloadHref(locationLike, paramName) {
   }
   if (typeof URL === 'function') {
     var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
-    for (var _index12 = 0; _index12 < urlCandidates.length; _index12 += 1) {
-      var candidate = urlCandidates[_index12];
+    for (var _index13 = 0; _index13 < urlCandidates.length; _index13 += 1) {
+      var candidate = urlCandidates[_index13];
       try {
-        var url = _index12 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index13 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -8932,8 +9352,8 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var _index13 = 0; _index13 < baseCandidates.length; _index13 += 1) {
-      var _candidate = baseCandidates[_index13];
+    for (var _index14 = 0; _index14 < baseCandidates.length; _index14 += 1) {
+      var _candidate = baseCandidates[_index14];
       try {
         var absolute = new URL(href + hash, _candidate).toString();
         return {
@@ -12066,8 +12486,8 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index14 = 0; _index14 < scopes.length; _index14 += 1) {
-    var _scope3 = scopes[_index14];
+  for (var _index15 = 0; _index15 < scopes.length; _index15 += 1) {
+    var _scope3 = scopes[_index15];
     if (!_scope3 || _typeof(_scope3) !== 'object') {
       continue;
     }
@@ -12519,9 +12939,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index15 = 0; _index15 < lensNames.length; _index15 += 1) {
+  for (var _index16 = 0; _index16 < lensNames.length; _index16 += 1) {
     var _ref24, _lens$minFocusMeters;
-    var name = lensNames[_index15];
+    var name = lensNames[_index16];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -12951,8 +13371,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index16 = 0; _index16 < devices.filterOptions.length; _index16 += 1) {
-      var value = devices.filterOptions[_index16];
+    for (var _index17 = 0; _index17 < devices.filterOptions.length; _index17 += 1) {
+      var value = devices.filterOptions[_index17];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -13047,8 +13467,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index17 = 0; _index17 < opts.length; _index17 += 1) {
-    var value = opts[_index17];
+  for (var _index18 = 0; _index18 < opts.length; _index18 += 1) {
+    var value = opts[_index18];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -13065,7 +13485,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index18];
+    var value = opts[_index19];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -13086,7 +13506,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index18 = 0; _index18 < opts.length; _index18 += 1) {
+  for (var _index19 = 0; _index19 < opts.length; _index19 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -13885,8 +14305,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index19 = 0; _index19 < items.length; _index19 += 1) {
-      var _items$_index = items[_index19],
+    for (var _index20 = 0; _index20 < items.length; _index20 += 1) {
+      var _items$_index = items[_index20],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {

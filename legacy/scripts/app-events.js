@@ -320,19 +320,7 @@ function hasAnyDeviceSelectionSafe(state) {
       if (lower === 'none') {
         return false;
       }
-      if (
-        lower === '--'
-        || lower === '—'
-        || lower === 'n/a'
-        || lower === 'tbd'
-        || lower === 'pending'
-        || lower.startsWith('-- ')
-        || lower.startsWith('— ')
-        || lower.startsWith('select ')
-        || lower.startsWith('choose ')
-        || lower.startsWith('pick ')
-        || lower.startsWith('add ')
-      ) {
+      if (lower === '--' || lower === '—' || lower === 'n/a' || lower === 'tbd' || lower === 'pending' || lower.startsWith('-- ') || lower.startsWith('— ') || lower.startsWith('select ') || lower.startsWith('choose ') || lower.startsWith('pick ') || lower.startsWith('add ')) {
         return false;
       }
     }
@@ -1934,6 +1922,23 @@ function toggleDeviceDetails(button) {
     button.textContent = texts[currentLang].hideDetails;
     button.setAttribute('aria-expanded', 'true');
     button.setAttribute('data-help', texts[currentLang].hideDetails);
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+      var rawName = typeof button.dataset.name === 'string' ? button.dataset.name : '';
+      var rawCategory = typeof button.dataset.category === 'string' ? button.dataset.category : '';
+      var rawSubcategory = typeof button.dataset.subcategory === 'string' ? button.dataset.subcategory : '';
+      var detail = {
+        name: rawName.trim(),
+        category: rawCategory.trim(),
+        subcategory: rawSubcategory.trim() || null
+      };
+      try {
+        document.dispatchEvent(new CustomEvent('device-library:show-details', {
+          detail: detail
+        }));
+      } catch (error) {
+        console.warn('Failed to dispatch device-library:show-details event', error);
+      }
+    }
   }
 }
 function inferDeviceCategory(key, data) {
@@ -2740,6 +2745,28 @@ addSafeEventListener(addDeviceBtn, "click", function () {
   updateFizConnectorOptions();
   applyFilters();
   updateCalculations();
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+    var normalizedSubcategory = category === "accessories.cables" && subcategory ? subcategory.trim() || null : null;
+    var detail = {
+      name: name,
+      category: category,
+      subcategory: normalizedSubcategory
+    };
+    if (isEditing) {
+      detail.original = {
+        name: originalName || '',
+        category: storedOriginalCategory || '',
+        subcategory: storedOriginalCategory === "accessories.cables" ? storedOriginalSubcategory ? storedOriginalSubcategory : null : null
+      };
+    }
+    try {
+      document.dispatchEvent(new CustomEvent(isEditing ? 'device-library:update' : 'device-library:add', {
+        detail: detail
+      }));
+    } catch (error) {
+      console.warn('Failed to dispatch device library mutation event', error);
+    }
+  }
   var categoryKey = category.replace(".", "_");
   var categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;
   if (isEditing) {

@@ -234,6 +234,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         addToken(value);
       });
     };
+    var ensureSynonymGroup = function ensureSynonymGroup(triggers, expansions, groupRequirements) {
+      var triggerList = Array.isArray(triggers) ? triggers : [triggers];
+      var requirementGroups = Array.isArray(groupRequirements) ? groupRequirements : [];
+      if (triggerList.length && hasAny(triggerList) || requirementGroups.length > 0 && hasAllGroups(requirementGroups)) {
+        var expansionList = Array.isArray(expansions) ? expansions : [expansions];
+        var combined = new Set([].concat(_toConsumableArray(triggerList), _toConsumableArray(expansionList)));
+        addAll(Array.from(combined));
+      }
+    };
     if (hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) || hasAllGroups([['frame', 'frames'], ['per', 'persecond', 'persec'], ['second', 'seconds', 'sec']]) || hasAllGroups([['frame', 'frames'], ['rate']])) {
       addAll(['fps', 'framerate', 'framepersecond', 'framespersecond', 'frame', 'frames', 'second', 'seconds']);
     }
@@ -277,6 +286,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else if (hasAllGroups([['exposure'], ['value']])) {
       addAll(['ev', 'exposurevalue']);
     }
+    ensureSynonymGroup(['usbc', 'usbtypec', 'usbctype', 'typec'], ['usbc', 'usbtypec', 'usbctype', 'typec', 'usbpowerdelivery', 'powerdelivery', 'pd'], [['usb'], ['c', 'typec']]);
+    ensureSynonymGroup(['usba', 'usbtypea', 'typea'], ['usba', 'usbtypea', 'typea'], [['usb'], ['a', 'typea']]);
+    ensureSynonymGroup(['microusb', 'usbmicro', 'usbmicrob'], ['microusb', 'usbmicro', 'usbmicrob'], [['usb'], ['micro']]);
+    ensureSynonymGroup(['miniusb', 'usbmini', 'usbminib'], ['miniusb', 'usbmini', 'usbminib'], [['usb'], ['mini']]);
+    ensureSynonymGroup(['microhdmi', 'hdmimicro'], ['microhdmi', 'hdmimicro'], [['micro'], ['hdmi']]);
+    ensureSynonymGroup(['minihdmi', 'hdmimini'], ['minihdmi', 'hdmimini', 'hdmitypec'], [['mini'], ['hdmi']]);
+    ensureSynonymGroup(['fullhdmi', 'hdmitypea'], ['fullhdmi', 'hdmitypea'], [['full'], ['hdmi']]);
+    ensureSynonymGroup(['sdxc'], ['sdxc', 'secureddxc', 'secureddigitalxc'], [['sd'], ['xc']]);
+    ensureSynonymGroup(['sdhc'], ['sdhc', 'secureddigitalhc'], [['sd'], ['hc']]);
+    ensureSynonymGroup(['cfexpress', 'cfexpresstypea', 'cfexpresstypeb'], ['cfexpress', 'cfexpresstypea', 'cfexpresstypeb'], [['cf'], ['express']]);
+    ensureSynonymGroup(['cfast'], ['cfast'], [['cf'], ['ast', 'fast']]);
+    ensureSynonymGroup(['xqd'], ['xqd'], [['qd']]);
+    ensureSynonymGroup(['dtap', 'ptap', 'powertap'], ['dtap', 'ptap', 'powertap'], [['d', 'p'], ['tap']]);
+    ensureSynonymGroup(['vmount', 'vlock'], ['vmount', 'vlock', 'vmountbattery', 'vmountplate'], [['v'], ['mount', 'lock']]);
+    ensureSynonymGroup(['bmount'], ['bmount', 'bmountrib'], [['b'], ['mount']]);
+    ensureSynonymGroup(['goldmount', 'antonbauer'], ['goldmount', 'antonbauer'], [['gold'], ['mount']]);
   }
   var FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
   function createEngine(options) {
@@ -352,6 +377,73 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return 1;
     };
+    var CACHE_SUPPORTS_MAP = typeof Map === 'function';
+    var CACHE_LIMIT_KEY = 400;
+    var CACHE_LIMIT_TOKENS = 250;
+    var CACHE_KEY_MAX_LENGTH = 200;
+    var CACHE_TOKENS_MAX_LENGTH = 200;
+    var FREEZE_SUPPORT = typeof Object.freeze === 'function';
+    var createCache = function createCache(limit) {
+      if (CACHE_SUPPORTS_MAP) {
+        var map = new Map();
+        return {
+          get: function get(key) {
+            return map.has(key) ? map.get(key) : undefined;
+          },
+          set: function set(key, value) {
+            if (map.has(key)) {
+              map.set(key, value);
+              return;
+            }
+            if (map.size >= limit) {
+              var iterator = map.keys();
+              var first = iterator && typeof iterator.next === 'function' ? iterator.next() : null;
+              if (first && !first.done) {
+                map.delete(first.value);
+              }
+            }
+            map.set(key, value);
+          }
+        };
+      }
+      var entries = [];
+      return {
+        get: function get(key) {
+          for (var index = 0; index < entries.length; index += 1) {
+            var entry = entries[index];
+            if (entry && entry[0] === key) {
+              return entry[1];
+            }
+          }
+          return undefined;
+        },
+        set: function set(key, value) {
+          for (var index = 0; index < entries.length; index += 1) {
+            if (entries[index] && entries[index][0] === key) {
+              entries.splice(index, 1);
+              break;
+            }
+          }
+          entries.push([key, value]);
+          if (entries.length > limit) {
+            entries.shift();
+          }
+        }
+      };
+    };
+    var freezeArray = function freezeArray(array) {
+      if (!Array.isArray(array) || !FREEZE_SUPPORT) {
+        return array;
+      }
+      try {
+        return Object.freeze(array);
+      } catch (error) {
+        void error;
+        return array;
+      }
+    };
+    var keyCache = createCache(CACHE_LIMIT_KEY);
+    var tokensCache = createCache(CACHE_LIMIT_TOKENS);
     var computeTokenMatchDetails = function computeTokenMatchDetails() {
       var entryTokens = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       var queryTokens = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
@@ -428,6 +520,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return '';
       }
       var str = String(value);
+      var cacheable = str.length <= CACHE_KEY_MAX_LENGTH;
+      if (cacheable) {
+        var cached = keyCache.get(str);
+        if (typeof cached !== 'undefined') {
+          return cached;
+        }
+      }
       var normalized = str.toLowerCase();
       if (typeof normalized.normalize === 'function') {
         normalized = normalized.normalize('NFD');
@@ -440,15 +539,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       normalized = normaliseMarkVariants(normalized);
       var simplified = normalized.replace(/[^a-z0-9]+/g, '');
       if (simplified) {
+        if (cacheable) {
+          keyCache.set(str, simplified);
+        }
         return simplified;
       }
-      return str.toLowerCase().replace(/\s+/g, '');
+      var fallback = str.toLowerCase().replace(/\s+/g, '');
+      if (cacheable) {
+        keyCache.set(str, fallback);
+      }
+      return fallback;
     };
     var searchTokens = function searchTokens(value) {
       if (!value) {
         return [];
       }
-      var normalized = String(value).toLowerCase();
+      var str = String(value);
+      var cacheable = str.length <= CACHE_TOKENS_MAX_LENGTH;
+      if (cacheable) {
+        var cached = tokensCache.get(str);
+        if (typeof cached !== 'undefined') {
+          return cached;
+        }
+      }
+      var normalized = str.toLowerCase();
       if (typeof normalized.normalize === 'function') {
         normalized = normalized.normalize('NFD');
       }
@@ -569,7 +683,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       applySearchTokenSynonyms(tokens, addToken);
-      return Array.from(tokens);
+      var result = freezeArray(Array.from(tokens));
+      if (cacheable) {
+        tokensCache.set(str, result);
+      }
+      return result;
     };
     var findBestSearchMatch = function findBestSearchMatch(map, key) {
       var tokens = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];

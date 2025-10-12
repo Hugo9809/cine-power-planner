@@ -708,6 +708,24 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     };
   }
 });
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getCurrentSetupState',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackGetCurrentSetupState() {
+      return {};
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'currentProjectInfo',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+  },
+  fallback: null
+});
 (function initialiseCriticalGlobals() {
   var scope = resolveCriticalGlobalScope();
   if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -1334,11 +1352,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       cb(false);
       return;
     }
-    if (
-      typeof Object.entries !== 'function' ||
-      typeof Object.fromEntries !== 'function' ||
-      typeof Object.values !== 'function'
-    ) {
+    if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function' || typeof Object.values !== 'function') {
       rememberModernSupportResult(false);
       cb(false);
       return;
@@ -1844,5 +1858,31 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
   }
   ensureCoreRuntimePlaceholders();
-  startLoading();
+  function startLoaderWhenBodyReady() {
+    if (typeof document === 'undefined') {
+      startLoading();
+      return;
+    }
+    if (document.body) {
+      startLoading();
+      return;
+    }
+    function handleReady() {
+      try {
+        document.removeEventListener('DOMContentLoaded', handleReady);
+      } catch (removeError) {
+        void removeError;
+      }
+      startLoading();
+    }
+    try {
+      document.addEventListener('DOMContentLoaded', handleReady, {
+        once: true
+      });
+    } catch (listenerError) {
+      void listenerError;
+      document.addEventListener('DOMContentLoaded', handleReady);
+    }
+  }
+  startLoaderWhenBodyReady();
 })();

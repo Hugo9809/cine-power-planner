@@ -116,7 +116,9 @@ var texts = {
       saveContact: "Save to contacts",
       openManager: "Open contacts",
       linkedBadge: "Linked to contact",
-      contactMissingDetails: "Enter a name, email or phone number before saving this contact.",
+      contactMissingDetails: "Enter a name, email, phone number or website before saving this contact.",
+      websiteLabel: "Website",
+      websitePlaceholder: "https://example.com",
       avatarOptionsTitle: "Photo options",
       avatarOptionsDescription: "Preview this photo and choose how to update it.",
       avatarOptionsClose: "Close",
@@ -139,12 +141,12 @@ var texts = {
       userProfileNameLabel: "Display name",
       userProfileNamePlaceholder: "Your name",
       userProfileRoleLabel: "Role or title",
-      userProfileRolePlaceholder: "e.g. 1st AC",
+      userProfileRolePlaceholder: "Select role",
       userProfilePhoneLabel: "Phone number",
       userProfilePhonePlaceholder: "Your phone number",
       userProfileEmailLabel: "Email address",
       userProfileEmailPlaceholder: "name@example.com",
-      userProfileHint: "Used to show your first name and last initial for the “User” option in the provided by dropdown.",
+      userProfileHint: "Used to show your first name and last initial for the “User” option in the provided by dropdown. Phone and email appear on exports and backups so crews can reach you offline.",
       userProfileAvatarButton: "Change photo",
       userProfileAvatarRemove: "Remove photo",
       userProfileSaved: "Profile saved.",
@@ -166,7 +168,7 @@ var texts = {
     },
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
-    featureSearchHelp: "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
+    featureSearchHelp: "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Exact matches and items you've used recently jump to the top automatically, so your go-to controls stay first. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Connector and media abbreviations like \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" or \"D-Tap\" automatically match their full names, so type whichever version you remember. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (for example, \"help: battery\") to filter suggestions to that type. Start with \"recent\" or \"history\" (for example, \"recent iso\") to search only items you've used lately before scanning the full catalog. Wrap any phrase in double quotes to force an exact match, so typing \"battery health\" with quotes jumps ahead of broader matches. Common filler words are ignored automatically, so conversational questions like \"how do I back up\" still surface the important keywords.",
     featureSearchClear: "Clear search",
     featureSearchClearHelp: "Clear the search box and show all results again. Press Escape to clear quickly.",
     featureSearchTypeFeature: "Feature",
@@ -184,8 +186,48 @@ var texts = {
     settingsTabGeneralHelp: "Adjust language, theme, typography and branding preferences.",
     generalSectionLanguageHeading: "Language & units",
     generalSectionAppearanceHeading: "Appearance",
+    generalSectionCameraColorsHeading: "Camera designations",
     generalSectionTypographyHeading: "Typography",
     generalSectionBrandingHeading: "Branding",
+    documentationTrackerHeading: "Documentation update tracker",
+    documentationTrackerDescription: "Log translation, help center and print guide updates before packaging an offline release.",
+    documentationTrackerAddRelease: "New release log",
+    documentationTrackerEmpty: "No releases tracked yet. Add the upcoming release to start logging updates.",
+    documentationTrackerSummaryIntro: "Use the tracker to record documentation refresh progress.",
+    documentationTrackerLocalesHeading: "Localized README coverage",
+    documentationTrackerLocaleEnglish: "English README",
+    documentationTrackerLocaleGerman: "German README",
+    documentationTrackerLocaleSpanish: "Spanish README",
+    documentationTrackerLocaleFrench: "French README",
+    documentationTrackerLocaleItalian: "Italian README",
+    documentationTrackerHelpHeading: "Help center topics",
+    documentationTrackerHelpStart: "Start Here & navigation",
+    documentationTrackerHelpSave: "Saving, sharing & exports",
+    documentationTrackerHelpBackup: "Backup & restore drills",
+    documentationTrackerHelpOwnGear: "Own gear & imports",
+    documentationTrackerHelpOffline: "Offline readiness & service worker",
+    documentationTrackerPrintHeading: "Printable guides",
+    documentationTrackerPrintChecklist: "Documentation update checklist",
+    documentationTrackerPrintMaintenance: "Documentation maintenance guide",
+    documentationTrackerPrintSaveShare: "Save, share, import, backup & restore reference",
+    documentationTrackerPrintOffline: "Offline readiness drill",
+    documentationTrackerReleaseNameLabel: "Release name",
+    documentationTrackerReleaseDateLabel: "Target release date",
+    documentationTrackerNotesLabel: "Verification notes",
+    documentationTrackerNotesPlaceholder: "Record what changed, who reviewed it and where the artifacts were stored.",
+    documentationTrackerMarkAllComplete: "Mark all complete",
+    documentationTrackerArchiveRelease: "Archive release",
+    documentationTrackerRestoreRelease: "Reopen release",
+    documentationTrackerArchivedBadge: "Archived",
+    documentationTrackerArchiveConfirm: 'Archive "{name}"? Completed checkmarks stay logged for audits.',
+    documentationTrackerSummaryPending: '{remaining} of {total} documentation tasks remain for "{name}".',
+    documentationTrackerSummaryComplete: 'All {total} documentation tasks for "{name}" are complete.',
+    documentationTrackerFallbackReleaseName: "Documentation release",
+    documentationTrackerProgress: "{completed}/{total} complete",
+    documentationTrackerSectionProgress: "{completed}/{total}",
+    documentationTrackerUpdatedAt: "Updated {time}",
+    documentationTrackerTargetSummary: "Target {date}",
+    documentationTrackerDefaultReleaseName: "Release {date}",
     languageSetting: "Language",
     settingsLanguageHelp: "Choose the interface language. Changes apply immediately and are remembered for next time.",
     darkModeSetting: "Dark mode",
@@ -194,6 +236,13 @@ var texts = {
     settingsPinkModeHelp: "Enable the playful pink accent theme from Settings.",
     accentColorSetting: "Accent color",
     accentColorHelp: "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
+    cameraColorSettingDescription: "Assign a highlight color to each camera letter so linked gear stays coordinated across your lists.",
+    cameraColorInputHelp: "Choose the highlight color for camera %s.",
+    cameraColorALabel: "Camera A color",
+    cameraColorBLabel: "Camera B color",
+    cameraColorCLabel: "Camera C color",
+    cameraColorDLabel: "Camera D color",
+    cameraColorELabel: "Camera E color",
     accentColorReset: "Reset to default",
     accentColorResetHelp: "Revert the accent color to the original theme color while keeping other preferences intact.",
     temperatureUnitSetting: "Temperature unit",
@@ -707,7 +756,7 @@ var texts = {
     loggingSectionHelp: "Review runtime diagnostics without leaving Settings.",
     loggingHeading: "Diagnostics log",
     loggingHeadingHelp: "Review runtime diagnostics without leaving Settings.",
-    loggingIntro: "The log updates live while Settings stay open. Enable console capture below when you need deeper debugging. Nothing leaves this device.",
+    loggingIntro: "The log updates live while Settings stay open. Console capture runs by default so transcripts stay local; adjust the toggles below if you need to change diagnostics behavior. Nothing leaves this device.",
     loggingLevelFilterLabel: "Show entries from",
     loggingLevelFilterHelp: "Choose the minimum level to display.",
     loggingLevelFilterAll: "All levels",
@@ -724,7 +773,7 @@ var texts = {
     loggingConsoleOutputLabel: "Mirror to console",
     loggingConsoleOutputHelp: "Keep the browser console in sync with these entries.",
     loggingCaptureConsoleLabel: "Capture console output",
-    loggingCaptureConsoleHelp: "Record console messages for diagnostics. Turning this on may affect performance.",
+    loggingCaptureConsoleHelp: "Record console messages for diagnostics. Leave this enabled unless you need to reduce logging overhead.",
     loggingCaptureErrorsLabel: "Capture global errors",
     loggingCaptureErrorsHelp: "Record uncaught errors and unhandled promise rejections.",
     loggingPersistSessionLabel: "Keep log between reloads",
@@ -891,6 +940,12 @@ var texts = {
     sharedImportAutoGearPresetFallback: "Shared automatic gear rules",
     sharedImportDialogTitle: "Automatic gear rules",
     sharedImportDialogMessage: "Choose how to apply the shared automatic gear rules from this project.",
+    sharedImportMetadataTimestamp: "Exported {timestamp}",
+    sharedImportMetadataVersion: "Planner version {version}",
+    sharedImportMetadataVersionMismatch: "Planner version {importVersion} (current build {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Includes automatic gear rules",
+    sharedImportMetadataIncludesOwnedGear: "Marks owned gear items",
+    sharedImportMetadataUnavailable: "Export details unavailable.",
     sharedImportDialogConfirm: "Apply",
     sharedImportDialogCancel: "Cancel",
     cameraLabel: "Camera:",
@@ -1262,10 +1317,12 @@ var texts = {
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Phone",
       crewEmailPlaceholder: "Email",
+      crewWebsitePlaceholder: "Website",
       crewRoleLabel: "Crew role",
       crewNameLabel: "Crew member name",
       crewPhoneLabel: "Crew member phone",
-      crewEmailLabel: "Crew member email"
+      crewEmailLabel: "Crew member email",
+      crewWebsiteLabel: "Crew member website"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -1367,10 +1424,13 @@ var texts = {
     gearListEditOwnedHelp: "Add or remove this line from your Own Gear list to keep your inventory in sync.",
     gearListOwnedExportLabel: "Owned by %s",
     gearListEditCameraLinkLabel: "Camera link",
-    gearListEditCameraLinkHelp: "Highlight items that should follow the selected camera everywhere.",
+    gearListEditCameraAssignmentLabel: "Camera designation",
+    gearListEditCameraAssignmentHelp: "Pick the letter for this camera body. Linked accessories will share its color.",
+    gearListEditCameraLinkHelp: "Highlight items that should follow a specific camera letter so crews know which kit moves together.",
     gearListEditCameraLinkNoneOption: "No camera link",
-    gearListEditCameraLinkCameraOption: "Link to camera (%s)",
-    gearListEditCameraLinkUnavailableOption: "Link to camera",
+    gearListEditCameraLinkCameraOption: "Camera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Camera %s (unassigned)",
+    gearListEditCameraLinkDefaultLabel: "Camera %s",
     gearListCameraLinkBadgeLabel: "Linked to camera",
     gearListEditDialogTitle: "Edit gear item",
     gearListEditQuantityLabel: "Quantity",
@@ -1392,6 +1452,10 @@ var texts = {
     gearListEditButton: "Edit gear item",
     gearListEditCustomItem: "Edit custom item",
     gearListEditReset: "Reset name",
+    gearListEditDeviceHeading: "Device attributes",
+    gearListEditDeviceEdit: "Edit device attributes",
+    gearListEditDeviceEmpty: "No device attributes recorded yet. Update the device to add details.",
+    gearListEditDeviceCategory: "Device library: %s",
     gearListLensCoverageWarning: "This lens may not cover the full sensor of this camera!",
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp: "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
@@ -1468,12 +1532,12 @@ var texts = {
     helpResultsAssist: "Tip: Press Tab to move into the quick links, or press Enter to open the top visible topic.",
     helpNoResults: "No help topics match your search. Try shorter keywords, synonyms, or clear the field to browse everything.",
     helpNoResultsSuggestionsHeading: "Need a different result?",
-    helpNoResultsSuggestionsIntro: "Try these steps to get back on track while keeping your data safe:",
+    helpNoResultsSuggestionsIntro: "Try these steps to get back on track while keeping your data safe and confirming offline safeguards:",
     helpNoResultsSuggestionClear: "Use %s to browse every article again.",
     helpNoResultsSuggestionSynonyms: "Search for equipment nicknames, battery part numbers, or shorter keywords.",
     helpNoResultsSuggestionQuickStart: "Jump to the %s for a guided refresher on saving, sharing, and backups.",
-    helpNoResultsSuggestionBackup: "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
-    helpOnboardingTutorialCopy: "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+    helpNoResultsSuggestionBackup: "Open %1$s, start a %2$s to confirm your offline exports, and review Settings → Data & Storage for the latest autosave timestamp before you continue.",
+    helpOnboardingTutorialCopy: "to follow every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net drill—before configuring your first project. Use the step navigator and progress meter to review completed sections offline.",
     onboardingTour: {
       startLabel: "Start guided tutorial",
       restartLabel: "Replay guided tutorial",
@@ -1484,6 +1548,7 @@ var texts = {
       doneLabel: "Finish tutorial",
       stepIndicator: "Step {current} of {total}",
       completionIndicator: "First project secured offline",
+      prefaceIndicator: "Preface",
       stepListAriaLabel: "Tutorial steps",
       stepStatusCurrent: "Current step",
       stepStatusComplete: "Completed",
@@ -1493,12 +1558,11 @@ var texts = {
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
-      helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
-      helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
-      helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped:
-        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
-      helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusNotStarted: "Guided tutorial progress saves offline as you advance. Next step: {next}.",
+      helpStatusInProgress: "Offline progress saved: {completed} steps completed out of {total}. Next: {next}.",
+      helpStatusResume: "Paused on {current}. {completed} of {total} steps already saved offline.",
+      helpStatusSkipped: "Tutorial skipped. Restart whenever you're ready—saved progress stays available offline.",
+      helpStatusCompleted: "Tutorial completed. Replay any step anytime for a refresher.",
       helpStatusLastCompleted: "Last completed: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Last update: {timeAgo}.",
       helpStatusTimeJustNow: "just now",
@@ -1515,39 +1579,123 @@ var texts = {
       steps: {
         intro: {
           title: "Welcome to Cine Power Planner",
-          body: "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own."
+          body: "Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped."
         },
         userProfile: {
-          title: "Configure your user profile",
-          body: "Enter your display name, role, phone, email and photo once in this card. Every update syncs to Contacts instantly, stores with your offline saves and keeps exports credited to the correct owner."
+          title: "Configure language and your profile",
+          body: "Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports."
+        },
+        unitsPreferences: {
+          title: "Tune theme and units",
+          body: "Open Settings → General to choose the theme, optional pink highlights, focus scale and temperature units. Request persistent storage so the browser keeps preferences and safeguards saves during cleanups."
         },
         nameProject: {
           title: "Name your first project",
-          body: "Enter a project name to anchor autosave, backups and exports. The Next button unlocks once a name is in place so every subsequent step protects that project offline."
+          body: "Give the project a descriptive name to anchor autosave, history, exports and backups. Every workflow references it so your offline library stays organized and easy to restore."
         },
         saveProject: {
-          title: "Save immediately",
-          body: "Press Save (or use Ctrl+S/⌘S/Enter) to capture your named project as an offline snapshot. If a saved setup is already selected the step completes automatically—otherwise click Save to continue."
+          title: "Capture an immediate save",
+          body: "Select Save (or press Ctrl+S/⌘S/Enter) to capture a complete offline snapshot—devices, power math, requirements, notes and diagnostics. The next workflow unlocks once the save finishes."
         },
         addCamera: {
-          title: "Add your primary camera",
-          body: "Open the Camera dropdown and choose the body you are planning for. Search is available offline inside the list. Next unlocks once a specific model is selected."
+          title: "Select the primary camera",
+          body: "Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and diagrams."
         },
-        addPower: {
-          title: "Choose a power source",
-          body: "Pick a battery or DC source that matches the build. Selecting an option updates runtime math instantly and stores the choice with your project snapshot."
+        addMonitoring: {
+          title: "Add monitors, wireless video and FIZ",
+          body: "Pick onboard monitors, wireless transmitters and FIZ motors or controllers. Each selection feeds runtime math, diagrams and automatic gear rules so the generated kit reflects the full build."
         },
-        generatePlan: {
-          title: "Generate your first plan",
-          body: "Use Generate Gear List and Project Requirements to create the printable checklist. This opens the project dialog so you can verify draw totals, runtime and crew notes together."
+        selectBattery: {
+          title: "Choose batteries",
+          body: "Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups."
         },
-        exportBackup: {
-          title: "Export an offline safety copy",
-          body: "Click Export Project or Quick Safeguards to download a JSON backup. Keeping a copy outside the browser ensures the new build survives resets and device swaps."
+        results: {
+          title: "Review the results summary",
+          body: "Treat Step 8 as three quick passes through Power Summary: 8A confirms the Total Draw card and peak load, 8B drills into each battery pack for runtime projections and reserve margin highlights, and 8C reviews changeover countdown timers plus charger coverage. Finish by logging any warnings, downloading the offline report for redundant backups and checking the autosave banner so shares and exports mirror the same snapshot."
+        },
+        batteryComparison: {
+          title: "Compare battery options",
+          body: "Open Battery Comparison to evaluate alternate packs side by side. The chart keeps calculations offline so you can test scenarios and lock in the safest runtime margin for the day."
+        },
+        runtimeFeedback: {
+          title: "Submit runtime feedback",
+          body: "Use the runtime feedback button to log real-world results. Entries sync with the current project, strengthen future estimates and remain available offline for audits."
+        },
+        connectionDiagram: {
+          title: "Inspect the connection diagram",
+          body: "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores."
+        },
+        editDeviceDataAdd: {
+          title: "Add a device to the library",
+          body: "Open Device Library, choose the correct category, enter the draw and connector details, then press Add. This stores the gear in the offline catalog so autosave, backups and shares all capture the new entry."
+        },
+        editDeviceDataReview: {
+          title: "Review the device details",
+          body: "Locate the device you just saved under Existing Devices and expand its details panel. Confirm the draw, outputs and compatibility information look right before relying on the data for runtime math or exports."
+        },
+        editDeviceDataEdit: {
+          title: "Update and resave the device",
+          body: "Use the Edit button on that entry, adjust specs or notes, and save again. This verifies the autosave timeline, backups and exports are refreshed with the latest numbers without risking any user data."
+        },
+        ownGearAccess: {
+          title: "Open the Own Gear dialog",
+          body: "Use the Own Gear button in the sidebar to open the inventory dialog whenever you need to review equipment you already control. Opening it yourself keeps the workflow familiar when the tutorial is finished."
+        },
+        ownGearAddDevice: {
+          title: "Add your first owned device",
+          body: "Enter the item name, optional quantity and notes, then save. Owned gear is stored offline, included in backups and marked inside exports so teams instantly see what is available without duplicating requests."
+        },
+        generateGearAndRequirements: {
+          title: "Generate requirements and gear list",
+          body: "Use Generate Gear List and Project Requirements to rebuild the checklist after every change. The planner saves the output with the project so PDFs, exports and backups always reflect the latest selections."
+        },
+        autoGearRulesAccess: {
+          title: "Open Automatic Gear Rules",
+          body: "Go to Settings → Automatic Gear Rules to review automation controls. Opening the tab shows the presets, stock rules and safety backups stored with your offline saves."
+        },
+        autoGearRulesEdit: {
+          title: "Edit stock automatic gear rules",
+          body: "Use the rules list to inspect factory additions. Select a stock rule to open it in the editor, adjust items or conditions, then save so the updated automation stays cached with backups and share bundles."
+        },
+        autoGearRulesCreate: {
+          title: "Add a new automatic gear rule",
+          body: "Press Add rule to create a custom automation. Name it, add conditions and required gear, then save. The planner runs new rules offline each time you regenerate the kit and includes them in exports, shares and backups."
+        },
+        projectRequirements: {
+          title: "Refine project requirements boxes",
+          body: "Adjust the Project Requirements output to capture crew notes, deliverables and safety reminders. Every box is saved with the project, prints with overviews and flows into exports. Work through three quick substeps so nothing is missed: 15A records the project brief—production company, rental preferences, schedule and delivery specs; 15B links crew rows to saved contacts while marking prep/shoot/return coverage and emergency notes; 15C captures logistics such as storage media, monitoring preferences and safety callouts, then regenerate the summary to confirm the new details appear."
+        },
+        gearList: {
+          title: "Audit the generated gear list",
+          body: "Check the categorized gear list for duplicates, counts and auto-added accessories. Edits save instantly, are included in share bundles and appear in printouts and PDFs."
+        },
+        exportImport: {
+          title: "Export and import projects",
+          body: "Use Export Project to download a JSON safety copy and Import Project to rehearse restores. Store exports on redundant media so no workstation loses data if a browser profile resets."
+        },
+        overviewAndPrint: {
+          title: "Generate overview, PDF and printouts",
+          body: "Generate the project overview to access PDF, print and share-ready summaries. The dialog uses saved data only, so you can print or export even while fully offline."
+        },
+        help: {
+          title: "Open the Help center",
+          body: "The Help dialog includes searchable documentation, translation notes and onboarding references. Keep it pinned while working—articles stay cached offline and update when new features arrive."
+        },
+        settingsGeneral: {
+          title: "Revisit Settings → General",
+          body: "Adjust language, typography, theme, pink mode, focus scale and other presentation options anytime. Preferences save locally, sync across projects and are bundled with backups."
+        },
+        settingsData: {
+          title: "Monitor Data & Storage",
+          body: "Use the Data & Storage tab to request persistent storage, watch save timestamps and launch quick safeguards. These controls verify that every project snapshot remains available offline."
+        },
+        settingsBackup: {
+          title: "Maintain Backup & Restore",
+          body: "The Backup & Restore tab manages full-app exports, restore rehearsals and diagnostics. Run backups before major changes, archive the files on external media and verify restores regularly."
         },
         completion: {
-          title: "You're ready to plan",
-          body: "Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations."
+          title: "Tutorial complete",
+          body: "You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline."
         }
       }
     },
@@ -1559,10 +1707,10 @@ var texts = {
     helpDataAuditStep2: "Export each active project with %1$s, confirm each download opens without errors, and store the files in two separate locations.",
     helpDataAuditStep3: "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage. Test %3$s with one of the new exports to ensure share bundles restore without reconnecting.",
     helpDataAuditStep4: "Run %1$s with your latest backup, verify every project, device, and rule, then record the runtime guard output from %2$s in your verification log before closing the rehearsal without publishing changes.",
-    helpDataAuditNote: "Log the results and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
+    helpDataAuditNote: "Log the results, capture a screenshot of Settings → Data & Storage with the latest autosave timestamp, and archive the console guard output with your backup rotation checklist so you always know which copies were verified offline.",
     helpRestoreDrillNote: "Log filenames, timestamps and verification results in your backup rotation checklist so every rehearsal documents a restorable copy.",
     helpSearchClear: "Clear search",
-    helpSearchHelp: "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
+    helpSearchHelp: "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type and highlight the matching article when you press Enter. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box, then press Tab to step through filtered quick links without leaving your project.",
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
     helpQuickLinksHeading: "Jump to a topic",
     helpQuickLinksAriaLabel: "Help topics quick navigation",
@@ -1602,7 +1750,7 @@ var texts = {
     generateOverviewHelp: "Rebuilds the print-ready summary for the selected saved project and opens the overview dialog so you can review power and connection details before printing when ready. Lens selections render with brand, mount, diameter, focus, weight, rod support and notes so exports cover spec-sensitive checkouts.",
     generateGearListHelp: "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp: "Download a JSON safety bundle of the current project—covering custom gear, favorites, runtime feedback and devices—ready to archive or share offline. Store the file with your redundant crew backups before closing the planner so every workstation can restore it without network access.",
-    applySharedLinkHelp: "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly.",
+    applySharedLinkHelp: "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview diff before applying—nothing overwrites your current project until you confirm Save, and the planner schedules a fresh auto-backup beforehand so you can roll back instantly. Unnamed imports are saved automatically under an “-imported” title so the data lands even when the bundle omitted a project name.",
     sharedLinkHelp: "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import—the planner only reads a copy and logs the attempt in diagnostics for your records.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
     monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
@@ -1736,7 +1884,9 @@ var texts = {
       saveContact: "Salva nei contatti",
       openManager: "Apri contatti",
       linkedBadge: "Collegato al contatto",
-      contactMissingDetails: "Inserisci nome, e-mail o numero di telefono prima di salvare questo contatto.",
+      contactMissingDetails: "Inserisci nome, e-mail, numero di telefono o sito web prima di salvare questo contatto.",
+      websiteLabel: "Sito web",
+      websitePlaceholder: "https://esempio.com",
       avatarOptionsTitle: "Opzioni foto",
       avatarOptionsDescription: "Visualizza l'anteprima della foto e scegli come aggiornarla.",
       avatarOptionsClose: "Chiudi",
@@ -1759,12 +1909,12 @@ var texts = {
       userProfileNameLabel: "Nome visualizzato",
       userProfileNamePlaceholder: "Il tuo nome",
       userProfileRoleLabel: "Ruolo o mansione",
-      userProfileRolePlaceholder: "es. 1º assistente camera",
+      userProfileRolePlaceholder: "Seleziona ruolo",
       userProfilePhoneLabel: "Numero di telefono",
       userProfilePhonePlaceholder: "Il tuo numero di telefono",
       userProfileEmailLabel: "Indirizzo email",
       userProfileEmailPlaceholder: "nome@example.com",
-      userProfileHint: "Usato per mostrare il nome e l'iniziale del cognome nell'opzione \"Utente\" del menu Fornito da.",
+      userProfileHint: "Usato per mostrare il nome e l'iniziale del cognome nell'opzione \"Utente\" del menu Fornito da. Telefono ed email compaiono in esportazioni e backup così la troupe può contattarti offline.",
       userProfileAvatarButton: "Cambia foto",
       userProfileAvatarRemove: "Rimuovi foto",
       userProfileSaved: "Profilo salvato.",
@@ -1786,7 +1936,7 @@ var texts = {
     },
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
-    featureSearchHelp: "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
+    featureSearchHelp: "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Le corrispondenze esatte e gli elementi usati di recente salgono automaticamente in cima, così i controlli che usi più spesso restano davanti. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Le abbreviazioni di connettori e supporti come \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" vengono collegate automaticamente al nome completo, così puoi digitare la versione che ricordi. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo. Inizia con \"recent\" o \"history\" (ad esempio \"recent iso\") per limitarti agli elementi usati di recente prima di scorrere tutto il catalogo. Le frasi esatte salgono ora in cima, quindi digitando l'intera etichetta di un controllo come \"battery health\" trovi quella funzione prima delle corrispondenze più generiche. La ricerca ignora automaticamente le parole riempitive più comuni, così domande conversazionali come \"come faccio il backup\" continuano a mettere in evidenza le parole davvero importanti.",
     featureSearchClear: "Cancella ricerca",
     featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
     featureSearchTypeFeature: "Funzione",
@@ -1818,8 +1968,7 @@ var texts = {
     shareIncludeAutoGearLabel: "Includi le regole automatiche per l'attrezzatura",
     shareIncludeAutoGearHelp: "Aggiunge le tue regole automatiche per l'attrezzatura al file di progetto esportato.",
     shareIncludeOwnedGearLabel: "Contrassegna l'attrezzatura personale nell'esportazione",
-    shareIncludeOwnedGearHelp:
-      "Aggiungi badge di proprietà per l'attrezzatura che hai contrassegnato come tua durante l'esportazione.",
+    shareIncludeOwnedGearHelp: "Aggiungi badge di proprietà per l'attrezzatura che hai contrassegnato come tua durante l'esportazione.",
     shareDialogTitle: "Esporta progetto",
     shareFilenameLabel: "Nome del file di esportazione",
     shareDialogConfirm: "Scarica",
@@ -1838,6 +1987,12 @@ var texts = {
     sharedImportAutoGearPresetFallback: "Regole automatiche condivise",
     sharedImportDialogTitle: "Regole automatiche per l'attrezzatura",
     sharedImportDialogMessage: "Scegli come applicare le regole automatiche condivise di questo progetto.",
+    sharedImportMetadataTimestamp: "Esportato il {timestamp}",
+    sharedImportMetadataVersion: "Versione planner {version}",
+    sharedImportMetadataVersionMismatch: "Versione planner {importVersion} (build attuale {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Include regole automatiche",
+    sharedImportMetadataIncludesOwnedGear: "Contrassegna gli elementi di attrezzatura personale",
+    sharedImportMetadataUnavailable: "Dettagli esportazione non disponibili.",
     sharedImportDialogConfirm: "Applica",
     sharedImportDialogCancel: "Annulla",
     cameraLabel: "Telecamera:",
@@ -2209,10 +2364,12 @@ var texts = {
       crewNamePlaceholder: "Nome",
       crewPhonePlaceholder: "Telefono",
       crewEmailPlaceholder: "Email",
+      crewWebsitePlaceholder: "Sito web",
       crewRoleLabel: "Ruolo della troupe",
       crewNameLabel: "Nome membro della troupe",
       crewPhoneLabel: "Telefono membro della troupe",
-      crewEmailLabel: "Email membro della troupe"
+      crewEmailLabel: "Email membro della troupe",
+      crewWebsiteLabel: "Sito web membro della troupe"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -2314,10 +2471,13 @@ var texts = {
     gearListEditOwnedHelp: "Aggiungi o rimuovi questa voce dalla tua lista di Attrezzatura personale per mantenerla sincronizzata.",
     gearListOwnedExportLabel: "Di proprietà di %s",
     gearListEditCameraLinkLabel: "Collegamento fotocamera",
-    gearListEditCameraLinkHelp: "Contrassegna gli elementi che seguono la fotocamera selezionata.",
+    gearListEditCameraAssignmentLabel: "Designazione camera",
+    gearListEditCameraAssignmentHelp: "Scegli la lettera associata a questo corpo macchina. Gli accessori collegati useranno lo stesso colore.",
+    gearListEditCameraLinkHelp: "Contrassegna gli elementi che seguono una specifica lettera di camera.",
     gearListEditCameraLinkNoneOption: "Nessun collegamento alla fotocamera",
-    gearListEditCameraLinkCameraOption: "Collega alla fotocamera (%s)",
-    gearListEditCameraLinkUnavailableOption: "Collega alla fotocamera",
+    gearListEditCameraLinkCameraOption: "Camera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Camera %s (non assegnata)",
+    gearListEditCameraLinkDefaultLabel: "Camera %s",
     gearListCameraLinkBadgeLabel: "Collegato alla fotocamera",
     gearListEditDialogTitle: "Modifica elemento della lista",
     gearListEditQuantityLabel: "Quantità",
@@ -2339,6 +2499,10 @@ var texts = {
     gearListEditButton: "Modifica elemento della lista",
     gearListEditCustomItem: "Modifica elemento personalizzato",
     gearListEditReset: "Ripristina nome",
+    gearListEditDeviceHeading: "Attributi dispositivo",
+    gearListEditDeviceEdit: "Modifica attributi dispositivo",
+    gearListEditDeviceEmpty: "Nessun attributo del dispositivo registrato. Aggiorna il dispositivo per aggiungere dettagli.",
+    gearListEditDeviceCategory: "Libreria dispositivi: %s",
     gearListLensCoverageWarning: "Questo obiettivo potrebbe non coprire interamente il sensore di questa camera!",
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp: "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
@@ -2408,8 +2572,48 @@ var texts = {
     settingsTabGeneralHelp: "Regola lingua, tema, tipografia e branding.",
     generalSectionLanguageHeading: "Lingua e unità",
     generalSectionAppearanceHeading: "Aspetto",
+    generalSectionCameraColorsHeading: "Designazioni camera",
     generalSectionTypographyHeading: "Tipografia",
     generalSectionBrandingHeading: "Branding e logo",
+    documentationTrackerHeading: "Registro aggiornamenti documentazione",
+    documentationTrackerDescription: "Registra gli aggiornamenti di traduzioni, help center e guide stampabili prima di distribuire una release offline.",
+    documentationTrackerAddRelease: "Nuovo registro release",
+    documentationTrackerEmpty: "Nessuna release tracciata. Aggiungi la prossima release per iniziare a registrare gli aggiornamenti.",
+    documentationTrackerSummaryIntro: "Usa il registro per tenere traccia dello stato degli aggiornamenti della documentazione.",
+    documentationTrackerLocalesHeading: "Copertura README localizzati",
+    documentationTrackerLocaleEnglish: "README inglese",
+    documentationTrackerLocaleGerman: "README tedesco",
+    documentationTrackerLocaleSpanish: "README spagnolo",
+    documentationTrackerLocaleFrench: "README francese",
+    documentationTrackerLocaleItalian: "README italiano",
+    documentationTrackerHelpHeading: "Argomenti dell'help center",
+    documentationTrackerHelpStart: "Avvio e navigazione",
+    documentationTrackerHelpSave: "Salvataggio, condivisione ed esportazioni",
+    documentationTrackerHelpBackup: "Backup e prove di ripristino",
+    documentationTrackerHelpOwnGear: "Gear personale e importazioni",
+    documentationTrackerHelpOffline: "Prontezza offline e service worker",
+    documentationTrackerPrintHeading: "Guide stampabili",
+    documentationTrackerPrintChecklist: "Checklist aggiornamento documentazione",
+    documentationTrackerPrintMaintenance: "Guida alla manutenzione della documentazione",
+    documentationTrackerPrintSaveShare: "Riferimento Salva, condividi, importa, backup & restore",
+    documentationTrackerPrintOffline: "Drill di prontezza offline",
+    documentationTrackerReleaseNameLabel: "Nome release",
+    documentationTrackerReleaseDateLabel: "Data release prevista",
+    documentationTrackerNotesLabel: "Note di verifica",
+    documentationTrackerNotesPlaceholder: "Annota cosa è cambiato, chi ha revisionato e dove sono archiviati gli artefatti.",
+    documentationTrackerMarkAllComplete: "Segna tutto completato",
+    documentationTrackerArchiveRelease: "Archivia release",
+    documentationTrackerRestoreRelease: "Riapri release",
+    documentationTrackerArchivedBadge: "Archiviato",
+    documentationTrackerArchiveConfirm: 'Archivia "{name}"? I segni di completamento restano registrati per gli audit.',
+    documentationTrackerSummaryPending: 'Restano {remaining} attività documentazione su {total} per "{name}".',
+    documentationTrackerSummaryComplete: 'Tutte le {total} attività documentazione per "{name}" sono complete.',
+    documentationTrackerFallbackReleaseName: "Release documentazione",
+    documentationTrackerProgress: "Completate {completed}/{total}",
+    documentationTrackerSectionProgress: "{completed}/{total}",
+    documentationTrackerUpdatedAt: "Aggiornato {time}",
+    documentationTrackerTargetSummary: "Obiettivo {date}",
+    documentationTrackerDefaultReleaseName: "Release {date}",
     languageSetting: "Lingua",
     settingsLanguageHelp: "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
     darkModeSetting: "Modalità scura",
@@ -2418,6 +2622,13 @@ var texts = {
     settingsPinkModeHelp: "Attiva il tema rosa giocoso dalle Impostazioni.",
     accentColorSetting: "Colore evidenza",
     accentColorHelp: "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+    cameraColorSettingDescription: "Assegna un colore evidenziatore a ogni lettera di camera così gli accessori collegati restano coordinati.",
+    cameraColorInputHelp: "Scegli il colore di evidenziazione per la camera %s.",
+    cameraColorALabel: "Colore camera A",
+    cameraColorBLabel: "Colore camera B",
+    cameraColorCLabel: "Colore camera C",
+    cameraColorDLabel: "Colore camera D",
+    cameraColorELabel: "Colore camera E",
     accentColorReset: "Ripristina predefinito",
     accentColorResetHelp: "Ripristina il colore d'accento originale del tema senza modificare le altre preferenze.",
     temperatureUnitSetting: "Unità di temperatura",
@@ -2931,7 +3142,7 @@ var texts = {
     loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingHeading: "Registro diagnostico",
     loggingHeadingHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
-    loggingIntro: "Il registro si aggiorna in tempo reale finché Impostazioni resta aperto. Attiva la cattura della console qui sotto quando ti serve un debug più approfondito. I dati non lasciano questo dispositivo.",
+    loggingIntro: "Il registro si aggiorna in tempo reale finché Impostazioni resta aperto. La cattura della console è attiva per impostazione predefinita così le trascrizioni restano locali; usa i controlli qui sotto solo se devi modificare il comportamento diagnostico. I dati non lasciano questo dispositivo.",
     loggingLevelFilterLabel: "Mostra le voci da",
     loggingLevelFilterHelp: "Scegli il livello minimo da visualizzare.",
     loggingLevelFilterAll: "Tutti i livelli",
@@ -2948,7 +3159,7 @@ var texts = {
     loggingConsoleOutputLabel: "Specchia nella console",
     loggingConsoleOutputHelp: "Mantiene sincronizzata la console del browser con questo registro.",
     loggingCaptureConsoleLabel: "Acquisisci output della console",
-    loggingCaptureConsoleHelp: "Registra i messaggi della console per la diagnostica. L’attivazione può influire sulle prestazioni.",
+    loggingCaptureConsoleHelp: "Registra i messaggi della console per la diagnostica. Lascia questa opzione attiva a meno che tu non debba ridurre il carico del logging.",
     loggingCaptureErrorsLabel: "Acquisisci errori globali",
     loggingCaptureErrorsHelp: "Registra errori non gestiti e promesse respinte.",
     loggingPersistSessionLabel: "Mantieni il registro dopo il ricaricamento",
@@ -3088,12 +3299,12 @@ var texts = {
     helpResultsAssist: "Suggerimento: premi Tab per passare ai collegamenti rapidi oppure premi Invio per aprire il primo argomento visibile.",
     helpNoResults: "Nessun argomento di aiuto corrisponde alla ricerca. Prova con parole chiave più brevi, sinonimi oppure cancella il campo per vedere tutti gli argomenti.",
     helpNoResultsSuggestionsHeading: "Serve un risultato diverso?",
-    helpNoResultsSuggestionsIntro: "Segui questi passaggi per rimetterti in carreggiata proteggendo i dati:",
+    helpNoResultsSuggestionsIntro: "Segui questi passaggi per rimetterti in carreggiata proteggendo i dati e confermando le salvaguardie offline:",
     helpNoResultsSuggestionClear: "Usa %s per mostrare di nuovo tutti gli articoli.",
     helpNoResultsSuggestionSynonyms: "Cerca soprannomi dell'attrezzatura, codici batteria o parole chiave più brevi.",
     helpNoResultsSuggestionQuickStart: "Apri la %s per un ripasso guidato su salvataggi, condivisioni e backup.",
-    helpNoResultsSuggestionBackup: "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
-    helpOnboardingTutorialCopy: "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+    helpNoResultsSuggestionBackup: "Apri %1$s, avvia una %2$s per confermare le esportazioni offline e controlla Impostazioni → Dati e archiviazione per verificare l'ultimo salvataggio automatico prima di proseguire.",
+    helpOnboardingTutorialCopy: "per seguire ogni flusso di lavoro con il monitoraggio dell'avanzamento offline—incluse il checkpoint di Power Summary e la prova della rete di sicurezza offline—prima di configurare il tuo primo progetto. Usa il navigatore dei passaggi e l'indicatore di avanzamento per rivedere offline le sezioni completate.",
     onboardingTour: {
       startLabel: "Avvia tutorial guidato",
       restartLabel: "Rivedi il tutorial guidato",
@@ -3104,6 +3315,7 @@ var texts = {
       doneLabel: "Termina tutorial",
       stepIndicator: "Passo {current} di {total}",
       completionIndicator: "Primo progetto salvato offline",
+      prefaceIndicator: "Prefazione",
       stepListAriaLabel: "Passaggi del tutorial",
       stepStatusCurrent: "Passaggio attuale",
       stepStatusComplete: "Completato",
@@ -3113,16 +3325,11 @@ var texts = {
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
-      helpStatusNotStarted:
-        "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
-      helpStatusInProgress:
-        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
-      helpStatusResume:
-        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
-      helpStatusSkipped:
-        "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
-      helpStatusCompleted:
-        "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
+      helpStatusNotStarted: "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
+      helpStatusInProgress: "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
+      helpStatusResume: "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
+      helpStatusSkipped: "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
+      helpStatusCompleted: "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
       helpStatusLastCompleted: "Ultimo completamento: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Ultimo aggiornamento: {timeAgo}.",
       helpStatusTimeJustNow: "proprio ora",
@@ -3139,39 +3346,123 @@ var texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-          body: "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente."
+          body: "Segui questo tour guidato per conoscere i flussi che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere senza perdere nulla."
         },
         userProfile: {
-          title: "Configura il tuo profilo",
-          body: "Compila nome visualizzato, ruolo, telefono, email e foto direttamente qui. Le modifiche si sincronizzano subito con Contatti, restano offline nei salvataggi e garantiscono i crediti corretti."
+          title: "Configura lingua e profilo",
+          body: "Imposta la lingua dell’interfaccia, il nome visibile, il ruolo, telefono, e-mail e foto. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e appare negli export."
+        },
+        unitsPreferences: {
+          title: "Personalizza tema e unità",
+          body: "Apri Impostazioni → Generale per scegliere tema, eventuali accenti rosa, scala di fuoco e unità di temperatura. Richiedi l’archiviazione persistente così il browser conserva preferenze e salvataggi in sicurezza."
         },
         nameProject: {
           title: "Dai un nome al primo progetto",
-          body: "Scrivi un nome progetto per attivare salvataggi automatici, backup ed esportazioni. Il pulsante Avanti si sblocca solo quando è presente un nome così ogni passaggio protegge subito il progetto offline."
+          body: "Assegna al progetto un nome descrittivo che funga da base per salvataggio automatico, cronologia, export e backup. Ogni flusso lo utilizza per mantenere ordinata la libreria offline."
         },
         saveProject: {
           title: "Salva subito",
-          body: "Premi Salva (o usa Ctrl+S/⌘S/Invio) per registrare una copia offline del progetto nominato. Se un setup già salvato è selezionato il passaggio viene completato automaticamente, altrimenti fai clic su Salva per proseguire."
+          body: "Premi Salva (o Ctrl+S/⌘S/Invio) per catturare uno snapshot completo offline: dispositivi, calcoli di potenza, requisiti, note e diagnostica. Il passaggio successivo si sblocca al termine del salvataggio."
         },
         addCamera: {
           title: "Aggiungi la camera principale",
-          body: "Apri il menu Camera e scegli il corpo che stai pianificando. La ricerca funziona anche offline all'interno dell'elenco. Avanti si attiva quando selezioni un modello specifico."
+          body: "Scegli il corpo macchina che stai pianificando. La ricerca all’interno del menu funziona offline. In questo modo si attivano accessori, assorbimenti e diagrammi corrispondenti."
         },
-        addPower: {
-          title: "Scegli l'alimentazione",
-          body: "Seleziona una batteria o una fonte DC adatta alla configurazione. La scelta aggiorna subito i calcoli di autonomia e viene salvata insieme allo snapshot del progetto."
+        addMonitoring: {
+          title: "Aggiungi monitor, video wireless e FIZ",
+          body: "Aggiungi monitor onboard, trasmettitori wireless e motori o controller FIZ. Ogni scelta alimenta i calcoli di autonomia, i diagrammi e le regole automatiche così il kit generato rispecchia l'intero setup."
         },
-        generatePlan: {
-          title: "Genera il primo piano",
-          body: "Usa Genera elenco attrezzatura e requisiti del progetto per creare la checklist stampabile. Si apre la finestra del progetto così puoi verificare assorbimenti, autonomia e note della troupe nello stesso posto."
+        selectBattery: {
+          title: "Scegli batterie",
+          body: "Seleziona il sistema batteria che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto."
         },
-        exportBackup: {
-          title: "Esporta una copia di sicurezza offline",
-          body: "Fai clic su Esporta progetto o su Quick safeguards per scaricare un backup JSON. Conservare una copia fuori dal browser protegge la nuova configurazione da reset e cambi di dispositivo."
+        results: {
+          title: "Rivedi il riepilogo dei risultati",
+          body: "Tratta il passaggio 8 come tre rapide revisioni in Power Summary: 8A conferma la scheda Carico totale e il picco previsto, 8B approfondisce ogni pacco batteria per le proiezioni di autonomia e gli avvisi sui margini di riserva, e 8C controlla i timer di cambio insieme alla copertura dei caricabatterie. Concludi registrando eventuali avvisi, scaricando il rapporto offline per backup ridondanti e verificando che il banner di salvataggio automatico riporti l'ultimo timestamp così condivisioni ed esportazioni riflettono lo stesso snapshot."
+        },
+        batteryComparison: {
+          title: "Confronta le batterie",
+          body: "Apri Confronto batterie per valutare alternative affiancate. Il grafico mantiene i calcoli offline così puoi testare scenari e fissare il margine di sicurezza migliore per la giornata."
+        },
+        runtimeFeedback: {
+          title: "Invia feedback sull'autonomia",
+          body: "Usa il pulsante feedback runtime per registrare risultati reali. Le voci si sincronizzano con il progetto corrente, migliorano le stime future e restano disponibili offline per gli audit."
+        },
+        connectionDiagram: {
+          title: "Esamina il diagramma delle connessioni",
+          body: "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, quindi salva così disposizione e annotazioni restano in esportazioni e ripristini."
+        },
+        editDeviceDataAdd: {
+          title: "Aggiungi un dispositivo alla libreria",
+          body: "Apri Libreria dispositivi, scegli la categoria corretta, inserisci assorbimento e connettori e premi Aggiungi. Il dispositivo viene salvato offline così autosalvataggi, backup e condivisioni includono il nuovo elemento."
+        },
+        editDeviceDataReview: {
+          title: "Rivedi i dettagli del dispositivo",
+          body: "Individua il dispositivo appena salvato in Dispositivi esistenti e apri il pannello dei dettagli. Controlla che assorbimento, uscite e informazioni di compatibilità siano corretti prima di usarli per calcoli o esportazioni."
+        },
+        editDeviceDataEdit: {
+          title: "Aggiorna e salva nuovamente il dispositivo",
+          body: "Premi Modifica su quella voce, aggiorna specifiche o note e salva di nuovo. In questo modo autosalvataggi, backup ed esportazioni vengono aggiornati con gli ultimi dati senza rischiare la perdita di informazioni."
+        },
+        ownGearAccess: {
+          title: "Apri la finestra Attrezzatura propria",
+          body: "Usa il pulsante Attrezzatura propria nella barra laterale per aprire la finestra inventario ogni volta che vuoi controllare l’equipaggiamento che hai già. Aprirla tu stesso rende il flusso naturale anche dopo il tutorial."
+        },
+        ownGearAddDevice: {
+          title: "Aggiungi il primo dispositivo di tua proprietà",
+          body: "Inserisci nome elemento, quantità opzionale e note, quindi salva. L’attrezzatura posseduta viene archiviata offline, inclusa nei backup e contrassegnata nelle esportazioni così la troupe vede subito cosa è disponibile senza doppioni."
+        },
+        generateGearAndRequirements: {
+          title: "Genera requisiti e elenco attrezzatura",
+          body: "Usa Genera elenco attrezzatura e requisiti del progetto per ricostruire la checklist dopo ogni modifica. Il planner salva l'output con il progetto così PDF, export e backup riflettono sempre le ultime scelte."
+        },
+        autoGearRulesAccess: {
+          title: "Apri Regole gear automatiche",
+          body: "Apri Impostazioni → Regole gear automatiche per controllare le automazioni. La scheda mostra preset, regole di fabbrica e backup di sicurezza archiviati con i tuoi salvataggi offline."
+        },
+        autoGearRulesEdit: {
+          title: "Modifica le regole automatiche predefinite",
+          body: "Usa l'elenco regole per esaminare le aggiunte di fabbrica. Seleziona una regola predefinita per aprirla nell'editor, aggiorna elementi o condizioni e salva così l'automazione aggiornata resta nella cache insieme a backup ed export condivisi."
+        },
+        autoGearRulesCreate: {
+          title: "Aggiungi una nuova regola automatica",
+          body: "Premi Aggiungi regola per creare un'automazione personalizzata. Dai un nome, aggiungi condizioni e l'attrezzatura richiesta, quindi salva. Il planner applica la nuova regola offline ogni volta che rigeneri il kit e la include in esportazioni, condivisioni e backup."
+        },
+        projectRequirements: {
+          title: "Raffina i riquadri dei requisiti di progetto",
+          body: "Modifica l'output Requisiti del progetto per registrare note troupe, deliverable e promemoria di sicurezza. Ogni riquadro viene salvato con il progetto, stampato nei riepiloghi e incluso nelle esportazioni. Segui tre sottopassi rapidi per non dimenticare nulla: 15A compila il briefing di progetto—casa di produzione, preferenze del rental, calendario e specifiche di consegna; 15B collega le righe della troupe ai contatti salvati segnando copertura di preparazione/riprese/resa e note di emergenza; 15C raccoglie logistica come supporti di archiviazione, preferenze di monitoraggio e richiami di sicurezza, quindi rigenera il riepilogo per confermare le nuove informazioni."
+        },
+        gearList: {
+          title: "Verifica l'elenco attrezzatura generato",
+          body: "Controlla l'elenco attrezzatura categorizzato per duplicati, quantità e accessori auto-aggiunti. Le modifiche si salvano all'istante, sono incluse nei pacchetti condivisi e appaiono in stampe e PDF."
+        },
+        exportImport: {
+          title: "Esporta e importa progetti",
+          body: "Usa Esporta progetto per scaricare una copia di sicurezza JSON e Importa progetto per provare i ripristini. Archivia le esportazioni su supporti ridondanti così nessuna postazione perde dati se il profilo del browser si reimposta."
+        },
+        overviewAndPrint: {
+          title: "Genera panoramica e stampe",
+          body: "Genera la panoramica del progetto per accedere a riepiloghi pronti per PDF, stampa e condivisione. La finestra usa solo dati salvati, quindi puoi stampare o esportare anche completamente offline."
+        },
+        help: {
+          title: "Apri il centro assistenza",
+          body: "La finestra Guida include documentazione ricercabile, note di traduzione e riferimenti del tutorial. Tienila appuntata mentre lavori: gli articoli restano in cache offline e si aggiornano quando arrivano nuove funzionalità."
+        },
+        settingsGeneral: {
+          title: "Riapri Impostazioni → Generale",
+          body: "Regola in qualsiasi momento lingua, tipografia, tema, modalità rosa, scala del fuoco e altre opzioni di presentazione. Le preferenze vengono salvate localmente, sincronizzate tra i progetti e incluse nei backup."
+        },
+        settingsData: {
+          title: "Monitora Dati e archiviazione",
+          body: "Usa la scheda Dati e archiviazione per richiedere l'archiviazione persistente, monitorare i timestamp dei salvataggi e avviare salvaguardie rapide. Questi controlli verificano che ogni snapshot di progetto resti disponibile offline."
+        },
+        settingsBackup: {
+          title: "Gestisci Backup e ripristino",
+          body: "La scheda Backup e ripristino gestisce esportazioni dell'intera app, prove di ripristino e diagnostica. Esegui backup prima dei cambiamenti importanti, archivia i file su supporti esterni e verifica regolarmente i ripristini."
         },
         completion: {
-          title: "Tutto pronto per pianificare",
-          body: "Lascia aperta la Guida quando serve supporto aggiuntivo. Ricorda di salvare spesso, creare backup prima delle modifiche importanti e conservare le esportazioni in più posizioni offline."
+          title: "Tutorial completato",
+          body: "Ora conosci tutte le protezioni. Continua a salvare spesso, esporta backup ridondanti e riprendi qualsiasi passaggio dalla Guida ogni volta che vuoi un ripasso. Cine Power Planner continuerà a proteggere i tuoi dati offline."
         }
       }
     },
@@ -3183,10 +3474,10 @@ var texts = {
     helpDataAuditStep2: "Esporta ogni progetto attivo con %1$s, verifica che ogni download si apra senza errori e archivia i file in due posizioni separate.",
     helpDataAuditStep3: "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale. Prova %3$s con uno dei nuovi export per assicurarti che i bundle condivisi si ripristinino senza riconnessione.",
     helpDataAuditStep4: "Esegui %1$s con il backup più recente, verifica ogni progetto, dispositivo e regola, quindi annota nel registro di verifica l'output della sentinella runtime da %2$s prima di chiudere la prova senza pubblicare modifiche.",
-    helpDataAuditNote: "Registra i risultati e archivia l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
+    helpDataAuditNote: "Registra i risultati, acquisisci uno screenshot di Impostazioni → Dati e archiviazione con l'ultimo salvataggio automatico e archivia anche l'output della sentinella runtime nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
     helpRestoreDrillNote: "Annota nomi file, timestamp e risultati della verifica nel registro di rotazione dei backup in modo che ogni esercitazione documenti una copia ripristinabile.",
     helpSearchClear: "Cancella ricerca",
-    helpSearchHelp: "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione. Premi '/' o Ctrl+F (Cmd+F su Mac) per spostare subito il focus sulla casella di ricerca.",
+    helpSearchHelp: "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione ed evidenziano l'articolo corrispondente quando premi Invio. Premi '/' o Ctrl+F (⌘+F su Mac) per spostare subito il focus sulla casella di ricerca, quindi usa Tab per scorrere i collegamenti filtrati senza chiudere il progetto.",
     helpSearchClearHelp: "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
     helpQuickLinksHeading: "Vai a un argomento",
     helpQuickLinksAriaLabel: "Navigazione rapida degli argomenti di aiuto",
@@ -3226,7 +3517,7 @@ var texts = {
     generateOverviewHelp: "Ricostruisce il riepilogo pronto per la stampa del progetto salvato selezionato e apre la finestra panoramica così puoi rivedere i dettagli di alimentazione e connessione prima di stampare quando preferisci. La sezione obiettivi mostra marca, attacco, diametro, fuoco, peso, supporto aste e note così gli export coprono le verifiche sensibili alle specifiche.",
     generateGearListHelp: "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp: "Scarica un pacchetto JSON di sicurezza del progetto corrente—comprende accessori personalizzati, preferiti, feedback di autonomia e dispositivi—pronto da archiviare o condividere offline. Conserva il file insieme ai backup ridondanti della troupe prima di chiudere il planner così ogni postazione può ripristinarlo senza connessione.",
-    applySharedLinkHelp: "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante.",
+    applySharedLinkHelp: "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla il diff in anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva e il planner programma prima un nuovo backup automatico così puoi tornare indietro all’istante. Le importazioni senza nome vengono salvate automaticamente con un titolo “-imported” così i dati arrivano anche quando il bundle non includeva un nome progetto.",
     sharedLinkHelp: "Scegli un JSON di progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei backup dopo l’importazione: il planner legge solo una copia e registra il tentativo nei log di diagnostica.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
     monitorSelectHelp: "Seleziona un monitor da includere.",
@@ -3360,7 +3651,9 @@ var texts = {
       saveContact: "Guardar en contactos",
       openManager: "Abrir contactos",
       linkedBadge: "Vinculado a un contacto",
-      contactMissingDetails: "Introduce un nombre, correo electrónico o teléfono antes de guardar este contacto.",
+      contactMissingDetails: "Introduce un nombre, correo electrónico, teléfono o sitio web antes de guardar este contacto.",
+      websiteLabel: "Sitio web",
+      websitePlaceholder: "https://ejemplo.com",
       avatarOptionsTitle: "Opciones de foto",
       avatarOptionsDescription: "Previsualiza esta foto y decide cómo actualizarla.",
       avatarOptionsClose: "Cerrar",
@@ -3383,12 +3676,12 @@ var texts = {
       userProfileNameLabel: "Nombre visible",
       userProfileNamePlaceholder: "Tu nombre",
       userProfileRoleLabel: "Rol o cargo",
-      userProfileRolePlaceholder: "p. ej. 1.er asistente de cámara",
+      userProfileRolePlaceholder: "Selecciona un rol",
       userProfilePhoneLabel: "Número de teléfono",
       userProfilePhonePlaceholder: "Tu número de teléfono",
       userProfileEmailLabel: "Correo electrónico",
       userProfileEmailPlaceholder: "nombre@ejemplo.com",
-      userProfileHint: "Sirve para mostrar tu nombre y la inicial del apellido en la opción \"Usuario\" del desplegable Proveedor.",
+      userProfileHint: "Sirve para mostrar tu nombre y la inicial del apellido en la opción \"Usuario\" del desplegable Proveedor. El teléfono y el correo aparecen en exportaciones y copias de seguridad para que la crew pueda localizarte sin conexión.",
       userProfileAvatarButton: "Cambiar foto",
       userProfileAvatarRemove: "Quitar foto",
       userProfileSaved: "Perfil guardado.",
@@ -3410,7 +3703,7 @@ var texts = {
     },
     featureSearchPlaceholder: "Buscar funciones, dispositivos o ayuda...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
-    featureSearchHelp: "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias priorizan controles y dispositivos antes que los artículos de ayuda para que llegues primero a las acciones. Cada resultado indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda e incluye una breve descripción para que confirmes el destino antes de pulsar Enter. Las coincidencias exactas y lo que usaste recientemente suben automáticamente a la parte superior, así tus controles habituales aparecen primero. La búsqueda también recorre los mismos textos de ayuda y descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" siguen llevando al botón correcto aunque la etiqueta cambie. Se toleran los errores tipográficos pequeños, así que \"bakcup\" sigue encontrando Copia de seguridad o Guardar. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar, usa Esc o × para limpiar el campo y, al vaciarlo, las coincidencias usadas recientemente vuelven a aparecer primero para repetir tareas habituales con rapidez. Antepon \"feature\", \"action\", \"device\" o \"help\" (por ejemplo, \"help: battery\") para limitar los resultados a ese tipo. Empieza con \"recent\" o \"history\" (por ejemplo, \"recent iso\") para concentrarte en los elementos usados recientemente antes de repasar todo el catálogo. Las frases exactas entre comillas, como \"battery health\", ahora se sitúan en la parte superior para superar coincidencias más amplias. La búsqueda omite automáticamente las palabras de relleno habituales, de modo que preguntas conversacionales como \"cómo hago la copia de seguridad\" siguen destacando las palabras clave importantes.",
+    featureSearchHelp: "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias priorizan controles y dispositivos antes que los artículos de ayuda para que llegues primero a las acciones. Cada resultado indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda e incluye una breve descripción para que confirmes el destino antes de pulsar Enter. Las coincidencias exactas y lo que usaste recientemente suben automáticamente a la parte superior, así tus controles habituales aparecen primero. La búsqueda también recorre los mismos textos de ayuda y descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" siguen llevando al botón correcto aunque la etiqueta cambie. Se toleran los errores tipográficos pequeños, así que \"bakcup\" sigue encontrando Copia de seguridad o Guardar. Las abreviaturas de conectores y soportes como \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" o \"D-Tap\" se asocian automáticamente con su nombre completo, así que escribe la versión que recuerdes. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar, usa Esc o × para limpiar el campo y, al vaciarlo, las coincidencias usadas recientemente vuelven a aparecer primero para repetir tareas habituales con rapidez. Antepon \"feature\", \"action\", \"device\" o \"help\" (por ejemplo, \"help: battery\") para limitar los resultados a ese tipo. Empieza con \"recent\" o \"history\" (por ejemplo, \"recent iso\") para concentrarte en los elementos usados recientemente antes de repasar todo el catálogo. Las frases exactas entre comillas, como \"battery health\", ahora se sitúan en la parte superior para superar coincidencias más amplias. La búsqueda omite automáticamente las palabras de relleno habituales, de modo que preguntas conversacionales como \"cómo hago la copia de seguridad\" siguen destacando las palabras clave importantes.",
     featureSearchClear: "Borrar búsqueda",
     featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
     featureSearchTypeFeature: "Función",
@@ -3442,8 +3735,7 @@ var texts = {
     shareIncludeAutoGearLabel: "Incluir reglas automáticas de equipo",
     shareIncludeAutoGearHelp: "Agrega tus reglas automáticas de equipo al archivo de proyecto exportado.",
     shareIncludeOwnedGearLabel: "Marcar equipo propio en la exportación",
-    shareIncludeOwnedGearHelp:
-      "Añade insignias de propiedad para el equipo que marcaste como tuyo al exportar.",
+    shareIncludeOwnedGearHelp: "Añade insignias de propiedad para el equipo que marcaste como tuyo al exportar.",
     shareDialogTitle: "Exportar proyecto",
     shareFilenameLabel: "Nombre del archivo de exportación",
     shareDialogConfirm: "Descargar",
@@ -3462,6 +3754,12 @@ var texts = {
     sharedImportAutoGearPresetFallback: "Reglas automáticas compartidas",
     sharedImportDialogTitle: "Reglas automáticas de equipo",
     sharedImportDialogMessage: "Elige cómo aplicar las reglas automáticas compartidas de este proyecto.",
+    sharedImportMetadataTimestamp: "Exportado el {timestamp}",
+    sharedImportMetadataVersion: "Versión del planificador {version}",
+    sharedImportMetadataVersionMismatch: "Versión del planificador {importVersion} (compilación actual {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Incluye reglas automáticas",
+    sharedImportMetadataIncludesOwnedGear: "Marca los elementos de equipo propio",
+    sharedImportMetadataUnavailable: "Detalles de exportación no disponibles.",
     sharedImportDialogConfirm: "Aplicar",
     sharedImportDialogCancel: "Cancelar",
     cameraLabel: "Cámara:",
@@ -3833,10 +4131,12 @@ var texts = {
       crewNamePlaceholder: "Nombre",
       crewPhonePlaceholder: "Teléfono",
       crewEmailPlaceholder: "Correo",
+      crewWebsitePlaceholder: "Sitio web",
       crewRoleLabel: "Rol del equipo",
       crewNameLabel: "Nombre del miembro del equipo",
       crewPhoneLabel: "Teléfono del miembro del equipo",
-      crewEmailLabel: "Correo del miembro del equipo"
+      crewEmailLabel: "Correo del miembro del equipo",
+      crewWebsiteLabel: "Sitio web del miembro del equipo"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -3938,10 +4238,13 @@ var texts = {
     gearListEditOwnedHelp: "Añade o elimina esta línea de tu lista de Equipo propio para mantenerla sincronizada.",
     gearListOwnedExportLabel: "Propiedad de %s",
     gearListEditCameraLinkLabel: "Vínculo con la cámara",
-    gearListEditCameraLinkHelp: "Marca los elementos que dependen de la cámara seleccionada.",
+    gearListEditCameraAssignmentLabel: "Identificación de cámara",
+    gearListEditCameraAssignmentHelp: "Elige la letra asociada a este cuerpo de cámara. Los accesorios vinculados usarán el mismo color.",
+    gearListEditCameraLinkHelp: "Marca los elementos que siguen a una letra de cámara concreta.",
     gearListEditCameraLinkNoneOption: "Sin vínculo con la cámara",
-    gearListEditCameraLinkCameraOption: "Vincular a la cámara (%s)",
-    gearListEditCameraLinkUnavailableOption: "Vincular a la cámara",
+    gearListEditCameraLinkCameraOption: "Cámara %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Cámara %s (sin asignar)",
+    gearListEditCameraLinkDefaultLabel: "Cámara %s",
     gearListCameraLinkBadgeLabel: "Vinculado a la cámara",
     gearListEditDialogTitle: "Editar elemento del equipo",
     gearListEditQuantityLabel: "Cantidad",
@@ -3963,6 +4266,10 @@ var texts = {
     gearListEditButton: "Editar elemento del equipo",
     gearListEditCustomItem: "Editar elemento personalizado",
     gearListEditReset: "Restablecer nombre",
+    gearListEditDeviceHeading: "Atributos del dispositivo",
+    gearListEditDeviceEdit: "Editar atributos del dispositivo",
+    gearListEditDeviceEmpty: "Sin atributos del dispositivo registrados. Actualiza el dispositivo para añadir detalles.",
+    gearListEditDeviceCategory: "Biblioteca de dispositivos: %s",
     gearListLensCoverageWarning: "¡Este objetivo puede que no cubra por completo el sensor de esta cámara!",
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp: "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
@@ -4032,8 +4339,48 @@ var texts = {
     settingsTabGeneralHelp: "Ajusta idioma, tema, tipografía y opciones de marca.",
     generalSectionLanguageHeading: "Idioma y unidades",
     generalSectionAppearanceHeading: "Apariencia",
+    generalSectionCameraColorsHeading: "Identificación de cámaras",
     generalSectionTypographyHeading: "Tipografía",
     generalSectionBrandingHeading: "Marca y logotipo",
+    documentationTrackerHeading: "Registro de actualizaciones de documentación",
+    documentationTrackerDescription: "Registra las actualizaciones de traducciones, ayuda y guías impresas antes de distribuir una versión offline.",
+    documentationTrackerAddRelease: "Nuevo registro de versión",
+    documentationTrackerEmpty: "No hay versiones registradas aún. Añade la próxima versión para empezar a registrar las actualizaciones.",
+    documentationTrackerSummaryIntro: "Usa el registro para seguir el progreso de las actualizaciones de documentación.",
+    documentationTrackerLocalesHeading: "Cobertura de README traducidos",
+    documentationTrackerLocaleEnglish: "README en inglés",
+    documentationTrackerLocaleGerman: "README en alemán",
+    documentationTrackerLocaleSpanish: "README en español",
+    documentationTrackerLocaleFrench: "README en francés",
+    documentationTrackerLocaleItalian: "README en italiano",
+    documentationTrackerHelpHeading: "Temas del centro de ayuda",
+    documentationTrackerHelpStart: "Introducción y navegación",
+    documentationTrackerHelpSave: "Guardado, compartición y exportaciones",
+    documentationTrackerHelpBackup: "Copias de seguridad y ensayos de restauración",
+    documentationTrackerHelpOwnGear: "Equipo propio e importaciones",
+    documentationTrackerHelpOffline: "Disponibilidad offline y service worker",
+    documentationTrackerPrintHeading: "Guías imprimibles",
+    documentationTrackerPrintChecklist: "Checklist de actualización de documentación",
+    documentationTrackerPrintMaintenance: "Guía de mantenimiento de la documentación",
+    documentationTrackerPrintSaveShare: "Referencia Guardar, compartir, importar, backup y restaurar",
+    documentationTrackerPrintOffline: "Ensayo de preparación offline",
+    documentationTrackerReleaseNameLabel: "Nombre de la versión",
+    documentationTrackerReleaseDateLabel: "Fecha objetivo de la versión",
+    documentationTrackerNotesLabel: "Notas de verificación",
+    documentationTrackerNotesPlaceholder: "Anota qué cambió, quién lo revisó y dónde se almacenaron los artefactos.",
+    documentationTrackerMarkAllComplete: "Marcar todo como completado",
+    documentationTrackerArchiveRelease: "Archivar versión",
+    documentationTrackerRestoreRelease: "Reabrir versión",
+    documentationTrackerArchivedBadge: "Archivado",
+    documentationTrackerArchiveConfirm: '¿Archivar "{name}"? Las marcas completadas se conservarán para las auditorías.',
+    documentationTrackerSummaryPending: 'Quedan {remaining} de {total} tareas de documentación para "{name}".',
+    documentationTrackerSummaryComplete: 'Todas las {total} tareas de documentación de "{name}" están completas.',
+    documentationTrackerFallbackReleaseName: "Versión de documentación",
+    documentationTrackerProgress: "{completed}/{total} completadas",
+    documentationTrackerSectionProgress: "{completed}/{total}",
+    documentationTrackerUpdatedAt: "Actualizado {time}",
+    documentationTrackerTargetSummary: "Objetivo {date}",
+    documentationTrackerDefaultReleaseName: "Versión {date}",
     languageSetting: "Idioma",
     settingsLanguageHelp: "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
     darkModeSetting: "Modo oscuro",
@@ -4042,6 +4389,13 @@ var texts = {
     settingsPinkModeHelp: "Activa el tema rosa divertido desde Ajustes.",
     accentColorSetting: "Color de acento",
     accentColorHelp: "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
+    cameraColorSettingDescription: "Asigna un color de realce a cada letra de cámara para mantener coordinados los accesorios vinculados.",
+    cameraColorInputHelp: "Elige el color de realce para la cámara %s.",
+    cameraColorALabel: "Color cámara A",
+    cameraColorBLabel: "Color cámara B",
+    cameraColorCLabel: "Color cámara C",
+    cameraColorDLabel: "Color cámara D",
+    cameraColorELabel: "Color cámara E",
     accentColorReset: "Restablecer predeterminado",
     accentColorResetHelp: "Restaura el color de acento original del tema sin cambiar otras preferencias.",
     temperatureUnitSetting: "Unidad de temperatura",
@@ -4555,7 +4909,7 @@ var texts = {
     loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingHeading: "Registro de diagnósticos",
     loggingHeadingHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
-    loggingIntro: "El registro se actualiza en vivo mientras Ajustes permanece abierto. Activa la captura de la consola abajo cuando necesites una depuración más detallada. Nada sale de este dispositivo.",
+    loggingIntro: "El registro se actualiza en vivo mientras Ajustes permanece abierto. La captura de la consola está activa de forma predeterminada para que las transcripciones permanezcan locales; ajusta los controles siguientes solo si necesitas cambiar el comportamiento del diagnóstico. Nada sale de este dispositivo.",
     loggingLevelFilterLabel: "Mostrar entradas desde",
     loggingLevelFilterHelp: "Elija el nivel mínimo que desea ver.",
     loggingLevelFilterAll: "Todos los niveles",
@@ -4572,7 +4926,7 @@ var texts = {
     loggingConsoleOutputLabel: "Reflejar en la consola",
     loggingConsoleOutputHelp: "Mantiene sincronizada la consola del navegador.",
     loggingCaptureConsoleLabel: "Capturar salida de la consola",
-    loggingCaptureConsoleHelp: "Registra los mensajes de la consola para diagnósticos. Activarlo puede afectar al rendimiento.",
+    loggingCaptureConsoleHelp: "Registra los mensajes de la consola para diagnósticos. Manténlo activado salvo que necesites reducir la carga del registro.",
     loggingCaptureErrorsLabel: "Capturar errores globales",
     loggingCaptureErrorsHelp: "Registra errores no capturados y rechazos de promesas.",
     loggingPersistSessionLabel: "Mantener registro tras recargar",
@@ -4712,12 +5066,12 @@ var texts = {
     helpResultsAssist: "Consejo: pulsa Tab para moverte a los accesos directos o pulsa Intro para abrir el primer tema visible.",
     helpNoResults: "No hay temas de ayuda que coincidan con la búsqueda. Prueba con palabras clave más cortas, sinónimos o borra el campo para ver todo.",
     helpNoResultsSuggestionsHeading: "¿Necesitas otro resultado?",
-    helpNoResultsSuggestionsIntro: "Prueba estos pasos para continuar sin poner en riesgo tus datos:",
+    helpNoResultsSuggestionsIntro: "Prueba estos pasos para continuar sin poner en riesgo tus datos y confirmando las salvaguardas sin conexión:",
     helpNoResultsSuggestionClear: "Usa %s para volver a mostrar todos los artículos.",
     helpNoResultsSuggestionSynonyms: "Busca apodos del equipo, números de parte de baterías o palabras clave más cortas.",
     helpNoResultsSuggestionQuickStart: "Ve a la %s para repasar cómo guardar, compartir y hacer copias de seguridad.",
-    helpNoResultsSuggestionBackup: "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
-    helpOnboardingTutorialCopy: "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+    helpNoResultsSuggestionBackup: "Abre %1$s, inicia un %2$s para confirmar tus exportaciones sin conexión y revisa Configuración → Datos y almacenamiento para verificar la marca temporal del último guardado automático antes de continuar.",
+    helpOnboardingTutorialCopy: "para recorrer cada flujo de trabajo con seguimiento del progreso sin conexión—incluido el punto de control del Resumen de energía y el simulacro de red de seguridad offline—antes de configurar tu primer proyecto. Usa el navegador de pasos y el medidor de progreso para revisar sin conexión las secciones terminadas.",
     onboardingTour: {
       startLabel: "Iniciar tutorial guiado",
       restartLabel: "Repetir tutorial guiado",
@@ -4728,6 +5082,7 @@ var texts = {
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
       completionIndicator: "Primer proyecto guardado sin conexión",
+      prefaceIndicator: "Prefacio",
       stepListAriaLabel: "Pasos del tutorial",
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
@@ -4737,16 +5092,11 @@ var texts = {
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
-      helpStatusNotStarted:
-        "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
-      helpStatusInProgress:
-        "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
-      helpStatusResume:
-        "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
-      helpStatusSkipped:
-        "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
-      helpStatusCompleted:
-        "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
+      helpStatusNotStarted: "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
+      helpStatusInProgress: "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
+      helpStatusResume: "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
+      helpStatusSkipped: "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
+      helpStatusCompleted: "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
       helpStatusLastCompleted: "Último paso completado: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Última actualización: {timeAgo}.",
       helpStatusTimeJustNow: "ahora mismo",
@@ -4763,39 +5113,123 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-          body: "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta."
+          body: "Usa este recorrido guiado para aprender los flujos que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar sin perder nada."
         },
         userProfile: {
-          title: "Configura tu perfil",
-          body: "Completa tu nombre visible, rol, teléfono, correo y foto directamente en este paso. Los cambios se sincronizan con Contactos al instante, permanecen sin conexión en tus guardados y garantizan los créditos correctos."
+          title: "Configura idioma y perfil",
+          body: "Define el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto. Los cambios se sincronizan al instante con Contactos, se conservan en los guardados sin conexión y aparecen en las exportaciones."
+        },
+        unitsPreferences: {
+          title: "Ajusta tema y unidades",
+          body: "Ve a Configuración → General para elegir tema, resaltes rosas opcionales, escala de foco y unidades de temperatura. Solicita almacenamiento persistente para que el navegador mantenga las preferencias y proteja los guardados."
         },
         nameProject: {
           title: "Pon nombre a tu primer proyecto",
-          body: "Escribe un nombre de proyecto para activar el guardado automático, las copias y las exportaciones. El botón Siguiente se desbloquea en cuanto haya un nombre, así cada paso protege el proyecto sin conexión."
+          body: "Ponle al proyecto un nombre descriptivo que sirva como base para el autoguardado, el historial, las exportaciones y las copias de seguridad. Cada flujo lo usa para que tu biblioteca sin conexión siga ordenada."
         },
         saveProject: {
           title: "Guarda de inmediato",
-          body: "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para capturar una instantánea sin conexión del proyecto con nombre. Si ya tienes seleccionado un proyecto guardado el paso se completa automáticamente; si no, haz clic en Guardar para continuar."
+          body: "Pulsa Guardar (o usa Ctrl+S/⌘S/Enter) para capturar una instantánea completa sin conexión: dispositivos, cálculos de energía, requisitos, notas y diagnósticos. El siguiente paso se desbloquea cuando termina el guardado."
         },
         addCamera: {
           title: "Añade la cámara principal",
-          body: "Abre la lista Cámara y elige el cuerpo para tu plan. La búsqueda funciona sin conexión dentro del desplegable. Siguiente se activa cuando seleccionas un modelo específico."
+          body: "Elige el cuerpo de cámara que estás planificando. La búsqueda dentro del menú funciona sin conexión. Así se habilitan accesorios, consumos y diagramas correspondientes."
         },
-        addPower: {
-          title: "Elige una fuente de energía",
-          body: "Selecciona una batería o fuente de CC que encaje con el montaje. La selección actualiza al instante los cálculos de autonomía y se guarda con la instantánea del proyecto."
+        addMonitoring: {
+          title: "Añade monitores, video inalámbrico y FIZ",
+          body: "Añade monitores abordo, transmisores inalámbricos y motores o controladores FIZ. Cada selección alimenta los cálculos de autonomía, los diagramas y las reglas automáticas para que el kit generado represente todo el montaje."
         },
-        generatePlan: {
-          title: "Genera tu primer plan",
-          body: "Usa Generar lista de equipo y requisitos del proyecto para crear la lista imprimible. Se abrirá el cuadro del proyecto para que revises consumos, autonomía y notas del equipo en un mismo lugar."
+        selectBattery: {
+          title: "Elige baterías",
+          body: "Selecciona el sistema de baterías que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto."
         },
-        exportBackup: {
-          title: "Exporta una copia de seguridad sin conexión",
-          body: "Haz clic en Exportar proyecto o en Quick safeguards para descargar una copia JSON. Guardar un archivo fuera del navegador protege el montaje frente a reinicios o cambios de dispositivo."
+        results: {
+          title: "Revisa el resumen de resultados",
+          body: "Trata el paso 8 como tres pasadas rápidas en Power Summary: 8A confirma la tarjeta de Consumo total y el pico previsto, 8B revisa cada paquete de baterías para las proyecciones de autonomía y los avisos de margen de reserva, y 8C comprueba las cuentas regresivas de cambio junto con la cobertura de cargadores. Termina registrando cualquier aviso, descargando el informe sin conexión para contar con copias de seguridad redundantes y comprobando que el banner de guardado automático muestre la marca de tiempo más reciente para que las comparticiones y exportaciones reflejen la misma instantánea."
+        },
+        batteryComparison: {
+          title: "Compara opciones de batería",
+          body: "Abre Comparación de baterías para evaluar paquetes alternativos uno junto a otro. La gráfica mantiene los cálculos offline para que pruebes escenarios y asegures el margen de autonomía más seguro del día."
+        },
+        runtimeFeedback: {
+          title: "Envía feedback de autonomía",
+          body: "Usa el botón de feedback de autonomía para registrar resultados reales. Las entradas se sincronizan con el proyecto actual, fortalecen las estimaciones futuras y permanecen disponibles offline para auditorías."
+        },
+        connectionDiagram: {
+          title: "Inspecciona el diagrama de conexiones",
+          body: "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones."
+        },
+        editDeviceDataAdd: {
+          title: "Añade un dispositivo a la biblioteca",
+          body: "Abre la Biblioteca de dispositivos, elige la categoría adecuada, introduce consumo y conectores y pulsa Añadir. Así el equipo queda guardado sin conexión y los autoguardados, las copias de seguridad y las comparticiones incluyen el nuevo registro."
+        },
+        editDeviceDataReview: {
+          title: "Revisa los detalles del dispositivo",
+          body: "Busca el dispositivo que acabas de guardar en Dispositivos existentes y despliega sus detalles. Confirma que consumo, salidas e información de compatibilidad sean correctos antes de usar los datos en cálculos o exportaciones."
+        },
+        editDeviceDataEdit: {
+          title: "Actualiza y vuelve a guardar el dispositivo",
+          body: "Pulsa Editar en esa entrada, ajusta especificaciones o notas y guarda otra vez. Esto verifica que el autosave, las copias de seguridad y las exportaciones se actualicen con los valores más recientes sin poner en riesgo los datos."
+        },
+        ownGearAccess: {
+          title: "Abre el cuadro de Equipo propio",
+          body: "Usa el botón Equipo propio en la barra lateral para abrir el cuadro de inventario siempre que necesites revisar el equipo que ya controlas. Abrirlo tú mismo mantiene el flujo familiar cuando termine el tutorial."
+        },
+        ownGearAddDevice: {
+          title: "Añade tu primer equipo propio",
+          body: "Introduce el nombre del artículo, la cantidad opcional y las notas, luego guarda. El equipo propio se almacena sin conexión, se incluye en los respaldos y se marca en las exportaciones para que el equipo vea al instante qué está disponible sin duplicar pedidos."
+        },
+        generateGearAndRequirements: {
+          title: "Genera requisitos y lista de equipo",
+          body: "Usa Generar lista de equipo y requisitos del proyecto para reconstruir la checklist de rodaje tras cada ajuste. El planner guarda el resultado con el proyecto para que los PDF, exportaciones y backups reflejen siempre las selecciones más recientes."
+        },
+        autoGearRulesAccess: {
+          title: "Abre las reglas automáticas de equipo",
+          body: "Ve a Ajustes → Reglas automáticas de equipo para revisar los controles de automatización. La pestaña muestra los preajustes, las reglas de fábrica y las copias de seguridad almacenadas con tus guardados sin conexión."
+        },
+        autoGearRulesEdit: {
+          title: "Edita las reglas automáticas de fábrica",
+          body: "Usa la lista de reglas para examinar las incorporaciones de fábrica. Selecciona una regla estándar para abrirla en el editor, ajusta elementos o condiciones y guarda para que la automatización actualizada permanezca en caché junto con las copias de seguridad y paquetes compartidos."
+        },
+        autoGearRulesCreate: {
+          title: "Añade una nueva regla automática",
+          body: "Pulsa Añadir regla para crear una automatización personalizada. Ponle nombre, agrega condiciones y el equipo necesario y guarda. El planificador ejecuta la nueva regla sin conexión cada vez que regeneras el kit y la incluye en exportaciones, compartidos y copias de seguridad."
+        },
+        projectRequirements: {
+          title: "Refina los recuadros de requisitos",
+          body: "Ajusta la salida de Requisitos del proyecto para capturar notas del equipo, entregables y recordatorios de seguridad. Cada recuadro se guarda con el proyecto, se imprime en los resúmenes y fluye hacia las exportaciones. Recorre tres subpasos rápidos para no olvidar nada: 15A documenta el briefing del proyecto—productora, preferencias del rental, calendario y especificaciones de entrega; 15B vincula las filas del equipo con los contactos guardados señalando la cobertura de preparación/rodaje/devolución y las notas de emergencia; 15C captura la logística como soportes de almacenamiento, preferencias de monitorización y avisos de seguridad, luego regenera el resumen para confirmar que aparezcan los nuevos detalles."
+        },
+        gearList: {
+          title: "Audita la lista de equipo generada",
+          body: "Revisa la lista de equipo categorizada en busca de duplicados, cantidades y accesorios autoañadidos. Las ediciones se guardan al instante, se incluyen en los paquetes para compartir y aparecen en impresiones y PDF."
+        },
+        exportImport: {
+          title: "Exporta e importa proyectos",
+          body: "Usa Exportar proyecto para descargar una copia de seguridad JSON y Importar proyecto para ensayar restauraciones. Guarda las exportaciones en soportes redundantes para que ninguna estación pierda datos si el perfil del navegador se restablece."
+        },
+        overviewAndPrint: {
+          title: "Genera vista general y documentos",
+          body: "Genera la vista general del proyecto para obtener el parte de energía listo para PDF, impresión o distribución al equipo. El cuadro usa solo datos guardados, así que puedes imprimir o exportar incluso estando completamente offline."
+        },
+        help: {
+          title: "Abre el centro de ayuda",
+          body: "El cuadro de Ayuda funciona como manual de rodaje offline: reúne documentación con búsqueda, notas de traducción y referencias del tutorial. Mantenlo anclado mientras trabajas; los artículos se almacenan en caché sin conexión y se actualizan cuando llegan nuevas funciones."
+        },
+        settingsGeneral: {
+          title: "Vuelve a Configuración → General",
+          body: "Ajusta idioma, tipografía, tema, modo rosa, escala de enfoque y otras opciones de presentación cuando quieras. Las preferencias se guardan localmente, viajan con tus proyectos y se incluyen en los respaldos."
+        },
+        settingsData: {
+          title: "Supervisa Datos y almacenamiento",
+          body: "Usa la pestaña Datos y almacenamiento para solicitar almacenamiento persistente, vigilar las marcas de tiempo de guardado y lanzar protecciones rápidas. Estos controles verifican que cada instantánea del proyecto permanezca disponible sin conexión."
+        },
+        settingsBackup: {
+          title: "Mantén Copia de seguridad y restauración",
+          body: "La pestaña Copia de seguridad y restauración gestiona exportaciones completas de la app, ensayos de restauración y diagnósticos. Ejecuta respaldos antes de cambios importantes, archiva los archivos en medios externos y verifica las restauraciones con regularidad."
         },
         completion: {
-          title: "Todo listo para planificar",
-          body: "Mantén Ayuda abierta cuando necesites más contexto. Recuerda guardar con frecuencia, crear copias antes de cambios importantes y almacenar las exportaciones en varias ubicaciones sin conexión."
+          title: "Tutorial completado",
+          body: "Ahora conoces todas las salvaguardas. Sigue guardando con frecuencia, exporta copias redundantes y vuelve a cualquier paso desde Ayuda cuando necesites un repaso. Cine Power Planner seguirá protegiendo tus datos sin conexión."
         }
       }
     },
@@ -4807,10 +5241,10 @@ var texts = {
     helpDataAuditStep2: "Exporta cada proyecto activo con %1$s, confirma que cada descarga se abre sin errores y guarda los archivos en dos ubicaciones distintas.",
     helpDataAuditStep3: "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local. Prueba %3$s con una de las nuevas exportaciones para asegurarte de que los paquetes compartidos se restauran sin volver a conectarte.",
     helpDataAuditStep4: "Ejecuta %1$s con tu copia de seguridad más reciente, verifica cada proyecto, dispositivo y regla, y luego registra en tu cuaderno de verificación la salida de la guarda runtime desde %2$s antes de cerrar el ensayo sin aplicar cambios.",
-    helpDataAuditNote: "Anota los resultados y archiva la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
+    helpDataAuditNote: "Anota los resultados, guarda una captura de Configuración → Datos y almacenamiento con la marca temporal más reciente y archiva también la salida de la guarda runtime en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
     helpRestoreDrillNote: "Anota nombres de archivo, marcas de tiempo y resultados de verificación en tu registro de rotación de copias de seguridad para que cada ensayo documente una copia recuperable.",
     helpSearchClear: "Borrar búsqueda",
-    helpSearchHelp: "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda.",
+    helpSearchHelp: "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes y resaltan el artículo correspondiente cuando pulsas Intro. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda y usa Tab para recorrer los accesos filtrados sin cerrar el proyecto.",
     helpSearchClearHelp: "Vacía el campo de búsqueda y vuelve a mostrar todos los temas.",
     helpQuickLinksHeading: "Ir a un tema",
     helpQuickLinksAriaLabel: "Navegación rápida por los temas de ayuda",
@@ -4850,7 +5284,7 @@ var texts = {
     generateOverviewHelp: "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre la ventana de overview para que revises los detalles de alimentación y conexión antes de imprimir cuando quieras. Las ópticas seleccionadas se muestran con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que los exports cubran chequeos sensibles a especificaciones.",
     generateGearListHelp: "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp: "Descarga un paquete JSON de seguridad del proyecto actual—incluye equipo personalizado, favoritos, retroalimentación de autonomía y dispositivos—listo para archivarse o compartirse sin conexión. Guarda el archivo junto a las copias de seguridad redundantes del equipo antes de cerrar el planificador para que cualquier estación pueda restaurarlo sin acceso a la red.",
-    applySharedLinkHelp: "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante.",
+    applySharedLinkHelp: "Carga la configuración desde un respaldo JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa con el diff antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar, y el planificador programa previamente una nueva copia de seguridad automática para que puedas deshacerla al instante. Las importaciones sin nombre se guardan automáticamente con un título “-imported” para que los datos se conserven incluso cuando el paquete no incluía un nombre de proyecto.",
     sharedLinkHelp: "Elige un JSON de proyecto exportado desde Guardar y compartir o desde Copia de seguridad y restaurar. Conserva el archivo original en tus respaldos tras la importación: el planificador solo lee una copia y deja constancia del intento en los registros de diagnóstico.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
     monitorSelectHelp: "Selecciona un monitor para incluir.",
@@ -4984,7 +5418,9 @@ var texts = {
       saveContact: "Enregistrer dans les contacts",
       openManager: "Ouvrir les contacts",
       linkedBadge: "Lié au contact",
-      contactMissingDetails: "Saisissez un nom, un e-mail ou un numéro de téléphone avant d'enregistrer ce contact.",
+      contactMissingDetails: "Saisissez un nom, un e-mail, un numéro de téléphone ou un site web avant d'enregistrer ce contact.",
+      websiteLabel: "Site web",
+      websitePlaceholder: "https://exemple.com",
       avatarOptionsTitle: "Options de photo",
       avatarOptionsDescription: "Prévisualisez cette photo et choisissez comment la mettre à jour.",
       avatarOptionsClose: "Fermer",
@@ -5007,12 +5443,12 @@ var texts = {
       userProfileNameLabel: "Nom affiché",
       userProfileNamePlaceholder: "Votre nom",
       userProfileRoleLabel: "Rôle ou fonction",
-      userProfileRolePlaceholder: "ex. 1er assistant caméra",
+      userProfileRolePlaceholder: "Sélectionner un rôle",
       userProfilePhoneLabel: "Numéro de téléphone",
       userProfilePhonePlaceholder: "Votre numéro de téléphone",
       userProfileEmailLabel: "Adresse e-mail",
       userProfileEmailPlaceholder: "prenom@exemple.com",
-      userProfileHint: "Utilisé pour afficher votre prénom et l’initiale du nom dans l’option \"Utilisateur\" du menu Fournisseur.",
+      userProfileHint: "Utilisé pour afficher votre prénom et l’initiale du nom dans l’option \"Utilisateur\" du menu Fournisseur. Le téléphone et l’e-mail figurent dans les exports et sauvegardes afin que l’équipe puisse vous joindre hors ligne.",
       userProfileAvatarButton: "Changer la photo",
       userProfileAvatarRemove: "Supprimer la photo",
       userProfileSaved: "Profil enregistré.",
@@ -5034,7 +5470,7 @@ var texts = {
     },
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
-    featureSearchHelp: "Saisissez un terme pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder, ainsi que les sujets d’aide associés. Les suggestions privilégient les correspondances directes avec les fonctionnalités et les appareils avant les articles d’aide afin de vous guider d’abord vers les commandes. Chaque résultat indique s’il ouvre une Fonctionnalité, une Action, un Appareil ou un Sujet d’aide et s’accompagne d’une courte description pour confirmer son effet. Les correspondances exactes et vos choix récents remontent automatiquement en tête afin que vos commandes habituelles apparaissent en premier. La recherche s’appuie sur les mêmes info-bulles et textes d’aide, donc des mots comme \"JSON\" ou \"sauvegarde auto\" mènent toujours au bon bouton, même si son libellé diffère. Les petites fautes de frappe sont tolérées : \"bakcup\" trouve encore Sauvegarder ou Enregistrer. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête ; en vidant le champ, vos correspondances récentes remontent en tête pour répéter rapidement vos actions. Ajoutez \"feature\", \"action\", \"device\" ou \"help\" (par exemple \"help: battery\") en préfixe pour limiter les résultats à ce type. Commencez par \"recent\" ou \"history\" (par exemple \"recent iso\") pour vous concentrer sur les éléments utilisés récemment avant de parcourir tout le catalogue. Encadrez une expression entre guillemets pour imposer une correspondance exacte afin que \"battery health\" prime sur les résultats plus larges. La recherche ignore désormais automatiquement les mots de remplissage courants, de sorte que des questions conversationnelles comme \"comment faire une sauvegarde\" restent centrées sur les mots clés importants.",
+    featureSearchHelp: "Saisissez un terme pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder, ainsi que les sujets d’aide associés. Les suggestions privilégient les correspondances directes avec les fonctionnalités et les appareils avant les articles d’aide afin de vous guider d’abord vers les commandes. Chaque résultat indique s’il ouvre une Fonctionnalité, une Action, un Appareil ou un Sujet d’aide et s’accompagne d’une courte description pour confirmer son effet. Les correspondances exactes et vos choix récents remontent automatiquement en tête afin que vos commandes habituelles apparaissent en premier. La recherche s’appuie sur les mêmes info-bulles et textes d’aide, donc des mots comme \"JSON\" ou \"sauvegarde auto\" mènent toujours au bon bouton, même si son libellé diffère. Les petites fautes de frappe sont tolérées : \"bakcup\" trouve encore Sauvegarder ou Enregistrer. Les abréviations de connecteurs et de supports comme \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" ou \"D-Tap\" sont automatiquement liées à leur nom complet, vous pouvez donc saisir la forme qui vous vient en premier. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête ; en vidant le champ, vos correspondances récentes remontent en tête pour répéter rapidement vos actions. Ajoutez \"feature\", \"action\", \"device\" ou \"help\" (par exemple \"help: battery\") en préfixe pour limiter les résultats à ce type. Commencez par \"recent\" ou \"history\" (par exemple \"recent iso\") pour vous concentrer sur les éléments utilisés récemment avant de parcourir tout le catalogue. Encadrez une expression entre guillemets pour imposer une correspondance exacte afin que \"battery health\" prime sur les résultats plus larges. La recherche ignore désormais automatiquement les mots de remplissage courants, de sorte que des questions conversationnelles comme \"comment faire une sauvegarde\" restent centrées sur les mots clés importants.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     featureSearchTypeFeature: "Fonctionnalité",
@@ -5066,8 +5502,7 @@ var texts = {
     shareIncludeAutoGearLabel: "Inclure les règles automatiques d’équipement",
     shareIncludeAutoGearHelp: "Ajoute vos règles automatiques d’équipement au fichier projet exporté.",
     shareIncludeOwnedGearLabel: "Marquer le matériel personnel à l’export",
-    shareIncludeOwnedGearHelp:
-      "Ajoutez des badges de propriété pour le matériel que vous avez indiqué comme vous appartenant lors de l’export.",
+    shareIncludeOwnedGearHelp: "Ajoutez des badges de propriété pour le matériel que vous avez indiqué comme vous appartenant lors de l’export.",
     shareDialogTitle: "Exporter le projet",
     shareFilenameLabel: "Nom du fichier d’export",
     shareDialogConfirm: "Télécharger",
@@ -5086,6 +5521,12 @@ var texts = {
     sharedImportAutoGearPresetFallback: "Règles automatiques partagées",
     sharedImportDialogTitle: "Règles automatiques d’accessoires",
     sharedImportDialogMessage: "Choisissez comment appliquer les règles automatiques partagées de ce projet.",
+    sharedImportMetadataTimestamp: "Exporté le {timestamp}",
+    sharedImportMetadataVersion: "Version du planificateur {version}",
+    sharedImportMetadataVersionMismatch: "Version du planificateur {importVersion} (version actuelle {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Inclut des règles automatiques",
+    sharedImportMetadataIncludesOwnedGear: "Marque le matériel personnel",
+    sharedImportMetadataUnavailable: "Détails d’exportation indisponibles.",
     sharedImportDialogConfirm: "Appliquer",
     sharedImportDialogCancel: "Annuler",
     cameraLabel: "Caméra:",
@@ -5457,10 +5898,12 @@ var texts = {
       crewNamePlaceholder: "Nom",
       crewPhonePlaceholder: "Téléphone",
       crewEmailPlaceholder: "Courriel",
+      crewWebsitePlaceholder: "Site web",
       crewRoleLabel: "Rôle de l'équipe",
       crewNameLabel: "Nom du membre de l'équipe",
       crewPhoneLabel: "Téléphone du membre de l'équipe",
-      crewEmailLabel: "Courriel du membre de l'équipe"
+      crewEmailLabel: "Courriel du membre de l'équipe",
+      crewWebsiteLabel: "Site web du membre de l'équipe"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -5562,10 +6005,13 @@ var texts = {
     gearListEditOwnedHelp: "Ajoutez ou retirez cette ligne de votre liste de Matériel personnel pour garder l’inventaire synchronisé.",
     gearListOwnedExportLabel: "Possédé par %s",
     gearListEditCameraLinkLabel: "Lien caméra",
-    gearListEditCameraLinkHelp: "Identifie les éléments attachés à la caméra sélectionnée.",
+    gearListEditCameraAssignmentLabel: "Désignation caméra",
+    gearListEditCameraAssignmentHelp: "Choisissez la lettre associée à ce boîtier. Les accessoires liés partageront sa couleur.",
+    gearListEditCameraLinkHelp: "Identifie les éléments attachés à une lettre de caméra précise.",
     gearListEditCameraLinkNoneOption: "Aucun lien caméra",
-    gearListEditCameraLinkCameraOption: "Lier à la caméra (%s)",
-    gearListEditCameraLinkUnavailableOption: "Lier à la caméra",
+    gearListEditCameraLinkCameraOption: "Caméra %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Caméra %s (non assignée)",
+    gearListEditCameraLinkDefaultLabel: "Caméra %s",
     gearListCameraLinkBadgeLabel: "Lié à la caméra",
     gearListEditDialogTitle: "Modifier l’élément de matériel",
     gearListEditQuantityLabel: "Quantité",
@@ -5587,6 +6033,10 @@ var texts = {
     gearListEditButton: "Modifier l’élément de matériel",
     gearListEditCustomItem: "Modifier l’élément personnalisé",
     gearListEditReset: "Réinitialiser le nom",
+    gearListEditDeviceHeading: "Attributs de l’appareil",
+    gearListEditDeviceEdit: "Modifier les attributs de l’appareil",
+    gearListEditDeviceEmpty: "Aucun attribut de l’appareil enregistré. Mettez à jour l’appareil pour ajouter des détails.",
+    gearListEditDeviceCategory: "Bibliothèque d’appareils : %s",
     gearListLensCoverageWarning: "Cet objectif pourrait ne pas couvrir entièrement le capteur de cette caméra !",
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp: "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
@@ -5656,8 +6106,48 @@ var texts = {
     settingsTabGeneralHelp: "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
     generalSectionLanguageHeading: "Langue et unités",
     generalSectionAppearanceHeading: "Apparence",
+    generalSectionCameraColorsHeading: "Désignations caméra",
     generalSectionTypographyHeading: "Typographie",
     generalSectionBrandingHeading: "Image de marque",
+    documentationTrackerHeading: "Journal des mises à jour de la documentation",
+    documentationTrackerDescription: "Consignez les mises à jour des traductions, de l'aide et des guides imprimés avant de livrer une version hors ligne.",
+    documentationTrackerAddRelease: "Nouveau journal de version",
+    documentationTrackerEmpty: "Aucune version suivie pour le moment. Ajoutez la prochaine version pour commencer à consigner les mises à jour.",
+    documentationTrackerSummaryIntro: "Utilisez le journal pour suivre l'avancement des mises à jour de la documentation.",
+    documentationTrackerLocalesHeading: "Couverture des README localisés",
+    documentationTrackerLocaleEnglish: "README en anglais",
+    documentationTrackerLocaleGerman: "README en allemand",
+    documentationTrackerLocaleSpanish: "README en espagnol",
+    documentationTrackerLocaleFrench: "README en français",
+    documentationTrackerLocaleItalian: "README en italien",
+    documentationTrackerHelpHeading: "Sujets du centre d'aide",
+    documentationTrackerHelpStart: "Premiers pas et navigation",
+    documentationTrackerHelpSave: "Enregistrement, partage et exportations",
+    documentationTrackerHelpBackup: "Sauvegarde et exercices de restauration",
+    documentationTrackerHelpOwnGear: "Équipement personnel et importations",
+    documentationTrackerHelpOffline: "Disponibilité hors ligne et service worker",
+    documentationTrackerPrintHeading: "Guides imprimables",
+    documentationTrackerPrintChecklist: "Checklist de mise à jour de la documentation",
+    documentationTrackerPrintMaintenance: "Guide de maintenance de la documentation",
+    documentationTrackerPrintSaveShare: "Référence Sauvegarder, partager, importer, sauvegarder et restaurer",
+    documentationTrackerPrintOffline: "Exercice de préparation hors ligne",
+    documentationTrackerReleaseNameLabel: "Nom de la version",
+    documentationTrackerReleaseDateLabel: "Date cible de la version",
+    documentationTrackerNotesLabel: "Notes de vérification",
+    documentationTrackerNotesPlaceholder: "Indiquez ce qui a changé, qui l'a vérifié et où les artefacts ont été stockés.",
+    documentationTrackerMarkAllComplete: "Tout marquer comme terminé",
+    documentationTrackerArchiveRelease: "Archiver la version",
+    documentationTrackerRestoreRelease: "Rouvrir la version",
+    documentationTrackerArchivedBadge: "Archivé",
+    documentationTrackerArchiveConfirm: "Archiver \xAB\xA0{name}\xA0\xBB ? Les coches termin\xE9es resteront consign\xE9es pour les audits.",
+    documentationTrackerSummaryPending: "Il reste {remaining} t\xE2ches de documentation sur {total} pour \xAB\xA0{name}\xA0\xBB.",
+    documentationTrackerSummaryComplete: "Les {total} t\xE2ches de documentation pour \xAB\xA0{name}\xA0\xBB sont termin\xE9es.",
+    documentationTrackerFallbackReleaseName: "Version documentation",
+    documentationTrackerProgress: "{completed}/{total} terminées",
+    documentationTrackerSectionProgress: "{completed}/{total}",
+    documentationTrackerUpdatedAt: "Mis à jour {time}",
+    documentationTrackerTargetSummary: "Objectif {date}",
+    documentationTrackerDefaultReleaseName: "Version {date}",
     languageSetting: "Langue",
     settingsLanguageHelp: "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
     darkModeSetting: "Mode sombre",
@@ -5666,6 +6156,13 @@ var texts = {
     settingsPinkModeHelp: "Activez le thème rose ludique depuis Paramètres.",
     accentColorSetting: "Couleur d’accent",
     accentColorHelp: "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
+    cameraColorSettingDescription: "Attribuez une couleur de surbrillance à chaque lettre de caméra pour garder les accessoires liés parfaitement coordonnés.",
+    cameraColorInputHelp: "Choisissez la couleur de surbrillance pour la caméra %s.",
+    cameraColorALabel: "Couleur caméra A",
+    cameraColorBLabel: "Couleur caméra B",
+    cameraColorCLabel: "Couleur caméra C",
+    cameraColorDLabel: "Couleur caméra D",
+    cameraColorELabel: "Couleur caméra E",
     accentColorReset: "Réinitialiser par défaut",
     accentColorResetHelp: "Rétablit la couleur d’accent d’origine du thème sans modifier les autres préférences.",
     temperatureUnitSetting: "Unité de température",
@@ -6179,7 +6676,7 @@ var texts = {
     loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingHeading: "Journal de diagnostics",
     loggingHeadingHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
-    loggingIntro: "Le journal se met à jour en direct tant que la fenêtre Paramètres reste ouverte. Activez la capture de la console ci-dessous lorsque vous avez besoin d’un débogage plus poussé. Rien ne quitte cet appareil.",
+    loggingIntro: "Le journal se met à jour en direct tant que la fenêtre Paramètres reste ouverte. La capture de la console est active par défaut pour que les transcriptions restent locales ; ajustez les commandes ci-dessous uniquement si vous devez modifier le comportement du diagnostic. Rien ne quitte cet appareil.",
     loggingLevelFilterLabel: "Afficher les entrées à partir de",
     loggingLevelFilterHelp: "Choisissez le niveau minimal à afficher.",
     loggingLevelFilterAll: "Tous les niveaux",
@@ -6196,7 +6693,7 @@ var texts = {
     loggingConsoleOutputLabel: "Dupliquer dans la console",
     loggingConsoleOutputHelp: "Maintient la console du navigateur synchronisée avec ce journal.",
     loggingCaptureConsoleLabel: "Capturer la sortie de la console",
-    loggingCaptureConsoleHelp: "Enregistre les messages de console pour le diagnostic. L’activation peut affecter les performances.",
+    loggingCaptureConsoleHelp: "Enregistre les messages de console pour le diagnostic. Laissez cette option activée sauf si vous devez réduire la charge de journalisation.",
     loggingCaptureErrorsLabel: "Capturer les erreurs globales",
     loggingCaptureErrorsHelp: "Enregistre les erreurs non interceptées et les promesses rejetées.",
     loggingPersistSessionLabel: "Conserver le journal après rechargement",
@@ -6336,12 +6833,12 @@ var texts = {
     helpResultsAssist: "Astuce : appuyez sur Tab pour rejoindre les raccourcis ou sur Entrée pour ouvrir le premier sujet visible.",
     helpNoResults: "Aucun sujet d'aide ne correspond à votre recherche. Essayez avec des mots-clés plus courts, des synonymes ou effacez le champ pour tout parcourir.",
     helpNoResultsSuggestionsHeading: "Besoin d'un autre résultat ?",
-    helpNoResultsSuggestionsIntro: "Suivez ces étapes pour avancer tout en protégeant vos données :",
+    helpNoResultsSuggestionsIntro: "Suivez ces étapes pour avancer tout en protégeant vos données et en confirmant les sauvegardes hors ligne :",
     helpNoResultsSuggestionClear: "Utilisez %s pour afficher de nouveau tous les articles.",
     helpNoResultsSuggestionSynonyms: "Recherchez des surnoms de matériel, des références de batteries ou des mots-clés plus courts.",
     helpNoResultsSuggestionQuickStart: "Ouvrez la %s pour revoir comment enregistrer, partager et sauvegarder vos projets.",
-    helpNoResultsSuggestionBackup: "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
-    helpOnboardingTutorialCopy: "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+    helpNoResultsSuggestionBackup: "Ouvrez %1$s, lancez un %2$s pour confirmer vos exports hors ligne et consultez Paramètres → Données et stockage afin de vérifier l'horodatage de la dernière sauvegarde automatique avant de continuer.",
+    helpOnboardingTutorialCopy: "pour parcourir chaque flux de travail avec un suivi de progression hors ligne — y compris le point de contrôle du Résumé d’alimentation et la répétition du filet de sécurité hors ligne — avant de configurer votre premier projet. Utilisez le navigateur d’étapes et la jauge de progression pour revoir hors ligne les sections terminées.",
     onboardingTour: {
       startLabel: "Lancer le tutoriel guidé",
       restartLabel: "Rejouer le tutoriel guidé",
@@ -6352,6 +6849,7 @@ var texts = {
       doneLabel: "Terminer le tutoriel",
       stepIndicator: "Étape {current} sur {total}",
       completionIndicator: "Premier projet sauvegardé hors ligne",
+      prefaceIndicator: "Préface",
       stepListAriaLabel: "Étapes du tutoriel",
       stepStatusCurrent: "Étape actuelle",
       stepStatusComplete: "Terminé",
@@ -6361,16 +6859,11 @@ var texts = {
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
-      helpStatusNotStarted:
-        "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
-      helpStatusInProgress:
-        "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
-      helpStatusResume:
-        "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
-      helpStatusSkipped:
-        "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
-      helpStatusCompleted:
-        "Tutoriel terminé. Rejouez n’importe quelle étape à tout moment pour un rappel.",
+      helpStatusNotStarted: "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
+      helpStatusInProgress: "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
+      helpStatusResume: "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
+      helpStatusSkipped: "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
+      helpStatusCompleted: "Tutoriel terminé. Rejouez n’importe quelle étape à tout moment pour un rappel.",
       helpStatusLastCompleted: "Dernière étape terminée : {step} ({timeAgo}).",
       helpStatusLastUpdated: "Dernière mise à jour : {timeAgo}.",
       helpStatusTimeJustNow: "à l’instant",
@@ -6387,39 +6880,123 @@ var texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-          body: "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement."
+          body: "Suivez ce guide pour découvrir les workflows qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez sans rien perdre."
         },
         userProfile: {
-          title: "Configurez votre profil",
-          body: "Renseignez votre nom affiché, rôle, téléphone, e-mail et photo directement ici. Les changements se synchronisent immédiatement avec Contacts, restent disponibles hors ligne dans vos sauvegardes et garantissent les bons crédits."
+          title: "Configurez la langue et votre profil",
+          body: "Définissez la langue de l’interface, votre nom d’affichage, rôle, téléphone, e-mail et photo. Chaque modification se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et figure dans les exports."
+        },
+        unitsPreferences: {
+          title: "Réglez thème et unités",
+          body: "Ouvrez Paramètres → Général pour choisir le thème, les accents roses facultatifs, l’échelle de mise au point et les unités de température. Demandez le stockage persistant afin que le navigateur conserve les préférences et sécurise les sauvegardes."
         },
         nameProject: {
           title: "Nommez votre premier projet",
-          body: "Saisissez un nom de projet pour activer l’enregistrement automatique, les sauvegardes et les exports. Le bouton Suivant se déverrouille dès qu’un nom est défini afin que chaque étape sécurise immédiatement le projet hors ligne."
+          body: "Donnez au projet un nom explicite pour ancrer l’enregistrement automatique, l’historique, les exports et les sauvegardes. Tous les workflows s’y réfèrent pour garder votre bibliothèque hors ligne organisée."
         },
         saveProject: {
           title: "Enregistrez immédiatement",
-          body: "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour capturer une copie hors ligne du projet nommé. Si une configuration déjà sauvegardée est sélectionnée, l’étape se valide automatiquement ; sinon, appuyez sur Enregistrer pour continuer."
+          body: "Cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S/Entrée) pour capturer un instantané complet hors ligne : équipements, calculs de puissance, exigences, notes et diagnostics. L’étape suivante se débloque une fois l’enregistrement terminé."
         },
         addCamera: {
           title: "Ajoutez la caméra principale",
-          body: "Ouvrez la liste Caméra et choisissez le boîtier que vous planifiez. La recherche est disponible hors connexion dans la liste. Suivant s’active lorsque vous sélectionnez un modèle précis."
+          body: "Sélectionnez le boîtier que vous planifiez. La recherche dans le menu fonctionne hors ligne. Vous débloquez ainsi les accessoires, consommations et diagrammes correspondants."
         },
-        addPower: {
-          title: "Choisissez une source d’alimentation",
-          body: "Sélectionnez une batterie ou une source CC adaptée à la configuration. Le choix met instantanément à jour les calculs d’autonomie et est enregistré avec l’instantané du projet."
+        addMonitoring: {
+          title: "Ajoutez moniteurs, vidéo sans fil et FIZ",
+          body: "Ajoutez moniteurs embarqués, transmetteurs sans fil et moteurs ou contrôleurs FIZ. Chaque sélection alimente les calculs d’autonomie, les diagrammes et les règles automatiques afin que le kit généré reflète l’ensemble du montage."
         },
-        generatePlan: {
-          title: "Générez votre premier plan",
-          body: "Utilisez Générer la liste du matériel et exigences du projet pour créer la checklist imprimable. La fenêtre du projet s’ouvre afin de vérifier ensemble consommations, autonomie et notes d’équipe."
+        selectBattery: {
+          title: "Choisissez les batteries",
+          body: "Sélectionnez le système de batteries qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne."
         },
-        exportBackup: {
-          title: "Exportez une copie de sécurité hors ligne",
-          body: "Cliquez sur Exporter le projet ou Quick safeguards pour télécharger une sauvegarde JSON. Conserver un fichier en dehors du navigateur protège la nouvelle configuration lors des réinitialisations ou changements d’appareil."
+        results: {
+          title: "Passez en revue le résumé des résultats",
+          body: "Traitez l’étape 8 comme trois passages rapides dans Power Summary : 8A confirme la carte Consommation totale et le pic prévu, 8B examine chaque pack batterie pour les estimations d’autonomie et les alertes de marge de réserve, et 8C vérifie les comptes à rebours de changement ainsi que la couverture des chargeurs. Terminez en consignant tout avertissement, en téléchargeant le rapport hors ligne pour des sauvegardes redondantes et en confirmant que la bannière d’enregistrement automatique affiche l’horodatage le plus récent afin que partages et exports reflètent le même instantané."
+        },
+        batteryComparison: {
+          title: "Comparez les options de batterie",
+          body: "Ouvrez Comparaison de batteries pour évaluer les packs alternatifs côte à côte. Le graphique conserve les calculs hors ligne pour tester des scénarios et valider la marge d’autonomie la plus sûre de la journée."
+        },
+        runtimeFeedback: {
+          title: "Envoyez un retour d’autonomie",
+          body: "Utilisez le bouton de retour d’expérience sur l’autonomie pour consigner les résultats réels. Les entrées se synchronisent avec le projet en cours, renforcent les estimations futures et restent disponibles hors ligne pour les audits."
+        },
+        connectionDiagram: {
+          title: "Inspectez le diagramme de connexion",
+          body: "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations."
+        },
+        editDeviceDataAdd: {
+          title: "Ajoutez un appareil à la bibliothèque",
+          body: "Ouvrez la bibliothèque des appareils, choisissez la catégorie appropriée, renseignez la consommation et les connecteurs puis cliquez sur Ajouter. L’appareil est ainsi enregistré hors ligne et pris en compte par l’autosauvegarde, les sauvegardes et les partages."
+        },
+        editDeviceDataReview: {
+          title: "Consultez les détails de l’appareil",
+          body: "Repérez l’appareil que vous venez d’enregistrer dans Appareils existants et déployez son panneau de détails. Vérifiez que consommation, sorties et informations de compatibilité sont correctes avant de les utiliser pour les calculs ou les exports."
+        },
+        editDeviceDataEdit: {
+          title: "Mettez à jour et resauvegardez l’appareil",
+          body: "Cliquez sur Modifier pour cette entrée, ajustez les spécifications ou les notes puis enregistrez à nouveau. Vous confirmez ainsi que l’autosauvegarde, les sauvegardes et les exports sont actualisés avec les dernières valeurs sans risque pour les données."
+        },
+        ownGearAccess: {
+          title: "Ouvrez la fenêtre Matériel personnel",
+          body: "Utilisez le bouton Matériel personnel dans la barre latérale pour ouvrir la fenêtre d’inventaire dès que vous devez vérifier ce que vous possédez déjà. L’ouvrir vous-même rend le geste naturel une fois le tutoriel terminé."
+        },
+        ownGearAddDevice: {
+          title: "Ajoutez votre premier matériel possédé",
+          body: "Saisissez le nom de l’élément, la quantité optionnelle et les notes, puis enregistrez. Le matériel possédé est stocké hors ligne, inclus dans les sauvegardes et signalé dans les exports pour que l’équipe voie immédiatement ce qui est disponible sans doublons."
+        },
+        generateGearAndRequirements: {
+          title: "Générez exigences et liste du matériel",
+          body: "Utilisez Générer liste du matériel et exigences du projet pour reconstruire la checklist après chaque modification. Le planner enregistre la sortie avec le projet afin que PDF, exports et sauvegardes reflètent toujours les dernières sélections."
+        },
+        autoGearRulesAccess: {
+          title: "Ouvrir les règles d’équipement automatiques",
+          body: "Ouvrez Paramètres → Règles d’équipement automatiques pour vérifier les automatismes. L’onglet affiche les préréglages, les règles d’usine et les sauvegardes de sécurité stockés avec vos enregistrements hors ligne."
+        },
+        autoGearRulesEdit: {
+          title: "Modifier les règles automatiques d’origine",
+          body: "Utilisez la liste des règles pour examiner les ajouts d’usine. Sélectionnez une règle d’origine pour l’ouvrir dans l’éditeur, ajustez les éléments ou conditions puis enregistrez afin que l’automatisation mise à jour reste en cache avec les sauvegardes et ensembles partagés."
+        },
+        autoGearRulesCreate: {
+          title: "Ajouter une nouvelle règle automatique",
+          body: "Cliquez sur Ajouter une règle pour créer une automatisation personnalisée. Nommez-la, ajoutez des conditions et le matériel requis, puis enregistrez. Le planificateur applique la nouvelle règle hors ligne à chaque régénération du kit et l’inclut dans les exports, partages et sauvegardes."
+        },
+        projectRequirements: {
+          title: "Affinez les encarts d’exigences du projet",
+          body: "Ajustez la sortie Exigences du projet pour consigner notes d’équipe, livrables et rappels de sécurité. Chaque encart est enregistré avec le projet, imprimé dans les aperçus et intégré aux exports. Parcourez trois sous-étapes rapides pour ne rien oublier : 15A renseigne le brief de projet—société de production, préférences du loueur, calendrier et spécifications de livraison ; 15B relie les lignes d’équipe aux contacts enregistrés en indiquant la couverture préparation/tournage/retour ainsi que les notes d’urgence ; 15C capture la logistique comme les supports de stockage, les préférences de monitoring et les rappels de sécurité, puis régénérez le résumé pour confirmer l’apparition des nouveaux détails."
+        },
+        gearList: {
+          title: "Auditez la liste du matériel générée",
+          body: "Vérifiez la liste du matériel classée par catégorie pour repérer doublons, quantités et accessoires ajoutés automatiquement. Les modifications sont sauvegardées instantanément, intégrées aux lots de partage et visibles dans les impressions et PDF."
+        },
+        exportImport: {
+          title: "Exportez et importez des projets",
+          body: "Utilisez Exporter le projet pour télécharger une copie JSON de sécurité et Importer un projet pour répéter les restaurations. Archivez les exports sur des supports redondants afin qu’aucun poste ne perde de données si le profil du navigateur est réinitialisé."
+        },
+        overviewAndPrint: {
+          title: "Générez aperçu et impressions",
+          body: "Générez l’aperçu du projet pour accéder aux résumés prêts pour PDF, impression et partage. La fenêtre n’utilise que des données enregistrées, ce qui vous permet d’imprimer ou d’exporter même totalement hors ligne."
+        },
+        help: {
+          title: "Ouvrez le centre d’aide",
+          body: "La fenêtre Aide inclut documentation recherchable, notes de traduction et repères du tutoriel. Gardez-la épinglée pendant le travail : les articles restent en cache hors ligne et se mettent à jour quand de nouvelles fonctions arrivent."
+        },
+        settingsGeneral: {
+          title: "Retournez à Paramètres → Général",
+          body: "Ajustez langue, typographie, thème, mode rose, échelle de mise au point et autres options de présentation quand vous voulez. Les préférences sont enregistrées localement, synchronisées entre les projets et ajoutées aux sauvegardes."
+        },
+        settingsData: {
+          title: "Surveillez Données et stockage",
+          body: "Utilisez l’onglet Données et stockage pour demander le stockage persistant, surveiller les horodatages de sauvegarde et lancer des protections rapides. Ces contrôles vérifient que chaque capture de projet reste disponible hors ligne."
+        },
+        settingsBackup: {
+          title: "Maintenez Sauvegarde et restauration",
+          body: "L’onglet Sauvegarde et restauration gère les exports complets de l’application, les répétitions de restauration et la diagnostic. Effectuez des sauvegardes avant les changements majeurs, archivez les fichiers sur des supports externes et validez régulièrement les restaurations."
         },
         completion: {
-          title: "Vous êtes prêt à planifier",
-          body: "Gardez l’Aide ouverte pour approfondir au besoin. Pensez à enregistrer souvent, à créer une sauvegarde avant toute modification majeure et à conserver vos exports dans plusieurs emplacements hors ligne."
+          title: "Tutoriel terminé",
+          body: "Vous connaissez désormais toutes les protections. Continuez à enregistrer souvent, exportez des sauvegardes redondantes et revisitez n’importe quelle étape depuis Aide quand vous voulez un rappel. Cine Power Planner continuera de protéger vos données hors ligne."
         }
       }
     },
@@ -6431,10 +7008,10 @@ var texts = {
     helpDataAuditStep2: "Exportez chaque projet actif avec %1$s, vérifiez que chaque téléchargement s’ouvre sans erreur et stockez les fichiers dans deux emplacements distincts.",
     helpDataAuditStep3: "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide. Testez %3$s avec l’une des nouvelles exportations pour garantir que les paquets partagés se restaurent sans reconnexion.",
     helpDataAuditStep4: "Exécutez %1$s avec votre dernière sauvegarde, vérifiez chaque projet, appareil et règle, puis consignez dans votre journal de vérification la sortie de la sentinelle runtime issue de %2$s avant de fermer la répétition sans publier les modifications.",
-    helpDataAuditNote: "Consignez les résultats et archivez la sortie de la sentinelle runtime dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
+    helpDataAuditNote: "Consignez les résultats, capturez une capture d’écran de Paramètres → Données et stockage avec le dernier horodatage de sauvegarde automatique, puis archivez également la sortie de la sentinelle runtime dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
     helpRestoreDrillNote: "Consignez les noms de fichiers, horodatages et résultats de vérification dans votre registre de rotation des sauvegardes afin que chaque répétition documente une copie restaurable.",
     helpSearchClear: "Effacer la recherche",
-    helpSearchHelp: "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche.",
+    helpSearchHelp: "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie et mettent en évidence l'article correspondant lorsque vous appuyez sur Entrée. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche, puis utilisez Tab pour parcourir les liens filtrés sans fermer votre projet.",
     helpSearchClearHelp: "Effacez le champ de recherche et affichez de nouveau tous les sujets.",
     helpQuickLinksHeading: "Accéder à un sujet",
     helpQuickLinksAriaLabel: "Navigation rapide des sujets d'aide",
@@ -6474,7 +7051,7 @@ var texts = {
     generateOverviewHelp: "Reconstruit le résumé prêt à l'impression du projet enregistré sélectionné et ouvre la fenêtre d'aperçu pour examiner les détails d'alimentation et de connexion avant d'imprimer quand vous êtes prêt. La section optiques affiche marque, monture, diamètre, focus, poids, support de rods et notes afin que les exports couvrent les contrôles sensibles aux spécifications.",
     generateGearListHelp: "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp: "Téléchargez un paquet JSON de sécurité du projet en cours—avec accessoires personnalisés, favoris, retours d’autonomie et appareils—prêt à archiver ou à partager hors ligne. Rangez le fichier avec les sauvegardes redondantes de l’équipe avant de fermer le planner afin que chaque poste puisse le restaurer sans connexion.",
-    applySharedLinkHelp: "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & partager ou Sauvegarder & restaurer. Vérifiez l’aperçu comparatif avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer, et le planner planifie en amont une nouvelle sauvegarde automatique pour que vous puissiez revenir en arrière immédiatement.",
+    applySharedLinkHelp: "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & partager ou Sauvegarder & restaurer. Vérifiez l’aperçu comparatif avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer, et le planner planifie en amont une nouvelle sauvegarde automatique pour que vous puissiez revenir en arrière immédiatement. Les imports sans nom sont automatiquement enregistrés avec un titre “-imported” afin que les données arrivent même lorsque le lot n’indiquait aucun nom de projet.",
     sharedLinkHelp: "Choisissez un fichier JSON de projet exporté depuis Enregistrer & partager ou Sauvegarder & restaurer. Conservez l’original dans vos sauvegardes après l’import : le planner ne lit qu’une copie et journalise la tentative dans le diagnostic.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
     monitorSelectHelp: "Sélectionnez un moniteur à inclure.",
@@ -6608,7 +7185,9 @@ var texts = {
       saveContact: "In Kontakten speichern",
       openManager: "Kontakte öffnen",
       linkedBadge: "Mit Kontakt verknüpft",
-      contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse oder eine Telefonnummer an, bevor du diesen Kontakt speicherst.",
+      contactMissingDetails: "Gib einen Namen, eine E-Mail-Adresse, eine Telefonnummer oder eine Website an, bevor du diesen Kontakt speicherst.",
+      websiteLabel: "Website",
+      websitePlaceholder: "https://beispiel.de",
       avatarOptionsTitle: "Fotooptionen",
       avatarOptionsDescription: "Zeige eine Vorschau des Fotos und wähle eine Aktion.",
       avatarOptionsClose: "Schließen",
@@ -6631,12 +7210,12 @@ var texts = {
       userProfileNameLabel: "Anzeigename",
       userProfileNamePlaceholder: "Dein Name",
       userProfileRoleLabel: "Rolle oder Funktion",
-      userProfileRolePlaceholder: "z. B. 1. AC",
+      userProfileRolePlaceholder: "Rolle auswählen",
       userProfilePhoneLabel: "Telefonnummer",
       userProfilePhonePlaceholder: "Ihre Telefonnummer",
       userProfileEmailLabel: "E-Mail-Adresse",
       userProfileEmailPlaceholder: "name@beispiel.de",
-      userProfileHint: "Zeigt im Eintrag \"User\" im Menü \"Bereitgestellt von\" deinen Vornamen und den Anfangsbuchstaben des Nachnamens.",
+      userProfileHint: "Zeigt im Eintrag \"User\" im Menü \"Bereitgestellt von\" deinen Vornamen und den Anfangsbuchstaben des Nachnamens. Telefon und E-Mail erscheinen in Exporten und Backups, damit die Crew dich offline erreichen kann.",
       userProfileAvatarButton: "Foto ändern",
       userProfileAvatarRemove: "Foto entfernen",
       userProfileSaved: "Profil gespeichert.",
@@ -6658,7 +7237,7 @@ var texts = {
     },
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
-    featureSearchHelp: "Tippe, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Vorschläge priorisieren direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit du zuerst bei den Bedienelementen landest. Jeder Vorschlag zeigt, ob er eine Funktion, Aktion, ein Gerät oder ein Hilfethema öffnet, damit du vor dem Drücken von Enter weißt, was passiert. Exakte Treffer und zuletzt verwendete Einträge wandern automatisch nach oben, damit deine meistgenutzten Bedienelemente zuerst erscheinen. Jeder Vorschlag enthält außerdem eine kurze Beschreibung, damit du sofort erkennst, was beim Auswählen passiert. Die Suche berücksichtigt außerdem die gleichen Hilfetexte aus Tooltips, sodass Begriffe wie \"JSON\" oder \"Autospeichern\" trotzdem zum richtigen Button führen, selbst wenn die Beschriftung anders lautet. Kleine Tippfehler werden verziehen, sodass \"bakcup\" trotzdem Backup oder Speichern findet. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, verwende Esc oder ×, um die Eingabe zu löschen, und wenn das Feld leer ist, erscheinen deine zuletzt genutzten Treffer oben für schnellere Wiederholungen. Stelle deiner Suche \"feature\", \"action\", \"device\" oder \"help\" vor (z. B. \"help: battery\"), um Vorschläge auf diesen Typ zu begrenzen. Beginne mit \"recent\" oder \"history\" (z. B. \"recent iso\"), um nur zuletzt verwendete Einträge zu durchsuchen, bevor der komplette Katalog berücksichtigt wird. Exakte Phrasen stehen jetzt ganz oben, daher bringt das Tippen der vollständigen Beschriftung eines Bedienelements wie \"battery health\" diese Funktion vor allgemeineren Treffern. Die Suche ignoriert jetzt automatisch gängige Füllwörter, sodass konversationelle Fragen wie \"wie mache ich ein Backup\" weiterhin die wichtigen Stichwörter hervorheben.",
+    featureSearchHelp: "Tippe, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Vorschläge priorisieren direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit du zuerst bei den Bedienelementen landest. Jeder Vorschlag zeigt, ob er eine Funktion, Aktion, ein Gerät oder ein Hilfethema öffnet, damit du vor dem Drücken von Enter weißt, was passiert. Exakte Treffer und zuletzt verwendete Einträge wandern automatisch nach oben, damit deine meistgenutzten Bedienelemente zuerst erscheinen. Jeder Vorschlag enthält außerdem eine kurze Beschreibung, damit du sofort erkennst, was beim Auswählen passiert. Die Suche berücksichtigt außerdem die gleichen Hilfetexte aus Tooltips, sodass Begriffe wie \"JSON\" oder \"Autospeichern\" trotzdem zum richtigen Button führen, selbst wenn die Beschriftung anders lautet. Kleine Tippfehler werden verziehen, sodass \"bakcup\" trotzdem Backup oder Speichern findet. Abkürzungen für Anschlüsse und Medien wie \"USB-C\", \"Micro-HDMI\", \"SDXC\", \"CFexpress\", \"V-Mount\" oder \"D-Tap\" werden automatisch ihren vollständigen Bezeichnungen zugeordnet, sodass du einfach die Variante eingeben kannst, an die du dich erinnerst. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, verwende Esc oder ×, um die Eingabe zu löschen, und wenn das Feld leer ist, erscheinen deine zuletzt genutzten Treffer oben für schnellere Wiederholungen. Stelle deiner Suche \"feature\", \"action\", \"device\" oder \"help\" vor (z. B. \"help: battery\"), um Vorschläge auf diesen Typ zu begrenzen. Beginne mit \"recent\" oder \"history\" (z. B. \"recent iso\"), um nur zuletzt verwendete Einträge zu durchsuchen, bevor der komplette Katalog berücksichtigt wird. Exakte Phrasen stehen jetzt ganz oben, daher bringt das Tippen der vollständigen Beschriftung eines Bedienelements wie \"battery health\" diese Funktion vor allgemeineren Treffern. Die Suche ignoriert jetzt automatisch gängige Füllwörter, sodass konversationelle Fragen wie \"wie mache ich ein Backup\" weiterhin die wichtigen Stichwörter hervorheben.",
     featureSearchClear: "Suche löschen",
     featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen. Drücke Esc, um schnell zu löschen.",
     featureSearchTypeFeature: "Funktion",
@@ -6690,8 +7269,7 @@ var texts = {
     shareIncludeAutoGearLabel: "Automatische Gear-Regeln einschließen",
     shareIncludeAutoGearHelp: "Fügt deine automatischen Gear-Regeln der exportierten Projektdatei hinzu.",
     shareIncludeOwnedGearLabel: "Eigenes Equipment im Export markieren",
-    shareIncludeOwnedGearHelp:
-      "Füge Besitzkennzeichnungen für Equipment hinzu, das du als dein eigenes markiert hast.",
+    shareIncludeOwnedGearHelp: "Füge Besitzkennzeichnungen für Equipment hinzu, das du als dein eigenes markiert hast.",
     shareDialogTitle: "Projekt exportieren",
     shareFilenameLabel: "Name der Exportdatei",
     shareDialogConfirm: "Herunterladen",
@@ -6710,6 +7288,12 @@ var texts = {
     sharedImportAutoGearPresetFallback: "Geteilte automatische Gear-Regeln",
     sharedImportDialogTitle: "Automatische Gear-Regeln",
     sharedImportDialogMessage: "Wähle, wie die geteilten automatischen Gear-Regeln für dieses Projekt übernommen werden sollen.",
+    sharedImportMetadataTimestamp: "Exportiert am {timestamp}",
+    sharedImportMetadataVersion: "Planerversion {version}",
+    sharedImportMetadataVersionMismatch: "Planerversion {importVersion} (aktuelle Version {appVersion})",
+    sharedImportMetadataIncludesAutoGear: "Enthält automatische Gear-Regeln",
+    sharedImportMetadataIncludesOwnedGear: "Kennzeichnet eigenes Equipment",
+    sharedImportMetadataUnavailable: "Exportdetails nicht verfügbar.",
     sharedImportDialogConfirm: "Übernehmen",
     sharedImportDialogCancel: "Abbrechen",
     cameraLabel: "Kamera:",
@@ -7081,10 +7665,12 @@ var texts = {
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Telefon",
       crewEmailPlaceholder: "E-Mail",
+      crewWebsitePlaceholder: "Website",
       crewRoleLabel: "Rolle im Team",
       crewNameLabel: "Name des Crewmitglieds",
       crewPhoneLabel: "Telefon des Crewmitglieds",
-      crewEmailLabel: "E-Mail des Crewmitglieds"
+      crewEmailLabel: "E-Mail des Crewmitglieds",
+      crewWebsiteLabel: "Website des Crewmitglieds"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",
@@ -7186,10 +7772,13 @@ var texts = {
     gearListEditOwnedHelp: "Füge diese Zeile deiner Eigengear-Liste hinzu oder entferne sie, damit dein Bestand synchron bleibt.",
     gearListOwnedExportLabel: "Im Besitz von %s",
     gearListEditCameraLinkLabel: "Kamera-Verknüpfung",
-    gearListEditCameraLinkHelp: "Kennzeichnet Artikel, die an der ausgewählten Kamera hängen.",
+    gearListEditCameraAssignmentLabel: "Kamera-Kennung",
+    gearListEditCameraAssignmentHelp: "Wähle den Buchstaben für dieses Kameragehäuse. Verknüpfte Zubehörteile verwenden dieselbe Farbe.",
+    gearListEditCameraLinkHelp: "Kennzeichnet Artikel, die einem bestimmten Kamerabuchstaben folgen.",
     gearListEditCameraLinkNoneOption: "Keine Kameraverknüpfung",
-    gearListEditCameraLinkCameraOption: "Mit Kamera verknüpfen (%s)",
-    gearListEditCameraLinkUnavailableOption: "Mit Kamera verknüpfen",
+    gearListEditCameraLinkCameraOption: "Kamera %s — %s",
+    gearListEditCameraLinkUnavailableOption: "Kamera %s (nicht zugewiesen)",
+    gearListEditCameraLinkDefaultLabel: "Kamera %s",
     gearListCameraLinkBadgeLabel: "Mit Kamera verknüpft",
     gearListEditDialogTitle: "Gear-Element bearbeiten",
     gearListEditQuantityLabel: "Menge",
@@ -7211,6 +7800,10 @@ var texts = {
     gearListEditButton: "Gear-Element bearbeiten",
     gearListEditCustomItem: "Benutzerdefinierten Eintrag bearbeiten",
     gearListEditReset: "Name zurücksetzen",
+    gearListEditDeviceHeading: "Geräteattribute",
+    gearListEditDeviceEdit: "Geräteattribute bearbeiten",
+    gearListEditDeviceEmpty: "Keine Geräteattribute gespeichert. Gerät aktualisieren, um Details hinzuzufügen.",
+    gearListEditDeviceCategory: "Gerätebibliothek: %s",
     gearListLensCoverageWarning: "Dieses Objektiv deckt den Sensor dieser Kamera möglicherweise nicht vollständig ab!",
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp: "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",
@@ -7280,8 +7873,48 @@ var texts = {
     settingsTabGeneralHelp: "Sprache, Erscheinungsbild, Typografie und Branding anpassen.",
     generalSectionLanguageHeading: "Sprache & Einheiten",
     generalSectionAppearanceHeading: "Darstellung & Farben",
+    generalSectionCameraColorsHeading: "Kamera-Kennungen",
     generalSectionTypographyHeading: "Typografie",
     generalSectionBrandingHeading: "Branding & Logo",
+    documentationTrackerHeading: "Protokoll für Dokumentationsupdates",
+    documentationTrackerDescription: "Protokollieren Sie Übersetzungen, Hilfeinhalte und Druckleitfäden, bevor Sie eine Offline-Version ausgeben.",
+    documentationTrackerAddRelease: "Neues Versionsprotokoll",
+    documentationTrackerEmpty: "Noch keine Version protokolliert. Fügen Sie die nächste Version hinzu, um mit dem Protokoll zu beginnen.",
+    documentationTrackerSummaryIntro: "Nutzen Sie das Protokoll, um den Fortschritt der Dokumentationsupdates nachzuhalten.",
+    documentationTrackerLocalesHeading: "Abdeckung der lokalisierten README-Dateien",
+    documentationTrackerLocaleEnglish: "README auf Englisch",
+    documentationTrackerLocaleGerman: "README auf Deutsch",
+    documentationTrackerLocaleSpanish: "README auf Spanisch",
+    documentationTrackerLocaleFrench: "README auf Französisch",
+    documentationTrackerLocaleItalian: "README auf Italienisch",
+    documentationTrackerHelpHeading: "Hilfecenter-Themen",
+    documentationTrackerHelpStart: "Einstieg und Navigation",
+    documentationTrackerHelpSave: "Speichern, Teilen und Exportieren",
+    documentationTrackerHelpBackup: "Backup- und Restore-Übungen",
+    documentationTrackerHelpOwnGear: "Eigenes Equipment und Importe",
+    documentationTrackerHelpOffline: "Offline-Bereitschaft und Service Worker",
+    documentationTrackerPrintHeading: "Druckleitfäden",
+    documentationTrackerPrintChecklist: "Checkliste Dokumentationsupdate",
+    documentationTrackerPrintMaintenance: "Leitfaden Dokumentationspflege",
+    documentationTrackerPrintSaveShare: "Referenz Speichern, Teilen, Import, Backup & Restore",
+    documentationTrackerPrintOffline: "Offline-Readiness-Übung",
+    documentationTrackerReleaseNameLabel: "Versionsname",
+    documentationTrackerReleaseDateLabel: "Geplantes Veröffentlichungsdatum",
+    documentationTrackerNotesLabel: "Prüfnotizen",
+    documentationTrackerNotesPlaceholder: "Notieren Sie, was sich geändert hat, wer geprüft hat und wo die Artefakte abgelegt wurden.",
+    documentationTrackerMarkAllComplete: "Alles als erledigt markieren",
+    documentationTrackerArchiveRelease: "Version archivieren",
+    documentationTrackerRestoreRelease: "Version wieder öffnen",
+    documentationTrackerArchivedBadge: "Archiviert",
+    documentationTrackerArchiveConfirm: '„{name}“ archivieren? Erledigte Häkchen bleiben für Audits erhalten.',
+    documentationTrackerSummaryPending: 'Für „{name}“ sind noch {remaining} von {total} Dokumentationsaufgaben offen.',
+    documentationTrackerSummaryComplete: 'Alle {total} Dokumentationsaufgaben für „{name}“ sind erledigt.',
+    documentationTrackerFallbackReleaseName: "Dokumentationsversion",
+    documentationTrackerProgress: "{completed}/{total} erledigt",
+    documentationTrackerSectionProgress: "{completed}/{total}",
+    documentationTrackerUpdatedAt: "Aktualisiert {time}",
+    documentationTrackerTargetSummary: "Ziel {date}",
+    documentationTrackerDefaultReleaseName: "Version {date}",
     languageSetting: "Sprache",
     settingsLanguageHelp: "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",
     darkModeSetting: "Dunkelmodus",
@@ -7290,6 +7923,13 @@ var texts = {
     settingsPinkModeHelp: "Aktiviere das verspielte Pink-Theme in den Einstellungen.",
     accentColorSetting: "Akzentfarbe",
     accentColorHelp: "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",
+    cameraColorSettingDescription: "Vergib eine Hervorhebungsfarbe für jeden Kamerabuchstaben, damit verknüpftes Zubehör farblich abgestimmt bleibt.",
+    cameraColorInputHelp: "Wähle die Hervorhebungsfarbe für Kamera %s.",
+    cameraColorALabel: "Farbe Kamera A",
+    cameraColorBLabel: "Farbe Kamera B",
+    cameraColorCLabel: "Farbe Kamera C",
+    cameraColorDLabel: "Farbe Kamera D",
+    cameraColorELabel: "Farbe Kamera E",
     accentColorReset: "Auf Standard zurücksetzen",
     accentColorResetHelp: "Stellt die ursprüngliche Akzentfarbe des Designs wieder her, ohne andere Einstellungen zu ändern.",
     temperatureUnitSetting: "Temperatureinheit",
@@ -7803,7 +8443,7 @@ var texts = {
     loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingHeading: "Diagnoseprotokoll",
     loggingHeadingHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
-    loggingIntro: "Das Protokoll aktualisiert sich live, solange die Einstellungen geöffnet bleiben. Aktivieren Sie unten die Konsolenerfassung, wenn Sie eine detailliertere Fehlersuche benötigen. Es verlässt nie dieses Gerät.",
+    loggingIntro: "Das Protokoll aktualisiert sich live, solange die Einstellungen geöffnet bleiben. Die Konsolenerfassung ist standardmäßig aktiv, damit Transkripte lokal bleiben; passen Sie die folgenden Schalter nur an, wenn Sie das Diagnoseverhalten ändern müssen. Es verlässt nie dieses Gerät.",
     loggingLevelFilterLabel: "Einträge anzeigen ab",
     loggingLevelFilterHelp: "Wählen Sie die minimale Stufe.",
     loggingLevelFilterAll: "Alle Stufen",
@@ -7820,7 +8460,7 @@ var texts = {
     loggingConsoleOutputLabel: "Auch in Konsole spiegeln",
     loggingConsoleOutputHelp: "Hält die Browserkonsole mit diesen Einträgen synchron.",
     loggingCaptureConsoleLabel: "Konsolenausgabe erfassen",
-    loggingCaptureConsoleHelp: "Protokolliert Konsolennachrichten für die Diagnose. Das Aktivieren kann die Leistung beeinflussen.",
+    loggingCaptureConsoleHelp: "Protokolliert Konsolennachrichten für die Diagnose. Lassen Sie diese Option aktiviert, es sei denn, Sie müssen die Protokollierungsbelastung reduzieren.",
     loggingCaptureErrorsLabel: "Globale Fehler erfassen",
     loggingCaptureErrorsHelp: "Erfasst unbehandelte Fehler und Promise-Ablehnungen.",
     loggingPersistSessionLabel: "Protokoll zwischen Reloads behalten",
@@ -7960,12 +8600,12 @@ var texts = {
     helpResultsAssist: "Tipp: Drücke Tab, um zu den Schnelllinks zu wechseln, oder drücke Eingabe, um das erste sichtbare Thema zu öffnen.",
     helpNoResults: "Es wurden keine Hilfethemen gefunden. Verwende kürzere Suchbegriffe, Synonyme oder lösche das Feld, um alle Themen zu sehen.",
     helpNoResultsSuggestionsHeading: "Du brauchst ein anderes Ergebnis?",
-    helpNoResultsSuggestionsIntro: "Probier diese Schritte, um weiterzukommen und deine Daten zu schützen:",
+    helpNoResultsSuggestionsIntro: "Probier diese Schritte, um weiterzukommen, deine Daten zu schützen und die Offline-Schutzmaßnahmen zu bestätigen:",
     helpNoResultsSuggestionClear: "Nutze %s, um wieder alle Artikel anzuzeigen.",
     helpNoResultsSuggestionSynonyms: "Suche nach Spitznamen der Geräte, Batterieteilenummern oder kürzeren Stichwörtern.",
     helpNoResultsSuggestionQuickStart: "Spring zur %s für eine geführte Auffrischung zu Speichern, Teilen und Backups.",
-    helpNoResultsSuggestionBackup: "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
-    helpOnboardingTutorialCopy: "to walk through every workflow with offline progress tracking—including the Power Summary checkpoint and the offline safety net rehearsal—before configuring your first project. Use the step navigator and progress meter to revisit finished sections offline.",
+    helpNoResultsSuggestionBackup: "Öffne %1$s, starte eine %2$s, um deine Offline-Exporte zu bestätigen, und prüfe unter Einstellungen → Daten & Speicherung den Zeitstempel des letzten automatischen Speicherns, bevor du fortfährst.",
+    helpOnboardingTutorialCopy: "um jeden Workflow mit Offline-Fortschrittsverfolgung durchzugehen – inklusive Power-Summary-Kontrollpunkt und Offline-Sicherheitsnetz-Probe –, bevor du dein erstes Projekt konfigurierst. Nutze den Schritt-Navigator und die Fortschrittsanzeige, um abgeschlossene Abschnitte offline erneut zu besuchen.",
     onboardingTour: {
       startLabel: "Geführtes Tutorial starten",
       restartLabel: "Geführtes Tutorial erneut starten",
@@ -7976,6 +8616,7 @@ var texts = {
       doneLabel: "Tutorial abschließen",
       stepIndicator: "Schritt {current} von {total}",
       completionIndicator: "Erstes Projekt offline gesichert",
+      prefaceIndicator: "Vorwort",
       stepListAriaLabel: "Tutorial-Schritte",
       stepStatusCurrent: "Aktueller Schritt",
       stepStatusComplete: "Abgeschlossen",
@@ -7985,16 +8626,11 @@ var texts = {
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
-      helpStatusNotStarted:
-        "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
-      helpStatusInProgress:
-        "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
-      helpStatusResume:
-        "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
-      helpStatusSkipped:
-        "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
-      helpStatusCompleted:
-        "Tutorial abgeschlossen. Spiele jeden Schritt jederzeit zur Auffrischung erneut ab.",
+      helpStatusNotStarted: "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
+      helpStatusInProgress: "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
+      helpStatusResume: "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
+      helpStatusSkipped: "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
+      helpStatusCompleted: "Tutorial abgeschlossen. Spiele jeden Schritt jederzeit zur Auffrischung erneut ab.",
       helpStatusLastCompleted: "Zuletzt abgeschlossen: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Letzte Aktualisierung: {timeAgo}.",
       helpStatusTimeJustNow: "gerade eben",
@@ -8011,39 +8647,123 @@ var texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-          body: "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst."
+          body: "Nutze diese geführte Tour, um die Abläufe kennenzulernen, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und nahtlos fortsetzen kannst."
         },
         userProfile: {
-          title: "Profil einrichten",
-          body: "Trage Anzeigename, Rolle, Telefon, E-Mail und Foto direkt in diesem Schritt ein. Die Änderungen werden sofort mit Kontakte synchronisiert, bleiben offline in deinen Sicherungen erhalten und sorgen für die richtigen Credits."
+          title: "Sprache und Profil einrichten",
+          body: "Lege Sprache der Oberfläche sowie Anzeigename, Rolle, Telefon, E‑Mail und Foto fest. Änderungen werden sofort mit Kontakte synchronisiert, bleiben in Offline-Sicherungen erhalten und erscheinen in Exporten."
+        },
+        unitsPreferences: {
+          title: "Theme und Einheiten anpassen",
+          body: "Öffne Einstellungen → Allgemein, um Theme, optionale Pink-Akzente, Fokus-Skala und Temperatureinheiten festzulegen. Fordere dauerhaften Speicher an, damit der Browser Einstellungen und Sicherungen zuverlässig bewahrt."
         },
         nameProject: {
-          title: "Benenne dein erstes Projekt",
-          body: "Trage einen Projektnamen ein, damit Autosave, Backups und Exporte aktiviert werden. Der Button Weiter wird erst freigeschaltet, wenn ein Name gesetzt ist – so schützt jeder Schritt dein Projekt sofort offline."
+          title: "Erstes Projekt benennen",
+          body: "Gib dem Projekt einen aussagekräftigen Namen. Er verankert Autosave, Verlauf, Exporte und Backups – und hält deine Offline-Bibliothek sortiert."
         },
         saveProject: {
-          title: "Speichere sofort",
-          body: "Klicke auf Speichern (oder nutze Strg+S/Cmd+S/Eingabe), um eine Offline-Kopie des benannten Projekts festzuhalten. Ist bereits ein gespeichertes Projekt ausgewählt, gilt der Schritt automatisch als erledigt – sonst speichere, um fortzufahren."
+          title: "Sofort speichern",
+          body: "Klicke auf Speichern (oder drücke Strg+S/⌘S/Eingabe), um einen vollständigen Offline-Schnappschuss – Geräte, Leistungsberechnung, Anforderungen, Notizen und Diagnosen – festzuhalten. Der nächste Schritt wird freigegeben, sobald das Speichern abgeschlossen ist."
         },
         addCamera: {
-          title: "Füge die Hauptkamera hinzu",
-          body: "Öffne die Liste Kamera und wähle das Gehäuse, das du planst. Die Suche funktioniert offline direkt im Dropdown. Weiter wird aktiviert, sobald du ein konkretes Modell auswählst."
+          title: "Kamera auswählen",
+          body: "Wähle den Kamerabody, den du planst. Die Suche im Menü funktioniert offline. Dadurch werden passende Zubehörteile, Leistungswerte und Diagramme aktiviert."
         },
-        addPower: {
-          title: "Wähle eine Stromquelle",
-          body: "Wähle einen Akku oder eine DC-Quelle, die zur Konfiguration passt. Die Auswahl aktualisiert sofort die Laufzeitberechnungen und wird zusammen mit dem Projektschnappschuss gespeichert."
+        addMonitoring: {
+          title: "Monitore, Funkvideo und FIZ hinzufügen",
+          body: "Füge Onboard-Monitore, Funkübertrager sowie FIZ-Motoren oder -Controller hinzu. Jede Auswahl speist Laufzeitberechnungen, Diagramme und automatische Regelwerke, damit das generierte Kit den gesamten Aufbau widerspiegelt."
         },
-        generatePlan: {
-          title: "Erstelle deinen ersten Plan",
-          body: "Nutze Liste & Anforderungen generieren, um die druckbare Checkliste zu erstellen. Der Projektdialog öffnet sich, damit du Verbrauch, Laufzeiten und Teamnotizen an einem Ort prüfen kannst."
+        selectBattery: {
+          title: "Batterien wählen",
+          body: "Wähle das Batteriesystem, das das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert."
         },
-        exportBackup: {
-          title: "Exportiere eine Offline-Sicherheitskopie",
-          body: "Klicke auf Projekt exportieren oder Quick safeguards, um ein JSON-Backup herunterzuladen. Eine Kopie außerhalb des Browsers schützt den Aufbau vor Zurücksetzungen oder Gerätewechseln."
+        results: {
+          title: "Ergebnisse zusammenfassen",
+          body: "Behandle Schritt 8 als drei kurze Durchläufe in Power Summary: 8A bestätigt die Karte Gesamtverbrauch und die erwartete Spitzenlast, 8B prüft jedes Batteriepack auf Laufzeitprognosen und Hinweise zu Reservemargen, und 8C kontrolliert die Countdown-Timer für Wechsel sowie die Ladegerätabdeckung. Schließe ab, indem du Warnungen protokollierst, den Offline-Bericht für redundante Backups herunterlädst und sicherstellst, dass das Autosave-Banner den neuesten Zeitstempel zeigt, damit Freigaben und Exporte denselben Stand widerspiegeln."
+        },
+        batteryComparison: {
+          title: "Batterieoptionen vergleichen",
+          body: "Öffne den Batterie-Vergleich, um alternative Packs nebeneinander zu bewerten. Das Diagramm hält Berechnungen offline, damit du Szenarien testen und den sichersten Laufzeitpuffer für den Tag festlegen kannst."
+        },
+        runtimeFeedback: {
+          title: "Laufzeit-Feedback senden",
+          body: "Nutze die Laufzeit-Rückmeldung, um reale Ergebnisse zu protokollieren. Einträge synchronisieren sich mit dem aktuellen Projekt, stärken zukünftige Schätzungen und bleiben offline für Audits verfügbar."
+        },
+        connectionDiagram: {
+          title: "Verbindungsdiagramm prüfen",
+          body: "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben."
+        },
+        editDeviceDataAdd: {
+          title: "Gerät zur Bibliothek hinzufügen",
+          body: "Öffne die Gerätebibliothek, wähle die passende Kategorie, trage Leistungsaufnahme und Anschlüsse ein und klicke auf Hinzufügen. So wird das Gerät offline gespeichert und Autosave, Backups sowie Freigaben übernehmen den neuen Eintrag."
+        },
+        editDeviceDataReview: {
+          title: "Gerätedetails überprüfen",
+          body: "Suche das soeben gespeicherte Gerät unter Vorhandene Geräte und klappe die Details aus. Prüfe, ob Leistungsaufnahme, Ausgänge und Kompatibilitätsinfos stimmen, bevor du sie für Berechnungen oder Exporte verwendest."
+        },
+        editDeviceDataEdit: {
+          title: "Gerät aktualisieren und erneut speichern",
+          body: "Nutze bei diesem Eintrag die Schaltfläche Bearbeiten, passe Spezifikationen oder Notizen an und speichere erneut. Dadurch stellst du sicher, dass Autosave, Backups und Exporte mit den aktuellen Werten arbeiten, ohne Nutzerdaten zu gefährden."
+        },
+        ownGearAccess: {
+          title: "Dialog Eigenes Equipment öffnen",
+          body: "Nutze die Schaltfläche Eigenes Equipment in der Seitenleiste, um den Inventardialog zu öffnen, sobald du vorhandenes Material prüfen möchtest. Wenn du ihn selbst öffnest, bleibt der Ablauf nach dem Tutorial vertraut."
+        },
+        ownGearAddDevice: {
+          title: "Erstes eigenes Gerät hinzufügen",
+          body: "Trage Bezeichnung, optionale Menge und Notizen ein und speichere. Eigenes Equipment wird offline abgelegt, in Backups aufgenommen und in Exporten markiert, damit das Team sofort erkennt, was verfügbar ist – ohne doppelte Anfragen."
+        },
+        generateGearAndRequirements: {
+          title: "Anforderungen und Gear-Liste erzeugen",
+          body: "Nutze Gear-Liste und Projektanforderungen generieren, um die Checkliste nach jeder Änderung neu zu erstellen. Der Planner speichert das Ergebnis beim Projekt, sodass PDFs, Exporte und Backups stets den neuesten Stand abbilden."
+        },
+        autoGearRulesAccess: {
+          title: "Automatische Gear-Regeln öffnen",
+          body: "Öffne Einstellungen → Automatische Gear-Regeln, um die Automatisierungen zu prüfen. Der Tab zeigt Presets, werksseitige Regeln sowie Sicherungsstände, die mit deinen Offline-Speichern abgelegt sind."
+        },
+        autoGearRulesEdit: {
+          title: "Werksregeln bearbeiten",
+          body: "Nutze die Regel-Liste, um die werkseitigen Ergänzungen zu sichten. Wähle eine Standardregel aus, öffne sie im Editor, passe Elemente oder Bedingungen an und speichere, damit die aktualisierte Automatisierung zusammen mit Backups und geteilten Paketen zwischengespeichert bleibt."
+        },
+        autoGearRulesCreate: {
+          title: "Neue automatische Regel hinzufügen",
+          body: "Klicke auf Regel hinzufügen, um eine eigene Automatisierung zu erstellen. Vergib einen Namen, ergänze Bedingungen und benötigtes Equipment und speichere. Der Planner führt die neue Regel offline bei jedem Neuaufbau des Kits aus und nimmt sie in Exporte, Freigaben und Sicherungen auf."
+        },
+        projectRequirements: {
+          title: "Projektanforderungs-Boxen verfeinern",
+          body: "Passe die Ausgabe Projektanforderungen an, um Teamnotizen, Deliverables und Sicherheitshinweise festzuhalten. Jeder Abschnitt wird mit dem Projekt gespeichert, in Übersichten gedruckt und in Exporte übernommen. Arbeite drei kurze Unterabschnitte durch, damit nichts fehlt: 15A protokolliert das Projektbriefing—Produktionsfirma, Verleihpräferenzen, Zeitplan und Liefervorgaben; 15B verknüpft die Teamzeilen mit gespeicherten Kontakten und markiert Abdeckung für Vorbereitung/Dreh/Rückgabe sowie Notfallhinweise; 15C erfasst die Logistik wie Speichermedien, Monitoring-Vorgaben und Sicherheitshinweise, anschließend die Übersicht neu generieren, um die neuen Angaben zu bestätigen."
+        },
+        gearList: {
+          title: "Generierte Gear-Liste prüfen",
+          body: "Prüfe die kategorisierte Gear-Liste auf Duplikate, Mengen und automatisch hinzugefügtes Zubehör. Änderungen werden sofort gespeichert, in Share-Bundles aufgenommen und erscheinen in Ausdrucken und PDFs."
+        },
+        exportImport: {
+          title: "Projekte exportieren und importieren",
+          body: "Nutze Projekt exportieren, um eine JSON-Sicherheitskopie herunterzuladen, und Projekt importieren, um Wiederherstellungen zu üben. Bewahre Exporte auf redundanten Medien auf, damit kein Arbeitsplatz Daten verliert, falls ein Browserprofil zurückgesetzt wird."
+        },
+        overviewAndPrint: {
+          title: "Übersicht und Drucke erzeugen",
+          body: "Erzeuge die Projektübersicht, um PDF-, Druck- und Sharing-fertige Zusammenfassungen zu erhalten. Der Dialog nutzt ausschließlich gespeicherte Daten, sodass du auch vollständig offline drucken oder exportieren kannst."
+        },
+        help: {
+          title: "Hilfezentrum öffnen",
+          body: "Der Hilfedialog umfasst durchsuchbare Dokumentation, Übersetzungshinweise und Tutorial-Referenzen. Lass ihn während der Arbeit angepinnt – Artikel bleiben offline zwischengespeichert und aktualisieren sich, sobald neue Funktionen eintreffen."
+        },
+        settingsGeneral: {
+          title: "Einstellungen → Allgemein erneut besuchen",
+          body: "Passe jederzeit Sprache, Typografie, Theme, Pink-Modus, Fokusskala und weitere Darstellungsoptionen an. Einstellungen werden lokal gesichert, zwischen Projekten synchronisiert und in Backups aufgenommen."
+        },
+        settingsData: {
+          title: "Daten & Speicher überwachen",
+          body: "Nutze den Reiter Daten & Speicher, um dauerhaften Speicher anzufordern, Speicherdaten zu überwachen und Schnellschutzmaßnahmen zu starten. Diese Kontrollen stellen sicher, dass jede Projektsicherung offline verfügbar bleibt."
+        },
+        settingsBackup: {
+          title: "Backup & Wiederherstellung pflegen",
+          body: "Der Reiter Backup & Wiederherstellung verwaltet Komplett-Exporte der App, Wiederherstellungsproben und Diagnose. Führe Backups vor großen Änderungen aus, archiviere die Dateien extern und überprüfe Wiederherstellungen regelmäßig."
         },
         completion: {
-          title: "Alles bereit zum Planen",
-          body: "Lass die Hilfe offen, wenn du detailliertere Hinweise brauchst. Speichere regelmäßig, erstelle vor größeren Änderungen ein Backup und bewahre Exporte an mehreren Offline-Orten auf."
+          title: "Tutorial abgeschlossen",
+          body: "Du kennst jetzt alle Schutzmaßnahmen. Speichere weiter häufig, exportiere redundante Backups und rufe bei Bedarf jeden Schritt über Hilfe erneut auf. Cine Power Planner schützt deine Daten weiterhin offline."
         }
       }
     },
@@ -8055,10 +8775,10 @@ var texts = {
     helpDataAuditStep2: "Exportiere jedes aktive Projekt mit %1$s, überprüfe, dass sich jeder Download fehlerfrei öffnen lässt, und lege die Dateien an zwei getrennten Orten ab.",
     helpDataAuditStep3: "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden. Teste %3$s mit einem der neuen Exporte, um sicherzustellen, dass geteilte Bundles ohne erneute Verbindung wiederhergestellt werden.",
     helpDataAuditStep4: "Starte %1$s mit deinem neuesten Backup, kontrolliere jedes Projekt, Gerät und jede Regel und protokolliere anschließend im Verifizierungslog die Ausgabe der Runtime-Wache aus %2$s, bevor du die Probe ohne Änderungen schließt.",
-    helpDataAuditNote: "Dokumentiere die Ergebnisse und archiviere die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
+    helpDataAuditNote: "Dokumentiere die Ergebnisse, sichere einen Screenshot von Einstellungen → Daten & Speicherung mit dem aktuellsten Autosave-Zeitstempel und archiviere außerdem die Ausgabe der Runtime-Wache in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
     helpRestoreDrillNote: "Protokolliere Dateinamen, Zeitstempel und Prüfergebnisse in deinem Backup-Rotationsprotokoll, damit jede Übung eine wiederherstellbare Kopie dokumentiert.",
     helpSearchClear: "Suche löschen",
-    helpSearchHelp: "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
+    helpSearchHelp: "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe und heben den passenden Artikel hervor, sobald du Eingabe drückst. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren, und nutze Tab, um durch die gefilterten Links zu wechseln, ohne das Projekt zu schließen.",
     helpSearchClearHelp: "Setzt das Suchfeld zurück und zeigt wieder alle Themen an.",
     helpQuickLinksHeading: "Zum Thema springen",
     helpQuickLinksAriaLabel: "Schnellnavigation der Hilfethemen",
@@ -8098,7 +8818,7 @@ var texts = {
     generateOverviewHelp: "Erstellt die druckfertige Übersicht für das ausgewählte gespeicherte Projekt neu und öffnet das Übersichtsfenster, damit du Strom- und Verbindungsdetails prüfen kannst, bevor du bei Bedarf druckst. Die Objektivsektion zeigt Marke, Mount, Durchmesser, Fokus, Gewicht, Rod-Support und Notizen, damit Exporte spezifikationskritische Checks abdecken.",
     generateGearListHelp: "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp: "Lade ein JSON-Sicherheitspaket des aktuellen Projekts—inklusive individuellem Zubehör, Favoriten, Laufzeitrückmeldungen und Geräten—herunter, bereit zum Archivieren oder Offline-Teilen. Lege die Datei vor dem Schließen des Planners zusammen mit den redundanten Team-Backups ab, damit jeder Arbeitsplatz sie ohne Netzwerkzugang wiederherstellen kann.",
-    applySharedLinkHelp: "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe den Vergleich in der Vorschau, bevor du fortfährst – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst, und der Planner plant vorher ein frisches automatisches Backup ein, damit du sofort zurückrollen kannst.",
+    applySharedLinkHelp: "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe den Vergleich in der Vorschau, bevor du fortfährst – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst, und der Planner plant vorher ein frisches automatisches Backup ein, damit du sofort zurückrollen kannst. Unbenannte Importe werden automatisch mit einem “-imported”-Titel gespeichert, damit die Daten auch dann ankommen, wenn das Paket keinen Projektnamen enthielt.",
     sharedLinkHelp: "Wähle ein Projekt-JSON, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Bewahre die Originaldatei nach dem Import in deinen Backups auf – der Planner liest nur eine Kopie und protokolliert den Vorgang im Diagnostik-Log.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",
     monitorSelectHelp: "Wähle einen Monitor, der enthalten sein soll.",
@@ -8281,6 +9001,59 @@ var categoryNames = {
     "filterOptions": "Filteroption"
   }
 };
+function cloneTranslationValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(function (item) {
+      return cloneTranslationValue(item);
+    });
+  }
+  if (value && _typeof(value) === 'object') {
+    return Object.keys(value).reduce(function (acc, key) {
+      acc[key] = cloneTranslationValue(value[key]);
+      return acc;
+    }, {});
+  }
+  return value;
+}
+function alignTranslationValue(referenceValue, translationValue) {
+  var referenceType = Array.isArray(referenceValue) ? 'array' : referenceValue === null ? 'null' : _typeof(referenceValue);
+  var translationType = Array.isArray(translationValue) ? 'array' : translationValue === null ? 'null' : _typeof(translationValue);
+  if (referenceType === 'array') {
+    if (translationType !== 'array') {
+      return cloneTranslationValue(referenceValue);
+    }
+    var maxLength = referenceValue.length;
+    var aligned = [];
+    for (var index = 0; index < maxLength; index += 1) {
+      var referenceItem = referenceValue[index];
+      var translationItem = index < translationValue.length ? translationValue[index] : undefined;
+      aligned[index] = alignTranslationValue(referenceItem, translationItem);
+    }
+    return aligned;
+  }
+  if (referenceType === 'object') {
+    if (translationType !== 'object') {
+      return cloneTranslationValue(referenceValue);
+    }
+    var _aligned = translationValue || {};
+    var referenceKeys = Object.keys(referenceValue || {});
+    referenceKeys.forEach(function (key) {
+      var referenceChild = referenceValue[key];
+      var translationChild = Object.prototype.hasOwnProperty.call(_aligned, key) ? _aligned[key] : undefined;
+      _aligned[key] = alignTranslationValue(referenceChild, translationChild);
+    });
+    Object.keys(_aligned).forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(referenceValue, key)) {
+        delete _aligned[key];
+      }
+    });
+    return _aligned;
+  }
+  if (translationType === referenceType && typeof translationValue !== 'undefined') {
+    return translationValue;
+  }
+  return cloneTranslationValue(referenceValue);
+}
 function ensureLanguageAlignment(dataset) {
   var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
     _ref$datasetName = _ref.datasetName,
@@ -8306,9 +9079,9 @@ function ensureLanguageAlignment(dataset) {
     }
     var translations = dataset[lang];
     referenceKeys.forEach(function (key) {
-      if (!Object.prototype.hasOwnProperty.call(translations, key)) {
-        translations[key] = reference[key];
-      }
+      var referenceValue = reference[key];
+      var translationValue = Object.prototype.hasOwnProperty.call(translations, key) ? translations[key] : undefined;
+      translations[key] = alignTranslationValue(referenceValue, translationValue);
     });
     Object.keys(translations).forEach(function (key) {
       if (!referenceKeys.has(key)) {
@@ -8322,6 +9095,18 @@ function ensureLanguageAlignment(dataset) {
         delete dataset[lang];
       }
     });
+  }
+}
+var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+if (globalScope) {
+  if (typeof globalScope.texts === 'undefined') {
+    globalScope.texts = texts;
+  }
+  if (typeof globalScope.categoryNames === 'undefined') {
+    globalScope.categoryNames = categoryNames;
+  }
+  if (typeof globalScope.gearItems === 'undefined') {
+    globalScope.gearItems = gearItems;
   }
 }
 var supportedLanguages = Object.keys(texts);

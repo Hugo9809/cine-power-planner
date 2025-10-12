@@ -12,6 +12,7 @@
         "powerDrawWatts": 20,
         "internalController": true,
         "torqueNm": 2.5,
+        "weight_g": 221,
         "gearTypes": ["0.8 mod", "0.4 mod", "0.5 mod", "0.6 mod", "0.8 mod 29mm wide"],
         "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera’s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
         "fizConnectors": [{
@@ -74,6 +75,7 @@
         "powerDrawWatts": 12,
         "internalController": false,
         "torqueNm": 0.5,
+        "weight_g": 398,
         "gearTypes": ["0.8 mod", "0.6 mod", "0.5 mod"],
         "notes": "Classic digital lens motor for ARRI LCS. Requires a UMC-4 (or earlier UMC-3) for control. Uses a 7-pin LEMO cable to connect to ARRI FIZ controllers.",
         "fizConnectors": [{
