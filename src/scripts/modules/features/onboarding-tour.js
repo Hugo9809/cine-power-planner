@@ -118,6 +118,9 @@
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
   const MAIN_ANCHOR_ID = 'mainContent';
   const HEADER_ANCHOR_ID = 'topBar';
+  const HERO_MAX_WIDTH_REM = 44;
+  const HERO_MARGIN_REM = 1.5;
+  const HERO_MIN_VIEWPORT_FRACTION = 0.92;
 
   const supportsDialogTopLayer = (function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
@@ -211,6 +214,39 @@
       }
       return 0;
     });
+  }
+
+  function getRootFontSizePx() {
+    if (!DOCUMENT || !DOCUMENT.documentElement) {
+      return 16;
+    }
+
+    const docEl = DOCUMENT.documentElement;
+    try {
+      const view = docEl.ownerDocument && docEl.ownerDocument.defaultView
+        ? docEl.ownerDocument.defaultView
+        : DOCUMENT.defaultView || GLOBAL_SCOPE;
+      if (view && typeof view.getComputedStyle === 'function') {
+        const styles = view.getComputedStyle(docEl);
+        if (styles && typeof styles.fontSize === 'string') {
+          const parsed = parseFloat(styles.fontSize);
+          if (Number.isFinite(parsed) && parsed > 0) {
+            return parsed;
+          }
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+
+    const inlineValue = docEl && docEl.style && typeof docEl.style.fontSize === 'string'
+      ? parseFloat(docEl.style.fontSize)
+      : NaN;
+    if (Number.isFinite(inlineValue) && inlineValue > 0) {
+      return inlineValue;
+    }
+
+    return 16;
   }
 
   function isDialogElement(element) {
@@ -2221,6 +2257,43 @@
     };
   }
 
+  function updateHeroInlineSize(size, metrics) {
+    if (!cardEl) {
+      return;
+    }
+
+    if (size !== 'hero') {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+      return;
+    }
+
+    const overlayMetrics = metrics || getOverlayMetrics();
+    if (!overlayMetrics || typeof overlayMetrics.viewportWidth !== 'number') {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+      return;
+    }
+
+    const viewportWidth = overlayMetrics.viewportWidth;
+    if (!Number.isFinite(viewportWidth) || viewportWidth <= 0) {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+      return;
+    }
+
+    const rootFontSize = getRootFontSizePx();
+    const heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
+    const heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
+    const marginWidth = Math.min(viewportWidth, viewportWidth - heroMargin);
+    const fractionWidth = Math.min(viewportWidth, viewportWidth * HERO_MIN_VIEWPORT_FRACTION);
+    const availableWidth = Math.max(0, fractionWidth, marginWidth);
+    const resolvedWidth = Math.min(heroMaxWidth, availableWidth);
+
+    if (resolvedWidth > 0) {
+      cardEl.style.setProperty('--onboarding-card-hero-inline-size', `${resolvedWidth}px`);
+    } else {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+    }
+  }
+
   function schedulePositionUpdate() {
     if (!active) {
       return;
@@ -2774,12 +2847,20 @@
     if (!cardEl) {
       return;
     }
-    const {
-      offsetLeft: scrollX,
-      offsetTop: scrollY,
-      viewportWidth,
-      viewportHeight,
-    } = getOverlayMetrics();
+    const overlayMetrics = getOverlayMetrics();
+    updateHeroInlineSize(currentStep && currentStep.size, overlayMetrics);
+    const scrollX = overlayMetrics && typeof overlayMetrics.offsetLeft === 'number'
+      ? overlayMetrics.offsetLeft
+      : 0;
+    const scrollY = overlayMetrics && typeof overlayMetrics.offsetTop === 'number'
+      ? overlayMetrics.offsetTop
+      : 0;
+    const viewportWidth = overlayMetrics && typeof overlayMetrics.viewportWidth === 'number'
+      ? overlayMetrics.viewportWidth
+      : 0;
+    const viewportHeight = overlayMetrics && typeof overlayMetrics.viewportHeight === 'number'
+      ? overlayMetrics.viewportHeight
+      : 0;
     const targetElement = target || getTargetElement(currentStep);
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const forceFloating = Boolean(currentStep && currentStep.forceFloating);
@@ -4882,6 +4963,7 @@
       ? step.size
       : 'standard';
     cardEl.setAttribute('data-size', size);
+    updateHeroInlineSize(size);
 
     const stepKey = step && typeof step.key === 'string' ? step.key : '';
     if (stepKey) {
