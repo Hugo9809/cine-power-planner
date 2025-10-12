@@ -214,6 +214,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return normalized;
   }
+  function _mergeMetadata(normalizedName, freeze, options) {
+    var existingMeta = metadataMap[normalizedName];
+    if (!existingMeta) {
+      return;
+    }
+    var mergedConnections = normalizeConnections([].concat(Array.isArray(existingMeta.connections) ? existingMeta.connections : [], options.connections || options.links || options.dependencies || []));
+    metadataMap[normalizedName] = {
+      description: typeof options.description === 'string' && options.description.trim() ? options.description.trim() : existingMeta.description,
+      category: typeof options.category === 'string' && options.category.trim() ? options.category.trim() : existingMeta.category,
+      registeredAt: existingMeta.registeredAt,
+      frozen: existingMeta.frozen,
+      connections: freezeDeep(mergedConnections)
+    };
+  }
   function register(name, moduleApi) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var normalizedName = normalizeName(name);
@@ -228,7 +242,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return existing;
       }
       if (!options.replace) {
-        throw new Error("Module \"".concat(normalizedName, "\" is already registered."));
+        _mergeMetadata(normalizedName, freeze, options || {});
+        return existing;
       }
     }
     moduleMap[normalizedName] = descriptor;

@@ -1050,6 +1050,110 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackFreezeDeep;
   }();
+  function _enforceShallowFreeze(target) {
+    if (!target || (_typeof(target) !== 'object' && typeof target !== 'function')) {
+      return target;
+    }
+
+    try {
+      if (typeof Object.preventExtensions === 'function') {
+        Object.preventExtensions(target);
+      }
+    } catch (preventError) {
+      void preventError;
+    }
+
+    try {
+      if (typeof Object.seal === 'function') {
+        Object.seal(target);
+      }
+    } catch (sealError) {
+      void sealError;
+    }
+
+    var keys = [];
+
+    try {
+      var ownNames = Object.getOwnPropertyNames(target);
+      for (var index = 0; index < ownNames.length; index += 1) {
+        keys.push(ownNames[index]);
+      }
+    } catch (nameError) {
+      void nameError;
+    }
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      try {
+        var symbols = Object.getOwnPropertySymbols(target);
+        for (var symbolIndex = 0; symbolIndex < symbols.length; symbolIndex += 1) {
+          keys.push(symbols[symbolIndex]);
+        }
+      } catch (symbolError) {
+        void symbolError;
+      }
+    }
+
+    for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+      var key = keys[keyIndex];
+
+      var descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(target, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+
+      if (!descriptor) {
+        continue;
+      }
+
+      var requiresLock = descriptor.configurable === true ||
+        (Object.prototype.hasOwnProperty.call(descriptor, 'writable') && descriptor.writable === true);
+
+      if (!requiresLock) {
+        continue;
+      }
+
+      var nextDescriptor = {
+        configurable: false,
+        enumerable: !!descriptor.enumerable
+      };
+
+      if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+        nextDescriptor.value = descriptor.value;
+        nextDescriptor.writable = false;
+      } else {
+        nextDescriptor.get = descriptor.get;
+        nextDescriptor.set = descriptor.set;
+      }
+
+      try {
+        Object.defineProperty(target, key, nextDescriptor);
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return target;
+  }
+
+  function _ensureDeepFrozen(value) {
+    var frozen = freezeDeep(value);
+    if (Object.isFrozen(frozen)) {
+      return frozen;
+    }
+    try {
+      var result = Object.freeze(frozen);
+      if (Object.isFrozen(result)) {
+        return result;
+      }
+    } catch (error) {
+      void error;
+    }
+    _enforceShallowFreeze(frozen);
+    return frozen;
+  }
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
@@ -1170,13 +1274,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var registry = options.registry || MODULE_REGISTRY;
     var queueKey = typeof options.queueKey === 'string' && options.queueKey ? options.queueKey : PENDING_QUEUE_KEY;
     if (!registry || typeof registry.register !== 'function') {
-      return freezeDeep({
+      return _ensureDeepFrozen({
         ok: false,
         processed: 0,
         requeued: 0,
         scopes: 0,
         queueKey: queueKey,
-        failures: freezeDeep([{
+        failures: _ensureDeepFrozen([{
           reason: 'missing-registry'
         }])
       });
@@ -1242,13 +1346,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (failures.length > 0 && options.warn) {
       safeWarn('cineRuntime.flushPendingModuleQueues() encountered issues while replaying module registrations.', failures);
     }
-    return freezeDeep({
+    return _ensureDeepFrozen({
       ok: failures.length === 0,
       processed: processed,
       requeued: requeued,
       scopes: touchedScopes,
       queueKey: queueKey,
-      failures: failures.length > 0 ? freezeDeep(failures) : freezeDeep([])
+      failures: failures.length > 0 ? _ensureDeepFrozen(failures) : _ensureDeepFrozen([])
     });
   }
   function synchronizeModuleLinks() {
@@ -1303,7 +1407,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       flushed: flushResult,
       failures: combinedFailures
     };
-    return freezeDeep(result);
+    return _ensureDeepFrozen(result);
   }
   var INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({
     warn: false
@@ -1312,7 +1416,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var registry = options.registry || MODULE_REGISTRY;
     if (!registry || typeof registry.list !== 'function' || typeof registry.describe !== 'function') {
-      return freezeDeep({
+      return _ensureDeepFrozen({
         ok: false,
         reason: 'missing-registry',
         modules: [],
@@ -1324,12 +1428,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     try {
       names = registry.list();
     } catch (error) {
-      return freezeDeep({
+      return _ensureDeepFrozen({
         ok: false,
         reason: 'list-failed',
         modules: [],
         missingConnections: [],
-        errors: freezeDeep([{
+        errors: _ensureDeepFrozen([{
           type: 'list',
           message: error && typeof error.message === 'string' ? error.message : null
         }])
@@ -1397,14 +1501,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           _iterator.f();
         }
       }
-      modules.push(freezeDeep({
+      modules.push(_ensureDeepFrozen({
         name: name,
         connections: connectionList,
         missing: missingList,
         ok: missingList.length === 0
       }));
     }
-    return freezeDeep({
+    return _ensureDeepFrozen({
       ok: missingConnections.length === 0,
       modules: modules,
       missingConnections: missingConnections,
@@ -1708,7 +1812,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function listCriticalChecks() {
-    return freezeDeep({
+    return _ensureDeepFrozen({
       cinePersistence: REQUIRED_PERSISTENCE_FUNCTIONS.slice(),
       cineOffline: REQUIRED_OFFLINE_FUNCTIONS.slice(),
       cineUi: {
@@ -1811,12 +1915,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       inspectUiHelp(ui, missing, detailMap);
     }
     var ok = missing.length === 0;
-    var result = freezeDeep({
+    var result = _ensureDeepFrozen({
       ok: ok,
       missing: missing.slice(),
-      modules: freezeDeep(modulePresence),
-      details: freezeDeep(detailMap),
-      registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
+      modules: _ensureDeepFrozen(modulePresence),
+      details: _ensureDeepFrozen(detailMap),
+      registry: registrySnapshot ? _ensureDeepFrozen(registrySnapshot) : null,
       checks: listCriticalChecks(),
       synchronization: synchronization
     });
@@ -1832,7 +1936,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return result;
   }
-  var runtimeAPI = freezeDeep({
+  var runtimeAPI = _ensureDeepFrozen({
     getPersistence: function getPersistence(options) {
       return ensureModule('cinePersistence', options);
     },
@@ -1853,7 +1957,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     listCriticalChecks: listCriticalChecks,
     verifyCriticalFlows: verifyCriticalFlows,
-    __internal: freezeDeep({
+    __internal: _ensureDeepFrozen({
       resolveModule: resolveModule,
       ensureModule: ensureModule,
       listCriticalChecks: listCriticalChecks,
