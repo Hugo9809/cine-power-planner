@@ -15,6 +15,19 @@
 - Updated runtime loaders to prefer the new helper for scope detection when available while keeping existing persistence and autosave behaviour intact.
 - Helper module registration preserves CommonJS exports and safe global attachment to avoid regression in offline caches and backup/restore flows.
 
+## Step 2 – Runtime helper delegation
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/modules/runtime.js` | 2282 | 2323 | +41 |
+| `legacy/scripts/modules/runtime.js` | 1856 | 1909 | +53 |
+
+*Notes:*
+
+- Centralised runtime fallbacks through `runtime-environment-helpers` so both modern and legacy bundles reuse the shared implementations before executing local fallbacks.
+- `resolveModuleSystem`, environment bridge, module environment and globals loaders now rely on the helper first, keeping offline scope detection consistent across contexts while retaining redundant fallbacks.
+- Helper delegation continues to respect offline autosave, backup and restore guarantees by avoiding behaviour changes when the helper is unavailable.
+
 ## Test summary
 
 - Attempted `node tools/runUnitTests.js tests/unit/runtimeModule.test.js` (fails in baseline with registry warnings; change does not introduce new regression).

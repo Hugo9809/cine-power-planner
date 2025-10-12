@@ -65,6 +65,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   var RUNTIME_ENVIRONMENT_HELPERS = resolveRuntimeEnvironmentHelpers();
 
+  function invokeEnvironmentHelper(helperName, args, fallback) {
+    if (
+      RUNTIME_ENVIRONMENT_HELPERS &&
+      helperName &&
+      typeof RUNTIME_ENVIRONMENT_HELPERS[helperName] === 'function'
+    ) {
+      try {
+        var result = RUNTIME_ENVIRONMENT_HELPERS[helperName].apply(
+          RUNTIME_ENVIRONMENT_HELPERS,
+          Array.isArray(args) ? args : []
+        );
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (helperInvocationError) {
+        void helperInvocationError;
+      }
+    }
+
+    if (typeof fallback === 'function') {
+      return fallback();
+    }
+
+    return void 0;
+  }
+
   function fallbackDetectGlobalScope() {
     if (
       RUNTIME_ENVIRONMENT_HELPERS &&
@@ -124,110 +150,137 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return scopes;
   }
   function fallbackLoadModuleEnvironment(scope) {
-    if (typeof require === 'function') {
-      try {
-        return require('./environment.js');
-      } catch (error) {
-        void error;
-      }
-    }
-    var candidates = fallbackCollectCandidateScopes(scope);
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (candidate && _typeof(candidate.cineModuleEnvironment) === 'object') {
-        return candidate.cineModuleEnvironment;
-      }
-    }
-    return null;
-  }
-  function fallbackLoadEnvironmentBridge(scope) {
-    if (typeof require === 'function') {
-      try {
-        return require('./environment-bridge.js');
-      } catch (error) {
-        void error;
-      }
-    }
-    var candidates = fallbackCollectCandidateScopes(scope);
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (candidate && _typeof(candidate.cineEnvironmentBridge) === 'object') {
-        return candidate.cineEnvironmentBridge;
-      }
-    }
-    return null;
-  }
-  function fallbackResolveModuleGlobals(scope) {
-    if (typeof require === 'function') {
-      try {
-        var required = require('./globals.js');
+    return invokeEnvironmentHelper(
+      'fallbackLoadModuleEnvironment',
+      [scope],
+      function localFallback() {
+        var required = fallbackTryRequire('./environment.js');
         if (required && _typeof(required) === 'object') {
           return required;
         }
-      } catch (error) {
-        void error;
+
+        var candidates = fallbackCollectCandidateScopes(scope);
+        for (var index = 0; index < candidates.length; index += 1) {
+          var candidate = candidates[index];
+          if (candidate && _typeof(candidate.cineModuleEnvironment) === 'object') {
+            return candidate.cineModuleEnvironment;
+          }
+        }
+
+        return null;
       }
-    }
-    var candidates = fallbackCollectCandidateScopes(scope);
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      if (candidate && _typeof(candidate.cineModuleGlobals) === 'object') {
-        return candidate.cineModuleGlobals;
+    );
+  }
+  function fallbackLoadEnvironmentBridge(scope) {
+    return invokeEnvironmentHelper(
+      'fallbackLoadEnvironmentBridge',
+      [scope],
+      function localFallback() {
+        var required = fallbackTryRequire('./environment-bridge.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+
+        var candidates = fallbackCollectCandidateScopes(scope);
+        for (var index = 0; index < candidates.length; index += 1) {
+          var candidate = candidates[index];
+          if (candidate && _typeof(candidate.cineEnvironmentBridge) === 'object') {
+            return candidate.cineEnvironmentBridge;
+          }
+        }
+
+        return null;
       }
-    }
-    return null;
+    );
+  }
+  function fallbackResolveModuleGlobals(scope) {
+    return invokeEnvironmentHelper(
+      'fallbackResolveModuleGlobals',
+      [scope],
+      function localFallback() {
+        var required = fallbackTryRequire('./globals.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+
+        var candidates = fallbackCollectCandidateScopes(scope);
+        for (var index = 0; index < candidates.length; index += 1) {
+          var candidate = candidates[index];
+          if (candidate && _typeof(candidate.cineModuleGlobals) === 'object') {
+            return candidate.cineModuleGlobals;
+          }
+        }
+
+        return null;
+      }
+    );
   }
   function fallbackTryRequire(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
+    return invokeEnvironmentHelper(
+      'fallbackTryRequire',
+      [modulePath],
+      function localFallback() {
+        if (typeof require !== 'function') {
+          return null;
+        }
+
+        try {
+          return require(modulePath);
+        } catch (error) {
+          void error;
+          return null;
+        }
+      }
+    );
   }
   function resolveModuleLinker(scope) {
-    if (typeof require === 'function') {
-      try {
-        return require('./helpers/module-linker.js');
-      } catch (error) {
-        void error;
-      }
-    }
-    var candidates = fallbackCollectCandidateScopes(scope);
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
-      try {
-        var linker = candidate && candidate.cineModuleLinker;
-        if (linker && _typeof(linker) === 'object') {
-          return linker;
+    return invokeEnvironmentHelper(
+      'resolveModuleLinker',
+      [scope],
+      function localFallback() {
+        var required = fallbackTryRequire('./helpers/module-linker.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
         }
-      } catch (error) {
-        void error;
+
+        var candidates = fallbackCollectCandidateScopes(scope);
+        for (var index = 0; index < candidates.length; index += 1) {
+          var candidate = candidates[index];
+          try {
+            var linker = candidate && candidate.cineModuleLinker;
+            if (linker && _typeof(linker) === 'object') {
+              return linker;
+            }
+          } catch (error) {
+            void error;
+          }
+        }
+
+        return null;
       }
-    }
-    return null;
+    );
   }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
   var MODULE_LINKER = resolveModuleLinker(LOCAL_SCOPE);
   function resolveModuleSystem(scope) {
-    var targetScope = scope || LOCAL_SCOPE;
-    if (typeof require === 'function') {
-      try {
-        var required = require('./system.js');
+    return invokeEnvironmentHelper(
+      'resolveModuleSystem',
+      [scope],
+      function localFallback() {
+        var targetScope = scope || LOCAL_SCOPE;
+
+        var required = fallbackTryRequire('./system.js');
         if (required && _typeof(required) === 'object') {
           return required;
         }
-      } catch (error) {
-        void error;
+
+        if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
+          return targetScope.cineModuleSystem;
+        }
+
+        return null;
       }
-    }
-    if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
-      return targetScope.cineModuleSystem;
-    }
-    return null;
+    );
   }
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   function resolveEnvironmentContext(scope) {
