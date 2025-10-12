@@ -16596,6 +16596,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         toggleBtn.setAttribute("aria-expanded", "false");
         toggleBtn.textContent = texts[currentLang].showDetails;
         toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
+        toggleBtn.dataset.name = name;
+        toggleBtn.dataset.category = categoryKey;
+        if (subcategory) toggleBtn.dataset.subcategory = subcategory;
         header.appendChild(toggleBtn);
     
         const editBtn = document.createElement("button");
