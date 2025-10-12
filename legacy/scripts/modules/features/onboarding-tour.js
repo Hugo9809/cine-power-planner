@@ -120,6 +120,35 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var DOM_POSITION_FOLLOWING = typeof Node !== 'undefined' && Node ? Node.DOCUMENT_POSITION_FOLLOWING : 4;
   var DOM_POSITION_PRECEDING = typeof Node !== 'undefined' && Node ? Node.DOCUMENT_POSITION_PRECEDING : 2;
   var FOCUSABLE_SELECTOR = ['button:not([disabled])', 'a[href]', 'input:not([disabled]):not([type="hidden"])', 'select:not([disabled])', 'textarea:not([disabled])', '[role="button"]:not([aria-disabled="true"])', '[tabindex]:not([tabindex="-1"])'].join(',');
+  function applyLanguagePreference(value) {
+    var candidate = typeof value === 'string' ? value.trim() : '';
+    if (!candidate) {
+      return false;
+    }
+    var applied = false;
+    var missingSentinel = {};
+    if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
+      try {
+        var result = GLOBAL_SCOPE.callCoreFunctionIfAvailable('setLanguage', [candidate], {
+          defaultValue: missingSentinel
+        });
+        if (result !== missingSentinel) {
+          applied = true;
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not route language preference via runtime bridge.', error);
+      }
+    }
+    if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
+      try {
+        GLOBAL_SCOPE.setLanguage(candidate);
+        applied = true;
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+      }
+    }
+    return applied;
+  }
   function isElementFocusable(element) {
     if (!element || typeof element.matches !== 'function') {
       return false;
@@ -356,14 +385,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'results', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   var DEFAULT_STEP_TEXTS = {
-    intro: {
-      title: 'Welcome to Cine Power Planner',
-      body: 'Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.'
-    },
-    userProfile: {
-      title: 'Configure language and your profile',
-      body: 'Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.'
-    },
+  intro: {
+    title: 'Welcome to Cine Power Planner',
+    body: 'Use this guided tour to see how Cine Power Planner keeps crews in control—map rig power draw, lock in runtime safeguards, and capture project requirements without missing a detail. AutoGear rules build complete gear lists from shooting scenarios and stay fully customizable. Generate crew and rental PDFs, share offline backups, and run the installable mobile PWA with zero subscription fees or servers so every pause resumes with safeguards intact.'
+  },
+  userProfile: {
+    title: 'Configure your crew profile',
+    body: 'Add your display name, role, phone, email and photo so contacts and exports stay personalized. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.'
+  },
     unitsPreferences: {
       title: 'Tune theme and units',
       body: 'Open Settings → General to choose the theme, optional pink highlights, focus scale and temperature units. Request persistent storage so the browser keeps preferences and safeguards saves during cleanups.'
@@ -472,10 +501,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       title: 'Maintain Backup & Restore',
       body: 'The Backup & Restore tab manages full-app exports, restore rehearsals and diagnostics. Run backups before major changes, archive the files on external media and verify restores regularly.'
     },
-    completion: {
-      title: 'Tutorial complete',
-      body: 'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.'
-    }
+  completion: {
+    title: 'Tutorial complete',
+    body: 'You now know every safeguard. Keep saving often, export redundant backups and revisit any step from Help whenever you want a refresher. Cine Power Planner will keep protecting your data offline.'
+  }
+};
+  var DEFAULT_INTRO_CONTENT = {
+    tagline: 'Plan every camera build offline and keep crews synced from prep to wrap.',
+    highlights: [
+      'Map power draw, runtime reserves, and battery safety margins with live offline math.',
+      'AutoGear rules build complete gear lists from shooting scenarios and stay fully customizable.',
+      'Track project requirements and generate crew and rental PDFs while keeping data in sync.',
+      'Work entirely offline with zero subscription fees on desktop or the installable mobile PWA.'
+    ],
+    hint: 'Choose your interface language here so the tutorial, planner UI, exports, and mobile PWA stay aligned even when you are fully offline.'
   };
   function isPrefaceStep(step) {
     return Boolean(step && step.preface);
@@ -1406,9 +1445,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return 'Preface';
     }();
+    var introTagline = function () {
+      var localizedValue = localized && typeof localized.introTagline === 'string' ? localized.introTagline.trim() : '';
+      if (localizedValue) {
+        return localizedValue;
+      }
+      var fallbackValue = fallback && typeof fallback.introTagline === 'string' ? fallback.introTagline.trim() : '';
+      if (fallbackValue) {
+        return fallbackValue;
+      }
+      return DEFAULT_INTRO_CONTENT.tagline;
+    }();
+    var sanitizeHighlightList = function sanitizeHighlightList(value) {
+      if (!value) {
+        return [];
+      }
+      var list = Array.isArray(value) ? value : typeof value === 'string' ? [value] : [];
+      var result = [];
+      for (var highlightIndex = 0; highlightIndex < list.length; highlightIndex += 1) {
+        var entry = typeof list[highlightIndex] === 'string' ? list[highlightIndex].trim() : '';
+        if (entry) {
+          result.push(entry);
+        }
+      }
+      return result;
+    };
+    var introHighlights = function () {
+      var localizedList = sanitizeHighlightList(localized && localized.introHighlights);
+      if (localizedList.length) {
+        return localizedList;
+      }
+      var fallbackList = sanitizeHighlightList(fallback && fallback.introHighlights);
+      if (fallbackList.length) {
+        return fallbackList;
+      }
+      return sanitizeHighlightList(DEFAULT_INTRO_CONTENT.highlights);
+    }();
+    var introHint = function () {
+      var localizedValue = localized && typeof localized.introHint === 'string' ? localized.introHint.trim() : '';
+      if (localizedValue) {
+        return localizedValue;
+      }
+      var fallbackValue = fallback && typeof fallback.introHint === 'string' ? fallback.introHint.trim() : '';
+      if (fallbackValue) {
+        return fallbackValue;
+      }
+      return DEFAULT_INTRO_CONTENT.hint;
+    }();
     return _objectSpread(_objectSpread(_objectSpread({}, fallback), localized), {}, {
       prefaceIndicator: prefaceIndicatorText,
-      steps: steps
+      steps: steps,
+      introTagline: introTagline,
+      introHighlights: introHighlights,
+      introHint: introHint
     });
   }
   var tourTexts = resolveTourTexts();
@@ -1596,6 +1685,323 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function getProxyControlId(prefix) {
     proxyControlId += 1;
     return "onboarding-".concat(prefix, "-").concat(proxyControlId);
+  }
+
+  function appendLanguagePreferenceField(container, registerCleanup, options) {
+    if (!container) {
+      return null;
+    }
+
+    var config = options || {};
+    var fieldKey = config.fieldKey || 'language';
+    var controlClassName = typeof config.controlClassName === 'string' ? config.controlClassName : '';
+    var explicitLabel = typeof config.labelText === 'string' ? config.labelText : '';
+    var headerSelect = DOCUMENT.getElementById('languageSelect');
+    var settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+    var settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
+
+    if (!headerSelect && !settingsLanguage) {
+      return null;
+    }
+
+    var resolveLabelText = function resolveLabelText() {
+      if (explicitLabel && explicitLabel.trim()) {
+        return explicitLabel.trim();
+      }
+      if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
+        var text = settingsLanguageLabel.textContent.trim();
+        if (text) {
+          return text;
+        }
+      }
+      if (headerSelect && typeof headerSelect.getAttribute === 'function') {
+        var ariaLabel = headerSelect.getAttribute('aria-label');
+        if (ariaLabel && ariaLabel.trim()) {
+          return ariaLabel.trim();
+        }
+      }
+      return 'Language';
+    };
+
+    var group = DOCUMENT.createElement('div');
+    group.className = 'onboarding-field-group';
+
+    var proxyId = getProxyControlId(fieldKey);
+    var label = DOCUMENT.createElement('label');
+    label.className = 'onboarding-field-label';
+    label.setAttribute('for', proxyId);
+    label.textContent = resolveLabelText();
+    group.appendChild(label);
+
+    var proxyControl = DOCUMENT.createElement('select');
+    proxyControl.id = proxyId;
+    proxyControl.className = ['onboarding-field-input', 'onboarding-field-select', controlClassName].filter(Boolean).join(' ');
+
+    var copySelectOptions = function copySelectOptions() {
+      while (proxyControl.firstChild) {
+        proxyControl.removeChild(proxyControl.firstChild);
+      }
+
+      var sources = [];
+      if (headerSelect && headerSelect.options && headerSelect.options.length) {
+        sources.push(headerSelect.options);
+      }
+      if (settingsLanguage && settingsLanguage.options && settingsLanguage.options.length) {
+        sources.push(settingsLanguage.options);
+      }
+      if (!sources.length) {
+        var fallbackOptions = headerSelect && headerSelect.options ? headerSelect.options : settingsLanguage && settingsLanguage.options ? settingsLanguage.options : null;
+        if (fallbackOptions) {
+          sources.push(fallbackOptions);
+        }
+      }
+
+      var addedValues = {};
+      for (var sourceIndex = 0; sourceIndex < sources.length; sourceIndex += 1) {
+        var optionList = sources[sourceIndex];
+        if (!optionList) {
+          continue;
+        }
+        for (var optionIndex = 0; optionIndex < optionList.length; optionIndex += 1) {
+          var sourceOption = optionList[optionIndex];
+          var value = sourceOption && typeof sourceOption.value === 'string' ? sourceOption.value : '';
+          var text = sourceOption && typeof sourceOption.textContent === 'string' ? sourceOption.textContent : value;
+          if (!value || addedValues[value]) {
+            continue;
+          }
+          addedValues[value] = true;
+          var option = DOCUMENT.createElement('option');
+          option.value = value;
+          option.textContent = text || value;
+          proxyControl.appendChild(option);
+        }
+      }
+
+      if (!proxyControl.firstChild) {
+        var fallbackValue = headerSelect && typeof headerSelect.value === 'string' && headerSelect.value ? headerSelect.value : settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value ? settingsLanguage.value : 'en';
+        var fallbackOption = DOCUMENT.createElement('option');
+        fallbackOption.value = fallbackValue;
+        fallbackOption.textContent = fallbackValue;
+        proxyControl.appendChild(fallbackOption);
+      }
+    };
+
+    copySelectOptions();
+
+    var syncFromActive = function syncFromActive() {
+      var activeValue = '';
+      if (headerSelect && typeof headerSelect.value === 'string' && headerSelect.value) {
+        activeValue = headerSelect.value;
+      } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
+        activeValue = settingsLanguage.value;
+      }
+      if (activeValue && proxyControl.value !== activeValue) {
+        proxyControl.value = activeValue;
+      }
+    };
+
+    var syncSelectElement = function syncSelectElement(element, nextValue) {
+      if (!element || typeof element.value !== 'string' || element.value === nextValue) {
+        return;
+      }
+      element.value = nextValue;
+      dispatchSyntheticEvent(element, 'change');
+    };
+
+    var syncToTargets = function syncToTargets() {
+      var nextValue = proxyControl.value;
+      if (!nextValue) {
+        return;
+      }
+      applyLanguagePreference(nextValue);
+      syncSelectElement(headerSelect, nextValue);
+      syncSelectElement(settingsLanguage, nextValue);
+    };
+
+    proxyControl.addEventListener('input', syncToTargets);
+    proxyControl.addEventListener('change', syncToTargets);
+    if (typeof registerCleanup === 'function') {
+      registerCleanup(function () {
+        proxyControl.removeEventListener('input', syncToTargets);
+        proxyControl.removeEventListener('change', syncToTargets);
+      });
+    }
+
+    var secondarySources = [];
+    if (headerSelect) {
+      headerSelect.addEventListener('change', syncFromActive);
+      headerSelect.addEventListener('input', syncFromActive);
+      secondarySources.push(headerSelect);
+    }
+    if (settingsLanguage && settingsLanguage !== headerSelect) {
+      settingsLanguage.addEventListener('change', syncFromActive);
+      settingsLanguage.addEventListener('input', syncFromActive);
+      secondarySources.push(settingsLanguage);
+    }
+    if (typeof registerCleanup === 'function' && secondarySources.length) {
+      registerCleanup(function () {
+        for (var index = 0; index < secondarySources.length; index += 1) {
+          var source = secondarySources[index];
+          if (!source) {
+            continue;
+          }
+          source.removeEventListener('change', syncFromActive);
+          source.removeEventListener('input', syncFromActive);
+        }
+      });
+    }
+
+    var observeMutation = function observeMutation(target) {
+      if (!target || typeof MutationObserver !== 'function') {
+        return;
+      }
+      try {
+        var observer = new MutationObserver(function () {
+          copySelectOptions();
+          syncFromActive();
+        });
+        observer.observe(target, {
+          childList: true
+        });
+        if (typeof registerCleanup === 'function') {
+          registerCleanup(function () {
+            try {
+              observer.disconnect();
+            } catch (error) {
+              void error;
+            }
+          });
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not observe language option changes.', error);
+      }
+    };
+
+    observeMutation(headerSelect);
+    observeMutation(settingsLanguage);
+
+    syncFromActive();
+
+    group.appendChild(proxyControl);
+    container.appendChild(group);
+
+    return proxyControl;
+  }
+
+  function resolveIntroContent() {
+    var tagline = tourTexts && typeof tourTexts.introTagline === 'string' && tourTexts.introTagline.trim() ? tourTexts.introTagline.trim() : DEFAULT_INTRO_CONTENT.tagline;
+    var highlights = [];
+    if (tourTexts && Array.isArray(tourTexts.introHighlights)) {
+      for (var index = 0; index < tourTexts.introHighlights.length; index += 1) {
+        var entry = typeof tourTexts.introHighlights[index] === 'string' ? tourTexts.introHighlights[index].trim() : '';
+        if (entry) {
+          highlights.push(entry);
+        }
+      }
+    }
+    if (!highlights.length) {
+      for (var fallbackIndex = 0; fallbackIndex < DEFAULT_INTRO_CONTENT.highlights.length; fallbackIndex += 1) {
+        var fallbackEntry = typeof DEFAULT_INTRO_CONTENT.highlights[fallbackIndex] === 'string' ? DEFAULT_INTRO_CONTENT.highlights[fallbackIndex].trim() : '';
+        if (fallbackEntry) {
+          highlights.push(fallbackEntry);
+        }
+      }
+    }
+    var hint = tourTexts && typeof tourTexts.introHint === 'string' && tourTexts.introHint.trim() ? tourTexts.introHint.trim() : DEFAULT_INTRO_CONTENT.hint;
+    return {
+      tagline: tagline,
+      highlights: highlights,
+      hint: hint
+    };
+  }
+
+  function renderIntroInteraction(registerCleanup) {
+    if (!interactionContainerEl) {
+      return false;
+    }
+
+    var fragment = DOCUMENT.createDocumentFragment();
+    var content = resolveIntroContent();
+
+    var hero = DOCUMENT.createElement('div');
+    hero.className = 'onboarding-intro-hero';
+
+    if (content.tagline) {
+      var taglineEl = DOCUMENT.createElement('p');
+      taglineEl.className = 'onboarding-intro-tagline';
+      taglineEl.textContent = content.tagline;
+      hero.appendChild(taglineEl);
+    }
+
+    if (content.highlights && content.highlights.length) {
+      var list = DOCUMENT.createElement('ul');
+      list.className = 'onboarding-intro-highlights';
+      for (var index = 0; index < content.highlights.length; index += 1) {
+        var text = content.highlights[index];
+        if (!text) {
+          continue;
+        }
+        var item = DOCUMENT.createElement('li');
+        item.className = 'onboarding-intro-highlight';
+        var textEl = DOCUMENT.createElement('p');
+        textEl.className = 'onboarding-intro-highlight-text';
+        textEl.textContent = text;
+        item.appendChild(textEl);
+        list.appendChild(item);
+      }
+      if (list.firstChild) {
+        hero.appendChild(list);
+      }
+    }
+
+    fragment.appendChild(hero);
+
+    var controls = DOCUMENT.createElement('div');
+    controls.className = 'onboarding-intro-controls';
+    var languageControl = appendLanguagePreferenceField(controls, registerCleanup, {
+      fieldKey: 'intro-language'
+    });
+    if (controls.firstChild) {
+      fragment.appendChild(controls);
+    }
+
+    if (content.hint) {
+      var hint = DOCUMENT.createElement('p');
+      hint.className = 'onboarding-intro-hint onboarding-resume-hint';
+      hint.textContent = content.hint;
+      fragment.appendChild(hint);
+    }
+
+    while (interactionContainerEl.firstChild) {
+      interactionContainerEl.removeChild(interactionContainerEl.firstChild);
+    }
+    interactionContainerEl.appendChild(fragment);
+    interactionContainerEl.hidden = false;
+
+    var focusTarget = languageControl || null;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+      var runFocus = function runFocus() {
+        try {
+          focusTarget.focus({
+            preventScroll: true
+          });
+        } catch (error) {
+          void error;
+          try {
+            focusTarget.focus();
+          } catch (focusError) {
+            void focusError;
+          }
+        }
+      };
+      if (typeof queueMicrotask === 'function') {
+        queueMicrotask(runFocus);
+      } else {
+        setTimeout(runFocus, 0);
+      }
+    }
+
+    return true;
   }
   function setNextButtonDisabled(disabled) {
     if (!nextButton) {
@@ -2847,42 +3253,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var avatarContainer = DOCUMENT.getElementById('userProfileAvatar');
     var avatarButton = DOCUMENT.getElementById('userProfileAvatarButton');
     var avatarButtonLabel = DOCUMENT.getElementById('userProfileAvatarButtonLabel');
-    var languageSelect = DOCUMENT.getElementById('languageSelect');
-    var settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
-    var settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
-    var applyLanguagePreference = function applyLanguagePreference(value) {
-      var candidate = typeof value === 'string' ? value.trim() : '';
-      if (!candidate) {
-        return false;
-      }
-      var applied = false;
-      var missingSentinel = {};
-      if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
-        try {
-          var result = GLOBAL_SCOPE.callCoreFunctionIfAvailable('setLanguage', [candidate], {
-            defaultValue: missingSentinel
-          });
-          if (result !== missingSentinel) {
-            applied = true;
-          }
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not route language preference via runtime bridge.', error);
-        }
-      }
-      if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
-        try {
-          GLOBAL_SCOPE.setLanguage(candidate);
-          applied = true;
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not sync language preference.', error);
-        }
-      }
-      return applied;
-    };
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Pick your interface language and contact details here once. Every update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    intro.textContent = 'Capture your crew profile once so Contacts, offline saves and exports always show who owns the setup.';
     fragment.appendChild(intro);
     var avatarGroup = DOCUMENT.createElement('div');
     avatarGroup.className = 'onboarding-avatar-group';
@@ -3087,115 +3461,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return proxyControl;
     };
-    var languageProxy = null;
-    if (languageSelect || settingsLanguage) {
-      var languageTarget = languageSelect || settingsLanguage;
-      var resolveLanguageLabel = function resolveLanguageLabel() {
-        if (settingsLanguageLabel && typeof settingsLanguageLabel.textContent === 'string') {
-          var text = settingsLanguageLabel.textContent.trim();
-          if (text) {
-            return text;
-          }
-        }
-        if (languageSelect && typeof languageSelect.getAttribute === 'function') {
-          var ariaLabel = languageSelect.getAttribute('aria-label');
-          if (ariaLabel && ariaLabel.trim()) {
-            return ariaLabel.trim();
-          }
-        }
-        return 'Language';
-      };
-      var handleLanguageSync = function handleLanguageSync(direction) {
-        if (!languageProxy || direction !== 'to') {
-          return;
-        }
-        var value = languageProxy.value;
-        var applied = applyLanguagePreference(value);
-        if (applied) {
-          return;
-        }
-        if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
-          languageSelect.value = value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-        if (settingsLanguage && settingsLanguage !== languageTarget && settingsLanguage.value !== value) {
-          settingsLanguage.value = value;
-          dispatchSyntheticEvent(settingsLanguage, 'change');
-        }
-      };
-      languageProxy = createProxyField({
-        fieldKey: 'user-language',
-        labelText: resolveLanguageLabel(),
-        target: languageTarget,
-        type: 'select',
-        onAfterSync: handleLanguageSync
-      });
-      var syncLanguageFromActive = function syncLanguageFromActive() {
-        if (!languageProxy) {
-          return;
-        }
-        var activeValue = '';
-        if (languageSelect && typeof languageSelect.value === 'string' && languageSelect.value) {
-          activeValue = languageSelect.value;
-        } else if (settingsLanguage && typeof settingsLanguage.value === 'string' && settingsLanguage.value) {
-          activeValue = settingsLanguage.value;
-        }
-        if (activeValue && languageProxy.value !== activeValue) {
-          languageProxy.value = activeValue;
-        }
-      };
-      syncLanguageFromActive();
-      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
-        var handleLanguageChangeEvent = function handleLanguageChangeEvent() {
-          syncLanguageFromActive();
-        };
-        try {
-          GLOBAL_SCOPE.addEventListener('languagechange', handleLanguageChangeEvent);
-          registerCleanup(function () {
-            try {
-              GLOBAL_SCOPE.removeEventListener('languagechange', handleLanguageChangeEvent);
-            } catch (removeError) {
-              void removeError;
-            }
-          });
-        } catch (error) {
-          safeWarn('cine.features.onboardingTour could not observe language changes.', error);
-        }
-      }
-      var secondarySources = [];
-      if (languageSelect && languageSelect !== languageTarget) {
-        secondarySources.push(languageSelect);
-      }
-      if (settingsLanguage && settingsLanguage !== languageTarget) {
-        secondarySources.push(settingsLanguage);
-      }
-      if (secondarySources.length) {
-        var handleSecondarySourceChange = function handleSecondarySourceChange() {
-          syncLanguageFromActive();
-        };
-        for (var index = 0; index < secondarySources.length; index += 1) {
-          var source = secondarySources[index];
-          if (!source) {
-            continue;
-          }
-          source.addEventListener('change', handleSecondarySourceChange);
-          source.addEventListener('input', handleSecondarySourceChange);
-        }
-        registerCleanup(function () {
-          for (var _index8 = 0; _index8 < secondarySources.length; _index8 += 1) {
-            var _source = secondarySources[_index8];
-            if (!_source) {
-              continue;
-            }
-            _source.removeEventListener('change', handleSecondarySourceChange);
-            _source.removeEventListener('input', handleSecondarySourceChange);
-          }
-        });
-      }
-      registerCleanup(function () {
-        languageProxy = null;
-      });
-    }
     var resolvedNameLabel = profileLabel && typeof profileLabel.textContent === 'string' ? profileLabel.textContent : 'Display name';
     var resolvedNamePlaceholder = 'e.g. Alex Rivera';
     if (profileInput && typeof profileInput.getAttribute === 'function') {
@@ -3300,57 +3565,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     var fragment = DOCUMENT.createDocumentFragment();
-    var languageSelect = DOCUMENT.getElementById('settingsLanguage');
-    if (languageSelect) {
-      var group = DOCUMENT.createElement('div');
-      group.className = 'onboarding-field-group';
-      var inputId = getProxyControlId('language');
-      var label = DOCUMENT.createElement('label');
-      label.className = 'onboarding-field-label';
-      label.setAttribute('for', inputId);
-      label.textContent = 'Language';
-      var proxySelect = DOCUMENT.createElement('select');
-      proxySelect.id = inputId;
-      proxySelect.className = 'onboarding-field-select';
-      var originalOptions = Array.from(languageSelect.options || []);
-      if (originalOptions.length === 0) {
-        var option = DOCUMENT.createElement('option');
-        option.value = languageSelect.value || 'en';
-        option.textContent = languageSelect.value || 'English';
-        proxySelect.appendChild(option);
-      } else {
-        for (var index = 0; index < originalOptions.length; index += 1) {
-          var source = originalOptions[index];
-          var _option = DOCUMENT.createElement('option');
-          _option.value = source.value;
-          _option.textContent = source.textContent || source.value;
-          proxySelect.appendChild(_option);
-        }
-      }
-      proxySelect.value = languageSelect.value || proxySelect.value;
-      var syncFromTarget = function syncFromTarget() {
-        if (proxySelect.value !== languageSelect.value) {
-          proxySelect.value = languageSelect.value;
-        }
-      };
-      var syncToTarget = function syncToTarget() {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
-        }
-      };
-      proxySelect.addEventListener('change', syncToTarget);
-      registerCleanup(function () {
-        proxySelect.removeEventListener('change', syncToTarget);
-      });
-      languageSelect.addEventListener('change', syncFromTarget);
-      registerCleanup(function () {
-        languageSelect.removeEventListener('change', syncFromTarget);
-      });
-      group.appendChild(label);
-      group.appendChild(proxySelect);
-      fragment.appendChild(group);
-    }
     var darkModeToggle = DOCUMENT.getElementById('settingsDarkMode');
     var themeGroup = DOCUMENT.createElement('div');
     themeGroup.className = 'onboarding-field-group';
@@ -3713,6 +3927,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var customRendered = function () {
+      if (key === 'intro') {
+        return renderIntroInteraction(registerCleanup);
+      }
       if (key === 'userProfile') {
         return renderUserProfileInteraction(registerCleanup);
       }

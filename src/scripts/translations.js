@@ -1802,6 +1802,16 @@ const texts = {
         "Picking up right where you paused. Use the step navigator to revisit earlier workflows without clearing offline progress.",
       resumeHintDetailed:
         "Resuming at step {current} of {total}. {completed} steps are already complete and locked into your offline saves.",
+      introTagline:
+        "Plan every camera build offline with automated safeguards from prep through wrap.",
+      introHighlights: [
+        "Map power draw, runtime reserves, and battery safety without reconnecting to the web.",
+        "AutoGear rules assemble complete gear lists from shooting scenarios and stay fully customizable.",
+        "Track project requirements, share offline backups, and generate PDFs for crews and rental partners.",
+        "Work entirely offline with zero subscription fees on desktop or the installable mobile PWA.",
+      ],
+      introHint:
+        "Pick your interface language here so the tour, planner UI, exports, and mobile PWA stay in sync even when you are fully offline.",
       progressMeterLabel: "Tutorial progress",
       progressValueLabel: "Completed {completed} of {total} steps",
       resumeLabelWithProgress: "Resume guided tutorial ({completed}/{total} complete)",
@@ -1834,12 +1844,12 @@ const texts = {
         intro: {
           title: "Welcome to Cine Power Planner",
           body:
-            "Use this guided tour to practice the safeguards that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and resume exactly where you stopped.",
+            "Use this guided tour to see how Cine Power Planner keeps crews in control—map rig power draw, lock in runtime safeguards, and capture project requirements without missing a detail. AutoGear rules build complete gear lists from shooting scenarios and stay fully customizable. Generate crew and rental PDFs, share offline backups, and run the installable mobile PWA with zero subscription fees or servers so every pause resumes with safeguards intact.",
         },
         userProfile: {
-          title: "Configure language and your profile",
+          title: "Configure your crew profile",
           body:
-            "Set your interface language plus display name, role, phone, email and photo. Each change syncs to Contacts immediately, stays in offline saves and appears on exports.",
+            "Add your display name, role, phone, email and photo so contacts and exports stay personalized. Each change syncs to Contacts immediately, stays in offline saves and appears on exports.",
         },
         unitsPreferences: {
           title: "Tune theme and units",
@@ -3884,6 +3894,16 @@ const texts = {
           "Riprendi esattamente da dove avevi interrotto. Usa il navigatore dei passaggi per rivedere i flussi precedenti senza cancellare i progressi salvati offline.",
         resumeHintDetailed:
           "Riprendi al passaggio {current} di {total}. {completed} passaggi sono già completati e fissati nei tuoi salvataggi offline.",
+      introTagline:
+        "Pianifica ogni configurazione camera offline con salvaguardie automatizzate dall'allestimento al wrap.",
+      introHighlights: [
+        "Mappa assorbimento, riserve di autonomia e sicurezza batterie senza doverti riconnettere.",
+        "Le regole AutoGear creano liste complete partendo dagli scenari di ripresa e restano completamente personalizzabili.",
+        "Traccia i requisiti di progetto, condividi backup offline e genera PDF per troupe e noleggi.",
+        "Lavora totalmente offline senza costi di abbonamento su desktop o con la PWA installabile.",
+      ],
+      introHint:
+        "Scegli qui la lingua dell'interfaccia così tour, planner, esportazioni e PWA mobile restano sincronizzati anche senza connessione.",
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
@@ -3915,13 +3935,13 @@ const texts = {
       steps: {
         intro: {
           title: "Benvenuto in Cine Power Planner",
-            body:
-              "Segui questo tour guidato per allenare le procedure che mantengono ogni progetto protetto e ripristinabile. L’avanzamento viene salvato offline, così puoi mettere in pausa e riprendere esattamente da dove avevi interrotto.",
+          body:
+            "Usa questo tour guidato per scoprire come Cine Power Planner mette la troupe al comando: mappa l’assorbimento del rig, consolida i margini di autonomia e registra i requisiti del progetto senza perdere dettagli. Le regole AutoGear generano liste complete dagli scenari di ripresa e restano completamente personalizzabili. Genera PDF per troupe e noleggi, condividi backup offline e usa la PWA installabile senza abbonamenti né server, così ogni pausa riparte con tutte le salvaguardie attive.",
         },
         userProfile: {
-          title: "Configura lingua e profilo",
+          title: "Configura il profilo della troupe",
           body:
-            "Imposta la lingua dell’interfaccia, il nome visibile, il ruolo, telefono, e-mail e foto. Ogni modifica si sincronizza subito con Contatti, resta nei salvataggi offline e appare negli export.",
+            "Aggiungi nome visibile, ruolo, telefono, e-mail e foto così contatti ed esportazioni restano personalizzati. Ogni modifica si sincronizza subito in Contatti, resta nei salvataggi offline e appare negli export.",
         },
         unitsPreferences: {
           title: "Personalizza tema e unità",
@@ -6010,13 +6030,13 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenido a Cine Power Planner",
-            body:
-              "Usa este recorrido guiado para practicar las salvaguardas que mantienen cada proyecto respaldado y listo para restaurar. El avance se guarda sin conexión, así que puedes pausar y retomar exactamente donde lo dejaste.",
+          body:
+            "Usa este recorrido guiado para descubrir cómo Cine Power Planner mantiene al equipo al mando: traza el consumo del rig, asegura los márgenes de autonomía y registra los requisitos del proyecto sin perder detalles. Las reglas AutoGear generan listas completas a partir de escenarios de rodaje y se mantienen totalmente personalizables. Genera PDF para equipo y renta, comparte copias de seguridad offline y ejecuta la PWA instalable sin cuotas ni servidores, de modo que cada pausa retoma todas las salvaguardas.",
         },
         userProfile: {
-          title: "Configura idioma y perfil",
+          title: "Configura tu perfil de equipo",
           body:
-            "Define el idioma de la interfaz, tu nombre visible, rol, teléfono, correo y foto. Los cambios se sincronizan al instante con Contactos, se conservan en los guardados sin conexión y aparecen en las exportaciones.",
+            "Añade nombre visible, rol, teléfono, correo y foto para que contactos y exportaciones sigan personalizados. Cada cambio se sincroniza al instante con Contactos, permanece en los guardados offline y aparece en las exportaciones.",
         },
         unitsPreferences: {
           title: "Ajusta tema y unidades",
@@ -8087,6 +8107,16 @@ const texts = {
           "Vous reprenez exactement là où vous avez fait pause. Utilisez le navigateur d'étapes pour revoir les workflows précédents sans effacer la progression sauvegardée hors ligne.",
         resumeHintDetailed:
           "Vous reprenez à l'étape {current} sur {total}. {completed} étapes sont déjà terminées et verrouillées dans vos sauvegardes hors ligne.",
+      introTagline:
+        "Planifiez chaque configuration caméra hors ligne avec des garde-fous automatisés du repérage au wrap.",
+      introHighlights: [
+        "Cartographiez la consommation, les marges d’autonomie et la sécurité batteries sans vous reconnecter.",
+        "Les règles AutoGear génèrent des listes complètes à partir des scénarios de tournage et restent entièrement personnalisables.",
+        "Suivez les exigences projet, partagez des sauvegardes hors ligne et générez des PDF pour l’équipe et la location.",
+        "Travaillez entièrement hors ligne sans abonnement sur ordinateur ou via la PWA installable.",
+      ],
+      introHint:
+        "Choisissez ici la langue de l’interface pour que le tutoriel, l’app, les exports et la PWA mobile restent synchronisés même hors ligne.",
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
@@ -8118,13 +8148,13 @@ const texts = {
       steps: {
         intro: {
           title: "Bienvenue dans Cine Power Planner",
-            body:
-              "Suivez ce guide pour vous entraîner aux mesures qui sécurisent chaque projet et garantissent sa restauration. La progression est sauvegardée hors ligne : faites une pause et reprenez exactement où vous vous étiez arrêté.",
+          body:
+            "Suivez ce tutoriel guidé pour voir comment Cine Power Planner garde l’équipe aux commandes : cartographiez la consommation du rig, sécurisez les marges d’autonomie et consignez les exigences du projet sans rien oublier. Les règles AutoGear bâtissent des listes complètes à partir des scénarios de tournage et restent entièrement personnalisables. Générez des PDF pour l’équipe et la location, partagez des sauvegardes hors ligne et utilisez la PWA installable sans abonnement ni serveur, afin que chaque pause reprenne toutes les protections.",
         },
         userProfile: {
-          title: "Configurez la langue et votre profil",
+          title: "Configurez votre profil d’équipe",
           body:
-            "Définissez la langue de l’interface, votre nom d’affichage, rôle, téléphone, e-mail et photo. Chaque modification se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et figure dans les exports.",
+            "Ajoutez nom d’affichage, fonction, téléphone, e-mail et photo pour personnaliser Contacts et les exports. Chaque modification se synchronise immédiatement avec Contacts, reste dans les sauvegardes hors ligne et figure dans les exports.",
         },
         unitsPreferences: {
           title: "Réglez thème et unités",
@@ -10199,6 +10229,16 @@ const texts = {
           "Du machst genau dort weiter, wo du pausiert hast. Mit dem Schritt-Navigator kannst du frühere Abläufe erneut ansehen, ohne den offline gespeicherten Fortschritt zu löschen.",
         resumeHintDetailed:
           "Du startest bei Schritt {current} von {total}. {completed} Schritte sind bereits abgeschlossen und fest in deinen Offline-Sicherungen verankert.",
+      introTagline:
+        "Plane jede Kamerakonfiguration offline mit automatisierten Schutzmaßnahmen vom Setup bis zum Wrap.",
+      introHighlights: [
+        "Erfasse Leistungsaufnahme, Laufzeitreserven und Batteriesicherheit ohne Onlineverbindung.",
+        "AutoGear-Regeln bauen vollständige Gerätelisten aus Drehszenarien und bleiben vollständig anpassbar.",
+        "Verfolge Projektanforderungen, teile Offline-Backups und erstelle PDFs für Crew und Verleih.",
+        "Arbeite komplett offline ohne Abogebühren – am Desktop oder mit der installierbaren PWA.",
+      ],
+      introHint:
+        "Wähle hier die Oberflächensprache, damit Tour, Planner, Exporte und mobile PWA auch offline synchron bleiben.",
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
@@ -10230,13 +10270,13 @@ const texts = {
       steps: {
         intro: {
           title: "Willkommen bei Cine Power Planner",
-            body:
-              "Nutze diese geführte Tour, um die Schutzmaßnahmen zu trainieren, die jedes Projekt abgesichert und wiederherstellbar halten. Der Fortschritt wird offline gespeichert, sodass du jederzeit pausieren und exakt dort fortsetzen kannst.",
+          body:
+            "Nutze dieses geführte Tutorial, um zu erleben, wie Cine Power Planner Teams die Kontrolle gibt: erfasse die Leistungsaufnahme des Rigs, sichere Laufzeitreserven ab und halte Projektanforderungen ohne Lücken fest. AutoGear-Regeln bauen vollständige Gerätelisten aus Drehszenarien auf und bleiben vollständig anpassbar. Erstelle PDFs für Crew und Verleih, teile Offline-Backups und nutze die installierbare PWA ohne Abos oder Server – so setzt du nach jeder Pause mit allen Schutzmaßnahmen fort.",
         },
         userProfile: {
-          title: "Sprache und Profil einrichten",
+          title: "Teamprofil einrichten",
           body:
-            "Lege Sprache der Oberfläche sowie Anzeigename, Rolle, Telefon, E‑Mail und Foto fest. Änderungen werden sofort mit Kontakte synchronisiert, bleiben in Offline-Sicherungen erhalten und erscheinen in Exporten.",
+            "Hinterlege Anzeigename, Rolle, Telefon, E-Mail und Foto, damit Kontakte und Exporte personalisiert bleiben. Änderungen synchronisieren sich sofort mit Kontakte, werden offline gesichert und erscheinen in Exporten.",
         },
         unitsPreferences: {
           title: "Theme und Einheiten anpassen",
