@@ -7214,6 +7214,14 @@ body.dark-mode .onboarding-hero-highlight-badge-description {
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
 }
 
+.onboarding-hero-highlight:first-child:not(.onboarding-hero-highlight--badge) {
+  grid-column: 1 / -1;
+}
+
+.onboarding-hero-highlight--badge + .onboarding-hero-highlight {
+  grid-column: 1 / -1;
+}
+
 .onboarding-hero-highlight {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -7479,8 +7487,9 @@ body.dark-mode .onboarding-hero-offline {
   .onboarding-hero {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     grid-template-areas:
-      "banner language"
-      "highlights language";
+      "banner highlights"
+      "banner highlights"
+      "language language";
     align-items: start;
   }
 
@@ -7497,8 +7506,17 @@ body.dark-mode .onboarding-hero-offline {
     grid-area: language;
     align-self: start;
     justify-self: stretch;
+    grid-column: 1 / -1;
     display: grid;
     gap: clamp(0.6rem, 0.5rem + 0.45vw, 0.95rem);
+  }
+
+  .onboarding-hero-language-select {
+    max-width: 100%;
+  }
+
+  .onboarding-hero-offline {
+    grid-column: 1 / -1;
   }
 }
 
