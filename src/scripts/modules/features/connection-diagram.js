@@ -1209,6 +1209,8 @@
       ensureDetailDialogElements();
 
       const popup = setupDiagramContainer.querySelector('#diagramPopup');
+      let activePopupNode = null;
+      let activePopupEntry = null;
       const hidePopup = () => {
         if (!popup) return;
         popup.style.display = 'none';
@@ -1218,6 +1220,8 @@
         popup.style.removeProperty('--diagram-popup-dynamic-width');
         popup.className = 'diagram-popup';
         popup.removeAttribute('aria-label');
+        activePopupNode = null;
+        activePopupEntry = null;
       };
       hidePopup();
 
@@ -1351,27 +1355,86 @@
         panPointerStart = null;
       };
 
+      const DRAG_HOLD_DELAY = 140;
+      const DRAG_MOVE_THRESHOLD = 4;
+      const DOUBLE_TAP_DELAY = 350;
+      const DOUBLE_TAP_DISTANCE = 30;
       let dragId = null;
       let dragPointerStart = null;
       let dragNode = null;
+      let dragStartPosition = null;
       let dragMovedDuringInteraction = false;
-      let skipNextNodeClick = false;
+      let dragActivationTimer = null;
+      let pendingDragInfo = null;
+      let dragActive = false;
+      let lastTapInfo = null;
+      const clearPendingDrag = () => {
+        if (dragActivationTimer) {
+          clearTimeout(dragActivationTimer);
+          dragActivationTimer = null;
+        }
+        pendingDragInfo = null;
+      };
+      const startDragSession = () => {
+        if (!pendingDragInfo) return false;
+        const { node, pointer } = pendingDragInfo;
+        if (!node) {
+          clearPendingDrag();
+          return false;
+        }
+        const nodeId = node.getAttribute('data-node');
+        if (!nodeId) {
+          clearPendingDrag();
+          return false;
+        }
+        const start = lastDiagramPositions[nodeId];
+        if (!start) {
+          clearPendingDrag();
+          return false;
+        }
+        dragId = nodeId;
+        dragNode = node;
+        dragPointerStart = pointer;
+        dragStartPosition = { x: start.x, y: start.y };
+        dragMovedDuringInteraction = false;
+        dragActive = true;
+        clearPendingDrag();
+        return true;
+      };
       const onDragStart = e => {
         const node = e.target.closest('.diagram-node');
         if (!node) return;
-        dragId = node.getAttribute('data-node');
-        dragNode = node;
-        dragPointerStart = getPos(e);
-        dragMovedDuringInteraction = false;
-        skipNextNodeClick = false;
-        if (e.touches) e.preventDefault();
-        e.stopPropagation();
+        const pointer = getPos(e);
+        pendingDragInfo = {
+          node,
+          pointer,
+          time: Date.now(),
+        };
         hidePopup();
+        dragMovedDuringInteraction = false;
+        dragActive = false;
+        if (dragActivationTimer) {
+          clearTimeout(dragActivationTimer);
+        }
+        dragActivationTimer = setTimeout(() => {
+          startDragSession();
+        }, DRAG_HOLD_DELAY);
+        e.stopPropagation();
+      };
+      const ensureDragSession = () => {
+        if (dragActive) return true;
+        return startDragSession();
       };
       const onDragMove = e => {
-        if (!dragId || !dragPointerStart) return;
-        const start = lastDiagramPositions[dragId];
-        if (!start) return;
+        if (pendingDragInfo && !dragActive) {
+          const pos = getPos(e);
+          const dx = Math.abs(pos.x - pendingDragInfo.pointer.x);
+          const dy = Math.abs(pos.y - pendingDragInfo.pointer.y);
+          if (dx > DRAG_MOVE_THRESHOLD || dy > DRAG_MOVE_THRESHOLD) {
+            startDragSession();
+          }
+        }
+        if (!ensureDragSession() || !dragPointerStart || !dragStartPosition) return;
         const pos = getPos(e);
         const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
         const dx = delta.x;
@@ -1379,37 +1442,44 @@
         if (!dragMovedDuringInteraction && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
           dragMovedDuringInteraction = true;
         }
-        let newX = start.x + dx;
-        let newY = start.y + dy;
+        let newX = dragStartPosition.x + dx;
+        let newY = dragStartPosition.y + dy;
         if (getCurrentGridSnap()) {
           const g = 20;
           newX = Math.round(newX / g) * g;
           newY = Math.round(newY / g) * g;
         }
-        const tx = newX - start.x;
-        const ty = newY - start.y;
+        const tx = newX - dragStartPosition.x;
+        const ty = newY - dragStartPosition.y;
         if (dragNode) dragNode.setAttribute('transform', `translate(${tx},${ty})`);
-        if (e.touches) e.preventDefault();
+        if (dragActive && e.touches) e.preventDefault();
       };
       const onDragEnd = e => {
-        if (!dragId || !dragPointerStart) return;
-        const start = lastDiagramPositions[dragId];
-        if (start) {
-          const pos = getPos(e);
-          const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
-          let newX = start.x + delta.x;
-          let newY = start.y + delta.y;
-          if (getCurrentGridSnap()) {
-            const g = 20;
-            newX = Math.round(newX / g) * g;
-            newY = Math.round(newY / g) * g;
-          }
-          manualPositions[dragId] = { x: newX, y: newY };
+        if (!dragActive || !dragId || !dragPointerStart || !dragStartPosition) {
+          clearPendingDrag();
+          dragActive = false;
+          dragId = null;
+          dragNode = null;
+          dragPointerStart = null;
+          dragStartPosition = null;
+          return;
         }
+        const pos = getPos(e);
+        const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+        let newX = dragStartPosition.x + delta.x;
+        let newY = dragStartPosition.y + delta.y;
+        if (getCurrentGridSnap()) {
+          const g = 20;
+          newX = Math.round(newX / g) * g;
+          newY = Math.round(newY / g) * g;
+        }
+        manualPositions[dragId] = { x: newX, y: newY };
+        clearPendingDrag();
         dragId = null;
         dragNode = null;
         dragPointerStart = null;
-        skipNextNodeClick = dragMovedDuringInteraction;
+        dragStartPosition = null;
+        dragActive = false;
         dragMovedDuringInteraction = false;
         renderSetupDiagram();
         if (scheduleProjectAutoSave) scheduleProjectAutoSave();
@@ -1418,7 +1488,36 @@
         if (e.touches) e.preventDefault();
       };
 
-      let activePopupNode = null;
+      const onNodeTouchEnd = e => {
+        const node = e.target.closest('.diagram-node');
+        if (!node) {
+          lastTapInfo = null;
+          return;
+        }
+        const nodeId = node.getAttribute('data-node');
+        if (!nodeId) {
+          lastTapInfo = null;
+          return;
+        }
+        const now = Date.now();
+        const pos = getPos(e);
+        if (lastTapInfo
+          && lastTapInfo.id === nodeId
+          && now - lastTapInfo.time <= DOUBLE_TAP_DELAY
+          && Math.abs(pos.x - lastTapInfo.pos.x) <= DOUBLE_TAP_DISTANCE
+          && Math.abs(pos.y - lastTapInfo.pos.y) <= DOUBLE_TAP_DISTANCE) {
+          const entry = lastPopupEntries[nodeId];
+          if (entry) {
+            showEntryPopupForNode(node, entry);
+            if (typeof e.preventDefault === 'function') e.preventDefault();
+          }
+          lastTapInfo = null;
+          return;
+        }
+        lastTapInfo = { id: nodeId, pos, time: now };
+        showHoverNoticeForNode(node);
+      };
+
       const adjustPopupLayout = (entry, viewportWidth, viewportHeight, margin) => {
         if (!popup) return;
         popup.dataset.columns = '1';
@@ -1546,6 +1645,7 @@
         popup.innerHTML = `<p class="diagram-popup-notice">${safeNotice}</p>`;
         popup.setAttribute('aria-label', hoverNoticeText);
         activePopupNode = nodeEl;
+        activePopupEntry = null;
         positionPopup(nodeEl, null);
       };
 
@@ -1561,13 +1661,13 @@
         const related = e.relatedTarget;
         if (related && activePopupNode.contains(related)) return;
         if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
+        if (popup && (related === popup || (related && popup.contains(related)))) return;
         hidePopup();
-        activePopupNode = null;
       };
 
       const onSvgLeave = e => {
         if (svg.contains(e.relatedTarget)) return;
-        activePopupNode = null;
+        if (popup && (e.relatedTarget === popup || popup.contains(e.relatedTarget))) return;
         hidePopup();
       };
 
@@ -1585,38 +1685,52 @@
         windowObj.addEventListener('mousemove', updatePointerPosition);
         windowObj.addEventListener('touchmove', updatePointerPosition, { passive: true });
       }
-      const onNodeClick = e => {
-        const node = e.target.closest('.diagram-node');
-        if (!node) return;
-        if (skipNextNodeClick) {
-          skipNextNodeClick = false;
+      const showEntryPopupForNode = (node, entry) => {
+        if (!entry) return;
+        if (!popup || !node) {
+          openDetailDialogWithEntry(entry);
           return;
         }
+        popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+        popup.innerHTML = entry.content || '';
+        if (entry.label) {
+          popup.setAttribute('aria-label', entry.label);
+        } else {
+          popup.removeAttribute('aria-label');
+        }
+        activePopupNode = node;
+        activePopupEntry = entry;
+        positionPopup(node, entry);
+      };
+
+      const onNodeDoubleClick = e => {
+        const node = e.target.closest('.diagram-node');
+        if (!node) return;
         const nodeId = node.getAttribute('data-node');
         if (!nodeId) return;
         const entry = lastPopupEntries[nodeId];
         if (!entry) return;
-        hidePopup();
-        activePopupNode = null;
-        openDetailDialogWithEntry(entry);
+        showEntryPopupForNode(node, entry);
         e.stopPropagation();
+        e.preventDefault();
       };
 
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, { passive: false });
+      svg.addEventListener('touchend', onNodeTouchEnd, { passive: false });
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
       svg.addEventListener('mouseleave', onSvgLeave);
-      svg.addEventListener('click', onNodeClick);
+      svg.addEventListener('dblclick', onNodeDoubleClick);
       const repositionActivePopup = () => {
         if (!activePopupNode) return;
         const nodeId = activePopupNode.getAttribute('data-node');
         if (!nodeId || !lastPopupEntries[nodeId]) {
           hidePopup();
-          activePopupNode = null;
           return;
         }
-        positionPopup(activePopupNode, null);
+        const entry = activePopupEntry || lastPopupEntries[nodeId];
+        positionPopup(activePopupNode, entry || null);
       };
 
       svg.addEventListener('mousemove', updatePointerPosition);
@@ -1642,15 +1756,25 @@
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);
+        svg.removeEventListener('touchend', onNodeTouchEnd);
         svg.removeEventListener('mouseover', onNodeOver);
         svg.removeEventListener('mouseout', onNodeOut);
         svg.removeEventListener('mouseleave', onSvgLeave);
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
-        svg.removeEventListener('click', onNodeClick);
+        svg.removeEventListener('dblclick', onNodeDoubleClick);
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
         }
+        clearPendingDrag();
+        dragId = null;
+        dragNode = null;
+        dragPointerStart = null;
+        dragStartPosition = null;
+        dragActive = false;
+        dragMovedDuringInteraction = false;
+        lastTapInfo = null;
+        hidePopup();
       };
 
       apply();
