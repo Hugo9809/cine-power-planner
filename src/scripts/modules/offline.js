@@ -879,6 +879,8 @@
           }
         }
       },
+      promise: warmupTask,
+      done: warmupTask,
     };
   }
 
@@ -2277,7 +2279,7 @@
       }
     })();
 
-    scheduleReloadWarmup({
+    const warmupHandle = scheduleReloadWarmup({
       window: win,
       navigator: options.navigator,
       fetch: options.fetch,
@@ -2287,28 +2289,113 @@
       allowCache: true,
     });
 
+    const resolveWarmupPromise = (handle) => {
+      if (!handle || typeof handle !== 'object') {
+        return null;
+      }
+
+      if (handle.promise && typeof handle.promise.then === 'function') {
+        return handle.promise;
+      }
+
+      if (handle.done && typeof handle.done.then === 'function') {
+        return handle.done;
+      }
+
+      return null;
+    };
+
+    const wrapResultWithSource = (source, promise) => {
+      if (!promise || typeof promise.then !== 'function') {
+        return Promise.resolve({
+          source,
+          value: promise,
+          successful: true,
+          error: null,
+        });
+      }
+
+      return Promise.resolve(promise)
+        .then((value) => ({
+          source,
+          value,
+          successful: true,
+          error: null,
+        }))
+        .catch((error) => ({
+          source,
+          value: undefined,
+          successful: false,
+          error,
+        }));
+    };
+
+    const warmupPromise = resolveWarmupPromise(warmupHandle);
+
+    let serviceWorkerResultLogged = false;
+    const serviceWorkerResultPromiseRaw = wrapResultWithSource('serviceWorker', serviceWorkerCleanupPromise);
+    const serviceWorkerResultPromise = serviceWorkerResultPromiseRaw.then((result) => {
+      if (!result.successful && result.error && !serviceWorkerResultLogged) {
+        serviceWorkerResultLogged = true;
+        safeWarn('Service worker cleanup promise rejected', result.error);
+      }
+      return result;
+    });
+
+    const warmupResultPromise = warmupPromise ? wrapResultWithSource('warmup', warmupPromise) : null;
+
+    const gatePromise = warmupResultPromise
+      ? Promise.race([serviceWorkerResultPromise, warmupResultPromise])
+      : serviceWorkerResultPromise;
+
     let serviceWorkersUnregistered = false;
+    let warmupFinishedBeforeReload = false;
+    let serviceWorkerStatusKnown = false;
 
     try {
       const serviceWorkerAwaitResult = await awaitPromiseWithSoftTimeout(
-        serviceWorkerCleanupPromise,
+        gatePromise,
         FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
         () => {
-          safeWarn('Service worker cleanup timed out before reload, continuing anyway.', {
+          safeWarn('Service worker cleanup or warmup timed out before reload, continuing anyway.', {
             timeoutMs: FORCE_RELOAD_CLEANUP_TIMEOUT_MS,
           });
         },
         (lateError) => {
-          safeWarn('Service worker cleanup failed after reload triggered', lateError);
+          if (lateError && lateError.source === 'warmup') {
+            const detail = lateError.error || lateError;
+            safeWarn('Reload warmup failed after reload triggered', detail);
+            return;
+          }
+
+          const detail = lateError && lateError.error ? lateError.error : lateError;
+          safeWarn('Service worker cleanup failed after reload triggered', detail);
         },
       );
 
       if (serviceWorkerAwaitResult && serviceWorkerAwaitResult.timedOut !== true) {
-        serviceWorkersUnregistered = !!serviceWorkerAwaitResult.result;
+        const gateResult = serviceWorkerAwaitResult.result;
+
+        if (gateResult && gateResult.source === 'serviceWorker') {
+          serviceWorkerStatusKnown = true;
+
+          if (gateResult.successful) {
+            serviceWorkersUnregistered = !!gateResult.value;
+          } else if (!serviceWorkerResultLogged && gateResult.error) {
+            serviceWorkerResultLogged = true;
+            safeWarn('Service worker cleanup promise rejected', gateResult.error);
+          }
+        } else if (gateResult && gateResult.source === 'warmup') {
+          warmupFinishedBeforeReload = gateResult.successful && gateResult.value === true;
+
+          if (!gateResult.successful && gateResult.error) {
+            safeWarn('Reload warmup promise rejected before reload triggered', gateResult.error);
+          }
+        }
       }
     } catch (error) {
-      safeWarn('Service worker cleanup promise rejected', error);
-      serviceWorkersUnregistered = false;
+      const detail = error && error.error ? error.error : error;
+      safeWarn('Reload preparation gate failed', detail);
     }
 
     let reloadTriggered = false;
@@ -2344,6 +2431,8 @@
     return {
       uiCacheCleared,
       serviceWorkersUnregistered,
+      serviceWorkerStatusKnown,
+      warmupCompleted: warmupFinishedBeforeReload,
       cachesCleared,
       reloadTriggered,
       navigationTriggered: reloadTriggered,
