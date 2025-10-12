@@ -75,5 +75,7 @@ describe('feature search normalization', () => {
     expect(normalize('5\'8" tripod mount')).toBe('5 ft 8 inch tripod mount');
     expect(normalize('7ft boom arm')).toBe('7 ft boom arm');
     expect(normalize('1/2" adapter')).toBe('1/2 inch adapter');
+    expect(normalize('0\t\t\t staging')).toBe('0 staging');
+    expect(normalize("12\t\t' lens")).toBe('12 ft lens');
   });
 });

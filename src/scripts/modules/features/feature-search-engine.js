@@ -329,7 +329,7 @@
     'g',
   );
   const MEASUREMENT_INCH_WORD_PATTERN = new RegExp(
-    String.raw`(${MEASUREMENT_VALUE_PATTERN})\s*(?:inches|inch|in\.?)(?![a-z])`,
+    String.raw`(${MEASUREMENT_VALUE_PATTERN})[\s-]*(?:inches|inch|in\.?)(?![a-z])`,
     'gi',
   );
   const MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(

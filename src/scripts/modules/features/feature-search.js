@@ -75,10 +75,23 @@
   const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
   const MEASUREMENT_DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
   const MEASUREMENT_SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
-  const MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
-  const MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
-  const MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
-  const MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+  const MEASUREMENT_VALUE_PATTERN = String.raw`\d+(?:\s*[.,/-]\s*\d+)*(?:\s+\d+(?:\s*[.,/-]\s*\d+)*)*`;
+  const MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(
+    String.raw`(${MEASUREMENT_VALUE_PATTERN})[\s-]*(?:feet|foot|ft\.?)(?![a-z])`,
+    'gi',
+  );
+  const MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(
+    String.raw`(${MEASUREMENT_VALUE_PATTERN})\s*['’](?=\s|[\d"”″'-]|$)`,
+    'g',
+  );
+  const MEASUREMENT_INCH_WORD_PATTERN = new RegExp(
+    String.raw`(${MEASUREMENT_VALUE_PATTERN})[\s-]*(?:inches|inch|in\.?)(?![a-z])`,
+    'gi',
+  );
+  const MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(
+    String.raw`(${MEASUREMENT_VALUE_PATTERN})\s*["”″](?=\s|[\d'’"-]|$)`,
+    'g',
+  );
   /* eslint-enable no-control-regex, no-misleading-character-class */
 
   function cleanMeasurementValue(value) {

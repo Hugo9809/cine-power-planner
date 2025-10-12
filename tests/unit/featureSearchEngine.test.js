@@ -13,6 +13,8 @@ describe('feature search engine module', () => {
     expect(engine.searchKey('Æther & Co.')).toBe('aetherandco');
     expect(engine.searchKey('Mark IV')).toBe('mk4');
     expect(engine.searchKey('5\'8" rig plate')).toBe('5ft8inchrigplate');
+    expect(engine.searchKey('0\t\t\t backdrop')).toBe('0backdrop');
+    expect(engine.searchKey("12\t\t' rig")).toBe('12ftrig');
   });
 
   test('collects search tokens with synonyms and numeric variants', () => {
