@@ -1,7 +1,30 @@
 /* global cineGearList */
 
-var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+if (typeof CORE_TEMPERATURE_QUEUE_KEY === 'undefined') {
+  try {
+    CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+  } catch (coreTemperatureQueueError) {
+    void coreTemperatureQueueError;
+    if (typeof globalThis !== 'undefined') {
+      globalThis.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+    } else if (typeof window !== 'undefined') {
+      window.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+    }
+  }
+}
+
+if (typeof CORE_TEMPERATURE_RENDER_NAME === 'undefined') {
+  try {
+    CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+  } catch (coreTemperatureRenderError) {
+    void coreTemperatureRenderError;
+    if (typeof globalThis !== 'undefined') {
+      globalThis.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+    } else if (typeof window !== 'undefined') {
+      window.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+    }
+  }
+}
 
 var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
   var helpers = null;
@@ -207,18 +230,25 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
 // workers, offline tabs and legacy frames all share the same configuration. We
 // build an ordered array here and then let the state helpers below iterate over
 // it when fetching shared utilities.
-var CORE_RUNTIME_CANDIDATE_SCOPES =
-  typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined'
-    ? CORE_RUNTIME_CANDIDATE_SCOPES
-    : collectCoreRuntimeCandidateScopes(
-        typeof CORE_GLOBAL_SCOPE !== 'undefined'
-          && CORE_GLOBAL_SCOPE
-          && typeof CORE_GLOBAL_SCOPE === 'object'
-          ? CORE_GLOBAL_SCOPE
-          : null
-      );
+if (
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' ||
+  !CORE_RUNTIME_CANDIDATE_SCOPES ||
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES.length !== 'number'
+) {
+  CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+      CORE_GLOBAL_SCOPE &&
+      typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null
+  );
+}
 
-var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
+var CORE_RUNTIME_STATE_SUPPORT_PART2 = (function resolveCoreRuntimeStateSupportPart2() {
+  if (typeof CORE_RUNTIME_STATE_SUPPORT !== 'undefined' && CORE_RUNTIME_STATE_SUPPORT) {
+    return CORE_RUNTIME_STATE_SUPPORT;
+  }
+
   var resolvedSupport = null;
 
   if (typeof resolveCoreSupportModule === 'function') {
@@ -240,6 +270,13 @@ var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   }
 
   if (resolvedSupport) {
+    if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+      try {
+        globalThis.CORE_RUNTIME_STATE_SUPPORT = resolvedSupport;
+      } catch (runtimeStateAssignError) {
+        void runtimeStateAssignError;
+      }
+    }
     return resolvedSupport;
   }
 
@@ -252,6 +289,13 @@ var CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
     try {
       var candidate = supportScope.cineCoreRuntimeState;
       if (candidate && typeof candidate === 'object') {
+        if (typeof CORE_RUNTIME_STATE_SUPPORT === 'undefined' && typeof globalThis !== 'undefined') {
+          try {
+            globalThis.CORE_RUNTIME_STATE_SUPPORT = candidate;
+          } catch (runtimeStateCandidateAssignError) {
+            void runtimeStateCandidateAssignError;
+          }
+        }
         return candidate;
       }
     } catch (supportLookupError) {
@@ -269,11 +313,11 @@ var CORE_TEMPERATURE_KEY_DEFAULTS = (function resolveCoreTemperatureKeyDefaults(
   };
 
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.resolveTemperatureKeyDefaults === 'function'
   ) {
     try {
-      var resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults();
+      var resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT_PART2.resolveTemperatureKeyDefaults();
       if (resolvedDefaults && typeof resolvedDefaults === 'object') {
         if (typeof resolvedDefaults.queueKey === 'string' && resolvedDefaults.queueKey) {
           defaults.queueKey = resolvedDefaults.queueKey;
@@ -304,22 +348,22 @@ CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 
 var CORE_SAFE_FREEZE_REGISTRY = (function resolveCoreSafeFreezeRegistry() {
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.ensureSafeFreezeRegistry === 'function'
   ) {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry();
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.ensureSafeFreezeRegistry();
     } catch (ensureRegistryError) {
       void ensureRegistryError;
     }
   }
 
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.createSafeFreezeRegistry === 'function'
   ) {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry();
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.createSafeFreezeRegistry();
     } catch (createRegistryError) {
       void createRegistryError;
     }
@@ -334,11 +378,11 @@ function coreSafeFreezeRegistryHas(value) {
   }
 
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.hasSafeFreezeEntry === 'function'
   ) {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry(
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.hasSafeFreezeEntry(
         CORE_SAFE_FREEZE_REGISTRY,
         value
       );
@@ -371,11 +415,11 @@ function coreSafeFreezeRegistryAdd(value) {
   }
 
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.registerSafeFreezeEntry === 'function'
   ) {
     try {
-      CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry(
+      CORE_RUNTIME_STATE_SUPPORT_PART2.registerSafeFreezeEntry(
         CORE_SAFE_FREEZE_REGISTRY,
         value
       );
@@ -645,11 +689,11 @@ function createLocalRuntimeStateFallback(candidateScopes) {
 
 function createLocalRuntimeState(candidateScopes) {
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.createLocalRuntimeState === 'function'
   ) {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState(
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.createLocalRuntimeState(
         candidateScopes,
         {
           temperatureQueueKey: CORE_TEMPERATURE_QUEUE_KEY,

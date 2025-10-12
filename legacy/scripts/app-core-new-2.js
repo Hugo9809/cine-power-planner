@@ -21,8 +21,16 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) { if (t && null != (n = r[t])) return n.call(r); if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r)); t = "@@asyncIterator", o = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
-var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+if ("undefined" == typeof CORE_TEMPERATURE_QUEUE_KEY) try {
+  CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+} catch (coreTemperatureQueueError) {
+  if (void coreTemperatureQueueError, "undefined" != typeof globalThis) globalThis.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';else if ("undefined" != typeof window) window.CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+}
+if ("undefined" == typeof CORE_TEMPERATURE_RENDER_NAME) try {
+  CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+} catch (coreTemperatureRenderError) {
+  if (void coreTemperatureRenderError, "undefined" != typeof globalThis) globalThis.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';else if ("undefined" != typeof window) window.CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+}
 var CORE_ENVIRONMENT_HELPERS = function resolveCoreEnvironmentHelpers() {
   var helpers = null;
 
@@ -177,8 +185,9 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-var CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
-var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
+if ("undefined" == typeof CORE_RUNTIME_CANDIDATE_SCOPES || !CORE_RUNTIME_CANDIDATE_SCOPES || "number" != typeof CORE_RUNTIME_CANDIDATE_SCOPES.length) CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes("undefined" != typeof CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE && ("undefined" == typeof CORE_GLOBAL_SCOPE ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
+var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPart2() {
+  if ("undefined" != typeof CORE_RUNTIME_STATE_SUPPORT && CORE_RUNTIME_STATE_SUPPORT) return CORE_RUNTIME_STATE_SUPPORT;
   var resolvedSupport = null;
   if (typeof resolveCoreSupportModule === 'function') {
     resolvedSupport = resolveCoreSupportModule('cineCoreRuntimeState', './modules/core/runtime-state.js');
@@ -194,6 +203,11 @@ var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
     }
   }
   if (resolvedSupport) {
+    if ("undefined" == typeof CORE_RUNTIME_STATE_SUPPORT && "undefined" != typeof globalThis) try {
+      globalThis.CORE_RUNTIME_STATE_SUPPORT = resolvedSupport;
+    } catch (runtimeStateAssignError) {
+      void runtimeStateAssignError;
+    }
     return resolvedSupport;
   }
   for (var supportIndex = 0; supportIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; supportIndex += 1) {
@@ -204,6 +218,11 @@ var CORE_RUNTIME_STATE_SUPPORT = function resolveCoreRuntimeStateSupport() {
     try {
       var candidate = supportScope.cineCoreRuntimeState;
       if (candidate && _typeof(candidate) === 'object') {
+        if ("undefined" == typeof CORE_RUNTIME_STATE_SUPPORT && "undefined" != typeof globalThis) try {
+          globalThis.CORE_RUNTIME_STATE_SUPPORT = candidate;
+        } catch (runtimeStateCandidateAssignError) {
+          void runtimeStateCandidateAssignError;
+        }
         return candidate;
       }
     } catch (supportLookupError) {
@@ -220,11 +239,11 @@ var CORE_TEMPERATURE_KEY_DEFAULTS = function resolveCoreTemperatureKeyDefaults()
   };
 
   if (
-    CORE_RUNTIME_STATE_SUPPORT &&
-    typeof CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults === 'function'
+    CORE_RUNTIME_STATE_SUPPORT_PART2 &&
+    typeof CORE_RUNTIME_STATE_SUPPORT_PART2.resolveTemperatureKeyDefaults === 'function'
   ) {
     try {
-      var resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT.resolveTemperatureKeyDefaults();
+      var resolvedDefaults = CORE_RUNTIME_STATE_SUPPORT_PART2.resolveTemperatureKeyDefaults();
       if (resolvedDefaults && _typeof(resolvedDefaults) === 'object') {
         if (typeof resolvedDefaults.queueKey === 'string' && resolvedDefaults.queueKey) {
           defaults.queueKey = resolvedDefaults.queueKey;
@@ -253,16 +272,16 @@ var CORE_TEMPERATURE_KEY_DEFAULTS = function resolveCoreTemperatureKeyDefaults()
 CORE_TEMPERATURE_QUEUE_KEY = CORE_TEMPERATURE_KEY_DEFAULTS.queueKey;
 CORE_TEMPERATURE_RENDER_NAME = CORE_TEMPERATURE_KEY_DEFAULTS.renderName;
 var CORE_SAFE_FREEZE_REGISTRY = function resolveCoreSafeFreezeRegistry() {
-  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry === 'function') {
+  if (CORE_RUNTIME_STATE_SUPPORT_PART2 && typeof CORE_RUNTIME_STATE_SUPPORT_PART2.ensureSafeFreezeRegistry === 'function') {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.ensureSafeFreezeRegistry();
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.ensureSafeFreezeRegistry();
     } catch (ensureRegistryError) {
       void ensureRegistryError;
     }
   }
-  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry === 'function') {
+  if (CORE_RUNTIME_STATE_SUPPORT_PART2 && typeof CORE_RUNTIME_STATE_SUPPORT_PART2.createSafeFreezeRegistry === 'function') {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.createSafeFreezeRegistry();
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.createSafeFreezeRegistry();
     } catch (createRegistryError) {
       void createRegistryError;
     }
@@ -273,9 +292,9 @@ function coreSafeFreezeRegistryHas(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return false;
   }
-  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry === 'function') {
+  if (CORE_RUNTIME_STATE_SUPPORT_PART2 && typeof CORE_RUNTIME_STATE_SUPPORT_PART2.hasSafeFreezeEntry === 'function') {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.hasSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.hasSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
     } catch (coreRegistryHasError) {
       void coreRegistryHasError;
     }
@@ -299,9 +318,9 @@ function coreSafeFreezeRegistryAdd(value) {
   if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
     return;
   }
-  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry === 'function') {
+  if (CORE_RUNTIME_STATE_SUPPORT_PART2 && typeof CORE_RUNTIME_STATE_SUPPORT_PART2.registerSafeFreezeEntry === 'function') {
     try {
-      CORE_RUNTIME_STATE_SUPPORT.registerSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
+      CORE_RUNTIME_STATE_SUPPORT_PART2.registerSafeFreezeEntry(CORE_SAFE_FREEZE_REGISTRY, value);
       return;
     } catch (coreRegistryAddError) {
       void coreRegistryAddError;
@@ -510,9 +529,9 @@ function createLocalRuntimeStateFallback(candidateScopes) {
   };
 }
 function createLocalRuntimeState(candidateScopes) {
-  if (CORE_RUNTIME_STATE_SUPPORT && typeof CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState === 'function') {
+  if (CORE_RUNTIME_STATE_SUPPORT_PART2 && typeof CORE_RUNTIME_STATE_SUPPORT_PART2.createLocalRuntimeState === 'function') {
     try {
-      return CORE_RUNTIME_STATE_SUPPORT.createLocalRuntimeState(candidateScopes, {
+      return CORE_RUNTIME_STATE_SUPPORT_PART2.createLocalRuntimeState(candidateScopes, {
         temperatureQueueKey: CORE_TEMPERATURE_QUEUE_KEY,
         temperatureRenderName: CORE_TEMPERATURE_RENDER_NAME
       });
