@@ -359,32 +359,32 @@
     intro: {
       title: 'Welcome to Cine Power Planner',
       body:
-        'This expanded walkthrough orients every workflow that protects your crew data, from first project setup to redundant backups. Each step saves progress offline so you can pause anytime and resume without losing guardrails.',
+        'Use this guided tour to learn the workflows that keep every project backed up and ready to restore. Progress saves offline so you can pause anytime and pick up exactly where you stopped.',
     },
     userProfile: {
       title: 'Configure language and your profile',
       body:
-        'Choose your interface language, display name, role, phone, email and photo on this card. Every change syncs to Contacts instantly, persists with your offline saves and keeps exports credited to the correct owner.',
+        'Set your interface language plus display name, role, phone, email and photo. Every change syncs to Contacts immediately, stays in offline saves and appears on exports.',
     },
     unitsPreferences: {
       title: 'Tune theme and units',
       body:
-        'Use Settings → General to choose dark or light theme, optional pink mode highlights, default focus scale and temperature units. Request persistent storage so browsers keep these preferences and every save safe during low-space cleanups.',
+        'Open Settings → General to choose the theme, optional pink highlights, focus scale and temperature units. Request persistent storage so the browser keeps preferences and safeguards saves during cleanups.',
     },
     nameProject: {
       title: 'Name your first project',
       body:
-        'Enter a descriptive project name to anchor autosave, history, exports and backups. Every subsequent workflow references this name so your offline library stays organized and easy to restore.',
+        'Give the project a descriptive name to anchor autosave, history, exports and backups. Every workflow references it so your offline library stays organized and easy to restore.',
     },
     saveProject: {
       title: 'Capture an immediate save',
       body:
-        'Press Save (or use Ctrl+S/⌘S/Enter) to write a complete offline snapshot—devices, runtime math, requirements, notes and diagnostics. The planner confirms completion before enabling the next workflow.',
+        'Select Save (or press Ctrl+S/⌘S/Enter) to capture a complete offline snapshot—devices, power math, requirements, notes and diagnostics. The next workflow unlocks once the save finishes.',
     },
     addCamera: {
       title: 'Select the primary camera',
       body:
-        'Choose the camera body you are planning for. Offline search is available inside the dropdown. Selecting a body unlocks accessories, power draws and diagrams tailored to that choice.',
+        'Choose the camera body you are planning. Offline search works inside the menu. That selection unlocks matching accessories, power draws and diagrams.',
     },
     addMonitoring: {
       title: 'Add monitors, wireless video and FIZ',
@@ -1376,18 +1376,107 @@
 
   let storedState = loadStoredState();
 
+  function normalizeLanguageCandidate(rawValue, availableTexts) {
+    if (!rawValue || (typeof rawValue !== 'string' && typeof rawValue !== 'number')) {
+      return null;
+    }
+    const textMap = (availableTexts && typeof availableTexts === 'object') ? availableTexts : {};
+    const trimmed = String(rawValue).trim();
+    if (!trimmed) {
+      return null;
+    }
+    if (Object.prototype.hasOwnProperty.call(textMap, trimmed)) {
+      return trimmed;
+    }
+    const lower = trimmed.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(textMap, lower)) {
+      return lower;
+    }
+    const base = lower.split(/[-_]/)[0];
+    if (base && Object.prototype.hasOwnProperty.call(textMap, base)) {
+      return base;
+    }
+    return null;
+  }
+
   function resolveLanguage() {
+    const availableTexts = GLOBAL_SCOPE && GLOBAL_SCOPE.texts && typeof GLOBAL_SCOPE.texts === 'object'
+      ? GLOBAL_SCOPE.texts
+      : {};
+    const defaultLang = Object.prototype.hasOwnProperty.call(availableTexts, 'en')
+      ? 'en'
+      : (Object.keys(availableTexts)[0] || 'en');
+
+    const seen = new Set();
+    const candidates = [];
+    const pushCandidate = value => {
+      const normalized = normalizeLanguageCandidate(value, availableTexts);
+      if (!normalized || seen.has(normalized)) {
+        return;
+      }
+      seen.add(normalized);
+      candidates.push(normalized);
+    };
+
     try {
-      const lang = typeof GLOBAL_SCOPE.currentLang === 'string' && GLOBAL_SCOPE.texts
-        ? GLOBAL_SCOPE.currentLang
-        : null;
-      if (lang && GLOBAL_SCOPE.texts && GLOBAL_SCOPE.texts[lang]) {
-        return lang;
+      if (typeof GLOBAL_SCOPE.currentLang === 'string') {
+        pushCandidate(GLOBAL_SCOPE.currentLang);
       }
     } catch (error) {
       void error;
     }
-    return 'en';
+
+    if (DOCUMENT && DOCUMENT.documentElement && typeof DOCUMENT.documentElement.lang === 'string') {
+      pushCandidate(DOCUMENT.documentElement.lang);
+    }
+
+    if (DOCUMENT && typeof DOCUMENT.getElementById === 'function') {
+      const headerLanguage = DOCUMENT.getElementById('languageSelect');
+      if (headerLanguage && typeof headerLanguage.value === 'string') {
+        pushCandidate(headerLanguage.value);
+      }
+      const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
+      if (settingsLanguage && typeof settingsLanguage.value === 'string') {
+        pushCandidate(settingsLanguage.value);
+      }
+    }
+
+    try {
+      if (
+        GLOBAL_SCOPE
+        && GLOBAL_SCOPE.localStorage
+        && typeof GLOBAL_SCOPE.localStorage.getItem === 'function'
+      ) {
+        pushCandidate(GLOBAL_SCOPE.localStorage.getItem('language'));
+      }
+    } catch (error) {
+      void error;
+    }
+
+    try {
+      const navigatorObject = GLOBAL_SCOPE && GLOBAL_SCOPE.navigator ? GLOBAL_SCOPE.navigator : null;
+      if (navigatorObject) {
+        if (Array.isArray(navigatorObject.languages)) {
+          for (let index = 0; index < navigatorObject.languages.length; index += 1) {
+            pushCandidate(navigatorObject.languages[index]);
+          }
+        }
+        if (typeof navigatorObject.language === 'string') {
+          pushCandidate(navigatorObject.language);
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && Object.prototype.hasOwnProperty.call(availableTexts, candidate)) {
+        return candidate;
+      }
+    }
+
+    return defaultLang;
   }
 
   function resolveTourTexts() {
@@ -3102,6 +3191,45 @@
     const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
     const settingsLanguageLabel = DOCUMENT.getElementById('settingsLanguageLabel');
 
+    const applyLanguagePreference = (value) => {
+      const candidate = typeof value === 'string' ? value.trim() : '';
+      if (!candidate) {
+        return false;
+      }
+
+      let applied = false;
+      const missingSentinel = {};
+
+      if (typeof GLOBAL_SCOPE.callCoreFunctionIfAvailable === 'function') {
+        try {
+          const result = GLOBAL_SCOPE.callCoreFunctionIfAvailable(
+            'setLanguage',
+            [candidate],
+            { defaultValue: missingSentinel },
+          );
+          if (result !== missingSentinel) {
+            applied = true;
+          }
+        } catch (error) {
+          safeWarn(
+            'cine.features.onboardingTour could not route language preference via runtime bridge.',
+            error,
+          );
+        }
+      }
+
+      if (!applied && typeof GLOBAL_SCOPE.setLanguage === 'function') {
+        try {
+          GLOBAL_SCOPE.setLanguage(candidate);
+          applied = true;
+        } catch (error) {
+          safeWarn('cine.features.onboardingTour could not sync language preference.', error);
+        }
+      }
+
+      return applied;
+    };
+
     const fragment = DOCUMENT.createDocumentFragment();
 
     const intro = DOCUMENT.createElement('p');
@@ -3354,12 +3482,8 @@
           return;
         }
         const value = languageProxy.value;
-        if (typeof GLOBAL_SCOPE.setLanguage === 'function') {
-          try {
-            GLOBAL_SCOPE.setLanguage(value);
-          } catch (error) {
-            safeWarn('cine.features.onboardingTour could not sync language preference.', error);
-          }
+        const applied = applyLanguagePreference(value);
+        if (applied) {
           return;
         }
         if (languageSelect && languageSelect !== languageTarget && languageSelect.value !== value) {
@@ -3413,6 +3537,38 @@
         } catch (error) {
           safeWarn('cine.features.onboardingTour could not observe language changes.', error);
         }
+      }
+
+      const secondarySources = [];
+      if (languageSelect && languageSelect !== languageTarget) {
+        secondarySources.push(languageSelect);
+      }
+      if (settingsLanguage && settingsLanguage !== languageTarget) {
+        secondarySources.push(settingsLanguage);
+      }
+
+      if (secondarySources.length) {
+        const handleSecondarySourceChange = () => {
+          syncLanguageFromActive();
+        };
+        for (let index = 0; index < secondarySources.length; index += 1) {
+          const source = secondarySources[index];
+          if (!source) {
+            continue;
+          }
+          source.addEventListener('change', handleSecondarySourceChange);
+          source.addEventListener('input', handleSecondarySourceChange);
+        }
+        registerCleanup(() => {
+          for (let index = 0; index < secondarySources.length; index += 1) {
+            const source = secondarySources[index];
+            if (!source) {
+              continue;
+            }
+            source.removeEventListener('change', handleSecondarySourceChange);
+            source.removeEventListener('input', handleSecondarySourceChange);
+          }
+        });
       }
 
       registerCleanup(() => {
@@ -4837,7 +4993,12 @@
     }
     const startFromHelp = () => {
       storedState = loadStoredState();
-      const resume = Boolean(storedState && storedState.activeStep);
+      const hasProgress = Boolean(
+        storedState
+        && Array.isArray(storedState.completedSteps)
+        && storedState.completedSteps.length > 0,
+      );
+      const resume = hasProgress && Boolean(storedState && storedState.activeStep);
       startTutorial({ resume });
     };
 

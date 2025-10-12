@@ -378,7 +378,7 @@ describe('onboarding tour manual start', () => {
     nextButton.click();
     await new Promise(resolve => setTimeout(resolve, 60));
 
-    expect(progress.textContent).toBe('Step 1 of 23');
+    expect(progress.textContent).toBe('Step 1 of 28');
 
     const onboardingLanguage = overlay.querySelector('select[id^="onboarding-user-language"]');
     expect(onboardingLanguage).not.toBeNull();
