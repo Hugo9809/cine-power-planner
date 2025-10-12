@@ -16426,6 +16426,33 @@ function getAvatarInitial(value) {
   return '•';
 }
 
+function isSafeImageUrl(url) {
+  if (typeof url !== 'string') return false;
+  // Accept only image data URLs (PNG, JPEG, GIF) or relative URLs (no scheme), but not SVG (risk for embedded scripts)
+  // Acceptable: data:image/png, data:image/jpeg, data:image/gif
+  // Optionally, allow only http(s) URLs to trusted hosts: skipped here for generality
+  // We reject "javascript:", "data:image/svg+xml", and others
+  if (url.startsWith('data:')) {
+    // allow only certain image mime types
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    try {
+      const mimeTypeEnd = url.indexOf(';', 5); // after 'data:'
+      const type = mimeTypeEnd >= 0 ? url.substring(5, mimeTypeEnd) : '';
+      if (allowedTypes.includes(type)) return true;
+    } catch (e) { /* ignore */ }
+    return false;
+  } else if (/^\s*javascript:/i.test(url)) {
+    return false;
+  } else if (/^\s*https?:\/\//i.test(url)) {
+    // Optionally: Add trusted domains logic here
+    return true;
+  } else if (/^[./\w-]/.test(url)) {
+    // Simple allow relative paths (basic check)
+    return true;
+  }
+  return false;
+}
+
 function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) {
   if (!container) return;
   const visual = container.querySelector('.person-avatar-visual, .contact-card-avatar-visual');
@@ -16433,7 +16460,7 @@ function updateAvatarVisual(container, avatarValue, fallbackName, initialClass) 
   while (visual.firstChild) {
     visual.removeChild(visual.firstChild);
   }
-  if (avatarValue) {
+  if (avatarValue && isSafeImageUrl(avatarValue)) {
     const img = document.createElement('img');
     img.src = avatarValue;
     img.alt = '';
