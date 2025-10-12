@@ -2486,6 +2486,32 @@ describe('export/import all data', () => {
     }));
   });
 
+  test('importAllData extracts nested project data containers', () => {
+    clearAllData();
+    importAllData({
+      data: {
+        project: { gearList: '<div>Nested</div>' },
+      },
+    });
+
+    const projects = loadProject();
+    expect(Object.values(projects).some((proj) => proj.gearList === '<div>Nested</div>')).toBe(true);
+  });
+
+  test('importAllData imports legacy plannerData project entries', () => {
+    clearAllData();
+    importAllData({
+      plannerData: [
+        ['projects', [{ name: 'Planner One', gearList: '<p>One</p>' }]],
+        { key: 'project', value: { gearList: '<p>Two</p>' } },
+      ],
+    });
+
+    const projects = loadProject();
+    expect(Object.values(projects).some((proj) => proj.gearList === '<p>One</p>')).toBe(true);
+    expect(Object.values(projects).some((proj) => proj.gearList === '<p>Two</p>')).toBe(true);
+  });
+
   test('importAllData converts legacy filter arrays into serialized filter selections', () => {
     clearAllData();
     importAllData({

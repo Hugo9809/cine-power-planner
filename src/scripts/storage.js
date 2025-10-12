@@ -10943,6 +10943,90 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
   return false;
 }
 
+function collectLegacyProjectCollections(container) {
+  if (!container || typeof container !== "object") {
+    return [];
+  }
+
+  const collections = [];
+  const addCollection = (value) => {
+    if (value === null || value === undefined) {
+      return;
+    }
+    collections.push(value);
+  };
+
+  const legacyKeys = [
+    "projectData",
+    "projectCollection",
+    "projectEntries",
+    "legacyProjects",
+    "legacyProjectData",
+  ];
+
+  legacyKeys.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(container, key)) {
+      addCollection(container[key]);
+    }
+  });
+
+  if (isPlainObject(container.data)) {
+    if (Object.prototype.hasOwnProperty.call(container.data, "project")) {
+      addCollection(container.data.project);
+    }
+    if (Object.prototype.hasOwnProperty.call(container.data, "projects")) {
+      addCollection(container.data.projects);
+    }
+  }
+
+  const plannerData = container.plannerData;
+  if (Array.isArray(plannerData)) {
+    plannerData.forEach((entry) => {
+      if (Array.isArray(entry) && entry.length >= 2) {
+        const key = entry[0];
+        if (typeof key === "string" && key.toLowerCase().includes("project")) {
+          addCollection(entry[1]);
+        }
+        return;
+      }
+
+      if (!entry || typeof entry !== "object") {
+        return;
+      }
+
+      const key = typeof entry.key === "string"
+        ? entry.key
+        : typeof entry.name === "string"
+          ? entry.name
+          : typeof entry.id === "string"
+            ? entry.id
+            : typeof entry.section === "string"
+              ? entry.section
+              : null;
+
+      if (!key || !key.toLowerCase().includes("project")) {
+        return;
+      }
+
+      const value = Object.prototype.hasOwnProperty.call(entry, "value")
+        ? entry.value
+        : Object.prototype.hasOwnProperty.call(entry, "data")
+          ? entry.data
+          : Object.prototype.hasOwnProperty.call(entry, "project")
+            ? entry.project
+            : Object.prototype.hasOwnProperty.call(entry, "projects")
+              ? entry.projects
+              : null;
+
+      if (value !== null && value !== undefined) {
+        addCollection(value);
+      }
+    });
+  }
+
+  return collections;
+}
+
 // --- Favorites Storage ---
 function loadFavorites() {
   applyLegacyStorageMigrations();
@@ -13576,15 +13660,59 @@ function importAllData(allData, options = {}) {
     return importProjectEntry;
   };
 
+  let projectImported = false;
+  const getTrackedImporter = () => {
+    const importer = ensureProjectImporter();
+    return (name, project, fallback) => {
+      projectImported = true;
+      importer(name, project, fallback);
+    };
+  };
+
+  const importTrackedCollection = (collection, fallbackLabel) => {
+    const wrapped = () => getTrackedImporter();
+    const result = importProjectCollection(collection, wrapped, fallbackLabel);
+    if (result) {
+      projectImported = true;
+    }
+    return result;
+  };
+
   if (allData.project) {
-    importProjectCollection(allData.project, ensureProjectImporter);
+    importTrackedCollection(allData.project);
   }
   if (allData.projects) {
     // Legacy plural key. Accept object map or array of named projects.
-    importProjectCollection(allData.projects, ensureProjectImporter);
+    importTrackedCollection(allData.projects);
   } else if (!allData.project && typeof allData.gearList === "string") {
     // Legacy export format stored just the gear list HTML
-    ensureProjectImporter()("", { gearList: allData.gearList });
+    getTrackedImporter()("", { gearList: allData.gearList });
+    projectImported = true;
+  }
+
+  if (!projectImported) {
+    const legacyCollections = collectLegacyProjectCollections(allData);
+    legacyCollections.forEach((collection, index) => {
+      if (collection && typeof collection === "object" && !Array.isArray(collection)) {
+        const normalized = isNormalizedProjectEntry(collection)
+          ? collection
+          : normalizeProject(collection);
+        if (normalized && isNormalizedProjectEntry(normalized)) {
+          getTrackedImporter()("", normalized, `Imported project ${index + 1}`);
+          projectImported = true;
+          return;
+        }
+      }
+
+      const imported = importProjectCollection(
+        collection,
+        () => getTrackedImporter(),
+        `Imported project ${index + 1}`,
+      );
+      if (imported) {
+        projectImported = true;
+      }
+    });
   }
 }
 

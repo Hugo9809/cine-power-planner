@@ -191,4 +191,54 @@ describe('device database import helpers', () => {
     expect(result.devices.fiz.motors['Motor A'].fizConnector).toBe('7-pin');
     expect(result.devices.accessories.chargers['Charger A'].outputs).toEqual(['D-Tap']);
   });
+
+  test('converts legacy category arrays nested in wrapper objects', () => {
+    env = setupScriptEnvironment();
+    const legacy = {
+      categories: [
+        {
+          name: 'Cameras',
+          items: [
+            { name: 'Camera Legacy', powerDrawWatts: 12, power: { input: { type: 'DC' } } },
+          ],
+        },
+        {
+          name: 'FIZ',
+          collections: [
+            {
+              name: 'Motors',
+              items: [
+                { name: 'Legacy Motor', powerDrawWatts: 1, fizConnector: '7-pin' },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = env.utils.parseDeviceDatabaseImport(legacy);
+
+    expect(result.errors).toEqual([]);
+    expect(result.devices.cameras['Camera Legacy'].powerDrawWatts).toBe(12);
+    expect(result.devices.fiz.motors['Legacy Motor'].fizConnector).toBe('7-pin');
+  });
+
+  test('parses legacy device collections exported as arrays', () => {
+    env = setupScriptEnvironment();
+    const legacy = [
+      ['cameras', { 'Camera Array': { powerDrawWatts: 9, power: { input: { type: 'DC' } } } }],
+      {
+        key: 'Monitors',
+        devices: {
+          'Monitor Array': { powerDrawWatts: 5, power: { input: { type: 'DC' } }, videoInputs: ['HDMI'] },
+        },
+      },
+    ];
+
+    const result = env.utils.parseDeviceDatabaseImport(legacy);
+
+    expect(result.errors).toEqual([]);
+    expect(result.devices.cameras['Camera Array'].powerDrawWatts).toBe(9);
+    expect(result.devices.monitors['Monitor Array'].videoInputs).toEqual(['HDMI']);
+  });
 });

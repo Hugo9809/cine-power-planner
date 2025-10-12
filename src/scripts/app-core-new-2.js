@@ -7580,6 +7580,354 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return target;
     }
 
+    const LEGACY_DEVICE_CATEGORY_ALIASES = {
+      batteryadapters: 'batteryHotswaps',
+      batteryadapter: 'batteryHotswaps',
+      batterieshotswap: 'batteryHotswaps',
+      director: 'directorMonitors',
+      directormonitors: 'directorMonitors',
+      directorsmonitor: 'directorMonitors',
+      ios: 'iosVideo',
+      iosvideo: 'iosVideo',
+      iosdevices: 'iosVideo',
+      ios_video: 'iosVideo',
+      iosmonitor: 'iosVideo',
+      wireless: 'wirelessReceivers',
+      wirelessvideo: 'wirelessReceivers',
+      wirelessreceiver: 'wirelessReceivers',
+    };
+
+    const DEVICE_CATEGORY_NORMALIZED_LOOKUP = REQUIRED_DEVICE_CATEGORIES.map((category) => ({
+      key: category,
+      normalized: category.replace(/[^a-z0-9]+/gi, '').toLowerCase(),
+    }));
+
+    function normalizeLegacyDeviceCategoryKey(rawKey) {
+      if (typeof rawKey !== 'string') {
+        return null;
+      }
+
+      const trimmed = rawKey.trim();
+      if (!trimmed) {
+        return null;
+      }
+
+      if (REQUIRED_DEVICE_CATEGORIES.includes(trimmed)) {
+        return trimmed;
+      }
+
+      const normalized = trimmed.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(LEGACY_DEVICE_CATEGORY_ALIASES, normalized)) {
+        return LEGACY_DEVICE_CATEGORY_ALIASES[normalized];
+      }
+
+      for (let index = 0; index < DEVICE_CATEGORY_NORMALIZED_LOOKUP.length; index += 1) {
+        const entry = DEVICE_CATEGORY_NORMALIZED_LOOKUP[index];
+        if (entry.normalized === normalized) {
+          return entry.key;
+        }
+      }
+
+      if (!trimmed) {
+        return null;
+      }
+
+      return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+    }
+
+    const LEGACY_CATEGORY_VALUE_KEYS = [
+      'devices',
+      'entries',
+      'items',
+      'values',
+      'collection',
+      'collections',
+      'data',
+      'value',
+    ];
+
+    function convertLegacyDeviceCategoryValue(value) {
+      if (value === null || value === undefined) {
+        return value;
+      }
+
+      if (isMapLike(value)) {
+        const converted = convertMapLikeToObject(value);
+        if (converted) {
+          return convertLegacyDeviceCategoryValue(converted);
+        }
+      }
+
+      const normalizedCollection = normalizeDeviceEntryCollection(value);
+      if (normalizedCollection !== undefined) {
+        return normalizedCollection;
+      }
+
+      if (Array.isArray(value)) {
+        const nested = {};
+        let hasNestedAssignments = false;
+        value.forEach((entry) => {
+          if (Array.isArray(entry) && entry.length >= 2) {
+            const nestedKey = normalizeLegacyDeviceCategoryKey(entry[0]);
+            if (!nestedKey) {
+              return;
+            }
+            nested[nestedKey] = convertLegacyDeviceCategoryValue(entry[1]);
+            hasNestedAssignments = true;
+            return;
+          }
+
+          if (!isPlainObjectValue(entry)) {
+            return;
+          }
+
+          let nestedKey = null;
+          if (typeof entry.category === 'string') {
+            nestedKey = entry.category;
+          } else if (typeof entry.key === 'string') {
+            nestedKey = entry.key;
+          } else if (typeof entry.name === 'string') {
+            nestedKey = entry.name;
+          } else if (typeof entry.id === 'string') {
+            nestedKey = entry.id;
+          } else if (typeof entry.type === 'string') {
+            nestedKey = entry.type;
+          } else if (typeof entry.section === 'string') {
+            nestedKey = entry.section;
+          } else if (typeof entry.title === 'string') {
+            nestedKey = entry.title;
+          }
+
+          let nestedValue = null;
+          for (let i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+            const key = LEGACY_CATEGORY_VALUE_KEYS[i];
+            if (Object.prototype.hasOwnProperty.call(entry, key)) {
+              nestedValue = entry[key];
+              break;
+            }
+          }
+
+          if (nestedValue === null || nestedValue === undefined) {
+            const clone = { ...entry };
+            delete clone.category;
+            delete clone.key;
+            delete clone.name;
+            delete clone.id;
+            delete clone.type;
+            delete clone.section;
+            delete clone.title;
+            if (Object.keys(clone).length) {
+              nestedValue = clone;
+            }
+          }
+
+          const resolvedNestedKey = normalizeLegacyDeviceCategoryKey(nestedKey);
+          if (!resolvedNestedKey) {
+            return;
+          }
+
+          nested[resolvedNestedKey] = convertLegacyDeviceCategoryValue(nestedValue);
+          hasNestedAssignments = true;
+        });
+
+        if (hasNestedAssignments) {
+          return nested;
+        }
+
+        return value;
+      }
+
+      if (isPlainObjectValue(value)) {
+        for (let i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+          const key = LEGACY_CATEGORY_VALUE_KEYS[i];
+          if (Array.isArray(value[key])) {
+            const normalized = normalizeDeviceEntryCollection(value[key]);
+            if (normalized !== undefined) {
+              return normalized;
+            }
+          }
+          if (isMapLike(value[key])) {
+            const converted = convertMapLikeToObject(value[key]);
+            if (converted) {
+              return convertLegacyDeviceCategoryValue(converted);
+            }
+          }
+        }
+
+        const nestedKeys = ['categories', 'sections', 'collections'];
+        for (let i = 0; i < nestedKeys.length; i += 1) {
+          const key = nestedKeys[i];
+          if (Array.isArray(value[key])) {
+            const normalized = convertLegacyDeviceCategoryValue(value[key]);
+            if (normalized && typeof normalized === 'object') {
+              return normalized;
+            }
+          }
+        }
+      }
+
+      return value;
+    }
+
+    function convertLegacyDeviceDatabaseArray(entries) {
+      if (!Array.isArray(entries)) {
+        return null;
+      }
+
+      const converted = {};
+      let assignments = 0;
+
+      entries.forEach((entry) => {
+        if (entry === null || entry === undefined) {
+          return;
+        }
+
+        if (Array.isArray(entry) && entry.length >= 2) {
+          const key = normalizeLegacyDeviceCategoryKey(entry[0]);
+          if (!key) {
+            return;
+          }
+          converted[key] = convertLegacyDeviceCategoryValue(entry[1]);
+          assignments += 1;
+          return;
+        }
+
+        if (!isPlainObjectValue(entry)) {
+          return;
+        }
+
+        let key = null;
+        if (typeof entry.category === 'string') {
+          key = entry.category;
+        } else if (typeof entry.key === 'string') {
+          key = entry.key;
+        } else if (typeof entry.name === 'string') {
+          key = entry.name;
+        } else if (typeof entry.id === 'string') {
+          key = entry.id;
+        } else if (typeof entry.type === 'string') {
+          key = entry.type;
+        } else if (typeof entry.section === 'string') {
+          key = entry.section;
+        } else if (typeof entry.title === 'string') {
+          key = entry.title;
+        }
+
+        let value = null;
+        for (let i = 0; i < LEGACY_CATEGORY_VALUE_KEYS.length; i += 1) {
+          const candidateKey = LEGACY_CATEGORY_VALUE_KEYS[i];
+          if (Object.prototype.hasOwnProperty.call(entry, candidateKey)) {
+            value = entry[candidateKey];
+            break;
+          }
+        }
+
+        if (value === null || value === undefined) {
+          const clone = { ...entry };
+          delete clone.category;
+          delete clone.key;
+          delete clone.name;
+          delete clone.id;
+          delete clone.type;
+          delete clone.section;
+          delete clone.title;
+          if (Object.keys(clone).length) {
+            value = clone;
+          }
+        }
+
+        const resolvedKey = normalizeLegacyDeviceCategoryKey(key);
+        if (!resolvedKey) {
+          return;
+        }
+
+        converted[resolvedKey] = convertLegacyDeviceCategoryValue(value);
+        assignments += 1;
+      });
+
+      return assignments ? converted : null;
+    }
+
+    function mergeLegacyDeviceCategoryAssignments(target, source) {
+      if (!source || typeof source !== 'object') {
+        return false;
+      }
+
+      let merged = false;
+      Object.entries(source).forEach(([key, value]) => {
+        if (value === undefined) {
+          return;
+        }
+        if (!Object.prototype.hasOwnProperty.call(target, key)) {
+          target[key] = value;
+          merged = true;
+          return;
+        }
+        if (isPlainObjectValue(target[key]) && isPlainObjectValue(value)) {
+          target[key] = { ...value, ...target[key] };
+          merged = true;
+        }
+      });
+
+      return merged;
+    }
+
+    function convertLegacyDeviceDatabaseContainer(candidate) {
+      if (candidate === null || candidate === undefined) {
+        return candidate;
+      }
+
+      if (isMapLike(candidate)) {
+        const converted = convertMapLikeToObject(candidate);
+        if (converted) {
+          return convertLegacyDeviceDatabaseContainer(converted);
+        }
+      }
+
+      if (Array.isArray(candidate)) {
+        const convertedArray = convertLegacyDeviceDatabaseArray(candidate);
+        return convertedArray || candidate;
+      }
+
+      if (!isPlainObjectValue(candidate)) {
+        return candidate;
+      }
+
+      const base = { ...candidate };
+      let changed = false;
+
+      const arrayKeys = ['categories', 'sections', 'collections'];
+      for (let i = 0; i < arrayKeys.length; i += 1) {
+        const key = arrayKeys[i];
+        if (Array.isArray(candidate[key])) {
+          const converted = convertLegacyDeviceDatabaseArray(candidate[key]);
+          if (converted && mergeLegacyDeviceCategoryAssignments(base, converted)) {
+            changed = true;
+          }
+        }
+      }
+
+      const nestedKeys = ['data', 'dataset', 'values', 'entries'];
+      for (let i = 0; i < nestedKeys.length; i += 1) {
+        const key = nestedKeys[i];
+        if (!Object.prototype.hasOwnProperty.call(candidate, key)) {
+          continue;
+        }
+        const nested = convertLegacyDeviceDatabaseContainer(candidate[key]);
+        if (nested && isPlainObjectValue(nested) && looksLikeDeviceDatabase(nested)) {
+          if (mergeLegacyDeviceCategoryAssignments(base, nested)) {
+            changed = true;
+          }
+        }
+      }
+
+      if (changed) {
+        return base;
+      }
+
+      return candidate;
+    }
+
     function upgradeDeviceDatabaseSchema(candidate) {
       if (!isPlainObjectValue(candidate)) {
         return candidate;
@@ -7798,24 +8146,35 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function parseDeviceDatabaseImport(rawData) {
       if (Array.isArray(rawData)) {
-        return { devices: null, errors: ['Import file must contain a JSON object, but found an array.'] };
+        const converted = convertLegacyDeviceDatabaseContainer(rawData);
+        if (!isPlainObjectValue(converted)) {
+          return { devices: null, errors: ['Import file must contain a JSON object, but found an array.'] };
+        }
+        rawData = converted;
       }
       if (!isPlainObjectValue(rawData)) {
         return { devices: null, errors: ['Import file must contain a JSON object.'] };
       }
-    
+
       if (Object.prototype.hasOwnProperty.call(rawData, 'devices') && !isPlainObjectValue(rawData.devices)) {
         return { devices: null, errors: ['The "devices" property must be an object.'] };
       }
-    
-      const candidate = Object.prototype.hasOwnProperty.call(rawData, 'devices') && isPlainObjectValue(rawData.devices)
+
+      let candidate = Object.prototype.hasOwnProperty.call(rawData, 'devices') && isPlainObjectValue(rawData.devices)
         ? rawData.devices
         : (looksLikeDeviceDatabase(rawData) ? rawData : null);
-    
+
+      if (!candidate) {
+        const convertedLegacy = convertLegacyDeviceDatabaseContainer(rawData);
+        if (convertedLegacy && looksLikeDeviceDatabase(convertedLegacy)) {
+          candidate = convertedLegacy;
+        }
+      }
+
       if (!candidate) {
         return { devices: null, errors: ['Could not find a device database in the selected file.'] };
       }
-    
+
       const normalizedCandidate = upgradeDeviceDatabaseSchema(candidate);
       return validateDeviceDatabaseStructure(normalizedCandidate);
     }
