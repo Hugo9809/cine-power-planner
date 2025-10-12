@@ -412,7 +412,9 @@
     'addCamera',
     'addMonitoring',
     'selectBattery',
-    'results',
+    'resultsTotalDraw',
+    'resultsBatteryRuntime',
+    'resultsChangeover',
     'batteryComparison',
     'runtimeFeedback',
     'connectionDiagram',
@@ -477,10 +479,20 @@
       body:
         'Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups.',
     },
-    results: {
-      title: 'Review the results summary',
+    resultsTotalDraw: {
+      title: 'Confirm total draw and peak load',
       body:
-        'Work through Step 8 in three passes inside Power Summary: 8A confirms Total Draw and peak load, 8B expands each battery group for runtime projections, reserve margins, charger coverage and device notes, and 8C checks changeover countdown timers plus status indicators. Capture any warnings, download the offline report for redundant backups and confirm the autosave banner shows the latest timestamp so shares and exports stay aligned.',
+        'Start Step 8 in Power Summary by focusing on the Total Draw card. Confirm the combined wattage, review the peak load indicator and log any anomalies so troubleshooting notes stay alongside offline saves.',
+    },
+    resultsBatteryRuntime: {
+      title: 'Expand battery runtime projections',
+      body:
+        'Next, expand each battery group to inspect runtime projections, reserve margin highlights, recommended pack counts and charger assignments. Apply adjustments so autosave, shares and backups remain synchronized with the plan.',
+    },
+    resultsChangeover: {
+      title: 'Check changeover timers and autosave',
+      body:
+        'Finish with the changeover countdown timers and charger coverage tiles. Capture remaining warnings, download the offline report for redundant backups and confirm the autosave banner timestamp so exports and share links mirror the same snapshot.',
     },
     batteryComparison: {
       title: 'Compare battery options',
@@ -1666,7 +1678,15 @@
         },
       },
       {
-        key: 'results',
+        key: 'resultsTotalDraw',
+        highlight: '#results',
+      },
+      {
+        key: 'resultsBatteryRuntime',
+        highlight: '#results',
+      },
+      {
+        key: 'resultsChangeover',
         highlight: '#results',
       },
       {
