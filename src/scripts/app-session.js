@@ -8304,7 +8304,7 @@ function collectFullBackupData() {
   return { data, diagnostics };
 }
 
-function createSettingsBackup(notify = true, timestamp = new Date()) {
+function performSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
     const shouldNotify = isEvent ? true : Boolean(notify);
@@ -8345,7 +8345,7 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     } else if (shouldNotify) {
       showNotification('success', 'Full app backup downloaded');
     }
-    return fileName;
+    return { fileName, downloadResult };
   } catch (e) {
     console.warn('Backup failed', e);
     if (notify) {
@@ -8353,6 +8353,11 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     }
     return null;
   }
+}
+
+function createSettingsBackup(notify = true, timestamp = new Date()) {
+  const result = performSettingsBackup(notify, timestamp);
+  return result ? result.fileName : null;
 }
 
 if (backupSettings) {
@@ -10096,7 +10101,7 @@ function resetPlannerStateAfterFactoryReset() {
 }
 
 if (factoryResetButton) {
-  factoryResetButton.addEventListener('click', () => {
+  factoryResetButton.addEventListener('click', async () => {
     const langTexts = texts[currentLang] || texts.en || {};
     const confirmReset = langTexts.confirmFactoryReset
       || 'Create a backup and wipe all planner data?';
@@ -10105,24 +10110,93 @@ if (factoryResetButton) {
       || 'This will permanently delete all saved planner data. Continue?';
     if (!confirm(confirmResetAgain)) return;
 
-    if (typeof createSettingsBackup !== 'function') {
+    if (typeof performSettingsBackup !== 'function') {
       const errorMsg = langTexts.factoryResetError
         || 'Factory reset failed. Please try again.';
       showNotification('error', errorMsg);
       return;
     }
 
-    let backupFileName = null;
+    let backupResult = null;
     try {
-      backupFileName = createSettingsBackup(false, new Date());
+      backupResult = performSettingsBackup(false, new Date());
     } catch (error) {
       console.error('Backup before factory reset failed', error);
     }
 
-    if (!backupFileName) {
+    if (!backupResult || !backupResult.fileName) {
       const backupFailedMsg = langTexts.factoryResetBackupFailed
         || 'Backup failed. Data was not deleted.';
       showNotification('error', backupFailedMsg);
+      return;
+    }
+
+    let downloadPermissionState = 'unknown';
+    let finalDownloadPermissionState = 'unknown';
+    const downloadResult = backupResult.downloadResult;
+    const permissionMonitor = downloadResult && downloadResult.permission
+      ? downloadResult.permission
+      : null;
+
+    if (permissionMonitor && permissionMonitor.initial && typeof permissionMonitor.initial.then === 'function') {
+      try {
+        downloadPermissionState = await permissionMonitor.initial;
+      } catch (permissionError) {
+        console.warn('Failed to inspect automatic download permission before factory reset', permissionError);
+        downloadPermissionState = 'unknown';
+      }
+    }
+
+    if (downloadPermissionState === 'denied') {
+      const deniedMsg = langTexts.factoryResetDownloadBlocked
+        || 'The backup download was blocked. Data was not deleted.';
+      showNotification('error', deniedMsg);
+      if (typeof alert === 'function') {
+        alert(deniedMsg);
+      }
+      return;
+    }
+
+    if (downloadPermissionState === 'prompt') {
+      const waitMsg = langTexts.factoryResetAwaitDownload
+        || 'Allow downloads to save your backup. The factory reset will continue after you accept the download.';
+      showNotification('info', waitMsg);
+      if (typeof alert === 'function') {
+        alert(waitMsg);
+      }
+    }
+
+    if (permissionMonitor && permissionMonitor.ready && typeof permissionMonitor.ready.then === 'function') {
+      try {
+        finalDownloadPermissionState = await permissionMonitor.ready;
+      } catch (permissionAwaitError) {
+        console.warn('Failed to await automatic download permission before factory reset', permissionAwaitError);
+        finalDownloadPermissionState = 'unknown';
+      }
+    } else {
+      finalDownloadPermissionState = downloadPermissionState;
+    }
+
+    if (downloadPermissionState === 'prompt') {
+      if (typeof finalDownloadPermissionState !== 'string' || !finalDownloadPermissionState) {
+        finalDownloadPermissionState = 'unknown';
+      }
+      if (finalDownloadPermissionState !== 'granted') {
+        const deniedMsg = langTexts.factoryResetDownloadBlocked
+          || 'The backup download was blocked. Data was not deleted.';
+        showNotification('error', deniedMsg);
+        if (typeof alert === 'function') {
+          alert(deniedMsg);
+        }
+        return;
+      }
+    } else if (finalDownloadPermissionState === 'denied') {
+      const deniedMsg = langTexts.factoryResetDownloadBlocked
+        || 'The backup download was blocked. Data was not deleted.';
+      showNotification('error', deniedMsg);
+      if (typeof alert === 'function') {
+        alert(deniedMsg);
+      }
       return;
     }
 

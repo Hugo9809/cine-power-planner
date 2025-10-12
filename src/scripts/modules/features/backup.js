@@ -1186,6 +1186,80 @@
     };
   }
 
+  function monitorAutomaticDownloadPermission() {
+    if (typeof navigator === 'undefined' || !navigator.permissions
+      || typeof navigator.permissions.query !== 'function') {
+      return null;
+    }
+
+    try {
+      const statusPromise = navigator.permissions.query({ name: 'automatic-downloads' });
+      if (!statusPromise || typeof statusPromise.then !== 'function') {
+        return null;
+      }
+
+      let permissionStatusRef = null;
+      const monitor = {
+        state: 'unknown',
+        initial: statusPromise.then(status => {
+          permissionStatusRef = status;
+          if (!status || typeof status.state !== 'string') {
+            monitor.state = 'unknown';
+            return monitor.state;
+          }
+          monitor.state = status.state;
+          return monitor.state;
+        }).catch(error => {
+          console.warn('Failed to query automatic download permission', error);
+          monitor.state = 'unknown';
+          return monitor.state;
+        }),
+        ready: null,
+      };
+
+      monitor.ready = monitor.initial.then(initialState => {
+        if (!permissionStatusRef || typeof permissionStatusRef.state !== 'string') {
+          return monitor.state;
+        }
+
+        if (initialState === 'prompt') {
+          return new Promise(resolve => {
+            const finalize = () => {
+              try {
+                permissionStatusRef.removeEventListener('change', finalize);
+              } catch (removeError) {
+                void removeError;
+              }
+              monitor.state = typeof permissionStatusRef.state === 'string'
+                ? permissionStatusRef.state
+                : 'unknown';
+              resolve(monitor.state);
+            };
+
+            try {
+              permissionStatusRef.addEventListener('change', finalize);
+            } catch (listenerError) {
+              console.warn('Failed to observe automatic download permission changes', listenerError);
+              resolve('unknown');
+            }
+          });
+        }
+
+        return initialState;
+      }).catch(error => {
+        console.warn('Failed to observe automatic download permission changes', error);
+        monitor.state = 'unknown';
+        return monitor.state;
+      });
+
+      return monitor;
+    } catch (error) {
+      console.warn('Failed to query automatic download permission', error);
+    }
+
+    return null;
+  }
+
   function triggerBackupDownload(url, fileName) {
     if (typeof document === 'undefined') {
       return false;
@@ -1349,7 +1423,8 @@
   }
 
   function downloadBackupPayload(payload, fileName) {
-    const failureResult = { success: false, method: null };
+    const permissionMonitor = monitorAutomaticDownloadPermission();
+    const failureResult = { success: false, method: null, permission: permissionMonitor };
 
     if (typeof payload !== 'string') {
       return failureResult;
@@ -1372,7 +1447,7 @@
           if (msSaveResult === false) {
             console.warn('Saving backup via msSaveOrOpenBlob was cancelled or declined');
           } else {
-            return { success: true, method: 'ms-save' };
+            return { success: true, method: 'ms-save', permission: permissionMonitor };
           }
         } catch (msError) {
           console.warn('Failed to save backup via msSaveOrOpenBlob', msError);
@@ -1400,7 +1475,7 @@
             }, 0);
           }
           if (triggered) {
-            return { success: true, method: 'blob-url' };
+            return { success: true, method: 'blob-url', permission: permissionMonitor };
           }
         }
       }
@@ -1410,13 +1485,13 @@
     if (encoded) {
       const triggered = triggerBackupDownload(encoded, fileName);
       if (triggered) {
-        return { success: true, method: 'data-url' };
+        return { success: true, method: 'data-url', permission: permissionMonitor };
       }
     }
 
     const opened = openBackupFallbackWindow(payload, fileName);
     if (opened) {
-      return { success: true, method: 'manual' };
+      return { success: true, method: 'manual', permission: permissionMonitor };
     }
 
     return failureResult;

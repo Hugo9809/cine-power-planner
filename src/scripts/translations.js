@@ -865,6 +865,9 @@ const texts = {
     confirmFactoryResetAgain:
       "Last warning: all projects, devices, settings and feedback will be deleted. Continue?",
     factoryResetBackupFailed: "Backup failed. Data was not deleted.",
+    factoryResetAwaitDownload:
+      "Allow downloads to save your backup. The factory reset will continue after you accept the download.",
+    factoryResetDownloadBlocked: "The backup download was blocked. Data was not deleted.",
     factoryResetSuccess:
       "Backup downloaded. All planner data cleared. Reloading…",
     factoryResetError: "Factory reset failed. Please try again.",
@@ -3690,6 +3693,9 @@ const texts = {
     confirmFactoryResetAgain:
       "Ultimo avviso: tutti i progetti, dispositivi, impostazioni e feedback salvati verranno eliminati. Continuare?",
     factoryResetBackupFailed: "Backup non riuscito. I dati non sono stati eliminati.",
+    factoryResetAwaitDownload:
+      "Consenti i download per salvare il backup. Il ripristino di fabbrica continuerà dopo aver accettato il download.",
+    factoryResetDownloadBlocked: "Il download del backup è stato bloccato. I dati non sono stati eliminati.",
     factoryResetSuccess:
       "Backup scaricato. Tutti i dati dell’app sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
@@ -5870,6 +5876,9 @@ const texts = {
     confirmFactoryResetAgain:
       "Último aviso: se eliminarán todos los proyectos, dispositivos, ajustes y comentarios guardados. ¿Continuar?",
     factoryResetBackupFailed: "La copia de seguridad falló. No se eliminaron los datos.",
+    factoryResetAwaitDownload:
+      "Permite las descargas para guardar tu copia de seguridad. El restablecimiento de fábrica continuará después de aceptar la descarga.",
+    factoryResetDownloadBlocked: "La descarga de la copia de seguridad fue bloqueada. No se eliminaron datos.",
     factoryResetSuccess:
       "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
     factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
@@ -8061,6 +8070,9 @@ const texts = {
     confirmFactoryResetAgain:
       "Dernier avertissement : tous les projets, appareils, réglages et retours enregistrés seront supprimés. Continuer ?",
     factoryResetBackupFailed: "Échec de la sauvegarde. Aucune donnée n’a été supprimée.",
+    factoryResetAwaitDownload:
+      "Autorisez les téléchargements pour enregistrer votre sauvegarde. La réinitialisation d’usine reprendra après avoir accepté le téléchargement.",
+    factoryResetDownloadBlocked: "Le téléchargement de la sauvegarde a été bloqué. Aucune donnée n’a été supprimée.",
     factoryResetSuccess:
       "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
     factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
@@ -10257,6 +10269,9 @@ const texts = {
     confirmFactoryResetAgain:
       "Letzte Warnung: Alle gespeicherten Projekte, Geräte, Einstellungen und Rückmeldungen werden gelöscht. Fortfahren?",
     factoryResetBackupFailed: "Backup fehlgeschlagen. Daten wurden nicht gelöscht.",
+    factoryResetAwaitDownload:
+      "Erlaube Downloads, damit deine Sicherung gespeichert wird. Die Werkseinstellung wird fortgesetzt, nachdem du den Download akzeptiert hast.",
+    factoryResetDownloadBlocked: "Der Sicherungsdownload wurde blockiert. Es wurden keine Daten gelöscht.",
     factoryResetSuccess:
       "Backup heruntergeladen. Alle Planer-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
