@@ -251,6 +251,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var SAFE_STORAGE = resolveStorage();
+  var storedStateCache = null;
+  var storedStateCacheRaw = null;
+  var storedStateCacheSource = null;
   var deviceLibraryState = {
     lastAdded: null,
     lastReviewed: null,
@@ -362,29 +365,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       hero: {
         heading: 'Step 1 · Welcome aboard',
         subheading: 'Power planning without losing data',
-        summary:
-          'Preview how Cine Power Planner protects work-in-progress before you add your first camera. The tour keeps progress local, explains every safety net and helps you confirm each safeguard.',
-        badgeIcon: '\uE9C3',
+        summary: 'Preview how Cine Power Planner protects work-in-progress before you add your first camera. The tour keeps progress local, explains every safety net and helps you confirm each safeguard.',
+        badgeIcon: "\uE9C3",
         badgeLabel: 'Offline-first & private',
-        badgeDescription:
-          'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
-        highlights: [
-          {
-            icon: '\uE1A6',
-            title: 'Plan safe power loads',
-            body: 'Model draw, runtime and changeovers to lock in battery safety margins with confidence.'
-          },
-          {
-            icon: '\uE467',
-            title: 'AutoGear builds reusable kits',
-            body: 'Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.'
-          },
-          {
-            icon: '\uE469',
-            title: 'Safeguard and share with context',
-            body: 'Capture deliverables, crew coverage and rental notes, then export PDFs and restore bundles crews can trust.'
-          }
-        ],
+        badgeDescription: 'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
+        highlights: [{
+          icon: "\uE1A6",
+          title: 'Plan safe power loads',
+          body: 'Model draw, runtime and changeovers to lock in battery safety margins with confidence.'
+        }, {
+          icon: "\uE467",
+          title: 'AutoGear builds reusable kits',
+          body: 'Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.'
+        }, {
+          icon: "\uE469",
+          title: 'Safeguard and share with context',
+          body: 'Capture deliverables, crew coverage and rental notes, then export PDFs and restore bundles crews can trust.'
+        }],
         languageLabel: 'Choose your language',
         languageHint: 'Switch languages now—the tutorial, help and exports update instantly across offline saves.',
         offlineSummary: 'Install the Cine Power Planner PWA to mirror safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.'
@@ -420,23 +417,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     resultsTotalDraw: {
       title: 'Power Summary pass: Total draw',
-      body:
-        'Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks.'
+      body: 'Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks.'
     },
     resultsBatteryPacks: {
       title: 'Power Summary pass: Battery runtimes',
-      body:
-        'Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety.'
+      body: 'Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety.'
     },
     resultsChangeover: {
       title: 'Power Summary pass: Changeovers',
-      body:
-        'Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot.'
+      body: 'Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot.'
     },
     resultsWarnings: {
       title: 'Power Summary pass: Warnings and backups',
-      body:
-        'Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state.'
+      body: 'Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state.'
     },
     batteryComparison: {
       title: 'Compare battery options',
@@ -1275,44 +1268,70 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return snapshot;
   }
+  function updateStoredStateCache(nextState, rawValue, source) {
+    storedStateCache = nextState;
+    storedStateCacheRaw = typeof rawValue === 'string' ? rawValue : rawValue || null;
+    storedStateCacheSource = source || storedStateCacheSource || null;
+  }
   function loadStoredState() {
     if (!SAFE_STORAGE || typeof SAFE_STORAGE.getItem !== 'function') {
-      return normalizeStateSnapshot({
+      if (storedStateCache && storedStateCacheSource === 'memory') {
+        return storedStateCache;
+      }
+      var fallbackState = normalizeStateSnapshot({
         version: STORAGE_VERSION
       });
+      updateStoredStateCache(fallbackState, null, 'memory');
+      return fallbackState;
     }
     var raw = null;
     try {
       raw = SAFE_STORAGE.getItem(STORAGE_KEY);
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not read onboarding state.', error);
+      if (storedStateCache) {
+        return storedStateCache;
+      }
       raw = null;
     }
     if (typeof raw !== 'string' || !raw) {
-      return normalizeStateSnapshot({
+      var _fallbackState = normalizeStateSnapshot({
         version: STORAGE_VERSION
       });
+      updateStoredStateCache(_fallbackState, raw, 'storage');
+      return _fallbackState;
+    }
+    if (storedStateCache && storedStateCacheSource === 'storage' && raw === storedStateCacheRaw) {
+      return storedStateCache;
     }
     try {
       var parsed = JSON.parse(raw);
       if (!parsed || _typeof(parsed) !== 'object') {
-        return normalizeStateSnapshot({
+        var emptyState = normalizeStateSnapshot({
           version: STORAGE_VERSION
         });
+        updateStoredStateCache(emptyState, raw, 'storage');
+        return emptyState;
       }
       if (parsed.version !== STORAGE_VERSION) {
-        return normalizeStateSnapshot(_objectSpread(_objectSpread({}, parsed), {}, {
+        var migratedState = normalizeStateSnapshot(_objectSpread(_objectSpread({}, parsed), {}, {
           version: STORAGE_VERSION,
           completed: false,
           skipped: false
         }));
+        updateStoredStateCache(migratedState, raw, 'storage');
+        return migratedState;
       }
-      return normalizeStateSnapshot(parsed);
+      var normalized = normalizeStateSnapshot(parsed);
+      updateStoredStateCache(normalized, raw, 'storage');
+      return normalized;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not parse onboarding state.', error);
-      return normalizeStateSnapshot({
+      var _fallbackState2 = normalizeStateSnapshot({
         version: STORAGE_VERSION
       });
+      updateStoredStateCache(_fallbackState2, raw, 'storage');
+      return _fallbackState2;
     }
   }
   function saveState(nextState) {
@@ -1327,11 +1346,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var payload = _objectSpread(_objectSpread({}, sanitized), {}, {
       timestamp: getTimestamp()
     });
+    var serialized = JSON.stringify(payload);
     try {
-      SAFE_STORAGE.setItem(STORAGE_KEY, JSON.stringify(payload));
+      SAFE_STORAGE.setItem(STORAGE_KEY, serialized);
+      updateStoredStateCache(payload, serialized, 'storage');
       return payload;
     } catch (error) {
       safeWarn('cine.features.onboardingTour could not persist onboarding state.', error);
+      updateStoredStateCache(sanitized, null, 'memory');
       return sanitized;
     }
   }
@@ -1436,9 +1458,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var localEntry = localized.steps && localized.steps[key];
       var resolvedTitle = localEntry && typeof localEntry.title === 'string' && localEntry.title || fallbackEntry && typeof fallbackEntry.title === 'string' && fallbackEntry.title || (typeof defaultEntry.title === 'string' ? defaultEntry.title : key);
       var resolvedBody = localEntry && typeof localEntry.body === 'string' && localEntry.body || fallbackEntry && typeof fallbackEntry.body === 'string' && fallbackEntry.body || (typeof defaultEntry.body === 'string' ? defaultEntry.body : '');
-      var resolvedEntry = _objectSpread(_objectSpread(_objectSpread({}, defaultEntry && typeof defaultEntry === 'object' ? defaultEntry : {}), fallbackEntry && typeof fallbackEntry === 'object' ? fallbackEntry : {}), localEntry && typeof localEntry === 'object' ? localEntry : {});
-      resolvedEntry.title = resolvedTitle;
-      resolvedEntry.body = resolvedBody;
+      var resolvedEntry = _objectSpread(_objectSpread(_objectSpread(_objectSpread({}, defaultEntry && _typeof(defaultEntry) === 'object' ? defaultEntry : {}), fallbackEntry && _typeof(fallbackEntry) === 'object' ? fallbackEntry : {}), localEntry && _typeof(localEntry) === 'object' ? localEntry : {}), {}, {
+        title: resolvedTitle,
+        body: resolvedBody
+      });
       steps[key] = resolvedEntry;
     }
     var prefaceIndicatorText = function () {
@@ -1458,12 +1481,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   var tourTexts = resolveTourTexts();
-  function getStepConfig() {
+  function createStepConfig() {
     return [{
       key: 'intro',
       highlight: null,
       preface: true,
-      size: 'large'
+      size: 'hero'
     }, {
       key: 'userProfile',
       highlight: null,
@@ -1605,6 +1628,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: null
     }];
   }
+  var STEP_CONFIG = function initializeStepConfig() {
+    var config = createStepConfig();
+    if (typeof MODULE_BASE.freezeDeep === 'function') {
+      try {
+        return MODULE_BASE.freezeDeep(config);
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not freeze step config.', error);
+      }
+    }
+    if (typeof Object.freeze === 'function') {
+      try {
+        return Object.freeze(config);
+      } catch (error) {
+        void error;
+      }
+    }
+    return config;
+  }();
+  function getStepConfig() {
+    return STEP_CONFIG;
+  }
   var stepConfig = getStepConfig();
   var overlayRoot = null;
   var overlayAnchor = null;
@@ -1618,11 +1662,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var progressMeterEl = null;
   var progressMeterFillEl = null;
   var cardContentEl = null;
+  var cardHeaderEl = null;
+  var cardActionsEl = null;
   var stepListContainerEl = null;
   var stepListEl = null;
   var resumeHintEl = null;
   var interactionContainerEl = null;
   var helpStatusEl = null;
+  var helpButtonsCache = null;
+  var helpButtonsObserver = null;
   var backButton = null;
   var nextButton = null;
   var skipButton = null;
@@ -1853,6 +1901,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var header = DOCUMENT.createElement('div');
     header.className = 'onboarding-card-header';
     cardEl.appendChild(header);
+    cardHeaderEl = header;
     progressEl = DOCUMENT.createElement('p');
     progressEl.className = 'onboarding-progress';
     header.appendChild(progressEl);
@@ -1906,6 +1955,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var actions = DOCUMENT.createElement('div');
     actions.className = 'onboarding-card-actions';
     cardEl.appendChild(actions);
+    cardActionsEl = actions;
     backButton = DOCUMENT.createElement('button');
     backButton.type = 'button';
     backButton.className = 'onboarding-back-button';
@@ -1953,6 +2003,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     progressMeterEl = null;
     progressMeterFillEl = null;
     cardContentEl = null;
+    cardHeaderEl = null;
+    cardActionsEl = null;
     stepListContainerEl = null;
     stepListEl = null;
     resumeHintEl = null;
@@ -2937,16 +2989,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     var introEntry = tourTexts && tourTexts.steps && tourTexts.steps.intro ? tourTexts.steps.intro : {};
-    var heroTexts = introEntry && typeof introEntry.hero === 'object' ? introEntry.hero : {};
+    var heroTexts = introEntry && _typeof(introEntry.hero) === 'object' ? introEntry.hero : {};
     var highlights = Array.isArray(heroTexts.highlights) ? heroTexts.highlights : [];
-    var heroHeading = typeof heroTexts.heading === 'string' && heroTexts.heading
-      ? heroTexts.heading
-      : typeof introEntry.title === 'string'
-        ? introEntry.title
-        : '';
+    var heroHeading = typeof heroTexts.heading === 'string' && heroTexts.heading ? heroTexts.heading : typeof introEntry.title === 'string' ? introEntry.title : '';
     var heroSubheading = typeof heroTexts.subheading === 'string' ? heroTexts.subheading : '';
     var heroSummary = typeof heroTexts.summary === 'string' ? heroTexts.summary : '';
-    var badgeIcon = typeof heroTexts.badgeIcon === 'string' && heroTexts.badgeIcon ? heroTexts.badgeIcon : '\uE9C3';
+    var badgeIcon = typeof heroTexts.badgeIcon === 'string' && heroTexts.badgeIcon ? heroTexts.badgeIcon : "\uE9C3";
     var badgeLabel = typeof heroTexts.badgeLabel === 'string' ? heroTexts.badgeLabel : '';
     var badgeDescription = typeof heroTexts.badgeDescription === 'string' ? heroTexts.badgeDescription : '';
     var languageLabel = typeof heroTexts.languageLabel === 'string' ? heroTexts.languageLabel : 'Language';
@@ -2972,16 +3020,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var badgeText = DOCUMENT.createElement('div');
       badgeText.className = 'onboarding-hero-highlight-text onboarding-hero-highlight-text--badge';
       if (badgeLabel) {
-        var badgeLabelEl = DOCUMENT.createElement('span');
-        badgeLabelEl.className = 'onboarding-hero-highlight-badge-label';
-        badgeLabelEl.textContent = badgeLabel;
-        badgeText.appendChild(badgeLabelEl);
+        var _labelEl = DOCUMENT.createElement('span');
+        _labelEl.className = 'onboarding-hero-highlight-badge-label';
+        _labelEl.textContent = badgeLabel;
+        badgeText.appendChild(_labelEl);
       }
       if (badgeDescription) {
-        var badgeDescriptionEl = DOCUMENT.createElement('span');
-        badgeDescriptionEl.className = 'onboarding-hero-highlight-badge-description';
-        badgeDescriptionEl.textContent = badgeDescription;
-        badgeText.appendChild(badgeDescriptionEl);
+        var descriptionEl = DOCUMENT.createElement('span');
+        descriptionEl.className = 'onboarding-hero-highlight-badge-description';
+        descriptionEl.textContent = badgeDescription;
+        badgeText.appendChild(descriptionEl);
       }
       badgeItem.appendChild(badgeText);
       badgeHighlight = badgeItem;
@@ -3018,29 +3066,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (badgeHighlight) {
         listEl.appendChild(badgeHighlight);
       }
-      for (var highlightIndex = 0; highlightIndex < highlights.length; highlightIndex += 1) {
-        var highlightEntry = highlights[highlightIndex] && typeof highlights[highlightIndex] === 'object' ? highlights[highlightIndex] : {};
+      for (var index = 0; index < highlights.length; index += 1) {
+        var entry = highlights[index] && _typeof(highlights[index]) === 'object' ? highlights[index] : {};
         var itemEl = DOCUMENT.createElement('li');
         itemEl.className = 'onboarding-hero-highlight';
         var iconEl = DOCUMENT.createElement('span');
         iconEl.className = 'icon-glyph onboarding-hero-highlight-icon';
         iconEl.setAttribute('data-icon-font', 'uicons');
         iconEl.setAttribute('aria-hidden', 'true');
-        iconEl.textContent = highlightEntry && typeof highlightEntry.icon === 'string' && highlightEntry.icon ? highlightEntry.icon : '\uE1A6';
+        iconEl.textContent = typeof entry.icon === 'string' && entry.icon ? entry.icon : "\uE1A6";
         itemEl.appendChild(iconEl);
         var textWrap = DOCUMENT.createElement('div');
         textWrap.className = 'onboarding-hero-highlight-text';
-        if (highlightEntry && typeof highlightEntry.title === 'string' && highlightEntry.title) {
-          var titleEl = DOCUMENT.createElement('h3');
-          titleEl.className = 'onboarding-hero-highlight-title';
-          titleEl.textContent = highlightEntry.title;
-          textWrap.appendChild(titleEl);
+        if (typeof entry.title === 'string' && entry.title) {
+          var _titleEl = DOCUMENT.createElement('h3');
+          _titleEl.className = 'onboarding-hero-highlight-title';
+          _titleEl.textContent = entry.title;
+          textWrap.appendChild(_titleEl);
         }
-        if (highlightEntry && typeof highlightEntry.body === 'string' && highlightEntry.body) {
-          var bodyEl = DOCUMENT.createElement('p');
-          bodyEl.className = 'onboarding-hero-highlight-body';
-          bodyEl.textContent = highlightEntry.body;
-          textWrap.appendChild(bodyEl);
+        if (typeof entry.body === 'string' && entry.body) {
+          var _bodyEl = DOCUMENT.createElement('p');
+          _bodyEl.className = 'onboarding-hero-highlight-body';
+          _bodyEl.textContent = entry.body;
+          textWrap.appendChild(_bodyEl);
         }
         itemEl.appendChild(textWrap);
         listEl.appendChild(itemEl);
@@ -3073,10 +3121,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!source) {
         return;
       }
-      var sourceOptions = source && source.options ? Array.prototype.slice.call(source.options) : [];
+      var sourceOptions = source && source.options ? Array.from(source.options) : [];
       if (sourceOptions.length) {
-        for (var optionIndex = 0; optionIndex < sourceOptions.length; optionIndex += 1) {
-          languageProxy.appendChild(sourceOptions[optionIndex].cloneNode(true));
+        for (var _index8 = 0; _index8 < sourceOptions.length; _index8 += 1) {
+          languageProxy.appendChild(sourceOptions[_index8].cloneNode(true));
         }
       } else if (typeof source.value === 'string') {
         var option = DOCUMENT.createElement('option');
@@ -3089,8 +3137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var getActiveLanguageValue = function getActiveLanguageValue() {
-      for (var valueIndex = 0; valueIndex < languageTargets.length; valueIndex += 1) {
-        var target = languageTargets[valueIndex];
+      for (var _index9 = 0; _index9 < languageTargets.length; _index9 += 1) {
+        var target = languageTargets[_index9];
         if (target && typeof target.value === 'string' && target.value) {
           return target.value;
         }
@@ -3128,8 +3176,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (applied) {
         return;
       }
-      for (var targetIndex = 0; targetIndex < languageTargets.length; targetIndex += 1) {
-        var target = languageTargets[targetIndex];
+      for (var _index0 = 0; _index0 < languageTargets.length; _index0 += 1) {
+        var target = languageTargets[_index0];
         if (!target || target.value === value) {
           continue;
         }
@@ -3144,37 +3192,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var handleTargetChange = function handleTargetChange() {
       syncLanguageProxyFromTargets();
     };
-    for (var targetIndex = 0; targetIndex < languageTargets.length; targetIndex += 1) {
-      var target = languageTargets[targetIndex];
-      if (!target) {
-        continue;
-      }
-      target.addEventListener('change', handleTargetChange);
-      target.addEventListener('input', handleTargetChange);
-      registerCleanup(function () {
-        target.removeEventListener('change', handleTargetChange);
-        target.removeEventListener('input', handleTargetChange);
-      });
-      if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
-        try {
-          var observer = new GLOBAL_SCOPE.MutationObserver(function () {
-            syncLanguageProxyFromTargets();
-          });
-          observer.observe(target, {
-            childList: true
-          });
-          registerCleanup(function () {
-            try {
-              observer.disconnect();
-            } catch (error) {
-              void error;
-            }
-          });
-        } catch (error) {
-          void error;
+    var _loop4 = function _loop4() {
+        var target = languageTargets[_index1];
+        if (!target) {
+          return 0;
         }
-        break;
-      }
+        target.addEventListener('change', handleTargetChange);
+        target.addEventListener('input', handleTargetChange);
+        registerCleanup(function () {
+          target.removeEventListener('change', handleTargetChange);
+          target.removeEventListener('input', handleTargetChange);
+        });
+        if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+          try {
+            var observer = new GLOBAL_SCOPE.MutationObserver(function () {
+              syncLanguageProxyFromTargets();
+            });
+            observer.observe(target, {
+              childList: true
+            });
+            registerCleanup(function () {
+              try {
+                observer.disconnect();
+              } catch (error) {
+                void error;
+              }
+            });
+          } catch (error) {
+            void error;
+          }
+          return 1;
+        }
+      },
+      _ret2;
+    for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
+      _ret2 = _loop4();
+      if (_ret2 === 0) continue;
+      if (_ret2 === 1) break;
     }
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       var handleLanguageEvent = function handleLanguageEvent() {
@@ -3231,7 +3285,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var fragment = DOCUMENT.createDocumentFragment();
     var intro = DOCUMENT.createElement('p');
     intro.className = 'onboarding-resume-hint';
-    intro.textContent = 'Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    var introText = tourTexts && typeof tourTexts.userProfileInteractionIntro === 'string' ? tourTexts.userProfileInteractionIntro : 'Enter your crew details once. Each update syncs to Contacts instantly, stays cached offline and flows into exports so crews always know who owns the setup.';
+    intro.textContent = introText;
     fragment.appendChild(intro);
     var avatarGroup = DOCUMENT.createElement('div');
     avatarGroup.className = 'onboarding-avatar-group';
@@ -3296,7 +3351,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     var rawAvatarActionLabel = avatarButtonLabel && typeof avatarButtonLabel.textContent === 'string' ? avatarButtonLabel.textContent.trim() : '';
-    var avatarActionLabel = !rawAvatarActionLabel ? 'Add profile Picture' : rawAvatarActionLabel.toLowerCase() === 'change photo' ? 'Add profile Picture' : rawAvatarActionLabel;
+    var fallbackAvatarAction = tourTexts && typeof tourTexts.userProfileAvatarAction === 'string' ? tourTexts.userProfileAvatarAction : 'Add profile photo';
+    var avatarChangeLabel = function () {
+      var lang = resolveLanguage();
+      var texts = GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.texts) === 'object' ? GLOBAL_SCOPE.texts : {};
+      var langPack = texts && _typeof(texts[lang]) === 'object' ? texts[lang] : null;
+      var fallbackPack = texts && _typeof(texts.en) === 'object' ? texts.en : null;
+      var langContacts = langPack && _typeof(langPack.contacts) === 'object' ? langPack.contacts : null;
+      var fallbackContacts = fallbackPack && _typeof(fallbackPack.contacts) === 'object' ? fallbackPack.contacts : null;
+      var primary = langContacts && typeof langContacts.userProfileAvatarButton === 'string' ? langContacts.userProfileAvatarButton.trim() : '';
+      if (primary) {
+        return primary;
+      }
+      return fallbackContacts && typeof fallbackContacts.userProfileAvatarButton === 'string' ? fallbackContacts.userProfileAvatarButton.trim() : '';
+    }();
+    var normalizedAvatarAction = rawAvatarActionLabel || '';
+    var avatarActionLabel = !normalizedAvatarAction ? fallbackAvatarAction : avatarChangeLabel && normalizedAvatarAction.toLowerCase() === avatarChangeLabel.toLowerCase() ? fallbackAvatarAction : normalizedAvatarAction;
     var avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
     avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
@@ -3504,7 +3574,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var skipHint = DOCUMENT.createElement('p');
     skipHint.className = 'onboarding-resume-hint';
-    skipHint.textContent = 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    var skipHintText = tourTexts && typeof tourTexts.userProfileInteractionSkipHint === 'string' ? tourTexts.userProfileInteractionSkipHint : 'Press Next when you are ready—Contacts in the sidebar always shows these saved details without resetting tutorial progress.';
+    skipHint.textContent = skipHintText;
     fragment.appendChild(skipHint);
     while (interactionContainerEl.firstChild) {
       interactionContainerEl.removeChild(interactionContainerEl.firstChild);
@@ -3541,6 +3612,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var fragment = DOCUMENT.createDocumentFragment();
     var languageSelect = DOCUMENT.getElementById('settingsLanguage');
+    var getTourString = function getTourString(key, fallbackValue) {
+      var raw = tourTexts && typeof tourTexts[key] === 'string' ? tourTexts[key].trim() : '';
+      return raw || fallbackValue;
+    };
     if (languageSelect) {
       var group = DOCUMENT.createElement('div');
       group.className = 'onboarding-field-group';
@@ -3548,7 +3623,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var label = DOCUMENT.createElement('label');
       label.className = 'onboarding-field-label';
       label.setAttribute('for', inputId);
-      label.textContent = 'Language';
+      label.textContent = getTourString('unitsPreferencesLanguageLabel', 'Language');
       var proxySelect = DOCUMENT.createElement('select');
       proxySelect.id = inputId;
       proxySelect.className = 'onboarding-field-select';
@@ -3598,26 +3673,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var themeLabel = DOCUMENT.createElement('label');
     themeLabel.className = 'onboarding-field-label';
     themeLabel.setAttribute('for', themeId);
-    themeLabel.textContent = 'Theme';
+    themeLabel.textContent = getTourString('unitsPreferencesThemeLabel', 'Theme');
     var themeSelect = DOCUMENT.createElement('select');
     themeSelect.id = themeId;
     themeSelect.className = 'onboarding-field-select';
     var themeLight = DOCUMENT.createElement('option');
     themeLight.value = 'light';
-    themeLight.textContent = 'Light';
+    themeLight.textContent = getTourString('unitsPreferencesThemeLight', 'Light');
     var themeDark = DOCUMENT.createElement('option');
     themeDark.value = 'dark';
-    themeDark.textContent = 'Dark';
+    themeDark.textContent = getTourString('unitsPreferencesThemeDark', 'Dark');
     themeSelect.appendChild(themeLight);
     themeSelect.appendChild(themeDark);
-
     var themePreferenceBridge = GLOBAL_SCOPE && GLOBAL_SCOPE.cineThemePreference ? GLOBAL_SCOPE.cineThemePreference : null;
-
-    if (
-      themePreferenceBridge
-      && typeof themePreferenceBridge.registerControl === 'function'
-      && typeof themePreferenceBridge.getValue === 'function'
-    ) {
+    if (themePreferenceBridge && typeof themePreferenceBridge.registerControl === 'function' && typeof themePreferenceBridge.getValue === 'function') {
       try {
         var currentTheme = themePreferenceBridge.getValue();
         if (typeof currentTheme === 'boolean') {
@@ -3626,14 +3695,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (bridgeError) {
         safeWarn('cine.features.onboardingTour: theme bridge getValue failed.', bridgeError);
       }
-
       var unregisterThemeControl = null;
       try {
-        unregisterThemeControl = themePreferenceBridge.registerControl(themeSelect, { type: 'select' });
+        unregisterThemeControl = themePreferenceBridge.registerControl(themeSelect, {
+          type: 'select'
+        });
       } catch (registerError) {
         safeWarn('cine.features.onboardingTour: theme bridge registerControl failed.', registerError);
       }
-
       if (typeof unregisterThemeControl === 'function') {
         registerCleanup(function () {
           try {
@@ -3645,14 +3714,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     } else {
       themeSelect.value = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
-
       var syncThemeFromTarget = function syncThemeFromTarget() {
         var expected = darkModeToggle && darkModeToggle.checked ? 'dark' : 'light';
         if (themeSelect.value !== expected) {
           themeSelect.value = expected;
         }
       };
-
       var syncThemeToTarget = function syncThemeToTarget() {
         if (!darkModeToggle) {
           return;
@@ -3663,7 +3730,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           dispatchSyntheticEvent(darkModeToggle, 'change');
         }
       };
-
       themeSelect.addEventListener('change', syncThemeToTarget);
       registerCleanup(function () {
         themeSelect.removeEventListener('change', syncThemeToTarget);
@@ -3686,16 +3752,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var pinkLabel = DOCUMENT.createElement('label');
       pinkLabel.className = 'onboarding-field-label';
       pinkLabel.setAttribute('for', pinkId);
-      pinkLabel.textContent = 'Pink mode accents';
+      pinkLabel.textContent = getTourString('unitsPreferencesPinkLabel', 'Pink mode accents');
       var pinkSelect = DOCUMENT.createElement('select');
       pinkSelect.id = pinkId;
       pinkSelect.className = 'onboarding-field-select';
       var pinkOff = DOCUMENT.createElement('option');
       pinkOff.value = 'off';
-      pinkOff.textContent = 'Disabled';
+      pinkOff.textContent = getTourString('unitsPreferencesPinkOff', 'Disabled');
       var pinkOn = DOCUMENT.createElement('option');
       pinkOn.value = 'on';
-      pinkOn.textContent = 'Enabled';
+      pinkOn.textContent = getTourString('unitsPreferencesPinkOn', 'Enabled');
       pinkSelect.appendChild(pinkOff);
       pinkSelect.appendChild(pinkOn);
       pinkSelect.value = pinkToggle.checked ? 'on' : 'off';
@@ -3744,11 +3810,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         _option2.textContent = focusScaleSelect.value || 'Metric';
         proxyFocus.appendChild(_option2);
       } else {
-        for (var _index9 = 0; _index9 < focusOptions.length; _index9 += 1) {
-          var _source2 = focusOptions[_index9];
+        for (var _index10 = 0; _index10 < focusOptions.length; _index10 += 1) {
+          var _source = focusOptions[_index10];
           var _option3 = DOCUMENT.createElement('option');
-          _option3.value = _source2.value;
-          _option3.textContent = _source2.textContent || _source2.value;
+          _option3.value = _source.value;
+          _option3.textContent = _source.textContent || _source.value;
           proxyFocus.appendChild(_option3);
         }
       }
@@ -3784,7 +3850,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var unitsLabel = DOCUMENT.createElement('label');
       unitsLabel.className = 'onboarding-field-label';
       unitsLabel.setAttribute('for', unitsId);
-      unitsLabel.textContent = 'Temperature units';
+      unitsLabel.textContent = getTourString('unitsPreferencesUnitsLabel', 'Temperature units');
       var proxyUnits = DOCUMENT.createElement('select');
       proxyUnits.id = unitsId;
       proxyUnits.className = 'onboarding-field-select';
@@ -3795,11 +3861,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         _option4.textContent = tempUnitSelect.value || 'Celsius';
         proxyUnits.appendChild(_option4);
       } else {
-        for (var _index0 = 0; _index0 < unitOptions.length; _index0 += 1) {
-          var _source3 = unitOptions[_index0];
+        for (var _index11 = 0; _index11 < unitOptions.length; _index11 += 1) {
+          var _source2 = unitOptions[_index11];
           var _option5 = DOCUMENT.createElement('option');
-          _option5.value = _source3.value;
-          _option5.textContent = _source3.textContent || _source3.value;
+          _option5.value = _source2.value;
+          _option5.textContent = _source2.textContent || _source2.value;
           proxyUnits.appendChild(_option5);
         }
       }
@@ -3830,7 +3896,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var persistenceButton = DOCUMENT.getElementById('storagePersistenceRequest');
     var persistenceHint = DOCUMENT.createElement('p');
     persistenceHint.className = 'onboarding-resume-hint';
-    persistenceHint.textContent = 'Request persistent storage so the browser keeps planner data even when space runs low.';
+    persistenceHint.textContent = getTourString('unitsPreferencesPersistenceHint', 'Request persistent storage so the browser keeps planner data even when space runs low.');
     fragment.appendChild(persistenceHint);
     var statusGroup = DOCUMENT.createElement('div');
     statusGroup.className = 'onboarding-storage-status';
@@ -3934,7 +4000,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var requestButton = DOCUMENT.createElement('button');
     requestButton.type = 'button';
     requestButton.className = 'onboarding-interaction-button';
-    requestButton.textContent = 'Request storage protection';
+    requestButton.textContent = getTourString('unitsPreferencesPersistenceAction', 'Protect storage on this device');
     requestButton.disabled = !persistenceButton;
     var handleRequest = function handleRequest() {
       if (!persistenceButton) {
@@ -4041,6 +4107,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     showStep(index);
   }
+  function moveSkipButtonToActions() {
+    if (!skipButton || !cardActionsEl) {
+      return;
+    }
+    if (cardActionsEl.contains(skipButton)) {
+      return;
+    }
+    var referenceNode = nextButton && cardActionsEl.contains(nextButton) ? nextButton : null;
+    cardActionsEl.insertBefore(skipButton, referenceNode);
+    skipButton.classList.add('onboarding-skip--intro');
+  }
+  function moveSkipButtonToHeader() {
+    if (!skipButton || !cardHeaderEl) {
+      return;
+    }
+    if (cardHeaderEl.contains(skipButton)) {
+      return;
+    }
+    cardHeaderEl.appendChild(skipButton);
+    skipButton.classList.remove('onboarding-skip--intro');
+  }
   function updateCardForStep(step, index) {
     if (!cardEl) {
       return;
@@ -4054,6 +4141,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var stepText = textPack.body;
     var size = step && typeof step.size === 'string' && step.size ? step.size : 'standard';
     cardEl.setAttribute('data-size', size);
+    var stepKey = step && typeof step.key === 'string' ? step.key : '';
+    if (stepKey) {
+      cardEl.setAttribute('data-step-key', stepKey);
+    } else {
+      cardEl.removeAttribute('data-step-key');
+    }
     cardEl.setAttribute('aria-labelledby', titleEl.id);
     cardEl.setAttribute('aria-describedby', bodyEl.id);
     titleEl.textContent = textPack.title || '';
@@ -4068,16 +4161,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     updateProgressMeter(step, index);
     skipButton.textContent = tourTexts.skipLabel || 'Skip tutorial';
     backButton.textContent = tourTexts.backLabel || 'Back';
-    if (step.key === 'completion') {
+    var isIntroStep = stepKey === 'intro';
+    var isCompletionStep = stepKey === 'completion';
+    if (isCompletionStep) {
       nextButton.textContent = tourTexts.doneLabel || 'Finish';
+    } else if (isIntroStep) {
+      nextButton.textContent = tourTexts.introStartLabel || 'Start onboarding tour';
     } else {
       nextButton.textContent = tourTexts.nextLabel || 'Next';
     }
-    backButton.disabled = index <= 0;
-    backButton.hidden = index <= 0;
-    if (step.key === 'intro') {
+    if (isIntroStep) {
+      backButton.disabled = true;
+      backButton.hidden = true;
+    } else {
+      backButton.disabled = index <= 0;
+      backButton.hidden = index <= 0;
+    }
+    backButton.setAttribute('aria-hidden', backButton.hidden ? 'true' : 'false');
+    if (backButton.hidden) {
+      backButton.tabIndex = -1;
+    } else {
+      backButton.removeAttribute('tabindex');
+    }
+    if (isIntroStep) {
+      moveSkipButtonToActions();
+    } else {
+      moveSkipButtonToHeader();
+    }
+    if (isIntroStep) {
       skipButton.hidden = false;
-    } else if (step.key === 'completion') {
+    } else if (isCompletionStep) {
       skipButton.hidden = true;
     } else {
       skipButton.hidden = false;
@@ -4360,15 +4473,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focusableElements.push(element);
     };
     var cardFocusable = collectFocusableElements(cardEl);
-    for (var _index1 = 0; _index1 < cardFocusable.length; _index1 += 1) {
-      pushUnique(cardFocusable[_index1]);
+    for (var _index12 = 0; _index12 < cardFocusable.length; _index12 += 1) {
+      pushUnique(cardFocusable[_index12]);
     }
     if (Array.isArray(activeTargetElements)) {
       for (var targetIndex = 0; targetIndex < activeTargetElements.length; targetIndex += 1) {
         var _target = activeTargetElements[targetIndex];
         var targetFocusable = collectFocusableElements(_target, true);
-        for (var _index10 = 0; _index10 < targetFocusable.length; _index10 += 1) {
-          pushUnique(targetFocusable[_index10]);
+        for (var _index13 = 0; _index13 < targetFocusable.length; _index13 += 1) {
+          pushUnique(targetFocusable[_index13]);
         }
       }
     }
@@ -4483,6 +4596,83 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     applyHelpButtonLabel();
   }
+  function invalidateHelpButtonsCache() {
+    helpButtonsCache = null;
+  }
+  function nodeContainsHelpTrigger(node) {
+    if (!node) {
+      return false;
+    }
+    if (matchesHelpTrigger(node)) {
+      return true;
+    }
+    if (typeof node.querySelector === 'function') {
+      try {
+        var candidate = node.querySelector(HELP_TRIGGER_SELECTOR);
+        if (candidate) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return false;
+  }
+  function handleHelpButtonMutations(mutations) {
+    if (!Array.isArray(mutations) || !mutations.length) {
+      return;
+    }
+    for (var index = 0; index < mutations.length; index += 1) {
+      var mutation = mutations[index];
+      if (!mutation) {
+        continue;
+      }
+      if (mutation.type === 'attributes') {
+        if (nodeContainsHelpTrigger(mutation.target)) {
+          invalidateHelpButtonsCache();
+          return;
+        }
+      } else if (mutation.type === 'childList') {
+        var added = mutation.addedNodes || [];
+        for (var nodeIndex = 0; nodeIndex < added.length; nodeIndex += 1) {
+          var node = added[nodeIndex];
+          if (nodeContainsHelpTrigger(node)) {
+            invalidateHelpButtonsCache();
+            return;
+          }
+        }
+        var removed = mutation.removedNodes || [];
+        for (var _nodeIndex = 0; _nodeIndex < removed.length; _nodeIndex += 1) {
+          var _node = removed[_nodeIndex];
+          if (nodeContainsHelpTrigger(_node)) {
+            invalidateHelpButtonsCache();
+            return;
+          }
+        }
+      }
+    }
+  }
+  function ensureHelpButtonObserver() {
+    if (helpButtonsObserver || typeof MutationObserver !== 'function' || !DOCUMENT) {
+      return;
+    }
+    var root = DOCUMENT.body || DOCUMENT.documentElement;
+    if (!root) {
+      return;
+    }
+    try {
+      helpButtonsObserver = new MutationObserver(handleHelpButtonMutations);
+      helpButtonsObserver.observe(root, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['data-onboarding-tour-trigger', 'id']
+      });
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not observe help trigger mutations.', error);
+      helpButtonsObserver = null;
+    }
+  }
   function matchesHelpTrigger(node) {
     if (!node) {
       return false;
@@ -4509,20 +4699,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   function collectHelpButtons() {
+    var forceRefresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    ensureHelpButtonObserver();
+    var canUseCache = !forceRefresh && Array.isArray(helpButtonsCache) && helpButtonsCache.length > 0;
+    if (canUseCache) {
+      var filtered = [];
+      for (var index = 0; index < helpButtonsCache.length; index += 1) {
+        var button = helpButtonsCache[index];
+        if (!button || typeof button.addEventListener !== 'function') {
+          continue;
+        }
+        if (typeof button.isConnected === 'boolean' && !button.isConnected) {
+          continue;
+        }
+        if (!matchesHelpTrigger(button)) {
+          continue;
+        }
+        filtered.push(button);
+      }
+      if (filtered.length) {
+        helpButtonsCache = filtered;
+        return filtered;
+      }
+    }
     var buttons = [];
     var seen = new Set();
     if (DOCUMENT && typeof DOCUMENT.querySelectorAll === 'function') {
       var candidates = DOCUMENT.querySelectorAll(HELP_TRIGGER_SELECTOR);
-      for (var index = 0; index < candidates.length; index += 1) {
-        var button = candidates[index];
-        if (!button || typeof button.addEventListener !== 'function') {
+      for (var _index14 = 0; _index14 < candidates.length; _index14 += 1) {
+        var _button = candidates[_index14];
+        if (!_button || typeof _button.addEventListener !== 'function') {
           continue;
         }
-        if (seen.has(button)) {
+        if (seen.has(_button)) {
           continue;
         }
-        seen.add(button);
-        buttons.push(button);
+        seen.add(_button);
+        buttons.push(_button);
       }
     }
     if (DOCUMENT && typeof DOCUMENT.getElementById === 'function') {
@@ -4531,6 +4744,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         buttons.push(fallback);
       }
     }
+    helpButtonsCache = buttons;
     return buttons;
   }
   function resolveHelpStatusElement() {
@@ -4680,8 +4894,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var message = template;
     var tokens = Object.keys(replacements);
-    for (var _index11 = 0; _index11 < tokens.length; _index11 += 1) {
-      var token = tokens[_index11];
+    for (var _index15 = 0; _index15 < tokens.length; _index15 += 1) {
+      var token = tokens[_index15];
       message = message.split(token).join(replacements[token]);
     }
     var progressUpdate = formatProgressUpdate(lastCompletedTitle, lastCompletedAt);
@@ -4693,6 +4907,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function applyHelpButtonLabel() {
     var buttons = collectHelpButtons();
+    if (!buttons.length) {
+      buttons = collectHelpButtons(true);
+    }
     if (!buttons.length) {
       applyHelpStatus();
       return;

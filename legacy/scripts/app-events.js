@@ -51,6 +51,12 @@ var eventsLogger = function resolveEventsLogger() {
   return null;
 }();
 var APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
+if (typeof viewfinderTypeOptions === 'undefined' || !Array.isArray(viewfinderTypeOptions)) {
+  viewfinderTypeOptions = [];
+}
+if (typeof viewfinderConnectorOptions === 'undefined' || !Array.isArray(viewfinderConnectorOptions)) {
+  viewfinderConnectorOptions = [];
+}
 function getGlobalScope() {
   if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
   if (typeof window !== 'undefined' && window) return window;
@@ -263,6 +269,115 @@ function callEventsCoreFunction(functionName) {
   }
   return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
 }
+function resolveFirstPowerInputType(device) {
+  var result;
+  try {
+    result = callEventsCoreFunction('firstPowerInputType', [device]);
+  } catch (error) {
+    if (eventsLogger && typeof eventsLogger.warn === 'function') {
+      try {
+        eventsLogger.warn('Failed to resolve firstPowerInputType from core', error, {
+          namespace: 'device-editor'
+        });
+      } catch (logError) {
+        void logError;
+      }
+    }
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to resolve firstPowerInputType from core', error);
+    }
+  }
+  if (typeof result === 'string') {
+    return result;
+  }
+  if (Array.isArray(result) && result.length) {
+    return typeof result[0] === 'string' ? result[0] : '';
+  }
+  if (result && _typeof(result) === 'object') {
+    var candidate = result.type || result.portType;
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+  }
+  return '';
+}
+function resolveCoreOptionsArray(functionName) {
+  var existingValues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var fallback = Array.isArray(existingValues) ? existingValues.slice() : [];
+  try {
+    var result = callEventsCoreFunction(functionName);
+    if (Array.isArray(result)) {
+      return result.slice();
+    }
+  } catch (coreError) {
+    if (eventsLogger && typeof eventsLogger.warn === 'function') {
+      try {
+        eventsLogger.warn("Failed to resolve ".concat(functionName), coreError);
+      } catch (logError) {
+        void logError;
+      }
+    }
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn("Failed to resolve ".concat(functionName), coreError);
+    }
+  }
+  return fallback;
+}
+function readGlobalArraySnapshot(key) {
+  var scope = getGlobalScope();
+  if (!scope || !key) {
+    return [];
+  }
+  var value = scope[key];
+  return Array.isArray(value) ? value.slice() : [];
+}
+function publishGlobalArraySnapshot(key, values) {
+  var scope = getGlobalScope();
+  if (!scope || !key) {
+    return;
+  }
+  if (!Array.isArray(values)) {
+    delete scope[key];
+    return;
+  }
+  try {
+    scope[key] = values.slice();
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn("Failed to persist ".concat(key, " options on the global scope"), error);
+    }
+  }
+}
+function syncCoreOptionsArray(globalKey, functionName) {
+  var existingValues = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var aggregated = [];
+  var seen = new Set();
+  var addValues = function addValues(values) {
+    if (!Array.isArray(values)) {
+      return;
+    }
+    for (var index = 0; index < values.length; index += 1) {
+      var option = values[index];
+      if (typeof option !== 'string') {
+        continue;
+      }
+      if (!seen.has(option)) {
+        seen.add(option);
+        aggregated.push(option);
+      }
+    }
+  };
+  addValues(existingValues);
+  addValues(readGlobalArraySnapshot(globalKey));
+  var resolved = resolveCoreOptionsArray(functionName, aggregated);
+  var finalValues = Array.isArray(resolved) ? resolved : aggregated;
+  publishGlobalArraySnapshot(globalKey, finalValues);
+  return finalValues;
+}
+var initialViewfinderTypeOptions = typeof viewfinderTypeOptions !== 'undefined' && Array.isArray(viewfinderTypeOptions) ? viewfinderTypeOptions : [];
+viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', initialViewfinderTypeOptions);
+var initialViewfinderConnectorOptions = typeof viewfinderConnectorOptions !== 'undefined' && Array.isArray(viewfinderConnectorOptions) ? viewfinderConnectorOptions : [];
+viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', initialViewfinderConnectorOptions);
 function readCoreDeviceSelectionHelper() {
   if (typeof globalThis !== 'undefined' && typeof globalThis.hasAnyDeviceSelection === 'function') {
     return globalThis.hasAnyDeviceSelection;
@@ -2035,13 +2150,13 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     var _deviceData$power, _deviceData$power2, _deviceData$power3;
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     showFormSection(cameraFieldsDiv);
-    var tmp = firstPowerInputType(deviceData);
+    var tmp = resolveFirstPowerInputType(deviceData);
     cameraWattInput.value = deviceData.powerDrawWatts || '';
     cameraVoltageInput.value = ((_deviceData$power = deviceData.power) === null || _deviceData$power === void 0 || (_deviceData$power = _deviceData$power.input) === null || _deviceData$power === void 0 ? void 0 : _deviceData$power.voltageRange) || '';
     cameraPortTypeInput.value = tmp || "";
     setBatteryPlates(((_deviceData$power2 = deviceData.power) === null || _deviceData$power2 === void 0 ? void 0 : _deviceData$power2.batteryPlateSupport) || []);
     setRecordingMedia(deviceData.recordingMedia || []);
-    setLensMounts(deviceData.lensMount || []);
+    callEventsCoreFunction('setLensMounts', [Array.isArray(deviceData.lensMount) ? deviceData.lensMount : []]);
     setPowerDistribution(((_deviceData$power3 = deviceData.power) === null || _deviceData$power3 === void 0 ? void 0 : _deviceData$power3.powerDistributionOutputs) || []);
     setVideoOutputs(deviceData.videoOutputs || []);
     setFizConnectors(deviceData.fizConnectors || []);
@@ -2077,7 +2192,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
     monitorWattInput.value = deviceData.powerDrawWatts || '';
     monitorVoltageInput.value = ((_deviceData$power4 = deviceData.power) === null || _deviceData$power4 === void 0 || (_deviceData$power4 = _deviceData$power4.input) === null || _deviceData$power4 === void 0 ? void 0 : _deviceData$power4.voltageRange) || '';
-    var mpt = firstPowerInputType(deviceData);
+    var mpt = resolveFirstPowerInputType(deviceData);
     monitorPortTypeInput.value = mpt || "";
     setMonitorVideoInputs(deviceData.videoInputs || ((_deviceData$video = deviceData.video) === null || _deviceData$video === void 0 ? void 0 : _deviceData$video.inputs) || []);
     setMonitorVideoOutputs(deviceData.videoOutputs || ((_deviceData$video2 = deviceData.video) === null || _deviceData$video2 === void 0 ? void 0 : _deviceData$video2.outputs) || []);
@@ -2092,7 +2207,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
     viewfinderWattInput.value = deviceData.powerDrawWatts || '';
     viewfinderVoltageInput.value = ((_deviceData$power5 = deviceData.power) === null || _deviceData$power5 === void 0 || (_deviceData$power5 = _deviceData$power5.input) === null || _deviceData$power5 === void 0 ? void 0 : _deviceData$power5.voltageRange) || '';
-    var vfpt = firstPowerInputType(deviceData);
+    var vfpt = resolveFirstPowerInputType(deviceData);
     viewfinderPortTypeInput.value = vfpt || "";
     setViewfinderVideoInputs(deviceData.videoInputs || ((_deviceData$video3 = deviceData.video) === null || _deviceData$video3 === void 0 ? void 0 : _deviceData$video3.inputs) || []);
     setViewfinderVideoOutputs(deviceData.videoOutputs || ((_deviceData$video4 = deviceData.video) === null || _deviceData$video4 === void 0 ? void 0 : _deviceData$video4.outputs) || []);
@@ -2103,7 +2218,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     var _deviceData$video5, _deviceData$video6;
     showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = firstPowerInputType(deviceData);
+    videoPowerInput.value = resolveFirstPowerInputType(deviceData);
     setVideoInputs(deviceData.videoInputs || ((_deviceData$video5 = deviceData.video) === null || _deviceData$video5 === void 0 ? void 0 : _deviceData$video5.inputs) || []);
     setVideoOutputsIO(deviceData.videoOutputs || ((_deviceData$video6 = deviceData.video) === null || _deviceData$video6 === void 0 ? void 0 : _deviceData$video6.outputs) || []);
     videoFrequencyInput.value = deviceData.frequency || '';
@@ -2234,8 +2349,8 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
         delete devices[_categoryKey][_name];
       }
       storeDevices(devices);
-      viewfinderTypeOptions = getAllViewfinderTypes();
-      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
       updateMountTypeOptions();
       populateSelect(cameraSelect, devices.cameras, true);
@@ -2721,8 +2836,8 @@ addSafeEventListener(addDeviceBtn, "click", function () {
   }
   resetDeviceForm();
   storeDevices(devices);
-  viewfinderTypeOptions = getAllViewfinderTypes();
-  viewfinderConnectorOptions = getAllViewfinderConnectors();
+  viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+  viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
   updatePlateTypeOptions();
   updatePowerPortOptions();
   updatePowerDistTypeOptions();
@@ -2879,8 +2994,8 @@ addSafeEventListener(importFileInput, "change", function (event) {
       }
       unifyDevices(devices);
       storeDevices(devices);
-      viewfinderTypeOptions = getAllViewfinderTypes();
-      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
+      viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();

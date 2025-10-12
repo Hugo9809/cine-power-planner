@@ -295,6 +295,28 @@
         "portType": "3G-SDI"
       }]
     },
+    "SmallHD 1303 HDR": {
+      "screenSizeInches": 13.3,
+      "brightnessNits": 1500,
+      "powerDrawWatts": 39,
+      "power": {
+        "input": {
+          "voltageRange": "12-34",
+          "portType": "LEMO 2-pin"
+        }
+      },
+      "wirelessTx": false,
+      "videoInputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "3G-SDI"
+      }],
+      "videoOutputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "3G-SDI"
+      }]
+    },
     "SmallHD Cine 5": {
       "screenSizeInches": 5,
       "brightnessNits": 2000,
@@ -412,7 +434,7 @@
       "power": {
         "input": {
           "voltageRange": "7-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": true,
@@ -458,7 +480,7 @@
       "power": {
         "input": {
           "voltageRange": "7-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": true,
@@ -483,7 +505,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": "4-pin Aviation / NP-F"
+          "portType": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -508,7 +530,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": "4-pin Aviation / NP-F"
+          "portType": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -532,7 +554,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": "4-pin Aviation / NP-F"
+          "portType": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -557,7 +579,7 @@
       "power": {
         "input": {
           "voltageRange": "7-24",
-          "portType": "4-pin Aviation / NP-F"
+          "portType": ["4-pin Aviation", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -578,7 +600,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -602,7 +624,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -626,7 +648,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -647,7 +669,7 @@
       "power": {
         "input": {
           "voltageRange": "6-16",
-          "portType": "DC Barrel / NP-F"
+          "portType": ["DC Barrel", "NP-F"]
         }
       },
       "wirelessTx": false,
@@ -661,6 +683,29 @@
       }, {
         "portType": "3G-SDI"
       }]
+    },
+    "Atomos Shogun 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1500,
+      "powerDrawWatts": 33,
+      "power": {
+        "input": {
+          "voltageRange": "6-16",
+          "portType": ["DC Barrel", "NP-F"]
+        }
+      },
+      "wirelessTx": false,
+      "videoInputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "12G-SDI"
+      }],
+      "videoOutputs": [{
+        "portType": "HDMI"
+      }, {
+        "portType": "12G-SDI"
+      }],
+      "weight_g": 738
     },
     "Feelworld FW568": {
       "screenSizeInches": 6,
@@ -777,7 +822,7 @@
       "power": {
         "input": {
           "voltageRange": "6.8-12",
-          "portType": "DC Barrel / D-Tap"
+          "portType": ["DC Barrel", "D-Tap"]
         }
       },
       "wirelessTx": false,

@@ -138,6 +138,7 @@
         "powerDrawWatts": 22.2,
         "internalController": false,
         "torqueNm": null,
+        "weight_g": 290,
         "gearTypes": ["0.8 mod", "0.5 mod", "0.6 mod"],
         "notes": "High torque, general purpose motor. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
         "fizConnectors": [{

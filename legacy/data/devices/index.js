@@ -1,13 +1,22 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var devices = {};
+function isSafeKey(key) {
+  return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+}
 function registerDevice(path, data) {
   var parts = path.split('.');
   var obj = devices;
   while (parts.length > 1) {
     var part = parts.shift();
+    if (!isSafeKey(part)) {
+      throw new Error("Unsafe key in path: '" + part + "'");
+    }
     obj = obj[part] = obj[part] || {};
   }
   var last = parts[0];
+  if (!isSafeKey(last)) {
+    throw new Error("Unsafe key in path: '" + last + "'");
+  }
   if (obj[last] && _typeof(obj[last]) === 'object' && _typeof(data) === 'object' && !Array.isArray(data)) {
     obj[last] = Object.assign({}, obj[last], data);
   } else {

@@ -3573,9 +3573,7 @@ function applyImportedOwnedGearMarkers(markers) {
     if (!marker || !marker.ownedId) {
       return;
     }
-    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
-      ? CSS.escape(marker.ownedId)
-      : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function' ? CSS.escape(marker.ownedId) : String(marker.ownedId).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var element = root.querySelector("[data-gear-own-gear-id=\"".concat(selectorId, "\"]"));
     if (!element) {
       return;
@@ -4542,7 +4540,15 @@ var appearanceContext = {
         return null;
       }
     },
-    getSafeLocalStorage: function getSafeLocalStorageWrapper() {
+    getSafeLocalStorage: function (_getSafeLocalStorage) {
+      function getSafeLocalStorage() {
+        return _getSafeLocalStorage.apply(this, arguments);
+      }
+      getSafeLocalStorage.toString = function () {
+        return _getSafeLocalStorage.toString();
+      };
+      return getSafeLocalStorage;
+    }(function () {
       try {
         if (typeof getSafeLocalStorage === 'function') {
           return getSafeLocalStorage();
@@ -4551,8 +4557,16 @@ var appearanceContext = {
         console.warn('cineSettingsAppearance: getSafeLocalStorage threw while building context', storageError);
       }
       return null;
-    },
-    resolveSafeLocalStorage: function resolveSafeLocalStorageWrapper() {
+    }),
+    resolveSafeLocalStorage: function (_resolveSafeLocalStorage) {
+      function resolveSafeLocalStorage() {
+        return _resolveSafeLocalStorage.apply(this, arguments);
+      }
+      resolveSafeLocalStorage.toString = function () {
+        return _resolveSafeLocalStorage.toString();
+      };
+      return resolveSafeLocalStorage;
+    }(function () {
       try {
         if (typeof resolveSafeLocalStorage === 'function') {
           return resolveSafeLocalStorage();
@@ -4561,7 +4575,7 @@ var appearanceContext = {
         console.warn('cineSettingsAppearance: resolveSafeLocalStorage threw while building context', storageError);
       }
       return null;
-    }
+    })
   },
   preferences: {
     getTemperatureUnit: function getTemperatureUnit() {
@@ -4670,14 +4684,12 @@ if (appearanceModule && typeof appearanceModule.createThemePreferenceController 
     }
   });
 }
-
 var themePreferenceGlobalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
-
-function setThemePreference(value, options) {
+var setThemePreference = function setThemePreference(value) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var normalized = !!value;
-  var config = options && _typeof(options) === 'object' ? options : {};
   if (themePreferenceController && typeof themePreferenceController.setValue === 'function') {
-    themePreferenceController.setValue(normalized, config);
+    themePreferenceController.setValue(normalized, options);
     return;
   }
   applyDarkMode(normalized);
@@ -4687,7 +4699,10 @@ function setThemePreference(value, options) {
     if (typeof resolveSafeLocalStorage === 'function') {
       var safeStorage = resolveSafeLocalStorage();
       if (safeStorage && typeof safeStorage.setItem === 'function') {
-        persistTargets.push({ name: 'safeLocalStorage', storage: safeStorage });
+        persistTargets.push({
+          name: 'safeLocalStorage',
+          storage: safeStorage
+        });
       }
     }
   } catch (error) {
@@ -4695,59 +4710,61 @@ function setThemePreference(value, options) {
   }
   try {
     if (typeof localStorage !== 'undefined') {
-      persistTargets.push({ name: 'localStorage', storage: localStorage });
+      persistTargets.push({
+        name: 'localStorage',
+        storage: localStorage
+      });
     }
   } catch (error) {
     console.warn('Could not access localStorage while persisting dark mode preference', error);
   }
-  for (var index = 0; index < persistTargets.length; index += 1) {
-    var entry = persistTargets[index];
+  persistTargets.forEach(function (entry) {
     if (!entry || !entry.storage || typeof entry.storage.setItem !== 'function') {
-      continue;
+      return;
     }
     try {
       entry.storage.setItem('darkMode', serialized);
     } catch (persistError) {
-      console.warn('Could not persist dark mode preference to ' + entry.name, persistError);
+      console.warn("Could not persist dark mode preference to ".concat(entry.name), persistError);
     }
-  }
-}
-
-function getThemePreference() {
+  });
+};
+var getThemePreference = function getThemePreference() {
   if (themePreferenceController && typeof themePreferenceController.getValue === 'function') {
     return !!themePreferenceController.getValue();
   }
-  return typeof document !== 'undefined' && document.body && document.body.classList && document.body.classList.contains('dark-mode');
-}
-
-function registerThemeControl(element, config) {
+  return typeof document !== 'undefined' && document.body && typeof document.body.classList !== 'undefined' && document.body.classList.contains('dark-mode');
+};
+var registerThemeControl = function registerThemeControl(element, config) {
   if (!themePreferenceController || typeof themePreferenceController.registerControl !== 'function') {
-    return function noopUnregister() {};
+    return function () {};
   }
   try {
     return themePreferenceController.registerControl(element, config);
   } catch (registrationError) {
     console.warn('Failed to register theme control', registrationError);
-    return function noopUnregister() {};
+    return function () {};
   }
-}
-
+};
 var unregisterHeaderThemeControl = function unregisterHeaderThemeControl() {};
 var unregisterSettingsThemeControl = function unregisterSettingsThemeControl() {};
-
 if (themePreferenceController) {
   if (darkModeToggle) {
-    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, {
+      type: 'button'
+    });
   }
   if (settingsDarkMode) {
-    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, {
+      type: 'checkbox'
+    });
   }
 } else {
   var fallbackDarkMode = false;
   try {
-    var storedDarkPreference = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
-    if (storedDarkPreference !== null) {
-      fallbackDarkMode = storedDarkPreference === 'true';
+    var stored = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
+    if (stored !== null) {
+      fallbackDarkMode = stored === 'true';
     } else if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       fallbackDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
@@ -4766,7 +4783,6 @@ if (themePreferenceController) {
     });
   }
 }
-
 if (themePreferenceGlobalScope) {
   try {
     themePreferenceGlobalScope.cineThemePreference = themePreferenceController ? {
@@ -4774,23 +4790,19 @@ if (themePreferenceGlobalScope) {
         return registerThemeControl(element, options);
       },
       setValue: function setValue(value, options) {
-        setThemePreference(value, options);
+        return setThemePreference(value, options);
       },
       getValue: function getValue() {
         return getThemePreference();
       },
       reloadFromStorage: function reloadFromStorage(options) {
-        if (themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function') {
-          return themePreferenceController.reloadFromStorage(options);
-        }
-        return getThemePreference();
+        return themePreferenceController && typeof themePreferenceController.reloadFromStorage === 'function' ? themePreferenceController.reloadFromStorage(options) : getThemePreference();
       }
     } : null;
   } catch (exposeError) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
 }
-
 var sessionFocusScale = typeof focusScalePreference === 'string' ? focusScalePreference : 'metric';
 var highContrastEnabled = false;
 try {
@@ -5045,34 +5057,36 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsDarkMode) {
-        setThemePreference(settingsDarkMode.checked, { persist: true });
+        setThemePreference(settingsDarkMode.checked, {
+          persist: true
+        });
       }
       if (settingsPinkMode) {
         persistPinkModePreference(settingsPinkMode.checked);
       }
       if (settingsHighContrast) {
-        var _enabled = settingsHighContrast.checked;
-        applyHighContrast(_enabled);
+        var enabled = settingsHighContrast.checked;
+        applyHighContrast(enabled);
         try {
-          localStorage.setItem('highContrast', _enabled);
+          localStorage.setItem('highContrast', enabled);
         } catch (e) {
           console.warn('Could not save high contrast preference', e);
         }
       }
       if (settingsReduceMotion) {
-        var _enabled2 = settingsReduceMotion.checked;
-        applyReduceMotion(_enabled2);
+        var _enabled = settingsReduceMotion.checked;
+        applyReduceMotion(_enabled);
         try {
-          localStorage.setItem('reduceMotion', _enabled2);
+          localStorage.setItem('reduceMotion', _enabled);
         } catch (e) {
           console.warn('Could not save reduce motion preference', e);
         }
       }
       if (settingsRelaxedSpacing) {
-        var _enabled3 = settingsRelaxedSpacing.checked;
-        applyRelaxedSpacing(_enabled3);
+        var _enabled2 = settingsRelaxedSpacing.checked;
+        applyRelaxedSpacing(_enabled2);
         try {
-          localStorage.setItem('relaxedSpacing', _enabled3);
+          localStorage.setItem('relaxedSpacing', _enabled2);
         } catch (e) {
           console.warn('Could not save relaxed spacing preference', e);
         }
@@ -6920,7 +6934,9 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
   }
   try {
-    setThemePreference(safeGetItem('darkMode') === 'true', { persist: true });
+    setThemePreference(safeGetItem('darkMode') === 'true', {
+      persist: true
+    });
   } catch (error) {
     console.warn('Failed to apply restored dark mode preference', error);
   }
@@ -9062,7 +9078,9 @@ if (factoryResetButton) {
         console.warn('Failed to reset planner state after factory reset', resetError);
       }
       try {
-        setThemePreference(false, { persist: true });
+        setThemePreference(false, {
+          persist: true
+        });
       } catch (darkError) {
         console.warn('Failed to reset dark mode during factory reset', darkError);
       }
