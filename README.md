@@ -1,6 +1,6 @@
 # Cine Power Planner
 
-![Cine Power Planner icon](src/icons/app-icon.svg)
+![Cine Power Planner icon](src/icons/logo-default.svg)
 
 Cine Power Planner is a standalone web app for building, auditing and sharing
 professional camera power plans that never leave your machine. Plan V‑Mount,
