@@ -11,6 +11,61 @@ Cine Power Planner es una aplicación web independiente para crear, auditar y co
 - **Pon a prueba las redes de seguridad.** Guardados manuales, auto-guardados en segundo plano y copias automáticas con sello horario se combinan para que practiques la rutina Guardar → Copia → Paquete → Restaurar desde el primer día.
 - **Aprueba actualizaciones a conciencia.** El service worker espera tu confirmación antes de actualizar, de modo que el equipo se mantiene en una versión auditada incluso durante viajes o con conectividad limitada.
 
+## Capas de seguridad a simple vista
+
+| Salvaguarda | Qué protege | Cómo activarla | Evidencia para archivar |
+| --- | --- | --- | --- |
+| Guardados manuales | Estado activo del proyecto, incluidos dispositivos, notas de autonomía y listas de equipo. | Pulsa **Enter**, elige **Guardar** o usa `Ctrl+S`/`⌘S`. | Entradas con marca temporal en el selector y registros de diferencias exportados desde **Comparar versiones**. |
+| Cadencia de auto-guardado y auto-backup | Instantáneas continuas que capturan ediciones en curso. | Mantén el proyecto abierto: las instantáneas se ejecutan cada ~50 cambios o 10 minutos. | Entradas `auto-backup-…` en el selector y la línea de tiempo de **Actividad reciente**. |
+| Copia de seguridad completa del planner | Todos los proyectos, favoritos, registros de autonomía, reglas automáticas y preferencias. | **Ajustes → Copia y restauración → Copia de seguridad** (o **Protecciones rápidas**). | `planner-backup.json`, exportes del historial de copias y anexos del registro de verificación. |
+| Exportaciones de paquetes de proyecto | Proyectos individuales listos para traspasar a otra estación de trabajo. | **Exportar proyecto** desde el selector. | Archivos `nombre-del-proyecto.json` (o `.cpproject` renombrados) guardados con notas de checksum. |
+| Sandbox de ensayo de restauración | Confianza en que los procesos de importación y restauración funcionan antes de tocar datos en producción. | **Ajustes → Copia y restauración → Ensayo de restauración**. | Captura de consola de `window.__cineRuntimeIntegrity`, notas del ensayo y capturas de la sandbox. |
+| Actualizaciones de documentación y traducciones | Temas del centro de ayuda, READMEs localizados y guías imprimibles. | Sigue la lista de mantenimiento de documentación cada vez que cambie el comportamiento. | Documentos actualizados en `docs/`, archivos `README.*.md` localizados y paquetes de verificación firmados. |
+
+## Accesos directos
+
+- **Ejecuta el ensayo completo.** Sigue el ejercicio de [Guía rápida](#guía-rápida) para verificar guardado, compartido, importación, copia de seguridad y restauración en cada estación, incluso sin conexión.
+- **Consulta los flujos.** Ten a mano el [Ensayo de guardado, compartido e importación](#ensayo-de-guardado-compartido-e-importación) y la [Referencia detallada de guardar, compartir, importar, copia de seguridad y restaurar](docs/save-share-restore-reference.md) durante formaciones o auditorías.
+- **Demuestra la preparación offline.** Combina el [Runbook de preparación offline](docs/offline-readiness.md) con la [Lista operativa](docs/operations-checklist.md) para que los ensayos documentados se mantengan alineados con la app y los recursos incluidos.
+- **Recertifica paquetes en caché.** Ejecuta el [Ensayo de verificación de caché offline y salvaguardas](docs/offline-cache-verification-drill.md) cada vez que regeneres assets del service worker, actualices iconos o toques la persistencia para que los builds en caché coincidan con el repositorio.
+- **Protege los datos de usuario de forma deliberada.** Usa el [Manual de protección de datos](docs/data-protection-playbook.md) para planificar cambios, ensayar salvaguardas diarias, preparar lanzamientos y responder a incidentes.
+- **Actualiza la documentación con intención.** Trabaja con la [Lista de verificación de actualizaciones de documentación](docs/documentation-update-checklist.md) y la [Matriz de cobertura de documentación](docs/documentation-coverage-matrix.md) para mantener sincronizados temas de ayuda, traducciones y manuales.
+- **Registra los ensayos de verificación.** Acompaña cada lanzamiento o auditoría con el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y guarda copias de la [Plantilla de registro de verificación](docs/verification-log-template.md) para documentar cada salvaguarda.
+- **Captura un snapshot de estado.** Completa el [Informe de estado de la documentación](docs/documentation-status-report-template.md) cuando actualices ayudas o traducciones; resume qué cambió, las evidencias offline reunidas y dónde residen copias y registros.
+- **Localiza con confianza.** Consulta la [Guía de traducción](docs/translation-guide.md) y los README específicos de cada idioma cada vez que añadas o ajustes idiomas para que el contenido offline siga alineado.
+
+## Kit de auditoría sin conexión
+
+Usa estas guías incluidas cada vez que necesites demostrar que el planner funciona sin conectividad o documentar cómo viajan los datos entre máquinas:
+
+- **Lista operativa** – El recorrido de [`docs/operations-checklist.md`](docs/operations-checklist.md) replica las salvaguardas de la app para que se observe cada flujo de guardado, compartido, importación, copia de seguridad y restauración antes de confiar en ellos sin conexión.
+- **Runbook de preparación offline** – [`docs/offline-readiness.md`](docs/offline-readiness.md) amplía el ensayo para días de viaje, incluye precalentamiento de caché, preparación de medios redundantes y simulacros de recuperación para mantener los datos seguros incluso en entornos aislados.
+- **Manual de protección de datos** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) reúne árboles de decisión para actualizaciones, respuesta a emergencias y comunicación para que los datos de usuario sigan siendo la máxima prioridad.
+- **Plantilla de registro de verificación** – [`docs/verification-log-template.md`](docs/verification-log-template.md) captura quién realizó los ensayos, cuándo se exportaron copias de seguridad y dónde viven las copias redundantes. Guárdala junto a tus paquetes para demostrar que nada se perdió.
+- **Matriz de cobertura de documentación** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) confirma que temas de ayuda, traducciones, capturas y manuales reflejan el runtime actual. Revísala antes de dar el visto bueno.
+
+## Ritmo de documentación y formación
+
+Mantener temas de ayuda, checklists y READMEs traducidos sincronizados con el comportamiento de la app forma parte del proceso de lanzamiento. Cuando cambien los flujos o lleguen nuevas salvaguardas, repite este ciclo antes de entregar builds a los equipos:
+
+1. **Mapea el cambio.** Anota qué flujos de guardado, compartido, importación, copia de seguridad o restauración incorporan nuevos estados, avisos o salvaguardas. Actualiza los recorridos relevantes en [`docs/`](docs) para que los ensayos reflejen la interfaz real.
+2. **Refresca la guía multilingüe.** Propaga los ajustes de redacción a los archivos `README.*.md` y a cualquier panel de ayuda localizado para que los equipos offline reciban las mismas indicaciones en todos los idiomas.
+3. **Repite los paquetes de verificación.** Ejecuta el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) con el build actual y guarda registros firmados que prueben cada flujo offline.
+4. **Distribuye paquetes actualizados.** Regenera los paquetes de formación compartibles para que los equipos ensayen con los assets, iconos y checklists que incluye este repositorio.
+
+Trata estos pasos como requisitos obligatorios para cada merge, de modo que la documentación sea tan resistente como el planner.
+
+## Lista de verificación de lanzamientos y documentación
+
+Antes de fusionar o publicar una build para campo, completa esta lista condensada para proteger datos, documentación y traducciones:
+
+1. **Ensaya los flujos críticos.** Ejecuta la [Guía rápida](#guía-rápida) o [`docs/operations-checklist.md`](docs/operations-checklist.md) para confirmar que guardado, compartido, importación, copia de seguridad y restauración siguen funcionando offline de extremo a extremo.
+2. **Actualiza la guía escrita.** Revisa el centro de ayuda, los README localizados y los manuales impresos. Usa la [Matriz de cobertura de documentación](docs/documentation-coverage-matrix.md) para asegurar que no falta ningún idioma ni flujo.
+3. **Captura artefactos de verificación.** Completa el [Paquete de verificación de documentación](docs/documentation-verification-packet.md) y la [Plantilla de registro de verificación](docs/verification-log-template.md) con las notas de ensayo, hashes de exportes y capturas de precalentamiento de caché más recientes.
+4. **Valida los toggles de idioma.** Cambia por cada idioma de la app para confirmar que los textos actualizados se representan correctamente sin cargar assets externos.
+5. **Guarda archivos redundantes.** Exporta `planner-backup.json`, los paquetes de proyecto actuales, las reglas automáticas en JSON y un ZIP del repositorio. Coloca todo en al menos dos soportes offline junto a una nota de retención.
+6. **Registra el estado del service worker.** Documenta la versión reportada, el comportamiento del indicador offline y la marca temporal del último **Forzar recarga** aprobado para que los equipos sepan qué revisión ejecutan.
+
 ## Panorama general
 
 ### Construido para equipos
@@ -43,6 +98,11 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 ## Tabla de contenidos
 
 - [De un vistazo](#de-un-vistazo)
+- [Capas de seguridad a simple vista](#capas-de-seguridad-a-simple-vista)
+- [Accesos directos](#accesos-directos)
+- [Kit de auditoría sin conexión](#kit-de-auditoría-sin-conexión)
+- [Ritmo de documentación y formación](#ritmo-de-documentación-y-formación)
+- [Lista de verificación de lanzamientos y documentación](#lista-de-verificación-de-lanzamientos-y-documentación)
 - [Panorama general](#panorama-general)
 - [Principios clave](#principios-clave)
 - [Traducciones](#traducciones)

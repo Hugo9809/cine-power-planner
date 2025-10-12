@@ -11,6 +11,61 @@ Cine Power Planner ist eine eigenständige Web-App zum Erstellen, Prüfen und Te
 - **Sicherheitsnetze schnell prüfen.** Manuelle Speicherungen, Hintergrund-Auto-Saves und automatische Zeitstempel-Backups greifen ineinander, damit du den Ablauf Speichern → Backup → Bundle → Wiederherstellen als ersten Schritt üben kannst.
 - **Updates bewusst freigeben.** Der Service Worker wartet auf deine Bestätigung, bevor er aktualisiert. Teams bleiben so auf einer geprüften Revision – selbst unterwegs oder bei schwacher Verbindung.
 
+## Sicherheitsnetze im Überblick
+
+| Schutzebene | Was sie schützt | So setzt du sie ein | Nachweis fürs Archiv |
+| --- | --- | --- | --- |
+| Manuelle Speicherungen | Aktuellen Projektstand inklusive Geräte, Laufzeitnotizen und Gear-Listen. | **Enter** drücken, **Speichern** wählen oder `Strg+S`/`⌘S` nutzen. | Zeitgestempelte Einträge im Selektor und exportierte Diff-Protokolle aus **Versionen vergleichen**. |
+| Auto-Save- & Auto-Backup-Kadenz | Laufende Schnappschüsse, die Zwischenstände sichern. | Projekt geöffnet lassen – Schnappschüsse laufen etwa alle 50 Änderungen oder 10 Minuten. | `auto-backup-…`-Einträge im Selektor sowie die Zeitleiste unter **Letzte Aktivitäten**. |
+| Vollständiges Planner-Backup | Alle Projekte, Favoriten, Laufzeitnotizen, automatische Gear-Regeln und Einstellungen. | **Einstellungen → Backup & Wiederherstellung → Backup** (oder **Schnelle Schutzmaßnahmen**). | `planner-backup.json`, exportierte Backup-Verlaufsprotokolle und Anhänge des Prüfprotokolls. |
+| Projekt-Bundle-Exporte | Einzelne Projekte für die Übergabe an andere Workstations. | **Projekt exportieren** im Selektor. | Dateien `projektname.json` (oder umbenannte `.cpproject`) mit Prüfsummen-Notizen. |
+| Wiederherstellungs-Sandbox | Sicherheit, dass Import und Restore korrekt funktionieren, bevor Live-Daten berührt werden. | **Einstellungen → Backup & Wiederherstellung → Restore-Probe**. | Konsolenmitschnitt von `window.__cineRuntimeIntegrity`, Probenotizen und Sandbox-Screenshots. |
+| Dokumentations- & Übersetzungsupdates | Hilfecenter-Themen, lokalisierte READMEs und druckbare Leitfäden. | Dokumentations-Checkliste befolgen, sobald sich Abläufe ändern. | Aktualisierte Docs in `docs/`, lokalisierte `README.*.md` und signierte Prüfpakete. |
+
+## Schnellzugriffe
+
+- **Kompletten Probelauf starten.** Folge der [Schnellstart](#schnellstart)-Übung, um Speichern, Teilen, Importieren, Backup und Wiederherstellung auf jedem Rechner – auch offline – zu verifizieren.
+- **Workflows nachschlagen.** Halte den [Speicher-, Teil- & Import-Drill](#speicher--teil--import-drill) sowie die ausführliche [Referenz zu Speichern, Teilen, Importieren, Backup & Wiederherstellen](docs/save-share-restore-reference.md) für Trainings und Audits bereit.
+- **Offline-Bereitschaft belegen.** Kombiniere das [Offline-Readiness-Runbook](docs/offline-readiness.md) mit der [operativen Checkliste](docs/operations-checklist.md), damit dokumentierte Proben mit App und Assets Schritt halten.
+- **Zwischengespeicherte Bundles re-zertifizieren.** Durchlaufe den [Offline-Cache- & Schutz-Verifizierungsdrill](docs/offline-cache-verification-drill.md), sobald Service-Worker-Assets, Icons oder Persistenzcode geändert wurden, damit gecachte Builds dem Repository entsprechen.
+- **Benutzerdaten bewusst schützen.** Nutze das [Data Protection Playbook](docs/data-protection-playbook.md), um Änderungen zu planen, tägliche Schutzroutinen zu proben, Releases vorzubereiten und auf Vorfälle zu reagieren.
+- **Dokumentation gezielt aktualisieren.** Arbeite die [Dokumentations-Update-Checkliste](docs/documentation-update-checklist.md) und die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md) durch, damit Hilfethemen, Übersetzungen und Handbücher synchron bleiben.
+- **Verifizierungsproben protokollieren.** Kopple jeden Release oder Audit mit dem [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und sichere Kopien der [Verifizierungs-Log-Vorlage](docs/verification-log-template.md), damit Nachweise zu allen Schutzproben vorliegen.
+- **Status-Snapshot erstellen.** Nutze den [Dokumentations-Statusbericht](docs/documentation-status-report-template.md), wenn du Hilfethemen oder Übersetzungen aktualisierst. Er fasst Änderungen, Offline-Belege und Speicherorte von Backups plus Prüfprotokollen zusammen.
+- **Lokalisierung mit Sicherheit erledigen.** Greife auf den [Translation Guide](docs/translation-guide.md) und die sprachspezifischen README-Dateien zurück, wenn neue Sprachen hinzugefügt oder angepasst werden.
+
+## Offline-Audit-Werkzeugkasten
+
+Nutze diese gebündelten Leitfäden, wenn du Offline-Tauglichkeit nachweisen oder Datenwege zwischen Rechnern dokumentieren musst:
+
+- **Operations-Checkliste** – Der Ablauf in [`docs/operations-checklist.md`](docs/operations-checklist.md) spiegelt die In-App-Schutzmaßnahmen, damit jeder Speicher-, Teil-, Import-, Backup- und Restore-Weg beobachtet wird, bevor Teams offline gehen.
+- **Offline-Readiness-Runbook** – [`docs/offline-readiness.md`](docs/offline-readiness.md) erweitert die Probe um Reisetage, Cache-Priming, redundante Medien und Recovery-Drills, damit Daten auch im luftgetrennten Betrieb geschützt bleiben.
+- **Data Protection Playbook** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) bündelt Entscheidungsbäume für Updates, Notfälle und Kommunikation, damit Benutzerdaten stets Priorität behalten.
+- **Verifizierungs-Log-Vorlage** – [`docs/verification-log-template.md`](docs/verification-log-template.md) hält fest, wer geprobt hat, wann Backups exportiert wurden und wo redundante Kopien liegen. Bewahre die ausgefüllte Vorlage bei den Bundles auf.
+- **Dokumentationsabdeckungs-Matrix** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) prüft, ob Hilfethemen, Übersetzungen, Screenshots und Handbücher den aktuellen Stand widerspiegeln.
+
+## Dokumentations- & Trainingsrhythmus
+
+Hilfethemen, Checklisten und lokalisierte READMEs im Gleichschritt mit dem Runtime-Verhalten zu halten, ist Teil jedes Releases. Sobald sich Abläufe ändern oder neue Schutzmechanismen landen, durchläufst du diesen Zyklus, bevor Builds an Crews gehen:
+
+1. **Änderung kartieren.** Notiere, welche Speicher-, Teil-, Import-, Backup- oder Restore-Flows neue Zustände, Hinweise oder Schutzmaßnahmen erhalten. Aktualisiere die entsprechenden Walkthroughs in [`docs/`](docs), damit Proben das Interface widerspiegeln.
+2. **Mehrsprachige Hinweise auffrischen.** Übertrage Formulierungen in `README.*.md` und lokalisierte Hilfe-Panels, damit Offline-Teams in jeder Sprache identische Anweisungen bekommen.
+3. **Verifizierungspakete erneut ausführen.** Durchlaufe das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) mit dem aktuellen Build und sichere unterschriebene Logs, die jeden Offline-Flow belegen.
+4. **Aktualisierte Bundles verteilen.** Regeneriere teilbare Trainings-Bundles, damit Crews mit den Assets, Icons und Checklisten aus diesem Repository üben.
+
+Behandle diese Schritte als verpflichtend für jeden Merge, damit die Dokumentation genauso robust bleibt wie der Planner.
+
+## Release- & Dokumentations-Checkliste
+
+Bevor du zusammenführst oder ein Field-Build ausspielst, arbeite diese komprimierte Liste durch, um Daten, Dokumentation und Übersetzungen zu schützen:
+
+1. **Kritische Workflows proben.** Führe den [Schnellstart](#schnellstart) oder [`docs/operations-checklist.md`](docs/operations-checklist.md) aus, um Speichern, Teilen, Importieren, Backup und Wiederherstellen offline zu verifizieren.
+2. **Schriftliche Hilfen aktualisieren.** Aktualisiere Hilfecenter, lokalisierte README-Dateien und Druckanleitungen. Nutze die [Dokumentationsabdeckungs-Matrix](docs/documentation-coverage-matrix.md), um sicherzustellen, dass keine Sprache fehlt.
+3. **Prüfartefakte sichern.** Fülle das [Dokumentations-Verifizierungspaket](docs/documentation-verification-packet.md) und die [Verifizierungs-Log-Vorlage](docs/verification-log-template.md) mit den neuesten Proben, Export-Hashes und Cache-Screenshots.
+4. **Übersetzungstoggles prüfen.** Wechsel durch alle Sprachen in der App und bestätige, dass neue Strings ohne externe Assets funktionieren.
+5. **Redundante Archive speichern.** Exportiere `planner-backup.json`, aktuelle Projekt-Bundles, automatische Gear-Regel-JSON und ein ZIP des Repos. Lege alles auf mindestens zwei offline Medien mit kurzem Aufbewahrungshinweis ab.
+6. **Service-Worker-Status protokollieren.** Dokumentiere gemeldete Version, Offline-Indikator-Verhalten und Zeitstempel des letzten bestätigten **Neu laden erzwingen**, damit Crews wissen, welche Revision aktiv ist.
+
 ## Überblick
 
 ### Entwickelt für Crews
@@ -43,6 +98,11 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 ## Inhaltsverzeichnis
 
 - [Auf einen Blick](#auf-einen-blick)
+- [Sicherheitsnetze im Überblick](#sicherheitsnetze-im-überblick)
+- [Schnellzugriffe](#schnellzugriffe)
+- [Offline-Audit-Werkzeugkasten](#offline-audit-werkzeugkasten)
+- [Dokumentations- & Trainingsrhythmus](#dokumentations--trainingsrhythmus)
+- [Release- & Dokumentations-Checkliste](#release--dokumentations-checkliste)
 - [Überblick](#überblick)
 - [Grundprinzipien](#grundprinzipien)
 - [Übersetzungen](#übersetzungen)

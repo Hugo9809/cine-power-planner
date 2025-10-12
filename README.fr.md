@@ -11,6 +11,61 @@ Cine Power Planner est une application web autonome pour créer, auditer et part
 - **Réseaux de sécurité éprouvés.** Sauvegardes manuelles, enregistrements automatiques en arrière-plan et backups horodatés se complètent pour répéter la boucle Sauvegarder → Backup → Bundle → Restaurer dès la première utilisation.
 - **Mises à jour sous contrôle.** Le service worker attend votre validation avant d’actualiser afin que les équipes restent sur une version vérifiée, même en déplacement ou avec une connectivité limitée.
 
+## Couches de sécurité en un coup d’œil
+
+| Filet de sécurité | Ce qu’il protège | Comment l’activer | Preuves à archiver |
+| --- | --- | --- | --- |
+| Sauvegardes manuelles | L’état courant du projet : équipements, notes d’autonomie et listes de matériel. | Appuyer sur **Entrée**, cliquer sur **Sauvegarder** ou utiliser `Ctrl+S`/`⌘S`. | Entrées horodatées dans le sélecteur et journaux de diff exportés depuis **Comparer les versions**. |
+| Cadence d’autosave et d’auto-backup | Des instantanés continus qui capturent les modifications en cours. | Laisser le projet ouvert : une capture toutes les ~50 modifications ou 10 minutes. | Entrées `auto-backup-…` dans le sélecteur et chronologie **Activité récente**. |
+| Backup complet du planner | L’ensemble des projets, favoris, retours d’autonomie, règles automatiques et préférences. | **Paramètres → Sauvegarde & restauration → Backup** (ou **Protections express**). | `planner-backup.json`, exports du journal d’historique et annexes du rapport de vérification. |
+| Exports de bundles projet | Projets individuels prêts pour un transfert vers un autre poste. | **Exporter le projet** depuis le sélecteur. | Fichiers `nom-du-projet.json` (ou `.cpproject` renommés) accompagnés de notes de checksum. |
+| Bac à sable de répétition de restauration | Assurance que les imports/restaurations fonctionnent avant de toucher aux données actives. | **Paramètres → Sauvegarde & restauration → Répétition de restauration**. | Capture console de `window.__cineRuntimeIntegrity`, notes de répétition et captures du bac à sable. |
+| Mises à jour documentation & traductions | Articles d’aide, READMEs localisés et guides imprimables. | Suivre la checklist de maintenance documentaire à chaque évolution fonctionnelle. | Docs mises à jour dans `docs/`, fichiers `README.*.md` localisés et paquets de vérification signés. |
+
+## Accès rapides
+
+- **Lancer la répétition complète.** Suivez l’exercice de [Démarrage rapide](#démarrage-rapide) pour valider sauvegarde, partage, import, backup et restauration sur chaque poste, même hors ligne.
+- **Consulter les workflows.** Gardez à portée l’[Exercice sauvegarde/partage/import](#exercice-sauvegardepartageimport) et la [référence détaillée Sauvegarde, partage, import, backup & restauration](docs/save-share-restore-reference.md) pendant les formations ou audits.
+- **Prouver la préparation hors ligne.** Associez le [Runbook de préparation offline](docs/offline-readiness.md) à la [check-list opérationnelle](docs/operations-checklist.md) pour synchroniser répétitions documentées, application et ressources embarquées.
+- **Re-certifier les bundles en cache.** Suivez le [Drill de vérification du cache hors ligne & protections](docs/offline-cache-verification-drill.md) après toute régénération d’assets service worker, ajout d’icônes ou modification de la persistance, afin de garantir la parité avec le dépôt.
+- **Protéger délibérément les données utilisateur.** Appuyez-vous sur le [Playbook de protection des données](docs/data-protection-playbook.md) pour cadrer les évolutions, répéter les filets quotidiens, préparer les livraisons et répondre aux incidents.
+- **Actualiser la documentation avec méthode.** Parcourez la [Checklist de mise à jour documentaire](docs/documentation-update-checklist.md) et la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour maintenir aides, traductions et manuels en phase.
+- **Journaliser les répétitions de vérification.** Associez chaque release ou audit au [Packet de vérification documentaire](docs/documentation-verification-packet.md) et archivez les copies de la [trame de journal de vérification](docs/verification-log-template.md) pour garder la trace de chaque filet.
+- **Réaliser un instantané d’état.** Renseignez le [Rapport d’état documentaire](docs/documentation-status-report-template.md) à chaque mise à jour d’aide ou de traduction ; il résume les changements, les preuves hors ligne et l’emplacement des backups et journaux.
+- **Localiser sereinement.** Référez-vous au [Guide de traduction](docs/translation-guide.md) et aux READMEs dédiés à chaque langue pour garantir l’alignement des contenus hors ligne lors de toute évolution.
+
+## Boîte à outils d’audit hors ligne
+
+Servez-vous de ces guides inclus dès qu’il faut prouver le fonctionnement hors réseau ou documenter les transferts de données entre machines :
+
+- **Check-list opérationnelle** – Le déroulé de [`docs/operations-checklist.md`](docs/operations-checklist.md) reflète les filets applicatifs afin que chaque flux de sauvegarde, partage, import, backup et restauration soit observé avant utilisation hors ligne.
+- **Runbook de préparation offline** – [`docs/offline-readiness.md`](docs/offline-readiness.md) prolonge la répétition pour les jours de déplacement, avec amorçage du cache, supports redondants et drills de récupération pour garder les données protégées même en environnement isolé.
+- **Playbook de protection des données** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) rassemble les arbres de décision pour les mises à jour, réponses d’urgence et communications, afin que la priorité reste aux données utilisateur.
+- **Trame de journal de vérification** – [`docs/verification-log-template.md`](docs/verification-log-template.md) consigne qui a répété, quand les backups ont été exportés et où se trouvent les copies redondantes. À conserver avec vos bundles.
+- **Matrice de couverture documentaire** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) vérifie que aides, traductions, captures et manuels reflètent le runtime courant. À parcourir avant validation.
+
+## Rythme documentation & formation
+
+Synchroniser aides, checklists et READMEs traduits avec le comportement runtime fait partie du processus de release. À chaque évolution ou nouvelle protection, bouclez les étapes suivantes avant de livrer un build aux équipes :
+
+1. **Cartographier le changement.** Identifiez les flux de sauvegarde, partage, import, backup ou restauration qui gagnent de nouveaux états, invites ou filets. Mettez à jour les walkthroughs concernés dans [`docs/`](docs) pour que les répétitions reflètent l’interface réelle.
+2. **Actualiser la guidance multilingue.** Répercutez les ajustements de formulation dans les fichiers `README.*.md` et les panneaux d’aide localisés afin que les équipes hors ligne reçoivent les mêmes consignes dans chaque langue.
+3. **Relancer les paquets de vérification.** Exécutez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) sur le build courant et archivez des journaux signés attestant chaque flux hors ligne.
+4. **Distribuer des bundles à jour.** Régénérez les bundles de formation partageables pour que les équipes répètent avec les assets, icônes et checklists livrés dans ce dépôt.
+
+Considérez ces étapes comme incontournables à chaque merge afin que la documentation reste aussi résiliente que le planner.
+
+## Check-list publication & documentation
+
+Avant de fusionner ou de publier une build terrain, cochez cette liste condensée pour protéger données, documentation et traductions :
+
+1. **Répéter les workflows critiques.** Suivez le [Démarrage rapide](#démarrage-rapide) ou [`docs/operations-checklist.md`](docs/operations-checklist.md) pour confirmer que sauvegarde, partage, import, backup et restauration restent opérationnels hors ligne de bout en bout.
+2. **Actualiser la documentation écrite.** Mettez à jour centre d’aide, READMEs localisés et manuels imprimés. Utilisez la [Matrice de couverture documentaire](docs/documentation-coverage-matrix.md) pour garantir qu’aucune langue ni workflow n’est oublié.
+3. **Collecter les artefacts de vérification.** Complétez le [Packet de vérification documentaire](docs/documentation-verification-packet.md) et la [trame de journal de vérification](docs/verification-log-template.md) avec les dernières notes de répétition, empreintes d’exports et captures d’amorçage du cache.
+4. **Valider les bascules de langue.** Parcourez chaque langue dans l’app pour confirmer que les nouveaux libellés s’affichent correctement sans charger de ressources externes.
+5. **Stocker des archives redondantes.** Exportez `planner-backup.json`, les bundles projet actuels, les règles automatiques en JSON et une archive ZIP du dépôt. Placez le tout sur au moins deux supports hors ligne accompagnés d’une note de rétention.
+6. **Consigner l’état du service worker.** Notez la version signalée, le comportement de l’indicateur hors ligne et l’horodatage du dernier **Forcer le rechargement** validé pour que les équipes sachent quelle révision est active.
+
 ## Vue d’ensemble
 
 ### Pensé pour les équipes
@@ -43,6 +98,11 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 ## Table des matières
 
 - [En résumé](#en-résumé)
+- [Couches de sécurité en un coup d’œil](#couches-de-sécurité-en-un-coup-dœil)
+- [Accès rapides](#accès-rapides)
+- [Boîte à outils d’audit hors ligne](#boîte-à-outils-daudit-hors-ligne)
+- [Rythme documentation & formation](#rythme-documentation--formation)
+- [Check-list publication & documentation](#check-list-publication--documentation)
 - [Vue d’ensemble](#vue-densemble)
 - [Principes fondamentaux](#principes-fondamentaux)
 - [Traductions](#traductions)

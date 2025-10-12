@@ -11,6 +11,61 @@ Cine Power Planner è un’applicazione web autonoma pensata per creare, verific
 - **Metti alla prova le reti di sicurezza.** Salvataggi manuali, auto-save in background e backup automatici con timestamp si sommano per esercitarsi fin da subito nel ciclo Salva → Backup → Bundle → Ripristina.
 - **Aggiornamenti sotto controllo.** Il service worker attende la tua conferma prima di aggiornarsi, mantenendo la troupe su una versione certificata anche in viaggio o con connettività limitata.
 
+## Reti di sicurezza in sintesi
+
+| Salvaguardia | Cosa protegge | Come esercitarla | Evidenze da archiviare |
+| --- | --- | --- | --- |
+| Salvataggi manuali | Stato attuale del progetto: dispositivi, note sulle autonomie e liste attrezzatura. | Premi **Invio**, scegli **Salva** o usa `Ctrl+S`/`⌘S`. | Voci con timestamp nel selettore ed export dei diff da **Confronta versioni**. |
+| Cadenza di auto-save e auto-backup | Snapshot continui che catturano le modifiche in corso. | Lascia il progetto aperto: avvengono ogni ~50 modifiche o 10 minuti. | Voci `auto-backup-…` nel selettore e timeline di **Attività recente**. |
+| Backup completo del planner | Tutti i progetti, i preferiti, i feedback runtime, le regole automatiche e le preferenze. | **Impostazioni → Backup & Ripristino → Backup** (o **Protezioni rapide**). | `planner-backup.json`, export del registro cronologico dei backup e allegati del log di verifica. |
+| Export dei bundle progetto | Singoli progetti pronti per il trasferimento a un’altra workstation. | **Esporta progetto** dal selettore. | File `nome-progetto.json` (o `.cpproject` rinominati) salvati con note sulle checksum. |
+| Sandbox di prova ripristino | Garanzia che import e ripristino funzionino prima di toccare i dati live. | **Impostazioni → Backup & Ripristino → Prova di ripristino**. | Acquisizione console di `window.__cineRuntimeIntegrity`, note di prova e screenshot della sandbox. |
+| Aggiornamenti di documentazione e traduzioni | Argomenti di help center, README localizzati e guide stampabili. | Segui la checklist di manutenzione della documentazione a ogni variazione di comportamento. | Documenti aggiornati in `docs/`, file `README.*.md` tradotti e pacchetti di verifica firmati. |
+
+## Accessi rapidi
+
+- **Esegui la prova completa.** Segui l’esercizio di [Avvio rapido](#avvio-rapido) per verificare salvataggi, condivisione, import, backup e ripristino su ogni postazione, anche offline.
+- **Consulta i workflow.** Tieni a portata il [Drill di salvataggio, condivisione e import](#drill-di-salvataggio-condivisione-e-import) e la [Riferimento dettagliato Salva, Condividi, Importa, Backup & Ripristina](docs/save-share-restore-reference.md) durante training e audit.
+- **Dimostra la prontezza offline.** Abbina l’[Offline Readiness Runbook](docs/offline-readiness.md) alla [Checklist operativa](docs/operations-checklist.md) per mantenere allineati prove documentate, app e risorse incluse.
+- **Ricertifica i bundle in cache.** Completa l’[Offline Cache & Safeguard Verification Drill](docs/offline-cache-verification-drill.md) quando rigeneri asset del service worker, aggiorni icone o tocchi la persistenza così i build in cache restano coerenti con il repository.
+- **Proteggi deliberatamente i dati utente.** Affidati al [Data Protection Playbook](docs/data-protection-playbook.md) per pianificare i cambi, provare le routine quotidiane di sicurezza, preparare i rilasci e rispondere agli incidenti.
+- **Aggiorna la documentazione con metodo.** Segui la [Documentation Update Checklist](docs/documentation-update-checklist.md) e la [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) per tenere sincronizzati help, traduzioni e manuali.
+- **Registra le prove di verifica.** Associa ogni release o audit al [Documentation Verification Packet](docs/documentation-verification-packet.md) e conserva copie della [Verification Log Template](docs/verification-log-template.md) per documentare ogni salvaguardia.
+- **Cattura un’istantanea di stato.** Compila il [Documentation Status Report](docs/documentation-status-report-template.md) quando aggiorni aiuti o traduzioni: riassume cosa è cambiato, le prove offline raccolte e dove risiedono backup e log.
+- **Localizza con sicurezza.** Consulta la [Translation Guide](docs/translation-guide.md) e i README dedicati a ogni lingua quando aggiungi o modifichi localizzazioni.
+
+## Kit di audit offline
+
+Usa queste guide incluse ogni volta che devi dimostrare il funzionamento offline del planner o documentare i flussi di dati tra macchine:
+
+- **Checklist operativa** – Il percorso in [`docs/operations-checklist.md`](docs/operations-checklist.md) rispecchia le salvaguardie dell’app così ogni flusso di salvataggio, condivisione, import, backup e ripristino viene osservato prima di lavorare offline.
+- **Offline Readiness Runbook** – [`docs/offline-readiness.md`](docs/offline-readiness.md) estende la prova ai giorni di viaggio, includendo pre-caricamento della cache, preparazione di media ridondanti e drill di recupero per mantenere i dati al sicuro anche in ambienti isolati.
+- **Data Protection Playbook** – [`docs/data-protection-playbook.md`](docs/data-protection-playbook.md) raccoglie gli alberi decisionali per aggiornamenti, emergenze e comunicazione affinché i dati utente restino la priorità.
+- **Verification Log Template** – [`docs/verification-log-template.md`](docs/verification-log-template.md) traccia chi ha eseguito le prove, quando sono stati esportati i backup e dove vivono le copie ridondanti. Conservala insieme ai bundle.
+- **Documentation Coverage Matrix** – [`docs/documentation-coverage-matrix.md`](docs/documentation-coverage-matrix.md) verifica che help, traduzioni, screenshot e manuali riflettano il runtime corrente. Consultala prima del via libera.
+
+## Cadenza di documentazione e training
+
+Mantenere help, checklist e README tradotti allineati al comportamento runtime è parte del processo di rilascio. Quando cambiano i flussi o arrivano nuove salvaguardie, segui questo ciclo prima di consegnare build alle troupe:
+
+1. **Mappa il cambiamento.** Annota quali flussi di salvataggio, condivisione, import, backup o ripristino introducono nuovi stati, prompt o reti di sicurezza. Aggiorna i walkthrough rilevanti in [`docs/`](docs) così le prove riflettono l’interfaccia reale.
+2. **Aggiorna la guida multilingue.** Propaga gli aggiustamenti di testo nei file `README.*.md` e nei pannelli di aiuto localizzati così i team offline ricevono le stesse istruzioni in ogni lingua.
+3. **Riesegui i pacchetti di verifica.** Lancia il [Documentation Verification Packet](docs/documentation-verification-packet.md) sul build corrente e archivia log firmati che provino ogni flusso offline.
+4. **Distribuisci bundle aggiornati.** Rigenera i pacchetti formativi condivisibili così le troupe si esercitano con asset, icone e checklist distribuiti da questo repository.
+
+Considera questi passaggi come vincolanti per ogni merge, così la documentazione resta solida quanto il planner.
+
+## Checklist di rilascio e documentazione
+
+Prima di un merge o di un rilascio sul campo, completa questa lista compatta per proteggere dati, documentazione e traduzioni:
+
+1. **Prova i workflow critici.** Segui l’[Avvio rapido](#avvio-rapido) o [`docs/operations-checklist.md`](docs/operations-checklist.md) per confermare salvataggi, condivisione, import, backup e ripristino offline end-to-end.
+2. **Aggiorna il materiale scritto.** Rinfresca help center, README localizzati e manuali. Usa la [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) per assicurarti che nessuna lingua o flusso resti indietro.
+3. **Raccogli gli artefatti di verifica.** Compila il [Documentation Verification Packet](docs/documentation-verification-packet.md) e la [Verification Log Template](docs/verification-log-template.md) con note di prova, hash degli export e screenshot di priming della cache più recenti.
+4. **Valida gli switch di lingua.** Scorri tutte le lingue dell’app per confermare che i nuovi string funzionino senza caricare asset esterni.
+5. **Archivia copie ridondanti.** Esporta `planner-backup.json`, i bundle progetto correnti, le regole automatiche in JSON e uno ZIP del repository. Conserva tutto su almeno due supporti offline con una nota di retention.
+6. **Registra lo stato del service worker.** Annota versione riportata, comportamento dell’indicatore offline e timestamp dell’ultimo **Forza ricarica** approvato così le troupe sanno quale revisione è attiva.
+
 ## Panoramica
 
 ### Progettato per le troupe
@@ -43,6 +98,11 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 ## Indice
 
 - [In breve](#in-breve)
+- [Reti di sicurezza in sintesi](#reti-di-sicurezza-in-sintesi)
+- [Accessi rapidi](#accessi-rapidi)
+- [Kit di audit offline](#kit-di-audit-offline)
+- [Cadenza di documentazione e training](#cadenza-di-documentazione-e-training)
+- [Checklist di rilascio e documentazione](#checklist-di-rilascio-e-documentazione)
 - [Panoramica](#panoramica)
 - [Principi chiave](#principi-chiave)
 - [Traduzioni](#traduzioni)
