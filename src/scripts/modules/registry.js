@@ -294,6 +294,32 @@
     return normalized;
   }
 
+  function mergeMetadata(normalizedName, freeze, options) {
+    const existingMeta = metadataMap[normalizedName];
+    if (!existingMeta) {
+      return;
+    }
+
+    const mergedConnections = normalizeConnections([
+      ...(Array.isArray(existingMeta.connections) ? existingMeta.connections : []),
+      ...(options.connections || options.links || options.dependencies || []),
+    ]);
+
+    metadataMap[normalizedName] = {
+      description:
+        typeof options.description === 'string' && options.description.trim()
+          ? options.description.trim()
+          : existingMeta.description,
+      category:
+        typeof options.category === 'string' && options.category.trim()
+          ? options.category.trim()
+          : existingMeta.category,
+      registeredAt: existingMeta.registeredAt,
+      frozen: existingMeta.frozen,
+      connections: freezeDeep(mergedConnections),
+    };
+  }
+
   function register(name, moduleApi, options = {}) {
     const normalizedName = normalizeName(name);
 
@@ -313,7 +339,8 @@
       }
 
       if (!options.replace) {
-        throw new Error(`Module "${normalizedName}" is already registered.`);
+        mergeMetadata(normalizedName, freeze, options || {});
+        return existing;
       }
     }
 

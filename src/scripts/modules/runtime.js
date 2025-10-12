@@ -1260,6 +1260,114 @@
     return fallbackFreezeDeep;
   })();
 
+  function enforceShallowFreeze(target) {
+    if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+      return target;
+    }
+
+    try {
+      if (typeof Object.preventExtensions === 'function') {
+        Object.preventExtensions(target);
+      }
+    } catch (preventError) {
+      void preventError;
+    }
+
+    try {
+      if (typeof Object.seal === 'function') {
+        Object.seal(target);
+      }
+    } catch (sealError) {
+      void sealError;
+    }
+
+    const keys = [];
+
+    try {
+      const ownNames = Object.getOwnPropertyNames(target);
+      for (let index = 0; index < ownNames.length; index += 1) {
+        keys.push(ownNames[index]);
+      }
+    } catch (nameError) {
+      void nameError;
+    }
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      try {
+        const symbols = Object.getOwnPropertySymbols(target);
+        for (let index = 0; index < symbols.length; index += 1) {
+          keys.push(symbols[index]);
+        }
+      } catch (symbolError) {
+        void symbolError;
+      }
+    }
+
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+
+      let descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(target, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+
+      if (!descriptor) {
+        continue;
+      }
+
+      const requiresLock =
+        descriptor.configurable === true ||
+        ('writable' in descriptor && descriptor.writable === true);
+
+      if (!requiresLock) {
+        continue;
+      }
+
+      const nextDescriptor = {
+        configurable: false,
+        enumerable: !!descriptor.enumerable,
+      };
+
+      if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+        nextDescriptor.value = descriptor.value;
+        nextDescriptor.writable = false;
+      } else {
+        nextDescriptor.get = descriptor.get;
+        nextDescriptor.set = descriptor.set;
+      }
+
+      try {
+        Object.defineProperty(target, key, nextDescriptor);
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    return target;
+  }
+
+  function ensureDeepFrozen(value) {
+    const frozen = freezeDeep(value);
+    if (Object.isFrozen(frozen)) {
+      return frozen;
+    }
+
+    try {
+      const result = Object.freeze(frozen);
+      if (Object.isFrozen(result)) {
+        return result;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    enforceShallowFreeze(frozen);
+    return frozen;
+  }
+
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
@@ -1376,13 +1484,13 @@
       : PENDING_QUEUE_KEY;
 
     if (!registry || typeof registry.register !== 'function') {
-      return freezeDeep({
+      return ensureDeepFrozen({
         ok: false,
         processed: 0,
         requeued: 0,
         scopes: 0,
         queueKey,
-        failures: freezeDeep([{ reason: 'missing-registry' }]),
+        failures: ensureDeepFrozen([{ reason: 'missing-registry' }]),
       });
     }
 
@@ -1463,13 +1571,13 @@
       );
     }
 
-    return freezeDeep({
+    return ensureDeepFrozen({
       ok: failures.length === 0,
       processed,
       requeued,
       scopes: touchedScopes,
       queueKey,
-      failures: failures.length > 0 ? freezeDeep(failures) : freezeDeep([]),
+      failures: failures.length > 0 ? ensureDeepFrozen(failures) : ensureDeepFrozen([]),
     });
   }
 
@@ -1543,7 +1651,7 @@
       failures: combinedFailures,
     };
 
-    return freezeDeep(result);
+    return ensureDeepFrozen(result);
   }
 
   const INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({ warn: false });
@@ -1552,7 +1660,7 @@
     const registry = options.registry || MODULE_REGISTRY;
 
     if (!registry || typeof registry.list !== 'function' || typeof registry.describe !== 'function') {
-      return freezeDeep({
+      return ensureDeepFrozen({
         ok: false,
         reason: 'missing-registry',
         modules: [],
@@ -1565,12 +1673,12 @@
     try {
       names = registry.list();
     } catch (error) {
-      return freezeDeep({
+      return ensureDeepFrozen({
         ok: false,
         reason: 'list-failed',
         modules: [],
         missingConnections: [],
-        errors: freezeDeep([
+        errors: ensureDeepFrozen([
           {
             type: 'list',
             message: error && typeof error.message === 'string' ? error.message : null,
@@ -1640,7 +1748,7 @@
       }
 
       modules.push(
-        freezeDeep({
+        ensureDeepFrozen({
           name,
           connections: connectionList,
           missing: missingList,
@@ -1649,7 +1757,7 @@
       );
     }
 
-    return freezeDeep({
+    return ensureDeepFrozen({
       ok: missingConnections.length === 0,
       modules,
       missingConnections,
@@ -2091,7 +2199,7 @@
   }
 
   function listCriticalChecks() {
-    return freezeDeep({
+    return ensureDeepFrozen({
       cinePersistence: REQUIRED_PERSISTENCE_FUNCTIONS.slice(),
       cineOffline: REQUIRED_OFFLINE_FUNCTIONS.slice(),
       cineUi: {
@@ -2202,12 +2310,12 @@
     }
 
     const ok = missing.length === 0;
-    const result = freezeDeep({
+    const result = ensureDeepFrozen({
       ok,
       missing: missing.slice(),
-      modules: freezeDeep(modulePresence),
-      details: freezeDeep(detailMap),
-      registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
+      modules: ensureDeepFrozen(modulePresence),
+      details: ensureDeepFrozen(detailMap),
+      registry: registrySnapshot ? ensureDeepFrozen(registrySnapshot) : null,
       checks: listCriticalChecks(),
       synchronization,
     });
@@ -2226,7 +2334,7 @@
     return result;
   }
 
-  const runtimeAPI = freezeDeep({
+  const runtimeAPI = ensureDeepFrozen({
     getPersistence(options) {
       return ensureModule('cinePersistence', options);
     },
@@ -2247,7 +2355,7 @@
     },
     listCriticalChecks,
     verifyCriticalFlows,
-    __internal: freezeDeep({
+    __internal: ensureDeepFrozen({
       resolveModule,
       ensureModule,
       listCriticalChecks,
@@ -2258,7 +2366,6 @@
       inspectModuleConnections,
     }),
   });
-
   informModuleGlobals('cineRuntime', runtimeAPI);
 
   registerOrQueueModule(
