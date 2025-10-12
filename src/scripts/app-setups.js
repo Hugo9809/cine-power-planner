@@ -2708,7 +2708,7 @@ function applyOwnedGearMarkersToHtml(html, markers, options = {}) {
     }
     const selectorId = typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function'
       ? CSS.escape(marker.ownedId)
-      : marker.ownedId.replace(/"/g, '\\"');
+      : marker.ownedId.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     const selector = `[data-gear-own-gear-id="${selectorId}"]`;
     const element = doc.body.querySelector(selector);
     if (!element) {
