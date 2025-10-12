@@ -1798,11 +1798,12 @@
       {
         key: 'resultsTotalDraw',
         highlight: [
-          '#powerDiagram',
           '#totalPowerLabel',
           '#totalPower',
           '#totalCurrent144Label',
+          '#totalCurrent144',
           '#totalCurrent12Label',
+          '#totalCurrent12',
         ],
       },
       {
