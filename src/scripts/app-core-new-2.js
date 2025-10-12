@@ -12230,7 +12230,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function buildFontFamilyValue(name) {
       if (!name) return fontFamily;
-      const escaped = name.replace(/\\/g, '\\').replace(/'/g, "\\'");
+      const escaped = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       return `'${escaped}', ${guessFontFallback(name)}`;
     }
     
