@@ -2578,7 +2578,9 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     cameraPortTypeInput.value = tmp || "";
     setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
     setRecordingMedia(deviceData.recordingMedia || []);
-    setLensMounts(deviceData.lensMount || []);
+    callEventsCoreFunction('setLensMounts', [
+      Array.isArray(deviceData.lensMount) ? deviceData.lensMount : [],
+    ]);
     setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
     setVideoOutputs(deviceData.videoOutputs || []);
     setFizConnectors(deviceData.fizConnectors || []);
