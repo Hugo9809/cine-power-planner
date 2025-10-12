@@ -8400,6 +8400,9 @@ const loggingNamespaceFilterEl = typeof document !== 'undefined'
 const loggingNamespaceHelpEl = typeof document !== 'undefined'
   ? document.getElementById('loggingNamespaceFilterHelp')
   : null;
+const loggingExportButton = typeof document !== 'undefined'
+  ? document.getElementById('loggingExportBtn')
+  : null;
 const loggingHistoryLimitInput = typeof document !== 'undefined'
   ? document.getElementById('loggingHistoryLimit')
   : null;
@@ -8524,6 +8527,7 @@ const LOGGING_LEVEL_PRIORITY = {
 
 const LOGGING_HISTORY_MIN = 50;
 const LOGGING_HISTORY_MAX = 2000;
+const LOGGING_EXPORT_STATUS_RESET_DELAY = 6000;
 
 const loggingState = {
   initialized: false,
@@ -8536,6 +8540,7 @@ const loggingState = {
   namespaceFilter: '',
   config: null,
   namespaceDebounce: null,
+  statusResetTimer: null,
 };
 
 function getLoggingLangInfo() {
@@ -8551,6 +8556,10 @@ function setLoggingStatusKey(key) {
   if (!loggingStatusEl) {
     return;
   }
+  if (loggingState.statusResetTimer != null) {
+    clearTimeout(loggingState.statusResetTimer);
+    loggingState.statusResetTimer = null;
+  }
   const { langTexts, fallbackTexts } = getLoggingLangInfo();
   const text = (langTexts && langTexts[key]) || (fallbackTexts && fallbackTexts[key]) || '';
   loggingStatusEl.textContent = text;
@@ -8559,6 +8568,26 @@ function setLoggingStatusKey(key) {
   } else {
     loggingStatusEl.removeAttribute('data-help');
   }
+}
+
+function scheduleLoggingStatusReset(delay = 5000, fallbackKey = 'loggingStatusIdle') {
+  if (loggingState.statusResetTimer != null) {
+    clearTimeout(loggingState.statusResetTimer);
+    loggingState.statusResetTimer = null;
+  }
+  if (typeof setTimeout !== 'function') {
+    if (fallbackKey) {
+      setLoggingStatusKey(fallbackKey);
+    }
+    return;
+  }
+  const timeout = typeof delay === 'number' && Number.isFinite(delay) ? Math.max(0, delay) : 5000;
+  loggingState.statusResetTimer = setTimeout(() => {
+    loggingState.statusResetTimer = null;
+    if (fallbackKey) {
+      setLoggingStatusKey(fallbackKey);
+    }
+  }, timeout);
 }
 
 function resolveLoggingApi() {
@@ -8624,6 +8653,7 @@ function setLoggingControlsDisabled(disabled) {
     loggingCaptureConsoleInput,
     loggingCaptureErrorsInput,
     loggingPersistSessionInput,
+    loggingExportButton,
   ];
   inputs.forEach(input => {
     if (!input) return;
@@ -8700,6 +8730,253 @@ function createLogDetailsElement(label, value) {
   details.appendChild(summary);
   details.appendChild(pre);
   return details;
+}
+
+function sanitizeLoggingFileSegment(segment) {
+  if (typeof segment !== 'string') {
+    return '';
+  }
+  const trimmed = segment.trim();
+  if (!trimmed) {
+    return '';
+  }
+  return trimmed.replace(/[^A-Za-z0-9.-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+function buildLoggingExportMetadata(date = new Date()) {
+  let referenceDate = date instanceof Date && !Number.isNaN(date.getTime()) ? date : new Date();
+  if (!(referenceDate instanceof Date) || Number.isNaN(referenceDate.getTime())) {
+    referenceDate = new Date();
+  }
+
+  let isoTimestamp = '';
+  if (referenceDate && typeof referenceDate.toISOString === 'function') {
+    try {
+      isoTimestamp = referenceDate.toISOString();
+    } catch (isoError) {
+      void isoError;
+      isoTimestamp = '';
+    }
+  }
+
+  if (!isoTimestamp) {
+    const fallbackDate = new Date(Date.now());
+    try {
+      isoTimestamp = fallbackDate.toISOString();
+      referenceDate = fallbackDate;
+    } catch (fallbackIsoError) {
+      void fallbackIsoError;
+      isoTimestamp = String(Date.now());
+    }
+  }
+
+  const stampSource = isoTimestamp || String(Date.now());
+  const sanitizedStamp = sanitizeLoggingFileSegment(stampSource.replace(/[:.]/g, '-'))
+    || sanitizeLoggingFileSegment(stampSource)
+    || String(Date.now());
+
+  const versionCandidate = typeof ACTIVE_APP_VERSION === 'string' && ACTIVE_APP_VERSION
+    ? ACTIVE_APP_VERSION
+    : (typeof APP_VERSION === 'string' && APP_VERSION ? APP_VERSION : '');
+  const sanitizedVersion = sanitizeLoggingFileSegment(versionCandidate);
+
+  const parts = ['cine-power-planner-log'];
+  if (sanitizedVersion) {
+    parts.push(`v${sanitizedVersion}`);
+  }
+  parts.push(sanitizedStamp);
+
+  const timezoneOffsetMinutes = typeof referenceDate.getTimezoneOffset === 'function'
+    ? 0 - referenceDate.getTimezoneOffset()
+    : null;
+
+  return {
+    isoTimestamp,
+    timezoneOffsetMinutes,
+    fileName: `${parts.join('-')}.json`,
+  };
+}
+
+function cloneLoggingExportValue(value) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+  try {
+    return SESSION_DEEP_CLONE(value);
+  } catch (cloneError) {
+    void cloneError;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (jsonError) {
+    void jsonError;
+  }
+  if (Array.isArray(value)) {
+    return value.slice();
+  }
+  return { ...value };
+}
+
+function exportLoggingHistory() {
+  const logging = resolveLoggingApi();
+  const { langTexts, fallbackTexts } = getLoggingLangInfo();
+  const unavailableMessage = (langTexts && langTexts.loggingExportUnavailable)
+    || (fallbackTexts && fallbackTexts.loggingExportUnavailable)
+    || '';
+  const errorMessage = (langTexts && langTexts.loggingExportError)
+    || (fallbackTexts && fallbackTexts.loggingExportError)
+    || '';
+  const successMessage = (langTexts && langTexts.loggingExportSuccess)
+    || (fallbackTexts && fallbackTexts.loggingExportSuccess)
+    || 'Diagnostics log exported.';
+
+  const shouldRestoreDisabled = loggingExportButton && !loggingExportButton.disabled;
+  if (loggingExportButton) {
+    loggingExportButton.disabled = true;
+    loggingExportButton.setAttribute('aria-disabled', 'true');
+  }
+
+  try {
+    if (!logging || typeof logging.getHistory !== 'function') {
+      if (unavailableMessage) {
+        showNotification('error', unavailableMessage);
+      }
+      setLoggingStatusKey('loggingStatusError');
+      scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY, 'loggingStatusIdle');
+      return;
+    }
+
+    setLoggingStatusKey('loggingStatusExporting');
+
+    const snapshot = logging.getHistory({}) || [];
+    if (!Array.isArray(snapshot)) {
+      throw new Error('Invalid diagnostics history snapshot.');
+    }
+    const historySource = snapshot;
+
+    let historySnapshot = cloneLoggingExportValue(historySource);
+    if (!Array.isArray(historySnapshot)) {
+      historySnapshot = historySource.slice();
+    }
+
+    let configSnapshot = null;
+    if (typeof logging.getConfig === 'function') {
+      try {
+        const config = logging.getConfig();
+        if (config && typeof config === 'object') {
+          const clonedConfig = cloneLoggingExportValue(config);
+          configSnapshot = clonedConfig && typeof clonedConfig === 'object'
+            ? clonedConfig
+            : { ...config };
+        }
+      } catch (configError) {
+        logSettingsEvent(
+          'warn',
+          'Diagnostics log export config capture failed',
+          { message: describeError(configError) },
+          { namespace: 'logging-export' },
+        );
+      }
+    }
+
+    let statsSnapshot = null;
+    if (typeof logging.getStats === 'function') {
+      try {
+        const stats = logging.getStats();
+        if (stats && typeof stats === 'object') {
+          const clonedStats = cloneLoggingExportValue(stats);
+          statsSnapshot = clonedStats && typeof clonedStats === 'object'
+            ? clonedStats
+            : { ...stats };
+        }
+      } catch (statsError) {
+        logSettingsEvent(
+          'warn',
+          'Diagnostics log export stats capture failed',
+          { message: describeError(statsError) },
+          { namespace: 'logging-export' },
+        );
+      }
+    }
+
+    const metadata = buildLoggingExportMetadata(new Date());
+    const exportPayload = {
+      exportedAt: metadata.isoTimestamp,
+      timezoneOffsetMinutes: metadata.timezoneOffsetMinutes,
+      filters: {
+        level: loggingState.levelFilter || 'all',
+        namespace: loggingState.namespaceFilter || '',
+      },
+      history: historySnapshot,
+      historyLength: historySnapshot.length,
+    };
+
+    const appVersion = typeof ACTIVE_APP_VERSION === 'string' && ACTIVE_APP_VERSION
+      ? ACTIVE_APP_VERSION
+      : (typeof APP_VERSION === 'string' && APP_VERSION ? APP_VERSION : null);
+    if (appVersion) {
+      exportPayload.appVersion = appVersion;
+    }
+    if (configSnapshot && typeof configSnapshot === 'object') {
+      exportPayload.config = configSnapshot;
+    }
+    if (statsSnapshot && typeof statsSnapshot === 'object') {
+      exportPayload.stats = statsSnapshot;
+    }
+
+    const serialized = JSON.stringify(exportPayload, null, 2);
+    if (!serialized) {
+      throw new Error('Empty diagnostics export payload.');
+    }
+
+    if (typeof downloadBackupPayload !== 'function') {
+      throw new Error('downloadBackupPayload unavailable.');
+    }
+
+    const downloadResult = downloadBackupPayload(serialized, metadata.fileName);
+    if (!downloadResult || !downloadResult.success) {
+      throw new Error('Diagnostics log download failed.');
+    }
+
+    logSettingsEvent(
+      'info',
+      'Diagnostics log exported',
+      { entries: historySnapshot.length, fileName: metadata.fileName },
+      { namespace: 'logging-export' },
+    );
+
+    if (successMessage) {
+      showNotification('success', successMessage);
+    }
+    setLoggingStatusKey('loggingStatusExported');
+    scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
+
+    if (downloadResult.method === 'manual' || downloadResult.method === 'window-fallback') {
+      const manualMessage = getManualDownloadFallbackMessage();
+      if (manualMessage) {
+        showNotification('warning', manualMessage);
+      }
+    }
+  } catch (error) {
+    const message = describeError(error);
+    logSettingsEvent(
+      'error',
+      'Diagnostics log export failed',
+      { message: message || null },
+      { namespace: 'logging-export' },
+    );
+    const failureMessage = errorMessage || message || 'Log export failed.';
+    if (failureMessage) {
+      showNotification('error', failureMessage);
+    }
+    setLoggingStatusKey('loggingStatusExportFailed');
+    scheduleLoggingStatusReset(LOGGING_EXPORT_STATUS_RESET_DELAY);
+  } finally {
+    if (loggingExportButton && shouldRestoreDisabled) {
+      loggingExportButton.disabled = false;
+      loggingExportButton.setAttribute('aria-disabled', 'false');
+    }
+  }
 }
 
 function renderLoggingHistory() {
@@ -9055,6 +9332,12 @@ function initializeLoggingPanel() {
   registerToggleHandler(loggingCaptureConsoleInput, 'captureConsole');
   registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
   registerToggleHandler(loggingPersistSessionInput, 'persistSession');
+
+  if (loggingExportButton) {
+    loggingExportButton.addEventListener('click', () => {
+      exportLoggingHistory();
+    });
+  }
 
   if (loggingNamespaceHelpEl) {
     loggingNamespaceHelpEl.setAttribute('aria-live', 'polite');

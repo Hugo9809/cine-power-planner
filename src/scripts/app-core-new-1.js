@@ -12863,6 +12863,22 @@ function setLanguage(lang) {
       || loggingPersistSessionHelp.textContent;
     loggingPersistSessionHelp.textContent = persistHelp;
   }
+  if (loggingExportButton) {
+    const exportLabel = texts[lang].loggingExportButton
+      || texts.en?.loggingExportButton
+      || loggingExportButton.textContent;
+    setButtonLabelWithIcon(loggingExportButton, exportLabel, ICON_GLYPHS.fileExport);
+    loggingExportButton.setAttribute('data-help', exportLabel);
+    loggingExportButton.setAttribute('title', exportLabel);
+    loggingExportButton.setAttribute('aria-label', exportLabel);
+  }
+  if (loggingExportHelp) {
+    const exportHelp = texts[lang].loggingExportHelp
+      || texts.en?.loggingExportHelp
+      || loggingExportHelp.textContent;
+    loggingExportHelp.textContent = exportHelp;
+    loggingExportHelp.setAttribute('data-help', exportHelp);
+  }
   if (loggingStatus) {
     const statusText = texts[lang].loggingStatusIdle
       || texts.en?.loggingStatusIdle
@@ -23861,6 +23877,8 @@ const loggingCaptureErrorsLabel = document.getElementById('loggingCaptureErrorsL
 const loggingCaptureErrorsHelp = document.getElementById('loggingCaptureErrorsHelp');
 const loggingPersistSessionLabel = document.getElementById('loggingPersistSessionLabel');
 const loggingPersistSessionHelp = document.getElementById('loggingPersistSessionHelp');
+const loggingExportButton = document.getElementById('loggingExportBtn');
+const loggingExportHelp = document.getElementById('loggingExportHelp');
 const loggingStatus = document.getElementById('loggingStatus');
 const loggingEmpty = document.getElementById('loggingEmpty');
 const loggingUnavailable = document.getElementById('loggingUnavailable');
