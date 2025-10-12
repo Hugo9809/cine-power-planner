@@ -173,10 +173,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var DOUBLE_PRIME_VARIANTS_PATTERN = /[″‶‴⁗]/g;
   var SINGLE_PRIME_VARIANTS_PATTERN = /[′‵]/g;
-  var MEASUREMENT_FOOT_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:feet|foot|ft\.?)(?![a-z])/gi;
-  var MEASUREMENT_FOOT_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*['’](?=\s|[\d"”″'-]|$)/g;
-  var MEASUREMENT_INCH_WORD_PATTERN = /(\d[\d\s.,/-]*)[\s-]*(?:inches|inch|in\.?)(?![a-z])/gi;
-  var MEASUREMENT_INCH_PRIME_PATTERN = /(\d[\d\s.,/-]*)\s*["”″](?=\s|[\d'’"-]|$)/g;
+  var MEASUREMENT_VALUE_PATTERN = '\\d+(?:\\s*[.,/-]\\s*\\d+)*(?:\\s+\\d+(?:\\s*[.,/-]\\s*\\d+)*)*';
+  var MEASUREMENT_FOOT_WORD_PATTERN = new RegExp(
+    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:feet|foot|ft\\.?)(?![a-z])'),
+    'gi',
+  );
+  var MEASUREMENT_FOOT_PRIME_PATTERN = new RegExp(
+    '('.concat(MEASUREMENT_VALUE_PATTERN, ")\\s*['’](?=\\s|[\\d\"”″'-]|$)"),
+    'g',
+  );
+  var MEASUREMENT_INCH_WORD_PATTERN = new RegExp(
+    '('.concat(MEASUREMENT_VALUE_PATTERN, ')[\\s-]*(?:inches|inch|in\\.?)(?![a-z])'),
+    'gi',
+  );
+  var MEASUREMENT_INCH_PRIME_PATTERN = new RegExp(
+    '('.concat(MEASUREMENT_VALUE_PATTERN, ')\\s*["”″](?=\\s|[\\d\'’"-]|$)'),
+    'g',
+  );
   function cleanMeasurementValue(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : value;
   }
