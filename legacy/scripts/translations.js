@@ -1496,7 +1496,8 @@ var texts = {
       helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
       helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
       helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped: "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
+      helpStatusSkipped:
+        "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
       helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
       helpStatusLastCompleted: "Last completed: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Last update: {timeAgo}.",
@@ -3112,11 +3113,16 @@ var texts = {
       progressMeterLabel: "Avanzamento del tutorial",
       progressValueLabel: "Completati {completed} di {total} passaggi",
       resumeLabelWithProgress: "Riprendi il tutorial guidato ({completed}/{total} completati)",
-      helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
-      helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
-      helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped: "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
-      helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusNotStarted:
+        "I progressi del tutorial guidato vengono salvati offline mentre avanzi. Prossimo passaggio: {next}.",
+      helpStatusInProgress:
+        "Avanzamento salvato offline: {completed} passaggi completati su {total}. Prossimo: {next}.",
+      helpStatusResume:
+        "In pausa su {current}. {completed} passaggi su {total} già salvati offline.",
+      helpStatusSkipped:
+        "Tutorial ignorato. Quando sei pronto puoi riavviarlo: i progressi salvati restano disponibili offline.",
+      helpStatusCompleted:
+        "Tutorial completato. Puoi ripetere qualsiasi passaggio in qualsiasi momento per un ripasso.",
       helpStatusLastCompleted: "Ultimo completamento: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Ultimo aggiornamento: {timeAgo}.",
       helpStatusTimeJustNow: "proprio ora",
@@ -4731,11 +4737,16 @@ var texts = {
       progressMeterLabel: "Progreso del tutorial",
       progressValueLabel: "Completados {completed} de {total} pasos",
       resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
-      helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
-      helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
-      helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped: "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
-      helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusNotStarted:
+        "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
+      helpStatusInProgress:
+        "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente: {next}.",
+      helpStatusResume:
+        "En pausa en {current}. {completed} de {total} pasos ya guardados sin conexión.",
+      helpStatusSkipped:
+        "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
+      helpStatusCompleted:
+        "Tutorial completado. Repite cualquier paso cuando necesites un repaso.",
       helpStatusLastCompleted: "Último paso completado: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Última actualización: {timeAgo}.",
       helpStatusTimeJustNow: "ahora mismo",
@@ -6350,11 +6361,16 @@ var texts = {
       progressMeterLabel: "Progression du tutoriel",
       progressValueLabel: "Étapes terminées : {completed} sur {total}",
       resumeLabelWithProgress: "Reprendre le tutoriel guidé ({completed}/{total} terminées)",
-      helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
-      helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
-      helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped: "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
-      helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusNotStarted:
+        "La progression du tutoriel guidé sera sauvegardée hors ligne au fur et à mesure. À suivre : {next}.",
+      helpStatusInProgress:
+        "Progression sauvegardée hors ligne : {completed} étape(s) sur {total}. À suivre : {next}.",
+      helpStatusResume:
+        "En pause sur {current}. {completed} étape(s) sur {total} déjà sauvegardées hors ligne.",
+      helpStatusSkipped:
+        "Tutoriel ignoré. Relancez-le quand vous serez prêt : la progression sauvegardée reste disponible hors ligne.",
+      helpStatusCompleted:
+        "Tutoriel terminé. Rejouez n’importe quelle étape à tout moment pour un rappel.",
       helpStatusLastCompleted: "Dernière étape terminée : {step} ({timeAgo}).",
       helpStatusLastUpdated: "Dernière mise à jour : {timeAgo}.",
       helpStatusTimeJustNow: "à l’instant",
@@ -7969,11 +7985,16 @@ var texts = {
       progressMeterLabel: "Tutorial-Fortschritt",
       progressValueLabel: "Abgeschlossen: {completed} von {total} Schritten",
       resumeLabelWithProgress: "Geführtes Tutorial fortsetzen ({completed}/{total} abgeschlossen)",
-      helpStatusNotStarted: "Your guided tutorial progress will be saved offline as you go. Next: {next}.",
-      helpStatusInProgress: "Progress saved offline: {completed} of {total} steps complete. Next: {next}.",
-      helpStatusResume: "Paused at {current}. {completed} of {total} steps already saved offline.",
-      helpStatusSkipped: "Tutorial skipped. Restart when you're ready—the saved progress stays available offline.",
-      helpStatusCompleted: "Tutorial complete. Replay any step anytime for a refresher.",
+      helpStatusNotStarted:
+        "Dein Fortschritt im geführten Tutorial wird beim Durchlaufen offline gespeichert. Als Nächstes: {next}.",
+      helpStatusInProgress:
+        "Fortschritt offline gesichert: {completed} von {total} Schritten erledigt. Weiter: {next}.",
+      helpStatusResume:
+        "Pausiert bei {current}. {completed} von {total} Schritten bereits offline gespeichert.",
+      helpStatusSkipped:
+        "Tutorial übersprungen. Starte neu, sobald du bereit bist – der gespeicherte Fortschritt bleibt offline verfügbar.",
+      helpStatusCompleted:
+        "Tutorial abgeschlossen. Spiele jeden Schritt jederzeit zur Auffrischung erneut ab.",
       helpStatusLastCompleted: "Zuletzt abgeschlossen: {step} ({timeAgo}).",
       helpStatusLastUpdated: "Letzte Aktualisierung: {timeAgo}.",
       helpStatusTimeJustNow: "gerade eben",
