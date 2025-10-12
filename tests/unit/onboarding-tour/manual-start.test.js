@@ -371,16 +371,9 @@ describe('onboarding tour manual start', () => {
 
     const progress = overlay.querySelector('.onboarding-progress');
     expect(progress).not.toBeNull();
-    expect(progress.textContent).toBe('Preface');
+    expect(progress.textContent).toBe('Step 1');
 
-    const nextButton = overlay.querySelector('.onboarding-next-button');
-    expect(nextButton).not.toBeNull();
-    nextButton.click();
-    await new Promise(resolve => setTimeout(resolve, 60));
-
-    expect(progress.textContent).toBe('Step 1 of 28');
-
-    const onboardingLanguage = overlay.querySelector('select[id^="onboarding-user-language"]');
+    const onboardingLanguage = overlay.querySelector('select.onboarding-hero-language-select');
     expect(onboardingLanguage).not.toBeNull();
     expect(onboardingLanguage.value).toBe('en');
 
@@ -401,5 +394,12 @@ describe('onboarding tour manual start', () => {
     expect(onboardingLanguage.value).toBe('fr');
     expect(settingsLanguage.value).toBe('fr');
     expect(global.currentLang).toBe('fr');
+
+    const nextButton = overlay.querySelector('.onboarding-next-button');
+    expect(nextButton).not.toBeNull();
+    nextButton.click();
+    await new Promise(resolve => setTimeout(resolve, 60));
+
+    expect(progress.textContent).toBe('Step 1 of 31');
   });
 });
