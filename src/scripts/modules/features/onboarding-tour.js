@@ -1937,6 +1937,7 @@
   let overlayAnchor = null;
   let highlightEl = null;
   let activeTargetElements = [];
+  let keyboardListenerAttached = false;
   let cardEl = null;
   let titleEl = null;
   let bodyEl = null;
@@ -2307,13 +2308,14 @@
 
     bringOverlayToTopLayer();
 
-    overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
+    attachKeyboardListener();
   }
 
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElements();
     clearScrollState();
+    detachKeyboardListener();
     if (overlayRoot && overlayRoot.parentNode) {
       if (supportsDialogTopLayer && typeof overlayRoot.close === 'function' && overlayRoot.open) {
         try {
@@ -2347,6 +2349,22 @@
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     lastCardPlacement = 'floating';
+  }
+
+  function attachKeyboardListener() {
+    if (!DOCUMENT || keyboardListenerAttached) {
+      return;
+    }
+    DOCUMENT.addEventListener('keydown', handleOverlayKeydown, true);
+    keyboardListenerAttached = true;
+  }
+
+  function detachKeyboardListener() {
+    if (!DOCUMENT || !keyboardListenerAttached) {
+      return;
+    }
+    DOCUMENT.removeEventListener('keydown', handleOverlayKeydown, true);
+    keyboardListenerAttached = false;
   }
 
   function formatStepIndicator(position, total) {

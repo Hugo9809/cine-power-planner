@@ -1610,6 +1610,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var overlayAnchor = null;
   var highlightEl = null;
   var activeTargetElements = [];
+  var keyboardListenerAttached = false;
   var cardEl = null;
   var titleEl = null;
   var bodyEl = null;
@@ -1925,12 +1926,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     DOCUMENT.body.appendChild(overlayRoot);
     overlayAnchor = DOCUMENT.body;
     bringOverlayToTopLayer();
-    overlayRoot.addEventListener('keydown', handleOverlayKeydown, true);
+    attachKeyboardListener();
   }
   function teardownOverlayElements() {
     clearFrame();
     clearActiveTargetElements();
     clearScrollState();
+    detachKeyboardListener();
     if (overlayRoot && overlayRoot.parentNode) {
       if (supportsDialogTopLayer && typeof overlayRoot.close === 'function' && overlayRoot.open) {
         try {
@@ -1962,6 +1964,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     lastCardPlacement = 'floating';
+  }
+  function attachKeyboardListener() {
+    if (!DOCUMENT || keyboardListenerAttached) {
+      return;
+    }
+    DOCUMENT.addEventListener('keydown', handleOverlayKeydown, true);
+    keyboardListenerAttached = true;
+  }
+  function detachKeyboardListener() {
+    if (!DOCUMENT || !keyboardListenerAttached) {
+      return;
+    }
+    DOCUMENT.removeEventListener('keydown', handleOverlayKeydown, true);
+    keyboardListenerAttached = false;
   }
   function formatStepIndicator(position, total) {
     var template = typeof tourTexts.stepIndicator === 'string' ? tourTexts.stepIndicator : 'Step {current} of {total}';
