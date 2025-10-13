@@ -593,6 +593,37 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void defaultsAssignError;
       }
     }
+
+    var runtimeTargetName = 'MOUNT_VOLTAGE_RUNTIME_EXPORTS';
+    var runtimeNamespace = null;
+
+    try {
+      runtimeNamespace = CORE_SCOPE[runtimeTargetName];
+    } catch (resolveRuntimeError) {
+      runtimeNamespace = null;
+      void resolveRuntimeError;
+    }
+
+    if (!runtimeNamespace || _typeof(runtimeNamespace) !== 'object') {
+      runtimeNamespace = {};
+    }
+
+    Object.keys(runtimeExports).forEach(function (runtimeKey) {
+      runtimeNamespace[runtimeKey] = runtimeExports[runtimeKey];
+    });
+
+    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
+      enumerable: true,
+      get: function get() {
+        return mountVoltageInputs;
+      }
+    });
+
+    try {
+      CORE_SCOPE[runtimeTargetName] = runtimeNamespace;
+    } catch (assignRuntimeError) {
+      void assignRuntimeError;
+    }
   }
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = namespace;
