@@ -546,6 +546,8 @@ if (typeof self !== 'undefined') {
   });
 
   self.addEventListener('activate', event => {
+    const activationReadyPromise = waitForActivationState();
+
     event.waitUntil((async () => {
       try {
         const keys = await caches.keys();
@@ -557,32 +559,36 @@ if (typeof self !== 'undefined') {
       } catch (error) {
         serviceWorkerLog.warn('Failed to clean up outdated caches during activation.', error);
       }
-
-      try {
-        await waitForActivationState();
-        if (typeof self.clients !== 'undefined' && typeof self.clients.claim === 'function') {
-          await self.clients.claim();
-        }
-      } catch (error) {
-        serviceWorkerLog.warn('Unable to claim clients during activation.', error);
-      }
-
-      try {
-        await waitForActivationState();
-        if (
-          self.registration &&
-          self.registration.navigationPreload &&
-          typeof self.registration.navigationPreload.enable === 'function'
-        ) {
-          await self.registration.navigationPreload.enable();
-          serviceWorkerLog.info('Navigation preload enabled for faster reloads.');
-        }
-      } catch (error) {
-        serviceWorkerLog.warn('Unable to enable navigation preload.', error);
-      }
-
-      serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
     })());
+
+    activationReadyPromise
+      .then(async () => {
+        try {
+          if (typeof self.clients !== 'undefined' && typeof self.clients.claim === 'function') {
+            await self.clients.claim();
+          }
+        } catch (error) {
+          serviceWorkerLog.warn('Unable to claim clients during activation.', error);
+        }
+
+        try {
+          if (
+            self.registration &&
+            self.registration.navigationPreload &&
+            typeof self.registration.navigationPreload.enable === 'function'
+          ) {
+            await self.registration.navigationPreload.enable();
+            serviceWorkerLog.info('Navigation preload enabled for faster reloads.');
+          }
+        } catch (error) {
+          serviceWorkerLog.warn('Unable to enable navigation preload.', error);
+        }
+
+        serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
+      })
+      .catch(error => {
+        serviceWorkerLog.warn('Activation readiness wait failed. Proceeding without deferred tasks.', error);
+      });
   });
 
   self.addEventListener('fetch', event => {
