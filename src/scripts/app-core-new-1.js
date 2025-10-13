@@ -358,6 +358,11 @@ const createLocalizationFallbackRuntimeContext =
   LOCALIZATION_FALLBACK_CONTEXT_NAMESPACE &&
   typeof LOCALIZATION_FALLBACK_CONTEXT_NAMESPACE.createLocalizationFallbackRuntimeContext === 'function'
     ? LOCALIZATION_FALLBACK_CONTEXT_NAMESPACE.createLocalizationFallbackRuntimeContext
+    : CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE &&
+      typeof CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE.createLocalizationFallbackContext === 'function'
+    ? function createLocalizationFallbackRuntimeContextFromSupportLite(options) {
+        return CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE.createLocalizationFallbackContext(options);
+      }
     : null;
 
 const createLegacyLocalizationFallbackContext =
