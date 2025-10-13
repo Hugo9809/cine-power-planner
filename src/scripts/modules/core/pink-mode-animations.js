@@ -184,6 +184,68 @@
   const pinkModeAssetTextCache = new Map();
   const pinkModeAssetTextPromiseCache = new Map();
 
+  function createPinkModeCacheKeyVariants(normalized, resolvedUrl, request) {
+    const variants = [];
+
+    if (request) {
+      variants.push(request);
+      if (typeof request.url === 'string' && request.url) {
+        variants.push(request.url);
+      }
+    }
+
+    if (resolvedUrl) {
+      variants.push(resolvedUrl);
+    }
+
+    if (!normalized) {
+      return variants;
+    }
+
+    variants.push(normalized);
+
+    const normalizedWithoutLeadingDot = normalized.charAt(0) === '.' ? normalized.slice(1) : normalized;
+    if (normalizedWithoutLeadingDot) {
+      variants.push(normalizedWithoutLeadingDot);
+    }
+
+    if (normalized.charAt(0) !== '/') {
+      variants.push(`./${normalized}`);
+      variants.push(`/${normalized}`);
+    } else {
+      const trimmed = normalized.replace(/^\/+/, '');
+      if (trimmed) {
+        variants.push(trimmed);
+        variants.push(`./${trimmed}`);
+      }
+    }
+
+    const encoded = encodeURI(normalized);
+    if (encoded && encoded !== normalized) {
+      variants.push(encoded);
+      if (encoded.charAt(0) !== '/') {
+        variants.push(`./${encoded}`);
+        variants.push(`/${encoded}`);
+      }
+    }
+
+    const deduped = [];
+    const seen = new Set();
+    for (const variant of variants) {
+      if (!variant) {
+        continue;
+      }
+      const key = typeof variant === 'string' ? variant : variant.url || variant;
+      if (!key || seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      deduped.push(variant);
+    }
+
+    return deduped;
+  }
+
   function loadPinkModeAssetText(path) {
     const normalized = normalizePinkModeAssetKey(path);
     if (!normalized) {
@@ -208,17 +270,12 @@
         return networkResult;
       }
 
-      const cacheResult = await fetchPinkModeAssetFromCaches(request || resolvedUrl);
-      if (cacheResult !== null) {
-        pinkModeAssetTextCache.set(normalized, cacheResult);
-        return cacheResult;
-      }
-
-      if (request && request.url && request.url !== resolvedUrl) {
-        const secondaryCacheResult = await fetchPinkModeAssetFromCaches(request.url);
-        if (secondaryCacheResult !== null) {
-          pinkModeAssetTextCache.set(normalized, secondaryCacheResult);
-          return secondaryCacheResult;
+      const cacheVariants = createPinkModeCacheKeyVariants(normalized, resolvedUrl, request);
+      for (const variant of cacheVariants) {
+        const cacheResult = await fetchPinkModeAssetFromCaches(variant);
+        if (cacheResult !== null) {
+          pinkModeAssetTextCache.set(normalized, cacheResult);
+          return cacheResult;
         }
       }
 
