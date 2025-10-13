@@ -140,11 +140,68 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
   }
   return null;
 }();
-var CORE_TEXT_ENTRY_SEPARATOR = '\n';
-function normaliseTextEntryValue(entry) {
+var CORE_TEXT_ENTRY_TOOLS = function resolveCoreTextEntryTools() {
+  var namespaceName = 'cineCoreTextEntries';
+
+  if (
+    typeof cineCoreTextEntries !== 'undefined' &&
+    cineCoreTextEntries &&
+    _typeof(cineCoreTextEntries) === 'object'
+  ) {
+    return cineCoreTextEntries;
+  }
+
+  var candidates = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      var tools = scope[namespaceName];
+      if (tools && _typeof(tools) === 'object') {
+        return tools;
+      }
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      var requiredTools = require('./app-core-text.js');
+      if (requiredTools && _typeof(requiredTools) === 'object') {
+        return requiredTools;
+      }
+    } catch (textEntriesRequireError) {
+      void textEntriesRequireError;
+    }
+  }
+
+  return null;
+}();
+
+var CORE_TEXT_ENTRY_SEPARATOR =
+  CORE_TEXT_ENTRY_TOOLS &&
+  typeof CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR === 'string' &&
+  CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
+    ? CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
+    : '\\n';
+
+function inlineNormaliseTextEntryValue(entry) {
   if (typeof entry === 'string') {
     return entry;
   }
+
   if (typeof entry === 'number' || typeof entry === 'boolean') {
     try {
       return String(entry);
@@ -153,26 +210,31 @@ function normaliseTextEntryValue(entry) {
     }
     return '';
   }
+
   if (Array.isArray(entry)) {
     var parts = [];
     for (var index = 0; index < entry.length; index += 1) {
-      var value = normaliseTextEntryValue(entry[index]);
+      var value = inlineNormaliseTextEntryValue(entry[index]);
       if (value) {
         parts.push(value);
       }
     }
     return parts.join(CORE_TEXT_ENTRY_SEPARATOR);
   }
+
   if (entry && _typeof(entry) === 'object') {
     if (typeof entry.text === 'string') {
       return entry.text;
     }
+
     if (Array.isArray(entry.text)) {
-      return normaliseTextEntryValue(entry.text);
+      return inlineNormaliseTextEntryValue(entry.text);
     }
+
     if (typeof entry.label === 'string') {
       return entry.label;
     }
+
     try {
       var objectString = String(entry);
       if (objectString && objectString !== '[object Object]') {
@@ -182,18 +244,27 @@ function normaliseTextEntryValue(entry) {
       void stringifyObjectError;
     }
   }
+
   return '';
 }
-function resolveTextEntry(primaryTexts, fallbackTexts, key) {
+
+function inlineResolveTextEntry(primaryTexts, fallbackTexts, key) {
   var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
   var normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
   var dictionaries = [];
+
   if (primaryTexts && (_typeof(primaryTexts) === 'object' || typeof primaryTexts === 'function')) {
     dictionaries.push(primaryTexts);
   }
-  if (fallbackTexts && fallbackTexts !== primaryTexts && (_typeof(fallbackTexts) === 'object' || typeof fallbackTexts === 'function')) {
+
+  if (
+    fallbackTexts &&
+    fallbackTexts !== primaryTexts &&
+    (_typeof(fallbackTexts) === 'object' || typeof fallbackTexts === 'function')
+  ) {
     dictionaries.push(fallbackTexts);
   }
+
   for (var index = 0; index < dictionaries.length; index += 1) {
     var dictionary = dictionaries[index];
     var entry = void 0;
@@ -203,16 +274,40 @@ function resolveTextEntry(primaryTexts, fallbackTexts, key) {
       void dictionaryLookupError;
       entry = undefined;
     }
+
     if (typeof entry === 'undefined' || entry === null) {
       continue;
     }
-    var resolved = normaliseTextEntryValue(entry);
+
+    var resolved = inlineNormaliseTextEntryValue(entry);
     if (typeof resolved === 'string') {
       return resolved;
     }
   }
+
   return normalizedDefault;
 }
+
+var normaliseTextEntryValue =
+  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue === 'function'
+    ? function normaliseTextEntryValueProxy(entry) {
+        return CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue(entry, CORE_TEXT_ENTRY_SEPARATOR);
+      }
+    : inlineNormaliseTextEntryValue;
+
+var resolveTextEntry =
+  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
+    ? function resolveTextEntryProxy(primaryTexts, fallbackTexts, key) {
+        var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+        return CORE_TEXT_ENTRY_TOOLS.resolveTextEntry(
+          primaryTexts,
+          fallbackTexts,
+          key,
+          defaultValue,
+          CORE_TEXT_ENTRY_SEPARATOR
+        );
+      }
+    : inlineResolveTextEntry;
 var CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 function resolvePreferredTemperatureStorageKey() {
   var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
