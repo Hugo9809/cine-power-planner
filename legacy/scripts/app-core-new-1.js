@@ -21727,6 +21727,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
   exposeCoreRuntimeConstant('setLanguage', setLanguage);
   exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
+  exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
+  exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
   var CORE_RUNTIME_CONSTANTS = {
     CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,
