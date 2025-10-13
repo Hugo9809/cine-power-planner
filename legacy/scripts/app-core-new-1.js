@@ -136,129 +136,162 @@ var createLocaleFallbacks = LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && typeof LOCA
 };
 var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');
 var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRuntimeToolFallbacks', './modules/core/runtime-tool-fallbacks.js');
-var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : function resolveCoreRuntimeShared() {
-  var shared = null;
-  if (typeof resolveCoreSupportModule === 'function') {
-    shared = resolveCoreSupportModule('cineCoreRuntimeShared', './modules/core/runtime-shared.js');
-  }
-  if (!shared && typeof require === 'function') {
+
+var CORE_RUNTIME_SHARED_TOOLS = resolveCoreSupportModule('cineCoreAppRuntimeShared', './modules/app-core/runtime-shared.js');
+var CORE_RUNTIME_SHARED_RESOLVER = CORE_RUNTIME_SHARED_TOOLS && typeof CORE_RUNTIME_SHARED_TOOLS.resolveRuntimeShared === 'function' ? CORE_RUNTIME_SHARED_TOOLS.resolveRuntimeShared : function attemptRequireRuntimeSharedResolver() {
+  if (typeof require === 'function') {
     try {
-      var requiredShared = require('./modules/core/runtime-shared.js');
-      if (requiredShared && _typeof(requiredShared) === 'object') {
-        shared = requiredShared;
+      var requiredRuntimeSharedTools = require('./modules/app-core/runtime-shared.js');
+      if (requiredRuntimeSharedTools && typeof requiredRuntimeSharedTools.resolveRuntimeShared === 'function') {
+        return requiredRuntimeSharedTools.resolveRuntimeShared;
       }
-    } catch (runtimeSharedRequireError) {
-      void runtimeSharedRequireError;
+    } catch (runtimeSharedToolsError) {
+      void runtimeSharedToolsError;
     }
   }
-  if (shared) {
-    return shared;
-  }
-  var fallbackScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  return null;
+}();
+function fallbackResolveRuntimeSharedFromGlobal() {
+  var fallbackScopes = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+    CORE_GLOBAL_SCOPE &&
+    _typeof(CORE_GLOBAL_SCOPE) === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object'
+      ? globalThis
+      : null,
+    typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null,
+    typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null,
+    typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null
+  ];
+
   for (var index = 0; index < fallbackScopes.length; index += 1) {
-    var candidateScope = fallbackScopes[index];
-    if (!candidateScope || _typeof(candidateScope) !== 'object') {
+    var scope = fallbackScopes[index];
+    if (!scope || _typeof(scope) !== 'object') {
       continue;
     }
+
     try {
-      var candidateShared = candidateScope.cineCoreRuntimeShared;
-      if (candidateShared && _typeof(candidateShared) === 'object') {
-        return candidateShared;
+      var candidate = scope.cineCoreRuntimeShared;
+      if (candidate && _typeof(candidate) === 'object') {
+        return candidate;
       }
     } catch (runtimeSharedLookupError) {
       void runtimeSharedLookupError;
     }
   }
+
+  return null;
+}
+var EXISTING_CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : null;
+var CORE_RUNTIME_SHARED = EXISTING_CORE_RUNTIME_SHARED || (CORE_RUNTIME_SHARED_RESOLVER ? CORE_RUNTIME_SHARED_RESOLVER({
+  currentShared: EXISTING_CORE_RUNTIME_SHARED,
+  resolveCoreSupportModule: resolveCoreSupportModule,
+  requireFn: typeof require === 'function' ? require : null,
+  runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
+}) : fallbackResolveRuntimeSharedFromGlobal());
+var PINK_MODE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeRuntime', './modules/app-core/pink-mode-runtime.js');
+var PINK_MODE_RUNTIME_FACTORY = PINK_MODE_RUNTIME_TOOLS && typeof PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime === 'function' ? PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime : function attemptRequirePinkModeRuntimeFactory() {
+  if (typeof require === 'function') {
+    try {
+      var requiredPinkModeRuntime = require('./modules/app-core/pink-mode-runtime.js');
+      if (requiredPinkModeRuntime && typeof requiredPinkModeRuntime.createPinkModeRuntime === 'function') {
+        return requiredPinkModeRuntime.createPinkModeRuntime;
+      }
+    } catch (pinkModeRuntimeRequireError) {
+      void pinkModeRuntimeRequireError;
+    }
+  }
   return null;
 }();
-var CORE_PINK_MODE_SUPPORT = resolveCoreSupportModule('cineCorePinkModeSupport', './modules/core/pink-mode-support.js');
-var PINK_MODE_SUPPORT_API = function resolvePinkModeSupportApi() {
-  if (CORE_PINK_MODE_SUPPORT && typeof CORE_PINK_MODE_SUPPORT.resolvePinkModeSupport === 'function') {
-    try {
-      var resolved = CORE_PINK_MODE_SUPPORT.resolvePinkModeSupport();
-      if (resolved && _typeof(resolved) === 'object') {
-        return resolved;
-      }
-    } catch (pinkModeResolveError) {
-      void pinkModeResolveError;
+function createInlinePinkModeFallbackApi() {
+  var fallbackIcons = Object.freeze({
+    off: Object.freeze({
+      className: 'icon-svg pink-mode-icon',
+      markup: ''
+    }),
+    onSequence: Object.freeze([])
+  });
+
+  function createSafeResolvedPromise(value) {
+    if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
+      return Promise.resolve(value);
     }
-  }
-  if (CORE_PINK_MODE_SUPPORT && typeof CORE_PINK_MODE_SUPPORT.createFallbackSupport === 'function') {
-    try {
-      var fallback = CORE_PINK_MODE_SUPPORT.createFallbackSupport();
-      if (fallback && _typeof(fallback) === 'object') {
-        return fallback;
-      }
-    } catch (pinkModeFallbackError) {
-      void pinkModeFallbackError;
-    }
-  }
-  function createInlinePinkModeFallback() {
-    function createSafeResolvedPromise(value) {
-      if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
-        return Promise.resolve(value);
-      }
-      var promiseLike = {
-        then: function then(callback) {
-          if (typeof callback === 'function') {
-            try {
-              return createSafeResolvedPromise(callback(value));
-            } catch (callbackError) {
-              return createSafeResolvedPromise(undefined);
-            }
+
+    var promiseLike = {
+      then: function then(callback) {
+        if (typeof callback === 'function') {
+          try {
+            return createSafeResolvedPromise(callback(value));
+          } catch (callbackError) {
+            void callbackError;
+            return createSafeResolvedPromise(undefined);
           }
-          return promiseLike;
-        },
-        catch: function _catch() {
-          return promiseLike;
         }
-      };
-      return promiseLike;
-    }
-    var fallbackIcons = Object.freeze({
-      off: Object.freeze({
-        className: 'icon-svg pink-mode-icon',
-        markup: ''
-      }),
-      onSequence: Object.freeze([])
-    });
-    return {
-      pinkModeIcons: fallbackIcons,
-      ensureSvgHasAriaHidden: function ensureSvgHasAriaHidden(markup) {
-        return typeof markup === 'string' ? markup.trim() : '';
+
+        return promiseLike;
       },
-      setPinkModeIconSequence: function setPinkModeIconSequence() {
-        return false;
-      },
-      loadPinkModeIconsFromFiles: function loadPinkModeIconsFromFiles() {
-        return createSafeResolvedPromise();
-      },
-      ensurePinkModeLottieRuntime: function ensurePinkModeLottieRuntime() {
-        return createSafeResolvedPromise(null);
-      },
-      resolvePinkModeLottieRuntime: function resolvePinkModeLottieRuntime() {
-        return null;
-      },
-      startPinkModeAnimatedIcons: function startPinkModeAnimatedIcons() {},
-      stopPinkModeAnimatedIcons: function stopPinkModeAnimatedIcons() {},
-      triggerPinkModeIconRain: function triggerPinkModeIconRain() {},
-      getPinkModeIconRotationTimer: function getPinkModeIconRotationTimer() {
-        return null;
-      },
-      setPinkModeIconRotationTimer: function setPinkModeIconRotationTimer() {},
-      getPinkModeIconIndex: function getPinkModeIconIndex() {
-        return 0;
-      },
-      setPinkModeIconIndex: function setPinkModeIconIndex() {},
-      PINK_MODE_ICON_INTERVAL_MS: 30000,
-      PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-pop',
-      PINK_MODE_ICON_ANIMATION_RESET_DELAY: 450,
-      PINK_MODE_ICON_FALLBACK_MARKUP: Object.freeze([])
+      catch: function _catch() {
+        return promiseLike;
+      }
     };
+
+    return promiseLike;
   }
-  return createInlinePinkModeFallback();
-}();
+
+  function trimMarkup(markup) {
+    return typeof markup === 'string' ? markup.trim() : '';
+  }
+
+  function noop() {}
+
+  function returnFalse() {
+    return false;
+  }
+
+  function returnNull() {
+    return null;
+  }
+
+  function returnZero() {
+    return 0;
+  }
+
+  return {
+    pinkModeIcons: fallbackIcons,
+    ensureSvgHasAriaHidden: trimMarkup,
+    setPinkModeIconSequence: returnFalse,
+    loadPinkModeIconsFromFiles: function loadPinkModeIconsFromFiles() {
+      return createSafeResolvedPromise();
+    },
+    ensurePinkModeLottieRuntime: function ensurePinkModeLottieRuntime() {
+      return createSafeResolvedPromise(null);
+    },
+    resolvePinkModeLottieRuntime: returnNull,
+    startPinkModeAnimatedIcons: noop,
+    stopPinkModeAnimatedIcons: noop,
+    triggerPinkModeIconRain: noop,
+    getPinkModeIconRotationTimer: returnNull,
+    setPinkModeIconRotationTimer: noop,
+    getPinkModeIconIndex: returnZero,
+    setPinkModeIconIndex: noop,
+    PINK_MODE_ICON_INTERVAL_MS: 30000,
+    PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-pop',
+    PINK_MODE_ICON_ANIMATION_RESET_DELAY: 450,
+    PINK_MODE_ICON_FALLBACK_MARKUP: Object.freeze([])
+  };
+}
+var PINK_MODE_SUPPORT_API_UNSAFE = PINK_MODE_RUNTIME_FACTORY ? PINK_MODE_RUNTIME_FACTORY({
+  resolveCoreSupportModule: resolveCoreSupportModule,
+  requireFn: typeof require === 'function' ? require : null,
+  runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
+}) : null;
+var PINK_MODE_SUPPORT_API = PINK_MODE_SUPPORT_API_UNSAFE && _typeof(PINK_MODE_SUPPORT_API_UNSAFE) === 'object' ? PINK_MODE_SUPPORT_API_UNSAFE : createInlinePinkModeFallbackApi();
 var pinkModeIcons = PINK_MODE_SUPPORT_API.pinkModeIcons,
+
   ensureSvgHasAriaHidden = PINK_MODE_SUPPORT_API.ensureSvgHasAriaHidden,
   setPinkModeIconSequence = PINK_MODE_SUPPORT_API.setPinkModeIconSequence,
   loadPinkModeIconsFromFiles = PINK_MODE_SUPPORT_API.loadPinkModeIconsFromFiles,
