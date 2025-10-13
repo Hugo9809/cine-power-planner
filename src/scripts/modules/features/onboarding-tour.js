@@ -2280,16 +2280,27 @@
     const rootFontSize = getRootFontSizePx();
     const heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
     const heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
-    const marginWidth = Math.min(viewportWidth, viewportWidth - heroMargin);
-    const fractionWidth = Math.min(viewportWidth, viewportWidth * HERO_MIN_VIEWPORT_FRACTION);
-    const availableWidth = Math.max(0, fractionWidth, marginWidth);
-    const resolvedWidth = Math.min(heroMaxWidth, availableWidth);
+    const marginLimitedWidth = viewportWidth - (heroMargin * 2);
+    const fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
+    const widthCandidates = [heroMaxWidth, viewportWidth];
 
-    if (resolvedWidth > 0) {
-      cardEl.style.setProperty('--onboarding-card-hero-inline-size', `${resolvedWidth}px`);
-    } else {
-      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+    if (Number.isFinite(fractionLimitedWidth) && fractionLimitedWidth > 0) {
+      widthCandidates.push(fractionLimitedWidth);
     }
+
+    if (Number.isFinite(marginLimitedWidth) && marginLimitedWidth > 0) {
+      widthCandidates.push(marginLimitedWidth);
+    }
+
+    const positiveCandidates = widthCandidates.filter((value) => Number.isFinite(value) && value > 0);
+
+    if (positiveCandidates.length === 0) {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+      return;
+    }
+
+    const resolvedWidth = Math.min(...positiveCandidates);
+    cardEl.style.setProperty('--onboarding-card-hero-inline-size', `${resolvedWidth}px`);
   }
 
   function schedulePositionUpdate() {

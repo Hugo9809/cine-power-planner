@@ -1942,15 +1942,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var rootFontSize = getRootFontSizePx();
     var heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
     var heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
-    var marginWidth = Math.min(viewportWidth, viewportWidth - heroMargin);
-    var fractionWidth = Math.min(viewportWidth, viewportWidth * HERO_MIN_VIEWPORT_FRACTION);
-    var availableWidth = Math.max(0, fractionWidth, marginWidth);
-    var resolvedWidth = Math.min(heroMaxWidth, availableWidth);
-    if (resolvedWidth > 0) {
-      cardEl.style.setProperty('--onboarding-card-hero-inline-size', "".concat(resolvedWidth, "px"));
-    } else {
-      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+    var marginLimitedWidth = viewportWidth - heroMargin * 2;
+    var fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
+    var widthCandidates = [heroMaxWidth, viewportWidth];
+    if (Number.isFinite(fractionLimitedWidth) && fractionLimitedWidth > 0) {
+      widthCandidates.push(fractionLimitedWidth);
     }
+    if (Number.isFinite(marginLimitedWidth) && marginLimitedWidth > 0) {
+      widthCandidates.push(marginLimitedWidth);
+    }
+    var positiveCandidates = widthCandidates.filter(function (value) {
+      return Number.isFinite(value) && value > 0;
+    });
+    if (positiveCandidates.length === 0) {
+      cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
+      return;
+    }
+    var resolvedWidth = Math.min.apply(Math, positiveCandidates);
+    cardEl.style.setProperty('--onboarding-card-hero-inline-size', "".concat(resolvedWidth, "px"));
   }
   function schedulePositionUpdate() {
     if (!active) {

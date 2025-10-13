@@ -7052,7 +7052,9 @@ body.dark-mode .onboarding-highlight {
 
 .onboarding-card[data-size='hero'] {
   --onboarding-card-hero-margin: 1.5rem;
-  --onboarding-card-hero-available: calc(100vw - var(--onboarding-card-hero-margin));
+  --onboarding-card-hero-available: calc(
+    100vw - (var(--onboarding-card-hero-margin) * 2)
+  );
   --onboarding-card-hero-inline: var(
     --onboarding-card-hero-inline-size,
     var(--onboarding-card-hero-available)
@@ -7073,7 +7075,7 @@ body.dark-mode .onboarding-highlight {
 @supports (width: calc(100dvw - 1px)) {
   .onboarding-card[data-size='hero'] {
     --onboarding-card-hero-available: calc(
-      100dvw - var(--onboarding-card-hero-margin)
+      100dvw - (var(--onboarding-card-hero-margin) * 2)
     );
   }
 }
