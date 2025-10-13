@@ -47,9 +47,9 @@
   --button-margin-block-end: var(--spacing-sm);
   --button-link-padding-block: var(--button-padding-block);
   --button-link-padding-inline: 12px;
-  --button-default-bg: color-mix(in srgb, var(--surface-color) 90%, var(--accent-color) 10%);
+  --button-default-bg: var(--control-bg);
   --button-default-text: var(--control-text);
-  --button-default-border: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  --button-default-border: var(--control-border);
   --button-primary-bg: color-mix(in srgb, var(--accent-color) 94%, var(--surface-color) 6%);
   --button-primary-border: color-mix(in srgb, var(--accent-color) 70%, transparent);
   --button-danger-bg: color-mix(in srgb, var(--danger-color) 92%, var(--surface-color) 8%);
