@@ -83,6 +83,55 @@
 const CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
   typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
 
+function resolveCoreDeviceSchemaNamespace() {
+  const candidates = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (scope.CORE_DEVICE_SCHEMA && typeof scope.CORE_DEVICE_SCHEMA === 'object') {
+        return scope.CORE_DEVICE_SCHEMA;
+      }
+    } catch (coreDeviceSchemaLookupError) {
+      void coreDeviceSchemaLookupError;
+    }
+
+    try {
+      if (scope.cineCoreDeviceSchema && typeof scope.cineCoreDeviceSchema === 'object') {
+        return scope.cineCoreDeviceSchema;
+      }
+    } catch (cineCoreDeviceSchemaLookupError) {
+      void cineCoreDeviceSchemaLookupError;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const moduleNamespace = require('./modules/core/device-schema.js');
+      if (moduleNamespace && typeof moduleNamespace === 'object') {
+        return moduleNamespace;
+      }
+    } catch (coreDeviceSchemaRequireError) {
+      void coreDeviceSchemaRequireError;
+    }
+  }
+
+  return null;
+}
+
+var CORE_DEVICE_SCHEMA = resolveCoreDeviceSchemaNamespace();
+
 const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap() {
   const namespaceName = 'cineCoreRuntimeSupportBootstrap';
 

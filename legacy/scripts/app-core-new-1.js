@@ -27,6 +27,41 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE = _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
+function resolveCoreDeviceSchemaNamespace() {
+  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      if (scope.CORE_DEVICE_SCHEMA && _typeof(scope.CORE_DEVICE_SCHEMA) === 'object') {
+        return scope.CORE_DEVICE_SCHEMA;
+      }
+    } catch (coreDeviceSchemaLookupError) {
+      void coreDeviceSchemaLookupError;
+    }
+    try {
+      if (scope.cineCoreDeviceSchema && _typeof(scope.cineCoreDeviceSchema) === 'object') {
+        return scope.cineCoreDeviceSchema;
+      }
+    } catch (cineCoreDeviceSchemaLookupError) {
+      void cineCoreDeviceSchemaLookupError;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var moduleNamespace = require('./modules/core/device-schema.js');
+      if (moduleNamespace && _typeof(moduleNamespace) === 'object') {
+        return moduleNamespace;
+      }
+    } catch (coreDeviceSchemaRequireError) {
+      void coreDeviceSchemaRequireError;
+    }
+  }
+  return null;
+}
+var CORE_DEVICE_SCHEMA = resolveCoreDeviceSchemaNamespace();
 var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
   var namespaceName = 'cineCoreRuntimeSupportBootstrap';
   function readFromScope(candidateScope) {
