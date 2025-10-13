@@ -33,6 +33,290 @@
 
   const GLOBAL_SCOPE = detectGlobalScope();
 
+  function createModuleBaseFallback(scope) {
+    const targetScope =
+      scope && (typeof scope === 'object' || typeof scope === 'function') ? scope : detectGlobalScope();
+
+    const resolvedScope =
+      targetScope && (typeof targetScope === 'object' || typeof targetScope === 'function')
+        ? targetScope
+        : null;
+
+    if (!resolvedScope) {
+      return null;
+    }
+
+    let existingBase = null;
+    try {
+      if (resolvedScope && typeof resolvedScope.cineModuleBase === 'object') {
+        existingBase = resolvedScope.cineModuleBase;
+      }
+    } catch (readBaseError) {
+      void readBaseError;
+      existingBase = null;
+    }
+
+    if (existingBase) {
+      return existingBase;
+    }
+
+    const moduleStorage = Object.create(null);
+    const listenerStorage = Object.create(null);
+
+    const notifyListeners = (name, api) => {
+      if (typeof name !== 'string' || !name) {
+        return;
+      }
+
+      const queue = listenerStorage[name];
+      if (!Array.isArray(queue) || queue.length === 0) {
+        return;
+      }
+
+      listenerStorage[name] = [];
+
+      for (let index = 0; index < queue.length; index += 1) {
+        const listener = queue[index];
+        if (typeof listener !== 'function') {
+          continue;
+        }
+
+        try {
+          listener(api);
+        } catch (listenerError) {
+          void listenerError;
+        }
+      }
+    };
+
+    const storeModule = (name, api) => {
+      if (typeof name !== 'string' || !name) {
+        return;
+      }
+
+      moduleStorage[name] = api;
+      notifyListeners(name, api);
+    };
+
+    const getStoredModule = name => {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(moduleStorage, name)) {
+        return moduleStorage[name];
+      }
+
+      return null;
+    };
+
+    const whenModuleAvailable = (name, handler) => {
+      if (typeof handler !== 'function' || typeof name !== 'string' || !name) {
+        return false;
+      }
+
+      const existing = getStoredModule(name);
+      if (existing) {
+        try {
+          handler(existing);
+        } catch (listenerError) {
+          void listenerError;
+        }
+        return true;
+      }
+
+      if (!Array.isArray(listenerStorage[name])) {
+        listenerStorage[name] = [];
+      }
+
+      listenerStorage[name].push(handler);
+      return true;
+    };
+
+    const ensureModuleGlobals = () => {
+      let globals = null;
+      try {
+        globals = resolvedScope.cineModuleGlobals;
+      } catch (readError) {
+        void readError;
+        globals = null;
+      }
+
+      if (!globals || typeof globals !== 'object') {
+        globals = {};
+      }
+
+      if (typeof globals.getModule !== 'function') {
+        globals.getModule = name => getStoredModule(name);
+      }
+
+      if (typeof globals.whenModuleAvailable !== 'function') {
+        globals.whenModuleAvailable = (name, handler) => whenModuleAvailable(name, handler);
+      }
+
+      if (typeof globals.register !== 'function') {
+        globals.register = (name, api) => {
+          storeModule(name, api);
+          return true;
+        };
+      }
+
+      try {
+        Object.defineProperty(resolvedScope, 'cineModuleGlobals', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: globals,
+        });
+      } catch (defineGlobalsError) {
+        void defineGlobalsError;
+        try {
+          resolvedScope.cineModuleGlobals = globals;
+        } catch (assignGlobalsError) {
+          void assignGlobalsError;
+        }
+      }
+
+      return globals;
+    };
+
+    const ensureModuleRegistry = () => {
+      let registry = null;
+      try {
+        registry = resolvedScope.cineModules;
+      } catch (readError) {
+        void readError;
+        registry = null;
+      }
+
+      if (!registry || typeof registry !== 'object') {
+        registry = {};
+      }
+
+      if (typeof registry.get !== 'function') {
+        registry.get = name => getStoredModule(name);
+      }
+
+      if (typeof registry.register !== 'function') {
+        registry.register = (name, api) => {
+          storeModule(name, api);
+          return true;
+        };
+      }
+
+      try {
+        Object.defineProperty(resolvedScope, 'cineModules', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: registry,
+        });
+      } catch (defineRegistryError) {
+        void defineRegistryError;
+        try {
+          resolvedScope.cineModules = registry;
+        } catch (assignRegistryError) {
+          void assignRegistryError;
+        }
+      }
+
+      return registry;
+    };
+
+    const fallbackBase = {
+      freezeDeep(value) {
+        return value;
+      },
+      safeWarn(message, detail) {
+        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+          return;
+        }
+
+        try {
+          if (typeof detail === 'undefined') {
+            console.warn(message);
+          } else {
+            console.warn(message, detail);
+          }
+        } catch (warnError) {
+          void warnError;
+        }
+      },
+      informModuleGlobals(name, api) {
+        const globals = ensureModuleGlobals();
+        if (globals && typeof globals.register === 'function') {
+          try {
+            globals.register(name, api);
+            return true;
+          } catch (registerError) {
+            void registerError;
+          }
+        }
+
+        storeModule(name, api);
+        return true;
+      },
+      registerOrQueueModule(name, api) {
+        const registry = ensureModuleRegistry();
+        if (registry && typeof registry.register === 'function') {
+          try {
+            registry.register(name, api);
+          } catch (registerError) {
+            void registerError;
+            storeModule(name, api);
+          }
+        } else {
+          storeModule(name, api);
+        }
+
+        ensureModuleGlobals();
+        return true;
+      },
+      exposeGlobal(name, value, target, options = {}) {
+        const scopeTarget =
+          target && (typeof target === 'object' || typeof target === 'function') ? target : resolvedScope;
+
+        if (!scopeTarget || (typeof scopeTarget !== 'object' && typeof scopeTarget !== 'function')) {
+          return false;
+        }
+
+        const descriptor = {
+          configurable: options.configurable !== false,
+          enumerable: !!options.enumerable,
+          writable: options.writable === true,
+          value,
+        };
+
+        try {
+          Object.defineProperty(scopeTarget, name, descriptor);
+          return true;
+        } catch (defineError) {
+          void defineError;
+          try {
+            scopeTarget[name] = value;
+            return true;
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+
+        return false;
+      },
+    };
+
+    fallbackBase.registerOrQueueModule('cineModuleBase', fallbackBase);
+    fallbackBase.exposeGlobal('cineModuleBase', fallbackBase, resolvedScope, {
+      configurable: true,
+      enumerable: false,
+      writable: false,
+    });
+
+    ensureModuleGlobals();
+    ensureModuleRegistry();
+
+    return fallbackBase;
+  }
+
   function moduleJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
@@ -139,7 +423,7 @@
     return null;
   }
 
-  const MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE);
+  const MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE) || createModuleBaseFallback(GLOBAL_SCOPE);
   if (!MODULE_BASE) {
     return;
   }
