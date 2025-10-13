@@ -42,13 +42,24 @@
     }
 
     if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
-      try {
-        const required = require(requirePath);
-        if (required && typeof required === 'object') {
-          return required;
+      const candidatePaths = [requirePath];
+
+      if (requirePath.startsWith('./modules/')) {
+        const normalizedPath = requirePath.slice(2);
+        candidatePaths.unshift(`../../${normalizedPath}`);
+      }
+
+      for (let index = 0; index < candidatePaths.length; index += 1) {
+        const candidatePath = candidatePaths[index];
+
+        try {
+          const required = require(candidatePath);
+          if (required && typeof required === 'object') {
+            return required;
+          }
+        } catch (supportModuleError) {
+          void supportModuleError;
         }
-      } catch (supportModuleError) {
-        void supportModuleError;
       }
     }
 
