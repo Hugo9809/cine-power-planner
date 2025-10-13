@@ -7014,11 +7014,13 @@ if (autoGearResetFactoryButton) {
 
   const initialHandler = resolveResetAutoGearRulesHandler();
 
-  const attachHandlerIfAvailable = handler => {
+  const attachHandlerIfAvailable = (handler, options = {}) => {
     if (!attachResetHandler(handler)) {
       return false;
     }
-    if (typeof console !== 'undefined' && typeof console.info === 'function') {
+    if (options.logReenabledReason === 'deferredModuleLoad'
+      && typeof console !== 'undefined'
+      && typeof console.info === 'function') {
       console.info('Automatic gear reset action re-enabled after deferred module load.');
     }
     return true;
@@ -7032,7 +7034,7 @@ if (autoGearResetFactoryButton) {
       'resetAutoGearRulesToFactoryAdditions',
       candidate => typeof candidate === 'function',
       candidate => {
-        attachHandlerIfAvailable(candidate);
+        attachHandlerIfAvailable(candidate, { logReenabledReason: 'deferredModuleLoad' });
       },
       {
         interval: 200,
@@ -7056,7 +7058,10 @@ if (autoGearResetFactoryButton) {
 
         const attachFromModule = moduleApi => {
           if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
-            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+            attachHandlerIfAvailable(
+              moduleApi.resetAutoGearRulesToFactoryAdditions,
+              { logReenabledReason: 'deferredModuleLoad' },
+            );
           }
         };
 
