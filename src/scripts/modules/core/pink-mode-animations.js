@@ -34,22 +34,88 @@
     return trimmed;
   }
 
+  function normalizePinkModeBaseHref(href) {
+    if (typeof href !== 'string' || !href) {
+      return '';
+    }
+
+    const fallbackBase =
+      (GLOBAL_SCOPE &&
+        GLOBAL_SCOPE.location &&
+        typeof GLOBAL_SCOPE.location.href === 'string' &&
+        GLOBAL_SCOPE.location.href) ||
+      (typeof location !== 'undefined' &&
+      location &&
+      typeof location.href === 'string'
+        ? location.href
+        : undefined);
+
+    try {
+      const url = fallbackBase ? new URL(href, fallbackBase) : new URL(href);
+      const path = typeof url.pathname === 'string' ? url.pathname : '';
+
+      if (path && path.indexOf('/src/scripts/') !== -1) {
+        const basePath = path.slice(0, path.indexOf('/src/scripts/'));
+        url.pathname = basePath.endsWith('/') ? basePath : `${basePath}/`;
+      } else if (path && !path.endsWith('/')) {
+        const lastSlash = path.lastIndexOf('/');
+        const lastSegment = lastSlash !== -1 ? path.slice(lastSlash + 1) : path;
+        if (lastSegment && lastSegment.indexOf('.') === -1) {
+          url.pathname = `${path}/`;
+        } else {
+          url.pathname = lastSlash >= 0 ? path.slice(0, lastSlash + 1) : '/';
+        }
+      }
+
+      if (!url.pathname.endsWith('/')) {
+        url.pathname = `${url.pathname}/`;
+      }
+
+      url.search = '';
+      url.hash = '';
+
+      return url.href;
+    } catch (error) {
+      void error;
+      return '';
+    }
+  }
+
   function resolvePinkModeAssetBaseUrl() {
+    const candidates = [];
+
     if (typeof document !== 'undefined' && document) {
       if (typeof document.baseURI === 'string' && document.baseURI) {
-        return document.baseURI;
+        candidates.push(document.baseURI);
       }
       if (document.currentScript && document.currentScript.src) {
-        return document.currentScript.src;
+        candidates.push(document.currentScript.src);
       }
     }
 
-    if (GLOBAL_SCOPE && GLOBAL_SCOPE.location && GLOBAL_SCOPE.location.href) {
-      return GLOBAL_SCOPE.location.href;
+    if (
+      GLOBAL_SCOPE &&
+      GLOBAL_SCOPE.location &&
+      typeof GLOBAL_SCOPE.location.href === 'string' &&
+      GLOBAL_SCOPE.location.href
+    ) {
+      candidates.push(GLOBAL_SCOPE.location.href);
     }
 
-    if (typeof location !== 'undefined' && location && location.href) {
-      return location.href;
+    if (
+      typeof location !== 'undefined' &&
+      location &&
+      typeof location.href === 'string' &&
+      location.href
+    ) {
+      candidates.push(location.href);
+    }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const normalized = normalizePinkModeBaseHref(candidates[index]);
+      if (normalized) {
+        return normalized;
+      }
     }
 
     return '';
