@@ -9,7 +9,7 @@ updates. Prioritise persistence, offline behaviour and documentation accuracy.
 | --- | --- | --- |
 | `npm test` | Run unit tests (Jest) covering storage helpers, autosave cadence and module registry invariants. | Execute offline; all dependencies are vendored. |
 | `npm run lint` | Ensure scripts adhere to ESLint rules that enforce defensive coding patterns. | Pay attention to storage and persistence warnings. |
-| `npm run build:service-worker` (if applicable) | Rebuild cache manifest and confirm hashes match `service-worker-assets.js`. | Required after modifying assets/icons. |
+| `npm run generate:sw-assets` | Rebuild the service worker asset manifest and confirm the generated list matches `service-worker-assets.js`. | Run after touching cached assets, icons, data files or runtime modules. |
 
 ## Manual rehearsals
 

@@ -5,8 +5,8 @@ entries as work progresses and link to supporting evidence stored offline.
 
 | ID | Description | Priority | Owner | Status | Evidence reference |
 | --- | --- | --- | --- | --- | --- |
-| TASK-001 | _(e.g. Add checksum display to restore sandbox)_ | High | _(Name)_ | _(In progress)_ | _(Verification packet path)_ |
-| TASK-002 |  |  |  |  |  |
+| TASK-001 | Regenerate `service-worker-assets.js` so cached schema/runtime helpers stay available offline. | High | Automated QA | Complete | service-worker-assets.js; `npm run test:jest -- service-worker` log |
+| TASK-002 | Align testing plan with `npm run generate:sw-assets` command to keep cache manifest updated. | Medium | Automated QA | Complete | docs/testing-plan.md |
 
 ## Workflow
 
