@@ -7921,10 +7921,53 @@ function ensureImportedProjectBaseName(rawName) {
   if (!trimmed) {
     return "Project-imported";
   }
+
+  const importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
+  if (importedMatch) {
+    const prefix = typeof importedMatch[1] === "string"
+      ? importedMatch[1].trim()
+      : "";
+    return prefix ? `${prefix}-imported` : "Project-imported";
+  }
+
   if (trimmed.toLowerCase().endsWith("-imported")) {
     return trimmed;
   }
+
   return `${trimmed}-imported`;
+}
+
+function resolveImportedProjectNamingContext(rawName) {
+  const trimmed = typeof rawName === "string" ? rawName.trim() : "";
+  const base = ensureImportedProjectBaseName(rawName);
+
+  if (!trimmed) {
+    return {
+      base,
+      initialCandidate: base,
+      suffixStart: 2,
+    };
+  }
+
+  const importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
+  const parsedSuffix = importedMatch && importedMatch[2]
+    ? Number(importedMatch[2])
+    : NaN;
+  const suffixStart = Number.isFinite(parsedSuffix) ? parsedSuffix + 1 : 2;
+
+  if (importedMatch) {
+    return {
+      base,
+      initialCandidate: trimmed,
+      suffixStart,
+    };
+  }
+
+  return {
+    base,
+    initialCandidate: base,
+    suffixStart: 2,
+  };
 }
 
 function generateImportedProjectName(baseName, usedNames, normalizedNames) {
@@ -7934,21 +7977,29 @@ function generateImportedProjectName(baseName, usedNames, normalizedNames) {
         .map((name) => (typeof name === "string" ? name.trim().toLowerCase() : ""))
         .filter((name) => name),
     );
-  const base = ensureImportedProjectBaseName(baseName);
-  let candidate = base.trim();
+
+  const context = resolveImportedProjectNamingContext(baseName);
+  let candidate = typeof context.initialCandidate === "string"
+    ? context.initialCandidate.trim()
+    : "";
+
   if (!candidate) {
-    candidate = "Project-imported";
+    candidate = context.base || "Project-imported";
   }
-  let normalizedCandidate = candidate.toLowerCase();
-  let suffix = 2;
+
+  let normalizedCandidate = candidate.trim().toLowerCase();
+  let suffix = context.suffixStart;
   while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    const base = context.base || "Project-imported";
     candidate = `${base}-${suffix++}`;
     normalizedCandidate = candidate.trim().toLowerCase();
   }
+
   usedNames.add(candidate);
   if (normalizedCandidate) {
     normalized.add(normalizedCandidate);
   }
+
   return candidate;
 }
 
