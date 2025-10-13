@@ -558,7 +558,7 @@ workflows hors ligne conservent leurs protections.
 
 ### Bundle pour navigateurs anciens
 
-Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour.
+Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour. La commande réplique également les artefacts JSON (par exemple `src/data/schema.json`) vers `legacy/data/` afin que les chemins `require()` legacy fonctionnent hors ligne et pendant les tests.
 
 ### Structure des fichiers
 

@@ -555,7 +555,7 @@ proprie protezioni.
 
 ### Bundle legacy
 
-Dopo modifiche in `src/scripts/` o `src/data/`, esegui `npm run build:legacy` per rigenerare il bundle ES5 destinato ai browser datati e mantenere aggiornati i polyfill locali.
+Dopo modifiche in `src/scripts/` o `src/data/`, esegui `npm run build:legacy` per rigenerare il bundle ES5 destinato ai browser datati e mantenere aggiornati i polyfill locali. Il comando replica anche gli artefatti JSON (ad esempio `src/data/schema.json`) dentro `legacy/data/` così i percorsi `require()` legacy funzionano offline e nei test.
 
 ### Struttura dei file
 
