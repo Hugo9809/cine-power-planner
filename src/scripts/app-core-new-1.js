@@ -80,68 +80,8 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
-function fallbackDetectRuntimeScope(primaryScope) {
-  if (
-    primaryScope &&
-    (typeof primaryScope === 'object' || typeof primaryScope === 'function')
-  ) {
-    return primaryScope;
-  }
-
-  if (
-    typeof globalThis !== 'undefined' &&
-    typeof globalThis === 'object' &&
-    globalThis
-  ) {
-    return globalThis;
-  }
-
-  if (typeof window !== 'undefined' && typeof window === 'object' && window) {
-    return window;
-  }
-
-  if (typeof self !== 'undefined' && typeof self === 'object' && self) {
-    return self;
-  }
-
-  if (typeof global !== 'undefined' && typeof global === 'object' && global) {
-    return global;
-  }
-
-  return null;
-}
-
-function fallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
-  if (typeof namespaceName !== 'string' || !namespaceName) {
-    return null;
-  }
-
-  const runtimeScope = fallbackDetectRuntimeScope(primaryScope);
-
-  if (
-    runtimeScope &&
-    runtimeScope[namespaceName] &&
-    typeof runtimeScope[namespaceName] === 'object'
-  ) {
-    return runtimeScope[namespaceName];
-  }
-
-  if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
-    try {
-      const required = require(requirePath);
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (supportModuleError) {
-      void supportModuleError;
-    }
-  }
-
-  return null;
-}
-
-const CORE_SUPPORT_RESOLVER = (function ensureCoreSupportResolver() {
-  const namespaceName = 'cineCoreSupportResolver';
+const CORE_RUNTIME_SUPPORT_RESOLUTION = (function loadCoreRuntimeSupportResolution() {
+  const namespaceName = 'cineCoreRuntimeSupportResolution';
 
   function readFromScope(candidateScope) {
     if (
@@ -152,10 +92,10 @@ const CORE_SUPPORT_RESOLVER = (function ensureCoreSupportResolver() {
     }
 
     try {
-      const resolver = candidateScope[namespaceName];
-      return resolver && typeof resolver === 'object' ? resolver : null;
-    } catch (resolverLookupError) {
-      void resolverLookupError;
+      const moduleCandidate = candidateScope[namespaceName];
+      return moduleCandidate && typeof moduleCandidate === 'object' ? moduleCandidate : null;
+    } catch (candidateLookupError) {
+      void candidateLookupError;
     }
 
     return null;
@@ -173,32 +113,116 @@ const CORE_SUPPORT_RESOLVER = (function ensureCoreSupportResolver() {
   ];
 
   for (let index = 0; index < candidates.length; index += 1) {
-    const resolver = readFromScope(candidates[index]);
-    if (resolver) {
-      return resolver;
+    const moduleCandidate = readFromScope(candidates[index]);
+    if (moduleCandidate) {
+      return moduleCandidate;
     }
   }
 
   if (typeof require === 'function') {
     try {
-      const requiredResolver = require('./modules/core/support-resolver.js');
-      if (requiredResolver && typeof requiredResolver === 'object') {
-        return requiredResolver;
+      const requiredModule = require('./modules/core/runtime-support-resolution.js');
+      if (requiredModule && typeof requiredModule === 'object') {
+        return requiredModule;
       }
-    } catch (supportResolverRequireError) {
-      void supportResolverRequireError;
+    } catch (runtimeSupportResolutionRequireError) {
+      void runtimeSupportResolutionRequireError;
     }
   }
 
   for (let index = 0; index < candidates.length; index += 1) {
-    const resolver = readFromScope(candidates[index]);
-    if (resolver) {
-      return resolver;
+    const moduleCandidate = readFromScope(candidates[index]);
+    if (moduleCandidate) {
+      return moduleCandidate;
     }
   }
 
   return null;
 })();
+
+const CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS =
+  CORE_RUNTIME_SUPPORT_RESOLUTION &&
+  typeof CORE_RUNTIME_SUPPORT_RESOLUTION.readRuntimeSupportResolver === 'function'
+    ? CORE_RUNTIME_SUPPORT_RESOLUTION.readRuntimeSupportResolver(
+        typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null
+      )
+    : null;
+
+const fallbackDetectRuntimeScope =
+  CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS &&
+  typeof CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS.detectRuntimeScope === 'function'
+    ? CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS.detectRuntimeScope
+    : function fallbackDetectRuntimeScope(primaryScope) {
+        if (
+          primaryScope &&
+          (typeof primaryScope === 'object' || typeof primaryScope === 'function')
+        ) {
+          return primaryScope;
+        }
+
+        if (
+          typeof globalThis !== 'undefined' &&
+          typeof globalThis === 'object' &&
+          globalThis
+        ) {
+          return globalThis;
+        }
+
+        if (typeof window !== 'undefined' && typeof window === 'object' && window) {
+          return window;
+        }
+
+        if (typeof self !== 'undefined' && typeof self === 'object' && self) {
+          return self;
+        }
+
+        if (typeof global !== 'undefined' && typeof global === 'object' && global) {
+          return global;
+        }
+
+        return null;
+      };
+
+const fallbackResolveCoreSupportModule =
+  CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS &&
+  typeof CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS.resolveCoreSupportModule === 'function'
+    ? CORE_RUNTIME_SUPPORT_RESOLVER_TOOLS.resolveCoreSupportModule
+    : function fallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
+        if (typeof namespaceName !== 'string' || !namespaceName) {
+          return null;
+        }
+
+        const runtimeScope = fallbackDetectRuntimeScope(primaryScope);
+
+        if (
+          runtimeScope &&
+          runtimeScope[namespaceName] &&
+          typeof runtimeScope[namespaceName] === 'object'
+        ) {
+          return runtimeScope[namespaceName];
+        }
+
+        if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+          try {
+            const required = require(requirePath);
+            if (required && typeof required === 'object') {
+              return required;
+            }
+          } catch (supportModuleError) {
+            void supportModuleError;
+          }
+        }
+
+        return null;
+      };
+
+const CORE_SUPPORT_RESOLVER =
+  CORE_RUNTIME_SUPPORT_RESOLUTION &&
+  typeof CORE_RUNTIME_SUPPORT_RESOLUTION.ensureCoreSupportResolver === 'function'
+    ? CORE_RUNTIME_SUPPORT_RESOLUTION.ensureCoreSupportResolver(
+        typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null
+      )
+    : null;
 
 const detectRuntimeScope =
   CORE_SUPPORT_RESOLVER && typeof CORE_SUPPORT_RESOLVER.detectRuntimeScope === 'function'
