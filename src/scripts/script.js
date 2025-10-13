@@ -22,6 +22,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/core/runtime-tools.js',
+    'modules/core/runtime-support-bootstrap.js',
     'modules/core/runtime-state/scope-utils.js',
     'modules/core/runtime-state/safe-freeze-registry.js',
     'modules/core/runtime-state/temperature-keys.js',
@@ -110,6 +111,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
   ensureModule('modules/core/runtime-tools.js');
+  ensureModule('modules/core/runtime-support-bootstrap.js');
   ensureModule('modules/core/localization-bridge.js');
   ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
