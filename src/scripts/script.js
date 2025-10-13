@@ -49,6 +49,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/gear-list.js',
     'modules/runtime-guard.js',
     'modules/results.js',
+    'app-core-text.js',
     'app-core-new-1.js',
     'app-core-new-2.js',
     'app-events.js',

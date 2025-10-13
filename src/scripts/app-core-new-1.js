@@ -249,9 +249,64 @@ const CORE_RUNTIME_SUPPORT_RESOLUTION = (function resolveRuntimeSupportResolutio
   return null;
 })();
 
-const CORE_TEXT_ENTRY_SEPARATOR = '\n';
+const CORE_TEXT_ENTRY_TOOLS = (function resolveCoreTextEntryTools() {
+  const namespaceName = 'cineCoreTextEntries';
 
-function normaliseTextEntryValue(entry) {
+  if (
+    typeof cineCoreTextEntries !== 'undefined' &&
+    cineCoreTextEntries &&
+    typeof cineCoreTextEntries === 'object'
+  ) {
+    return cineCoreTextEntries;
+  }
+
+  const candidates = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const tools = scope[namespaceName];
+      if (tools && typeof tools === 'object') {
+        return tools;
+      }
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const requiredTools = require('./app-core-text.js');
+      if (requiredTools && typeof requiredTools === 'object') {
+        return requiredTools;
+      }
+    } catch (textEntriesRequireError) {
+      void textEntriesRequireError;
+    }
+  }
+
+  return null;
+})();
+
+const CORE_TEXT_ENTRY_SEPARATOR =
+  CORE_TEXT_ENTRY_TOOLS &&
+  typeof CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR === 'string' &&
+  CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
+    ? CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
+    : '\n';
+
+function inlineNormaliseTextEntryValue(entry) {
   if (typeof entry === 'string') {
     return entry;
   }
@@ -268,7 +323,7 @@ function normaliseTextEntryValue(entry) {
   if (Array.isArray(entry)) {
     const parts = [];
     for (let index = 0; index < entry.length; index += 1) {
-      const value = normaliseTextEntryValue(entry[index]);
+      const value = inlineNormaliseTextEntryValue(entry[index]);
       if (value) {
         parts.push(value);
       }
@@ -282,7 +337,7 @@ function normaliseTextEntryValue(entry) {
     }
 
     if (Array.isArray(entry.text)) {
-      return normaliseTextEntryValue(entry.text);
+      return inlineNormaliseTextEntryValue(entry.text);
     }
 
     if (typeof entry.label === 'string') {
@@ -302,7 +357,7 @@ function normaliseTextEntryValue(entry) {
   return '';
 }
 
-function resolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
+function inlineResolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
   const normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
   const dictionaries = [];
 
@@ -333,7 +388,7 @@ function resolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
       continue;
     }
 
-    const resolved = normaliseTextEntryValue(entry);
+    const resolved = inlineNormaliseTextEntryValue(entry);
     if (typeof resolved === 'string') {
       return resolved;
     }
@@ -341,6 +396,31 @@ function resolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
 
   return normalizedDefault;
 }
+
+const normaliseTextEntryValue =
+  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue === 'function'
+    ? function normaliseTextEntryValueProxy(entry) {
+        return CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue(entry, CORE_TEXT_ENTRY_SEPARATOR);
+      }
+    : inlineNormaliseTextEntryValue;
+
+const resolveTextEntry =
+  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
+    ? function resolveTextEntryProxy(
+        primaryTexts,
+        fallbackTexts,
+        key,
+        defaultValue = ''
+      ) {
+        return CORE_TEXT_ENTRY_TOOLS.resolveTextEntry(
+          primaryTexts,
+          fallbackTexts,
+          key,
+          defaultValue,
+          CORE_TEXT_ENTRY_SEPARATOR
+        );
+      }
+    : inlineResolveTextEntry;
 
 const CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 
