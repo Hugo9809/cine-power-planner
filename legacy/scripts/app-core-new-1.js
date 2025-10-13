@@ -7335,6 +7335,75 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
 
+  function resolveUpdateDevicesReferenceFunction() {
+    var directReference = null;
+    try {
+      directReference = typeof updateGlobalDevicesReference === 'function' ? updateGlobalDevicesReference : null;
+    } catch (referenceError) {
+      void referenceError;
+      directReference = null;
+    }
+
+    if (directReference) {
+      return directReference;
+    }
+
+    var candidates = [];
+
+    function registerCandidate(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (candidates.indexOf(scope) !== -1) {
+        return;
+      }
+      candidates.push(scope);
+    }
+
+    try {
+      registerCandidate(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
+    } catch (corePart1ScopeError) {
+      void corePart1ScopeError;
+    }
+
+    try {
+      registerCandidate(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+    } catch (coreGlobalScopeError) {
+      void coreGlobalScopeError;
+    }
+
+    try {
+      registerCandidate(typeof DEVICE_GLOBAL_SCOPE !== 'undefined' ? DEVICE_GLOBAL_SCOPE : null);
+    } catch (deviceScopeError) {
+      void deviceScopeError;
+    }
+
+    try {
+      registerCandidate(typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined' ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null);
+    } catch (runtimeCandidateError) {
+      void runtimeCandidateError;
+    }
+
+    registerCandidate(typeof globalThis !== 'undefined' ? globalThis : null);
+    registerCandidate(typeof window !== 'undefined' ? window : null);
+    registerCandidate(typeof self !== 'undefined' ? self : null);
+    registerCandidate(typeof global !== 'undefined' ? global : null);
+
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      try {
+        var candidate = scope && scope.updateGlobalDevicesReference;
+        if (typeof candidate === 'function') {
+          return candidate;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+
+    return null;
+  }
+
   if (window.defaultDevices === undefined) {
     window.defaultDevices = CORE_DEEP_CLONE(devices);
     unifyDevices(window.defaultDevices);
@@ -7361,7 +7430,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     devices = merged;
-    updateGlobalDevicesReference(devices);
+    var updateDevicesReferenceFn = resolveUpdateDevicesReferenceFunction();
+    if (typeof updateDevicesReferenceFn === 'function') {
+      try {
+        updateDevicesReferenceFn(devices);
+      } catch (updateDevicesReferenceError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to update global devices reference during initialization', updateDevicesReferenceError);
+        }
+      }
+    }
   }
   unifyDevices(devices);
   function getBatteryPlateSupport(name) {
