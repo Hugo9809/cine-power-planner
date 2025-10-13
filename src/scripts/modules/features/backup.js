@@ -1186,20 +1186,60 @@
     };
   }
 
+  function isUnsupportedDownloadPermissionError(error) {
+    if (!error) return false;
+
+    const name = typeof error.name === 'string' ? error.name : '';
+    if (name === 'TypeError' || name === 'NotSupportedError') {
+      return true;
+    }
+
+    if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
+      if (error.code === DOMException.NOT_SUPPORTED_ERR) {
+        return true;
+      }
+    }
+
+    if (typeof error.message === 'string') {
+      const lowerMessage = error.message.toLowerCase();
+      if (lowerMessage.includes('automatic-download') && lowerMessage.includes('not a valid enum')) {
+        return true;
+      }
+      if (lowerMessage.includes('downloads') && lowerMessage.includes('not a valid enum')) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   function monitorAutomaticDownloadPermission() {
     if (typeof navigator === 'undefined' || !navigator.permissions
       || typeof navigator.permissions.query !== 'function') {
       return null;
     }
 
+    const candidateNames = ['automatic-downloads', 'downloads'];
     let statusPromise = null;
-    try {
-      statusPromise = navigator.permissions.query({ name: 'automatic-downloads' });
-    } catch (error) {
-      if (!error || error.name !== 'TypeError') {
-        console.warn('Failed to query automatic download permission', error);
+    let permissionNameUsed = null;
+
+    for (let index = 0; index < candidateNames.length; index += 1) {
+      const permissionName = candidateNames[index];
+      try {
+        const queryResult = navigator.permissions.query({ name: permissionName });
+        if (!queryResult || typeof queryResult.then !== 'function') {
+          continue;
+        }
+        statusPromise = queryResult;
+        permissionNameUsed = permissionName;
+        break;
+      } catch (error) {
+        if (isUnsupportedDownloadPermissionError(error)) {
+          continue;
+        }
+        console.warn(`Failed to query automatic download permission (${permissionName})`, error);
+        return null;
       }
-      return null;
     }
 
     if (!statusPromise || typeof statusPromise.then !== 'function') {
@@ -1209,6 +1249,8 @@
     let permissionStatusRef = null;
     const monitor = {
       state: 'unknown',
+      name: permissionNameUsed,
+      supported: true,
       initial: statusPromise.then(status => {
         permissionStatusRef = status;
         if (!status || typeof status.state !== 'string') {
@@ -1218,7 +1260,12 @@
         monitor.state = status.state;
         return monitor.state;
       }).catch(error => {
-        console.warn('Failed to query automatic download permission', error);
+        if (isUnsupportedDownloadPermissionError(error)) {
+          monitor.supported = false;
+          monitor.state = 'unknown';
+          return monitor.state;
+        }
+        console.warn(`Failed to query automatic download permission (${permissionNameUsed || 'unknown'})`, error);
         monitor.state = 'unknown';
         return monitor.state;
       }),
@@ -1255,7 +1302,9 @@
 
       return initialState;
     }).catch(error => {
-      console.warn('Failed to observe automatic download permission changes', error);
+      if (!isUnsupportedDownloadPermissionError(error)) {
+        console.warn('Failed to observe automatic download permission changes', error);
+      }
       monitor.state = 'unknown';
       return monitor.state;
     });
