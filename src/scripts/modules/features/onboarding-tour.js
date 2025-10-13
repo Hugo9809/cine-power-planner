@@ -2570,7 +2570,7 @@
 
     backButton = DOCUMENT.createElement('button');
     backButton.type = 'button';
-    backButton.className = 'onboarding-back-button';
+    backButton.className = 'onboarding-back-button secondary';
     backButton.addEventListener('click', () => {
       if (!active) return;
       goToPreviousStep();
@@ -2579,7 +2579,7 @@
 
     nextButton = DOCUMENT.createElement('button');
     nextButton.type = 'button';
-    nextButton.className = 'onboarding-next-button';
+    nextButton.className = 'onboarding-next-button primary';
     nextButton.addEventListener('click', () => {
       if (!active) return;
       goToNextStep();
@@ -4320,7 +4320,7 @@
         : normalizedAvatarAction;
     const avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
     avatarAction.textContent = avatarActionLabel;
     const handleAvatarActionClick = () => {
       if (avatarButton && typeof avatarButton.click === 'function') {
@@ -5031,7 +5031,7 @@
     actions.className = 'onboarding-interaction-actions';
     const requestButton = DOCUMENT.createElement('button');
     requestButton.type = 'button';
-    requestButton.className = 'onboarding-interaction-button';
+    requestButton.className = 'onboarding-interaction-button primary';
     requestButton.textContent = getTourString('unitsPreferencesPersistenceAction', 'Protect storage on this device');
     requestButton.disabled = !persistenceButton;
 
