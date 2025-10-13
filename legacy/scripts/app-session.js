@@ -6014,10 +6014,15 @@ if (settingsButton && settingsDialog) {
     };
     var initialHandler = resolveResetAutoGearRulesHandler();
     var attachHandlerIfAvailable = function attachHandlerIfAvailable(handler) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (!attachResetHandler(handler)) {
         return false;
       }
-      if (typeof console !== 'undefined' && typeof console.info === 'function') {
+
+      if (options.logReenabledReason === 'deferredModuleLoad'
+        && typeof console !== 'undefined'
+        && typeof console.info === 'function') {
         console.info('Automatic gear reset action re-enabled after deferred module load.');
       }
       return true;
@@ -6028,7 +6033,9 @@ if (settingsButton && settingsDialog) {
       whenGlobalValueAvailable('resetAutoGearRulesToFactoryAdditions', function (candidate) {
         return typeof candidate === 'function';
       }, function (candidate) {
-        attachHandlerIfAvailable(candidate);
+        attachHandlerIfAvailable(candidate, {
+          logReenabledReason: 'deferredModuleLoad'
+        });
       }, {
         interval: 200,
         maxAttempts: 300,
@@ -6047,7 +6054,9 @@ if (settingsButton && settingsDialog) {
         }
         var attachFromModule = function attachFromModule(moduleApi) {
           if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
-            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions, {
+              logReenabledReason: 'deferredModuleLoad'
+            });
           }
         };
         if (typeof moduleGlobals.getModule === 'function') {
