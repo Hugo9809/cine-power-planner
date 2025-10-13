@@ -809,6 +809,67 @@
       .catch(() => false);
   }
 
+  function shouldSuppressReloadWarmupFailure(error, href) {
+    if (!error) {
+      return false;
+    }
+
+    let message = '';
+    try {
+      message = typeof error.message === 'string' ? error.message : '';
+    } catch (readError) {
+      void readError;
+      message = '';
+    }
+
+    let name = '';
+    try {
+      name = typeof error.name === 'string' ? error.name : '';
+    } catch (readError) {
+      void readError;
+      name = '';
+    }
+
+    const normalisedMessage = message.toLowerCase();
+    const normalisedName = name.toLowerCase();
+
+    if (normalisedName === 'aborted' || normalisedName === 'aborterror') {
+      return true;
+    }
+
+    if (normalisedMessage.includes('load failed')) {
+      return true;
+    }
+
+    if (normalisedMessage.includes('cancelled') || normalisedMessage.includes('canceled')) {
+      return true;
+    }
+
+    if (typeof DOMException === 'function') {
+      try {
+        if (error instanceof DOMException && (error.name === 'NetworkError' || error.code === DOMException.NETWORK_ERR)) {
+          return true;
+        }
+      } catch (inspectionError) {
+        void inspectionError;
+      }
+    }
+
+    if (href && typeof href === 'string') {
+      try {
+        const baseHref = typeof location === 'object' && location ? readLocationHrefSafe(location) : undefined;
+        const parsed = typeof URL === 'function' ? new URL(href, baseHref || undefined) : null;
+        if (parsed && parsed.protocol && parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          return true;
+        }
+      } catch (parseError) {
+        void parseError;
+      }
+    }
+
+    return false;
+  }
+
   function scheduleReloadWarmup(options = {}) {
     const nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
     if (!nextHref) {
@@ -926,10 +987,13 @@
             return false;
           }
 
-          if (!reloadWarmupFailureLogged) {
+          const suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
+
+          if (!reloadWarmupFailureLogged && !suppressWarning) {
             reloadWarmupFailureLogged = true;
             safeWarn('Reload warmup fetch failed', fallbackError || firstError);
           }
+
           return false;
         }
 

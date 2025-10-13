@@ -236,6 +236,36 @@ describe('cineOffline module', () => {
     }
   });
 
+  test('reload warmup suppresses warning when both fetch attempts fail with load failure', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const fetchMock = jest.fn(() => Promise.reject(new TypeError('Load failed')));
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app?foo=bar',
+        navigator: { onLine: true },
+        window: {},
+        serviceWorkerPromise: Promise.resolve(true),
+        cachePromise: Promise.resolve(true),
+        allowCache: true,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+      await expect(warmupHandle.promise).resolves.toBe(false);
+
+      jest.runOnlyPendingTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
+      expect(warmupWarnings).toHaveLength(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   test('cleans up forceReload markers from the current URL during initialization', () => {
     if (harness) {
       harness.teardown();
