@@ -2063,6 +2063,58 @@ const temperaturePreferenceStorageKey =
       ? resolveTemperatureStorageKey()
       : 'cameraPowerPlanner_temperatureUnit';
 
+const sessionGlobalScope = getSessionCloneScope();
+
+function normalizeTemperatureUnitValue(value) {
+  if (value === 'fahrenheit' || value === 'celsius') {
+    return value;
+  }
+  return value && typeof value === 'string' ? value.toLowerCase() : 'celsius';
+}
+
+function resolveInitialTemperatureUnit() {
+  if (sessionGlobalScope && typeof sessionGlobalScope.temperatureUnit === 'string') {
+    return normalizeTemperatureUnitValue(sessionGlobalScope.temperatureUnit);
+  }
+
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      const stored = localStorage.getItem(temperaturePreferenceStorageKey);
+      if (typeof stored === 'string' && stored) {
+        return normalizeTemperatureUnitValue(stored);
+      }
+    }
+  } catch (temperatureStorageError) {
+    console.warn('Unable to read stored temperature unit preference', temperatureStorageError);
+  }
+
+  return 'celsius';
+}
+
+let localTemperatureUnit = resolveInitialTemperatureUnit();
+
+if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
+  try {
+    Object.defineProperty(sessionGlobalScope, 'temperatureUnit', {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return localTemperatureUnit;
+      },
+      set(value) {
+        localTemperatureUnit = normalizeTemperatureUnitValue(value);
+      },
+    });
+  } catch (defineTemperaturePropertyError) {
+    void defineTemperaturePropertyError;
+    try {
+      sessionGlobalScope.temperatureUnit = localTemperatureUnit;
+    } catch (sessionTemperatureExposeError) {
+      void sessionTemperatureExposeError;
+    }
+  }
+}
+
 let recordFullBackupHistoryEntryFn = () => {};
 let ensureCriticalStorageBackupsFn = () => ({ ensured: [], skipped: [], errors: [] });
 try {
@@ -5490,9 +5542,9 @@ const appearanceContext = {
     },
   },
   preferences: {
-    getTemperatureUnit: () => temperatureUnit,
+    getTemperatureUnit: () => localTemperatureUnit,
     setTemperatureUnit: value => {
-      temperatureUnit = value;
+      localTemperatureUnit = normalizeTemperatureUnitValue(value);
     },
     applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
     getFocusScale: () => {
@@ -6257,7 +6309,7 @@ const mountVoltageResetButtonRef = (() => {
       }
     }
     updateCameraColorInputsFromState();
-    if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
+    if (settingsTemperatureUnit) settingsTemperatureUnit.value = localTemperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';

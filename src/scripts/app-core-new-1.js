@@ -3015,12 +3015,17 @@ const helpModuleApi = resolveHelpModuleApi();
 var deviceSchema = null;
 
 const deviceSchemaManager = (function initializeDeviceSchemaManager() {
+  const coreDeviceSchema =
+    typeof CORE_DEVICE_SCHEMA !== 'undefined' && CORE_DEVICE_SCHEMA
+      ? CORE_DEVICE_SCHEMA
+      : null;
+
   if (
-    CORE_DEVICE_SCHEMA &&
-    typeof CORE_DEVICE_SCHEMA.createDeviceSchemaManager === 'function'
+    coreDeviceSchema &&
+    typeof coreDeviceSchema.createDeviceSchemaManager === 'function'
   ) {
     try {
-      return CORE_DEVICE_SCHEMA.createDeviceSchemaManager({
+      return coreDeviceSchema.createDeviceSchemaManager({
         onSchemaChange: schema => {
           deviceSchema = schema;
         },
