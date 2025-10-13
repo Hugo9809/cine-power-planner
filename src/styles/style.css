@@ -9147,6 +9147,77 @@ body.light-mode #topBar select:focus-visible {
   overflow: auto;
 }
 
+.diagram-popup__layout {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1vw, 0.75rem);
+  min-width: 0;
+}
+
+.diagram-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.diagram-popup__title {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * 1.05);
+  font-weight: var(--font-weight-semibold);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.diagram-popup__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm, 4px);
+  background: transparent;
+  color: var(--accent-color);
+  font-size: inherit;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  padding: 0.25rem 0.6rem;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.diagram-popup__back .btn-icon {
+  margin-inline-end: 0.25rem;
+  --button-icon-size: 1.05em;
+}
+
+.diagram-popup__back:hover,
+.diagram-popup__back:focus-visible {
+  border-color: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  background-color: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  outline: none;
+}
+
+.diagram-popup__back:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.diagram-popup__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.4rem, 0.9vw, 0.65rem);
+  min-width: 0;
+}
+
+.diagram-popup__body > :first-child {
+  margin-top: 0;
+}
+
+.diagram-popup__fallback {
+  margin: 0;
+}
+
 .diagram-popup:focus,
 .diagram-popup:focus-visible {
   outline: 2px solid var(--accent-color);
@@ -9280,6 +9351,21 @@ body.light-mode #topBar select:focus-visible {
 
 .diagram-detail-dialog__content .diagram-popup--camera {
   width: 100%;
+}
+
+.diagram-detail-dialog__content .diagram-popup__header {
+  display: none;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.diagram-detail-dialog__content .diagram-popup__layout {
+  gap: clamp(0.75rem, 1.2vw, 1rem);
+}
+
+.diagram-detail-dialog__content .diagram-popup__body {
+  gap: clamp(0.65rem, 1.1vw, 0.85rem);
 }
 
 

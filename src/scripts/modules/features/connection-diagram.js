@@ -262,6 +262,19 @@
         .replace(/'/g, '&#39;');
     };
 
+    const sanitizeDomId = value => {
+      if (typeof value !== 'string') return '';
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+      const normalized = trimmed.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+      return normalized || '';
+    };
+
+    const buildPopupHeadingId = nodeId => {
+      const sanitized = sanitizeDomId(nodeId);
+      return sanitized ? `diagramPopupTitle-${sanitized}` : 'diagramPopupTitle';
+    };
+
     const resolveDeviceInfo = (devicesObj, categoryPath, name) => {
       if (!devicesObj || !categoryPath || !name) return null;
       const segments = String(categoryPath).split('.').filter(Boolean);
@@ -1144,7 +1157,14 @@
       if (!popup && document) {
         popup = document.createElement('div');
         popup.id = 'diagramPopup';
+      }
+      if (popup) {
         popup.className = 'diagram-popup';
+        popup.setAttribute('role', 'dialog');
+        popup.setAttribute('aria-modal', 'false');
+        if (!popup.hasAttribute('tabindex')) {
+          popup.tabIndex = -1;
+        }
       }
       setupDiagramContainer.innerHTML = '';
       if (popup) setupDiagramContainer.appendChild(popup);
@@ -1167,16 +1187,34 @@
             }
           }
         }
-        let content = `<div class="diagram-popup-heading"><strong>${safeLabel}</strong></div>`;
-        if (summaryHtml) {
-          content += summaryHtml;
-        } else {
-          content += `<p>${safeLabel}</p>`;
-        }
+        const safeBackLabel = escapeHtml(detailDialogBackLabel || 'Back');
+        const headingId = buildPopupHeadingId(nodeId);
+        const safeHeadingId = escapeHtml(headingId);
+        const bodyHtml = summaryHtml || `<p class="diagram-popup__fallback">${safeLabel}</p>`;
+        const content = `
+          <div class="diagram-popup__layout">
+            <header class="diagram-popup__header">
+              <button
+                type="button"
+                class="diagram-popup__back"
+                data-diagram-popup-close
+                aria-label="${safeBackLabel}"
+              >
+                <span class="btn-icon icon-glyph icon-text" aria-hidden="true" data-icon-font="text">&larr;</span>
+                <span class="diagram-popup__back-label">${safeBackLabel}</span>
+              </button>
+              <h3 class="diagram-popup__title" id="${safeHeadingId}">${safeLabel}</h3>
+            </header>
+            <div class="diagram-popup__body">
+              ${bodyHtml}
+            </div>
+          </div>
+        `;
         popupEntries[nodeId] = {
           className,
           content,
           label: safeLabel,
+          headingId,
         };
       });
 
@@ -1242,6 +1280,8 @@
         popup.style.removeProperty('--diagram-popup-dynamic-width');
         popup.className = 'diagram-popup';
         popup.removeAttribute('aria-label');
+        popup.removeAttribute('aria-labelledby');
+        popup.onkeydown = null;
         activePopupNode = null;
         activePopupEntry = null;
       };
@@ -1638,6 +1678,55 @@
         popup.style.visibility = 'visible';
       };
 
+      const focusPopup = () => {
+        if (!popup || typeof popup.focus !== 'function') return;
+        try {
+          popup.focus({ preventScroll: true });
+        } catch (focusError) {
+          popup.focus();
+          void focusError;
+        }
+      };
+
+      const wirePopupControls = (nodeEl, entry) => {
+        if (!popup) return;
+        const closeButton = popup.querySelector('[data-diagram-popup-close]');
+        if (closeButton) {
+          closeButton.onclick = event => {
+            if (event) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            hidePopup();
+          };
+        }
+        popup.onkeydown = event => {
+          if (!event) return;
+          const key = event.key || event.code;
+          if (key === 'Escape' || key === 'Esc') {
+            event.preventDefault();
+            hidePopup();
+          }
+        };
+        if (entry) {
+          const expandButton = popup.querySelector('[data-diagram-popup-expand]');
+          if (expandButton) {
+            expandButton.onclick = event => {
+              if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              hidePopup();
+              openDetailDialogWithEntry(entry);
+            };
+          }
+        }
+        if (!popup.classList.contains('diagram-popup--notice')) {
+          focusPopup();
+        }
+        void nodeEl;
+      };
+
       const updatePointerPosition = event => {
         if (!event) return;
         let clientX;
@@ -1666,6 +1755,7 @@
         popup.className = 'diagram-popup diagram-popup--notice';
         popup.innerHTML = `<p class="diagram-popup-notice">${safeNotice}</p>`;
         popup.setAttribute('aria-label', hoverNoticeText);
+        popup.removeAttribute('aria-labelledby');
         activePopupNode = nodeEl;
         activePopupEntry = null;
         positionPopup(nodeEl, null);
@@ -1724,14 +1814,20 @@
         }
         popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
         popup.innerHTML = entry.content || '';
-        if (entry.label) {
+        if (entry.headingId) {
+          popup.setAttribute('aria-labelledby', entry.headingId);
+          popup.removeAttribute('aria-label');
+        } else if (entry.label) {
           popup.setAttribute('aria-label', entry.label);
+          popup.removeAttribute('aria-labelledby');
         } else {
           popup.removeAttribute('aria-label');
+          popup.removeAttribute('aria-labelledby');
         }
         activePopupNode = node;
         activePopupEntry = entry;
         positionPopup(node, entry);
+        wirePopupControls(node, entry);
       };
 
       const onNodeDoubleClick = e => {
