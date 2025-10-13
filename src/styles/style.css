@@ -8222,24 +8222,24 @@ body:not(.dark-mode) .onboarding-step-status {
   font-weight: var(--font-weight-medium);
 }
 
-.onboarding-next-button {
+.onboarding-card-actions .onboarding-next-button {
   background: var(--accent-color);
   color: var(--inverse-text-color);
   box-shadow: var(--panel-shadow);
 }
 
-.onboarding-next-button:hover,
-.onboarding-next-button:focus-visible {
+.onboarding-card-actions .onboarding-next-button:hover,
+.onboarding-card-actions .onboarding-next-button:focus-visible {
   background: color-mix(in srgb, var(--accent-color) 88%, #ffffff 12%);
   color: var(--inverse-text-color);
 }
 
-.onboarding-next-button:active {
+.onboarding-card-actions .onboarding-next-button:active {
   background: color-mix(in srgb, var(--accent-color) 76%, var(--control-active-bg) 24%);
   box-shadow: none;
 }
 
-.onboarding-next-button[disabled] {
+.onboarding-card-actions .onboarding-next-button[disabled] {
   background: color-mix(in srgb, var(--control-disabled-bg) 55%, var(--accent-color) 45%);
   color: color-mix(in srgb, var(--inverse-text-color) 80%, rgba(255, 255, 255, 0.45) 20%);
   box-shadow: none;
