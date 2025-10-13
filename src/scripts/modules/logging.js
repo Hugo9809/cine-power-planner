@@ -2022,14 +2022,133 @@
       message = `[console.${method || level}]`;
     }
 
+    let sanitizedArguments = null;
     let detailPayload = null;
     if (rawArgs.length) {
       try {
-        detailPayload = { arguments: sanitizeForLog(rawArgs) };
+        sanitizedArguments = sanitizeForLog(rawArgs);
+        detailPayload = { arguments: sanitizedArguments };
       } catch (detailError) {
         detailPayload = { arguments: rawArgs.slice() };
         void detailError;
       }
+    }
+
+    const errorEntries = [];
+    const sanitizedArray = Array.isArray(sanitizedArguments) ? sanitizedArguments : null;
+
+    for (let index = 0; index < rawArgs.length; index += 1) {
+      const rawValue = rawArgs[index];
+      const sanitizedValue = sanitizedArray ? sanitizedArray[index] : null;
+      const isErrorInstance = rawValue instanceof Error;
+
+      const hasSanitizedErrorShape =
+        sanitizedValue && typeof sanitizedValue === 'object' && sanitizedValue !== null
+          ? Boolean(
+              typeof sanitizedValue.stack === 'string'
+                || typeof sanitizedValue.message === 'string'
+                || typeof sanitizedValue.name === 'string'
+            )
+          : false;
+
+      if (!isErrorInstance && !hasSanitizedErrorShape) {
+        continue;
+      }
+
+      let snapshot = hasSanitizedErrorShape ? sanitizedValue : null;
+
+      if (!snapshot) {
+        try {
+          snapshot = sanitizeForLog(rawValue);
+        } catch (argumentSanitizeError) {
+          snapshot = null;
+          void argumentSanitizeError;
+        }
+      }
+
+      if (!snapshot && isErrorInstance) {
+        snapshot = {
+          name: rawValue.name || null,
+          message: rawValue.message || coerceMessage(rawValue) || null,
+        };
+        if (typeof rawValue.code !== 'undefined') {
+          snapshot.code = rawValue.code;
+        }
+        if (typeof rawValue.status !== 'undefined') {
+          snapshot.status = rawValue.status;
+        }
+        if (typeof rawValue.stack === 'string' && rawValue.stack) {
+          snapshot.stack = rawValue.stack;
+        }
+      }
+
+      let valueClone = snapshot;
+      if (valueClone && typeof valueClone === 'object') {
+        try {
+          valueClone = LOGGING_DEEP_CLONE(valueClone);
+        } catch (cloneError) {
+          void cloneError;
+          try {
+            valueClone = Object.assign({}, valueClone);
+          } catch (assignError) {
+            valueClone = snapshot;
+            void assignError;
+          }
+        }
+      }
+
+      const entry = { index };
+      if (valueClone && typeof valueClone === 'object') {
+        entry.value = valueClone;
+        if (typeof valueClone.name === 'string' && valueClone.name) {
+          entry.name = valueClone.name;
+        }
+        if (typeof valueClone.message === 'string' && valueClone.message) {
+          entry.message = valueClone.message;
+        }
+        if (typeof valueClone.code !== 'undefined') {
+          entry.code = valueClone.code;
+        }
+        if (typeof valueClone.status !== 'undefined') {
+          entry.status = valueClone.status;
+        }
+      } else if (typeof valueClone !== 'undefined') {
+        entry.value = valueClone;
+        const coercedMessage = coerceMessage(valueClone);
+        if (coercedMessage) {
+          entry.message = coercedMessage;
+        }
+      } else {
+        entry.value = null;
+      }
+
+      const rawType = rawValue === null ? 'null' : typeof rawValue;
+      if (rawType === 'object' || rawType === 'function') {
+        const ctorName = rawValue && rawValue.constructor && rawValue.constructor.name;
+        entry.argumentType = typeof ctorName === 'string' && ctorName ? ctorName : rawType;
+      } else {
+        entry.argumentType = rawType;
+      }
+
+      const stackSummary = isErrorInstance && typeof rawValue.stack === 'string' && rawValue.stack
+        ? normaliseStackTrace(rawValue.stack)
+        : valueClone && typeof valueClone === 'object' && typeof valueClone.stack === 'string'
+          ? normaliseStackTrace(valueClone.stack)
+          : null;
+
+      if (stackSummary) {
+        if (typeof stackSummary.stack === 'string') {
+          entry.stack = stackSummary.stack;
+        }
+        if (Array.isArray(stackSummary.frames) && stackSummary.frames.length) {
+          entry.frames = stackSummary.frames;
+        }
+        if (stackSummary.truncated) {
+          entry.stackTruncated = true;
+        }
+      }
+
+      errorEntries.push(entry);
     }
 
     const contextMeta = { channel: 'console', method: method || 'log' };
@@ -2046,11 +2165,52 @@
       }
     }
 
+    if (errorEntries.length) {
+      detailPayload = detailPayload || {};
+      const errorIndices = [];
+      for (let index = 0; index < errorEntries.length; index += 1) {
+        const errorEntry = errorEntries[index];
+        errorIndices.push(errorEntry.index);
+      }
+      detailPayload.errors = errorEntries;
+      detailPayload.errorCount = errorEntries.length;
+      detailPayload.errorIndices = errorIndices;
+      detailPayload.primaryError = errorEntries[0];
+
+      contextMeta.errorCount = errorEntries.length;
+      contextMeta.errorIndices = errorIndices;
+
+      const primaryError = errorEntries[0];
+      if (primaryError) {
+        if (typeof primaryError.name === 'string' && primaryError.name) {
+          contextMeta.primaryErrorName = primaryError.name;
+        }
+        if (typeof primaryError.message === 'string' && primaryError.message) {
+          contextMeta.primaryErrorMessage = primaryError.message;
+        }
+        if (typeof primaryError.code !== 'undefined') {
+          contextMeta.primaryErrorCode = primaryError.code;
+        }
+        if (typeof primaryError.status !== 'undefined') {
+          contextMeta.primaryErrorStatus = primaryError.status;
+        }
+        if (primaryError.stack) {
+          contextMeta.primaryErrorHasStack = true;
+        }
+      }
+    }
+
+    const forceStackCapture = method === 'error' || errorEntries.length > 0;
+    const contextOptions = { namespace: 'console', meta: contextMeta };
+    if (forceStackCapture) {
+      contextOptions.captureStack = true;
+    }
+
     return logInternal(
       level,
       message,
       detailPayload,
-      { namespace: 'console', meta: contextMeta },
+      contextOptions,
       { silentConsole: true },
     );
   }
