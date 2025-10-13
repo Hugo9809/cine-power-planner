@@ -10094,6 +10094,31 @@ function setLanguage(lang) {
     }
     return TEMPERATURE_UNITS?.celsius || "celsius";
   };
+  const normalizeFocusScaleSafe = value => {
+    if (typeof normalizeFocusScale === "function") {
+      try {
+        const normalized = normalizeFocusScale(value);
+        if (normalized === "imperial" || normalized === "metric") {
+          return normalized;
+        }
+      } catch (normalizeError) {
+        console.warn(
+          "normalizeFocusScale helper threw an error; falling back to safe normalization",
+          normalizeError,
+        );
+      }
+    }
+    if (typeof value === "string") {
+      const trimmed = value.trim().toLowerCase();
+      if (trimmed === "imperial") {
+        return "imperial";
+      }
+      if (trimmed === "metric") {
+        return "metric";
+      }
+    }
+    return "metric";
+  };
   const resolveLocaleString = key => {
     if (!key) return "";
     const bundle = texts[lang];
@@ -11485,7 +11510,7 @@ function setLanguage(lang) {
       settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
       Array.from(settingsFocusScale.options || []).forEach(option => {
         if (!option) return;
-        const normalized = normalizeFocusScale(option.value);
+        const normalized = normalizeFocusScaleSafe(option.value);
         option.textContent = getFocusScaleLabelForLang(lang, normalized);
       });
       settingsFocusScale.value = focusScalePreference;
