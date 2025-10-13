@@ -16446,6 +16446,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     const CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect,
+      populateMonitorSelect,
       refreshDeviceLists,
       hasAnyDeviceSelection,
       refreshAutoGearCameraOptions,
