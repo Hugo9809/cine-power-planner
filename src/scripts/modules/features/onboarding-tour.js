@@ -1842,16 +1842,10 @@
       {
         key: 'resultsTotalDraw',
         highlight: [
-          '#totalPowerLabel',
-          '#totalPower',
-          '#totalCurrent144Label',
-          '#totalCurrent144',
-          '#totalCurrent12Label',
-          '#totalCurrent12',
+          '#resultsTotalPowerRow',
+          '#resultsTotalCurrent144Row',
+          '#resultsTotalCurrent12Row',
         ],
-        highlightPadding: {
-          right: 24,
-        },
       },
       {
         key: 'resultsBatteryPacks',
