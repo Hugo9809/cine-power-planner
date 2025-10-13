@@ -106,7 +106,7 @@
     if (
       typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
       CORE_GLOBAL_SCOPE &&
-      _typeof(CORE_GLOBAL_SCOPE) === 'object'
+      typeof CORE_GLOBAL_SCOPE === 'object'
     ) {
       return CORE_GLOBAL_SCOPE;
     }
