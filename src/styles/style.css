@@ -5064,7 +5064,11 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 }
 
 .auto-gear-condition-flash {
-  box-shadow: 0 0 0 2px var(--accent-color, #007aff);
+  --auto-gear-flash-shadow: color-mix(in srgb, var(--accent-color, #007aff) 55%, transparent);
+  --auto-gear-flash-shadow-strong: color-mix(in srgb, var(--accent-color, #007aff) 65%, transparent);
+  --auto-gear-flash-background-strong: color-mix(in srgb, var(--accent-color, #007aff) 18%, transparent);
+  --auto-gear-flash-background-light: color-mix(in srgb, var(--accent-color, #007aff) 12%, transparent);
+  box-shadow: 0 0 0 2px var(--auto-gear-flash-shadow);
   animation: auto-gear-condition-flash 1.2s ease-out;
 }
 
@@ -5076,15 +5080,15 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 
 @keyframes auto-gear-condition-flash {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.55);
-    background-color: rgba(0, 122, 255, 0.08);
+    box-shadow: 0 0 0 0 var(--auto-gear-flash-shadow-strong);
+    background-color: var(--auto-gear-flash-background-light);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.4);
-    background-color: rgba(0, 122, 255, 0.12);
+    box-shadow: 0 0 0 3px var(--auto-gear-flash-shadow-strong);
+    background-color: var(--auto-gear-flash-background-strong);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+    box-shadow: 0 0 0 0 transparent;
     background-color: var(--surface-color);
   }
 }
