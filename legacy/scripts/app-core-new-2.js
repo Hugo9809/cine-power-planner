@@ -1019,6 +1019,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var template = langTexts.autoGearRulesCountOther || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.autoGearRulesCountOther);
       return template ? template.replace('%s', String(count)) : String(count);
     }
+    var autoGearBackupDateFormatter = null;
+    var autoGearBackupDateFormatterLocale = '';
+
+    function ensureAutoGearBackupDateFormatter() {
+      var resolvedLocale = resolveLanguageCode(currentLang);
+      if (autoGearBackupDateFormatter && autoGearBackupDateFormatterLocale === resolvedLocale) {
+        return autoGearBackupDateFormatter;
+      }
+
+      if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+        try {
+          autoGearBackupDateFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          });
+          autoGearBackupDateFormatterLocale = resolvedLocale;
+          return autoGearBackupDateFormatter;
+        } catch (formatterError) {
+          console.warn('Failed to create automatic gear backup date formatter', formatterError);
+        }
+      }
+
+      autoGearBackupDateFormatter = null;
+      autoGearBackupDateFormatterLocale = '';
+      return null;
+    }
+
     function formatAutoGearBackupCount(count) {
       var langTexts = texts[currentLang] || texts.en || {};
       var fallbackTexts = texts.en || {};
@@ -1039,9 +1066,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof isoString !== 'string') return '';
       var date = new Date(isoString);
       if (Number.isNaN(date.valueOf())) return isoString;
-      if (autoGearBackupDateFormatter) {
+      var formatter = ensureAutoGearBackupDateFormatter();
+      if (formatter) {
         try {
-          return autoGearBackupDateFormatter.format(date);
+          return formatter.format(date);
         } catch (error) {
           console.warn('Failed to format automatic gear backup timestamp', error);
         }

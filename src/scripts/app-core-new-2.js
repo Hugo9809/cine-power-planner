@@ -1214,6 +1214,36 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return template ? template.replace('%s', String(count)) : String(count);
     }
     
+    let autoGearBackupDateFormatter = null;
+    let autoGearBackupDateFormatterLocale = '';
+
+    function ensureAutoGearBackupDateFormatter() {
+      const resolvedLocale = resolveLanguageCode(currentLang);
+      if (
+        autoGearBackupDateFormatter
+        && autoGearBackupDateFormatterLocale === resolvedLocale
+      ) {
+        return autoGearBackupDateFormatter;
+      }
+
+      if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+        try {
+          autoGearBackupDateFormatter = new Intl.DateTimeFormat(resolvedLocale, {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          });
+          autoGearBackupDateFormatterLocale = resolvedLocale;
+          return autoGearBackupDateFormatter;
+        } catch (formatterError) {
+          console.warn('Failed to create automatic gear backup date formatter', formatterError);
+        }
+      }
+
+      autoGearBackupDateFormatter = null;
+      autoGearBackupDateFormatterLocale = '';
+      return null;
+    }
+
     function formatAutoGearBackupCount(count) {
       const langTexts = texts[currentLang] || texts.en || {};
       const fallbackTexts = texts.en || {};
@@ -1235,9 +1265,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof isoString !== 'string') return '';
       const date = new Date(isoString);
       if (Number.isNaN(date.valueOf())) return isoString;
-      if (autoGearBackupDateFormatter) {
+      const formatter = ensureAutoGearBackupDateFormatter();
+      if (formatter) {
         try {
-          return autoGearBackupDateFormatter.format(date);
+          return formatter.format(date);
         } catch (error) {
           console.warn('Failed to format automatic gear backup timestamp', error);
         }
