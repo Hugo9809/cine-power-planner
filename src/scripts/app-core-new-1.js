@@ -3226,6 +3226,171 @@ const AUTO_GEAR_SEEDED_KEY =
   typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_SEEDED_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_RETENTION_DEFAULT_FALLBACK = 36;
+const AUTO_GEAR_RETENTION_MIN_FALLBACK = 1;
+const AUTO_GEAR_RETENTION_MAX_FALLBACK = 50;
+
+function readGlobalAutoGearValue(propertyName) {
+  const scopes = [
+    CORE_PART1_RUNTIME_SCOPE && typeof CORE_PART1_RUNTIME_SCOPE === 'object'
+      ? CORE_PART1_RUNTIME_SCOPE
+      : null,
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE &&
+    (typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'object'
+      || typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'function')
+      ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+      : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const value = scope[propertyName];
+      if (typeof value !== 'undefined') {
+        return value;
+      }
+    } catch (globalLookupError) {
+      void globalLookupError;
+    }
+  }
+
+  return undefined;
+}
+
+function resolveAutoGearBackupRetentionMin() {
+  const candidates = [];
+
+  if (typeof AUTO_GEAR_BACKUP_RETENTION_MIN !== 'undefined') {
+    candidates.push(AUTO_GEAR_BACKUP_RETENTION_MIN);
+  }
+
+  const globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
+  if (typeof globalCandidate !== 'undefined') {
+    candidates.push(globalCandidate);
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const numeric = Number(candidates[index]);
+    if (!Number.isFinite(numeric)) {
+      continue;
+    }
+
+    const rounded = Math.round(numeric);
+    if (rounded >= AUTO_GEAR_RETENTION_MIN_FALLBACK) {
+      return rounded;
+    }
+  }
+
+  return AUTO_GEAR_RETENTION_MIN_FALLBACK;
+}
+
+function resolveAutoGearBackupRetentionDefault() {
+  const minValue = resolveAutoGearBackupRetentionMin();
+  const globalMaxCandidate =
+    typeof AUTO_GEAR_BACKUP_RETENTION_MAX !== 'undefined'
+      ? AUTO_GEAR_BACKUP_RETENTION_MAX
+      : readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MAX');
+  const parsedMax = Number(globalMaxCandidate);
+  const maxValue = Number.isFinite(parsedMax) && parsedMax >= minValue
+    ? Math.min(Math.round(parsedMax), AUTO_GEAR_RETENTION_MAX_FALLBACK)
+    : AUTO_GEAR_RETENTION_MAX_FALLBACK;
+
+  const normalize = value => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return null;
+    }
+
+    const rounded = Math.round(numeric);
+    if (rounded < minValue) {
+      return minValue;
+    }
+    if (rounded > maxValue) {
+      return maxValue;
+    }
+    return rounded;
+  };
+
+  const candidates = [];
+
+  if (typeof AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'undefined') {
+    candidates.push(AUTO_GEAR_BACKUP_RETENTION_DEFAULT);
+  }
+
+  const globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT');
+  if (typeof globalCandidate !== 'undefined') {
+    candidates.push(globalCandidate);
+  }
+
+  if (typeof getAutoGearBackupRetentionDefault === 'function') {
+    try {
+      candidates.push(getAutoGearBackupRetentionDefault());
+    } catch (autoGearDefaultError) {
+      void autoGearDefaultError;
+    }
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const normalized = normalize(candidates[index]);
+    if (normalized !== null) {
+      return normalized;
+    }
+  }
+
+  const fallbackNormalized = normalize(AUTO_GEAR_RETENTION_DEFAULT_FALLBACK);
+  return fallbackNormalized === null ? minValue : fallbackNormalized;
+}
+
+let localeSortCollator = null;
+function localeSort(a, b) {
+  const stringA =
+    typeof a === 'string'
+      ? a
+      : a && typeof a.toString === 'function'
+        ? a.toString()
+        : '';
+  const stringB =
+    typeof b === 'string'
+      ? b
+      : b && typeof b.toString === 'function'
+        ? b.toString()
+        : '';
+
+  if (!localeSortCollator) {
+    try {
+      localeSortCollator =
+        typeof Intl !== 'undefined' && typeof Intl.Collator === 'function'
+          ? new Intl.Collator(undefined, { sensitivity: 'base', numeric: false })
+          : false;
+    } catch (collatorError) {
+      localeSortCollator = false;
+      void collatorError;
+    }
+  }
+
+  if (localeSortCollator && typeof localeSortCollator.compare === 'function') {
+    return localeSortCollator.compare(stringA, stringB);
+  }
+
+  try {
+    return stringA.localeCompare(stringB, undefined, { sensitivity: 'base' });
+  } catch (localeCompareError) {
+    void localeCompareError;
+  }
+
+  if (stringA < stringB) return -1;
+  if (stringA > stringB) return 1;
+  return 0;
+}
+
 const AUTO_GEAR_BACKUPS_KEY =
   typeof AUTO_GEAR_BACKUPS_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_BACKUPS_STORAGE_KEY
