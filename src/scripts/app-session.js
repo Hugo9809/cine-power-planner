@@ -42,6 +42,14 @@
 /* global getUserProfileSnapshot, formatUserProfileProviderName,
           ensureContactForImportedOwner, setGearItemProvider,
           dispatchGearProviderDataChanged */
+// Maintain backwards compatibility with legacy globals so that preference
+// helpers can resolve the temperature unit even if this file executes before
+// other runtime segments restore the persisted setting.
+// eslint-disable-next-line no-redeclare
+var temperatureUnit = typeof temperatureUnit === 'string' && temperatureUnit
+  ? temperatureUnit
+  : 'celsius';
+
 // Keep a baseline set of match types so that the session search feature
 // continues to work even when globals have not been initialised yet (for
 // example during unit tests or offline restore flows).

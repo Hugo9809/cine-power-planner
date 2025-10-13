@@ -1119,6 +1119,35 @@ const getCoreGlobalObject =
       }
     : fallbackGetCoreGlobalObject;
 
+// Shared references for the add device form. Declaring these up-front ensures
+// that other runtime segments (such as the event wiring module) can safely
+// access the bindings without crashing the boot sequence. Keeping startup
+// resilient is critical for protecting user data flows like backups.
+var newCategorySelect = typeof document !== 'undefined' ? document.getElementById('newCategory') : null;
+var newSubcategorySelect = typeof document !== 'undefined' ? document.getElementById('newSubcategory') : null;
+var subcategoryFieldDiv = typeof document !== 'undefined' ? document.getElementById('subcategoryField') : null;
+var newNameInput = typeof document !== 'undefined' ? document.getElementById('newName') : null;
+var newWattInput = typeof document !== 'undefined' ? document.getElementById('newWatt') : null;
+var wattFieldDiv = typeof document !== 'undefined' ? document.getElementById('wattField') : null;
+var dynamicFieldsDiv = typeof document !== 'undefined' ? document.getElementById('dynamicFields') : null;
+var cameraFieldsDiv = typeof document !== 'undefined' ? document.getElementById('cameraFields') : null;
+var cameraWattInput = typeof document !== 'undefined' ? document.getElementById('cameraWatt') : null;
+var cameraVoltageInput = typeof document !== 'undefined' ? document.getElementById('cameraVoltage') : null;
+var cameraPortTypeInput = typeof document !== 'undefined' ? document.getElementById('cameraPortType') : null;
+var monitorFieldsDiv = typeof document !== 'undefined' ? document.getElementById('monitorFields') : null;
+var monitorScreenSizeInput = typeof document !== 'undefined' ? document.getElementById('monitorScreenSize') : null;
+var monitorBrightnessInput = typeof document !== 'undefined' ? document.getElementById('monitorBrightness') : null;
+var monitorWattInput = typeof document !== 'undefined' ? document.getElementById('monitorWatt') : null;
+var monitorVoltageInput = typeof document !== 'undefined' ? document.getElementById('monitorVoltage') : null;
+var monitorPortTypeInput = typeof document !== 'undefined' ? document.getElementById('monitorPortType') : null;
+var monitorVideoInputsContainer = typeof document !== 'undefined'
+  ? document.getElementById('monitorVideoInputsContainer')
+  : null;
+var lensFieldsDiv = typeof document !== 'undefined' ? document.getElementById('lensFields') : null;
+var lensMountOptionsContainer = typeof document !== 'undefined'
+  ? document.getElementById('lensMountOptionsContainer')
+  : null;
+
 const ensureCoreGlobalValue =
   CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.ensureGlobalValue === 'function'
     ? function ensureCoreGlobalValueProxy(name, fallbackValue) {
@@ -3010,17 +3039,72 @@ function resolveOwnGearModule() {
   return moduleApi;
 }
 
+function resolveCoreDeviceSchemaNamespace() {
+  const namespaceCandidates = [];
+  const scope = getCoreGlobalObject();
+
+  const addCandidate = candidate => {
+    if (candidate && typeof candidate === 'object' && namespaceCandidates.indexOf(candidate) === -1) {
+      namespaceCandidates.push(candidate);
+    }
+  };
+
+  try {
+    if (typeof CORE_DEVICE_SCHEMA !== 'undefined' && CORE_DEVICE_SCHEMA) {
+      addCandidate(CORE_DEVICE_SCHEMA);
+    }
+  } catch (coreDeviceSchemaRefError) {
+    if (!(coreDeviceSchemaRefError && coreDeviceSchemaRefError.name === 'ReferenceError')) {
+      throw coreDeviceSchemaRefError;
+    }
+  }
+
+  try {
+    if (typeof cineCoreDeviceSchema !== 'undefined' && cineCoreDeviceSchema) {
+      addCandidate(cineCoreDeviceSchema);
+    }
+  } catch (cineCoreDeviceSchemaRefError) {
+    if (!(cineCoreDeviceSchemaRefError && cineCoreDeviceSchemaRefError.name === 'ReferenceError')) {
+      throw cineCoreDeviceSchemaRefError;
+    }
+  }
+
+  if (scope && typeof scope === 'object') {
+    addCandidate(scope.CORE_DEVICE_SCHEMA);
+    addCandidate(scope.cineCoreDeviceSchema);
+  }
+
+  const namespace =
+    namespaceCandidates.find(candidate => candidate && typeof candidate.createDeviceSchemaManager === 'function')
+    || namespaceCandidates.find(candidate => candidate && typeof candidate === 'object')
+    || null;
+
+  if (namespace && scope && typeof scope === 'object') {
+    try {
+      if (!scope.CORE_DEVICE_SCHEMA || typeof scope.CORE_DEVICE_SCHEMA !== 'object') {
+        scope.CORE_DEVICE_SCHEMA = namespace;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return namespace;
+}
+
 const helpModuleApi = resolveHelpModuleApi();
 
 var deviceSchema = null;
 
+const coreDeviceSchemaNamespace = resolveCoreDeviceSchemaNamespace();
+
 const deviceSchemaManager = (function initializeDeviceSchemaManager() {
   if (
-    CORE_DEVICE_SCHEMA &&
-    typeof CORE_DEVICE_SCHEMA.createDeviceSchemaManager === 'function'
+    coreDeviceSchemaNamespace &&
+    typeof coreDeviceSchemaNamespace.createDeviceSchemaManager === 'function'
   ) {
     try {
-      return CORE_DEVICE_SCHEMA.createDeviceSchemaManager({
+      return coreDeviceSchemaNamespace.createDeviceSchemaManager({
         onSchemaChange: schema => {
           deviceSchema = schema;
         },

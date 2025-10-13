@@ -265,6 +265,22 @@
     }
   }
 
+  if (globalScope && typeof globalScope === 'object') {
+    const aliasName = 'CORE_DEVICE_SCHEMA';
+    try {
+      const currentAlias = globalScope[aliasName];
+      if (!currentAlias || typeof currentAlias !== 'object') {
+        globalScope[aliasName] = existing;
+      } else if (currentAlias !== existing) {
+        for (const key of Object.keys(existing)) {
+          currentAlias[key] = existing[key];
+        }
+      }
+    } catch (aliasError) {
+      void aliasError;
+    }
+  }
+
   if (typeof module === 'object' && module && module.exports) {
     module.exports = existing;
   }
