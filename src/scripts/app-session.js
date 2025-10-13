@@ -77,6 +77,111 @@ function getSessionCloneScope() {
   return null;
 }
 
+function resolveSessionRuntimeFunction(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+
+  const candidates = [];
+  const seen = new Set();
+  const enqueue = (scope) => {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+    if (seen.has(scope)) {
+      return;
+    }
+    seen.add(scope);
+    candidates.push(scope);
+  };
+
+  try { enqueue(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch { /* noop */ }
+  try { enqueue(typeof globalThis !== 'undefined' ? globalThis : null); } catch { /* noop */ }
+  try { enqueue(typeof window !== 'undefined' ? window : null); } catch { /* noop */ }
+  try { enqueue(typeof self !== 'undefined' ? self : null); } catch { /* noop */ }
+  try { enqueue(typeof global !== 'undefined' ? global : null); } catch { /* noop */ }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope) {
+      continue;
+    }
+
+    try {
+      const directCandidate = scope[name];
+      if (typeof directCandidate === 'function') {
+        return directCandidate;
+      }
+    } catch (directError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveSessionRuntimeFunction: failed to read candidate from scope', name, directError);
+      }
+    }
+
+    try {
+      const nestedScope = scope.CORE_GLOBAL_SCOPE || scope.core || scope.__cineRuntimeState;
+      if (nestedScope && !seen.has(nestedScope)) {
+        enqueue(nestedScope);
+        // Re-evaluate the nested scope immediately to surface direct matches sooner.
+        const nestedCandidate = nestedScope[name];
+        if (typeof nestedCandidate === 'function') {
+          return nestedCandidate;
+        }
+      }
+    } catch (nestedError) {
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug('resolveSessionRuntimeFunction: nested scope probe failed', name, nestedError);
+      }
+    }
+  }
+
+  return null;
+}
+
+function safeGetCurrentProjectName(defaultValue = '') {
+  const resolver = resolveSessionRuntimeFunction('getCurrentProjectName');
+  if (typeof resolver !== 'function') {
+    return defaultValue;
+  }
+
+  try {
+    const resolved = resolver();
+    if (typeof resolved === 'string' && resolved.trim()) {
+      return resolved;
+    }
+  } catch (projectNameError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('safeGetCurrentProjectName: runtime call failed, using fallback', projectNameError);
+    }
+  }
+
+  return defaultValue;
+}
+
+function resolveSetLanguageFn() {
+  return resolveSessionRuntimeFunction('setLanguage');
+}
+
+function applySetLanguage(languageCode, options = {}) {
+  const setLanguageFn = resolveSetLanguageFn();
+  if (typeof setLanguageFn !== 'function') {
+    if (!options?.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('applySetLanguage: setLanguage runtime function not available');
+    }
+    return false;
+  }
+
+  try {
+    setLanguageFn(languageCode);
+    return true;
+  } catch (setLanguageError) {
+    if (!options?.silent && typeof console !== 'undefined' && typeof console.error === 'function') {
+      console.error('applySetLanguage: setLanguage execution failed', setLanguageError);
+    }
+    return false;
+  }
+}
+
 // Basic JSON cloning fallback. We lean on this when structuredClone is not
 // available so that session data stays isolated from the UI state.
 function sessionJsonDeepClone(value) {
@@ -4406,7 +4511,7 @@ function restoreSessionState() {
   }
 
   if (gearListOutput || projectRequirementsOutput) {
-    const typedName = getCurrentProjectName();
+    const typedName = safeGetCurrentProjectName();
     const storageKey = getCurrentProjectStorageKey();
     const fetchStoredProject = name =>
       typeof loadProject === 'function' && typeof name === 'string'
@@ -6507,7 +6612,7 @@ const mountVoltageResetButtonRef = (() => {
   if (settingsSave) {
     settingsSave.addEventListener('click', () => {
       if (settingsLanguage) {
-        setLanguage(settingsLanguage.value);
+        applySetLanguage(settingsLanguage.value);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -10659,7 +10764,7 @@ function handleRestoreSettingsInputChange() {
     }
     if (restoredPreferences.language) {
       try {
-        setLanguage(restoredPreferences.language);
+        applySetLanguage(restoredPreferences.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -10772,7 +10877,7 @@ function handleRestoreSettingsInputChange() {
         settingsShowAutoBackups.checked = showAutoBackups;
       }
       if (restoredPreferenceState.language) {
-        setLanguage(restoredPreferenceState.language);
+        applySetLanguage(restoredPreferenceState.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -12962,7 +13067,7 @@ if (downloadDiagramButton) {
     const pad = n => String(n).padStart(2, '0');
     const now = new Date();
     const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const namePart = (getCurrentProjectName() || 'setup')
+    const namePart = (safeGetCurrentProjectName('setup') || 'setup')
         .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
     const baseName = `${datePart}_${namePart}_diagram`;
 
@@ -15544,32 +15649,7 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
-  const resolveSetLanguageFn = () => {
-    if (typeof setLanguage === 'function') {
-      return setLanguage;
-    }
-    if (typeof CORE_GLOBAL_SCOPE !== 'undefined'
-      && CORE_GLOBAL_SCOPE
-      && typeof CORE_GLOBAL_SCOPE.setLanguage === 'function') {
-      return CORE_GLOBAL_SCOPE.setLanguage;
-    }
-    if (typeof globalThis !== 'undefined'
-      && typeof globalThis.setLanguage === 'function') {
-      return globalThis.setLanguage;
-    }
-    return null;
-  };
-
-  const setLanguageFn = resolveSetLanguageFn();
-  if (typeof setLanguageFn === 'function') {
-    try {
-      setLanguageFn(currentLang);
-    } catch (setLanguageError) {
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error('Failed to initialize language selection', setLanguageError);
-      }
-    }
-  }
+  applySetLanguage(currentLang);
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
@@ -17417,7 +17497,9 @@ if (typeof module !== "undefined" && module.exports) {
     openSideMenu,
     setupSideMenu,
     setupResponsiveControls,
-    setLanguage,
+    setLanguage: applySetLanguage,
+    applySetLanguage,
+    safeGetCurrentProjectName,
     updateCalculations,
     setBatteryPlates,
     getBatteryPlates,
