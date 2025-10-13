@@ -725,6 +725,34 @@
         void defaultsAssignError;
       }
     }
+
+    const runtimeTargetName = 'MOUNT_VOLTAGE_RUNTIME_EXPORTS';
+    let runtimeNamespace = null;
+    try {
+      runtimeNamespace = CORE_SCOPE[runtimeTargetName];
+    } catch (resolveRuntimeError) {
+      runtimeNamespace = null;
+      void resolveRuntimeError;
+    }
+
+    if (!runtimeNamespace || typeof runtimeNamespace !== 'object') {
+      runtimeNamespace = {};
+    }
+
+    for (const key of Object.keys(runtimeExports)) {
+      runtimeNamespace[key] = runtimeExports[key];
+    }
+
+    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
+      enumerable: true,
+      get: () => mountVoltageInputs,
+    });
+
+    try {
+      CORE_SCOPE[runtimeTargetName] = runtimeNamespace;
+    } catch (assignRuntimeError) {
+      void assignRuntimeError;
+    }
   }
 
   if (typeof module === 'object' && module && module.exports) {
