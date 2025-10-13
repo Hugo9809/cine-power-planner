@@ -199,7 +199,13 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 /* global requestPersistentStorage */
 
-const missingMountVoltageWarnings = (() => {
+let missingMountVoltageWarnings = null;
+
+function resolveMissingMountVoltageWarnings() {
+  if (missingMountVoltageWarnings instanceof Set) {
+    return missingMountVoltageWarnings;
+  }
+
   const candidateScopes = [
     (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
       ? CORE_GLOBAL_SCOPE
@@ -215,6 +221,7 @@ const missingMountVoltageWarnings = (() => {
     try {
       const existing = scope.__cineMissingMountVoltageWarnings;
       if (existing instanceof Set) {
+        missingMountVoltageWarnings = existing;
         return existing;
       }
     } catch (readError) {
@@ -233,11 +240,12 @@ const missingMountVoltageWarnings = (() => {
     }
   }
 
+  missingMountVoltageWarnings = created;
   return created;
-})();
+}
 
 function warnMissingMountVoltageHelper(helperName, error) {
-  const warnings = missingMountVoltageWarnings;
+  const warnings = resolveMissingMountVoltageWarnings();
   const key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
   if (warnings.has(key)) {
     return;
