@@ -7433,6 +7433,15 @@ const refreshGlobalLoadingIndicatorText = () => {
   indicator.dataset.currentMessage = message;
 };
 
+const GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = 260;
+
+const getHighResolutionTimestamp = () => {
+  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+    return performance.now();
+  }
+  return Date.now();
+};
+
 const showGlobalLoadingIndicator = (message) => {
   if (typeof document === 'undefined') {
     return () => {};
@@ -7497,14 +7506,37 @@ const showGlobalLoadingIndicator = (message) => {
   indicator.dataset.count = String(globalLoadingIndicatorRefCount);
   indicator.style.display = 'flex';
 
-  return () => {
+  const displayedAt = getHighResolutionTimestamp();
+  let finalized = false;
+
+  const finalizeHide = () => {
+    if (finalized) {
+      return;
+    }
+    finalized = true;
     globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
+    indicator.dataset.count = String(globalLoadingIndicatorRefCount);
     if (globalLoadingIndicatorRefCount === 0) {
       indicator.remove();
       if (!container.children.length) {
         container.remove();
       }
     }
+  };
+
+  return () => {
+    if (finalized) {
+      return;
+    }
+    const elapsed = getHighResolutionTimestamp() - displayedAt;
+    if (elapsed < GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS) {
+      const remaining = GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS - elapsed;
+      if (typeof setTimeout === 'function') {
+        setTimeout(finalizeHide, Math.max(16, remaining));
+        return;
+      }
+    }
+    finalizeHide();
   };
 };
 
