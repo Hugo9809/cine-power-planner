@@ -7059,10 +7059,10 @@ body.dark-mode .onboarding-highlight {
     --onboarding-card-hero-inline-size,
     var(--onboarding-card-hero-available)
   );
-  width: min(44rem, var(--onboarding-card-hero-inline));
-  inline-size: min(44rem, var(--onboarding-card-hero-inline));
-  max-width: min(44rem, var(--onboarding-card-hero-inline));
-  max-inline-size: min(44rem, var(--onboarding-card-hero-inline));
+  width: min(100%, var(--onboarding-card-hero-inline));
+  inline-size: min(100%, var(--onboarding-card-hero-inline));
+  max-width: min(100%, var(--onboarding-card-hero-inline));
+  max-inline-size: min(100%, var(--onboarding-card-hero-inline));
   --onboarding-card-padding: clamp(1.5rem, 1.15rem + 2vw, 2.25rem);
   gap: clamp(1.35rem, 1.1rem + 1.5vw, 2rem);
   --onboarding-hero-heading-fluid-adjust: clamp(
@@ -7088,7 +7088,8 @@ body.dark-mode .onboarding-highlight {
   display: grid;
   gap: clamp(1.5rem, 1.2rem + 1vw, 2.15rem);
   position: relative;
-  max-width: min(64rem, 100%);
+  width: 100%;
+  max-width: 100%;
   margin-inline: auto;
 }
 
@@ -7107,6 +7108,7 @@ body.dark-mode .onboarding-highlight {
   border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
   box-shadow: none;
   position: relative;
+  width: 100%;
 }
 
 .onboarding-hero-banner::before,
@@ -7223,15 +7225,12 @@ body.dark-mode .onboarding-hero-highlight-badge-description {
   padding: 0;
   display: grid;
   gap: clamp(1.05rem, 0.9rem + 0.9vw, 1.6rem);
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.onboarding-hero-highlight:first-child:not(.onboarding-hero-highlight--badge) {
-  grid-column: 1 / -1;
-}
-
+.onboarding-hero-highlight:first-child:not(.onboarding-hero-highlight--badge),
 .onboarding-hero-highlight--badge + .onboarding-hero-highlight {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .onboarding-hero-highlight {
@@ -7289,6 +7288,7 @@ body.dark-mode .onboarding-hero-highlight-body {
 .onboarding-hero-language {
   display: grid;
   gap: clamp(0.55rem, 0.45rem + 0.4vw, 0.9rem);
+  width: 100%;
 }
 
 .onboarding-hero-language-label {
@@ -7302,7 +7302,8 @@ body.dark-mode .onboarding-hero-language-label {
 }
 
 .onboarding-hero-language-select {
-  max-width: min(22rem, 100%);
+  width: 100%;
+  max-width: 100%;
 }
 
 .onboarding-hero-language-hint {
