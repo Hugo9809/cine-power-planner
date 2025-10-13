@@ -393,6 +393,38 @@
   let pinkModeLottieRuntime = null;
   let pinkModeLottiePromise = null;
 
+  function sharePinkModeLottieRuntime(runtime) {
+    if (!runtime || typeof runtime.loadAnimation !== 'function') {
+      return;
+    }
+
+    const assignAlias = (scope, name) => {
+      if (!scope || typeof scope !== 'object') {
+        return;
+      }
+      if (scope[name] && scope[name] === runtime) {
+        return;
+      }
+      try {
+        if (!scope[name]) {
+          scope[name] = runtime;
+        }
+      } catch (error) {
+        void error;
+      }
+    };
+
+    if (typeof window !== 'undefined' && window) {
+      assignAlias(window, 'lottie');
+      assignAlias(window, 'bodymovin');
+    }
+
+    if (GLOBAL_SCOPE) {
+      assignAlias(GLOBAL_SCOPE, 'lottie');
+      assignAlias(GLOBAL_SCOPE, 'bodymovin');
+    }
+  }
+
   function disablePinkModeLottieWebWorkers(instance) {
     if (!instance || typeof instance.useWebWorker !== 'function') {
       return;
@@ -413,15 +445,40 @@
       return pinkModeLottieRuntime;
     }
 
-    if (
-      typeof window !== 'undefined' &&
-      window &&
-      window.lottie &&
-      typeof window.lottie.loadAnimation === 'function'
-    ) {
-      pinkModeLottieRuntime = window.lottie;
-      disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
-      return pinkModeLottieRuntime;
+    if (typeof window !== 'undefined' && window) {
+      const browserRuntime =
+        (window.lottie && typeof window.lottie.loadAnimation === 'function'
+          ? window.lottie
+          : null) ||
+        (window.bodymovin && typeof window.bodymovin.loadAnimation === 'function'
+          ? window.bodymovin
+          : null);
+
+      if (browserRuntime) {
+        pinkModeLottieRuntime = browserRuntime;
+        sharePinkModeLottieRuntime(browserRuntime);
+        disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
+        return pinkModeLottieRuntime;
+      }
+    }
+
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+      const globalRuntime =
+        (GLOBAL_SCOPE.lottie &&
+        typeof GLOBAL_SCOPE.lottie.loadAnimation === 'function'
+          ? GLOBAL_SCOPE.lottie
+          : null) ||
+        (GLOBAL_SCOPE.bodymovin &&
+        typeof GLOBAL_SCOPE.bodymovin.loadAnimation === 'function'
+          ? GLOBAL_SCOPE.bodymovin
+          : null);
+
+      if (globalRuntime) {
+        pinkModeLottieRuntime = globalRuntime;
+        sharePinkModeLottieRuntime(globalRuntime);
+        disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
+        return pinkModeLottieRuntime;
+      }
     }
 
     return null;
@@ -514,9 +571,14 @@
     pinkModeLottiePromise = loaderPromise
       .then(instance => {
         if (instance && typeof instance.loadAnimation === 'function') {
+          sharePinkModeLottieRuntime(instance);
           return instance;
         }
-        return resolvePinkModeLottieRuntime();
+        const resolved = resolvePinkModeLottieRuntime();
+        if (resolved) {
+          sharePinkModeLottieRuntime(resolved);
+        }
+        return resolved;
       })
       .catch(error => {
         console.warn('Unable to load pink mode animations', error);
@@ -530,6 +592,7 @@
         }
 
         pinkModeLottieRuntime = runtime;
+        sharePinkModeLottieRuntime(runtime);
         disablePinkModeLottieWebWorkers(runtime);
         pinkModeLottiePromise = Promise.resolve(runtime);
         return runtime;
@@ -1468,12 +1531,12 @@
   }
 
   function spawnPinkModeIconRainInstance(templates) {
+    const lottieRuntime = resolvePinkModeLottieRuntime();
     if (
       !Array.isArray(templates) ||
       !templates.length ||
-      typeof window === 'undefined' ||
-      !window.lottie ||
-      typeof window.lottie.loadAnimation !== 'function'
+      !lottieRuntime ||
+      typeof lottieRuntime.loadAnimation !== 'function'
     ) {
       return false;
     }
@@ -1644,7 +1707,7 @@
 
     let animationInstance;
     try {
-      animationInstance = window.lottie.loadAnimation({
+      animationInstance = lottieRuntime.loadAnimation({
         container,
         renderer: 'svg',
         loop: true,
@@ -1762,13 +1825,13 @@
   }
 
   function spawnPinkModeAnimatedIconInstance(templates) {
+    const lottieRuntime = resolvePinkModeLottieRuntime();
     if (
       !pinkModeAnimatedIconsActive ||
       !Array.isArray(templates) ||
       !templates.length ||
-      typeof window === 'undefined' ||
-      !window.lottie ||
-      typeof window.lottie.loadAnimation !== 'function'
+      !lottieRuntime ||
+      typeof lottieRuntime.loadAnimation !== 'function'
     ) {
       return false;
     }
@@ -1994,7 +2057,7 @@
 
     let animationInstance;
     try {
-      animationInstance = window.lottie.loadAnimation({
+      animationInstance = lottieRuntime.loadAnimation({
         container,
         renderer: 'svg',
         loop: true,
