@@ -8661,6 +8661,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       return ((_TEMPERATURE_UNITS5 = TEMPERATURE_UNITS) === null || _TEMPERATURE_UNITS5 === void 0 ? void 0 : _TEMPERATURE_UNITS5.celsius) || "celsius";
     };
+    var FALLBACK_NORMALIZE_FOCUS_SCALE = function FALLBACK_NORMALIZE_FOCUS_SCALE(value) {
+      if (typeof value === "string") {
+        var trimmed = value.trim().toLowerCase();
+        if (trimmed === "imperial" || trimmed === "feet" || trimmed === "ft") {
+          return "imperial";
+        }
+        if (trimmed === "metric" || trimmed === "metre" || trimmed === "meter" || trimmed === "m") {
+          return "metric";
+        }
+      }
+      return "metric";
+    };
+
+    var ensureNormalizeFocusScaleHelper = function ensureNormalizeFocusScaleHelper() {
+      if (typeof normalizeFocusScale === "function") {
+        return normalizeFocusScale;
+      }
+      var scope = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : typeof global !== "undefined" ? global : null;
+      if (scope && typeof scope.normalizeFocusScale === "function") {
+        return scope.normalizeFocusScale;
+      }
+      if (scope) {
+        try {
+          Object.defineProperty(scope, "normalizeFocusScale", {
+            value: FALLBACK_NORMALIZE_FOCUS_SCALE,
+            writable: true,
+            configurable: true,
+          });
+        } catch (defineError) {
+          scope.normalizeFocusScale = FALLBACK_NORMALIZE_FOCUS_SCALE;
+        }
+      }
+      return FALLBACK_NORMALIZE_FOCUS_SCALE;
+    };
+
+    ensureNormalizeFocusScaleHelper();
+
     var normalizeFocusScaleSafe = function normalizeFocusScaleSafe(value) {
       if (typeof normalizeFocusScale === "function") {
         try {
@@ -8672,16 +8709,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           console.warn("normalizeFocusScale helper threw an error; falling back to safe normalization", normalizeError);
         }
       }
-      if (typeof value === "string") {
-        var trimmed = value.trim().toLowerCase();
-        if (trimmed === "imperial") {
-          return "imperial";
-        }
-        if (trimmed === "metric") {
-          return "metric";
-        }
-      }
-      return "metric";
+      return FALLBACK_NORMALIZE_FOCUS_SCALE(value);
     };
     var resolveLocaleString = function resolveLocaleString(key) {
       if (!key) return "";

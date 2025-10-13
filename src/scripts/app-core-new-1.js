@@ -10012,6 +10012,52 @@ function setLanguage(lang) {
     }
     return TEMPERATURE_UNITS?.celsius || "celsius";
   };
+  const FALLBACK_NORMALIZE_FOCUS_SCALE = value => {
+    if (typeof value === "string") {
+      const trimmed = value.trim().toLowerCase();
+      if (trimmed === "imperial" || trimmed === "feet" || trimmed === "ft") {
+        return "imperial";
+      }
+      if (trimmed === "metric" || trimmed === "metre" || trimmed === "meter" || trimmed === "m") {
+        return "metric";
+      }
+    }
+    return "metric";
+  };
+
+  const ensureNormalizeFocusScaleHelper = () => {
+    if (typeof normalizeFocusScale === "function") {
+      return normalizeFocusScale;
+    }
+    const scope =
+      typeof globalThis !== "undefined"
+        ? globalThis
+        : typeof window !== "undefined"
+          ? window
+          : typeof self !== "undefined"
+            ? self
+            : typeof global !== "undefined"
+              ? global
+              : null;
+    if (scope && typeof scope.normalizeFocusScale === "function") {
+      return scope.normalizeFocusScale;
+    }
+    if (scope) {
+      try {
+        Object.defineProperty(scope, "normalizeFocusScale", {
+          value: FALLBACK_NORMALIZE_FOCUS_SCALE,
+          writable: true,
+          configurable: true,
+        });
+      } catch (defineError) {
+        scope.normalizeFocusScale = FALLBACK_NORMALIZE_FOCUS_SCALE;
+      }
+    }
+    return FALLBACK_NORMALIZE_FOCUS_SCALE;
+  };
+
+  ensureNormalizeFocusScaleHelper();
+
   const normalizeFocusScaleSafe = value => {
     if (typeof normalizeFocusScale === "function") {
       try {
@@ -10026,16 +10072,7 @@ function setLanguage(lang) {
         );
       }
     }
-    if (typeof value === "string") {
-      const trimmed = value.trim().toLowerCase();
-      if (trimmed === "imperial") {
-        return "imperial";
-      }
-      if (trimmed === "metric") {
-        return "metric";
-      }
-    }
-    return "metric";
+    return FALLBACK_NORMALIZE_FOCUS_SCALE(value);
   };
   const resolveFocusScalePreference = () => {
     const tryNormalize = candidate => {
