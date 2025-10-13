@@ -866,27 +866,63 @@
 
       const allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
 
-      const requestInit = {
-        cache: allowCachePopulation ? 'reload' : 'no-store',
-        credentials: 'same-origin',
-        redirect: 'follow',
+      const buildRequestInit = (overrides = {}) => {
+        const requestInit = {
+          cache: allowCachePopulation ? 'reload' : 'no-store',
+          credentials: 'same-origin',
+          redirect: 'follow',
+        };
+
+        if (controller && controller.signal) {
+          requestInit.signal = controller.signal;
+        }
+
+        return Object.assign(requestInit, overrides);
       };
 
-      if (controller && controller.signal) {
-        requestInit.signal = controller.signal;
-      }
+      const performFetch = async (overrides = {}) => {
+        const requestInit = buildRequestInit(overrides);
+        return fetchFn.call(win || undefined, nextHref, requestInit);
+      };
+
+      const isAborted = () => controller && controller.signal && controller.signal.aborted === true;
 
       let response = null;
+      let firstError = null;
 
       try {
-        response = await fetchFn.call(win || undefined, nextHref, requestInit);
+        response = await performFetch();
       } catch (error) {
-        const aborted = controller && controller.signal && controller.signal.aborted;
-        if (!aborted && !reloadWarmupFailureLogged) {
-          reloadWarmupFailureLogged = true;
-          safeWarn('Reload warmup fetch failed', error);
+        firstError = error;
+      }
+
+      if (!response) {
+        if (isAborted()) {
+          return false;
         }
-        return false;
+
+        let fallbackResponse = null;
+        let fallbackError = firstError;
+
+        try {
+          fallbackResponse = await performFetch({ cache: 'default' });
+        } catch (secondError) {
+          fallbackError = secondError || firstError;
+        }
+
+        if (!fallbackResponse) {
+          if (isAborted()) {
+            return false;
+          }
+
+          if (!reloadWarmupFailureLogged) {
+            reloadWarmupFailureLogged = true;
+            safeWarn('Reload warmup fetch failed', fallbackError || firstError);
+          }
+          return false;
+        }
+
+        response = fallbackResponse;
       }
 
       if (!response) {
@@ -2562,6 +2598,7 @@
       clearCacheStorage,
       triggerReload,
       cleanupForceReloadArtifacts,
+      scheduleReloadWarmup,
     },
   };
 
