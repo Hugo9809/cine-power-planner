@@ -418,7 +418,7 @@ function resolvePreferredTemperatureStorageKey() {
   return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
 }
 
-const TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
+var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
 
 (function ensureTemperatureStorageKeyGlobal(key) {
   const candidates = [
