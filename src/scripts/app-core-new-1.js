@@ -89,16 +89,15 @@
 // be refreshed without touching the heavy runtime bundle. We resolve the
 // localisation runtime through a dedicated helper which keeps this file focused
 // on orchestration while smaller modules handle the heavy lifting.
-const CORE_LOCALIZATION_RUNTIME_ENVIRONMENT_TOOLS = resolveCoreSupportModule(
-  'cineCoreLocalizationRuntimeEnvironment',
-  './modules/core/localization-runtime-environment.js'
+const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppLocalizationSupport',
+  '../app-core/localization-support.js'
 );
 
-const localizationRuntimeEnvironment =
-  CORE_LOCALIZATION_RUNTIME_ENVIRONMENT_TOOLS &&
-  typeof CORE_LOCALIZATION_RUNTIME_ENVIRONMENT_TOOLS.createLocalizationRuntimeEnvironment ===
-    'function'
-    ? CORE_LOCALIZATION_RUNTIME_ENVIRONMENT_TOOLS.createLocalizationRuntimeEnvironment({
+const APP_CORE_LOCALIZATION_SUPPORT =
+  APP_CORE_LOCALIZATION_SUPPORT_TOOLS &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT_TOOLS.createAppLocalizationSupport === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT_TOOLS.createAppLocalizationSupport({
         resolveCoreSupportModule,
         requireFn: typeof require === 'function' ? require : null,
         runtimeScope:
@@ -107,42 +106,46 @@ const localizationRuntimeEnvironment =
       })
     : null;
 
+const localizationRuntimeEnvironment =
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.localizationRuntimeEnvironment
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationRuntimeEnvironment
+    : null;
+
 const CORE_LOCALIZATION_BRIDGE =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.coreLocalizationBridge
-    ? localizationRuntimeEnvironment.coreLocalizationBridge
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationBridge
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationBridge
     : null;
 
 const CORE_LOCALIZATION_FALLBACKS =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.coreLocalizationFallbacks
-    ? localizationRuntimeEnvironment.coreLocalizationFallbacks
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationFallbacks
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbacks
     : null;
 
 const CORE_INLINE_LOCALIZATION_FALLBACKS =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.coreInlineLocalizationFallbacks
-    ? localizationRuntimeEnvironment.coreInlineLocalizationFallbacks
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.inlineLocalizationFallbacks
+    ? APP_CORE_LOCALIZATION_SUPPORT.inlineLocalizationFallbacks
     : null;
 
 const LOCALIZATION_FALLBACK_SUPPORT =
-  localizationRuntimeEnvironment &&
-  typeof localizationRuntimeEnvironment.localizationFallbackSupport !== 'undefined'
-    ? localizationRuntimeEnvironment.localizationFallbackSupport
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackSupport !== 'undefined'
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackSupport
     : null;
 
 const createBasicLocalizationFallbackResolvers =
-  localizationRuntimeEnvironment &&
-  typeof localizationRuntimeEnvironment.createBasicLocalizationFallbackResolvers === 'function'
-    ? localizationRuntimeEnvironment.createBasicLocalizationFallbackResolvers
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.createBasicLocalizationFallbackResolvers === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.createBasicLocalizationFallbackResolvers
     : function createBasicLocalizationFallbackResolversProxy() {
         return null;
       };
 
 const LOCALIZATION_FALLBACK_REGISTRY =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.localizationFallbackRegistry
-    ? localizationRuntimeEnvironment.localizationFallbackRegistry
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackRegistry
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackRegistry
     : {
         createFallbackResolvers(fallbackOptions) {
           return createBasicLocalizationFallbackResolvers(fallbackOptions);
@@ -150,9 +153,9 @@ const LOCALIZATION_FALLBACK_REGISTRY =
       };
 
 const LOCALIZATION_FALLBACK_RESOLVERS =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.localizationFallbackResolvers
-    ? localizationRuntimeEnvironment.localizationFallbackResolvers
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackResolvers
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackResolvers
     : LOCALIZATION_FALLBACK_REGISTRY &&
       typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function'
     ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
@@ -165,23 +168,23 @@ const LOCALIZATION_FALLBACK_RESOLVERS =
       });
 
 const LOCALIZATION_FALLBACK_NAMESPACE =
-  localizationRuntimeEnvironment &&
-  localizationRuntimeEnvironment.localizationFallbackNamespace
-    ? localizationRuntimeEnvironment.localizationFallbackNamespace
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackNamespace !== 'undefined'
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackNamespace
     : null;
 
 const fallbackResolveLocaleModule =
-  localizationRuntimeEnvironment &&
-  typeof localizationRuntimeEnvironment.fallbackResolveLocaleModule === 'function'
-    ? localizationRuntimeEnvironment.fallbackResolveLocaleModule
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.fallbackResolveLocaleModule === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.fallbackResolveLocaleModule
     : function fallbackResolveLocaleModuleProxy() {
         return null;
       };
 
 const createLocaleFallbacks =
-  localizationRuntimeEnvironment &&
-  typeof localizationRuntimeEnvironment.createLocaleFallbacks === 'function'
-    ? localizationRuntimeEnvironment.createLocaleFallbacks
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.createLocaleFallbacks === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.createLocaleFallbacks
     : function createLocaleFallbacksProxy() {
         return null;
       };
