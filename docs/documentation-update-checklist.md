@@ -16,6 +16,7 @@ instructions.
 
 - [ ] Update the relevant markdown files in `docs/`.
 - [ ] Sync README translations and note pending language reviews.
+- [ ] Confirm UI button screenshots/text reference the Project Overview save/delete style.
 - [ ] Capture new screenshots or diagrams using local assets only.
 - [ ] Update schema definitions in `docs/schema-inventory.md` if persistence
       payloads changed.
