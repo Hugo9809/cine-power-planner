@@ -1771,6 +1771,42 @@
     return trimmed;
   }
 
+  function enforceSameOriginNextHref(locationLike, originalHref, nextHref) {
+    if (isSameOriginReloadTarget(locationLike, nextHref)) {
+      return nextHref;
+    }
+
+    const fallbackHref = typeof originalHref === 'string' && originalHref ? originalHref : '';
+    const baseHref = readLocationHrefSafe(locationLike) || fallbackHref;
+
+    if (typeof URL === 'function' && baseHref) {
+      try {
+        const base = new URL(baseHref, fallbackHref || undefined);
+        const candidate = new URL(nextHref, baseHref);
+        const rebuilt = `${base.origin || ''}${candidate.pathname || ''}${candidate.search || ''}${candidate.hash || ''}`;
+        if (rebuilt && isSameOriginReloadTarget(locationLike, rebuilt)) {
+          return rebuilt;
+        }
+      } catch (rebuildError) {
+        void rebuildError;
+      }
+    }
+
+    if (typeof nextHref === 'string') {
+      const originPattern = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+(.*)$/;
+      const match = nextHref.match(originPattern);
+      const origin = readLocationOriginSafe(locationLike);
+      if (match && match[1] && origin) {
+        const rebuilt = `${origin}${match[1]}`;
+        if (isSameOriginReloadTarget(locationLike, rebuilt)) {
+          return rebuilt;
+        }
+      }
+    }
+
+    return fallbackHref || baseHref || '';
+  }
+
   function buildForceReloadUrl(locationLike, paramName) {
     const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
     const timestamp = Date.now().toString(36);
@@ -1795,9 +1831,10 @@
         try {
           const url = index === 0 ? new URL(candidate) : new URL(originalHref, candidate);
           url.searchParams.set(param, timestamp);
+          const candidateHref = url.toString();
           return {
             originalHref,
-            nextHref: url.toString(),
+            nextHref: enforceSameOriginNextHref(locationLike, originalHref, candidateHref),
             param,
             timestamp,
           };
@@ -1832,9 +1869,10 @@
 
         try {
           const absolute = new URL(href + hash, candidate).toString();
+          const candidateHref = absolute;
           return {
             originalHref,
-            nextHref: absolute,
+            nextHref: enforceSameOriginNextHref(locationLike, originalHref, candidateHref),
             param,
             timestamp,
           };
@@ -1844,9 +1882,10 @@
       }
     }
 
+    const candidateHref = href ? href + hash : originalHref;
     return {
       originalHref,
-      nextHref: href ? href + hash : originalHref,
+      nextHref: enforceSameOriginNextHref(locationLike, originalHref, candidateHref),
       param,
       timestamp,
     };
