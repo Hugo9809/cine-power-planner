@@ -7794,7 +7794,7 @@ body.dark-mode .onboarding-interaction-button:focus-visible {
   padding: 0.625rem 0.875rem;
   border-radius: 12px;
   background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+  border: none;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
   line-height: var(--line-height-snug);
   font-weight: var(--font-weight-medium);
@@ -7803,7 +7803,7 @@ body.dark-mode .onboarding-interaction-button:focus-visible {
 
 body.dark-mode .onboarding-resume-hint {
   background: color-mix(in srgb, var(--accent-color) 28%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
+  border: none;
   color: var(--inverse-text-color);
 }
 
