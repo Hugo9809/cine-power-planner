@@ -1031,13 +1031,13 @@ main.legal-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .person-avatar button:hover,
 .person-avatar button:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent-color);
   background-color: transparent;
 }
 
@@ -1347,16 +1347,17 @@ main.legal-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .contact-card-avatar button:hover {
   background-color: transparent;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent-color) 60%, transparent);
 }
 
 .contact-card-avatar button:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent-color);
   background-color: transparent;
 }
 
