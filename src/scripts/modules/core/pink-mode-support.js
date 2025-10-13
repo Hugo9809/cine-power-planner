@@ -1,3 +1,5 @@
+/* global cineCorePinkModeAnimations */
+
 (function () {
   function detectScope() {
     if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
@@ -34,6 +36,7 @@
           try {
             return createSafeResolvedPromise(callback(value));
           } catch (callbackError) {
+            void callbackError;
             return createSafeResolvedPromise(undefined);
           }
         }
