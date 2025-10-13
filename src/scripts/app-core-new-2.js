@@ -16674,6 +16674,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['getFizConnectors', () => getFizConnectors],
       ['clearFizConnectors', () => clearFizConnectors],
       ['clearViewfinders', () => clearViewfinders],
+      ['setTimecodes', () => setTimecodes],
+      ['getTimecodes', () => getTimecodes],
       ['clearTimecodes', () => clearTimecodes],
       ['confirmAutoGearSelection', () => confirmAutoGearSelection],
       ['configureSharedImportOptions', () => configureSharedImportOptions],

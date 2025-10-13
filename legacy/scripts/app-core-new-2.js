@@ -15902,6 +15902,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return clearFizConnectors;
     }], ['clearViewfinders', function () {
       return clearViewfinders;
+    }], ['setTimecodes', function () {
+      return setTimecodes;
+    }], ['getTimecodes', function () {
+      return getTimecodes;
     }], ['clearTimecodes', function () {
       return clearTimecodes;
     }], ['confirmAutoGearSelection', function () {
