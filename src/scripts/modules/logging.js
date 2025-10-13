@@ -2389,7 +2389,7 @@
         logInternal(
           'info',
           'Console output capture disabled',
-          { installed: false },
+          buildConsoleCaptureDetail({ status: 'disabled' }),
           { namespace: 'logging', meta: { channel: 'console', lifecycle: 'sync' } },
           { silentConsole: true },
         );
@@ -2403,6 +2403,16 @@
     const installed = installConsoleProxies();
     if (!installed) {
       if (!consoleProxyWarningIssued) {
+        const reason = typeof console === 'undefined' || !console
+          ? 'console-unavailable'
+          : 'installation-failed';
+        logInternal(
+          'warn',
+          'Console output capture failed',
+          buildConsoleCaptureDetail({ status: 'failed', reason }),
+          { namespace: 'logging', meta: { channel: 'console', lifecycle: 'sync' } },
+          { silentConsole: true },
+        );
         safeWarn('cineLogging: Unable to capture console output for diagnostics.');
         consoleProxyWarningIssued = true;
       }
@@ -2416,7 +2426,7 @@
       logInternal(
         'info',
         'Console output capture enabled',
-        { installed: true },
+        buildConsoleCaptureDetail({ status: 'enabled' }),
         { namespace: 'logging', meta: { channel: 'console', lifecycle: 'sync' } },
         { silentConsole: true },
       );
@@ -2428,6 +2438,29 @@
 
   function isConsoleCaptureActive() {
     return Boolean(activeConfig.captureConsole) && consoleProxyInstalled === true;
+  }
+
+  function buildConsoleCaptureDetail(overrides) {
+    const detail = {
+      configured: activeConfig.captureConsole === true,
+      installed: consoleProxyInstalled === true,
+      attempted: consoleProxyInstallationAttempted === true,
+      failed: consoleProxyInstallationFailed === true,
+    };
+
+    if (typeof console === 'undefined' || !console) {
+      detail.consoleAvailable = false;
+    }
+
+    if (overrides && typeof overrides === 'object') {
+      const overrideKeys = Object.keys(overrides);
+      for (let index = 0; index < overrideKeys.length; index += 1) {
+        const key = overrideKeys[index];
+        detail[key] = overrides[key];
+      }
+    }
+
+    return detail;
   }
 
   function enableConsoleCapture(options) {
