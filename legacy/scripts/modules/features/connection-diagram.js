@@ -81,6 +81,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function fallbackValue(value, fallback) {
     return typeof value === 'undefined' ? fallback : value;
   }
+
+  function optionalFunction(value) {
+    return typeof value === 'function' ? value : null;
+  }
   function createConnectionDiagram() {
     var context = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var document = fallbackValue(context.document, GLOBAL_SCOPE.document || null);
@@ -155,9 +159,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var getCurrentGridSnap = fallbackGetter(context.getCurrentGridSnap, function () {
       return false;
     });
-    var scheduleProjectAutoSave = fallbackGetter(context.scheduleProjectAutoSave);
-    var saveCurrentSession = fallbackGetter(context.saveCurrentSession);
-    var checkSetupChanged = fallbackGetter(context.checkSetupChanged);
+    var scheduleProjectAutoSave = optionalFunction(context.scheduleProjectAutoSave);
+    var saveCurrentSession = optionalFunction(context.saveCurrentSession);
+    var checkSetupChanged = optionalFunction(context.checkSetupChanged);
     var motorPriority = fallbackGetter(context.motorPriority, function () {
       return 0;
     });
