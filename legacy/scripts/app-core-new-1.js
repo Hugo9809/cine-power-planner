@@ -1,29 +1,51 @@
 function fallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
+  }
+
   if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
     return globalThis;
   }
+
   if (typeof window !== 'undefined' && window && _typeof(window) === 'object') {
     return window;
   }
+
   if (typeof self !== 'undefined' && self && _typeof(self) === 'object') {
     return self;
   }
+
   if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
     return global;
   }
+
   return null;
 }
+
 function fallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
   if (typeof namespaceName !== 'string' || !namespaceName) {
     return null;
   }
+
   var runtimeScope = fallbackDetectRuntimeScope(primaryScope);
+
   if (runtimeScope && runtimeScope[namespaceName] && _typeof(runtimeScope[namespaceName]) === 'object') {
     return runtimeScope[namespaceName];
   }
+
   if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+    try {
+      var required = require(requirePath);
+      if (required && _typeof(required) === 'object') {
+        return required;
+      }
+    } catch (supportModuleError) {
+      void supportModuleError;
+    }
+  }
+
+  return null;
+}
 var CORE_SUPPORT_RESOLVER = function ensureCoreSupportResolver() {
   var namespaceName = 'cineCoreSupportResolver';
   function readFromScope(candidateScope) {
