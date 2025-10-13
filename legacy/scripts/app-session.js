@@ -44,6 +44,109 @@ function getSessionCloneScope() {
   }
   return null;
 }
+function resolveSessionRuntimeFunction(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+  var candidates = [];
+  var seen = new Set();
+  var enqueue = function enqueue(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    if (seen.has(scope)) {
+      return;
+    }
+    seen.add(scope);
+    candidates.push(scope);
+  };
+  try {
+    enqueue(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  } catch (_unused) {}
+  try {
+    enqueue(typeof globalThis !== 'undefined' ? globalThis : null);
+  } catch (_unused2) {}
+  try {
+    enqueue(typeof window !== 'undefined' ? window : null);
+  } catch (_unused3) {}
+  try {
+    enqueue(typeof self !== 'undefined' ? self : null);
+  } catch (_unused4) {}
+  try {
+    enqueue(typeof global !== 'undefined' ? global : null);
+  } catch (_unused5) {}
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      var directCandidate = scope[name];
+      if (typeof directCandidate === 'function') {
+        return directCandidate;
+      }
+    } catch (directError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('resolveSessionRuntimeFunction: failed to read candidate from scope', name, directError);
+      }
+    }
+    try {
+      var nestedScope = scope.CORE_GLOBAL_SCOPE || scope.core || scope.__cineRuntimeState;
+      if (nestedScope && !seen.has(nestedScope)) {
+        enqueue(nestedScope);
+        var nestedCandidate = nestedScope[name];
+        if (typeof nestedCandidate === 'function') {
+          return nestedCandidate;
+        }
+      }
+    } catch (nestedError) {
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug('resolveSessionRuntimeFunction: nested scope probe failed', name, nestedError);
+      }
+    }
+  }
+  return null;
+}
+function safeGetCurrentProjectName() {
+  var defaultValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var resolver = resolveSessionRuntimeFunction('getCurrentProjectName');
+  if (typeof resolver !== 'function') {
+    return defaultValue;
+  }
+  try {
+    var resolved = resolver();
+    if (typeof resolved === 'string' && resolved.trim()) {
+      return resolved;
+    }
+  } catch (projectNameError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('safeGetCurrentProjectName: runtime call failed, using fallback', projectNameError);
+    }
+  }
+  return defaultValue;
+}
+function resolveSetLanguageFn() {
+  return resolveSessionRuntimeFunction('setLanguage');
+}
+function applySetLanguage(languageCode) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var setLanguageFn = resolveSetLanguageFn();
+  if (typeof setLanguageFn !== 'function') {
+    if (!(options !== null && options !== void 0 && options.silent) && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('applySetLanguage: setLanguage runtime function not available');
+    }
+    return false;
+  }
+  try {
+    setLanguageFn(languageCode);
+    return true;
+  } catch (setLanguageError) {
+    if (!(options !== null && options !== void 0 && options.silent) && typeof console !== 'undefined' && typeof console.error === 'function') {
+      console.error('applySetLanguage: setLanguage execution failed', setLanguageError);
+    }
+    return false;
+  }
+}
 function sessionJsonDeepClone(value) {
   if (value === null || _typeof(value) !== 'object') {
     return value;
@@ -3636,7 +3739,7 @@ function restoreSessionState() {
     markProjectFormDataDirty();
   }
   if (gearListOutput || projectRequirementsOutput) {
-    var typedName = getCurrentProjectName();
+    var typedName = safeGetCurrentProjectName();
     var storageKey = getCurrentProjectStorageKey();
     var fetchStoredProject = function fetchStoredProject(name) {
       return typeof loadProject === 'function' && typeof name === 'string' ? loadProject(name) : null;
@@ -5536,7 +5639,7 @@ if (settingsButton && settingsDialog) {
         first.focus({
           preventScroll: true
         });
-      } catch (_unused) {
+      } catch (_unused6) {
         first.focus();
       }
     }
@@ -5575,7 +5678,7 @@ if (settingsButton && settingsDialog) {
   if (settingsSave) {
     settingsSave.addEventListener('click', function () {
       if (settingsLanguage) {
-        setLanguage(settingsLanguage.value);
+        applySetLanguage(settingsLanguage.value);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -6410,6 +6513,13 @@ var refreshGlobalLoadingIndicatorText = function refreshGlobalLoadingIndicatorTe
   textTarget.textContent = message;
   indicator.dataset.currentMessage = message;
 };
+var GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS = 260;
+var getHighResolutionTimestamp = function getHighResolutionTimestamp() {
+  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+    return performance.now();
+  }
+  return Date.now();
+};
 var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
   if (typeof document === 'undefined') {
     return function () {};
@@ -6467,14 +6577,35 @@ var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
   globalLoadingIndicatorRefCount += 1;
   indicator.dataset.count = String(globalLoadingIndicatorRefCount);
   indicator.style.display = 'flex';
-  return function () {
+  var displayedAt = getHighResolutionTimestamp();
+  var finalized = false;
+  var finalizeHide = function finalizeHide() {
+    if (finalized) {
+      return;
+    }
+    finalized = true;
     globalLoadingIndicatorRefCount = Math.max(0, globalLoadingIndicatorRefCount - 1);
+    indicator.dataset.count = String(globalLoadingIndicatorRefCount);
     if (globalLoadingIndicatorRefCount === 0) {
       indicator.remove();
       if (!container.children.length) {
         container.remove();
       }
     }
+  };
+  return function () {
+    if (finalized) {
+      return;
+    }
+    var elapsed = getHighResolutionTimestamp() - displayedAt;
+    if (elapsed < GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS) {
+      var remaining = GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS - elapsed;
+      if (typeof setTimeout === 'function') {
+        setTimeout(finalizeHide, Math.max(16, remaining));
+        return;
+      }
+    }
+    finalizeHide();
   };
 };
 try {
@@ -9457,7 +9588,7 @@ function handleRestoreSettingsInputChange() {
     }
     if (restoredPreferences.language) {
       try {
-        setLanguage(restoredPreferences.language);
+        applySetLanguage(restoredPreferences.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -9567,7 +9698,7 @@ function handleRestoreSettingsInputChange() {
         settingsShowAutoBackups.checked = showAutoBackups;
       }
       if (restoredPreferenceState.language) {
-        setLanguage(restoredPreferenceState.language);
+        applySetLanguage(restoredPreferenceState.language);
         if (typeof populateUserButtonDropdowns === 'function') {
           try {
             populateUserButtonDropdowns();
@@ -11500,26 +11631,26 @@ function copyTextToClipboardBestEffort(text) {
     document.body.appendChild(textarea);
     try {
       textarea.focus();
-    } catch (_unused2) {}
+    } catch (_unused7) {}
     try {
       textarea.select();
       if (typeof textarea.setSelectionRange === 'function') {
         textarea.setSelectionRange(0, textarea.value.length);
       }
-    } catch (_unused3) {}
+    } catch (_unused8) {}
     if (typeof document.execCommand === 'function') {
       try {
         document.execCommand('copy');
-      } catch (_unused4) {}
+      } catch (_unused9) {}
     }
-  } catch (_unused5) {} finally {
+  } catch (_unused0) {} finally {
     if (textarea && textarea.parentNode) {
       textarea.parentNode.removeChild(textarea);
     }
     if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
       try {
         previousActiveElement.focus();
-      } catch (_unused6) {}
+      } catch (_unused1) {}
     }
   }
 }
@@ -11533,7 +11664,7 @@ if (downloadDiagramButton) {
     };
     var now = new Date();
     var datePart = "".concat(now.getFullYear(), "-").concat(pad(now.getMonth() + 1), "-").concat(pad(now.getDate()), "_").concat(pad(now.getHours()), "-").concat(pad(now.getMinutes()));
-    var namePart = (getCurrentProjectName() || 'setup').replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+    var namePart = (safeGetCurrentProjectName('setup') || 'setup').replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
     var baseName = "".concat(datePart, "_").concat(namePart, "_diagram");
     var saveSvg = function saveSvg() {
       var blob = new Blob([source], {
@@ -11750,7 +11881,7 @@ if (helpButton && helpDialog) {
         element.focus({
           preventScroll: true
         });
-      } catch (_unused7) {
+      } catch (_unused10) {
         element.focus();
       }
     }
@@ -11772,7 +11903,7 @@ if (helpButton && helpDialog) {
       heading.focus({
         preventScroll: true
       });
-    } catch (_unused8) {
+    } catch (_unused11) {
       heading.focus();
     }
     if (!hadTabIndex) {
@@ -12091,7 +12222,7 @@ if (helpButton && helpDialog) {
       var focusEl;
       try {
         focusEl = document.querySelector(selector);
-      } catch (_unused9) {
+      } catch (_unused12) {
         focusEl = null;
       }
       if (!focusEl) return;
@@ -12104,7 +12235,7 @@ if (helpButton && helpDialog) {
           if (candidate) {
             highlightEl = candidate;
           }
-        } catch (_unused0) {}
+        } catch (_unused13) {}
       }
       var targetInsideHelp = helpDialog.contains(focusEl);
       var runFocus = function runFocus() {
@@ -12393,7 +12524,7 @@ if (helpButton && helpDialog) {
         helpDialog.focus({
           preventScroll: true
         });
-      } catch (_unused1) {
+      } catch (_unused14) {
         helpDialog.focus();
       }
     }
@@ -12407,7 +12538,7 @@ if (helpButton && helpDialog) {
         returnFocusEl.focus({
           preventScroll: true
         });
-      } catch (_unused10) {
+      } catch (_unused15) {
         returnFocusEl.focus();
       }
     }
@@ -12454,7 +12585,7 @@ if (helpButton && helpDialog) {
         try {
           var match = document.querySelector(selector);
           addCandidate(match);
-        } catch (_unused11) {}
+        } catch (_unused16) {}
       });
     };
     var addFromIds = function addFromIds(raw) {
@@ -13224,7 +13355,7 @@ if (helpButton && helpDialog) {
       featureSearch.focus({
         preventScroll: true
       });
-    } catch (_unused12) {
+    } catch (_unused17) {
       featureSearch.focus();
     }
     if (typeof featureSearch.select === 'function') {
@@ -13451,7 +13582,7 @@ if (helpButton && helpDialog) {
         featureSearch.focus({
           preventScroll: true
         });
-      } catch (_unused13) {
+      } catch (_unused18) {
         featureSearch.focus();
       }
       (_featureSearch$setSel = (_featureSearch2 = featureSearch).setSelectionRange) === null || _featureSearch$setSel === void 0 || _featureSearch$setSel.call(_featureSearch2, value.length, value.length);
@@ -13837,7 +13968,7 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
-  setLanguage(currentLang);
+  applySetLanguage(currentLang);
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
@@ -14238,7 +14369,6 @@ function tokenizeFrameRateContext(value) {
     return token && token !== 'fps';
   });
 }
-
 function normalizeMatchTarget(value) {
   if (typeof value !== 'string' || !value) {
     return '';
@@ -14437,12 +14567,20 @@ function findMaxFrameRateForSensor(entries, sensorTokens) {
         matchScore += 2;
         return;
       }
-      for (var _iterator5 = _createForOfIteratorHelperLoose(normalizedSensorTokens), _step5; !(_step5 = _iterator5()).done;) {
-        var sensorToken = _step5.value;
-        if (sensorToken && entryToken.includes(sensorToken)) {
-          matchScore += 1;
-          break;
+      var _iterator3 = _createForOfIteratorHelper(normalizedSensorTokens),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var sensorToken = _step3.value;
+          if (sensorToken && entryToken.includes(sensorToken)) {
+            matchScore += 1;
+            break;
+          }
         }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
       }
     });
     if (normalizedSensorLabel && normalizedEntryLabel && normalizedEntryLabel.includes(normalizedSensorLabel)) {
@@ -15045,7 +15183,7 @@ function ensureFilterDetailEditButton(element) {
           editLabel = trimmed;
         }
       }
-    } catch (_unused14) {}
+    } catch (_unused19) {}
   }
   var button = doc.createElement('button');
   button.type = 'button';
@@ -15580,7 +15718,9 @@ if (typeof module !== "undefined" && module.exports) {
     openSideMenu: openSideMenu,
     setupSideMenu: setupSideMenu,
     setupResponsiveControls: setupResponsiveControls,
-    setLanguage: setLanguage,
+    setLanguage: applySetLanguage,
+    applySetLanguage: applySetLanguage,
+    safeGetCurrentProjectName: safeGetCurrentProjectName,
     updateCalculations: updateCalculations,
     setBatteryPlates: setBatteryPlates,
     getBatteryPlates: getBatteryPlates,

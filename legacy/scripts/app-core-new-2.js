@@ -5576,6 +5576,115 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }
+    function resolveCoreRuntimeFunction(name) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+      for (var index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+        var scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+          continue;
+        }
+        try {
+          var candidate = scope[name];
+          if (typeof candidate === 'function') {
+            return candidate;
+          }
+        } catch (resolveError) {
+          void resolveError;
+        }
+      }
+      return null;
+    }
+    function configureIconOnlyButtonSafe(button, glyph) {
+      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var resolvedConfigurator = resolveCoreRuntimeFunction('configureIconOnlyButton');
+      if (typeof resolvedConfigurator === 'function') {
+        try {
+          resolvedConfigurator(button, glyph, options);
+          return;
+        } catch (configError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('configureIconOnlyButton failed, applying fallback configuration', configError);
+          }
+        }
+      }
+      if (!button) {
+        return;
+      }
+      var resolvedGlyph = glyph || function () {
+        var glyphMap = readCoreScopeValue('ICON_GLYPHS');
+        if (glyphMap && _typeof(glyphMap) === 'object' && glyphMap.add) {
+          return glyphMap.add;
+        }
+        return null;
+      }();
+      var setButtonLabelWithIconFn = resolveCoreRuntimeFunction('setButtonLabelWithIcon');
+      if (typeof setButtonLabelWithIconFn === 'function') {
+        try {
+          setButtonLabelWithIconFn(button, '', resolvedGlyph);
+        } catch (labelError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('setButtonLabelWithIcon fallback failed', labelError);
+          }
+        }
+      }
+      var _ref3 = options || {},
+        _ref3$contextPaths = _ref3.contextPaths,
+        contextPaths = _ref3$contextPaths === void 0 ? [] : _ref3$contextPaths,
+        _ref3$fallbackContext = _ref3.fallbackContext,
+        fallbackContext = _ref3$fallbackContext === void 0 ? '' : _ref3$fallbackContext,
+        _ref3$actionKey = _ref3.actionKey,
+        actionKey = _ref3$actionKey === void 0 ? 'addEntry' : _ref3$actionKey;
+      var getLocalizedPathTextFn = resolveCoreRuntimeFunction('getLocalizedPathText');
+      var ensureArray = function ensureArray(value) {
+        if (Array.isArray(value)) return value;
+        if (value === null || value === undefined) return [];
+        return [value];
+      };
+      var actionLabel = actionKey === 'removeEntry' ? 'Remove' : 'Add';
+      if (typeof getLocalizedPathTextFn === 'function') {
+        try {
+          actionLabel = getLocalizedPathTextFn(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
+        } catch (actionLabelError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('getLocalizedPathText failed to resolve action label', actionLabelError);
+          }
+        }
+      }
+      var contextLabel = '';
+      var contextCandidates = ensureArray(contextPaths);
+      if (typeof getLocalizedPathTextFn === 'function') {
+        for (var index = 0; index < contextCandidates.length; index += 1) {
+          var contextPath = contextCandidates[index];
+          if (!contextPath) {
+            continue;
+          }
+          try {
+            var resolvedLabel = getLocalizedPathTextFn(contextPath, '');
+            if (resolvedLabel) {
+              contextLabel = resolvedLabel;
+              break;
+            }
+          } catch (contextLabelError) {
+            void contextLabelError;
+          }
+        }
+      }
+      if (!contextLabel && typeof fallbackContext === 'string' && fallbackContext) {
+        contextLabel = fallbackContext;
+      }
+      var normalizedContext = contextLabel ? contextLabel.replace(/[:：]\s*$/, '').trim() : '';
+      var combinedLabel = [actionLabel, normalizedContext].filter(Boolean).join(' ').trim();
+      if (combinedLabel) {
+        try {
+          button.setAttribute('aria-label', combinedLabel);
+          button.setAttribute('title', combinedLabel);
+        } catch (attributeError) {
+          void attributeError;
+        }
+      }
+    }
     function getInstallBannerDismissedInSession() {
       var scope = getInstallBannerGlobalScope();
       if (!scope) {
@@ -6325,10 +6434,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return false;
       }
       var merged = false;
-      Object.entries(source).forEach(function (_ref3) {
-        var _ref4 = _slicedToArray(_ref3, 2),
-          key = _ref4[0],
-          value = _ref4[1];
+      Object.entries(source).forEach(function (_ref4) {
+        var _ref5 = _slicedToArray(_ref4, 2),
+          key = _ref5[0],
+          value = _ref5[1];
         if (value === undefined) {
           return;
         }
@@ -6903,12 +7012,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function formatTemperatureForDisplay(celsius) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var _ref5 = options || {},
-        unit = _ref5.unit,
-        _ref5$lang = _ref5.lang,
-        lang = _ref5$lang === void 0 ? currentLang : _ref5$lang,
-        _ref5$includeSign = _ref5.includeSign,
-        includeSign = _ref5$includeSign === void 0 ? true : _ref5$includeSign;
+      var _ref6 = options || {},
+        unit = _ref6.unit,
+        _ref6$lang = _ref6.lang,
+        lang = _ref6$lang === void 0 ? currentLang : _ref6$lang,
+        _ref6$includeSign = _ref6.includeSign,
+        includeSign = _ref6$includeSign === void 0 ? true : _ref6$includeSign;
       var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       var converted = convertCelsiusToUnit(celsius, resolvedUnit);
       if (!Number.isFinite(converted)) {
@@ -6959,16 +7068,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var categories = [];
       var total = 0;
-      Object.entries(diff).forEach(function (_ref6) {
-        var _ref7 = _slicedToArray(_ref6, 2),
-          cat = _ref7[0],
-          entries = _ref7[1];
+      Object.entries(diff).forEach(function (_ref7) {
+        var _ref8 = _slicedToArray(_ref7, 2),
+          cat = _ref8[0],
+          entries = _ref8[1];
         if (!isPlainObjectValue(entries)) return;
         if (cat === 'fiz') {
-          Object.entries(entries).forEach(function (_ref8) {
-            var _ref9 = _slicedToArray(_ref8, 2),
-              sub = _ref9[0],
-              subEntries = _ref9[1];
+          Object.entries(entries).forEach(function (_ref9) {
+            var _ref0 = _slicedToArray(_ref9, 2),
+              sub = _ref0[0],
+              subEntries = _ref0[1];
             if (!isPlainObjectValue(subEntries)) return;
             var keys = Object.keys(subEntries);
             if (!keys.length) return;
@@ -7038,20 +7147,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           addCount(key, entry);
         });
       } else if (isPlainObjectValue(projectData)) {
-        Object.entries(projectData).forEach(function (_ref0) {
-          var _ref1 = _slicedToArray(_ref0, 2),
-            name = _ref1[0],
-            entry = _ref1[1];
+        Object.entries(projectData).forEach(function (_ref1) {
+          var _ref10 = _slicedToArray(_ref1, 2),
+            name = _ref10[0],
+            entry = _ref10[1];
           addCount(name, entry);
         });
       } else {
         addCount('', projectData);
       }
       if (isPlainObjectValue(setupsData)) {
-        Object.entries(setupsData).forEach(function (_ref10) {
-          var _ref11 = _slicedToArray(_ref10, 2),
-            name = _ref11[0],
-            setup = _ref11[1];
+        Object.entries(setupsData).forEach(function (_ref11) {
+          var _ref12 = _slicedToArray(_ref11, 2),
+            name = _ref12[0],
+            setup = _ref12[1];
           addCount(name, setup);
         });
       }
@@ -7089,10 +7198,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       if (isPlainObjectValue(value)) {
         var result = {};
-        Object.entries(value).forEach(function (_ref12) {
-          var _ref13 = _slicedToArray(_ref12, 2),
-            key = _ref13[0],
-            val = _ref13[1];
+        Object.entries(value).forEach(function (_ref13) {
+          var _ref14 = _slicedToArray(_ref13, 2),
+            key = _ref14[0],
+            val = _ref14[1];
           var pruned = pruneValueForImportantBackup(val);
           if (pruned !== undefined) {
             result[key] = pruned;
@@ -7174,10 +7283,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return undefined;
       }
       var reduced = {};
-      Object.entries(collection).forEach(function (_ref14) {
-        var _ref15 = _slicedToArray(_ref14, 2),
-          name = _ref15[0],
-          entry = _ref15[1];
+      Object.entries(collection).forEach(function (_ref15) {
+        var _ref16 = _slicedToArray(_ref15, 2),
+          name = _ref16[0],
+          entry = _ref16[1];
         var important = extractImportantProjectEntry(entry);
         if (important) {
           reduced[name] = important;
@@ -7188,10 +7297,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function createImportantProjectData(data) {
       var importantData = {};
       if (isPlainObjectValue(data)) {
-        Object.entries(data).forEach(function (_ref16) {
-          var _ref17 = _slicedToArray(_ref16, 2),
-            key = _ref17[0],
-            value = _ref17[1];
+        Object.entries(data).forEach(function (_ref17) {
+          var _ref18 = _slicedToArray(_ref17, 2),
+            key = _ref18[0],
+            value = _ref18[1];
           if (key === 'project' || key === 'setups' || key === 'autoGearRules') {
             return;
           }
@@ -7281,9 +7390,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var lookup = typeof categoryNames !== 'undefined' && categoryNames || {};
       var localized = lookup[resolved] || lookup.en || {};
       var fallback = lookup.en || {};
-      var items = categories.map(function (_ref18) {
-        var key = _ref18.key,
-          count = _ref18.count;
+      var items = categories.map(function (_ref19) {
+        var key = _ref19.key,
+          count = _ref19.count;
         var label = localized[key] || fallback[key] || key;
         var formattedCount = formatNumberForLang(resolved, count, {
           maximumFractionDigits: 0
@@ -7388,10 +7497,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
           continue;
         }
-        Object.entries(current).forEach(function (_ref19) {
-          var _ref20 = _slicedToArray(_ref19, 2),
-            key = _ref20[0],
-            val = _ref20[1];
+        Object.entries(current).forEach(function (_ref20) {
+          var _ref21 = _slicedToArray(_ref20, 2),
+            key = _ref21[0],
+            val = _ref21[1];
           var normalizedKey = typeof key === 'string' ? key.toLowerCase() : '';
           if (typeof val === 'string') {
             var _trimmed = val.trim();
@@ -7419,10 +7528,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!isPlainObjectValue(setups)) {
         return result;
       }
-      Object.entries(setups).forEach(function (_ref21) {
-        var _ref22 = _slicedToArray(_ref21, 2),
-          name = _ref22[0],
-          entry = _ref22[1];
+      Object.entries(setups).forEach(function (_ref22) {
+        var _ref23 = _slicedToArray(_ref22, 2),
+          name = _ref23[0],
+          entry = _ref23[1];
         if (!name || typeof name !== 'string') {
           return;
         }
@@ -9368,10 +9477,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     };
-    var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref23) {
-      var label = _ref23.label,
-        _ref23$keywords = _ref23.keywords,
-        keywords = _ref23$keywords === void 0 ? '' : _ref23$keywords;
+    var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref24) {
+      var label = _ref24.label,
+        _ref24$keywords = _ref24.keywords,
+        keywords = _ref24$keywords === void 0 ? '' : _ref24$keywords;
       if (!element || !label) return null;
       var baseLabel = label.trim();
       if (!baseLabel) return null;
@@ -9865,9 +9974,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return computeRelativeLuminance(pinkRgb);
     }();
     function shouldEnableDarkModeAccentBoost() {
-      var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-        color = _ref24.color,
-        highContrast = _ref24.highContrast;
+      var _ref25 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        color = _ref25.color,
+        highContrast = _ref25.highContrast;
       if (typeof document === 'undefined') return false;
       if (!document.body || !document.body.classList.contains('dark-mode')) return false;
       if (document.body.classList.contains('pink-mode')) return false;
@@ -10358,8 +10467,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee7(name, dataUrl) {
-        var _ref48,
-          _ref48$persist,
+        var _ref49,
+          _ref49$persist,
           persist,
           uniqueName,
           value,
@@ -10372,7 +10481,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.n) {
             case 0:
-              _ref48 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref48$persist = _ref48.persist, persist = _ref48$persist === void 0 ? true : _ref48$persist;
+              _ref49 = _args7.length > 2 && _args7[2] !== undefined ? _args7[2] : {}, _ref49$persist = _ref49.persist, persist = _ref49$persist === void 0 ? true : _ref49$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -10619,7 +10728,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof window === 'undefined') return null;
       if (typeof window.queryLocalFonts === 'function') {
         return function () {
-          var _ref25 = _asyncToGenerator(_regenerator().m(function _callee(options) {
+          var _ref26 = _asyncToGenerator(_regenerator().m(function _callee(options) {
             var _t;
             return _regenerator().w(function (_context) {
               while (1) switch (_context.n) {
@@ -10633,7 +10742,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee);
           }));
           return function (_x9) {
-            return _ref25.apply(this, arguments);
+            return _ref26.apply(this, arguments);
           };
         }();
       }
@@ -10641,7 +10750,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var _navigator = navigator,
           fonts = _navigator.fonts;
         return function () {
-          var _ref26 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
+          var _ref27 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
             var _t2;
             return _regenerator().w(function (_context2) {
               while (1) switch (_context2.n) {
@@ -10655,7 +10764,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }, _callee2);
           }));
           return function (_x0) {
-            return _ref26.apply(this, arguments);
+            return _ref27.apply(this, arguments);
           };
         }();
       }
@@ -11879,12 +11988,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               categoryPath: []
             };
           };
-          var buildGearItemHelp = function buildGearItemHelp(_ref27) {
-            var name = _ref27.name,
-              countText = _ref27.countText,
-              deviceInfo = _ref27.deviceInfo,
-              libraryCategory = _ref27.libraryCategory,
-              tableCategory = _ref27.tableCategory;
+          var buildGearItemHelp = function buildGearItemHelp(_ref28) {
+            var name = _ref28.name,
+              countText = _ref28.countText,
+              deviceInfo = _ref28.deviceInfo,
+              libraryCategory = _ref28.libraryCategory,
+              tableCategory = _ref28.tableCategory;
             var parts = [];
             var label = "".concat(countText || '').concat(name).trim();
             if (label) parts.push(label);
@@ -12063,10 +12172,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function sanitizeProjectInfo(info) {
       if (!info || _typeof(info) !== 'object') return null;
       var result = {};
-      Object.entries(info).forEach(function (_ref28) {
-        var _ref29 = _slicedToArray(_ref28, 2),
-          key = _ref29[0],
-          value = _ref29[1];
+      Object.entries(info).forEach(function (_ref29) {
+        var _ref30 = _slicedToArray(_ref29, 2),
+          key = _ref30[0],
+          value = _ref30[1];
         var sanitized = sanitizeProjectInfoValue(value);
         if (sanitized !== undefined) {
           result[key] = sanitized;
@@ -12780,7 +12889,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -12791,7 +12900,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -12844,7 +12953,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -12855,7 +12964,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -12908,7 +13017,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -12919,7 +13028,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -12972,7 +13081,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -12983,7 +13092,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -13038,7 +13147,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13049,7 +13158,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13106,7 +13215,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -13117,7 +13226,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -13170,7 +13279,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13181,7 +13290,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13234,7 +13343,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
         fallbackContext: 'FIZ Connector',
         actionKey: 'addEntry'
@@ -13245,7 +13354,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
         fallbackContext: 'FIZ Connector',
         actionKey: 'removeEntry'
@@ -13380,7 +13489,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['mediaHeading', ['cameraMediaLabel']],
         fallbackContext: 'Recording Media',
         actionKey: 'addEntry'
@@ -13391,7 +13500,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['mediaHeading', ['cameraMediaLabel']],
         fallbackContext: 'Recording Media',
         actionKey: 'removeEntry'
@@ -13407,11 +13516,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref30 = item || {},
-            _ref30$type = _ref30.type,
-            type = _ref30$type === void 0 ? '' : _ref30$type,
-            _ref30$notes = _ref30.notes,
-            notes = _ref30$notes === void 0 ? '' : _ref30$notes;
+          var _ref31 = item || {},
+            _ref31$type = _ref31.type,
+            type = _ref31$type === void 0 ? '' : _ref31$type,
+            _ref31$notes = _ref31.notes,
+            notes = _ref31$notes === void 0 ? '' : _ref31$notes;
           cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
         });
       } else {
@@ -13606,7 +13715,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
         fallbackContext: 'Battery Plates',
         actionKey: 'addEntry'
@@ -13617,7 +13726,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
         fallbackContext: 'Battery Plates',
         actionKey: 'removeEntry'
@@ -13633,13 +13742,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref31 = item || {},
-            _ref31$type = _ref31.type,
-            type = _ref31$type === void 0 ? '' : _ref31$type,
-            _ref31$mount = _ref31.mount,
-            mount = _ref31$mount === void 0 ? 'native' : _ref31$mount,
-            _ref31$notes = _ref31.notes,
-            notes = _ref31$notes === void 0 ? '' : _ref31$notes;
+          var _ref32 = item || {},
+            _ref32$type = _ref32.type,
+            type = _ref32$type === void 0 ? '' : _ref32$type,
+            _ref32$mount = _ref32.mount,
+            mount = _ref32$mount === void 0 ? 'native' : _ref32$mount,
+            _ref32$notes = _ref32.notes,
+            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
           batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
         });
       } else {
@@ -13750,7 +13859,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
         fallbackContext: 'Viewfinder',
         actionKey: 'addEntry'
@@ -13761,7 +13870,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
         fallbackContext: 'Viewfinder',
         actionKey: 'removeEntry'
@@ -13777,15 +13886,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref32 = item || {},
-            _ref32$type = _ref32.type,
-            type = _ref32$type === void 0 ? '' : _ref32$type,
-            _ref32$resolution = _ref32.resolution,
-            resolution = _ref32$resolution === void 0 ? '' : _ref32$resolution,
-            _ref32$connector = _ref32.connector,
-            connector = _ref32$connector === void 0 ? '' : _ref32$connector,
-            _ref32$notes = _ref32.notes,
-            notes = _ref32$notes === void 0 ? '' : _ref32$notes;
+          var _ref33 = item || {},
+            _ref33$type = _ref33.type,
+            type = _ref33$type === void 0 ? '' : _ref33$type,
+            _ref33$resolution = _ref33.resolution,
+            resolution = _ref33$resolution === void 0 ? '' : _ref33$resolution,
+            _ref33$connector = _ref33.connector,
+            connector = _ref33$connector === void 0 ? '' : _ref33$connector,
+            _ref33$notes = _ref33.notes,
+            notes = _ref33$notes === void 0 ? '' : _ref33$notes;
           viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
         });
       } else {
@@ -13892,7 +14001,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var fallbackContext = (context === null || context === void 0 ? void 0 : context.fallbackContext) || 'Lens Mount';
       var targetContainer = (context === null || context === void 0 ? void 0 : context.container) || lensMountContainer;
       var minRows = Number.isFinite(context === null || context === void 0 ? void 0 : context.minRows) ? context.minRows : 1;
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: [headingId, [labelId]],
         fallbackContext: fallbackContext,
         actionKey: 'addEntry'
@@ -13912,7 +14021,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: [headingId, [labelId]],
         fallbackContext: fallbackContext,
         actionKey: 'removeEntry'
@@ -13933,11 +14042,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref33 = item || {},
-            _ref33$type = _ref33.type,
-            type = _ref33$type === void 0 ? '' : _ref33$type,
-            _ref33$mount = _ref33.mount,
-            mount = _ref33$mount === void 0 ? 'native' : _ref33$mount;
+          var _ref34 = item || {},
+            _ref34$type = _ref34.type,
+            type = _ref34$type === void 0 ? '' : _ref34$type,
+            _ref34$mount = _ref34.mount,
+            mount = _ref34$mount === void 0 ? 'native' : _ref34$mount;
           lensMountContainer.appendChild(createLensMountRow(type, mount));
         });
       } else {
@@ -14184,7 +14293,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
         fallbackContext: 'Power Distribution',
         actionKey: 'addEntry'
@@ -14195,7 +14304,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
         fallbackContext: 'Power Distribution',
         actionKey: 'removeEntry'
@@ -14211,17 +14320,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref34 = item || {},
-            _ref34$type = _ref34.type,
-            type = _ref34$type === void 0 ? '' : _ref34$type,
-            _ref34$voltage = _ref34.voltage,
-            voltage = _ref34$voltage === void 0 ? '' : _ref34$voltage,
-            _ref34$current = _ref34.current,
-            current = _ref34$current === void 0 ? '' : _ref34$current,
-            _ref34$wattage = _ref34.wattage,
-            wattage = _ref34$wattage === void 0 ? '' : _ref34$wattage,
-            _ref34$notes = _ref34.notes,
-            notes = _ref34$notes === void 0 ? '' : _ref34$notes;
+          var _ref35 = item || {},
+            _ref35$type = _ref35.type,
+            type = _ref35$type === void 0 ? '' : _ref35$type,
+            _ref35$voltage = _ref35.voltage,
+            voltage = _ref35$voltage === void 0 ? '' : _ref35$voltage,
+            _ref35$current = _ref35.current,
+            current = _ref35$current === void 0 ? '' : _ref35$current,
+            _ref35$wattage = _ref35.wattage,
+            wattage = _ref35$wattage === void 0 ? '' : _ref35$wattage,
+            _ref35$notes = _ref35.notes,
+            notes = _ref35$notes === void 0 ? '' : _ref35$notes;
           powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
         });
       } else {
@@ -14310,7 +14419,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
       var addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
         fallbackContext: 'Timecode',
         actionKey: 'addEntry'
@@ -14321,7 +14430,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
         fallbackContext: 'Timecode',
         actionKey: 'removeEntry'
@@ -14337,11 +14446,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
         filtered.forEach(function (item) {
-          var _ref35 = item || {},
-            _ref35$type = _ref35.type,
-            type = _ref35$type === void 0 ? '' : _ref35$type,
-            _ref35$notes = _ref35.notes,
-            notes = _ref35$notes === void 0 ? '' : _ref35$notes;
+          var _ref36 = item || {},
+            _ref36$type = _ref36.type,
+            type = _ref36$type === void 0 ? '' : _ref36$type,
+            _ref36$notes = _ref36.notes,
+            notes = _ref36$notes === void 0 ? '' : _ref36$notes;
           timecodeContainer.appendChild(createTimecodeRow(type, notes));
         });
       } else {
@@ -14636,9 +14745,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       initFavoritableSelect(selectElem);
     }
     function populateMonitorSelect() {
-      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref36) {
-        var _ref37 = _slicedToArray(_ref36, 2),
-          data = _ref37[1];
+      var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref37) {
+        var _ref38 = _slicedToArray(_ref37, 2),
+          data = _ref38[1];
         return !(data.wirelessRX && !data.wirelessTx);
       }));
       populateSelect(monitorSelect, filtered, true);
@@ -14649,9 +14758,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!cameraName || cameraName === 'None') {
         return allCages;
       }
-      return Object.fromEntries(Object.entries(allCages).filter(function (_ref38) {
-        var _ref39 = _slicedToArray(_ref38, 2),
-          cage = _ref39[1];
+      return Object.fromEntries(Object.entries(allCages).filter(function (_ref39) {
+        var _ref40 = _slicedToArray(_ref39, 2),
+          cage = _ref40[1];
         if (!cage || _typeof(cage) !== 'object') {
           return true;
         }
@@ -14821,9 +14930,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function applyFilters() {
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref40) {
-        var list = _ref40.list,
-          filterInput = _ref40.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref41) {
+        var list = _ref41.list,
+          filterInput = _ref41.filterInput;
         if (!list) return;
         var value = filterInput ? filterInput.value : '';
         filterDeviceList(list, value);
@@ -15525,9 +15634,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function refreshDeviceLists() {
       syncDeviceManagerCategories();
       if (!(activeDeviceManagerLists instanceof Map)) return;
-      activeDeviceManagerLists.forEach(function (_ref41, categoryKey) {
-        var list = _ref41.list,
-          filterInput = _ref41.filterInput;
+      activeDeviceManagerLists.forEach(function (_ref42, categoryKey) {
+        var list = _ref42.list,
+          filterInput = _ref42.filterInput;
         if (!list) return;
         renderDeviceList(categoryKey, list);
         var filterValue = filterInput ? filterInput.value : '';
@@ -15536,6 +15645,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect: populateSelect,
+      populateMonitorSelect: populateMonitorSelect,
       refreshDeviceLists: refreshDeviceLists,
       hasAnyDeviceSelection: hasAnyDeviceSelection,
       refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
@@ -15898,6 +16008,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return clearPowerDistribution;
     }], ['clearVideoOutputs', function () {
       return clearVideoOutputs;
+    }], ['setFizConnectors', function () {
+      return setFizConnectors;
+    }], ['getFizConnectors', function () {
+      return getFizConnectors;
     }], ['clearFizConnectors', function () {
       return clearFizConnectors;
     }], ['clearViewfinders', function () {
@@ -15923,10 +16037,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }], ['storeLoadedSetupState', function () {
       return storeLoadedSetupState;
     }]];
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref42) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        exportName = _ref43[0],
-        getter = _ref43[1];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref43) {
+      var _ref44 = _slicedToArray(_ref43, 2),
+        exportName = _ref44[0],
+        getter = _ref44[1];
       try {
         var _value4 = getter();
         if (typeof _value4 !== 'undefined') {
@@ -16024,10 +16138,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cineCoreGuard: ['ensureDefaultProjectInfoSnapshot', 'skipNextGearListRefresh', 'alignActiveAutoGearPreset', 'reconcileAutoGearAutoPresetState', 'openAutoGearEditor', 'closeAutoGearEditor', 'saveAutoGearRuleFromEditor', 'handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'applyAutoGearBackupVisibility', 'renderAutoGearBackupControls', 'renderAutoGearBackupRetentionControls', 'renderAutoGearDraftImpact', 'renderAutoGearDraftLists', 'renderAutoGearMonitorDefaultsControls', 'renderAutoGearPresetsControls', 'renderAutoGearRulesList', 'updateAutoGearCameraWeightDraft', 'updateAutoGearShootingDaysDraft', 'setAutoGearAutoPresetId', 'syncAutoGearAutoPreset', 'updateAutoGearCatalogOptions', 'updateAutoGearItemButtonState', 'updateAutoGearMonitorDefaultOptions', 'applyFavoritesToSelect', 'updateFavoriteButton', 'toggleFavorite', 'loadStoredLogoPreview', 'renderSettingsLogoPreview', 'loadFeedbackSafe', 'saveFeedbackSafe', 'saveCurrentGearList'],
         cineCoreExperience: ['populateSelect', 'refreshDeviceLists', 'hasAnyDeviceSelection', 'refreshAutoGearCameraOptions', 'refreshAutoGearCameraWeightCondition', 'refreshAutoGearMonitorOptions', 'refreshAutoGearTripodHeadOptions', 'refreshAutoGearTripodBowlOptions', 'refreshAutoGearTripodTypesOptions', 'refreshAutoGearTripodSpreaderOptions', 'refreshAutoGearWirelessOptions', 'refreshAutoGearMotorsOptions', 'refreshAutoGearControllersOptions', 'refreshAutoGearCrewOptions', 'refreshAutoGearDistanceOptions', 'exportAutoGearRules', 'generatePrintableOverview', 'generateGearListHtml', 'displayGearAndRequirements', 'updateGearListButtonVisibility', 'overviewSectionIcons', 'scenarioIcons', 'populateFeatureSearch', 'restoreFeatureSearchDefaults', 'updateFeatureSearchValue', 'updateFeatureSearchSuggestions', 'featureSearchEntries', 'featureSearchDefaultOptions', 'applyAccentColor', 'clearAccentColorOverrides', 'updateAccentColorResetButtonState', 'refreshDarkModeAccentBoost', 'isHighContrastActive', 'accentColor', 'prevAccentColor', 'revertAccentColor', 'DEFAULT_ACCENT_COLOR', 'HIGH_CONTRAST_ACCENT_COLOR', 'fontSize', 'fontFamily', 'applyDarkMode', 'applyPinkMode', 'applyHighContrast', 'setupInstallBanner', 'ensureZoomRemoteSetup', 'generateConnectorSummary', 'diagramConnectorIcons', 'DIAGRAM_MONITOR_ICON']
       };
-      Object.entries(MODULE_EXPORTS).forEach(function (_ref44) {
-        var _ref45 = _slicedToArray(_ref44, 2),
-          moduleName = _ref45[0],
-          exportNames = _ref45[1];
+      Object.entries(MODULE_EXPORTS).forEach(function (_ref45) {
+        var _ref46 = _slicedToArray(_ref45, 2),
+          moduleName = _ref46[0],
+          exportNames = _ref46[1];
         var moduleRef = scope[moduleName];
         if (!moduleRef || typeof moduleRef.install !== 'function') {
           return;
@@ -16069,10 +16183,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref46) {
-      var _ref47 = _slicedToArray(_ref46, 2),
-        name = _ref47[0],
-        value = _ref47[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref47) {
+      var _ref48 = _slicedToArray(_ref47, 2),
+        name = _ref48[0],
+        value = _ref48[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }

@@ -511,6 +511,54 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: '',
   accessDate: '2024-05-28'
 }), Object.freeze({
+  name: 'BildTon GmbH – Kameraverleih München',
+  shortName: 'BildTon',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Moosacher Straße 79, 80809 München',
+  phone: '+49 89 45244990',
+  email: 'info@bildton.tv',
+  website: 'https://bildton.tv/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'Calumet Rent – München (Leopoldstraße)',
+  shortName: 'Calumet Rent',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Leopoldstraße 160, 80804 München',
+  phone: '+49 89 53072814',
+  email: 'rent.muenchen@calumet.de',
+  website: 'https://www.rent.calumetphoto.de/calumet-rent-muenchen',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'Cine-Mobil – München (Geiselgasteig)',
+  shortName: 'Cine-Mobil',
+  city: 'Geiselgasteig (Munich)',
+  country: 'Germany',
+  address: 'Bavariafilmplatz 7, 82031 Geiselgasteig',
+  phone: '+49 89 99981910',
+  email: 'info@cine-mobil.de',
+  website: 'https://www.cine-mobil.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'Cinegate (PRG) – München',
+  shortName: 'Cinegate',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Martin-Kollar-Straße 12, 81829 München',
+  phone: '+49 89 70996260',
+  email: 'muenchen@cinegate.de',
+  website: 'https://cinegate.prg.com/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
   name: 'Camera Nordic – Norway',
   shortName: 'Camera Nordic',
   city: 'Oslo',
@@ -619,6 +667,30 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: 'https://www.direct-digital.com/en/contact',
   accessDate: '2025-02-14'
 }), Object.freeze({
+  name: 'FGV Schmidle – München',
+  shortName: 'FGV Schmidle',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Aschauer Straße 8–10, 81549 München',
+  phone: '+49 89 6809090',
+  email: 'munich@fgv-rental.de',
+  website: 'https://fgv-rental.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'Gruppe 3 – München',
+  shortName: 'Gruppe 3',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Frankfurter Ring 247, 80807 München',
+  phone: '+49 89 3681840',
+  email: 'info@gruppe3.de',
+  website: 'https://www.gruppe3.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
   name: 'Hawk Anamorphic Los Angeles LP',
   shortName: 'Hawk',
   city: 'Los Angeles',
@@ -654,6 +726,30 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceQuote: 'Junction Rentals contact page lists phone 020 7967 7956, email info@junction.rentals and address Unit 14, Bessemer Park, Herne Hill, London SE24 0HG',
   sourceUrl: 'https://junction.rentals/contact',
   accessDate: '2025-02-14'
+}), Object.freeze({
+  name: 'K-9 Kameraverleih – München',
+  shortName: 'K-9 Kameraverleih',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Oberföhringerstraße 125, 81925 München',
+  phone: '+49 89 326302420',
+  email: 'info@k-9tv.de',
+  website: 'https://www.k-9tv.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'KLT Rental – Unterföhring (München area)',
+  shortName: 'KLT Rental',
+  city: 'Unterföhring (Munich area)',
+  country: 'Germany',
+  address: 'Dieselstraße 3, 85774 Unterföhring',
+  phone: '+49 89 18933630',
+  email: 'info@klt-rental.de',
+  website: 'https://www.klt-rental.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
 }), Object.freeze({
   name: 'Keslow Camera – Albuquerque',
   shortName: 'Keslow',
@@ -1015,6 +1111,30 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: 'https://ludwigkamera.de/en/branches/',
   accessDate: '2025-02-14'
 }), Object.freeze({
+  name: 'MBF Filmtechnik – Frankfurt (HQ)',
+  shortName: 'MBF Filmtechnik',
+  city: 'Frankfurt am Main',
+  country: 'Germany',
+  address: 'Gaugrafenstraße 20, 60489 Frankfurt am Main',
+  phone: '+49 69 3400040',
+  email: 'frankfurt@rental.de',
+  website: 'https://mbf.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'MBF Filmtechnik – Hamburg',
+  shortName: 'MBF Filmtechnik',
+  city: 'Hamburg',
+  country: 'Germany',
+  address: 'Winsbergring 34, 22525 Hamburg',
+  phone: '+49 40 6568640',
+  email: 'hamburg@rental.de',
+  website: 'https://mbf.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
   name: 'MovieTech (MovieTech AG)',
   shortName: 'MovieTech',
   city: 'Munich',
@@ -1219,6 +1339,30 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceUrl: 'https://shootblue.tv/contact/',
   accessDate: '2025-02-14'
 }), Object.freeze({
+  name: 'Sparks Filmtechnik – München',
+  shortName: 'Sparks Filmtechnik',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Behringstraße 27d, 80999 München',
+  phone: '+49 89 8131901',
+  email: 'info@sparks-rental.de',
+  website: 'https://sparks-rental.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
+  name: 'TMT Film- und TV-Produktions-Service – München',
+  shortName: 'TMT Film- und TV-Produktions-Service',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Kistlerhofstraße 70, Gebäude 75, 81379 München',
+  phone: '+49 89 7470880',
+  email: 'info@tmt-muc.de',
+  website: 'https://www.tmt-muc.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
+}), Object.freeze({
   name: 'TSF Group (GROUPE TSF)',
   shortName: 'TSF',
   city: 'Saint-Denis (Paris)',
@@ -1230,6 +1374,18 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceQuote: 'TSF Group contact page lists 30 avenue George Sand, 93210 Saint-Denis with phone +33 (0)1 49 17 60 00 and email contact@tsf.fr',
   sourceUrl: 'https://us.tsf.fr/contact/',
   accessDate: '2025-02-14'
+}), Object.freeze({
+  name: 'UFO Filmgerät – München',
+  shortName: 'UFO Filmgerät',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Landsberger Straße 212, 80687 München',
+  phone: '+49 89 125033830',
+  email: 'muenchen@ufo-filmgeraet.de',
+  website: 'https://www.ufo-filmgeraet.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
 }), Object.freeze({
   name: 'VA Hire – Brisbane',
   shortName: 'VA Hire',
@@ -1266,6 +1422,18 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceQuote: 'VA Hire contact page shows Sydney location at Disney Studios Australia, Gate D / Professional Entrance, Building 44B, 38 Driver Avenue, Moore Park NSW 2021 with office phone 02 9906 6006 and email sydney@vahire.com',
   sourceUrl: 'https://www.vahire.com',
   accessDate: '2025-02-14'
+}), Object.freeze({
+  name: 'Videolink – München',
+  shortName: 'Videolink',
+  city: 'Munich',
+  country: 'Germany',
+  address: 'Boschetsrieder Straße 125, 81379 München',
+  phone: '+49 89 35627730',
+  email: 'info@videolink.de',
+  website: 'https://www.videolink.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
 }), Object.freeze({
   name: 'Vantage – Berlin',
   shortName: 'Vantage',
@@ -1422,6 +1590,18 @@ var rentalHouses = Object.freeze([Object.freeze({
   sourceQuote: 'Vocas contact page lists Vocas Sales & Services at Larenseweg 121, 1221 CL Hilversum with phone +31 (0)35 62 33 707 and email info@vocas.nl',
   sourceUrl: 'https://vocas.nl/',
   accessDate: '2025-02-14'
+}), Object.freeze({
+  name: 'Zündt’s Filmgeräte Verleih – Kirchheim (München area)',
+  shortName: 'Zündt’s Filmgeräte Verleih',
+  city: 'Kirchheim-Heimstetten (Munich area)',
+  country: 'Germany',
+  address: 'Weißenfelder Straße 4a, 85551 Kirchheim-Heimstetten',
+  phone: '+49 89 244106900',
+  email: 'info@zuendt.de',
+  website: 'https://zuendt.de/',
+  sourceQuote: 'Provided rental partner dataset (2025-10-14)',
+  sourceUrl: '',
+  accessDate: '2025-10-14'
 })]);
 var shouldExposeGlobally = typeof module === 'undefined' || !module || !module.exports;
 if (shouldExposeGlobally) {

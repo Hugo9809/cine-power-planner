@@ -334,7 +334,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (value === null || value === undefined) return '';
       return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     };
-
     var sanitizeDomId = function sanitizeDomId(value) {
       if (typeof value !== 'string') return '';
       var trimmed = value.trim();
@@ -342,7 +341,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var normalized = trimmed.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
       return normalized || '';
     };
-
     var buildPopupHeadingId = function buildPopupHeadingId(nodeId) {
       var sanitized = sanitizeDomId(nodeId);
       return sanitized ? "diagramPopupTitle-".concat(sanitized) : 'diagramPopupTitle';
@@ -1839,7 +1837,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var focusPopup = function focusPopup() {
         if (!popup || typeof popup.focus !== 'function') return;
         try {
-          popup.focus({ preventScroll: true });
+          popup.focus({
+            preventScroll: true
+          });
         } catch (focusError) {
           popup.focus();
           void focusError;

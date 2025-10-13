@@ -441,6 +441,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var escapeHtml = resolveEscapeHtml();
   var pinkModeLottieRuntime = null;
   var pinkModeLottiePromise = null;
+  function sharePinkModeLottieRuntime(runtime) {
+    if (!runtime || typeof runtime.loadAnimation !== 'function') {
+      return;
+    }
+    var assignAlias = function assignAlias(scope, name) {
+      if (!scope || _typeof(scope) !== 'object') {
+        return;
+      }
+      if (scope[name] && scope[name] === runtime) {
+        return;
+      }
+      try {
+        if (!scope[name]) {
+          scope[name] = runtime;
+        }
+      } catch (error) {
+        void error;
+      }
+    };
+    if (typeof window !== 'undefined' && window) {
+      assignAlias(window, 'lottie');
+      assignAlias(window, 'bodymovin');
+    }
+    if (GLOBAL_SCOPE) {
+      assignAlias(GLOBAL_SCOPE, 'lottie');
+      assignAlias(GLOBAL_SCOPE, 'bodymovin');
+    }
+  }
   function disablePinkModeLottieWebWorkers(instance) {
     if (!instance || typeof instance.useWebWorker !== 'function') {
       return;
@@ -455,10 +483,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (pinkModeLottieRuntime && typeof pinkModeLottieRuntime.loadAnimation === 'function') {
       return pinkModeLottieRuntime;
     }
-    if (typeof window !== 'undefined' && window && window.lottie && typeof window.lottie.loadAnimation === 'function') {
-      pinkModeLottieRuntime = window.lottie;
-      disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
-      return pinkModeLottieRuntime;
+    if (typeof window !== 'undefined' && window) {
+      var browserRuntime = (window.lottie && typeof window.lottie.loadAnimation === 'function' ? window.lottie : null) || (window.bodymovin && typeof window.bodymovin.loadAnimation === 'function' ? window.bodymovin : null);
+      if (browserRuntime) {
+        pinkModeLottieRuntime = browserRuntime;
+        sharePinkModeLottieRuntime(browserRuntime);
+        disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
+        return pinkModeLottieRuntime;
+      }
+    }
+    if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+      var globalRuntime = (GLOBAL_SCOPE.lottie && typeof GLOBAL_SCOPE.lottie.loadAnimation === 'function' ? GLOBAL_SCOPE.lottie : null) || (GLOBAL_SCOPE.bodymovin && typeof GLOBAL_SCOPE.bodymovin.loadAnimation === 'function' ? GLOBAL_SCOPE.bodymovin : null);
+      if (globalRuntime) {
+        pinkModeLottieRuntime = globalRuntime;
+        sharePinkModeLottieRuntime(globalRuntime);
+        disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
+        return pinkModeLottieRuntime;
+      }
     }
     return null;
   }
@@ -533,9 +574,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     pinkModeLottiePromise = loaderPromise.then(function (instance) {
       if (instance && typeof instance.loadAnimation === 'function') {
+        sharePinkModeLottieRuntime(instance);
         return instance;
       }
-      return resolvePinkModeLottieRuntime();
+      var resolved = resolvePinkModeLottieRuntime();
+      if (resolved) {
+        sharePinkModeLottieRuntime(resolved);
+      }
+      return resolved;
     }).catch(function (error) {
       console.warn('Unable to load pink mode animations', error);
       return null;
@@ -546,6 +592,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return null;
       }
       pinkModeLottieRuntime = runtime;
+      sharePinkModeLottieRuntime(runtime);
       disablePinkModeLottieWebWorkers(runtime);
       pinkModeLottiePromise = Promise.resolve(runtime);
       return runtime;
@@ -1392,7 +1439,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function spawnPinkModeIconRainInstance(templates) {
-    if (!Array.isArray(templates) || !templates.length || typeof window === 'undefined' || !window.lottie || typeof window.lottie.loadAnimation !== 'function') {
+    var lottieRuntime = resolvePinkModeLottieRuntime();
+    if (!Array.isArray(templates) || !templates.length || !lottieRuntime || typeof lottieRuntime.loadAnimation !== 'function') {
       return false;
     }
     var layer = ensurePinkModeAnimationLayer({
@@ -1506,7 +1554,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var animationInstance;
     try {
-      animationInstance = window.lottie.loadAnimation({
+      animationInstance = lottieRuntime.loadAnimation({
         container: container,
         renderer: 'svg',
         loop: true,
@@ -1593,7 +1641,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
   }
   function spawnPinkModeAnimatedIconInstance(templates) {
-    if (!pinkModeAnimatedIconsActive || !Array.isArray(templates) || !templates.length || typeof window === 'undefined' || !window.lottie || typeof window.lottie.loadAnimation !== 'function') {
+    var lottieRuntime = resolvePinkModeLottieRuntime();
+    if (!pinkModeAnimatedIconsActive || !Array.isArray(templates) || !templates.length || !lottieRuntime || typeof lottieRuntime.loadAnimation !== 'function') {
       return false;
     }
     var layer = ensurePinkModeAnimationLayer();
@@ -1753,7 +1802,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var animationInstance;
     try {
-      animationInstance = window.lottie.loadAnimation({
+      animationInstance = lottieRuntime.loadAnimation({
         container: container,
         renderer: 'svg',
         loop: true,

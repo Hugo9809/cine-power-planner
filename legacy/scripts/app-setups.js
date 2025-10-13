@@ -17,6 +17,68 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
+function resolveSetupRuntimeFunction(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+  var candidates = [];
+  var registerCandidate = function registerCandidate(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    if (!candidates.includes(scope)) {
+      candidates.push(scope);
+    }
+  };
+  try {
+    registerCandidate(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  } catch (_unused) {}
+  try {
+    registerCandidate(typeof globalThis !== 'undefined' ? globalThis : null);
+  } catch (_unused2) {}
+  try {
+    registerCandidate(typeof window !== 'undefined' ? window : null);
+  } catch (_unused3) {}
+  try {
+    registerCandidate(typeof self !== 'undefined' ? self : null);
+  } catch (_unused4) {}
+  try {
+    registerCandidate(typeof global !== 'undefined' ? global : null);
+  } catch (_unused5) {}
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    try {
+      var candidate = scope[name];
+      if (typeof candidate === 'function') {
+        return candidate;
+      }
+    } catch (resolveError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to resolve runtime function from scope', name, resolveError);
+      }
+    }
+  }
+  return null;
+}
+function safeGetCurrentProjectName() {
+  var defaultValue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var resolver = resolveSetupRuntimeFunction('getCurrentProjectName');
+  if (typeof resolver !== 'function') {
+    return defaultValue;
+  }
+  try {
+    var resolved = resolver();
+    if (typeof resolved === 'string' && resolved.trim()) {
+      return resolved;
+    }
+    return defaultValue;
+  } catch (projectNameError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('safeGetCurrentProjectName failed, falling back to default', projectNameError);
+    }
+    return defaultValue;
+  }
+}
 var CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 var CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
 var PRODUCTION_COMPANY_FIELD_ORDER = ['productionCompanyAddress', 'productionCompanyStreet', 'productionCompanyStreet2', 'productionCompanyCity', 'productionCompanyRegion', 'productionCompanyPostalCode', 'productionCompanyCountry'];
@@ -2489,7 +2551,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
   var shareLinkMessage = shareContext.linkMessage;
   var shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
   var shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
-  var setupName = getCurrentProjectName();
+  var setupName = safeGetCurrentProjectName();
   var readPowerSelectValue = function readPowerSelectValue(select) {
     return select && typeof select.value === 'string' ? normalizePowerSelectionString(select.value) : '';
   };
@@ -3320,7 +3382,7 @@ function handleShareSetupClick() {
   var shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
   var shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
   saveCurrentGearList();
-  var setupName = getCurrentProjectName();
+  var setupName = safeGetCurrentProjectName();
   var defaultName = getDefaultShareFilename(setupName);
   var defaultFilename = ensureJsonExtension(defaultName);
   if (!shareDialog || !shareForm || !shareFilenameInput) {
@@ -4584,7 +4646,7 @@ function collectProjectFormData() {
   if (storageEntries.length) {
     info.storageRequirements = storageEntries;
   }
-  var currentProjectName = getCurrentProjectName();
+  var currentProjectName = safeGetCurrentProjectName();
   if (currentProjectName) {
     info.projectName = currentProjectName;
   }
@@ -9902,7 +9964,7 @@ function gearListGenerateHtmlImpl() {
   delete projectInfo.viewfinderSettings;
   delete projectInfo.frameGuides;
   delete projectInfo.aspectMaskOpacity;
-  var projectTitleSource = getCurrentProjectName() || info.projectName || '';
+  var projectTitleSource = safeGetCurrentProjectName(info.projectName || '') || info.projectName || '';
   var projectTitle = escapeHtml(projectTitleSource);
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2', 'storageRequirements', 'monitorBatteries', 'lensSelections']);
   var infoEntries = Object.entries(projectInfo).filter(function (_ref27) {
@@ -11607,7 +11669,7 @@ function gearListGetCurrentHtmlImpl() {
   if (!projHtml && !gearHtml) {
     return '';
   }
-  var projectName = getCurrentProjectName();
+  var projectName = safeGetCurrentProjectName();
   var titleHtml = projectName ? "<h2>".concat(projectName, "</h2>") : '';
   var combined = "".concat(titleHtml).concat(projHtml).concat(gearHtml).trim();
   if (combined && typeof globalThis !== 'undefined') {

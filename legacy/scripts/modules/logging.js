@@ -2025,9 +2025,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         removeConsoleProxies();
       }
       if (lastConsoleCaptureState !== 'disabled') {
-        logInternal('info', 'Console output capture disabled', {
-          installed: false
-        }, {
+        logInternal('info', 'Console output capture disabled', buildConsoleCaptureDetail({
+          status: 'disabled'
+        }), {
           namespace: 'logging',
           meta: {
             channel: 'console',
@@ -2045,6 +2045,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var installed = installConsoleProxies();
     if (!installed) {
       if (!consoleProxyWarningIssued) {
+        var reason = typeof console === 'undefined' || !console ? 'console-unavailable' : 'installation-failed';
+        logInternal('warn', 'Console output capture failed', buildConsoleCaptureDetail({
+          status: 'failed',
+          reason: reason
+        }), {
+          namespace: 'logging',
+          meta: {
+            channel: 'console',
+            lifecycle: 'sync'
+          }
+        }, {
+          silentConsole: true
+        });
         safeWarn('cineLogging: Unable to capture console output for diagnostics.');
         consoleProxyWarningIssued = true;
       }
@@ -2053,9 +2066,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     consoleProxyWarningIssued = false;
     if (lastConsoleCaptureState !== 'enabled') {
-      logInternal('info', 'Console output capture enabled', {
-        installed: true
-      }, {
+      logInternal('info', 'Console output capture enabled', buildConsoleCaptureDetail({
+        status: 'enabled'
+      }), {
         namespace: 'logging',
         meta: {
           channel: 'console',
@@ -2070,6 +2083,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function isConsoleCaptureActive() {
     return Boolean(activeConfig.captureConsole) && consoleProxyInstalled === true;
+  }
+  function buildConsoleCaptureDetail(overrides) {
+    var detail = {
+      configured: activeConfig.captureConsole === true,
+      installed: consoleProxyInstalled === true,
+      attempted: consoleProxyInstallationAttempted === true,
+      failed: consoleProxyInstallationFailed === true
+    };
+    if (typeof console === 'undefined' || !console) {
+      detail.consoleAvailable = false;
+    }
+    if (overrides && _typeof(overrides) === 'object') {
+      var overrideKeys = Object.keys(overrides);
+      for (var index = 0; index < overrideKeys.length; index += 1) {
+        var key = overrideKeys[index];
+        detail[key] = overrides[key];
+      }
+    }
+    return detail;
   }
   function enableConsoleCapture(options) {
     var setOptions = options && _typeof(options) === 'object' ? options : null;
