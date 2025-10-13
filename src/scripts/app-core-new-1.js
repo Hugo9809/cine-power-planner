@@ -3368,6 +3368,7 @@ const AUTO_GEAR_SEEDED_KEY =
 const AUTO_GEAR_RETENTION_DEFAULT_FALLBACK = 36;
 const AUTO_GEAR_RETENTION_MIN_FALLBACK = 1;
 const AUTO_GEAR_RETENTION_MAX_FALLBACK = 50;
+const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 
 function readGlobalAutoGearValue(propertyName) {
   const scopes = [
@@ -3561,7 +3562,6 @@ const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
 var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolveAutoGearBackupRetentionDefault();
-const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
 const AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
@@ -17757,7 +17757,7 @@ function decodeSharedSetup(setup) {
 }
   var deviceManagerSection = document.getElementById("device-manager");
   var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
-  let deviceListContainerRef = null;
+  var deviceListContainerRef = null;
 
   function resolveDeviceListContainer() {
     if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
@@ -22954,6 +22954,8 @@ function getCrewRoleEntries() {
 exposeCoreRuntimeConstant('setupInstallBanner', setupInstallBanner);
 exposeCoreRuntimeConstant('maybeShowIosPwaHelp', maybeShowIosPwaHelp);
 exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+exposeCoreRuntimeConstant('setLanguage', setLanguage);
+exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
 const CORE_RUNTIME_CONSTANTS = {
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,

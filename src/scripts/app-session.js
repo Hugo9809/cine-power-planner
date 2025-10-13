@@ -199,6 +199,60 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 /* global requestPersistentStorage */
 
+const missingMountVoltageWarnings = (() => {
+  const candidateScopes = [
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    (typeof globalThis !== 'undefined' && typeof globalThis === 'object') ? globalThis : null,
+    (typeof window !== 'undefined' && typeof window === 'object') ? window : null,
+    (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
+    (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
+  ].filter(Boolean);
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      const existing = scope.__cineMissingMountVoltageWarnings;
+      if (existing instanceof Set) {
+        return existing;
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  const created = new Set();
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    try {
+      scope.__cineMissingMountVoltageWarnings = created;
+      break;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return created;
+})();
+
+function warnMissingMountVoltageHelper(helperName, error) {
+  const warnings = missingMountVoltageWarnings;
+  const key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
+  if (warnings.has(key)) {
+    return;
+  }
+  warnings.add(key);
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    const message = `Mount voltage helper "${key}" is unavailable; using defaults to protect user data.`;
+    if (error) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
+  }
+}
+
 // Lazily create globally shared placeholders so that other modules can safely
 // attach state without mutating the global namespace unexpectedly. This keeps
 // backwards compatibility with legacy entry points.
@@ -17448,24 +17502,6 @@ if (typeof module !== "undefined" && module.exports) {
       clearAutoGearDefaultsSeeded,
     },
   };
-}
-
-const missingMountVoltageWarnings = new Set();
-
-function warnMissingMountVoltageHelper(helperName, error) {
-  const key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
-  if (missingMountVoltageWarnings.has(key)) {
-    return;
-  }
-  missingMountVoltageWarnings.add(key);
-  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-    const message = `Mount voltage helper "${key}" is unavailable; using defaults to protect user data.`;
-    if (error) {
-      console.warn(message, error);
-    } else {
-      console.warn(message);
-    }
-  }
 }
 
 function fallbackParseVoltageValue(value, fallback) {
