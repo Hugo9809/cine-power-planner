@@ -154,3 +154,18 @@
 
 - Pink mode animations now resolve asset URLs relative to the active document base, preserving correct lookups when the planner runs from custom subdirectories or offline mirrors.【F:src/scripts/modules/core/pink-mode-animations.js†L29-L116】
 - Asset fetches reuse the service worker cache first and fall back to XHR when `fetch` is blocked, keeping the animated icon library available even for strict offline launches that previously rendered static placeholders.【F:src/scripts/modules/core/pink-mode-animations.js†L118-L243】【F:src/scripts/modules/core/pink-mode-animations.js†L756-L809】
+
+## Step 13 – Runtime scope helper extraction
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 24552 | 24408 | -144 |
+| `src/scripts/app-core-runtime-scopes.js` | – | 158 | +158 |
+| `legacy/scripts/app-core-new-1.js` | 21682 | 21681 | -1 |
+| `legacy/scripts/app-core-runtime-scopes.js` | – | 129 | +129 |
+
+*Notes:*
+
+- Moved the shared runtime scope candidate collectors into a dedicated helper so part one of the app core can shrink while still leaning on the defensive fallbacks that protect autosave, backup, and restore flows.【F:src/scripts/app-core-runtime-scopes.js†L1-L132】【F:src/scripts/app-core-new-1.js†L124-L205】
+- Legacy bundles load the same helper to keep older browsers aligned during the refactor without dropping any offline-safe guards.【F:legacy/scripts/app-core-runtime-scopes.js†L1-L109】【F:legacy/scripts/app-core-new-1.js†L119-L205】
+- Loader manifests, bundler scripts, integrity tests, and the service worker manifest now reference the new helper so offline caching and scripted builds continue to include the extracted runtime scopes.【F:src/scripts/script.js†L32-L58】【F:legacy/scripts/script.js†L12-L37】【F:src/scripts/loader.js†L2880-L2960】【F:tests/script/scriptIntegrity.test.js†L106-L133】【F:service-worker-assets.js†L1-L46】【F:service-worker-assets.js†L140-L187】
