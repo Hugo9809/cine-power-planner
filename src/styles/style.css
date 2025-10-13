@@ -7787,30 +7787,20 @@ body.dark-mode .onboarding-active-target {
   padding-block: calc(var(--button-padding-block) + 6px);
   padding-inline: calc(var(--button-padding-inline) + 6px);
   text-align: center;
-  box-shadow: var(--panel-shadow);
-  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  --button-border-width: 1px;
+  --button-border: color-mix(in srgb, var(--panel-border) 70%, transparent);
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
+  transition: transform 0.2s ease;
 }
 
 .onboarding-interaction-button:hover,
 .onboarding-interaction-button:focus-visible {
   transform: translateY(-1px);
-  box-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-interaction-button:active {
   transform: translateY(0);
-  box-shadow: none;
-}
-
-body.dark-mode .onboarding-interaction-button {
-  border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.45);
-}
-
-body.dark-mode .onboarding-interaction-button:hover,
-body.dark-mode .onboarding-interaction-button:focus-visible {
-  box-shadow: 0 22px 38px rgba(0, 0, 0, 0.5);
 }
 
 .onboarding-resume-hint {
@@ -8204,55 +8194,8 @@ body:not(.dark-mode) .onboarding-step-status {
 .onboarding-step-button,
 .onboarding-skip {
   margin: 0;
-  background: var(--onboarding-button-bg);
-  color: var(--onboarding-button-text);
-  border: none;
-  border-radius: var(--border-radius);
-  padding: var(--button-padding-block) var(--button-padding-inline);
-  min-height: var(--button-size);
-  line-height: var(--button-line-height);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--button-icon-gap);
-  font: inherit;
-  font-weight: var(--font-weight-medium);
-  text-align: center;
-  cursor: pointer;
-  box-shadow: none;
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.onboarding-card-actions button:hover,
-.onboarding-card-actions button:focus-visible,
-.onboarding-interaction-button:hover,
-.onboarding-interaction-button:focus-visible,
-.onboarding-step-button:hover,
-.onboarding-step-button:focus-visible,
-.onboarding-skip:hover,
-.onboarding-skip:focus-visible {
-  background: var(--onboarding-button-hover-bg);
-  color: var(--onboarding-button-text);
-  box-shadow: var(--panel-shadow-hover);
-}
-
-.onboarding-card-actions button:active,
-.onboarding-interaction-button:active,
-.onboarding-step-button:active,
-.onboarding-skip:active {
-  background: var(--onboarding-button-active-bg);
-  box-shadow: none;
-}
-
-.onboarding-card-actions button:disabled,
-.onboarding-interaction-button:disabled,
-.onboarding-step-button:disabled,
-.onboarding-skip:disabled {
-  background: var(--onboarding-button-disabled-bg);
-  color: var(--onboarding-button-disabled-text);
-  cursor: not-allowed;
-  box-shadow: none;
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-card-actions button {
@@ -8272,32 +8215,8 @@ body:not(.dark-mode) .onboarding-step-status {
 
 .onboarding-back-button,
 .onboarding-next-button {
-  font-weight: var(--font-weight-medium);
-  background: var(--control-bg);
-  color: var(--control-text);
-  box-shadow: none;
-}
-
-.onboarding-back-button:hover,
-.onboarding-back-button:focus-visible,
-.onboarding-next-button:hover,
-.onboarding-next-button:focus-visible {
-  background: var(--control-hover-bg);
-  color: var(--control-text);
-}
-
-.onboarding-back-button:active,
-.onboarding-next-button:active {
-  background: var(--control-active-bg);
-  color: var(--control-text);
-  box-shadow: none;
-}
-
-.onboarding-back-button:disabled,
-.onboarding-next-button:disabled {
-  background: var(--control-disabled-bg);
-  color: color-mix(in srgb, var(--control-text) 80%, transparent);
-  box-shadow: none;
+  --button-shadow: none;
+  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-skip {
