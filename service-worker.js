@@ -227,6 +227,85 @@ try {
 } catch (logExposeError) {
   serviceWorkerLog.warn('Unable to expose service worker logger on global scope.', logExposeError);
 }
+
+async function waitForActivationState() {
+  if (typeof self === 'undefined' || !self) {
+    return;
+  }
+
+  const { registration } = self;
+  if (!registration) {
+    return;
+  }
+
+  const currentScriptUrl = (self.location && self.location.href) || null;
+
+  const possibleWorkers = [registration.installing, registration.waiting, registration.active].filter(
+    worker => worker
+  );
+
+  const candidateWorker = possibleWorkers.find(worker => {
+    try {
+      return worker && worker.scriptURL === currentScriptUrl;
+    } catch (error) {
+      serviceWorkerLog.warn('Unable to inspect worker script URL while waiting for activation.', error);
+      return false;
+    }
+  });
+
+  const targetWorker = candidateWorker || registration.active;
+
+  if (!targetWorker || typeof targetWorker.state !== 'string') {
+    return;
+  }
+
+  if (targetWorker.state === 'activated') {
+    return;
+  }
+
+  await new Promise(resolve => {
+    let timeoutId = null;
+
+    const cleanup = () => {
+      if (timeoutId !== null) {
+        try {
+          clearTimeout(timeoutId);
+        } catch (error) {
+          serviceWorkerLog.warn('Unable to clear activation wait timeout.', error);
+        }
+        timeoutId = null;
+      }
+      try {
+        targetWorker.removeEventListener('statechange', handleStateChange);
+      } catch (error) {
+        serviceWorkerLog.warn('Unable to remove activation statechange listener.', error);
+      }
+    };
+
+    const handleStateChange = () => {
+      if (targetWorker.state === 'activated') {
+        cleanup();
+        resolve();
+      }
+    };
+
+    try {
+      targetWorker.addEventListener('statechange', handleStateChange);
+    } catch (error) {
+      serviceWorkerLog.warn('Unable to observe activation state changes.', error);
+      resolve();
+      return;
+    }
+
+    timeoutId = setTimeout(() => {
+      serviceWorkerLog.warn('Activation wait timed out. Proceeding without confirmed activation.');
+      cleanup();
+      resolve();
+    }, 1000);
+
+    handleStateChange();
+  });
+}
 function loadServiceWorkerAssets() {
   if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
     try {
@@ -480,6 +559,7 @@ if (typeof self !== 'undefined') {
       }
 
       try {
+        await waitForActivationState();
         if (typeof self.clients !== 'undefined' && typeof self.clients.claim === 'function') {
           await self.clients.claim();
         }
@@ -488,6 +568,7 @@ if (typeof self !== 'undefined') {
       }
 
       try {
+        await waitForActivationState();
         if (
           self.registration &&
           self.registration.navigationPreload &&
