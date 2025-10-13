@@ -1837,6 +1837,9 @@
           '#totalCurrent12Label',
           '#totalCurrent12',
         ],
+        highlightPadding: {
+          right: 24,
+        },
       },
       {
         key: 'resultsBatteryPacks',
@@ -2869,6 +2872,46 @@
     activeTargetElements = [];
   }
 
+  const DEFAULT_HIGHLIGHT_PADDING = 12;
+
+  function normalizeHighlightPaddingValue(value, fallback) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, value);
+    }
+    return fallback;
+  }
+
+  function resolveStepHighlightPadding(step) {
+    const fallback = {
+      top: DEFAULT_HIGHLIGHT_PADDING,
+      right: DEFAULT_HIGHLIGHT_PADDING,
+      bottom: DEFAULT_HIGHLIGHT_PADDING,
+      left: DEFAULT_HIGHLIGHT_PADDING,
+    };
+    if (!step || typeof step !== 'object') {
+      return fallback;
+    }
+    const custom = step.highlightPadding;
+    if (typeof custom === 'number' && Number.isFinite(custom)) {
+      const normalized = Math.max(0, custom);
+      return {
+        top: normalized,
+        right: normalized,
+        bottom: normalized,
+        left: normalized,
+      };
+    }
+    if (custom && typeof custom === 'object') {
+      return {
+        top: normalizeHighlightPaddingValue(custom.top, fallback.top),
+        right: normalizeHighlightPaddingValue(custom.right, fallback.right),
+        bottom: normalizeHighlightPaddingValue(custom.bottom, fallback.bottom),
+        left: normalizeHighlightPaddingValue(custom.left, fallback.left),
+      };
+    }
+    return fallback;
+  }
+
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
@@ -2925,12 +2968,12 @@
     combinedRect.width = Math.max(0, combinedRect.right - combinedRect.left);
     combinedRect.height = Math.max(0, combinedRect.bottom - combinedRect.top);
 
-    const padding = 12;
-    const width = Math.max(0, combinedRect.width + padding * 2);
-    const height = Math.max(0, combinedRect.height + padding * 2);
+    const padding = resolveStepHighlightPadding(currentStep);
+    const width = Math.max(0, combinedRect.width + padding.left + padding.right);
+    const height = Math.max(0, combinedRect.height + padding.top + padding.bottom);
     const { offsetLeft, offsetTop } = getOverlayMetrics();
-    const left = combinedRect.left + offsetLeft - padding;
-    const top = combinedRect.top + offsetTop - padding;
+    const left = combinedRect.left + offsetLeft - padding.left;
+    const top = combinedRect.top + offsetTop - padding.top;
 
     highlightEl.style.width = `${width}px`;
     highlightEl.style.height = `${height}px`;
