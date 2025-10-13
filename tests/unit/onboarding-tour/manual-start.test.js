@@ -352,7 +352,7 @@ describe('onboarding tour manual start', () => {
     }
   });
 
-  test('hero welcome step widens on compact viewports', async () => {
+  test('welcome step uses large card sizing on compact viewports', async () => {
     const originalInnerWidth = global.innerWidth;
     const originalVisualViewport = global.visualViewport;
 
@@ -400,10 +400,11 @@ describe('onboarding tour manual start', () => {
       const card = overlay.querySelector('.onboarding-card');
       expect(card).not.toBeNull();
 
+      const sizeAttr = card.getAttribute('data-size');
+      expect(sizeAttr).toBe('large');
+
       const inlineSizeValue = card.style.getPropertyValue('--onboarding-card-hero-inline-size');
-      const inlineSize = parseFloat(inlineSizeValue);
-      expect(Number.isFinite(inlineSize)).toBe(true);
-      expect(inlineSize).toBeGreaterThan(290);
+      expect(inlineSizeValue).toBe('');
     } finally {
       if (typeof originalInnerWidth === 'number') {
         global.innerWidth = originalInnerWidth;
@@ -414,7 +415,7 @@ describe('onboarding tour manual start', () => {
     }
   });
 
-  test('hero welcome step keeps compact viewport margins balanced', async () => {
+  test('welcome step keeps compact viewport margins balanced', async () => {
     const originalInnerWidth = global.innerWidth;
     const originalVisualViewport = global.visualViewport;
 
@@ -463,8 +464,8 @@ describe('onboarding tour manual start', () => {
       expect(card).not.toBeNull();
 
       const inlineSizeValue = card.style.getPropertyValue('--onboarding-card-hero-inline-size');
-      const inlineSize = parseFloat(inlineSizeValue);
-      const measuredWidth = Number.isFinite(inlineSize) && inlineSize > 0 ? inlineSize : 296;
+      expect(inlineSizeValue).toBe('');
+      const measuredWidth = 296;
 
       card.getBoundingClientRect = () => ({
         width: measuredWidth,
@@ -480,7 +481,7 @@ describe('onboarding tour manual start', () => {
 
       const left = parseFloat(card.style.left);
       expect(Number.isFinite(left)).toBe(true);
-      expect(left).toBeCloseTo(12, 1);
+      expect(left).toBeCloseTo(16, 1);
     } finally {
       if (typeof originalInnerWidth === 'number') {
         global.innerWidth = originalInnerWidth;
@@ -530,6 +531,7 @@ describe('onboarding tour manual start', () => {
     headerLanguage.dispatchEvent(new Event('change', { bubbles: true }));
     await new Promise(resolve => setTimeout(resolve, 30));
 
+    // Ensure the welcome language selector mirrors header updates.
     expect(onboardingLanguage.value).toBe('fr');
     expect(settingsLanguage.value).toBe('fr');
     expect(global.currentLang).toBe('fr');
