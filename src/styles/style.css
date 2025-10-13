@@ -7728,8 +7728,7 @@ body.dark-mode .onboarding-field-label {
   color: color-mix(in srgb, var(--inverse-text-color) 92%, rgba(255, 255, 255, 0.4));
 }
 
-.onboarding-field-input,
-.onboarding-field-select {
+.onboarding-field-input {
   width: 100%;
   border: 1px solid color-mix(in srgb, var(--accent-color) 35%, var(--control-border));
   background: color-mix(in srgb, var(--surface-color) 95%, rgba(255, 255, 255, 0.05) 5%);
@@ -7737,8 +7736,11 @@ body.dark-mode .onboarding-field-label {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-body.dark-mode .onboarding-field-input,
-body.dark-mode .onboarding-field-select {
+.onboarding-field-select {
+  width: 100%;
+}
+
+body.dark-mode .onboarding-field-input {
   background: color-mix(in srgb, rgba(24, 28, 34, 0.95) 85%, rgba(255, 255, 255, 0.08) 15%);
   border-color: color-mix(in srgb, var(--accent-color) 45%, rgba(255, 255, 255, 0.18));
   color: var(--inverse-text-color);
@@ -7746,9 +7748,7 @@ body.dark-mode .onboarding-field-select {
 }
 
 .onboarding-field-input:focus,
-.onboarding-field-select:focus,
-.onboarding-field-input:focus-visible,
-.onboarding-field-select:focus-visible {
+.onboarding-field-input:focus-visible {
   outline: none;
   border-color: color-mix(in srgb, var(--accent-color) 70%, var(--control-border));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 35%, transparent);
