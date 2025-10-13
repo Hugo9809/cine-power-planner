@@ -9023,11 +9023,28 @@ function connectionLabel(outType, inType) {
 
 function updateBatteryPlateVisibility() {
   ensureBatteryPlateElements();
-  const camName = cameraSelect.value;
-  const plates = getAvailableBatteryPlates(camName);
-  const current = batteryPlateSelect.value;
+  const camName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  const plates = typeof getAvailableBatteryPlates === 'function'
+    ? getAvailableBatteryPlates(camName)
+    : [];
+  const applyDependentUpdates = () => {
+    updateViewfinderSettingsVisibility();
+    updateViewfinderExtensionVisibility();
+    updateMonitoringConfigurationOptions();
+  };
+  if (!batteryPlateSelect || !batteryPlateRow) {
+    if (batteryPlateRow && typeof batteryPlateRow.style !== 'undefined') {
+      batteryPlateRow.style.display = 'none';
+    }
+    if (batteryPlateSelect) {
+      batteryPlateSelect.value = '';
+    }
+    applyDependentUpdates();
+    return;
+  }
+  const current = typeof batteryPlateSelect.value === 'string' ? batteryPlateSelect.value : '';
   batteryPlateSelect.innerHTML = '';
-  if (plates.length) {
+  if (Array.isArray(plates) && plates.length) {
     plates.forEach(pt => {
       const opt = document.createElement('option');
       opt.value = pt;
@@ -9044,9 +9061,7 @@ function updateBatteryPlateVisibility() {
     batteryPlateRow.style.display = 'none';
     batteryPlateSelect.value = '';
   }
-  updateViewfinderSettingsVisibility();
-  updateViewfinderExtensionVisibility();
-  updateMonitoringConfigurationOptions();
+  applyDependentUpdates();
 }
 
 function updateViewfinderSettingsVisibility() {
@@ -19626,7 +19641,7 @@ var lensFocusScaleSelect = document.getElementById("lensFocusScaleUnit");
 const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
-const viewfinderContainer = document.getElementById("viewfinderContainer");
+var viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 var batteryFieldsDiv = document.getElementById("batteryFields");
 let batteryPlateRow;
@@ -20144,27 +20159,27 @@ var helpSectionsContainer = document.getElementById("helpSections");
 var helpQuickLinksNav = document.getElementById("helpQuickLinks");
 var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 var helpQuickLinksList = document.getElementById("helpQuickLinksList");
-let installPromptBanner;
-let installPromptBannerText;
-let installPromptBannerAction;
-let installPromptBannerIcon;
-let installPromptBannerDismiss;
-let installGuideDialog;
-let installGuideTitle;
-let installGuideIntro;
-let installGuideSteps;
-let installGuideNote;
-let installGuideMigration;
-let installGuideMigrationTitle;
-let installGuideMigrationIntro;
-let installGuideMigrationSteps;
-let installGuideMigrationNote;
-let installGuideClose;
+var installPromptBanner;
+var installPromptBannerText;
+var installPromptBannerAction;
+var installPromptBannerIcon;
+var installPromptBannerDismiss;
+var installGuideDialog;
+var installGuideTitle;
+var installGuideIntro;
+var installGuideSteps;
+var installGuideNote;
+var installGuideMigration;
+var installGuideMigrationTitle;
+var installGuideMigrationIntro;
+var installGuideMigrationSteps;
+var installGuideMigrationNote;
+var installGuideClose;
 var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
-let iosPwaHelpTitle;
-let iosPwaHelpIntro;
-let iosPwaHelpStep1;
-let installPromptElementsInitialized = false;
+var iosPwaHelpTitle;
+var iosPwaHelpIntro;
+var iosPwaHelpStep1;
+var installPromptElementsInitialized = false;
 
 function ensureInstallPromptElements() {
   if (installPromptElementsInitialized && installPromptBanner) {
