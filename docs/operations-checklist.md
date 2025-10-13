@@ -13,28 +13,32 @@ restore workflows protect every bit of user data.
 
 ## Rehearsal steps
 
-1. **Manual save**
+1. **Modern bundle self-healing**
+   - [ ] While online, open DevTools storage inspector for `localStorage`.
+   - [ ] Disable the network temporarily, reload once to confirm the loader falls back to the inline legacy bundle without writing `cameraPowerPlanner_forceLegacyBundle`.
+   - [ ] Restore connectivity and reload; verify the app returns to the modern bundle automatically and the legacy flag remains absent.
+2. **Manual save**
    - [ ] Modify project notes, press **Save** (or `Ctrl+S` / `⌘S`).
    - [ ] Verify confirmation toast, check autosave ledger entry.
-2. **Autosave cadence**
+3. **Autosave cadence**
    - [ ] Make >50 changes or wait 10 minutes.
    - [ ] Confirm the autosave ledger records the run and timestamp.
-3. **Planner backup**
+4. **Planner backup**
    - [ ] Navigate to **Settings → Backup & Restore → Backup**.
    - [ ] Save `planner-backup.json` to two physical media; record checksums.
-4. **Project export**
+5. **Project export**
    - [ ] From the selector, choose **Export Project** for the active rig.
    - [ ] Store the bundle with checksum and capture diff summary screenshot.
-5. **Restore sandbox**
+6. **Restore sandbox**
    - [ ] Use **Settings → Backup & Restore → Restore rehearsal**.
    - [ ] Import the exported bundle; verify sandbox label and data integrity.
-6. **Promotion**
+7. **Promotion**
    - [ ] Promote sandbox data to live projects.
    - [ ] Confirm autosave ledger logs the promotion event.
-7. **Share rehearsal**
+8. **Share rehearsal**
    - [ ] Copy bundle to secondary workstation (offline).
    - [ ] Import via sandbox, promote and compare diff logs to original.
-8. **Documentation alignment**
+9. **Documentation alignment**
    - [ ] Check README + docs instructions against actual UI labels.
    - [ ] Update `review-findings.md` with discrepancies.
 
