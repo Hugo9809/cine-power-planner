@@ -404,7 +404,7 @@ const normaliseTextEntryValue =
       }
     : inlineNormaliseTextEntryValue;
 
-var resolveTextEntry =
+const resolveTextEntryRuntime =
   CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
     ? function resolveTextEntryProxy(
         primaryTexts,
@@ -421,6 +421,58 @@ var resolveTextEntry =
         );
       }
     : inlineResolveTextEntry;
+
+const resolveTextEntryInternal = (function ensureResolveTextEntryAvailability(resolver) {
+  const candidateScopes = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      if (typeof scope.resolveTextEntry === 'function') {
+        return scope.resolveTextEntry;
+      }
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+
+  try {
+    if (typeof resolveTextEntry === 'function') {
+      return resolveTextEntry;
+    }
+  } catch (globalLookupError) {
+    void globalLookupError;
+  }
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      scope.resolveTextEntry = resolver;
+      if (typeof scope.resolveTextEntry === 'function') {
+        return scope.resolveTextEntry;
+      }
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+
+  return resolver;
+})(resolveTextEntryRuntime);
 
 const CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 
@@ -7878,11 +7930,11 @@ function applyOwnGearLocalization(lang) {
   if (ownGearDialog) {
     const title = document.getElementById('ownGearDialogHeading');
     if (title) {
-      title.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
+      title.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
     }
     const description = document.getElementById('ownGearDialogDescription');
     if (description) {
-      const text = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
+      const text = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
       description.textContent = text;
       if (text) {
         description.setAttribute('data-help', text);
@@ -7893,10 +7945,10 @@ function applyOwnGearLocalization(lang) {
   }
   const addHeading = document.getElementById('ownGearAddHeading');
   if (addHeading) {
-    addHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
+    addHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
   }
   if (ownGearAddHelp) {
-    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHelp', '');
+    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHelp', '');
     ownGearAddHelp.textContent = helpText;
     if (helpText) {
       ownGearAddHelp.removeAttribute('hidden');
@@ -7908,16 +7960,16 @@ function applyOwnGearLocalization(lang) {
   }
   const nameLabel = document.getElementById('ownGearNameLabel');
   if (nameLabel) {
-    nameLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
+    nameLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
   }
   if (ownGearNameInput) {
-    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
+    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
     if (placeholder) {
       ownGearNameInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearNameInput.removeAttribute('placeholder');
     }
-    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameHelp', '');
+    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameHelp', '');
     if (helpText) {
       ownGearNameInput.setAttribute('data-help', helpText);
     } else {
@@ -7926,16 +7978,16 @@ function applyOwnGearLocalization(lang) {
   }
   const quantityLabel = document.getElementById('ownGearQuantityLabel');
   if (quantityLabel) {
-    quantityLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
+    quantityLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
   }
   if (ownGearQuantityInput) {
-    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
+    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
     if (placeholder) {
       ownGearQuantityInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearQuantityInput.removeAttribute('placeholder');
     }
-    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
+    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
     if (helpText) {
       ownGearQuantityInput.setAttribute('data-help', helpText);
     } else {
@@ -7944,16 +7996,16 @@ function applyOwnGearLocalization(lang) {
   }
   const notesLabel = document.getElementById('ownGearNotesLabel');
   if (notesLabel) {
-    notesLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
+    notesLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
   }
   if (ownGearNotesInput) {
-    const placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
+    const placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
     if (placeholder) {
       ownGearNotesInput.setAttribute('placeholder', placeholder);
     } else {
       ownGearNotesInput.removeAttribute('placeholder');
     }
-    const helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
+    const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
     if (helpText) {
       ownGearNotesInput.setAttribute('data-help', helpText);
     } else {
@@ -7961,19 +8013,19 @@ function applyOwnGearLocalization(lang) {
     }
   }
   if (ownGearResetButton) {
-    const label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
+    const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
     setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
   }
   if (ownGearCloseButton) {
-    const label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
+    const label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
     setButtonLabelWithIcon(ownGearCloseButton, label, ICON_GLYPHS.circleX);
   }
   const listHeading = document.getElementById('ownGearListHeading');
   if (listHeading) {
-    listHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
+    listHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
   }
   if (ownGearEmptyState) {
-    ownGearEmptyState.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
+    ownGearEmptyState.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
   }
   updateOwnGearSaveButtonState();
   renderOwnGearList();
@@ -9211,16 +9263,16 @@ function updateBatteryLabel() {
   if (!label) return;
   const langTexts = getLanguageTexts(currentLang);
   const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-  const helpText = resolveTextEntry(langTexts, fallbackTexts, 'batterySelectHelp', '');
+  const helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'batterySelectHelp', '');
   if (helpText) {
     label.setAttribute('data-help', helpText);
   } else {
     label.removeAttribute('data-help');
   }
   if (getSelectedPlate() === 'B-Mount') {
-    label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
+    label.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
   } else {
-    label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
+    label.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
   }
 }
 
@@ -9436,7 +9488,7 @@ function checkFizCompatibility() {
   }
 
   if (incompatible) {
-    const warning = resolveTextEntry(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
+    const warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
     setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
   } else {
@@ -9465,7 +9517,7 @@ function checkFizController() {
   if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
     const langTexts = getLanguageTexts(currentLang);
     const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-    const warning = resolveTextEntry(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
+    const warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
     setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
     return;
@@ -9496,7 +9548,7 @@ function checkFizController() {
   if (needController && !hasController) {
     const langTexts = getLanguageTexts(currentLang);
     const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-    const warning = resolveTextEntry(langTexts, fallbackTexts, 'missingFIZControllerWarning', '');
+    const warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'missingFIZControllerWarning', '');
     setStatusMessage(compatElem, warning);
     setStatusLevel(compatElem, 'danger');
   }
@@ -9538,26 +9590,26 @@ function checkArriCompatibility() {
   const clmRegex = /CLM-[345]/i;
   const hasCLM = motors.some(m => clmRegex.test(m));
   if (hasCLM && !usesUMC4) {
-    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
   } else if (usesUMC4 && motors.some(m => !clmRegex.test(m))) {
-    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
   } else if ((usesRIA1 || usesRF) && motors.some(m => clmRegex.test(m))) {
-    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
   } else if (
     distance &&
     distance !== 'None' &&
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
-    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
   } else if (onlyMasterGrip && !usesRF) {
-    msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
+    msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
   }
 
   if (msg) {
     setStatusMessage(compatElem, msg);
     const langTexts = getLanguageTexts(currentLang);
     const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-    const umcWarning = resolveTextEntry(langTexts, fallbackTexts, 'arriUMC4Warning', '');
+    const umcWarning = resolveTextEntryInternal(langTexts, fallbackTexts, 'arriUMC4Warning', '');
     if (msg === umcWarning && umcWarning) {
       setStatusLevel(compatElem, 'warning');
     } else {
