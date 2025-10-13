@@ -287,14 +287,6 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
 
     const { entries: addressEntries } = addressAccumulator;
     if (addressEntries.length) {
-        const fallbackAddressLabel = Array.isArray(LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress)
-            && LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress.length
-            ? LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress[0]
-            : 'Production Company Address';
-        const label = (projectLabels && projectLabels.productionCompanyAddress)
-            || (textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields.productionCompanyAddress)
-            || fallbackAddressLabel;
-        addLine(label, 'req-sub-label');
         addressEntries.forEach((entry) => {
             const { value, fields } = entry;
             addLine(value, 'req-sub-line', fields);

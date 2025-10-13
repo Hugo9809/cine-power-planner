@@ -167,9 +167,6 @@ function buildCombinedProductionCompanyDisplay(sourceInfo, projectLabels) {
   });
   var addressEntries = addressAccumulator.entries;
   if (addressEntries.length) {
-    var fallbackAddressLabel = Array.isArray(LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress) && LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress.length ? LEGACY_PROJECT_FIELD_LABELS.productionCompanyAddress[0] : 'Production Company Address';
-    var label = projectLabels && projectLabels.productionCompanyAddress || textsObj && textsObj.en && textsObj.en.projectFields && textsObj.en.projectFields.productionCompanyAddress || fallbackAddressLabel;
-    addLine(label, 'req-sub-label');
     addressEntries.forEach(function (entry) {
       var value = entry.value,
         fields = entry.fields;

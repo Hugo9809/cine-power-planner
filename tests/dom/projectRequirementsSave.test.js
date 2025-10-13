@@ -282,7 +282,7 @@ describe('project requirements persistence to project storage', () => {
     expect(addressBox).toBeNull();
 
     const valueHtml = companyBoxes[0].querySelector('.req-value').innerHTML;
-    expect(valueHtml).toContain('Production Company Address');
+    expect(valueHtml).not.toContain('Production Company Address');
     expect(valueHtml).toContain('500 Stage Way');
     expect(valueHtml).toContain('Backlot City');
     expect(valueHtml).toContain('90002');
