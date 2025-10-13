@@ -28,6 +28,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/runtime-state/local-runtime-state.js',
     'modules/core/runtime-state.js',
     'modules/core/localization-bridge.js',
+    'modules/core/pink-mode-support.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
     'modules/core/experience.js',
