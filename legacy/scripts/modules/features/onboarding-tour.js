@@ -504,7 +504,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     batteryComparison: {
       title: 'Compare battery options',
-      body: 'Open Battery Comparison to evaluate alternate packs side by side. The chart keeps calculations offline so you can test scenarios and lock in the safest runtime margin for the day.'
+      body: 'Open Battery Comparison to evaluate alternate packs side by side and lock in the safest runtime margin for the day.'
     },
     runtimeFeedback: {
       title: 'Submit runtime feedback',
