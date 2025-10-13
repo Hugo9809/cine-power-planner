@@ -3399,12 +3399,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   storeDevices(devices);
   viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
   viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
-  updatePlateTypeOptions();
-  updatePowerPortOptions();
-  updatePowerDistTypeOptions();
-  updatePowerDistVoltageOptions();
-  updatePowerDistCurrentOptions();
-  updateRecordingMediaOptions();
+  callEventsCoreFunction('updatePlateTypeOptions');
+  callEventsCoreFunction('updatePowerPortOptions');
+  callEventsCoreFunction('updatePowerDistTypeOptions');
+  callEventsCoreFunction('updatePowerDistVoltageOptions');
+  callEventsCoreFunction('updatePowerDistCurrentOptions');
+  callEventsCoreFunction('updateRecordingMediaOptions');
   updateTimecodeTypeOptions();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
