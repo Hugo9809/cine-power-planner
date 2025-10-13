@@ -248,20 +248,57 @@
 
   const globalScope = detectGlobalScope();
   const targetName = 'cineCoreDeviceSchema';
-  const existing =
-    globalScope && typeof globalScope[targetName] === 'object'
-      ? globalScope[targetName]
-      : {};
+  const aliasName = 'CORE_DEVICE_SCHEMA';
+
+  let existingAlias = null;
+  if (globalScope && (typeof globalScope === 'object' || typeof globalScope === 'function')) {
+    try {
+      const candidate = globalScope[aliasName];
+      if (candidate && typeof candidate === 'object') {
+        existingAlias = candidate;
+      }
+    } catch (readAliasError) {
+      void readAliasError;
+      existingAlias = null;
+    }
+  }
+
+  // Preserve backwards compatibility with legacy runtime segments that expect
+  // a `CORE_DEVICE_SCHEMA` global while still favouring the new namespace
+  // object when it already exists.
+  let existing = existingAlias;
+  if (!existing || typeof existing !== 'object') {
+    if (globalScope && (typeof globalScope === 'object' || typeof globalScope === 'function')) {
+      try {
+        const candidate = globalScope[targetName];
+        if (candidate && typeof candidate === 'object') {
+          existing = candidate;
+        }
+      } catch (readExistingError) {
+        void readExistingError;
+        existing = null;
+      }
+    }
+  }
+
+  if (!existing || typeof existing !== 'object') {
+    existing = {};
+  }
 
   for (const key of Object.keys(namespace)) {
     existing[key] = namespace[key];
   }
 
-  if (globalScope && typeof globalScope === 'object') {
+  if (globalScope && (typeof globalScope === 'object' || typeof globalScope === 'function')) {
     try {
       globalScope[targetName] = existing;
     } catch (assignError) {
       void assignError;
+    }
+    try {
+      globalScope[aliasName] = existing;
+    } catch (assignAliasError) {
+      void assignAliasError;
     }
   }
 
