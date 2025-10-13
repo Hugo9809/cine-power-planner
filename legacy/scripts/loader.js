@@ -238,6 +238,193 @@ function normaliseCriticalGlobalVariable(name, validator, fallback) {
   }
   return nextValue;
 }
+var DEFAULT_TEMPERATURE_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
+function ensureTemperatureStorageKeyAlias() {
+  var scope = resolveCriticalGlobalScope();
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return DEFAULT_TEMPERATURE_STORAGE_KEY;
+  }
+  function normaliseKey() {
+    var storageKey = null;
+    try {
+      storageKey = scope.TEMPERATURE_STORAGE_KEY;
+    } catch (readStorageKeyError) {
+      void readStorageKeyError;
+      storageKey = null;
+    }
+    var unitKey = null;
+    try {
+      unitKey = scope.TEMPERATURE_UNIT_STORAGE_KEY;
+    } catch (readUnitKeyError) {
+      void readUnitKeyError;
+      unitKey = null;
+    }
+    var resolvedKey = typeof storageKey === 'string' && storageKey ? storageKey : typeof unitKey === 'string' && unitKey ? unitKey : DEFAULT_TEMPERATURE_STORAGE_KEY;
+    if (scope.TEMPERATURE_STORAGE_KEY !== resolvedKey) {
+      try {
+        scope.TEMPERATURE_STORAGE_KEY = resolvedKey;
+      } catch (assignStorageKeyError) {
+        void assignStorageKeyError;
+        try {
+          Object.defineProperty(scope, 'TEMPERATURE_STORAGE_KEY', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: resolvedKey
+          });
+        } catch (defineStorageKeyError) {
+          void defineStorageKeyError;
+        }
+      }
+    }
+    if (scope.TEMPERATURE_UNIT_STORAGE_KEY !== resolvedKey) {
+      try {
+        scope.TEMPERATURE_UNIT_STORAGE_KEY = resolvedKey;
+      } catch (assignUnitKeyError) {
+        void assignUnitKeyError;
+        try {
+          Object.defineProperty(scope, 'TEMPERATURE_UNIT_STORAGE_KEY', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: resolvedKey
+          });
+        } catch (defineUnitKeyError) {
+          void defineUnitKeyError;
+        }
+      }
+    }
+    return resolvedKey;
+  }
+  var resolved = normaliseKey();
+  var existingResolver = null;
+  try {
+    existingResolver = scope.resolveTemperatureStorageKey;
+  } catch (readResolverError) {
+    void readResolverError;
+    existingResolver = null;
+  }
+  if (typeof existingResolver !== 'function') {
+    var resolver = function resolveTemperatureStorageKeyFallback() {
+      return normaliseKey();
+    };
+    try {
+      scope.resolveTemperatureStorageKey = resolver;
+    } catch (assignResolverError) {
+      void assignResolverError;
+      try {
+        Object.defineProperty(scope, 'resolveTemperatureStorageKey', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: resolver
+        });
+      } catch (defineResolverError) {
+        void defineResolverError;
+      }
+    }
+  }
+  return resolved;
+}
+function ensureResolveTextEntryFallback() {
+  var scope = resolveCriticalGlobalScope();
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return null;
+  }
+  var existing = null;
+  try {
+    existing = scope.resolveTextEntry;
+  } catch (readExistingError) {
+    void readExistingError;
+    existing = null;
+  }
+  if (typeof existing === 'function') {
+    return existing;
+  }
+  function extractEntry(source, key) {
+    if (!source || _typeof(source) !== 'object' && typeof source !== 'function') {
+      return undefined;
+    }
+    var value;
+    try {
+      value = source[key];
+    } catch (readError) {
+      void readError;
+      value = undefined;
+    }
+    if (typeof value === 'function') {
+      try {
+        value = value(key, source);
+      } catch (invokeError) {
+        void invokeError;
+        value = undefined;
+      }
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+    if (value && typeof value.text === 'string') {
+      return value.text;
+    }
+    if (value === null) {
+      return '';
+    }
+    return undefined;
+  }
+  var resolver = function resolveTextEntryFallback(langTexts, fallbackTexts, key, defaultValue) {
+    var keyName = typeof key === 'string' ? key : '';
+    if (!keyName) {
+      if (typeof defaultValue === 'string') {
+        return defaultValue;
+      }
+      if (typeof defaultValue === 'number' || typeof defaultValue === 'boolean') {
+        return String(defaultValue);
+      }
+      if (defaultValue && typeof defaultValue.text === 'string') {
+        return defaultValue.text;
+      }
+      return typeof defaultValue === 'undefined' ? '' : String(defaultValue);
+    }
+    var sources = [langTexts, fallbackTexts];
+    for (var index = 0; index < sources.length; index += 1) {
+      var result = extractEntry(sources[index], keyName);
+      if (typeof result !== 'undefined') {
+        return result;
+      }
+    }
+    if (typeof defaultValue === 'string') {
+      return defaultValue;
+    }
+    if (typeof defaultValue === 'number' || typeof defaultValue === 'boolean') {
+      return String(defaultValue);
+    }
+    if (defaultValue && typeof defaultValue.text === 'string') {
+      return defaultValue.text;
+    }
+    return typeof defaultValue === 'undefined' ? '' : String(defaultValue);
+  };
+  try {
+    scope.resolveTextEntry = resolver;
+  } catch (assignError) {
+    void assignError;
+    try {
+      Object.defineProperty(scope, 'resolveTextEntry', {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: resolver
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+  return resolver;
+}
+ensureTemperatureStorageKeyAlias();
+ensureResolveTextEntryFallback();
 var loaderBaseUrlCache = null;
 var documentBaseUrlCache = null;
 function stripUrlSearchAndHash(url) {
