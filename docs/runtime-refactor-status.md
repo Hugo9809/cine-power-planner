@@ -129,3 +129,17 @@
 - Part one of app core now resolves `cineCoreRuntimeState` before falling back to its local implementation, sharing the candidate scope collector so both halves reuse the same module while keeping offline guards intact.【F:src/scripts/app-core-new-1.js†L136-L225】
 - Temperature queue and renderer keys derive from the shared helper, keeping customised runtime overrides aligned across autosave, backup, and restore flows even when profiles reload from offline caches.【F:src/scripts/app-core-new-1.js†L682-L723】
 - The runtime state bootstrap delegates to `createLocalRuntimeState` when available, ensuring the freeze registry and renderer assignment protections match the module’s implementation while preserving the legacy fallback path for cold starts.【F:src/scripts/app-core-new-1.js†L1083-L1334】
+
+## Step 11 – Pink mode support bridge
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 23449 | 23454 | +5 |
+| `src/scripts/modules/core/pink-mode-support.js` | – | 243 | +243 |
+| `legacy/scripts/modules/core/pink-mode-support.js` | – | 194 | +194 |
+
+*Notes:*
+
+- Added `cineCorePinkModeSupport` to centralise the pink mode fallbacks, exposing the animation helpers when present and preserving resilient defaults for offline and cold-start contexts.【F:src/scripts/modules/core/pink-mode-support.js†L1-L243】
+- App core now resolves the shared support bridge before touching local fallbacks, trimming duplicate promise helpers while keeping the offline-safe behaviour that protects autosave and icon rotation state.【F:src/scripts/app-core-new-1.js†L203-L324】
+- Updated the module manifests so both the modern and legacy loaders, along with the service worker cache rehearsal, ship the new bridge for consistent offline coverage.【F:src/scripts/script.js†L33-L47】【F:legacy/scripts/script.js†L13-L32】【F:service-worker-assets.js†L41-L84】

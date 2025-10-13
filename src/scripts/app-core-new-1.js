@@ -202,121 +202,126 @@ var CORE_RUNTIME_SHARED =
 
 const CORE_PINK_MODE_SUPPORT =
   resolveCoreSupportModule(
-    'cineCorePinkModeAnimations',
-    './modules/core/pink-mode-animations.js'
-  ) || {};
+    'cineCorePinkModeSupport',
+    './modules/core/pink-mode-support.js'
+  );
 
-function createSafeResolvedPromise(value) {
-  if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
-    return Promise.resolve(value);
+const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
+  if (
+    CORE_PINK_MODE_SUPPORT &&
+    typeof CORE_PINK_MODE_SUPPORT.resolvePinkModeSupport === 'function'
+  ) {
+    try {
+      const resolved = CORE_PINK_MODE_SUPPORT.resolvePinkModeSupport();
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+    } catch (pinkModeResolveError) {
+      void pinkModeResolveError;
+    }
   }
 
-  const promiseLike = {
-    then(callback) {
-      if (typeof callback === 'function') {
-        try {
-          return createSafeResolvedPromise(callback(value));
-        } catch (callbackError) {
-          return createSafeResolvedPromise(undefined);
-        }
+  if (
+    CORE_PINK_MODE_SUPPORT &&
+    typeof CORE_PINK_MODE_SUPPORT.createFallbackSupport === 'function'
+  ) {
+    try {
+      const fallback = CORE_PINK_MODE_SUPPORT.createFallbackSupport();
+      if (fallback && typeof fallback === 'object') {
+        return fallback;
       }
-      return promiseLike;
-    },
-    catch() {
-      return promiseLike;
-    },
-  };
+    } catch (pinkModeFallbackError) {
+      void pinkModeFallbackError;
+    }
+  }
 
-  return promiseLike;
-}
+  function createInlinePinkModeFallback() {
+    function createSafeResolvedPromise(value) {
+      if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
+        return Promise.resolve(value);
+      }
 
-const pinkModeIcons =
-  CORE_PINK_MODE_SUPPORT && typeof CORE_PINK_MODE_SUPPORT.pinkModeIcons === 'object'
-    ? CORE_PINK_MODE_SUPPORT.pinkModeIcons
-    : {
-        off: Object.freeze({ className: 'icon-svg pink-mode-icon', markup: '' }),
-        onSequence: Object.freeze([]),
+      const promiseLike = {
+        then(callback) {
+          if (typeof callback === 'function') {
+            try {
+              return createSafeResolvedPromise(callback(value));
+            } catch (callbackError) {
+              return createSafeResolvedPromise(undefined);
+            }
+          }
+          return promiseLike;
+        },
+        catch() {
+          return promiseLike;
+        },
       };
 
-const ensureSvgHasAriaHidden =
-  typeof CORE_PINK_MODE_SUPPORT.ensureSvgHasAriaHidden === 'function'
-    ? CORE_PINK_MODE_SUPPORT.ensureSvgHasAriaHidden
-    : markup => (typeof markup === 'string' ? markup.trim() : '');
+      return promiseLike;
+    }
 
-const setPinkModeIconSequence =
-  typeof CORE_PINK_MODE_SUPPORT.setPinkModeIconSequence === 'function'
-    ? CORE_PINK_MODE_SUPPORT.setPinkModeIconSequence
-    : () => false;
+    const fallbackIcons = Object.freeze({
+      off: Object.freeze({ className: 'icon-svg pink-mode-icon', markup: '' }),
+      onSequence: Object.freeze([]),
+    });
 
-const loadPinkModeIconsFromFiles =
-  typeof CORE_PINK_MODE_SUPPORT.loadPinkModeIconsFromFiles === 'function'
-    ? CORE_PINK_MODE_SUPPORT.loadPinkModeIconsFromFiles
-    : () => createSafeResolvedPromise();
+    return {
+      pinkModeIcons: fallbackIcons,
+      ensureSvgHasAriaHidden(markup) {
+        return typeof markup === 'string' ? markup.trim() : '';
+      },
+      setPinkModeIconSequence() {
+        return false;
+      },
+      loadPinkModeIconsFromFiles() {
+        return createSafeResolvedPromise();
+      },
+      ensurePinkModeLottieRuntime() {
+        return createSafeResolvedPromise(null);
+      },
+      resolvePinkModeLottieRuntime() {
+        return null;
+      },
+      startPinkModeAnimatedIcons() {},
+      stopPinkModeAnimatedIcons() {},
+      triggerPinkModeIconRain() {},
+      getPinkModeIconRotationTimer() {
+        return null;
+      },
+      setPinkModeIconRotationTimer() {},
+      getPinkModeIconIndex() {
+        return 0;
+      },
+      setPinkModeIconIndex() {},
+      PINK_MODE_ICON_INTERVAL_MS: 30000,
+      PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-pop',
+      PINK_MODE_ICON_ANIMATION_RESET_DELAY: 450,
+      PINK_MODE_ICON_FALLBACK_MARKUP: Object.freeze([]),
+    };
+  }
 
-const ensurePinkModeLottieRuntime =
-  typeof CORE_PINK_MODE_SUPPORT.ensurePinkModeLottieRuntime === 'function'
-    ? CORE_PINK_MODE_SUPPORT.ensurePinkModeLottieRuntime
-    : () => createSafeResolvedPromise(null);
+  return createInlinePinkModeFallback();
+})();
 
-const resolvePinkModeLottieRuntime =
-  typeof CORE_PINK_MODE_SUPPORT.resolvePinkModeLottieRuntime === 'function'
-    ? CORE_PINK_MODE_SUPPORT.resolvePinkModeLottieRuntime
-    : () => null;
-
-const startPinkModeAnimatedIcons =
-  typeof CORE_PINK_MODE_SUPPORT.startPinkModeAnimatedIcons === 'function'
-    ? CORE_PINK_MODE_SUPPORT.startPinkModeAnimatedIcons
-    : () => {};
-
-const stopPinkModeAnimatedIcons =
-  typeof CORE_PINK_MODE_SUPPORT.stopPinkModeAnimatedIcons === 'function'
-    ? CORE_PINK_MODE_SUPPORT.stopPinkModeAnimatedIcons
-    : () => {};
-
-const triggerPinkModeIconRain =
-  typeof CORE_PINK_MODE_SUPPORT.triggerPinkModeIconRain === 'function'
-    ? CORE_PINK_MODE_SUPPORT.triggerPinkModeIconRain
-    : () => {};
-
-const getPinkModeIconRotationTimer =
-  typeof CORE_PINK_MODE_SUPPORT.getPinkModeIconRotationTimer === 'function'
-    ? CORE_PINK_MODE_SUPPORT.getPinkModeIconRotationTimer
-    : () => null;
-
-const setPinkModeIconRotationTimer =
-  typeof CORE_PINK_MODE_SUPPORT.setPinkModeIconRotationTimer === 'function'
-    ? CORE_PINK_MODE_SUPPORT.setPinkModeIconRotationTimer
-    : () => {};
-
-const getPinkModeIconIndex =
-  typeof CORE_PINK_MODE_SUPPORT.getPinkModeIconIndex === 'function'
-    ? CORE_PINK_MODE_SUPPORT.getPinkModeIconIndex
-    : () => 0;
-
-const setPinkModeIconIndex =
-  typeof CORE_PINK_MODE_SUPPORT.setPinkModeIconIndex === 'function'
-    ? CORE_PINK_MODE_SUPPORT.setPinkModeIconIndex
-    : () => {};
-
-const PINK_MODE_ICON_INTERVAL_MS =
-  typeof CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_INTERVAL_MS === 'number'
-    ? CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_INTERVAL_MS
-    : 30000;
-
-const PINK_MODE_ICON_ANIMATION_CLASS =
-  typeof CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_ANIMATION_CLASS === 'string'
-    ? CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_ANIMATION_CLASS
-    : 'pink-mode-icon-pop';
-
-const PINK_MODE_ICON_ANIMATION_RESET_DELAY =
-  typeof CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_ANIMATION_RESET_DELAY === 'number'
-    ? CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_ANIMATION_RESET_DELAY
-    : 450;
-
-const PINK_MODE_ICON_FALLBACK_MARKUP =
-  CORE_PINK_MODE_SUPPORT && CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_FALLBACK_MARKUP
-    ? CORE_PINK_MODE_SUPPORT.PINK_MODE_ICON_FALLBACK_MARKUP
-    : Object.freeze([]);
+const {
+  pinkModeIcons,
+  ensureSvgHasAriaHidden,
+  setPinkModeIconSequence,
+  loadPinkModeIconsFromFiles,
+  ensurePinkModeLottieRuntime,
+  resolvePinkModeLottieRuntime,
+  startPinkModeAnimatedIcons,
+  stopPinkModeAnimatedIcons,
+  triggerPinkModeIconRain,
+  getPinkModeIconRotationTimer,
+  setPinkModeIconRotationTimer,
+  getPinkModeIconIndex,
+  setPinkModeIconIndex,
+  PINK_MODE_ICON_INTERVAL_MS,
+  PINK_MODE_ICON_ANIMATION_CLASS,
+  PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+  PINK_MODE_ICON_FALLBACK_MARKUP,
+} = PINK_MODE_SUPPORT_API;
 
 const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   let resolvedSupport = null;
