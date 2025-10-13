@@ -61,6 +61,18 @@
         }
       };
 
+  function prefersReducedMotion() {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE.matchMedia !== 'function') {
+      return false;
+    }
+    try {
+      return GLOBAL_SCOPE.matchMedia('(prefers-reduced-motion: reduce)').matches === true;
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
+
   function collectCandidateScopes(primary) {
     if (typeof MODULE_BASE.collectCandidateScopes === 'function') {
       try {
@@ -5134,7 +5146,19 @@
     }
 
     if (cardContentEl) {
-      cardContentEl.scrollTop = 0;
+      if (typeof cardContentEl.scrollTo === 'function' && !prefersReducedMotion()) {
+        try {
+          cardContentEl.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (scrollError) {
+          safeWarn(
+            'cine.features.onboardingTour could not smoothly reset card scroll.',
+            scrollError,
+          );
+          cardContentEl.scrollTop = 0;
+        }
+      } else {
+        cardContentEl.scrollTop = 0;
+      }
     }
 
     const totalSteps = getCountableStepTotal(stepConfig);
