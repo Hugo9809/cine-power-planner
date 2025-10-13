@@ -341,7 +341,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - Nutze **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**, um zwei Stände zu vergleichen, Kontext in **Vorfallsnotizen** festzuhalten und ein Prüfprotokoll für Übergaben zu exportieren.
 - Starte **Wiederherstellungsprobe** in **Einstellungen → Backup & Wiederherstellung**, lade das Backup in eine Wegwerf-Sandbox, prüfe die Vergleichstabelle und bestätige die Integrität, bevor du **Wiederherstellen** auf die Live-Daten anwendest.
 - Repository lokal öffnen oder intern hosten, damit sensible Daten nicht nach außen gelangen. Exporte sind menschenlesbar und auditierbar.
-- Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten.
+- Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten und stößt vor dem Löschen der Caches
+  jetzt automatisch einen sofortigen Auto-Save samt Backup an.
 - **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
 - Service-Worker-Updates laden im Hintergrund und warten auf deine Bestätigung. Bei **Update bereit**: Änderungen abschließen, Backup erstellen, dann **Neu laden erzwingen**.
 - Daten liegen in gehärtetem `localStorage`; gesperrte Profile weichen auf `sessionStorage` aus. Jeder Schreibvorgang legt zusätzlich einen `__legacyMigrationBackup`-Schnappschuss an, damit sich Quota- oder Schemafehler verlustfrei beheben lassen. Entwickler-Tools können Rohdaten exportieren, bevor Caches geleert oder Tests gefahren werden.

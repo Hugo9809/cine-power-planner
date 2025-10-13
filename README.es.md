@@ -340,7 +340,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - Usa **Configuración → Copia de seguridad y restauración → Comparar versiones** para diferenciar dos guardados, anotar contexto en **Notas del incidente** y exportar un registro para el traspaso.
 - Ejecuta **Ensayo de restauración** desde **Configuración → Copia de seguridad y restauración** para cargar un backup en un espacio desechable, revisar la tabla comparativa y confirmar que está íntegro antes de aplicar **Restaurar** sobre los datos activos.
 - Ejecutar la app desde disco o una red interna mantiene los datos sensibles fuera de servicios externos. Las exportaciones en JSON son auditables.
-- La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado.
+- La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado y ahora ejecuta un auto-guardado inmediato con copia de seguridad antes de limpiar las cachés.
 - **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.
 - Las actualizaciones del service worker se descargan en segundo plano y esperan tu aprobación. Al ver **Actualización lista**, termina los cambios, crea un backup y pulsa **Forzar recarga**.
 - Los datos residen en un `localStorage` reforzado; los perfiles restringidos recurren a `sessionStorage`. Cada escritura genera una instantánea `__legacyMigrationBackup` para recuperarse sin pérdidas si aparece un error de cuota o de esquema. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés o realizar pruebas.

@@ -301,7 +301,9 @@ localization steps.
   browsing the full catalog.
 - **Force reload button** – refresh cached service worker assets without
   deleting projects or devices. The reload now preloads the fresh bundle while
-  cleanup runs so updates land faster without risking stored data.
+  cleanup runs so updates land faster without risking stored data. It now
+  triggers an immediate auto-save and backup flush before the caches clear so no
+  in-flight edits are lost.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping
