@@ -267,16 +267,50 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
   var globalScope = detectGlobalScope();
   var targetName = 'cineCoreDeviceSchema';
-  var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
+  var aliasName = 'CORE_DEVICE_SCHEMA';
+  var existingAlias = null;
+  if (globalScope && (_typeof(globalScope) === 'object' || typeof globalScope === 'function')) {
+    try {
+      var candidate = globalScope[aliasName];
+      if (candidate && _typeof(candidate) === 'object') {
+        existingAlias = candidate;
+      }
+    } catch (readAliasError) {
+      void readAliasError;
+      existingAlias = null;
+    }
+  }
+  var existing = existingAlias;
+  if (!existing || _typeof(existing) !== 'object') {
+    if (globalScope && (_typeof(globalScope) === 'object' || typeof globalScope === 'function')) {
+      try {
+        var _candidate = globalScope[targetName];
+        if (_candidate && _typeof(_candidate) === 'object') {
+          existing = _candidate;
+        }
+      } catch (readExistingError) {
+        void readExistingError;
+        existing = null;
+      }
+    }
+  }
+  if (!existing || _typeof(existing) !== 'object') {
+    existing = {};
+  }
   for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
     var key = _Object$keys[_i];
     existing[key] = namespace[key];
   }
-  if (globalScope && _typeof(globalScope) === 'object') {
+  if (globalScope && (_typeof(globalScope) === 'object' || typeof globalScope === 'function')) {
     try {
       globalScope[targetName] = existing;
     } catch (assignError) {
       void assignError;
+    }
+    try {
+      globalScope[aliasName] = existing;
+    } catch (assignAliasError) {
+      void assignAliasError;
     }
   }
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {

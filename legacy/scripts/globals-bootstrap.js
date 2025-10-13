@@ -5,6 +5,153 @@ function __cineIsArray(value) {
   }
   return Object.prototype.toString.call(value) === '[object Array]';
 }
+function __cineToComparableString(value) {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || typeof value === 'undefined') {
+    return '';
+  }
+  try {
+    return String(value);
+  } catch (stringError) {
+    void stringError;
+    return '';
+  }
+}
+function __cineFallbackLocaleSort(a, b) {
+  var normalizedA = __cineToComparableString(a);
+  var normalizedB = __cineToComparableString(b);
+  try {
+    if (typeof normalizedA.localeCompare === 'function') {
+      return normalizedA.localeCompare(normalizedB, undefined, {
+        sensitivity: 'accent',
+        numeric: true
+      });
+    }
+  } catch (compareError) {
+    void compareError;
+  }
+  if (normalizedA < normalizedB) {
+    return -1;
+  }
+  if (normalizedA > normalizedB) {
+    return 1;
+  }
+  return 0;
+}
+function __cineToFiniteInteger(candidate) {
+  if (candidate === null || typeof candidate === 'undefined') {
+    return null;
+  }
+  var numeric = Number(candidate);
+  if (!Number.isFinite(numeric)) {
+    return null;
+  }
+  var rounded = Math.round(numeric);
+  if (!Number.isFinite(rounded)) {
+    return null;
+  }
+  return rounded;
+}
+function __cineResolveRetentionBounds(scope) {
+  var min = __cineFallbackResolveAutoGearBackupRetentionMin(scope);
+  var max = null;
+  var candidates = [];
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_MAX')) {
+    candidates.push(scope.AUTO_GEAR_BACKUP_RETENTION_MAX);
+  }
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'MAX_AUTO_BACKUPS')) {
+    candidates.push(scope.MAX_AUTO_BACKUPS);
+  }
+  if (scope && scope.__cineStorageApi && Object.prototype.hasOwnProperty.call(scope.__cineStorageApi, 'AUTO_GEAR_BACKUP_RETENTION_MAX')) {
+    candidates.push(scope.__cineStorageApi.AUTO_GEAR_BACKUP_RETENTION_MAX);
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var normalized = __cineToFiniteInteger(candidates[index]);
+    if (typeof normalized !== 'number') {
+      continue;
+    }
+    if (normalized < min) {
+      normalized = min;
+    }
+    if (max === null || normalized > max) {
+      max = normalized;
+    }
+  }
+  if (max === null) {
+    max = Math.max(min, 120);
+  }
+  return {
+    min: min,
+    max: max
+  };
+}
+function __cineFallbackResolveAutoGearBackupRetentionMin(scope) {
+  var candidates = [];
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_MIN')) {
+    candidates.push(scope.AUTO_GEAR_BACKUP_RETENTION_MIN);
+  }
+  if (scope && scope.__cineStorageApi && Object.prototype.hasOwnProperty.call(scope.__cineStorageApi, 'AUTO_GEAR_BACKUP_RETENTION_MIN')) {
+    candidates.push(scope.__cineStorageApi.AUTO_GEAR_BACKUP_RETENTION_MIN);
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var normalized = __cineToFiniteInteger(candidates[index]);
+    if (typeof normalized === 'number' && normalized >= 1) {
+      return normalized < 1 ? 1 : normalized;
+    }
+  }
+  return 1;
+}
+function __cineFallbackResolveAutoGearBackupRetentionDefault(scope) {
+  var bounds = __cineResolveRetentionBounds(scope);
+  var min = bounds.min;
+  var max = bounds.max;
+  var accessors = [];
+  if (scope && typeof scope.getAutoGearBackupRetentionDefault === 'function') {
+    accessors.push(function () {
+      return scope.getAutoGearBackupRetentionDefault();
+    });
+  }
+  if (scope && scope.__cineStorageApi && typeof scope.__cineStorageApi.getAutoGearBackupRetentionDefault === 'function') {
+    accessors.push(function () {
+      return scope.__cineStorageApi.getAutoGearBackupRetentionDefault();
+    });
+  }
+  accessors.push(function () {
+    if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_DEFAULT')) {
+      return scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    }
+    return null;
+  });
+  for (var index = 0; index < accessors.length; index += 1) {
+    try {
+      var candidate = accessors[index]();
+      var normalized = __cineToFiniteInteger(candidate);
+      if (typeof normalized === 'number') {
+        if (normalized < min) {
+          normalized = min;
+        } else if (normalized > max) {
+          normalized = max;
+        }
+        return normalized;
+      }
+    } catch (accessError) {
+      void accessError;
+    }
+  }
+  var fallback = __cineToFiniteInteger(36);
+  if (typeof fallback !== 'number') {
+    fallback = min;
+  }
+  if (fallback < min) {
+    fallback = min;
+  }
+  if (fallback > max) {
+    fallback = max;
+  }
+  return fallback;
+}
 (function bootstrapCoreRuntimeGlobals() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
   if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -115,7 +262,32 @@ function __cineIsArray(value) {
   ensureNullableObject('CORE_GLOBAL_SCOPE');
   ensureNullableObject('autoGearAddOwnGearSelect');
   ensureNullableObject('autoGearRemoveOwnGearSelect');
+  ensureNullableObject('newSubcategorySelect');
+  ensureFunction('syncAutoGearMonitorFieldVisibility', function syncAutoGearMonitorFieldVisibilityFallback() {});
   ensureString('currentLang', 'en');
+  ensureFunction('localeSort', __cineFallbackLocaleSort);
+  ensureFunction('resolveAutoGearBackupRetentionMin', function () {
+    var resolved = __cineFallbackResolveAutoGearBackupRetentionMin(scope);
+    if (scope && (typeof scope.AUTO_GEAR_BACKUP_RETENTION_MIN !== 'number' || !Number.isFinite(scope.AUTO_GEAR_BACKUP_RETENTION_MIN))) {
+      try {
+        scope.AUTO_GEAR_BACKUP_RETENTION_MIN = resolved;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    return resolved;
+  });
+  ensureFunction('resolveAutoGearBackupRetentionDefault', function () {
+    var resolved = __cineFallbackResolveAutoGearBackupRetentionDefault(scope);
+    if (scope && (typeof scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'number' || !Number.isFinite(scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT))) {
+      try {
+        scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolved;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    return resolved;
+  });
 })();
 function __cineResolveGlobalValue(name, fallback) {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
@@ -195,6 +367,76 @@ var safeGenerateConnectorSummary = typeof safeGenerateConnectorSummary !== 'unde
     return result ? label + ': ' + result : label;
   };
   return __cineCommitGlobalValue('safeGenerateConnectorSummary', normalized);
+}();
+var localeSort = typeof localeSort === 'function' ? localeSort : function resolveLocaleSort() {
+  var collator = null;
+  if (typeof Intl !== 'undefined' && Intl && typeof Intl.Collator === 'function') {
+    try {
+      collator = new Intl.Collator(undefined, {
+        sensitivity: 'base',
+        numeric: true
+      });
+    } catch (collatorError) {
+      void collatorError;
+      collator = null;
+    }
+  }
+  var comparator = collator ? function localeSortWithCollator(a, b) {
+    return collator.compare(a == null ? '' : String(a), b == null ? '' : String(b));
+  } : function localeSortWithoutCollator(a, b) {
+    var stringA = a == null ? '' : String(a);
+    var stringB = b == null ? '' : String(b);
+    if (stringA === stringB) {
+      return 0;
+    }
+    return stringA < stringB ? -1 : 1;
+  };
+  return __cineCommitGlobalValue('localeSort', comparator);
+}();
+var resolveAutoGearBackupRetentionMin = typeof resolveAutoGearBackupRetentionMin === 'function' ? resolveAutoGearBackupRetentionMin : function defineResolveAutoGearBackupRetentionMin() {
+  var FALLBACK_MIN = 1;
+  function normalize(value) {
+    var numeric = Number(value);
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return FALLBACK_MIN;
+    }
+    var rounded = Math.round(numeric);
+    return rounded > 0 ? rounded : FALLBACK_MIN;
+  }
+  function resolveMin() {
+    var candidate = __cineResolveGlobalValue('AUTO_GEAR_BACKUP_RETENTION_MIN', undefined);
+    var normalized = normalize(candidate);
+    __cineCommitGlobalValue('AUTO_GEAR_BACKUP_RETENTION_MIN', normalized);
+    return normalized;
+  }
+  return __cineCommitGlobalValue('resolveAutoGearBackupRetentionMin', resolveMin);
+}();
+var resolveAutoGearBackupRetentionDefault = typeof resolveAutoGearBackupRetentionDefault === 'function' ? resolveAutoGearBackupRetentionDefault : function defineResolveAutoGearBackupRetentionDefault() {
+  function normalizeDefault(value) {
+    var minValue = resolveAutoGearBackupRetentionMin();
+    var maxCandidate = __cineResolveGlobalValue('AUTO_GEAR_BACKUP_RETENTION_MAX', undefined);
+    var hasMax = Number.isFinite(Number(maxCandidate));
+    var maxValue = hasMax ? Math.max(Math.round(Number(maxCandidate)), minValue) : null;
+    var numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return minValue;
+    }
+    var rounded = Math.round(numeric);
+    if (rounded < minValue) {
+      return minValue;
+    }
+    if (hasMax && maxValue !== null && rounded > maxValue) {
+      return maxValue;
+    }
+    return rounded;
+  }
+  function resolveDefault() {
+    var candidate = __cineResolveGlobalValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT', undefined);
+    var normalized = normalizeDefault(candidate);
+    __cineCommitGlobalValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT', normalized);
+    return normalized;
+  }
+  return __cineCommitGlobalValue('resolveAutoGearBackupRetentionDefault', resolveDefault);
 }();
 var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' ? CORE_RUNTIME_SHARED : __cineCommitGlobalValue('CORE_RUNTIME_SHARED', null);
 var CORE_GLOBAL_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : __cineCommitGlobalValue('CORE_GLOBAL_SCOPE', null);

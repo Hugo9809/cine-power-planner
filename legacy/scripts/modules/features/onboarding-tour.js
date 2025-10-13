@@ -1544,7 +1544,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: 'intro',
       highlight: null,
       preface: true,
-      size: 'hero'
+      size: 'large'
     }, {
       key: 'userProfile',
       highlight: null,

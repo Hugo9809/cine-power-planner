@@ -45,6 +45,53 @@ if (typeof CORE_TEMPERATURE_RENDER_NAME === 'undefined') {
     }
   }
 }
+(function ensureIconGlyphRegistryAvailability() {
+  var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  var registry = null;
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      if (scope.ICON_GLYPHS && _typeof(scope.ICON_GLYPHS) === 'object') {
+        registry = scope.ICON_GLYPHS;
+        break;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+  if (!registry) {
+    registry = {};
+  }
+  for (var _index = 0; _index < candidateScopes.length; _index += 1) {
+    var _scope = candidateScopes[_index];
+    if (!_scope) {
+      continue;
+    }
+    try {
+      if (typeof _scope.ICON_GLYPHS === 'undefined') {
+        _scope.ICON_GLYPHS = registry;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  var identifierExists = false;
+  try {
+    identifierExists = typeof ICON_GLYPHS !== 'undefined';
+  } catch (identifierError) {
+    identifierExists = false;
+  }
+  if (!identifierExists) {
+    try {
+      ICON_GLYPHS = registry;
+    } catch (exposeError) {
+      void exposeError;
+    }
+  }
+})();
 var CORE_ENVIRONMENT_HELPERS = function resolveCoreEnvironmentHelpers() {
   var helpers = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -1319,9 +1366,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (_typeof(value) === 'object') {
         var keys = Object.keys(value).sort();
         var _serialized = '{';
-        for (var _index = 0; _index < keys.length; _index += 1) {
-          var key = keys[_index];
-          if (_index > 0) {
+        for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
+          var key = keys[_index2];
+          if (_index2 > 0) {
             _serialized += ',';
           }
           _serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
@@ -1397,17 +1444,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       var fallback = sharedDeviceManagerLists instanceof Map ? sharedDeviceManagerLists : new Map();
-      for (var _index2 = 0; _index2 < candidateScopes.length; _index2 += 1) {
-        var _scope = candidateScopes[_index2];
-        if (!_scope) continue;
-        var extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(_scope) : true;
+      for (var _index3 = 0; _index3 < candidateScopes.length; _index3 += 1) {
+        var _scope2 = candidateScopes[_index3];
+        if (!_scope2) continue;
+        var extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(_scope2) : true;
         if (!extensible) continue;
         try {
-          _scope.deviceManagerLists = fallback;
+          _scope2.deviceManagerLists = fallback;
         } catch (assignError) {
           void assignError;
           try {
-            Object.defineProperty(_scope, 'deviceManagerLists', {
+            Object.defineProperty(_scope2, 'deviceManagerLists', {
               configurable: true,
               writable: true,
               value: fallback
@@ -6489,8 +6536,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
       var resolvedApi = null;
-      for (var _index3 = 0; _index3 < candidates.length; _index3 += 1) {
-        var candidate = candidates[_index3];
+      for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
+        var candidate = candidates[_index4];
         if (candidate && _typeof(candidate) === 'object' && typeof candidate.normalizeSearchValue === 'function') {
           resolvedApi = candidate;
           break;
@@ -6598,8 +6645,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof global !== 'undefined' && global && !candidates.includes(global)) {
         candidates.push(global);
       }
-      for (var _index4 = 0; _index4 < candidates.length; _index4 += 1) {
-        var candidate = candidates[_index4];
+      for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
+        var candidate = candidates[_index5];
         if (candidate && _typeof(candidate) === 'object') {
           return candidate;
         }
@@ -7865,13 +7912,40 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return TEMPERATURE_UNITS.celsius;
     }
-    function convertCelsiusToUnit(value) {
-      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+    function getRuntimeTemperatureUnit() {
+      var fallbackUnitCandidates = [];
+      if (typeof temperatureUnit !== 'undefined') {
+        fallbackUnitCandidates.push(temperatureUnit);
+      }
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object') {
+        fallbackUnitCandidates.push(CORE_GLOBAL_SCOPE.temperatureUnit);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
+        fallbackUnitCandidates.push(globalThis.temperatureUnit);
+      }
+      if (typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
+        fallbackUnitCandidates.push(window.temperatureUnit);
+      }
+      if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
+        fallbackUnitCandidates.push(self.temperatureUnit);
+      }
+      if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
+        fallbackUnitCandidates.push(global.temperatureUnit);
+      }
+      for (var index = 0; index < fallbackUnitCandidates.length; index += 1) {
+        var candidate = fallbackUnitCandidates[index];
+        if (typeof candidate === 'string' && candidate) {
+          return candidate;
+        }
+      }
+      return 'celsius';
+    }
+    function convertCelsiusToUnit(value, unit) {
       var numeric = Number(value);
       if (!Number.isFinite(numeric)) {
         return Number.NaN;
       }
-      var resolvedUnit = normalizeTemperatureUnit(unit);
+      var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
         return numeric * 9 / 5 + 32;
       }
@@ -7879,8 +7953,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getTemperatureUnitSymbolForLang() {
       var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
-      var resolvedUnit = normalizeTemperatureUnit(unit);
+      var unit = arguments.length > 1 ? arguments[1] : undefined;
+      var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       var textsForLang = getLanguageTexts(lang);
       var fallbackTexts = getLanguageTexts('en');
       var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
@@ -7888,8 +7962,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getTemperatureUnitLabelForLang() {
       var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
-      var resolvedUnit = normalizeTemperatureUnit(unit);
+      var unit = arguments.length > 1 ? arguments[1] : undefined;
+      var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       var textsForLang = getLanguageTexts(lang);
       var fallbackTexts = getLanguageTexts('en');
       var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitFahrenheit' : 'temperatureUnitCelsius';
@@ -7897,23 +7971,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function getTemperatureColumnLabelForLang() {
       var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+      var unit = arguments.length > 1 ? arguments[1] : undefined;
       var textsForLang = getLanguageTexts(lang);
       var fallbackTexts = getLanguageTexts('en');
       var baseLabel = textsForLang.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
-      var symbol = getTemperatureUnitSymbolForLang(lang, unit);
+      var symbol = getTemperatureUnitSymbolForLang(lang, typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       return "".concat(baseLabel, " (").concat(symbol, ")");
     }
     function formatTemperatureForDisplay(celsius) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var _ref5 = options || {},
-        _ref5$unit = _ref5.unit,
-        unit = _ref5$unit === void 0 ? temperatureUnit : _ref5$unit,
+        unit = _ref5.unit,
         _ref5$lang = _ref5.lang,
         lang = _ref5$lang === void 0 ? currentLang : _ref5$lang,
         _ref5$includeSign = _ref5.includeSign,
         includeSign = _ref5$includeSign === void 0 ? true : _ref5$includeSign;
-      var resolvedUnit = normalizeTemperatureUnit(unit);
+      var resolvedUnit = normalizeTemperatureUnit(typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit);
       var converted = convertCelsiusToUnit(celsius, resolvedUnit);
       if (!Number.isFinite(converted)) {
         return '';
@@ -10144,8 +10217,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           void error;
         }
       }
-      for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
-        var candidate = candidates[_index5];
+      for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
+        var candidate = candidates[_index6];
         if (candidate && typeof candidate.createEngine === 'function') {
           if (globalScope && !globalScope[FEATURE_SEARCH_ENGINE_MODULE_CACHE_KEY]) {
             try {
