@@ -61,6 +61,45 @@ function runBabel(context, sourceDir, outDir, ignores) {
   });
 }
 
+function copyStaticDataArtifacts(context, sourceDir, outDir) {
+  const { fs: fsImpl } = context;
+
+  const sourceRoot = sourceDir || path.join(context.rootDir, 'src', 'data');
+  const targetRoot = outDir;
+
+  function mirrorDirectory(fromDir, toDir) {
+    const entries = fsImpl.readdirSync(fromDir, { withFileTypes: true });
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      const sourcePath = path.join(fromDir, entry.name);
+      const targetPath = path.join(toDir, entry.name);
+
+      if (entry.isDirectory()) {
+        fsImpl.mkdirSync(targetPath, { recursive: true });
+        mirrorDirectory(sourcePath, targetPath);
+        continue;
+      }
+
+      if (!entry.isFile()) {
+        continue;
+      }
+
+      if (path.extname(entry.name).toLowerCase() === '.json') {
+        fsImpl.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fsImpl.copyFileSync(sourcePath, targetPath);
+      }
+    }
+  }
+
+  if (!fsImpl.existsSync(sourceRoot)) {
+    return;
+  }
+
+  fsImpl.mkdirSync(targetRoot, { recursive: true });
+  mirrorDirectory(sourceRoot, targetRoot);
+}
+
 function copyPolyfills(context, destinationDir) {
   const { fs: fsImpl, coreJsPath, coreJsMapPath, regeneratorPath } = context;
   const targetDir = destinationDir || path.join(context.legacyDir, 'polyfills');
@@ -88,6 +127,7 @@ function buildLegacy(options = {}) {
   try {
     runBabel(context, path.join('src', 'scripts'), stagingScriptsDir);
     runBabel(context, path.join('src', 'data'), stagingDataDir, ['**/*.json']);
+    copyStaticDataArtifacts(context, path.join(context.rootDir, 'src', 'data'), stagingDataDir);
     copyPolyfills(context, stagingPolyfillsDir);
 
     if (fsImpl.existsSync(legacyDir)) {
@@ -131,6 +171,7 @@ if (require.main === module) {
 module.exports = {
   buildLegacy,
   copyPolyfills,
+  copyStaticDataArtifacts,
   createBuildContext,
   runBabel,
 };

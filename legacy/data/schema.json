@@ -1,0 +1,619 @@
+{
+  "accessories": {
+    "batteries": {
+      "attributes": [
+        "capacity",
+        "mount_type",
+        "pinA",
+        "pinV",
+        "weight_g"
+      ]
+    },
+    "cables": {
+      "cables": {
+        "attributes": [
+          "brand",
+          "compatibleCameras",
+          "compatibleControllers",
+          "compatibleDevices",
+          "connectors",
+          "from",
+          "kNumber",
+          "lengthM",
+          "notes",
+          "provenance",
+          "orientation",
+          "to",
+          "type",
+          "useCase"
+        ]
+      },
+      "fiz": {
+        "attributes": [
+          "brand",
+          "compatibleCameras",
+          "compatibleControllers",
+          "compatibleDevices",
+          "connectors",
+          "from",
+          "kNumber",
+          "lengthM",
+          "notes",
+          "provenance",
+          "orientation",
+          "to",
+          "type",
+          "useCase"
+        ]
+      },
+      "power": {
+        "attributes": [
+          "from",
+          "lengthM",
+          "to",
+          "connectors"
+        ]
+      },
+      "video": {
+        "attributes": [
+          "lengthM",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "cages": {
+      "attributes": [
+        "batteryMount",
+        "brand",
+        "compatible",
+        "handle_extension_compatible",
+        "kNumber",
+        "material",
+        "mounting_points",
+        "notes",
+        "rodStandard",
+        "side_plates",
+        "top_handle_included",
+        "verified_source",
+        "weight_g"
+      ]
+    },
+    "cameraStabiliser": {
+      "attributes": [
+        "brand",
+        "options"
+      ]
+    },
+    "cameraSupport": {
+      "attributes": [
+        "brand",
+        "compatible",
+        "diameterMm",
+        "dimensionsMm",
+        "kNumber",
+        "lengthMm",
+        "rodStandard"
+      ]
+    },
+    "carts": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "chargers": {
+      "attributes": [
+        "chargeModes",
+        "chargingSpeedAmps",
+        "dimensions_mm",
+        "inputConnector",
+        "inputVoltageV",
+        "mount",
+        "notes",
+        "outputs",
+        "perBayCurrentA",
+        "provenance",
+        "slots",
+        "totalPowerW",
+        "weight_g"
+      ]
+    },
+    "filters": {
+      "attributes": [
+        "brand",
+        "kNumber"
+      ]
+    },
+    "grip": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "lenses": {
+      "attributes": [
+        "brand",
+        "clampOn",
+        "frontDiameterMm",
+        "imageCircleMm",
+        "lengthMm",
+        "lensType",
+        "minFocusMeters",
+        "mount",
+        "needsLensSupport",
+        "notes",
+        "rodLengthCm",
+        "rodStandard",
+        "tStop",
+        "weight_g"
+      ]
+    },
+    "matteboxes": {
+      "attributes": [
+        "brand",
+        "compatible",
+        "diameterMm",
+        "kNumber",
+        "model",
+        "note",
+        "provenance",
+        "sideFlags",
+        "stages",
+        "topFlag",
+        "traySize",
+        "type"
+      ]
+    },
+    "media": {
+      "attributes": [
+        "brand",
+        "capacityGb",
+        "capacityTb",
+        "interface",
+        "kNumber",
+        "model"
+      ]
+    },
+    "cardReaders": {
+      "attributes": [
+        "brand",
+        "model",
+        "kNumber",
+        "supportedMedia",
+        "interface",
+        "slots",
+        "busPowered",
+        "notes"
+      ]
+    },
+    "powerPlates": {
+      "attributes": [
+        "brand",
+        "kNumber",
+        "mount"
+      ]
+    },
+    "rigging": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "sliders": {
+      "attributes": [
+        "brand",
+        "bowlMount",
+        "dimensionsCm",
+        "driveType",
+        "features",
+        "material",
+        "model",
+        "motorized",
+        "notes",
+        "payloadHorizontalKg",
+        "payloadVerticalKg",
+        "travelCm",
+        "weightKg"
+      ]
+    },
+    "tripodHeads": {
+      "attributes": [
+        "bowlSizeMm",
+        "brand",
+        "material"
+      ]
+    },
+    "tripods": {
+      "attributes": [
+        "brand",
+        "model",
+        "material",
+        "stages",
+        "bowlSizeMm",
+        "bowlMount",
+        "payloadKg",
+        "heightRangeCm",
+        "weightKg",
+        "spreader",
+        "features",
+        "dimensionsCm",
+        "sizeClass",
+        "notes",
+        "sourceUrl"
+      ]
+    },
+    "videoAssist": {
+      "attributes": [
+        "brand",
+        "screenSizeInches"
+      ]
+    }
+  },
+  "batteries": {
+    "attributes": [
+      "capacity",
+      "dtapA",
+      "mount_type",
+      "pinA",
+      "weight_g"
+    ]
+  },
+  "batteryHotswaps": {
+    "attributes": [
+      "capacity",
+      "mount_type",
+      "pinA"
+    ]
+  },
+  "cameras": {
+    "attributes": [
+      "fizConnectors",
+      "lensMount",
+      "power",
+      "powerDrawWatts",
+      "frameRates",
+      "recordingCodecs",
+      "recordingMedia",
+      "resolutions",
+      "sensorModes",
+      "timecode",
+      "videoOutputs",
+      "viewfinder",
+      "weight_g"
+    ],
+    "power": {
+      "batteryPlateSupport": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "input": {
+        "attributes": [
+          "notes",
+          "powerDrawWatts",
+          "type",
+          "voltageRange"
+        ]
+      },
+      "powerDistributionOutputs": {
+        "attributes": [
+          "current",
+          "notes",
+          "type",
+          "voltage",
+          "wattage"
+        ]
+      }
+    },
+    "fizConnectors": {
+      "attributes": [
+        "count",
+        "notes",
+        "type"
+      ]
+    },
+    "lensMount": {
+      "attributes": [
+        "mount",
+        "notes",
+        "type"
+      ]
+    },
+    "recordingMedia": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "timecode": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type",
+        "version"
+      ]
+    },
+    "viewfinder": {
+      "attributes": [
+        "notes",
+        "resolution",
+        "size",
+        "type"
+      ]
+    }
+  },
+  "directorMonitors": {
+    "attributes": [
+      "brand",
+      "brightnessNits",
+      "model",
+      "power",
+      "powerDrawWatts",
+      "screenSizeInches",
+      "videoInputs",
+      "videoOutputs",
+      "wirelessTx",
+      "notes"
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "videoInputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    }
+  },
+  "filterOptions": {
+    "attributes": []
+  },
+  "fiz": {
+    "controllers": {
+      "attributes": [
+        "batteryType",
+        "connectivity",
+        "fizConnectors",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "powerSource"
+      ]
+    },
+    "distance": {
+      "attributes": [
+        "accuracy",
+        "connectionCompatibility",
+        "fizConnectors",
+        "measurementMethod",
+        "measurementRange",
+        "notes",
+        "outputDisplay",
+        "powerDrawWatts"
+      ]
+    },
+    "handUnits": {
+      "attributes": [
+        "batteryType",
+        "connectivity",
+        "fizConnectors",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "powerSource"
+      ]
+    },
+    "motors": {
+      "attributes": [
+        "fizConnectors",
+        "gearTypes",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "torqueNm"
+      ]
+    }
+  },
+  "iosVideo": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "notes",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "videoInputs": {
+      "attributes": [
+        "type"
+      ]
+    }
+  },
+  "lenses": {
+    "attributes": [
+      "brand",
+      "clampOn",
+      "frontDiameterMm",
+      "imageCircleMm",
+      "lengthMm",
+      "lensType",
+      "minFocusMeters",
+      "mount",
+      "needsLensSupport",
+      "notes",
+      "rodLengthCm",
+      "rodStandard",
+      "tStop",
+      "weight_g"
+    ]
+  },
+  "media": {
+    "attributes": [
+      "brand",
+      "capacityGb",
+      "capacityTb",
+      "interface",
+      "kNumber",
+      "model"
+    ]
+  },
+  "monitors": {
+    "attributes": [
+      "audioInput",
+      "audioIo",
+      "audioOutput",
+      "bluetooth",
+      "brightnessNits",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "screenSizeInches",
+      "videoInputs",
+      "videoOutputs",
+      "wireless",
+      "wirelessRX",
+      "wirelessTx"
+    ],
+    "audioInput": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "audioIo": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "audioOutput": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "portType",
+          "voltageRange"
+        ]
+      }
+    },
+    "videoInputs": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "wireless": {
+      "attributes": [
+        "portType"
+      ]
+    }
+  },
+  "video": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "videoInputs": {
+      "attributes": [
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    }
+  },
+  "videoAssist": {
+    "attributes": [
+      "brand",
+      "screenSizeInches"
+    ]
+  },
+  "viewfinders": {
+    "attributes": [
+      "brand",
+      "compatible",
+      "isPersonalGear",
+      "kNumber",
+      "listOfOrigin",
+      "model"
+    ]
+  },
+  "wirelessReceivers": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ],
+    "power": {
+      "batteryPlateSupport": {
+        "attributes": [
+          "mount",
+          "type"
+        ]
+      },
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "videoOutputs": {
+      "attributes": [
+        "type"
+      ]
+    }
+  }
+}

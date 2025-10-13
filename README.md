@@ -1351,7 +1351,9 @@ failed registrations so offline workflows never lose critical safeguards.
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
 to regenerate the transpiled ES5 bundle served to older browsers. The command
 rebuilds everything inside `legacy/` and refreshes the local polyfill copies so
-offline usage stays reliable.
+offline usage stays reliable. It also mirrors JSON artifacts (for example,
+`src/data/schema.json`) into `legacy/data/` so the legacy `require()` paths keep
+working offline and in tests.
 
 ### File structure
 

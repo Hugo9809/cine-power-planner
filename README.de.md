@@ -555,7 +555,7 @@ Warteschlange, damit Offline-Workflows keine Schutzmechanismen verlieren.
 
 ### Legacy-Browser-Bundle
 
-Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell.
+Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell. Dabei werden jetzt auch JSON-Artefakte (z. B. `src/data/schema.json`) nach `legacy/data/` gespiegelt, damit die Legacy-`require()`-Pfade offline und in Tests funktionieren.
 
 ### Struktur
 
