@@ -6,6 +6,193 @@ function __cineIsArray(value) {
   return Object.prototype.toString.call(value) === '[object Array]';
 }
 
+function __cineToComparableString(value) {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (value === null || typeof value === 'undefined') {
+    return '';
+  }
+
+  try {
+    return String(value);
+  } catch (stringError) {
+    void stringError;
+    return '';
+  }
+}
+
+function __cineFallbackLocaleSort(a, b) {
+  var normalizedA = __cineToComparableString(a);
+  var normalizedB = __cineToComparableString(b);
+
+  try {
+    if (typeof normalizedA.localeCompare === 'function') {
+      return normalizedA.localeCompare(normalizedB, undefined, {
+        sensitivity: 'accent',
+        numeric: true,
+      });
+    }
+  } catch (compareError) {
+    void compareError;
+  }
+
+  if (normalizedA < normalizedB) {
+    return -1;
+  }
+  if (normalizedA > normalizedB) {
+    return 1;
+  }
+  return 0;
+}
+
+function __cineToFiniteInteger(candidate) {
+  if (candidate === null || typeof candidate === 'undefined') {
+    return null;
+  }
+
+  var numeric = Number(candidate);
+  if (!Number.isFinite(numeric)) {
+    return null;
+  }
+
+  var rounded = Math.round(numeric);
+  if (!Number.isFinite(rounded)) {
+    return null;
+  }
+
+  return rounded;
+}
+
+function __cineResolveRetentionBounds(scope) {
+  var min = __cineFallbackResolveAutoGearBackupRetentionMin(scope);
+  var max = null;
+  var candidates = [];
+
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_MAX')) {
+    candidates.push(scope.AUTO_GEAR_BACKUP_RETENTION_MAX);
+  }
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'MAX_AUTO_BACKUPS')) {
+    candidates.push(scope.MAX_AUTO_BACKUPS);
+  }
+  if (
+    scope &&
+    scope.__cineStorageApi &&
+    Object.prototype.hasOwnProperty.call(
+      scope.__cineStorageApi,
+      'AUTO_GEAR_BACKUP_RETENTION_MAX',
+    )
+  ) {
+    candidates.push(scope.__cineStorageApi.AUTO_GEAR_BACKUP_RETENTION_MAX);
+  }
+
+  for (var index = 0; index < candidates.length; index += 1) {
+    var normalized = __cineToFiniteInteger(candidates[index]);
+    if (typeof normalized !== 'number') {
+      continue;
+    }
+    if (normalized < min) {
+      normalized = min;
+    }
+    if (max === null || normalized > max) {
+      max = normalized;
+    }
+  }
+
+  if (max === null) {
+    max = Math.max(min, 120);
+  }
+
+  return { min: min, max: max };
+}
+
+function __cineFallbackResolveAutoGearBackupRetentionMin(scope) {
+  var candidates = [];
+
+  if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_MIN')) {
+    candidates.push(scope.AUTO_GEAR_BACKUP_RETENTION_MIN);
+  }
+  if (
+    scope &&
+    scope.__cineStorageApi &&
+    Object.prototype.hasOwnProperty.call(
+      scope.__cineStorageApi,
+      'AUTO_GEAR_BACKUP_RETENTION_MIN',
+    )
+  ) {
+    candidates.push(scope.__cineStorageApi.AUTO_GEAR_BACKUP_RETENTION_MIN);
+  }
+
+  for (var index = 0; index < candidates.length; index += 1) {
+    var normalized = __cineToFiniteInteger(candidates[index]);
+    if (typeof normalized === 'number' && normalized >= 1) {
+      return normalized < 1 ? 1 : normalized;
+    }
+  }
+
+  return 1;
+}
+
+function __cineFallbackResolveAutoGearBackupRetentionDefault(scope) {
+  var bounds = __cineResolveRetentionBounds(scope);
+  var min = bounds.min;
+  var max = bounds.max;
+  var accessors = [];
+
+  if (scope && typeof scope.getAutoGearBackupRetentionDefault === 'function') {
+    accessors.push(function () {
+      return scope.getAutoGearBackupRetentionDefault();
+    });
+  }
+
+  if (
+    scope &&
+    scope.__cineStorageApi &&
+    typeof scope.__cineStorageApi.getAutoGearBackupRetentionDefault === 'function'
+  ) {
+    accessors.push(function () {
+      return scope.__cineStorageApi.getAutoGearBackupRetentionDefault();
+    });
+  }
+
+  accessors.push(function () {
+    if (scope && Object.prototype.hasOwnProperty.call(scope, 'AUTO_GEAR_BACKUP_RETENTION_DEFAULT')) {
+      return scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    }
+    return null;
+  });
+
+  for (var index = 0; index < accessors.length; index += 1) {
+    try {
+      var candidate = accessors[index]();
+      var normalized = __cineToFiniteInteger(candidate);
+      if (typeof normalized === 'number') {
+        if (normalized < min) {
+          normalized = min;
+        } else if (normalized > max) {
+          normalized = max;
+        }
+        return normalized;
+      }
+    } catch (accessError) {
+      void accessError;
+    }
+  }
+
+  var fallback = __cineToFiniteInteger(36);
+  if (typeof fallback !== 'number') {
+    fallback = min;
+  }
+  if (fallback < min) {
+    fallback = min;
+  }
+  if (fallback > max) {
+    fallback = max;
+  }
+  return fallback;
+}
+
 (function bootstrapCoreRuntimeGlobals() {
   var scope =
     (typeof globalThis !== 'undefined' && globalThis) ||
@@ -144,6 +331,37 @@ function __cineIsArray(value) {
   ensureNullableObject('autoGearAddOwnGearSelect');
   ensureNullableObject('autoGearRemoveOwnGearSelect');
   ensureString('currentLang', 'en');
+  ensureFunction('localeSort', __cineFallbackLocaleSort);
+  ensureFunction('resolveAutoGearBackupRetentionMin', function () {
+    var resolved = __cineFallbackResolveAutoGearBackupRetentionMin(scope);
+    if (
+      scope &&
+      (typeof scope.AUTO_GEAR_BACKUP_RETENTION_MIN !== 'number'
+        || !Number.isFinite(scope.AUTO_GEAR_BACKUP_RETENTION_MIN))
+    ) {
+      try {
+        scope.AUTO_GEAR_BACKUP_RETENTION_MIN = resolved;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    return resolved;
+  });
+  ensureFunction('resolveAutoGearBackupRetentionDefault', function () {
+    var resolved = __cineFallbackResolveAutoGearBackupRetentionDefault(scope);
+    if (
+      scope &&
+      (typeof scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'number'
+        || !Number.isFinite(scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT))
+    ) {
+      try {
+        scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolved;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    return resolved;
+  });
 })();
 
 function __cineResolveGlobalValue(name, fallback) {
