@@ -199,6 +199,11 @@ const CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule(
   './modules/core/runtime-tool-fallbacks.js'
 );
 
+const RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppRuntimeToolInlineFallbacks',
+  './modules/app-core/runtime-tool-inline-fallbacks.js'
+);
+
 const CORE_RUNTIME_SHARED_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeShared',
   './modules/app-core/runtime-shared.js'
@@ -1093,36 +1098,66 @@ if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY && typeof require === 'function') {
   }
 }
 
-function createInlineRuntimeToolFallbacks(primaryScope) {
-  function isValidScope(scope) {
-    return !!scope && (typeof scope === 'object' || typeof scope === 'function');
+const createInlineRuntimeToolFallbacks = (function resolveInlineRuntimeToolFallbacks() {
+  if (
+    RUNTIME_TOOL_INLINE_FALLBACK_TOOLS &&
+    typeof RUNTIME_TOOL_INLINE_FALLBACK_TOOLS.createInlineRuntimeToolFallbacks === 'function'
+  ) {
+    return RUNTIME_TOOL_INLINE_FALLBACK_TOOLS.createInlineRuntimeToolFallbacks;
   }
 
-  function detectScope(primary) {
-    if (isValidScope(primary)) {
-      return primary;
+  if (typeof require === 'function') {
+    try {
+      const requiredInlineFallbacks = require(
+        './modules/app-core/runtime-tool-inline-fallbacks.js'
+      );
+      if (
+        requiredInlineFallbacks &&
+        typeof requiredInlineFallbacks.createInlineRuntimeToolFallbacks === 'function'
+      ) {
+        return requiredInlineFallbacks.createInlineRuntimeToolFallbacks;
+      }
+    } catch (inlineFallbackRequireError) {
+      void inlineFallbackRequireError;
+    }
+  }
+
+  function fallbackDetectScope(scopeCandidate) {
+    if (
+      scopeCandidate &&
+      (typeof scopeCandidate === 'object' || typeof scopeCandidate === 'function')
+    ) {
+      return scopeCandidate;
     }
 
-    if (typeof globalThis !== 'undefined' && isValidScope(globalThis)) {
+    if (
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' &&
+      CORE_PART1_RUNTIME_SCOPE &&
+      typeof CORE_PART1_RUNTIME_SCOPE === 'object'
+    ) {
+      return CORE_PART1_RUNTIME_SCOPE;
+    }
+
+    if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
       return globalThis;
     }
 
-    if (typeof window !== 'undefined' && isValidScope(window)) {
+    if (typeof window !== 'undefined' && window && typeof window === 'object') {
       return window;
     }
 
-    if (typeof self !== 'undefined' && isValidScope(self)) {
+    if (typeof self !== 'undefined' && self && typeof self === 'object') {
       return self;
     }
 
-    if (typeof global !== 'undefined' && isValidScope(global)) {
+    if (typeof global !== 'undefined' && global && typeof global === 'object') {
       return global;
     }
 
     return null;
   }
 
-  function ensureGlobalValue(name, fallbackValue, primary) {
+  function fallbackEnsureCoreGlobalValue(name, fallbackValue, scopeCandidate) {
     const provider =
       typeof fallbackValue === 'function'
         ? fallbackValue
@@ -1130,7 +1165,9 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
             return fallbackValue;
           };
 
-    if (typeof name !== 'string' || !name) {
+    const scope = fallbackDetectScope(scopeCandidate);
+
+    if (!scope || typeof name !== 'string' || !name) {
       try {
         return provider();
       } catch (fallbackError) {
@@ -1139,21 +1176,12 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
       }
     }
 
-    const scope = detectScope(primary);
-    if (!isValidScope(scope)) {
-      return provider();
-    }
-
-    let existing;
     try {
-      existing = scope[name];
+      if (typeof scope[name] !== 'undefined') {
+        return scope[name];
+      }
     } catch (readError) {
-      existing = undefined;
       void readError;
-    }
-
-    if (typeof existing !== 'undefined') {
-      return existing;
     }
 
     const value = provider();
@@ -1171,20 +1199,16 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
         writable: true,
         value,
       });
+
+      return scope[name];
     } catch (defineError) {
       void defineError;
-    }
-
-    try {
-      return scope[name];
-    } catch (finalReadError) {
-      void finalReadError;
     }
 
     return value;
   }
 
-  function jsonDeepClone(value) {
+  function fallbackJsonDeepClone(value) {
     if (value === null || typeof value !== 'object') {
       return value;
     }
@@ -1198,12 +1222,12 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
     return value;
   }
 
-  function resolveStructuredClone(primary) {
+  function fallbackResolveStructuredClone(scopeCandidate) {
     if (typeof structuredClone === 'function') {
       return structuredClone;
     }
 
-    const scope = detectScope(primary);
+    const scope = fallbackDetectScope(scopeCandidate);
     if (scope && typeof scope.structuredClone === 'function') {
       try {
         return scope.structuredClone.bind(scope);
@@ -1212,37 +1236,17 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
       }
     }
 
-    if (typeof require === 'function') {
-      try {
-        const nodeUtil = require('node:util');
-        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
-          return nodeUtil.structuredClone.bind(nodeUtil);
-        }
-      } catch (nodeUtilError) {
-        void nodeUtilError;
-      }
-
-      try {
-        const legacyUtil = require('util');
-        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
-          return legacyUtil.structuredClone.bind(legacyUtil);
-        }
-      } catch (legacyUtilError) {
-        void legacyUtilError;
-      }
-    }
-
     return null;
   }
 
-  function createResilientDeepClone(primary) {
-    const structuredCloneImpl = resolveStructuredClone(primary);
+  function fallbackCreateResilientDeepClone(scopeCandidate) {
+    const structuredCloneImpl = fallbackResolveStructuredClone(scopeCandidate);
 
     if (!structuredCloneImpl) {
-      return jsonDeepClone;
+      return fallbackJsonDeepClone;
     }
 
-    return function resilientDeepClone(value) {
+    return function fallbackResilientDeepClone(value) {
       if (value === null || typeof value !== 'object') {
         return value;
       }
@@ -1253,19 +1257,20 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
         void structuredCloneError;
       }
 
-      return jsonDeepClone(value);
+      return fallbackJsonDeepClone(value);
     };
   }
 
-  function ensureDeepClone(primary) {
-    const scope = detectScope(primary);
+  function fallbackEnsureDeepClone(scopeCandidate) {
+    const scope = fallbackDetectScope(scopeCandidate);
+
     if (scope && typeof scope.__cineDeepClone === 'function') {
       return scope.__cineDeepClone;
     }
 
-    const clone = createResilientDeepClone(scope);
+    const clone = fallbackCreateResilientDeepClone(scope);
 
-    if (isValidScope(scope)) {
+    if (scope && typeof scope === 'object') {
       try {
         Object.defineProperty(scope, '__cineDeepClone', {
           configurable: true,
@@ -1274,49 +1279,43 @@ function createInlineRuntimeToolFallbacks(primaryScope) {
         });
       } catch (defineError) {
         void defineError;
+      }
 
-        try {
+      try {
+        if (typeof scope.__cineDeepClone !== 'function') {
           scope.__cineDeepClone = clone;
-        } catch (assignError) {
-          void assignError;
         }
+      } catch (assignError) {
+        void assignError;
       }
     }
 
     return clone;
   }
 
-  const resolvedScope = detectScope(primaryScope);
+  return function fallbackCreateInlineRuntimeToolFallbacks(primaryScope) {
+    const resolvedScope = fallbackDetectScope(primaryScope);
 
-  function getCoreGlobalObject() {
-    return detectScope(resolvedScope);
-  }
-
-  function ensureCoreGlobalValue(name, fallbackValue) {
-    return ensureGlobalValue(name, fallbackValue, resolvedScope);
-  }
-
-  function resolveStructuredCloneForScope(scope) {
-    return resolveStructuredClone(scope || resolvedScope);
-  }
-
-  function createResilientDeepCloneForScope(scope) {
-    return createResilientDeepClone(scope || resolvedScope);
-  }
-
-  function ensureDeepCloneForScope(scope) {
-    return ensureDeepClone(scope || resolvedScope);
-  }
-
-  return {
-    getCoreGlobalObject,
-    ensureCoreGlobalValue,
-    jsonDeepClone,
-    resolveStructuredClone: resolveStructuredCloneForScope,
-    createResilientDeepClone: createResilientDeepCloneForScope,
-    ensureDeepClone: ensureDeepCloneForScope,
+    return {
+      getCoreGlobalObject() {
+        return fallbackDetectScope(resolvedScope);
+      },
+      ensureCoreGlobalValue(name, fallbackValue) {
+        return fallbackEnsureCoreGlobalValue(name, fallbackValue, resolvedScope);
+      },
+      jsonDeepClone: fallbackJsonDeepClone,
+      resolveStructuredClone(scope) {
+        return fallbackResolveStructuredClone(scope || resolvedScope);
+      },
+      createResilientDeepClone(scope) {
+        return fallbackCreateResilientDeepClone(scope || resolvedScope);
+      },
+      ensureDeepClone(scope) {
+        return fallbackEnsureDeepClone(scope || resolvedScope);
+      },
+    };
   };
-}
+})();
 
 let CORE_RUNTIME_TOOL_FALLBACKS =
   typeof CORE_RUNTIME_TOOL_FALLBACK_FACTORY === 'function'
