@@ -496,7 +496,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     resultsChangeover: {
       title: 'Power Summary pass: Changeovers',
-      body: 'Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot.'
+      body: 'Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan.'
     },
     resultsWarnings: {
       title: 'Power Summary pass: Warnings and backups',
