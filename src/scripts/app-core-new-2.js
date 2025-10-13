@@ -16670,6 +16670,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['clearLensDeviceMountOptions', () => clearLensDeviceMountOptions],
       ['clearPowerDistribution', () => clearPowerDistribution],
       ['clearVideoOutputs', () => clearVideoOutputs],
+      ['setFizConnectors', () => setFizConnectors],
+      ['getFizConnectors', () => getFizConnectors],
       ['clearFizConnectors', () => clearFizConnectors],
       ['clearViewfinders', () => clearViewfinders],
       ['clearTimecodes', () => clearTimecodes],
