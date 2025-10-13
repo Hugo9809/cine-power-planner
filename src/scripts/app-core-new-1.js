@@ -164,41 +164,21 @@ if (LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.configure 
   }
 }
 
-const CORE_LOCALIZATION_FALLBACK_BOOTSTRAP = resolveCoreSupportModule(
-  'cineCoreLocalizationFallbackBootstrap',
-  './modules/core/localization-fallback-bootstrap.js'
+const CORE_LOCALIZATION_FALLBACK_ENVIRONMENT = resolveCoreSupportModule(
+  'cineCoreLocalizationFallbackEnvironment',
+  './modules/core/localization-fallback-environment.js'
 );
 
-let LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE = CORE_LOCALIZATION_FALLBACK_BOOTSTRAP;
-
-if (
-  (!LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE ||
-    typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks !==
-      'function') &&
-  typeof require === 'function'
-) {
-  try {
-    const requiredLocalizationFallbackBootstrap = require(
-      './modules/core/localization-fallback-bootstrap.js'
-    );
-    if (
-      requiredLocalizationFallbackBootstrap &&
-      typeof requiredLocalizationFallbackBootstrap.setupLocalizationFallbacks === 'function'
-    ) {
-      LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE = requiredLocalizationFallbackBootstrap;
-    }
-  } catch (localizationFallbackBootstrapRequireError) {
-    void localizationFallbackBootstrapRequireError;
-  }
-}
-
-const LOCALIZATION_FALLBACK_BOOTSTRAP_STATE =
-  LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks === 'function'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks({
-        primaryRuntimeScope:
+const localizationFallbackEnvironment =
+  CORE_LOCALIZATION_FALLBACK_ENVIRONMENT &&
+  typeof CORE_LOCALIZATION_FALLBACK_ENVIRONMENT.createLocalizationFallbackEnvironment ===
+    'function'
+    ? CORE_LOCALIZATION_FALLBACK_ENVIRONMENT.createLocalizationFallbackEnvironment({
+        runtimeScope:
           typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
         coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+        resolveCoreSupportModule,
+        requireFn: typeof require === 'function' ? require : null,
         localizationFallbackFactories: CORE_LOCALIZATION_FALLBACK_FACTORIES,
         localizationFallbacks: CORE_LOCALIZATION_FALLBACKS,
         inlineLocalizationFallbacks: CORE_INLINE_LOCALIZATION_FALLBACKS,
@@ -206,135 +186,72 @@ const LOCALIZATION_FALLBACK_BOOTSTRAP_STATE =
         localizationFallbackResolution: CORE_LOCALIZATION_FALLBACK_RESOLUTION,
         localizationFallbackSupportLite: CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE,
         localizationInlineSupport: LOCALIZATION_INLINE_SUPPORT,
-        resolveCoreSupportModule,
-        requireFn: typeof require === 'function' ? require : null,
       })
     : null;
 
-const LOCALIZATION_FALLBACK_CONTEXT =
-  LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context === 'object'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context
+const LOCALIZATION_FALLBACK_SUPPORT =
+  localizationFallbackEnvironment &&
+  typeof localizationFallbackEnvironment.localizationFallbackSupport !== 'undefined'
+    ? localizationFallbackEnvironment.localizationFallbackSupport
     : null;
 
-const LOCALIZATION_FALLBACK_SUPPORT =
-  (LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.support) ||
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.support !== 'undefined'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.support
-    : null);
-
-const fallbackCreateBasicLocalizationFallbackResolversFromNamespace =
-  LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.fallbackCreateBasicLocalizationFallbackResolvers ===
-    'function'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE
-        .fallbackCreateBasicLocalizationFallbackResolvers
-    : function fallbackCreateBasicLocalizationFallbackResolversProxy() {
+const createBasicLocalizationFallbackResolvers =
+  localizationFallbackEnvironment &&
+  typeof localizationFallbackEnvironment.createBasicLocalizationFallbackResolvers === 'function'
+    ? localizationFallbackEnvironment.createBasicLocalizationFallbackResolvers
+    : function createBasicLocalizationFallbackResolversProxy() {
         return null;
       };
 
-const createBasicLocalizationFallbackResolvers =
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createBasicLocalizationFallbackResolvers ===
-    'function'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createBasicLocalizationFallbackResolvers
-    : fallbackCreateBasicLocalizationFallbackResolversFromNamespace);
-
 const LOCALIZATION_FALLBACK_REGISTRY =
-  (LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.registry) ||
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry === 'object'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry
-    : (CORE_LOCALIZATION_FALLBACK_REGISTRY &&
+  localizationFallbackEnvironment &&
+  localizationFallbackEnvironment.localizationFallbackRegistry
+    ? localizationFallbackEnvironment.localizationFallbackRegistry
+    : CORE_LOCALIZATION_FALLBACK_REGISTRY &&
       typeof CORE_LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function'
-        ? CORE_LOCALIZATION_FALLBACK_REGISTRY
-        : {
-            createFallbackResolvers(fallbackOptions) {
-              return createBasicLocalizationFallbackResolvers(fallbackOptions);
-            },
-          }));
+    ? CORE_LOCALIZATION_FALLBACK_REGISTRY
+    : {
+        createFallbackResolvers(fallbackOptions) {
+          return createBasicLocalizationFallbackResolvers(fallbackOptions);
+        },
+      };
 
 const LOCALIZATION_FALLBACK_RESOLVERS =
-  (LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.resolvers) ||
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers === 'object'
-    ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers
-    : (LOCALIZATION_FALLBACK_REGISTRY &&
+  localizationFallbackEnvironment &&
+  localizationFallbackEnvironment.localizationFallbackResolvers
+    ? localizationFallbackEnvironment.localizationFallbackResolvers
+    : LOCALIZATION_FALLBACK_REGISTRY &&
       typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function'
-        ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
-            directNamespace: CORE_LOCALIZATION_FALLBACKS,
-            inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
-          })
-        : createBasicLocalizationFallbackResolvers({
-            directNamespace: CORE_LOCALIZATION_FALLBACKS,
-            inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
-          })));
+    ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
+        directNamespace: CORE_LOCALIZATION_FALLBACKS,
+        inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
+      })
+    : createBasicLocalizationFallbackResolvers({
+        directNamespace: CORE_LOCALIZATION_FALLBACKS,
+        inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
+      });
 
 const LOCALIZATION_FALLBACK_NAMESPACE =
-  (LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.namespace) ||
-  (LOCALIZATION_FALLBACK_RESOLVERS &&
-  LOCALIZATION_FALLBACK_RESOLVERS.namespace &&
-  typeof LOCALIZATION_FALLBACK_RESOLVERS.namespace === 'object'
-    ? LOCALIZATION_FALLBACK_RESOLVERS.namespace
-    : null);
+  localizationFallbackEnvironment &&
+  localizationFallbackEnvironment.localizationFallbackNamespace
+    ? localizationFallbackEnvironment.localizationFallbackNamespace
+    : null;
 
 const fallbackResolveLocaleModule =
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.fallbackResolveLocaleModule === 'function'
-    ? function fallbackResolveLocaleModuleProxy(scope) {
-        try {
-          return LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.fallbackResolveLocaleModule(scope);
-        } catch (fallbackError) {
-          void fallbackError;
-        }
-
-        return null;
-      }
-    : LOCALIZATION_FALLBACK_CONTEXT &&
-      typeof LOCALIZATION_FALLBACK_CONTEXT.fallbackResolveLocaleModule === 'function'
-    ? function fallbackResolveLocaleModuleProxy(scope) {
-        try {
-          return LOCALIZATION_FALLBACK_CONTEXT.fallbackResolveLocaleModule(scope);
-        } catch (fallbackError) {
-          void fallbackError;
-        }
-
-        return null;
-      }
+  localizationFallbackEnvironment &&
+  typeof localizationFallbackEnvironment.fallbackResolveLocaleModule === 'function'
+    ? localizationFallbackEnvironment.fallbackResolveLocaleModule
     : function fallbackResolveLocaleModuleProxy() {
         return null;
-      });
+      };
 
 const createLocaleFallbacks =
-  (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE &&
-  typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createLocaleFallbacks === 'function'
-    ? function createLocaleFallbacksProxy(options) {
-        try {
-          return LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createLocaleFallbacks(options);
-        } catch (createFallbackError) {
-          void createFallbackError;
-        }
-
-        return null;
-      }
-    : LOCALIZATION_FALLBACK_CONTEXT &&
-      typeof LOCALIZATION_FALLBACK_CONTEXT.createLocaleFallbacks === 'function'
-    ? function createLocaleFallbacksProxy(options) {
-        try {
-          return LOCALIZATION_FALLBACK_CONTEXT.createLocaleFallbacks(options);
-        } catch (createFallbackError) {
-          void createFallbackError;
-        }
-
-        return null;
-      }
+  localizationFallbackEnvironment &&
+  typeof localizationFallbackEnvironment.createLocaleFallbacks === 'function'
+    ? localizationFallbackEnvironment.createLocaleFallbacks
     : function createLocaleFallbacksProxy() {
         return null;
-      });
+      };
 
 const CORE_RUNTIME_TOOLS = resolveCoreSupportModule(
   'cineCoreRuntimeTools',
