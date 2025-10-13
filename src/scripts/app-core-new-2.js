@@ -16551,6 +16551,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['updatePowerDistTypeOptions', () => updatePowerDistTypeOptions],
       ['updatePowerDistVoltageOptions', () => updatePowerDistVoltageOptions],
       ['updatePowerDistCurrentOptions', () => updatePowerDistCurrentOptions],
+      ['updateTimecodeTypeOptions', () => updateTimecodeTypeOptions],
       ['setPowerDistribution', () => setPowerDistribution],
       ['getPowerDistribution', () => getPowerDistribution],
       ['renderSetupDiagram', () => renderSetupDiagram],

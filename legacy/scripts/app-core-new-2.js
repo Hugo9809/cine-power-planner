@@ -15662,6 +15662,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return updatePowerDistVoltageOptions;
     }], ['updatePowerDistCurrentOptions', function () {
       return updatePowerDistCurrentOptions;
+    }], ['updateTimecodeTypeOptions', function () {
+      return updateTimecodeTypeOptions;
     }], ['setPowerDistribution', function () {
       return setPowerDistribution;
     }], ['getPowerDistribution', function () {
