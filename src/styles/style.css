@@ -7334,10 +7334,12 @@ body.dark-mode .onboarding-hero-highlight-body {
 
   .onboarding-card[data-size='hero'] {
     --onboarding-card-hero-margin: 1.15rem;
+    --onboarding-card-hero-inline: min(32rem, calc(100vw - 3rem));
     width: min(100%, var(--onboarding-card-hero-inline));
     inline-size: min(100%, var(--onboarding-card-hero-inline));
     max-width: min(100%, var(--onboarding-card-hero-inline));
     max-inline-size: min(100%, var(--onboarding-card-hero-inline));
+    margin-inline: auto;
     --onboarding-card-padding: clamp(1.1rem, 0.85rem + 2vw, 1.65rem);
     gap: clamp(1.05rem, 0.85rem + 1.4vw, 1.6rem);
   }
