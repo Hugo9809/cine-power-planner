@@ -101,29 +101,63 @@ var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
   }
   return null;
 }();
-function defaultFallbackDetectRuntimeScope(primaryScope) {
+var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution() {
+  var namespaceName = 'cineCoreRuntimeSupportResolution';
+  function readFromScope(candidateScope) {
+    if (!candidateScope || (_typeof(candidateScope) !== 'object' && typeof candidateScope !== 'function')) {
+      return null;
+    }
+    try {
+      var resolution = candidateScope[namespaceName];
+      return resolution && _typeof(resolution) === 'object' ? resolution : null;
+    } catch (resolutionLookupError) {
+      void resolutionLookupError;
+    }
+    return null;
+  }
+  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidates.length; index += 1) {
+    var resolution = readFromScope(candidates[index]);
+    if (resolution) {
+      return resolution;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var requiredResolution = require('./modules/core/runtime-support-resolution.js');
+      if (requiredResolution && _typeof(requiredResolution) === 'object') {
+        return requiredResolution;
+      }
+    } catch (runtimeSupportResolutionRequireError) {
+      void runtimeSupportResolutionRequireError;
+    }
+  }
+  for (var _index2 = 0; _index2 < candidates.length; _index2 += 1) {
+    var _resolution = readFromScope(candidates[_index2]);
+    if (_resolution) {
+      return _resolution;
+    }
+  }
+  return null;
+}();
+function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
   }
-  if (typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' && globalThis) {
-    return globalThis;
-  }
-  if (typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' && window) {
-    return window;
-  }
-  if (typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' && self) {
-    return self;
-  }
-  if (typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' && global) {
-    return global;
+  var candidates = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
+      return scope;
+    }
   }
   return null;
 }
-function defaultFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
+function inlineFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
   if (typeof namespaceName !== 'string' || !namespaceName) {
     return null;
   }
-  var runtimeScope = defaultFallbackDetectRuntimeScope(primaryScope);
+  var runtimeScope = inlineFallbackDetectRuntimeScope(primaryScope);
   if (runtimeScope && runtimeScope[namespaceName] && _typeof(runtimeScope[namespaceName]) === 'object') {
     return runtimeScope[namespaceName];
   }
@@ -139,11 +173,41 @@ function defaultFallbackResolveCoreSupportModule(namespaceName, requirePath, pri
   }
   return null;
 }
+var CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS = function resolveRuntimeSupportResolutionDefaults() {
+  if (CORE_RUNTIME_SUPPORT_RESOLUTION && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.fallbackDetectRuntimeScope === 'function' && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.fallbackResolveCoreSupportModule === 'function') {
+    return CORE_RUNTIME_SUPPORT_RESOLUTION;
+  }
+  return {
+    fallbackDetectRuntimeScope: inlineFallbackDetectRuntimeScope,
+    fallbackResolveCoreSupportModule: inlineFallbackResolveCoreSupportModule,
+    readRuntimeSupportResolver: function readRuntimeSupportResolver() {
+      return Object.freeze({
+        detectRuntimeScope: inlineFallbackDetectRuntimeScope,
+        resolveCoreSupportModule: inlineFallbackResolveCoreSupportModule
+      });
+    }
+  };
+}();
+var CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS = function resolveRuntimeSupportResolutionTools() {
+  if (CORE_RUNTIME_SUPPORT_RESOLUTION && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.readRuntimeSupportResolver === 'function') {
+    try {
+      return CORE_RUNTIME_SUPPORT_RESOLUTION.readRuntimeSupportResolver(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE);
+    } catch (runtimeSupportResolutionToolsError) {
+      void runtimeSupportResolutionToolsError;
+    }
+  }
+  try {
+    return CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS.readRuntimeSupportResolver(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE);
+  } catch (runtimeSupportResolutionDefaultsError) {
+    void runtimeSupportResolutionDefaultsError;
+  }
+  return null;
+}();
 var CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS = CORE_RUNTIME_SUPPORT_BOOTSTRAP && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP.resolveBootstrap === 'function' ? CORE_RUNTIME_SUPPORT_BOOTSTRAP.resolveBootstrap(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE) : null;
 var CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS = !CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && CORE_RUNTIME_SUPPORT_BOOTSTRAP && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP.readRuntimeSupportTools === 'function' ? CORE_RUNTIME_SUPPORT_BOOTSTRAP.readRuntimeSupportTools(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE) : null;
-var fallbackDetectRuntimeScope = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope || CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS && typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope || defaultFallbackDetectRuntimeScope;
+var fallbackDetectRuntimeScope = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope || CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS && typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope || CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS && typeof CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS.detectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS.detectRuntimeScope || CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS.fallbackDetectRuntimeScope;
 var detectRuntimeScope = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.detectRuntimeScope === 'function' && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.detectRuntimeScope || fallbackDetectRuntimeScope;
-var fallbackResolveCoreSupportModule = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule === 'function' && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule || CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS && typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule === 'function' && CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule || defaultFallbackResolveCoreSupportModule;
+var fallbackResolveCoreSupportModule = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule === 'function' && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule || CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS && typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule === 'function' && CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule || CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS && typeof CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS.resolveCoreSupportModule === 'function' && CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS.resolveCoreSupportModule || CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS.fallbackResolveCoreSupportModule;
 var CORE_PART1_RUNTIME_SCOPE = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.runtimeScope ? CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.runtimeScope : detectRuntimeScope(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE);
 var resolveCoreSupportModule = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.resolveCoreSupportModule === 'function' ? function resolveCoreSupportModule(namespaceName, requirePath) {
   return CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.resolveCoreSupportModule(namespaceName, requirePath, CORE_PART1_RUNTIME_SCOPE);
