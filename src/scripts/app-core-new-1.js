@@ -8694,6 +8694,76 @@ function updateGlobalDevicesReference(latestDevices) {
   }
 }
 
+function resolveUpdateDevicesReferenceFunction() {
+  let directReference = null;
+  try {
+    directReference = typeof updateGlobalDevicesReference === 'function'
+      ? updateGlobalDevicesReference
+      : null;
+  } catch (referenceError) {
+    void referenceError;
+    directReference = null;
+  }
+
+  if (directReference) {
+    return directReference;
+  }
+
+  const candidates = [];
+  const registerCandidate = (scope) => {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+    if (candidates.indexOf(scope) !== -1) {
+      return;
+    }
+    candidates.push(scope);
+  };
+
+  try {
+    registerCandidate(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
+  } catch (corePart1ScopeError) {
+    void corePart1ScopeError;
+  }
+
+  try {
+    registerCandidate(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  } catch (coreGlobalScopeError) {
+    void coreGlobalScopeError;
+  }
+
+  try {
+    registerCandidate(typeof DEVICE_GLOBAL_SCOPE !== 'undefined' ? DEVICE_GLOBAL_SCOPE : null);
+  } catch (deviceScopeError) {
+    void deviceScopeError;
+  }
+
+  try {
+    registerCandidate(typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined' ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null);
+  } catch (runtimeCandidateError) {
+    void runtimeCandidateError;
+  }
+
+  registerCandidate(typeof globalThis !== 'undefined' ? globalThis : null);
+  registerCandidate(typeof window !== 'undefined' ? window : null);
+  registerCandidate(typeof self !== 'undefined' ? self : null);
+  registerCandidate(typeof global !== 'undefined' ? global : null);
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    try {
+      const candidate = scope && scope.updateGlobalDevicesReference;
+      if (typeof candidate === 'function') {
+        return candidate;
+      }
+    } catch (scopeError) {
+      void scopeError;
+    }
+  }
+
+  return null;
+}
+
 // Store a deep copy of the initial 'devices' data as defined in the device files.
 // This 'defaultDevices' will be used when reverting the database.
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
@@ -8725,17 +8795,7 @@ if (storedDevices) {
     }
   }
   devices = merged;
-  const updateDevicesReferenceFn =
-    (typeof updateGlobalDevicesReference === 'function' && updateGlobalDevicesReference)
-    || (typeof CORE_GLOBAL_SCOPE !== 'undefined'
-      && CORE_GLOBAL_SCOPE
-      && typeof CORE_GLOBAL_SCOPE.updateGlobalDevicesReference === 'function'
-        ? CORE_GLOBAL_SCOPE.updateGlobalDevicesReference
-        : null)
-    || (typeof globalThis !== 'undefined'
-      && typeof globalThis.updateGlobalDevicesReference === 'function'
-        ? globalThis.updateGlobalDevicesReference
-        : null);
+  const updateDevicesReferenceFn = resolveUpdateDevicesReferenceFunction();
   if (typeof updateDevicesReferenceFn === 'function') {
     try {
       updateDevicesReferenceFn(devices);
