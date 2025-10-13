@@ -1980,7 +1980,12 @@ const texts = {
         connectionDiagram: {
           title: "Inspect the connection diagram",
           body:
-            "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.",
+            "The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to open hover details, then save so the arrangement and annotations persist across exports and restores.",
+        },
+        connectionDiagramDetails: {
+          title: "Open device hover details",
+          body:
+            "Double-click any device node in the diagram to reveal its hover detail popup. Review draw notes, connector callouts and saved annotations, then close it to keep arranging the layout before saving.",
         },
         editDeviceDataAdd: {
           title: "Add a device to the library",
@@ -4159,7 +4164,12 @@ const texts = {
         connectionDiagram: {
           title: "Esamina il diagramma delle connessioni",
           body:
-            "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, quindi salva così disposizione e annotazioni restano in esportazioni e ripristini.",
+            "Il diagramma interattivo mostra come si collegano alimentazione, video e controllo. Trascina i nodi per pianificare il layout, fai doppio clic sui dispositivi per aprire i popup informativi e poi salva così disposizione e annotazioni restano in esportazioni e ripristini.",
+        },
+        connectionDiagramDetails: {
+          title: "Apri i dettagli hover del dispositivo",
+          body:
+            "Fai doppio clic su qualsiasi nodo dispositivo nel diagramma per visualizzare il popup dei dettagli. Rivedi note su assorbimento, connettori e annotazioni salvate, quindi chiudilo per proseguire con l'organizzazione del layout prima di salvare.",
         },
         editDeviceDataAdd: {
           title: "Aggiungi un dispositivo alla libreria",
@@ -6351,7 +6361,12 @@ const texts = {
         connectionDiagram: {
           title: "Inspecciona el diagrama de conexiones",
           body:
-            "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones.",
+            "El diagrama interactivo traza la ruta de energía, video y control del rig. Acomoda los nodos para planear el plano de cámara, haz doble clic en los dispositivos para abrir los detalles flotantes y luego guarda para que la disposición y las anotaciones permanezcan en exportaciones y restauraciones.",
+        },
+        connectionDiagramDetails: {
+          title: "Abre los detalles flotantes del dispositivo",
+          body:
+            "Haz doble clic en cualquier nodo de dispositivo del diagrama para mostrar el popup de detalles flotantes. Revisa notas de consumo, avisos de conectores y anotaciones guardadas, y ciérralo para seguir organizando el plano antes de guardar.",
         },
         editDeviceDataAdd: {
           title: "Añade un dispositivo a la biblioteca",
@@ -8556,7 +8571,12 @@ const texts = {
         connectionDiagram: {
           title: "Inspectez le diagramme de connexion",
           body:
-            "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations.",
+            "Le diagramme interactif montre comment l’alimentation, la vidéo et les contrôles sont reliés. Faites glisser les nœuds pour planifier l’agencement, double-cliquez sur les appareils pour afficher les infobulles détaillées, puis enregistrez afin que la disposition et les annotations persistent dans les exports et restaurations.",
+        },
+        connectionDiagramDetails: {
+          title: "Ouvrez les détails flottants de l’appareil",
+          body:
+            "Double-cliquez sur n’importe quel nœud d’appareil dans le diagramme pour afficher la fenêtre détaillée en survol. Consultez les notes de consommation, les rappels de connecteur et les annotations enregistrées, puis fermez-la pour poursuivre l’organisation avant d’enregistrer.",
         },
         editDeviceDataAdd: {
           title: "Ajoutez un appareil à la bibliothèque",
@@ -10764,7 +10784,12 @@ const texts = {
         connectionDiagram: {
           title: "Verbindungsdiagramm prüfen",
           body:
-            "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben.",
+            "Das interaktive Diagramm zeigt, wie Strom, Video und Steuerung verbunden sind. Ziehe Knoten, um das Rig-Layout zu planen, doppelklicke auf Geräte, um die Hover-Details zu öffnen, und speichere anschließend, damit Anordnung und Anmerkungen in Exporten und Wiederherstellungen erhalten bleiben.",
+        },
+        connectionDiagramDetails: {
+          title: "Geräte-Hover-Details öffnen",
+          body:
+            "Doppelklicke auf einen Geräteknoten im Diagramm, um das Hover-Detail-Popup anzuzeigen. Prüfe Leistungsnotizen, Anschluss-Hinweise und gespeicherte Anmerkungen und schließe es, um das Layout weiter anzupassen, bevor du speicherst.",
         },
         editDeviceDataAdd: {
           title: "Gerät zur Bibliothek hinzufügen",

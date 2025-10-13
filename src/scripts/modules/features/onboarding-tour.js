@@ -505,6 +505,7 @@
     'batteryComparison',
     'runtimeFeedback',
     'connectionDiagram',
+    'connectionDiagramDetails',
     'editDeviceDataAdd',
     'editDeviceDataReview',
     'editDeviceDataEdit',
@@ -633,7 +634,12 @@
     connectionDiagram: {
       title: 'Inspect the connection diagram',
       body:
-        'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.',
+        'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to pop open hover details, then save so the arrangement and annotations persist across exports and restores.',
+    },
+    connectionDiagramDetails: {
+      title: 'Open device hover details',
+      body:
+        'Double-click any device node in the diagram to reveal its hover detail popup. Review draw notes, connector callouts and saved annotations, then close it to continue arranging the layout before saving.',
     },
     editDeviceDataAdd: {
       title: 'Add a device to the library',
@@ -1878,6 +1884,10 @@
       },
       {
         key: 'connectionDiagram',
+        highlight: '#diagramArea',
+      },
+      {
+        key: 'connectionDiagramDetails',
         highlight: '#diagramArea',
       },
       {

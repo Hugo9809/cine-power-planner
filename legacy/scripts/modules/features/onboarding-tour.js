@@ -428,7 +428,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return value;
   }
-  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
+  var DEFAULT_STEP_KEYS = ['intro', 'userProfile', 'unitsPreferences', 'nameProject', 'saveProject', 'addCamera', 'addMonitoring', 'selectBattery', 'resultsTotalDraw', 'resultsBatteryPacks', 'resultsChangeover', 'resultsWarnings', 'batteryComparison', 'runtimeFeedback', 'connectionDiagram', 'connectionDiagramDetails', 'editDeviceDataAdd', 'editDeviceDataReview', 'editDeviceDataEdit', 'ownGearAccess', 'ownGearAddDevice', 'generateGearAndRequirements', 'autoGearRulesAccess', 'autoGearRulesEdit', 'autoGearRulesCreate', 'projectRequirements', 'gearList', 'exportImport', 'overviewAndPrint', 'help', 'settingsGeneral', 'settingsData', 'settingsBackup', 'completion'];
   var DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
@@ -512,7 +512,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     connectionDiagram: {
       title: 'Inspect the connection diagram',
-      body: 'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, then save so the arrangement and annotations persist across exports and restores.'
+      body: 'The interactive diagram shows how power, video and control gear connect. Drag nodes to plan rig layout, double-click devices to pop open hover details, then save so the arrangement and annotations persist across exports and restores.'
+    },
+    connectionDiagramDetails: {
+      title: 'Open device hover details',
+      body: 'Double-click any device node in the diagram to reveal its hover detail popup. Review draw notes, connector callouts and saved annotations, then close it to continue arranging the layout before saving.'
     },
     editDeviceDataAdd: {
       title: 'Add a device to the library',
@@ -1612,6 +1616,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: '#runtimeFeedbackBtn'
     }, {
       key: 'connectionDiagram',
+      highlight: '#diagramArea'
+    }, {
+      key: 'connectionDiagramDetails',
       highlight: '#diagramArea'
     }, {
       key: 'editDeviceDataAdd',
