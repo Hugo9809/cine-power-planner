@@ -2649,6 +2649,93 @@ function applyCameraFizConnectors(connectors) {
   return applied;
 }
 
+function applyCameraTimecodes(timecodes) {
+  const normalized = Array.isArray(timecodes)
+    ? timecodes.map(entry => {
+      if (!entry) {
+        return entry;
+      }
+
+      if (typeof entry === 'string') {
+        const trimmed = entry.trim();
+        return trimmed ? { type: trimmed, notes: '' } : entry;
+      }
+
+      if (typeof entry === 'object') {
+        const normalizedEntry = { ...entry };
+
+        if (typeof normalizedEntry.type !== 'string' || !normalizedEntry.type) {
+          const derivedType =
+            (typeof normalizedEntry.format === 'string' && normalizedEntry.format) ||
+            (typeof normalizedEntry.name === 'string' && normalizedEntry.name) ||
+            '';
+          if (derivedType) {
+            normalizedEntry.type = derivedType;
+          }
+        }
+
+        if (typeof normalizedEntry.notes !== 'string') {
+          if (typeof normalizedEntry.comment === 'string') {
+            normalizedEntry.notes = normalizedEntry.comment;
+          } else if (normalizedEntry.notes == null) {
+            normalizedEntry.notes = '';
+          }
+        }
+
+        return normalizedEntry;
+      }
+
+      return entry;
+    })
+    : [];
+
+  let applied = false;
+
+  if (typeof setTimecodes === 'function') {
+    try {
+      setTimecodes(normalized);
+      applied = true;
+    } catch (directApplyError) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        try {
+          eventsLogger.warn('Direct setTimecodes invocation failed', directApplyError, {
+            namespace: 'device-editor',
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
+
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Direct setTimecodes invocation failed', directApplyError);
+      }
+    }
+  }
+
+  if (!applied) {
+    try {
+      callEventsCoreFunction('setTimecodes', [normalized], { defer: true });
+      applied = true;
+    } catch (coreInvokeError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        try {
+          eventsLogger.error('Failed to schedule setTimecodes', coreInvokeError, {
+            namespace: 'device-editor',
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
+
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to schedule setTimecodes', coreInvokeError);
+      }
+    }
+  }
+
+  return applied;
+}
+
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
@@ -2692,7 +2779,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setVideoOutputs(deviceData.videoOutputs || []);
     applyCameraFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
-    setTimecodes(deviceData.timecode || []);
+    applyCameraTimecodes(deviceData.timecode || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "lenses") {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
