@@ -429,56 +429,30 @@ var CORE_RUNTIME_SHARED =
       })
     : fallbackResolveRuntimeSharedFromGlobal());
 
-const PINK_MODE_RUNTIME_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppPinkModeRuntime',
-  './modules/app-core/pink-mode-runtime.js'
+const PINK_MODE_SUPPORT_BRIDGE_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppPinkModeSupportBridge',
+  './modules/app-core/pink-mode-support-bridge.js'
 );
 
-const PINK_MODE_RUNTIME_FACTORY =
-  (PINK_MODE_RUNTIME_TOOLS &&
-  typeof PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime === 'function'
-    ? PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime
+const createPinkModeSupportBridge =
+  (PINK_MODE_SUPPORT_BRIDGE_TOOLS &&
+  typeof PINK_MODE_SUPPORT_BRIDGE_TOOLS.createPinkModeSupportBridge === 'function'
+    ? PINK_MODE_SUPPORT_BRIDGE_TOOLS.createPinkModeSupportBridge
     : null) ||
-  (function attemptRequirePinkModeRuntimeFactory() {
+  (function attemptResolvePinkModeSupportBridge() {
     if (typeof require === 'function') {
       try {
-        const requiredPinkModeRuntime = require('./modules/app-core/pink-mode-runtime.js');
+        const requiredPinkModeSupportBridge = require(
+          './modules/app-core/pink-mode-support-bridge.js'
+        );
         if (
-          requiredPinkModeRuntime &&
-          typeof requiredPinkModeRuntime.createPinkModeRuntime === 'function'
+          requiredPinkModeSupportBridge &&
+          typeof requiredPinkModeSupportBridge.createPinkModeSupportBridge === 'function'
         ) {
-          return requiredPinkModeRuntime.createPinkModeRuntime;
+          return requiredPinkModeSupportBridge.createPinkModeSupportBridge;
         }
-      } catch (pinkModeRuntimeRequireError) {
-        void pinkModeRuntimeRequireError;
-      }
-    }
-
-    return null;
-  })();
-
-const PINK_MODE_FALLBACK_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppPinkModeFallback',
-  './modules/app-core/pink-mode-fallback.js'
-);
-
-const PINK_MODE_FALLBACK_FACTORY =
-  (PINK_MODE_FALLBACK_TOOLS &&
-  typeof PINK_MODE_FALLBACK_TOOLS.createPinkModeFallbackApi === 'function'
-    ? PINK_MODE_FALLBACK_TOOLS.createPinkModeFallbackApi
-    : null) ||
-  (function attemptResolvePinkModeFallbackFactory() {
-    if (typeof require === 'function') {
-      try {
-        const requiredPinkModeFallback = require('./modules/app-core/pink-mode-fallback.js');
-        if (
-          requiredPinkModeFallback &&
-          typeof requiredPinkModeFallback.createPinkModeFallbackApi === 'function'
-        ) {
-          return requiredPinkModeFallback.createPinkModeFallbackApi;
-        }
-      } catch (pinkModeFallbackRequireError) {
-        void pinkModeFallbackRequireError;
+      } catch (pinkModeSupportBridgeRequireError) {
+        void pinkModeSupportBridgeRequireError;
       }
     }
 
@@ -498,15 +472,15 @@ const PINK_MODE_FALLBACK_FACTORY =
       }
 
       try {
-        const candidate = scope.cineCoreAppPinkModeFallback;
+        const candidate = scope.cineCoreAppPinkModeSupportBridge;
         if (
           candidate &&
-          typeof candidate.createPinkModeFallbackApi === 'function'
+          typeof candidate.createPinkModeSupportBridge === 'function'
         ) {
-          return candidate.createPinkModeFallbackApi;
+          return candidate.createPinkModeSupportBridge;
         }
-      } catch (pinkModeFallbackLookupError) {
-        void pinkModeFallbackLookupError;
+      } catch (pinkModeSupportBridgeLookupError) {
+        void pinkModeSupportBridgeLookupError;
       }
     }
 
@@ -583,34 +557,17 @@ function createLastResortPinkModeFallbackApi() {
   };
 }
 
-const PINK_MODE_SUPPORT_API_UNSAFE =
-  PINK_MODE_RUNTIME_FACTORY
-    ? PINK_MODE_RUNTIME_FACTORY({
+const PINK_MODE_SUPPORT_API =
+  (typeof createPinkModeSupportBridge === 'function'
+    ? createPinkModeSupportBridge({
         resolveCoreSupportModule,
         requireFn: typeof require === 'function' ? require : null,
         runtimeScope:
           typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
         coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
       })
-    : null;
-
-const PINK_MODE_SUPPORT_API =
-  PINK_MODE_SUPPORT_API_UNSAFE && typeof PINK_MODE_SUPPORT_API_UNSAFE === 'object'
-    ? PINK_MODE_SUPPORT_API_UNSAFE
-    : (function resolvePinkModeFallbackApi() {
-        if (typeof PINK_MODE_FALLBACK_FACTORY === 'function') {
-          try {
-            const fallbackApi = PINK_MODE_FALLBACK_FACTORY();
-            if (fallbackApi && typeof fallbackApi === 'object') {
-              return fallbackApi;
-            }
-          } catch (pinkModeFallbackFactoryError) {
-            void pinkModeFallbackFactoryError;
-          }
-        }
-
-        return createLastResortPinkModeFallbackApi();
-      })();
+    : null) ||
+  createLastResortPinkModeFallbackApi();
 
 const {
   pinkModeIcons,

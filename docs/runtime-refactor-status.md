@@ -197,3 +197,18 @@
 - Moved the shared environment guards, runtime state fallbacks, and connector summary helpers into `app-core-enviroment.js` so part 2 focuses on the interactive runtime while the bootstrap logic evolves independently.【F:src/scripts/app-core-enviroment.js†L1-L1562】【F:src/scripts/app-core-new-2.js†L1-L20】
 - Updated the loader manifests, service worker asset manifest, and script integrity tests to reference the new module, ensuring offline caching and Node bundling include the extracted helpers.【F:src/scripts/loader.js†L2870-L2895】【F:legacy/scripts/loader.js†L2394-L2406】【F:service-worker-assets.js†L176-L188】【F:tests/script/scriptIntegrity.test.js†L107-L121】
 
+## Step 16 – Pink mode support bridge
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 24772 | 24729 | -43 |
+| `legacy/scripts/app-core-new-1.js` | 21789 | 21817 | +28 |
+| `src/scripts/modules/app-core/pink-mode-support-bridge.js` | – | 450 | +450 |
+| `legacy/scripts/modules/app-core/pink-mode-support-bridge.js` | – | 449 | +449 |
+
+*Notes:*
+
+- Extracted the pink mode runtime and fallback resolver into `pink-mode-support-bridge.js` so the main runtime file shrinks while keeping the resilient lookup chain intact across online, offline, and restore scenarios.【F:src/scripts/modules/app-core/pink-mode-support-bridge.js†L1-L450】【F:src/scripts/app-core-new-1.js†L429-L589】
+- Added the mirrored legacy bridge so older bundles reuse the same orchestration without regressing ES5 compatibility during offline cache hydration.【F:legacy/scripts/modules/app-core/pink-mode-support-bridge.js†L1-L449】【F:legacy/scripts/app-core-new-1.js†L73-L155】
+- Updated the bundler manifests, loader, script aggregator, and service worker asset list to ship the bridge in all environments, preserving offline availability and script integrity checks.【F:src/scripts/script.js†L39-L47】【F:legacy/scripts/script.js†L1-L4】【F:src/scripts/loader.js†L3176-L3193】【F:legacy/scripts/loader.js†L2662-L2666】【F:service-worker-assets.js†L80-L118】【F:service-worker-assets.js†L236-L270】
+
