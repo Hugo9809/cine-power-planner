@@ -33,6 +33,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/pink-mode-animations.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
+    'modules/core/mount-voltage.js',
     'modules/core/experience.js',
     'modules/logging.js',
     'modules/features/help.js',
