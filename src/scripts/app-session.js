@@ -1,6 +1,6 @@
 // --- SESSION STATE HANDLING ---
 /* eslint-disable no-redeclare */
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
+/* global CORE_GLOBAL_SCOPE, resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
           updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
           DEFAULT_ACCENT_COLOR: true, HIGH_CONTRAST_ACCENT_COLOR: true,
@@ -191,7 +191,7 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone,
-          mountVoltageResetButton, CORE_GLOBAL_SCOPE,
+          mountVoltageResetButton,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
           applyMountVoltagePreferences, getMountVoltageStorageKeyName,
           getMountVoltageStorageBackupKeyName,
@@ -15544,7 +15544,32 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
-  setLanguage(currentLang);
+  const resolveSetLanguageFn = () => {
+    if (typeof setLanguage === 'function') {
+      return setLanguage;
+    }
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined'
+      && CORE_GLOBAL_SCOPE
+      && typeof CORE_GLOBAL_SCOPE.setLanguage === 'function') {
+      return CORE_GLOBAL_SCOPE.setLanguage;
+    }
+    if (typeof globalThis !== 'undefined'
+      && typeof globalThis.setLanguage === 'function') {
+      return globalThis.setLanguage;
+    }
+    return null;
+  };
+
+  const setLanguageFn = resolveSetLanguageFn();
+  if (typeof setLanguageFn === 'function') {
+    try {
+      setLanguageFn(currentLang);
+    } catch (setLanguageError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to initialize language selection', setLanguageError);
+      }
+    }
+  }
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();

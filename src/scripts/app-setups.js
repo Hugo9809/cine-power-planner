@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
+/* global CORE_GLOBAL_SCOPE, getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState, filterDetailsStorage,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
@@ -4978,9 +4978,33 @@ function collectProjectFormData() {
         info.storageRequirements = storageEntries;
     }
 
-    const currentProjectName = getCurrentProjectName();
-    if (currentProjectName) {
-        info.projectName = currentProjectName;
+    const resolveProjectNameFn = () => {
+        if (typeof getCurrentProjectName === 'function') {
+            return getCurrentProjectName;
+        }
+        if (typeof CORE_GLOBAL_SCOPE !== 'undefined'
+            && CORE_GLOBAL_SCOPE
+            && typeof CORE_GLOBAL_SCOPE.getCurrentProjectName === 'function') {
+            return CORE_GLOBAL_SCOPE.getCurrentProjectName;
+        }
+        if (typeof globalThis !== 'undefined'
+            && typeof globalThis.getCurrentProjectName === 'function') {
+            return globalThis.getCurrentProjectName;
+        }
+        return null;
+    };
+    const projectNameFn = resolveProjectNameFn();
+    if (typeof projectNameFn === 'function') {
+        try {
+            const currentProjectName = projectNameFn();
+            if (currentProjectName) {
+                info.projectName = currentProjectName;
+            }
+        } catch (projectNameError) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Failed to resolve current project name during setup export', projectNameError);
+            }
+        }
     }
 
     const snapshot = freezeProjectFormDataSnapshot(info);

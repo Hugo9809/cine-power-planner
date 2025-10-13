@@ -8792,7 +8792,26 @@ if (storedDevices) {
     }
   }
   devices = merged;
-  updateGlobalDevicesReference(devices);
+  const updateDevicesReferenceFn =
+    (typeof updateGlobalDevicesReference === 'function' && updateGlobalDevicesReference)
+    || (typeof CORE_GLOBAL_SCOPE !== 'undefined'
+      && CORE_GLOBAL_SCOPE
+      && typeof CORE_GLOBAL_SCOPE.updateGlobalDevicesReference === 'function'
+        ? CORE_GLOBAL_SCOPE.updateGlobalDevicesReference
+        : null)
+    || (typeof globalThis !== 'undefined'
+      && typeof globalThis.updateGlobalDevicesReference === 'function'
+        ? globalThis.updateGlobalDevicesReference
+        : null);
+  if (typeof updateDevicesReferenceFn === 'function') {
+    try {
+      updateDevicesReferenceFn(devices);
+    } catch (updateDevicesReferenceError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to update global devices reference during initialization', updateDevicesReferenceError);
+      }
+    }
+  }
 }
 unifyDevices(devices);
 
