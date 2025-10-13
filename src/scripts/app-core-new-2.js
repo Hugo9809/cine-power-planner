@@ -6095,6 +6095,126 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
 
+    function resolveCoreRuntimeFunction(name) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+      for (let index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+        const scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          continue;
+        }
+        try {
+          const candidate = scope[name];
+          if (typeof candidate === 'function') {
+            return candidate;
+          }
+        } catch (resolveError) {
+          void resolveError;
+        }
+      }
+      return null;
+    }
+
+    function configureIconOnlyButtonSafe(button, glyph, options = {}) {
+      const resolvedConfigurator = resolveCoreRuntimeFunction('configureIconOnlyButton');
+      if (typeof resolvedConfigurator === 'function') {
+        try {
+          resolvedConfigurator(button, glyph, options);
+          return;
+        } catch (configError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('configureIconOnlyButton failed, applying fallback configuration', configError);
+          }
+        }
+      }
+
+      if (!button) {
+        return;
+      }
+
+      const resolvedGlyph = glyph || (() => {
+        const glyphMap = readCoreScopeValue('ICON_GLYPHS');
+        if (glyphMap && typeof glyphMap === 'object' && glyphMap.add) {
+          return glyphMap.add;
+        }
+        return null;
+      })();
+
+      const setButtonLabelWithIconFn = resolveCoreRuntimeFunction('setButtonLabelWithIcon');
+      if (typeof setButtonLabelWithIconFn === 'function') {
+        try {
+          setButtonLabelWithIconFn(button, '', resolvedGlyph);
+        } catch (labelError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('setButtonLabelWithIcon fallback failed', labelError);
+          }
+        }
+      }
+
+      const {
+        contextPaths = [],
+        fallbackContext = '',
+        actionKey = 'addEntry',
+      } = options || {};
+
+      const getLocalizedPathTextFn = resolveCoreRuntimeFunction('getLocalizedPathText');
+      const ensureArray = (value) => {
+        if (Array.isArray(value)) return value;
+        if (value === null || value === undefined) return [];
+        return [value];
+      };
+
+      let actionLabel = actionKey === 'removeEntry' ? 'Remove' : 'Add';
+      if (typeof getLocalizedPathTextFn === 'function') {
+        try {
+          actionLabel = getLocalizedPathTextFn(
+            ['projectForm', actionKey],
+            actionKey === 'removeEntry' ? 'Remove' : 'Add',
+          );
+        } catch (actionLabelError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('getLocalizedPathText failed to resolve action label', actionLabelError);
+          }
+        }
+      }
+
+      let contextLabel = '';
+      const contextCandidates = ensureArray(contextPaths);
+      if (typeof getLocalizedPathTextFn === 'function') {
+        for (let index = 0; index < contextCandidates.length; index += 1) {
+          const contextPath = contextCandidates[index];
+          if (!contextPath) {
+            continue;
+          }
+          try {
+            const resolvedLabel = getLocalizedPathTextFn(contextPath, '');
+            if (resolvedLabel) {
+              contextLabel = resolvedLabel;
+              break;
+            }
+          } catch (contextLabelError) {
+            void contextLabelError;
+          }
+        }
+      }
+
+      if (!contextLabel && typeof fallbackContext === 'string' && fallbackContext) {
+        contextLabel = fallbackContext;
+      }
+
+      const normalizedContext = contextLabel ? contextLabel.replace(/[:：]\s*$/, '').trim() : '';
+      const combinedLabel = [actionLabel, normalizedContext].filter(Boolean).join(' ').trim();
+      if (combinedLabel) {
+        try {
+          button.setAttribute('aria-label', combinedLabel);
+          button.setAttribute('title', combinedLabel);
+        } catch (attributeError) {
+          void attributeError;
+        }
+      }
+    }
+
     function getInstallBannerDismissedInSession() {
       const scope = getInstallBannerGlobalScope();
       if (!scope) {
@@ -13532,7 +13652,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13543,7 +13663,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13595,7 +13715,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -13606,7 +13726,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -13658,7 +13778,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13669,7 +13789,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13721,7 +13841,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -13732,7 +13852,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -13786,7 +13906,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13797,7 +13917,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13854,7 +13974,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'addEntry'
@@ -13865,7 +13985,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
         fallbackContext: 'Video Inputs',
         actionKey: 'removeEntry'
@@ -13915,7 +14035,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'addEntry'
@@ -13926,7 +14046,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
         fallbackContext: 'Video Outputs',
         actionKey: 'removeEntry'
@@ -13977,7 +14097,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(createFieldWithLabel(select, 'Type'));
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
         fallbackContext: 'FIZ Connector',
         actionKey: 'addEntry'
@@ -13988,7 +14108,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(addBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
         fallbackContext: 'FIZ Connector',
         actionKey: 'removeEntry'
@@ -14145,7 +14265,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['mediaHeading', ['cameraMediaLabel']],
         fallbackContext: 'Recording Media',
         actionKey: 'addEntry'
@@ -14157,7 +14277,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['mediaHeading', ['cameraMediaLabel']],
         fallbackContext: 'Recording Media',
         actionKey: 'removeEntry'
@@ -14349,7 +14469,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
         fallbackContext: 'Battery Plates',
         actionKey: 'addEntry'
@@ -14361,7 +14481,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
         fallbackContext: 'Battery Plates',
         actionKey: 'removeEntry'
@@ -14490,7 +14610,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
         fallbackContext: 'Viewfinder',
         actionKey: 'addEntry'
@@ -14502,7 +14622,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
         fallbackContext: 'Viewfinder',
         actionKey: 'removeEntry'
@@ -14629,7 +14749,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const fallbackContext = context?.fallbackContext || 'Lens Mount';
       const targetContainer = context?.container || lensMountContainer;
       const minRows = Number.isFinite(context?.minRows) ? context.minRows : 1;
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: [headingId, [labelId]],
         fallbackContext,
         actionKey: 'addEntry'
@@ -14650,7 +14770,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: [headingId, [labelId]],
         fallbackContext,
         actionKey: 'removeEntry'
@@ -14911,7 +15031,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
         fallbackContext: 'Power Distribution',
         actionKey: 'addEntry'
@@ -14923,7 +15043,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
         fallbackContext: 'Power Distribution',
         actionKey: 'removeEntry'
@@ -15030,7 +15150,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
-      configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      configureIconOnlyButtonSafe(addBtn, ICON_GLYPHS.add, {
         contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
         fallbackContext: 'Timecode',
         actionKey: 'addEntry'
@@ -15042,7 +15162,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      configureIconOnlyButtonSafe(removeBtn, ICON_GLYPHS.minus, {
         contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
         fallbackContext: 'Timecode',
         actionKey: 'removeEntry'
