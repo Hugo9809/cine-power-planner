@@ -1960,7 +1960,7 @@ const texts = {
         resultsChangeover: {
           title: "Power Summary pass: Changeovers",
           body:
-            "Continue through the changeover countdown timers to confirm charger coverage and status indicators so every handoff is organized in the saved snapshot.",
+            "Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan.",
         },
         resultsWarnings: {
           title: "Power Summary pass: Warnings and backups",
@@ -4139,7 +4139,7 @@ const texts = {
         resultsChangeover: {
           title: "Passaggio Power Summary: Cambi turno",
             body:
-              "Prosegui con i timer di cambio per confermare copertura dei caricabatterie e indicatori di stato così ogni handoff resta organizzato nello snapshot salvato.",
+              "Scorri l'elenco dei cambi per controllare l'autonomia residua, confermare che il prossimo pacco carico sia pronto e segnare i cambi completati così lo snapshot salvato riflette il piano aggiornato.",
         },
         resultsWarnings: {
           title: "Passaggio Power Summary: Avvisi e backup",
@@ -6331,7 +6331,7 @@ const texts = {
         resultsChangeover: {
           title: "Pasada por Power Summary: Cambios",
             body:
-              "Continúa con los temporizadores de cambio para confirmar la cobertura de cargadores y los indicadores de estado de modo que cada relevo quede organizado en la instantánea guardada.",
+              "Recorre la lista de cambios para revisar la autonomía restante, confirmar que la siguiente batería cargada esté preparada y marcar cada relevo completado para que la instantánea guardada refleje el plan actualizado.",
         },
         resultsWarnings: {
           title: "Pasada por Power Summary: Avisos y copias",
@@ -8536,7 +8536,7 @@ const texts = {
         resultsChangeover: {
           title: "Passage Power Summary : Basculements",
             body:
-              "Poursuivez avec les minuteries de bascule pour confirmer la couverture des chargeurs et les indicateurs d’état afin que chaque relais reste organisé dans l’instantané sauvegardé.",
+              "Parcourez la liste des basculements pour vérifier l’autonomie restante, confirmer que la prochaine batterie chargée est prête et valider chaque échange afin que l’instantané enregistré reflète le plan actualisé.",
         },
         resultsWarnings: {
           title: "Passage Power Summary : Alertes et sauvegardes",
@@ -10744,7 +10744,7 @@ const texts = {
         resultsChangeover: {
           title: "Power Summary-Durchgang: Umschaltungen",
             body:
-              "Gehe die Umschalt-Countdowns durch, bestätige Ladeabdeckung und Statusanzeigen, damit jeder Wechsel im gespeicherten Snapshot organisiert bleibt.",
+              "Gehe die Wechselübersicht durch, prüfe die verbleibende Laufzeit, bestätige, dass der nächste geladene Akku bereitliegt, und markiere abgeschlossene Wechsel, damit der gespeicherte Snapshot den aktuellen Übergabeplan abbildet.",
         },
         resultsWarnings: {
           title: "Power Summary-Durchgang: Warnungen und Backups",
