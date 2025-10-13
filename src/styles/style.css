@@ -57,8 +57,8 @@
   --button-hover-brightness: 0.97;
   --button-active-brightness: 0.92;
   --button-disabled-opacity: 0.55;
-  --button-shadow: var(--panel-shadow);
-  --button-hover-shadow: var(--panel-shadow-hover);
+  --button-shadow: none;
+  --button-hover-shadow: none;
   --icon-gap: 0.3em;
   --button-icon-gap: 0.375em;
   --install-banner-font-scale: var(--font-scale-xs);
@@ -839,7 +839,7 @@ main.legal-content {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   font-weight: var(--font-weight-medium);
   text-decoration: none;
-  box-shadow: var(--button-shadow, var(--panel-shadow));
+  box-shadow: var(--button-shadow, none);
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -852,7 +852,7 @@ main.legal-content {
 .button-link:hover,
 .button-link:focus-visible {
   filter: brightness(var(--button-hover-factor, var(--button-hover-brightness)));
-  box-shadow: var(--button-hover-shadow, var(--panel-shadow-hover));
+  box-shadow: var(--button-hover-shadow, none);
   outline: 2px solid color-mix(in srgb, var(--accent-color) 65%, transparent);
   outline-offset: 2px;
 }
@@ -8380,7 +8380,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--button-icon-gap);
-  box-shadow: var(--button-shadow, var(--panel-shadow));
+  box-shadow: var(--button-shadow, none);
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -8393,7 +8393,7 @@ button {
 button:hover,
 button:focus-visible {
   filter: brightness(var(--button-hover-factor, var(--button-hover-brightness)));
-  box-shadow: var(--button-hover-shadow, var(--panel-shadow-hover));
+  box-shadow: var(--button-hover-shadow, none);
 }
 
 button:focus-visible {
@@ -8441,8 +8441,8 @@ button.primary,
   --button-border: var(--button-primary-border);
   --button-hover-factor: 1.05;
   --button-active-factor: 0.95;
-  --button-shadow: var(--panel-shadow);
-  --button-hover-shadow: var(--panel-shadow-hover);
+  --button-shadow: none;
+  --button-hover-shadow: none;
 }
 
 button.secondary,
@@ -8465,8 +8465,8 @@ button.danger,
   --button-border: var(--button-danger-border);
   --button-hover-factor: 0.95;
   --button-active-factor: 0.9;
-  --button-shadow: var(--panel-shadow);
-  --button-hover-shadow: var(--panel-shadow-hover);
+  --button-shadow: none;
+  --button-hover-shadow: none;
 }
 
 .ghost-button {
