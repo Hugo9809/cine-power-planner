@@ -70,11 +70,13 @@ describe('cineOffline module', () => {
 
     expect(register).not.toHaveBeenCalled();
     expect(windowMock.addEventListener).toHaveBeenCalledWith('load', expect.any(Function), { once: true });
+    expect(loadHandler).toEqual(expect.any(Function));
 
     await loadHandler();
     await promise;
 
     expect(register).toHaveBeenCalledWith('sw.js', undefined);
+    expect(windowMock.removeEventListener).toHaveBeenCalledWith('load', loadHandler);
   });
 
   test('registerServiceWorker retries registration on a new invocation after a rejection', async () => {

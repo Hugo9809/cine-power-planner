@@ -334,7 +334,7 @@ same online or offline.
 5. Open **Help → Quick start checklist** and launch the guided tutorial. It
    walks through creating projects, configuring devices, reviewing the Power
    Summary (with its quick summary checkpoint) and rehearsing the offline safety
-   net step that highlights the top-bar indicator plus autosave status, building
+   next step that highlights the top-bar indicator plus autosave status, building
    gear lists, managing contacts, tracking your own gear, tuning automatic
    rules, and the export/import/backup drills. The step navigator and progress
    meter let you revisit finished workflows without restarting, the **Resume

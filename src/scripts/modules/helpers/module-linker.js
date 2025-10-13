@@ -179,11 +179,23 @@
 
     if (SCOPE_UTILS && typeof SCOPE_UTILS.resolveFromScopes === 'function') {
       try {
-        return SCOPE_UTILS.resolveFromScopes(propertyName, {
+        const resolvedScope = SCOPE_UTILS.resolveFromScopes(propertyName, {
           primaryScope: settings.primaryScope || PRIMARY_SCOPE,
           additionalScopes: settings.additionalScopes,
           detect: settings.detect || detectGlobalScope,
         });
+
+        if (resolvedScope && (typeof resolvedScope === 'object' || typeof resolvedScope === 'function')) {
+          try {
+            if (propertyName in resolvedScope) {
+              return resolvedScope[propertyName];
+            }
+          } catch (error) {
+            void error;
+          }
+        } else if (typeof resolvedScope !== 'undefined') {
+          return resolvedScope;
+        }
       } catch (error) {
         void error;
       }
