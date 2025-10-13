@@ -58,7 +58,7 @@
   --button-hover-brightness: 0.97;
   --button-active-brightness: 0.92;
   --button-disabled-opacity: 0.55;
-  --button-shadow: var(--panel-shadow);
+  --button-shadow: none;
   --button-hover-shadow: var(--panel-shadow-hover);
   --icon-gap: 0.3em;
   --button-icon-gap: 0.375em;
@@ -8453,7 +8453,7 @@ button.primary,
   --button-border: var(--button-primary-border);
   --button-hover-factor: 1.05;
   --button-active-factor: 0.95;
-  --button-shadow: var(--panel-shadow);
+  --button-shadow: none;
   --button-hover-shadow: var(--panel-shadow-hover);
 }
 
@@ -8477,7 +8477,7 @@ button.danger,
   --button-border: var(--button-danger-border);
   --button-hover-factor: 0.95;
   --button-active-factor: 0.9;
-  --button-shadow: var(--panel-shadow);
+  --button-shadow: none;
   --button-hover-shadow: var(--panel-shadow-hover);
 }
 
