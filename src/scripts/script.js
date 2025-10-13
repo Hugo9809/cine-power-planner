@@ -21,6 +21,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/localization.js',
     'modules/offline.js',
     'modules/core-shared.js',
+    'modules/core/support-module-resolver.js',
     'modules/core/runtime-tools.js',
     'modules/core/runtime-state/scope-utils.js',
     'modules/core/runtime-state/safe-freeze-registry.js',

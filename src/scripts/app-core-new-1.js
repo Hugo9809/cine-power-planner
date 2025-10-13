@@ -95,30 +95,6 @@ var CORE_PART1_RUNTIME_SCOPE =
 // bundles. Rather than assuming a module loader exists we defensively look for
 // pre-attached namespaces first and then fall back to CommonJS style requires.
 // This defensive dance keeps offline builds and automated backups aligned.
-function resolveCoreSupportModule(namespaceName, requirePath) {
-  if (
-    CORE_PART1_RUNTIME_SCOPE &&
-    typeof CORE_PART1_RUNTIME_SCOPE === 'object' &&
-    CORE_PART1_RUNTIME_SCOPE[namespaceName] &&
-    typeof CORE_PART1_RUNTIME_SCOPE[namespaceName] === 'object'
-  ) {
-    return CORE_PART1_RUNTIME_SCOPE[namespaceName];
-  }
-
-  if (typeof require === 'function') {
-    try {
-      const required = require(requirePath);
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (supportModuleError) {
-      void supportModuleError;
-    }
-  }
-
-  return null;
-}
-
 // All localisation strings live in a dedicated bridge so that translations can
 // be refreshed without touching the heavy runtime bundle. We resolve it lazily
 // here which allows the help centre and documentation sync scripts to reuse the
