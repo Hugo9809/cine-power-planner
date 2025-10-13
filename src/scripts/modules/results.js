@@ -2015,8 +2015,10 @@
         var pinOk = resolveText('pinOk').replace('{max}', String(maxPinA));
         setStatusMessageFn(pinWarnTarget, pinOk);
         setStatusLevelFn(pinWarnTarget, 'success');
-      } else {
+      } else if (hasPinLimit) {
         setStatusLevelFn(pinWarnTarget, pinSeverity || 'warning');
+      } else {
+        setStatusLevelFn(pinWarnTarget, null);
       }
       if (!bMountCam) {
         if (hasDtapRating && dtapWarnTarget && dtapWarnTarget.textContent === '') {
