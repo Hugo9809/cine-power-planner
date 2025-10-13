@@ -5421,24 +5421,74 @@ function downgradeSafeLocalStorageToMemory(reason, error, failingStorage) {
     console.warn('Unable to capture storage snapshot during downgrade', snapshotError);
   }
 
-  const memoryStorage = createMemoryStorage();
+  let fallbackStorage = null;
+  let fallbackType = 'memory';
+
+  if (safeLocalStorageInfo.type !== 'session') {
+    const sessionScopes = [
+      GLOBAL_SCOPE,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.window ? GLOBAL_SCOPE.window : null,
+      GLOBAL_SCOPE && GLOBAL_SCOPE.__cineGlobal ? GLOBAL_SCOPE.__cineGlobal : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < sessionScopes.length; index += 1) {
+      const candidate = resolveSessionStorageFromScope(sessionScopes[index]);
+      if (!candidate || candidate === activeStorage || (failingStorage && candidate === failingStorage)) {
+        continue;
+      }
+
+      try {
+        const verified = verifyStorage(candidate);
+        if (verified) {
+          fallbackStorage = verified;
+          fallbackType = 'session';
+          registerKnownSessionStorage(verified);
+          break;
+        }
+      } catch (sessionError) {
+        console.warn('Unable to activate sessionStorage fallback during downgrade', sessionError);
+      }
+    }
+  }
+
+  if (!fallbackStorage) {
+    fallbackStorage = createMemoryStorage();
+  }
+
   Object.keys(snapshot).forEach((key) => {
+    const value = snapshot[key];
+    if (value === null || value === undefined) {
+      return;
+    }
     try {
-      memoryStorage.setItem(key, snapshot[key]);
+      if (typeof fallbackStorage.setItem === 'function') {
+        fallbackStorage.setItem(key, value);
+      } else {
+        fallbackStorage[key] = value;
+      }
     } catch (copyError) {
-      console.warn('Unable to copy storage entry to memory during downgrade', key, copyError);
+      const label = fallbackType === 'session' ? 'sessionStorage' : 'memory';
+      console.warn(`Unable to copy storage entry to ${label} during downgrade`, key, copyError);
     }
   });
 
-  safeLocalStorageInfo = { storage: memoryStorage, type: 'memory' };
+  safeLocalStorageInfo = { storage: fallbackStorage, type: fallbackType };
   lastFailedUpgradeCandidate = null;
 
+  const fallbackDescription = fallbackType === 'session' ? 'sessionStorage' : 'in-memory fallback';
   console.warn(
     reason
-      ? `Downgraded planner storage to in-memory fallback after ${reason} errors.`
-      : 'Downgraded planner storage to in-memory fallback after storage errors.',
+      ? `Downgraded planner storage to ${fallbackDescription} after ${reason} errors.`
+      : `Downgraded planner storage to ${fallbackDescription} after storage errors.`,
     error,
   );
+
+  if (fallbackType === 'session') {
+    alertSessionFallback();
+  }
 
   updateGlobalSafeLocalStorageReference();
 }
