@@ -164,4 +164,72 @@
       return null;
     }
   );
+
+  ensureBinding(
+    'CORE_RUNTIME_SHARED',
+    function validateCoreRuntimeShared(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object' ||
+        typeof candidate === 'function'
+      );
+    },
+    function provideCoreRuntimeSharedFallback() {
+      return null;
+    }
+  );
+
+  ensureBinding(
+    'CORE_GLOBAL_SCOPE',
+    function validateCoreGlobalScope(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object' ||
+        typeof candidate === 'function'
+      );
+    },
+    function provideCoreGlobalScopeFallback() {
+      return null;
+    }
+  );
+
+  ensureBinding(
+    'autoGearAddOwnGearSelect',
+    function validateAutoGearAddOwnGearSelect(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object'
+      );
+    },
+    function provideAutoGearAddOwnGearSelectFallback() {
+      return null;
+    }
+  );
+
+  ensureBinding(
+    'autoGearRemoveOwnGearSelect',
+    function validateAutoGearRemoveOwnGearSelect(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object'
+      );
+    },
+    function provideAutoGearRemoveOwnGearSelectFallback() {
+      return null;
+    }
+  );
+
+  ensureBinding(
+    'currentLang',
+    function validateCurrentLang(candidate) {
+      return typeof candidate === 'undefined' || typeof candidate === 'string';
+    },
+    function provideCurrentLangFallback() {
+      return 'en';
+    }
+  );
 })();

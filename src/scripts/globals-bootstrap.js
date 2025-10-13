@@ -139,6 +139,11 @@ function __cineIsArray(value) {
   ensureNullableObject('iosPwaHelpClose');
   ensureNullableObject('totalPowerElem');
   ensureFunction('safeGenerateConnectorSummary', fallbackSafeGenerateConnectorSummary);
+  ensureNullableObject('CORE_RUNTIME_SHARED');
+  ensureNullableObject('CORE_GLOBAL_SCOPE');
+  ensureNullableObject('autoGearAddOwnGearSelect');
+  ensureNullableObject('autoGearRemoveOwnGearSelect');
+  ensureString('currentLang', 'en');
 })();
 
 function __cineResolveGlobalValue(name, fallback) {
@@ -278,6 +283,31 @@ var safeGenerateConnectorSummary =
 
         return __cineCommitGlobalValue('safeGenerateConnectorSummary', normalized);
       })();
+
+var CORE_RUNTIME_SHARED =
+  typeof CORE_RUNTIME_SHARED !== 'undefined'
+    ? CORE_RUNTIME_SHARED
+    : __cineCommitGlobalValue('CORE_RUNTIME_SHARED', null);
+
+var CORE_GLOBAL_SCOPE =
+  typeof CORE_GLOBAL_SCOPE !== 'undefined'
+    ? CORE_GLOBAL_SCOPE
+    : __cineCommitGlobalValue('CORE_GLOBAL_SCOPE', null);
+
+var autoGearAddOwnGearSelect =
+  typeof autoGearAddOwnGearSelect !== 'undefined'
+    ? autoGearAddOwnGearSelect
+    : __cineCommitGlobalValue('autoGearAddOwnGearSelect', null);
+
+var autoGearRemoveOwnGearSelect =
+  typeof autoGearRemoveOwnGearSelect !== 'undefined'
+    ? autoGearRemoveOwnGearSelect
+    : __cineCommitGlobalValue('autoGearRemoveOwnGearSelect', null);
+
+var currentLang =
+  typeof currentLang !== 'undefined' && typeof currentLang === 'string'
+    ? currentLang
+    : __cineCommitGlobalValue('currentLang', 'en');
 
 var totalPowerElem =
   typeof totalPowerElem !== 'undefined' &&
