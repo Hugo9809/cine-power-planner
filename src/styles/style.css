@@ -7332,7 +7332,7 @@ body.dark-mode .onboarding-hero-offline {
   }
 
   .onboarding-card[data-size='hero'] {
-    --onboarding-card-hero-margin: 1.25rem;
+    --onboarding-card-hero-margin: 1.15rem;
     width: min(100%, var(--onboarding-card-hero-inline));
     inline-size: min(100%, var(--onboarding-card-hero-inline));
     max-width: min(100%, var(--onboarding-card-hero-inline));
@@ -7459,7 +7459,7 @@ body.dark-mode .onboarding-hero-offline {
   }
 
   .onboarding-card[data-size='hero'] {
-    --onboarding-card-hero-margin: 1rem;
+    --onboarding-card-hero-margin: 0.75rem;
     --onboarding-card-padding: clamp(0.9rem, 0.75rem + 2vw, 1.35rem);
     gap: clamp(0.85rem, 0.7rem + 1vw, 1.2rem);
   }

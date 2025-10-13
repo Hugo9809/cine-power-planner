@@ -121,6 +121,10 @@
   const HERO_MAX_WIDTH_REM = 44;
   const HERO_MARGIN_REM = 1.5;
   const HERO_MIN_VIEWPORT_FRACTION = 0.92;
+  const HERO_MARGIN_BREAKPOINTS = [
+    { maxViewportRem: 48, marginRem: 1.15 },
+    { maxViewportRem: 26, marginRem: 0.75 },
+  ];
 
   const supportsDialogTopLayer = (function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
@@ -2279,7 +2283,26 @@
 
     const rootFontSize = getRootFontSizePx();
     const heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
-    const heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
+    const heroMargin = (() => {
+      const safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0
+        ? rootFontSize
+        : 16;
+      const widthInRem = Number.isFinite(viewportWidth) && viewportWidth > 0
+        ? viewportWidth / safeRootFont
+        : Infinity;
+
+      let resolvedMarginRem = HERO_MARGIN_REM;
+      if (Number.isFinite(widthInRem)) {
+        for (let index = 0; index < HERO_MARGIN_BREAKPOINTS.length; index += 1) {
+          const breakpoint = HERO_MARGIN_BREAKPOINTS[index];
+          if (breakpoint && Number.isFinite(breakpoint.maxViewportRem) && widthInRem <= breakpoint.maxViewportRem) {
+            resolvedMarginRem = breakpoint.marginRem;
+          }
+        }
+      }
+
+      return Math.max(0, resolvedMarginRem * safeRootFont);
+    })();
     const marginLimitedWidth = viewportWidth - (heroMargin * 2);
     const fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
     const widthCandidates = [heroMaxWidth, viewportWidth];
