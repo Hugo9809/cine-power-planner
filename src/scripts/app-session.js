@@ -6659,19 +6659,70 @@ const getNotificationTopOffset = () => {
   return `${Math.ceil(offset)}px`;
 };
 
+let notificationContainerEnsureScheduled = false;
+
+const scheduleNotificationContainerEnsure = () => {
+  if (notificationContainerEnsureScheduled) {
+    return;
+  }
+  notificationContainerEnsureScheduled = true;
+  const trigger = () => {
+    notificationContainerEnsureScheduled = false;
+    try {
+      ensureNotificationContainer();
+    } catch (scheduleError) {
+      console.warn('Failed to ensure notification container after scheduling', scheduleError);
+    }
+  };
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(trigger);
+  } else if (typeof setTimeout === 'function') {
+    setTimeout(trigger, 16);
+  }
+};
+
 const ensureNotificationContainer = () => {
   if (typeof document === 'undefined') return null;
   const id = 'backupNotificationContainer';
   let container = document.getElementById(id);
+  let isNew = false;
   if (!container) {
     container = document.createElement('div');
     container.id = id;
     container.style.position = 'fixed';
     container.style.right = '1rem';
     container.style.zIndex = '10000';
-    document.body.appendChild(container);
+    isNew = true;
   }
-  container.style.top = getNotificationTopOffset();
+
+  const preferredParent = (typeof document.body !== 'undefined' && document.body)
+    ? document.body
+    : (typeof document.documentElement !== 'undefined' ? document.documentElement : null);
+
+  if (preferredParent) {
+    if (container.parentNode !== preferredParent) {
+      preferredParent.appendChild(container);
+    }
+    container.style.top = getNotificationTopOffset();
+  } else if (!container.parentNode) {
+    // Document still parsing without a body element. Retry once the DOM has progressed.
+    scheduleNotificationContainerEnsure();
+  }
+
+  if (isNew && typeof document.addEventListener === 'function') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        try {
+          ensureNotificationContainer();
+        } catch (ensureError) {
+          console.warn('Failed to ensure notification container after DOMContentLoaded', ensureError);
+        }
+      }, { once: true });
+    } else {
+      scheduleNotificationContainerEnsure();
+    }
+  }
+
   return container;
 };
 
