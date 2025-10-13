@@ -83,6 +83,44 @@ function getGlobalScope() {
   return null;
 }
 
+const resolvedDeviceManagerElements = {
+  categorySelect: null,
+};
+
+function resolveNewCategorySelect() {
+  const cached = resolvedDeviceManagerElements.categorySelect;
+  if (cached && typeof cached === 'object') {
+    if (typeof cached.isConnected === 'boolean') {
+      if (cached.isConnected) {
+        return cached;
+      }
+    } else if (cached.ownerDocument) {
+      return cached;
+    }
+  }
+
+  let element = null;
+  if (typeof newCategorySelect !== 'undefined' && newCategorySelect) {
+    element = newCategorySelect;
+  } else if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    element = document.getElementById('newCategory');
+  }
+
+  if (element) {
+    resolvedDeviceManagerElements.categorySelect = element;
+    const scope = getGlobalScope();
+    if (scope && typeof scope === 'object') {
+      try {
+        scope.newCategorySelect = scope.newCategorySelect || element;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  }
+
+  return element;
+}
+
 // Autosaves are intentionally conservative: we track how many field level
 // mutations happen between runs and enforce a time based cadence. This keeps
 // user data safe even if the browser throttles timers or the tab goes idle.
@@ -2782,13 +2820,18 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
     const name = button.dataset.name;
     const categoryKey = button.dataset.category;
     const subcategory = button.dataset.subcategory;
+    const categorySelect = resolveNewCategorySelect();
+    if (!categorySelect) {
+      console.warn('Cannot edit device: category select is unavailable');
+      return;
+    }
 
     // Ensure category exists in selector
-    if (!Array.from(newCategorySelect.options).some(opt => opt.value === categoryKey)) {
+    if (!Array.from(categorySelect.options).some(opt => opt.value === categoryKey)) {
       const opt = document.createElement("option");
       opt.value = categoryKey;
       opt.textContent = categoryNames[currentLang]?.[categoryKey] || categoryKey;
-      newCategorySelect.appendChild(opt);
+      categorySelect.appendChild(opt);
     }
 
     addDeviceBtn.dataset.mode = "edit";
@@ -2801,10 +2844,10 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
     }
 
     // Set form for editing
-    newCategorySelect.value = categoryKey;
+    categorySelect.value = categoryKey;
     newNameInput.value = name;
     // Trigger change handler so fields are cleared and rebuilt for the category
-    newCategorySelect.dispatchEvent(new Event('change'));
+    categorySelect.dispatchEvent(new Event('change'));
 
     let deviceData;
     if (categoryKey === "accessories.cables") {
@@ -2878,161 +2921,167 @@ addSafeEventListener(deviceManagerSection, 'keydown', (event) => {
 });
 
 // Category selection in add device form
-addSafeEventListener(newCategorySelect, "change", () => {
-  const wasEditing = addDeviceBtn?.dataset.mode === "edit";
-  const previousName = newNameInput ? newNameInput.value : "";
-  const val = newCategorySelect.value;
-  placeWattField(val);
-  clearDynamicFields();
-  subcategoryFieldDiv.hidden = true;
-  newSubcategorySelect.innerHTML = "";
-  newSubcategorySelect.disabled = false;
-  if (dtapRow) dtapRow.style.display = "";
-  if (wattFieldDiv) wattFieldDiv.style.display = "block";
-  hideFormSection(batteryFieldsDiv);
-  hideFormSection(cameraFieldsDiv);
-  hideFormSection(monitorFieldsDiv);
-  hideFormSection(viewfinderFieldsDiv);
-  hideFormSection(videoFieldsDiv);
-  hideFormSection(motorFieldsDiv);
-  hideFormSection(controllerFieldsDiv);
-  hideFormSection(distanceFieldsDiv);
-  if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(batteryFieldsDiv);
-    if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
-  } else if (val === "cameras") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(cameraFieldsDiv);
-  } else if (val === "lenses") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(lensFieldsDiv);
-    setLensDeviceMountOptions([], resolveDefaultLensMountType());
+const newCategorySelectElement = resolveNewCategorySelect();
+if (newCategorySelectElement) {
+  addSafeEventListener(newCategorySelectElement, "change", () => {
+    const wasEditing = addDeviceBtn?.dataset.mode === "edit";
+    const previousName = newNameInput ? newNameInput.value : "";
+    const val = newCategorySelectElement.value;
+    placeWattField(val);
+    clearDynamicFields();
+    subcategoryFieldDiv.hidden = true;
+    newSubcategorySelect.innerHTML = "";
+    newSubcategorySelect.disabled = false;
+    if (dtapRow) dtapRow.style.display = "";
+    if (wattFieldDiv) wattFieldDiv.style.display = "block";
+    hideFormSection(batteryFieldsDiv);
+    hideFormSection(cameraFieldsDiv);
+    hideFormSection(monitorFieldsDiv);
+    hideFormSection(viewfinderFieldsDiv);
+    hideFormSection(videoFieldsDiv);
+    hideFormSection(motorFieldsDiv);
+    hideFormSection(controllerFieldsDiv);
+    hideFormSection(distanceFieldsDiv);
+    if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(batteryFieldsDiv);
+      if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
+    } else if (val === "cameras") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(cameraFieldsDiv);
+    } else if (val === "lenses") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(lensFieldsDiv);
+      setLensDeviceMountOptions([], resolveDefaultLensMountType());
+      if (lensFocusScaleSelect) {
+        updateLensFocusScaleSelectOptions();
+        lensFocusScaleSelect.value = '';
+      }
+    } else if (val === "monitors" || val === "directorMonitors") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(monitorFieldsDiv);
+    } else if (val === "viewfinders") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(viewfinderFieldsDiv);
+    } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
+      showFormSection(videoFieldsDiv);
+    } else if (val === "fiz.motors") {
+      showFormSection(motorFieldsDiv);
+    } else if (val === "fiz.controllers") {
+      showFormSection(controllerFieldsDiv);
+    } else if (val === "fiz.distance") {
+      showFormSection(distanceFieldsDiv);
+    } else if (val === "accessories.cables") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      subcategoryFieldDiv.hidden = false;
+      const subcats = Object.keys(devices.accessories?.cables || {});
+      for (const sc of subcats) {
+        const opt = document.createElement('option');
+        opt.value = sc;
+        opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
+        newSubcategorySelect.appendChild(opt);
+      }
+      if (newSubcategorySelect.value) {
+        buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
+      }
+    } else {
+      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+    }
+    newWattInput.value = "";
+    newCapacityInput.value = "";
+    newPinAInput.value = "";
+    newDtapAInput.value = "";
+    cameraWattInput.value = "";
+    cameraVoltageInput.value = "";
+    cameraPortTypeInput.value = "";
+    monitorScreenSizeInput.value = "";
+    monitorBrightnessInput.value = "";
+    monitorWattInput.value = "";
+    monitorVoltageInput.value = "";
+    monitorPortTypeInput.value = "";
+    monitorWirelessTxInput.checked = false;
+    monitorLatencyInput.value = "";
+    monitorAudioOutputInput.value = "";
+    clearMonitorVideoInputs();
+    clearMonitorVideoOutputs();
+    viewfinderScreenSizeInput.value = "";
+    viewfinderBrightnessInput.value = "";
+    viewfinderWattInput.value = "";
+    viewfinderVoltageInput.value = "";
+    viewfinderPortTypeInput.value = "";
+    viewfinderWirelessTxInput.checked = false;
+    viewfinderLatencyInput.value = "";
+    clearViewfinderVideoInputs();
+    clearViewfinderVideoOutputs();
+    clearBatteryPlates();
+    clearRecordingMedia();
+    clearLensMounts();
+    clearLensDeviceMountOptions();
     if (lensFocusScaleSelect) {
-      updateLensFocusScaleSelectOptions();
       lensFocusScaleSelect.value = '';
     }
-  } else if (val === "monitors" || val === "directorMonitors") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(monitorFieldsDiv);
-  } else if (val === "viewfinders") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(viewfinderFieldsDiv);
-  } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
-    showFormSection(videoFieldsDiv);
-  } else if (val === "fiz.motors") {
-    showFormSection(motorFieldsDiv);
-  } else if (val === "fiz.controllers") {
-    showFormSection(controllerFieldsDiv);
-  } else if (val === "fiz.distance") {
-    showFormSection(distanceFieldsDiv);
-  } else if (val === "accessories.cables") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    subcategoryFieldDiv.hidden = false;
-    const subcats = Object.keys(devices.accessories?.cables || {});
-    for (const sc of subcats) {
-      const opt = document.createElement('option');
-      opt.value = sc;
-      opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
-      newSubcategorySelect.appendChild(opt);
+    callEventsCoreFunction('clearPowerDistribution', [], { defer: true });
+    clearVideoOutputs();
+    clearFizConnectors();
+    clearViewfinders();
+    clearTimecodes();
+    videoPowerInput.value = "";
+    clearVideoInputs();
+    clearVideoOutputsIO();
+    videoFrequencyInput.value = "";
+    videoLatencyInput.value = "";
+    motorConnectorInput.value = "";
+    motorInternalInput.checked = false;
+    motorTorqueInput.value = "";
+    motorGearInput.value = "";
+    motorNotesInput.value = "";
+    controllerConnectorInput.value = "";
+    controllerPowerInput.value = "";
+    controllerBatteryInput.value = "";
+    controllerConnectivityInput.value = "";
+    controllerNotesInput.value = "";
+    distanceConnectionInput.value = "";
+    distanceMethodInput.value = "";
+    distanceRangeInput.value = "";
+    distanceAccuracyInput.value = "";
+    distanceOutputInput.value = "";
+    distanceNotesInput.value = "";
+    if (val !== 'accessories.cables') {
+      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
     }
-    if (newSubcategorySelect.value) {
-      buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
+    if (newNameInput) {
+      if (wasEditing) {
+        newNameInput.value = previousName;
+      } else {
+        newNameInput.value = "";
+      }
     }
-  } else {
-    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
-  }
-  newWattInput.value = "";
-  newCapacityInput.value = "";
-  newPinAInput.value = "";
-  newDtapAInput.value = "";
-  cameraWattInput.value = "";
-  cameraVoltageInput.value = "";
-  cameraPortTypeInput.value = "";
-  monitorScreenSizeInput.value = "";
-  monitorBrightnessInput.value = "";
-  monitorWattInput.value = "";
-  monitorVoltageInput.value = "";
-  monitorPortTypeInput.value = "";
-  monitorWirelessTxInput.checked = false;
-  monitorLatencyInput.value = "";
-  monitorAudioOutputInput.value = "";
-  clearMonitorVideoInputs();
-  clearMonitorVideoOutputs();
-  viewfinderScreenSizeInput.value = "";
-  viewfinderBrightnessInput.value = "";
-  viewfinderWattInput.value = "";
-  viewfinderVoltageInput.value = "";
-  viewfinderPortTypeInput.value = "";
-  viewfinderWirelessTxInput.checked = false;
-  viewfinderLatencyInput.value = "";
-  clearViewfinderVideoInputs();
-  clearViewfinderVideoOutputs();
-  clearBatteryPlates();
-  clearRecordingMedia();
-  clearLensMounts();
-  clearLensDeviceMountOptions();
-  if (lensFocusScaleSelect) {
-    lensFocusScaleSelect.value = '';
-  }
-  callEventsCoreFunction('clearPowerDistribution', [], { defer: true });
-  clearVideoOutputs();
-  clearFizConnectors();
-  clearViewfinders();
-  clearTimecodes();
-  videoPowerInput.value = "";
-  clearVideoInputs();
-  clearVideoOutputsIO();
-  videoFrequencyInput.value = "";
-  videoLatencyInput.value = "";
-  motorConnectorInput.value = "";
-  motorInternalInput.checked = false;
-  motorTorqueInput.value = "";
-  motorGearInput.value = "";
-  motorNotesInput.value = "";
-  controllerConnectorInput.value = "";
-  controllerPowerInput.value = "";
-  controllerBatteryInput.value = "";
-  controllerConnectivityInput.value = "";
-  controllerNotesInput.value = "";
-  distanceConnectionInput.value = "";
-  distanceMethodInput.value = "";
-  distanceRangeInput.value = "";
-  distanceAccuracyInput.value = "";
-  distanceOutputInput.value = "";
-  distanceNotesInput.value = "";
-  if (val !== 'accessories.cables') {
-    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
-  }
-  if (newNameInput) {
+    const cancelLabel = texts[currentLang].cancelEditBtn;
     if (wasEditing) {
-      newNameInput.value = previousName;
+      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(cancelEditBtn);
     } else {
-      newNameInput.value = "";
+      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+      addDeviceBtn.dataset.mode = "add";
+      delete addDeviceBtn.dataset.originalName;
+      delete addDeviceBtn.dataset.originalSubcategory;
+      delete addDeviceBtn.dataset.originalCategory;
+      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      hideFormSection(cancelEditBtn);
     }
-  }
-  const cancelLabel = texts[currentLang].cancelEditBtn;
-  if (wasEditing) {
-    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    showFormSection(cancelEditBtn);
-  } else {
-    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-    addDeviceBtn.dataset.mode = "add";
-    delete addDeviceBtn.dataset.originalName;
-    delete addDeviceBtn.dataset.originalSubcategory;
-    delete addDeviceBtn.dataset.originalCategory;
-    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    hideFormSection(cancelEditBtn);
-  }
-});
+  });
+} else {
+  console.warn('Device manager category select is unavailable; change handler not registered');
+}
 
 addSafeEventListener(newSubcategorySelect, 'change', () => {
-  if (newCategorySelect.value === 'accessories.cables') {
+  const categorySelect = resolveNewCategorySelect();
+  if (categorySelect && categorySelect.value === 'accessories.cables') {
     buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
   }
 });
@@ -3051,9 +3100,10 @@ function resetDeviceForm() {
   }
   // Trigger change handler to reset fields and button text, guarding against
   // missing DOM elements in test environments.
-  if (newCategorySelect.isConnected) {
+  const categorySelect = resolveNewCategorySelect();
+  if (categorySelect && categorySelect.isConnected) {
     try {
-      newCategorySelect.dispatchEvent(new Event('change'));
+      categorySelect.dispatchEvent(new Event('change'));
     } catch (err) {
       console.warn('resetDeviceForm dispatch failed', err);
     }
@@ -3064,7 +3114,8 @@ function resetDeviceForm() {
 // Add/Update device logic
 addSafeEventListener(addDeviceBtn, "click", () => {
   const name = newNameInput.value.trim();
-  const category = newCategorySelect.value;
+  const categorySelect = resolveNewCategorySelect();
+  const category = categorySelect ? categorySelect.value : '';
   const isEditing = addDeviceBtn.dataset.mode === "edit";
   const originalName = addDeviceBtn.dataset.originalName;
   const originalCategory = addDeviceBtn.dataset.originalCategory;

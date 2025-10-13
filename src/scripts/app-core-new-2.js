@@ -26,6 +26,68 @@ if (typeof CORE_TEMPERATURE_RENDER_NAME === 'undefined') {
   }
 }
 
+(function ensureIconGlyphRegistryAvailability() {
+  const candidateScopes = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ];
+
+  let registry = null;
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      if (scope.ICON_GLYPHS && typeof scope.ICON_GLYPHS === 'object') {
+        registry = scope.ICON_GLYPHS;
+        break;
+      }
+    } catch (lookupError) {
+      void lookupError;
+    }
+  }
+
+  if (!registry) {
+    registry = {};
+  }
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope) {
+      continue;
+    }
+    try {
+      if (typeof scope.ICON_GLYPHS === 'undefined') {
+        scope.ICON_GLYPHS = registry;
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  let identifierExists = false;
+  try {
+    identifierExists = typeof ICON_GLYPHS !== 'undefined';
+  } catch (identifierError) {
+    identifierExists = false;
+  }
+
+  if (!identifierExists) {
+    try {
+      ICON_GLYPHS = registry;
+    } catch (exposeError) {
+      void exposeError;
+    }
+  }
+})();
+
 var CORE_ENVIRONMENT_HELPERS = (function resolveCoreEnvironmentHelpers() {
   var helpers = null;
 
