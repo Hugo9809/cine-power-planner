@@ -159,15 +159,6 @@
       return true;
     }
 
-    if (
-      typeof process !== 'undefined' &&
-      process &&
-      process.release &&
-      process.release.name === 'node'
-    ) {
-      return true;
-    }
-
     if (isEthereumProviderCandidate(value)) {
       return true;
     }
