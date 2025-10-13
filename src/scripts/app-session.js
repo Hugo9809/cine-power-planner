@@ -390,6 +390,156 @@ function getSessionRuntimeScopes() {
   return scopes;
 }
 
+function resolveModuleApi(name, validator) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+
+  const validate = typeof validator === 'function' ? validator : value => !!value;
+
+  const seen = new Set();
+  const queue = [];
+
+  const enqueueScope = candidate => {
+    if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+      return;
+    }
+    if (seen.has(candidate)) {
+      return;
+    }
+    seen.add(candidate);
+    queue.push(candidate);
+  };
+
+  const nestedKeys = [
+    'CORE_SHARED',
+    'CORE_GLOBAL_SCOPE',
+    'CORE_AGGREGATED_EXPORTS',
+    'CORE_RUNTIME_SCOPE',
+    'CORE_PART2_RUNTIME_SCOPE',
+    'CORE_SCOPE',
+    'CORE_SHARED_SCOPE_PART2',
+    'cine',
+    'cineGlobals',
+    'cineModuleGlobals',
+    'cineModuleBase',
+    'cineModuleContext',
+    'cineRuntime',
+    'cinePersistence',
+    'cineOffline',
+    'cineUi',
+    'APP',
+    'app',
+    '__cineGlobal',
+    '__cineScope',
+    '__cineModules',
+    '__cineExports',
+    '__cineRuntime',
+  ];
+
+  const checkCandidate = candidate => {
+    if (!candidate) {
+      return null;
+    }
+    try {
+      if (validate(candidate)) {
+        return candidate;
+      }
+    } catch (validationError) {
+      void validationError;
+    }
+    return null;
+  };
+
+  const tryResolveFromScope = scope => {
+    let directCandidate;
+    try {
+      directCandidate = scope[name];
+    } catch (directError) {
+      void directError;
+      directCandidate = undefined;
+    }
+    const validatedDirect = checkCandidate(directCandidate);
+    if (validatedDirect) {
+      return validatedDirect;
+    }
+
+    let moduleGlobals;
+    try {
+      moduleGlobals = scope.cineModuleGlobals;
+    } catch (globalsError) {
+      void globalsError;
+      moduleGlobals = null;
+    }
+    if (moduleGlobals && typeof moduleGlobals.getModule === 'function') {
+      try {
+        const viaGlobals = moduleGlobals.getModule(name);
+        const validatedGlobal = checkCandidate(viaGlobals);
+        if (validatedGlobal) {
+          return validatedGlobal;
+        }
+      } catch (globalLookupError) {
+        void globalLookupError;
+      }
+    }
+
+    let registry;
+    try {
+      registry = scope.cineModules;
+    } catch (registryError) {
+      void registryError;
+      registry = null;
+    }
+    if (registry && typeof registry.get === 'function') {
+      try {
+        const viaRegistry = registry.get(name);
+        const validatedRegistry = checkCandidate(viaRegistry);
+        if (validatedRegistry) {
+          return validatedRegistry;
+        }
+      } catch (registryLookupError) {
+        void registryLookupError;
+      }
+    }
+
+    return null;
+  };
+
+  enqueueScope(detectPrimaryGlobalScope());
+  const runtimeScopes = getSessionRuntimeScopes();
+  for (let index = 0; index < runtimeScopes.length; index += 1) {
+    enqueueScope(runtimeScopes[index]);
+  }
+
+  while (queue.length) {
+    const scope = queue.shift();
+    if (!scope) {
+      continue;
+    }
+
+    const resolved = tryResolveFromScope(scope);
+    if (resolved) {
+      return resolved;
+    }
+
+    for (let index = 0; index < nestedKeys.length; index += 1) {
+      const key = nestedKeys[index];
+      let nested;
+      try {
+        nested = scope[key];
+      } catch (nestedError) {
+        void nestedError;
+        nested = undefined;
+      }
+      if (nested) {
+        enqueueScope(nested);
+      }
+    }
+  }
+
+  return null;
+}
+
 function normalizeVersionValue(value) {
   if (typeof value !== 'string') {
     return null;
@@ -5193,13 +5343,16 @@ let stopPinkModeAnimatedIconRotation = () => {};
 let applyPinkModeIcon = () => {};
 let isPinkModeActive = () => !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 
-const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
+const appearanceModuleFactoryPlaceholder = ensureSessionRuntimePlaceholder(
   'cineSettingsAppearance',
   () => null,
 );
 
+const appearanceModuleValidator = candidate => !!candidate && typeof candidate.initialize === 'function';
+
 let appearanceModule = null;
 let themePreferenceController = null;
+let appearanceModuleInitialized = false;
 
 function detectSystemThemePreference() {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -5298,32 +5451,116 @@ function initializeAppearanceModule(factory) {
   return applyAppearanceModuleBindings(module);
 }
 
-const appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
+function attemptAppearanceModuleInitialization(moduleCandidate) {
+  if (!appearanceModuleValidator(moduleCandidate)) {
+    return false;
+  }
+  if (appearanceModuleInitialized) {
+    return true;
+  }
+  const initialized = initializeAppearanceModule(moduleCandidate);
+  if (initialized) {
+    appearanceModuleInitialized = true;
+  }
+  return initialized;
+}
+
+const resolvedAppearanceModuleFactory = appearanceModuleValidator(appearanceModuleFactoryPlaceholder)
+  ? appearanceModuleFactoryPlaceholder
+  : resolveModuleApi('cineSettingsAppearance', appearanceModuleValidator);
+
+const appearanceModuleReady = attemptAppearanceModuleInitialization(resolvedAppearanceModuleFactory);
 
 if (!appearanceModuleReady) {
   if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
     console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
   }
 
+  const appearanceModuleWaitOptions = {
+    interval: 200,
+    maxAttempts: 300,
+    onTimeout: () => {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
+      }
+    },
+  };
+
+  const announceIfInitialized = moduleCandidate => {
+    const wasInitialized = appearanceModuleInitialized;
+    if (attemptAppearanceModuleInitialization(moduleCandidate) && !wasInitialized) {
+      if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
+        console.info('cineSettingsAppearance module became available after deferred load.');
+      }
+    }
+  };
+
   whenGlobalValueAvailable(
     'cineSettingsAppearance',
-    candidate => !!candidate && typeof candidate.initialize === 'function',
-    candidate => {
-      if (initializeAppearanceModule(candidate)) {
-        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
-          console.info('cineSettingsAppearance module became available after deferred load.');
+    appearanceModuleValidator,
+    announceIfInitialized,
+    appearanceModuleWaitOptions,
+  );
+
+  whenGlobalValueAvailable(
+    'cineModuleGlobals',
+    candidate => candidate && typeof candidate.whenModuleAvailable === 'function',
+    moduleGlobals => {
+      if (appearanceModuleInitialized) {
+        return;
+      }
+
+      let resolvedModule = null;
+      if (typeof moduleGlobals.getModule === 'function') {
+        try {
+          resolvedModule = moduleGlobals.getModule('cineSettingsAppearance');
+        } catch (moduleLookupError) {
+          void moduleLookupError;
+          resolvedModule = null;
+        }
+      }
+
+      if (appearanceModuleValidator(resolvedModule)) {
+        announceIfInitialized(resolvedModule);
+        return;
+      }
+
+      if (typeof moduleGlobals.whenModuleAvailable === 'function') {
+        try {
+          moduleGlobals.whenModuleAvailable('cineSettingsAppearance', moduleCandidate => {
+            if (appearanceModuleValidator(moduleCandidate)) {
+              announceIfInitialized(moduleCandidate);
+            }
+          });
+        } catch (subscriptionError) {
+          void subscriptionError;
         }
       }
     },
-    {
-      interval: 200,
-      maxAttempts: 300,
-      onTimeout: () => {
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
-        }
-      },
+    { interval: 200, maxAttempts: 150 },
+  );
+
+  whenGlobalValueAvailable(
+    'cineModules',
+    candidate => candidate && typeof candidate.get === 'function',
+    registry => {
+      if (appearanceModuleInitialized) {
+        return;
+      }
+
+      let resolvedModule = null;
+      try {
+        resolvedModule = registry.get('cineSettingsAppearance');
+      } catch (registryLookupError) {
+        void registryLookupError;
+        resolvedModule = null;
+      }
+
+      if (appearanceModuleValidator(resolvedModule)) {
+        announceIfInitialized(resolvedModule);
+      }
     },
+    { interval: 200, maxAttempts: 150 },
   );
 }
 
@@ -6371,6 +6608,13 @@ const resolveResetAutoGearRulesHandler = () => {
     && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
     return globalThis.resetAutoGearRulesToFactoryAdditions;
   }
+  const moduleApi = resolveModuleApi(
+    'cineFeatureAutoGearRules',
+    candidate => candidate && typeof candidate.resetAutoGearRulesToFactoryAdditions === 'function',
+  );
+  if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+    return moduleApi.resetAutoGearRulesToFactoryAdditions;
+  }
   return null;
 };
 
@@ -6400,7 +6644,17 @@ if (autoGearResetFactoryButton) {
 
   const initialHandler = resolveResetAutoGearRulesHandler();
 
-  if (!attachResetHandler(initialHandler)) {
+  const attachHandlerIfAvailable = handler => {
+    if (!attachResetHandler(handler)) {
+      return false;
+    }
+    if (typeof console !== 'undefined' && typeof console.info === 'function') {
+      console.info('Automatic gear reset action re-enabled after deferred module load.');
+    }
+    return true;
+  };
+
+  if (!attachHandlerIfAvailable(initialHandler)) {
     disableResetButton();
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Automatic gear reset action unavailable: reset handler missing.');
@@ -6410,11 +6664,7 @@ if (autoGearResetFactoryButton) {
       'resetAutoGearRulesToFactoryAdditions',
       candidate => typeof candidate === 'function',
       candidate => {
-        if (attachResetHandler(candidate)) {
-          if (typeof console !== 'undefined' && typeof console.info === 'function') {
-            console.info('Automatic gear reset action re-enabled after deferred module load.');
-          }
-        }
+        attachHandlerIfAvailable(candidate);
       },
       {
         interval: 200,
@@ -6425,6 +6675,61 @@ if (autoGearResetFactoryButton) {
           }
         },
       },
+    );
+
+    whenGlobalValueAvailable(
+      'cineModuleGlobals',
+      candidate => candidate && typeof candidate.whenModuleAvailable === 'function',
+      moduleGlobals => {
+        if (resetHandlerAttached) {
+          return;
+        }
+
+        const attachFromModule = moduleApi => {
+          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+          }
+        };
+
+        if (typeof moduleGlobals.getModule === 'function') {
+          try {
+            const moduleApi = moduleGlobals.getModule('cineFeatureAutoGearRules');
+            attachFromModule(moduleApi);
+          } catch (moduleLookupError) {
+            void moduleLookupError;
+          }
+        }
+
+        if (!resetHandlerAttached && typeof moduleGlobals.whenModuleAvailable === 'function') {
+          try {
+            moduleGlobals.whenModuleAvailable('cineFeatureAutoGearRules', moduleApi => {
+              attachFromModule(moduleApi);
+            });
+          } catch (subscriptionError) {
+            void subscriptionError;
+          }
+        }
+      },
+      { interval: 200, maxAttempts: 150 },
+    );
+
+    whenGlobalValueAvailable(
+      'cineModules',
+      candidate => candidate && typeof candidate.get === 'function',
+      registry => {
+        if (resetHandlerAttached) {
+          return;
+        }
+        try {
+          const moduleApi = registry.get('cineFeatureAutoGearRules');
+          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+          }
+        } catch (registryLookupError) {
+          void registryLookupError;
+        }
+      },
+      { interval: 200, maxAttempts: 150 },
     );
   }
 }
