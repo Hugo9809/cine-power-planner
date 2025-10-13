@@ -302,6 +302,27 @@ function callEventsCoreFunction(functionName) {
   }
   return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
 }
+var CORE_FUNCTION_MISSING_SENTINEL = Object.freeze({
+  missing: true
+});
+function invokeCoreFunctionStrict(functionName) {
+  var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var result = callEventsCoreFunction(functionName, args, {
+    defaultValue: CORE_FUNCTION_MISSING_SENTINEL
+  });
+  if (result === CORE_FUNCTION_MISSING_SENTINEL) {
+    var error = new ReferenceError("Missing core function: ".concat(functionName));
+    if (eventsLogger && typeof eventsLogger.error === 'function') {
+      try {
+        eventsLogger.error("Missing core function: ".concat(functionName), error);
+      } catch (logError) {
+        void logError;
+      }
+    }
+    throw error;
+  }
+  return result;
+}
 function resolveFirstPowerInputType(device) {
   var result;
   try {
@@ -2745,12 +2766,12 @@ addSafeEventListener(addDeviceBtn, "click", function () {
     }
     var powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
-      powerDist = getPowerDistribution();
-      videoOut = getVideoOutputs();
-      fizCon = getFizConnectors();
-      viewfinder = getViewfinders();
-      timecode = getTimecodes();
-      plateSupport = getBatteryPlates();
+      powerDist = invokeCoreFunctionStrict('getPowerDistribution');
+      videoOut = invokeCoreFunctionStrict('getVideoOutputs');
+      fizCon = invokeCoreFunctionStrict('getFizConnectors');
+      viewfinder = invokeCoreFunctionStrict('getViewfinders');
+      timecode = invokeCoreFunctionStrict('getTimecodes');
+      plateSupport = invokeCoreFunctionStrict('getBatteryPlates');
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);

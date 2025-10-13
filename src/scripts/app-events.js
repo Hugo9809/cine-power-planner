@@ -403,6 +403,24 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+const CORE_FUNCTION_MISSING_SENTINEL = Object.freeze({ missing: true });
+
+function invokeCoreFunctionStrict(functionName, args = []) {
+  const result = callEventsCoreFunction(functionName, args, { defaultValue: CORE_FUNCTION_MISSING_SENTINEL });
+  if (result === CORE_FUNCTION_MISSING_SENTINEL) {
+    const error = new ReferenceError(`Missing core function: ${functionName}`);
+    if (eventsLogger && typeof eventsLogger.error === 'function') {
+      try {
+        eventsLogger.error(`Missing core function: ${functionName}`, error);
+      } catch (logError) {
+        void logError;
+      }
+    }
+    throw error;
+  }
+  return result;
+}
+
 function resolveFirstPowerInputType(device) {
   let result;
 
@@ -3284,12 +3302,12 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
-      powerDist = getPowerDistribution();
-      videoOut = getVideoOutputs();
-      fizCon = getFizConnectors();
-      viewfinder = getViewfinders();
-      timecode = getTimecodes();
-      plateSupport = getBatteryPlates();
+      powerDist = invokeCoreFunctionStrict('getPowerDistribution');
+      videoOut = invokeCoreFunctionStrict('getVideoOutputs');
+      fizCon = invokeCoreFunctionStrict('getFizConnectors');
+      viewfinder = invokeCoreFunctionStrict('getViewfinders');
+      timecode = invokeCoreFunctionStrict('getTimecodes');
+      plateSupport = invokeCoreFunctionStrict('getBatteryPlates');
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);
