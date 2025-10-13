@@ -5061,10 +5061,142 @@ let stopPinkModeAnimatedIconRotation = () => {};
 let applyPinkModeIcon = () => {};
 let isPinkModeActive = () => !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 
-const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
-  'cineSettingsAppearance',
-  () => null,
-);
+const APPEARANCE_MODULE_NAME = 'cineSettingsAppearance';
+let appearanceModule = null;
+let themePreferenceController = null;
+
+function detectSystemThemePreference() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return null;
+  }
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch (error) {
+    console.warn('cineSettingsAppearance: detectSystemPreference failed', error);
+  }
+  return null;
+}
+
+function applyAppearanceModuleApi(api, options = {}) {
+  if (!api || typeof api !== 'object') {
+    return false;
+  }
+
+  appearanceModule = api;
+
+  updateThemeColor = api.updateThemeColor || updateThemeColor;
+  setToggleIcon = api.setToggleIcon || setToggleIcon;
+  applyDarkMode = api.applyDarkMode || applyDarkMode;
+  applyHighContrast = api.applyHighContrast || applyHighContrast;
+  applyReduceMotion = api.applyReduceMotion || applyReduceMotion;
+  applyRelaxedSpacing = api.applyRelaxedSpacing || applyRelaxedSpacing;
+  applyPinkMode = api.applyPinkMode || applyPinkMode;
+  persistPinkModePreference = api.persistPinkModePreference || persistPinkModePreference;
+  rememberSettingsPinkModeBaseline =
+    api.rememberSettingsPinkModeBaseline || rememberSettingsPinkModeBaseline;
+  revertSettingsPinkModeIfNeeded =
+    api.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
+  rememberSettingsTemperatureUnitBaseline =
+    api.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
+  revertSettingsTemperatureUnitIfNeeded =
+    api.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  rememberSettingsFocusScaleBaseline =
+    api.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
+  revertSettingsFocusScaleIfNeeded =
+    api.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
+  applyShowAutoBackupsPreference =
+    api.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
+  rememberSettingsShowAutoBackupsBaseline =
+    api.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
+  revertSettingsShowAutoBackupsIfNeeded =
+    api.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
+  rememberSettingsMountVoltagesBaseline =
+    api.rememberSettingsMountVoltagesBaseline || rememberSettingsMountVoltagesBaseline;
+  revertSettingsMountVoltagesIfNeeded =
+    api.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
+  handlePinkModeIconPress = api.handlePinkModeIconPress || handlePinkModeIconPress;
+  triggerPinkModeIconAnimation =
+    api.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
+  startPinkModeIconRotation = api.startPinkModeIconRotation || startPinkModeIconRotation;
+  stopPinkModeIconRotation = api.stopPinkModeIconRotation || stopPinkModeIconRotation;
+  startPinkModeAnimatedIconRotation =
+    api.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
+  stopPinkModeAnimatedIconRotation =
+    api.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
+  applyPinkModeIcon = api.applyPinkModeIcon || applyPinkModeIcon;
+  isPinkModeActive = api.isPinkModeActive || isPinkModeActive;
+
+  if (options.skipThemeControllerUpdate) {
+    return true;
+  }
+
+  if (typeof api.createThemePreferenceController === 'function') {
+    try {
+      themePreferenceController = api.createThemePreferenceController({
+        detectSystemPreference: detectSystemThemePreference,
+      });
+    } catch (controllerError) {
+      console.warn(
+        'cineSettingsAppearance: Failed to create theme preference controller',
+        controllerError,
+      );
+    }
+  }
+
+  return true;
+}
+
+function resolveAppearanceModuleFactory() {
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    const candidate = scope[APPEARANCE_MODULE_NAME];
+    if (candidate && typeof candidate.initialize === 'function') {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+function initializeAppearanceModule(factory) {
+  if (!factory || typeof factory.initialize !== 'function') {
+    return null;
+  }
+  try {
+    const moduleApi = factory.initialize(appearanceContext);
+    if (moduleApi && typeof moduleApi === 'object') {
+      return moduleApi;
+    }
+  } catch (initializationError) {
+    console.warn('cineSettingsAppearance: initialization failed', initializationError);
+  }
+  return null;
+}
+
+function attemptAppearanceModuleInitialization({ skipThemeControllerUpdate = false } = {}) {
+  const factory = resolveAppearanceModuleFactory();
+  let moduleApi = initializeAppearanceModule(factory);
+
+  if (!moduleApi) {
+    const placeholderFactory = ensureSessionRuntimePlaceholder(
+      APPEARANCE_MODULE_NAME,
+      () => null,
+    );
+    if (placeholderFactory && placeholderFactory !== factory) {
+      moduleApi = initializeAppearanceModule(placeholderFactory);
+    }
+  }
+
+  if (moduleApi) {
+    applyAppearanceModuleApi(moduleApi, { skipThemeControllerUpdate });
+    return true;
+  }
+
+  return false;
+}
 
 const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
@@ -5402,57 +5534,44 @@ const appearanceContext = {
   },
 };
 
-const appearanceModule = appearanceModuleFactory && typeof appearanceModuleFactory.initialize === 'function'
-  ? appearanceModuleFactory.initialize(appearanceContext)
-  : null;
+let appearanceModuleReady = attemptAppearanceModuleInitialization();
 
-if (appearanceModule) {
-  updateThemeColor = appearanceModule.updateThemeColor || updateThemeColor;
-  setToggleIcon = appearanceModule.setToggleIcon || setToggleIcon;
-  applyDarkMode = appearanceModule.applyDarkMode || applyDarkMode;
-  applyHighContrast = appearanceModule.applyHighContrast || applyHighContrast;
-  applyReduceMotion = appearanceModule.applyReduceMotion || applyReduceMotion;
-  applyRelaxedSpacing = appearanceModule.applyRelaxedSpacing || applyRelaxedSpacing;
-  applyPinkMode = appearanceModule.applyPinkMode || applyPinkMode;
-  persistPinkModePreference = appearanceModule.persistPinkModePreference || persistPinkModePreference;
-  rememberSettingsPinkModeBaseline = appearanceModule.rememberSettingsPinkModeBaseline || rememberSettingsPinkModeBaseline;
-  revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
-  rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
-  revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
-  rememberSettingsFocusScaleBaseline = appearanceModule.rememberSettingsFocusScaleBaseline || rememberSettingsFocusScaleBaseline;
-  revertSettingsFocusScaleIfNeeded = appearanceModule.revertSettingsFocusScaleIfNeeded || revertSettingsFocusScaleIfNeeded;
-  applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
-  rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
-  revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
-  rememberSettingsMountVoltagesBaseline = appearanceModule.rememberSettingsMountVoltagesBaseline || rememberSettingsMountVoltagesBaseline;
-  revertSettingsMountVoltagesIfNeeded = appearanceModule.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
-  handlePinkModeIconPress = appearanceModule.handlePinkModeIconPress || handlePinkModeIconPress;
-  triggerPinkModeIconAnimation = appearanceModule.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
-  startPinkModeIconRotation = appearanceModule.startPinkModeIconRotation || startPinkModeIconRotation;
-  stopPinkModeIconRotation = appearanceModule.stopPinkModeIconRotation || stopPinkModeIconRotation;
-  startPinkModeAnimatedIconRotation = appearanceModule.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
-  stopPinkModeAnimatedIconRotation = appearanceModule.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
-  applyPinkModeIcon = appearanceModule.applyPinkModeIcon || applyPinkModeIcon;
-  isPinkModeActive = appearanceModule.isPinkModeActive || isPinkModeActive;
-} else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-  console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-}
+if (!appearanceModuleReady) {
+  const MAX_APPEARANCE_MODULE_RETRIES = 5;
+  let appearanceModuleRetryCount = 0;
 
-let themePreferenceController = null;
-if (appearanceModule && typeof appearanceModule.createThemePreferenceController === 'function') {
-  themePreferenceController = appearanceModule.createThemePreferenceController({
-    detectSystemPreference: () => {
-      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-        return null;
-      }
-      try {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
-      } catch (error) {
-        console.warn('cineSettingsAppearance: detectSystemPreference failed', error);
-      }
-      return null;
-    },
-  });
+  const finalizeMissingAppearanceModule = () => {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+    }
+  };
+
+  const scheduleAppearanceModuleRetry = () => {
+    if (appearanceModuleReady) {
+      return;
+    }
+    appearanceModuleRetryCount += 1;
+    if (appearanceModuleRetryCount > MAX_APPEARANCE_MODULE_RETRIES) {
+      finalizeMissingAppearanceModule();
+      return;
+    }
+    if (attemptAppearanceModuleInitialization({ skipThemeControllerUpdate: false })) {
+      appearanceModuleReady = true;
+      return;
+    }
+    if (typeof setTimeout === 'function') {
+      const delay = Math.min(appearanceModuleRetryCount * 160, 960);
+      setTimeout(scheduleAppearanceModuleRetry, delay);
+      return;
+    }
+    finalizeMissingAppearanceModule();
+  };
+
+  if (typeof setTimeout === 'function') {
+    setTimeout(scheduleAppearanceModuleRetry, 0);
+  } else {
+    scheduleAppearanceModuleRetry();
+  }
 }
 
 const themePreferenceGlobalScope = (typeof globalThis !== 'undefined'
