@@ -641,6 +641,107 @@
 
   reloadMountVoltagePreferencesFromStorage();
 
+  function mountVoltageInputsGetter() {
+    return mountVoltageInputs;
+  }
+
+  const MOUNT_VOLTAGE_INPUTS_DESCRIPTOR = {
+    configurable: true,
+    enumerable: true,
+    get: mountVoltageInputsGetter,
+  };
+
+  function cloneNamespace(source) {
+    if (!source || typeof source !== 'object') {
+      return {};
+    }
+
+    const clone = {};
+    const propertyNames = Object.getOwnPropertyNames(source);
+
+    for (const key of propertyNames) {
+      if (key === 'mountVoltageInputs') {
+        continue;
+      }
+
+      let descriptor = null;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(source, key);
+      } catch (descriptorError) {
+        descriptor = null;
+        void descriptorError;
+      }
+
+      if (descriptor) {
+        try {
+          Object.defineProperty(clone, key, descriptor);
+          continue;
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+
+      clone[key] = source[key];
+    }
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      const symbols = Object.getOwnPropertySymbols(source);
+      for (const symbol of symbols) {
+        let descriptor = null;
+        try {
+          descriptor = Object.getOwnPropertyDescriptor(source, symbol);
+        } catch (symbolDescriptorError) {
+          descriptor = null;
+          void symbolDescriptorError;
+        }
+
+        if (descriptor) {
+          try {
+            Object.defineProperty(clone, symbol, descriptor);
+            continue;
+          } catch (symbolDefineError) {
+            void symbolDefineError;
+          }
+        }
+
+        try {
+          clone[symbol] = source[symbol];
+        } catch (symbolAssignError) {
+          void symbolAssignError;
+        }
+      }
+    }
+
+    return clone;
+  }
+
+  function ensureMountVoltageInputsProperty(target) {
+    if (!target || typeof target !== 'object') {
+      return target;
+    }
+
+    const existingDescriptor = Object.getOwnPropertyDescriptor(target, 'mountVoltageInputs');
+    if (existingDescriptor && existingDescriptor.get === mountVoltageInputsGetter) {
+      return target;
+    }
+
+    try {
+      Object.defineProperty(target, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
+      return target;
+    } catch (defineError) {
+      const clonedTarget = cloneNamespace(target);
+
+      try {
+        Object.defineProperty(clonedTarget, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
+        return clonedTarget;
+      } catch (cloneDefineError) {
+        void cloneDefineError;
+      }
+    }
+
+    return target;
+  }
+
   const runtimeExports = {
     SUPPORTED_MOUNT_VOLTAGE_TYPES,
     DEFAULT_MOUNT_VOLTAGES,
@@ -654,10 +755,7 @@
     persistMountVoltagePreferences,
   };
 
-  Object.defineProperty(runtimeExports, 'mountVoltageInputs', {
-    enumerable: true,
-    get: () => mountVoltageInputs,
-  });
+  Object.defineProperty(runtimeExports, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
 
   Object.freeze(runtimeExports);
 
@@ -684,26 +782,29 @@
     runtimeExports,
   };
 
-  Object.defineProperty(namespace, 'mountVoltageInputs', {
-    enumerable: true,
-    get: () => mountVoltageInputs,
-  });
+  Object.defineProperty(namespace, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
 
   if (CORE_SCOPE && typeof CORE_SCOPE === 'object') {
     const targetName = 'cineCoreMountVoltage';
-    const existingNamespace =
+    let existingNamespace =
       CORE_SCOPE[targetName] && typeof CORE_SCOPE[targetName] === 'object'
         ? CORE_SCOPE[targetName]
         : {};
+
+    if (
+      existingNamespace &&
+      typeof existingNamespace === 'object' &&
+      typeof Object.isExtensible === 'function' &&
+      !Object.isExtensible(existingNamespace)
+    ) {
+      existingNamespace = cloneNamespace(existingNamespace);
+    }
 
     for (const key of Object.keys(namespace)) {
       existingNamespace[key] = namespace[key];
     }
 
-    Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: () => mountVoltageInputs,
-    });
+    existingNamespace = ensureMountVoltageInputsProperty(existingNamespace);
 
     try {
       CORE_SCOPE[targetName] = existingNamespace;
@@ -739,14 +840,20 @@
       runtimeNamespace = {};
     }
 
+    if (
+      runtimeNamespace &&
+      typeof runtimeNamespace === 'object' &&
+      typeof Object.isExtensible === 'function' &&
+      !Object.isExtensible(runtimeNamespace)
+    ) {
+      runtimeNamespace = cloneNamespace(runtimeNamespace);
+    }
+
     for (const key of Object.keys(runtimeExports)) {
       runtimeNamespace[key] = runtimeExports[key];
     }
 
-    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: () => mountVoltageInputs,
-    });
+    runtimeNamespace = ensureMountVoltageInputsProperty(runtimeNamespace);
 
     try {
       CORE_SCOPE[runtimeTargetName] = runtimeNamespace;

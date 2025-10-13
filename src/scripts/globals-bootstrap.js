@@ -619,102 +619,101 @@ var currentLang =
     ? currentLang
     : __cineCommitGlobalValue('currentLang', 'en');
 
-var getLanguageTexts =
-  typeof getLanguageTexts === 'function'
-    ? getLanguageTexts
-    : (function defineGetLanguageTextsFallback() {
-        function normalizeLanguageCode(candidate) {
-          if (typeof candidate === 'string' && candidate) {
-            try {
-              return candidate.trim().toLowerCase();
-            } catch (normalizeError) {
-              void normalizeError;
-            }
-          }
-          return '';
+if (typeof getLanguageTexts !== 'function') {
+  (function defineGetLanguageTextsFallback() {
+    function normalizeLanguageCode(candidate) {
+      if (typeof candidate === 'string' && candidate) {
+        try {
+          return candidate.trim().toLowerCase();
+        } catch (normalizeError) {
+          void normalizeError;
         }
+      }
+      return '';
+    }
 
-        function resolveDefaultLanguage() {
-          var defaultLanguage = __cineResolveGlobalValue('DEFAULT_LANGUAGE', null);
-          if (typeof defaultLanguage === 'string' && defaultLanguage) {
-            return defaultLanguage;
-          }
-          return 'en';
+    function resolveDefaultLanguage() {
+      var defaultLanguage = __cineResolveGlobalValue('DEFAULT_LANGUAGE', null);
+      if (typeof defaultLanguage === 'string' && defaultLanguage) {
+        return defaultLanguage;
+      }
+      return 'en';
+    }
+
+    function resolveTextsDictionary() {
+      var scopeTexts = __cineResolveGlobalValue('texts', null);
+      if (scopeTexts && typeof scopeTexts === 'object') {
+        return scopeTexts;
+      }
+      return {};
+    }
+
+    function fallbackGetLanguageTexts(lang) {
+      var dictionary = resolveTextsDictionary();
+      if (!dictionary || typeof dictionary !== 'object') {
+        return {};
+      }
+
+      var normalized = normalizeLanguageCode(lang);
+      var defaultLang = resolveDefaultLanguage();
+      var fallbackNormalized = normalizeLanguageCode(defaultLang);
+
+      if (normalized && Object.prototype.hasOwnProperty.call(dictionary, normalized)) {
+        var direct = dictionary[normalized];
+        if (direct && typeof direct === 'object') {
+          return direct;
         }
+      }
 
-        function resolveTextsDictionary() {
-          var scopeTexts = __cineResolveGlobalValue('texts', null);
-          if (scopeTexts && typeof scopeTexts === 'object') {
-            return scopeTexts;
+      if (normalized && normalized.length > 2) {
+        var shortCode = normalized.slice(0, 2);
+        if (Object.prototype.hasOwnProperty.call(dictionary, shortCode)) {
+          var regionalMatch = dictionary[shortCode];
+          if (regionalMatch && typeof regionalMatch === 'object') {
+            return regionalMatch;
           }
-          return {};
         }
+      }
 
-        function fallbackGetLanguageTexts(lang) {
-          var dictionary = resolveTextsDictionary();
-          if (!dictionary || typeof dictionary !== 'object') {
-            return {};
-          }
-
-          var normalized = normalizeLanguageCode(lang);
-          var defaultLang = resolveDefaultLanguage();
-          var fallbackNormalized = normalizeLanguageCode(defaultLang);
-
-          if (normalized && Object.prototype.hasOwnProperty.call(dictionary, normalized)) {
-            var direct = dictionary[normalized];
-            if (direct && typeof direct === 'object') {
-              return direct;
-            }
-          }
-
-          if (normalized && normalized.length > 2) {
-            var shortCode = normalized.slice(0, 2);
-            if (Object.prototype.hasOwnProperty.call(dictionary, shortCode)) {
-              var regionalMatch = dictionary[shortCode];
-              if (regionalMatch && typeof regionalMatch === 'object') {
-                return regionalMatch;
-              }
-            }
-          }
-
-          if (fallbackNormalized && Object.prototype.hasOwnProperty.call(dictionary, fallbackNormalized)) {
-            var fallbackEntry = dictionary[fallbackNormalized];
-            if (fallbackEntry && typeof fallbackEntry === 'object') {
-              return fallbackEntry;
-            }
-          }
-
-          if (Object.prototype.hasOwnProperty.call(dictionary, 'en')) {
-            var englishEntry = dictionary.en;
-            if (englishEntry && typeof englishEntry === 'object') {
-              return englishEntry;
-            }
-          }
-
-          var firstKey = null;
-          try {
-            for (var key in dictionary) {
-              if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
-                firstKey = key;
-                break;
-              }
-            }
-          } catch (iterateError) {
-            void iterateError;
-          }
-
-          if (firstKey) {
-            var firstEntry = dictionary[firstKey];
-            if (firstEntry && typeof firstEntry === 'object') {
-              return firstEntry;
-            }
-          }
-
-          return {};
+      if (fallbackNormalized && Object.prototype.hasOwnProperty.call(dictionary, fallbackNormalized)) {
+        var fallbackEntry = dictionary[fallbackNormalized];
+        if (fallbackEntry && typeof fallbackEntry === 'object') {
+          return fallbackEntry;
         }
+      }
 
-        return __cineCommitGlobalValue('getLanguageTexts', fallbackGetLanguageTexts);
-      })();
+      if (Object.prototype.hasOwnProperty.call(dictionary, 'en')) {
+        var englishEntry = dictionary.en;
+        if (englishEntry && typeof englishEntry === 'object') {
+          return englishEntry;
+        }
+      }
+
+      var firstKey = null;
+      try {
+        for (var key in dictionary) {
+          if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+            firstKey = key;
+            break;
+          }
+        }
+      } catch (iterateError) {
+        void iterateError;
+      }
+
+      if (firstKey) {
+        var firstEntry = dictionary[firstKey];
+        if (firstEntry && typeof firstEntry === 'object') {
+          return firstEntry;
+        }
+      }
+
+      return {};
+    }
+
+    __cineCommitGlobalValue('getLanguageTexts', fallbackGetLanguageTexts);
+  })();
+}
 
 var resolveTextEntry =
   typeof resolveTextEntry === 'function'

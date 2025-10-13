@@ -514,6 +514,92 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   reloadMountVoltagePreferencesFromStorage();
+  function mountVoltageInputsGetter() {
+    return mountVoltageInputs;
+  }
+  var MOUNT_VOLTAGE_INPUTS_DESCRIPTOR = {
+    configurable: true,
+    enumerable: true,
+    get: mountVoltageInputsGetter
+  };
+  function cloneNamespace(source) {
+    if (!source || _typeof(source) !== 'object') {
+      return {};
+    }
+    var clone = {};
+    var propertyNames = Object.getOwnPropertyNames(source);
+    for (var index = 0; index < propertyNames.length; index += 1) {
+      var key = propertyNames[index];
+      if (key === 'mountVoltageInputs') {
+        continue;
+      }
+      var descriptor = null;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(source, key);
+      } catch (descriptorError) {
+        descriptor = null;
+        void descriptorError;
+      }
+      if (descriptor) {
+        try {
+          Object.defineProperty(clone, key, descriptor);
+          continue;
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+      clone[key] = source[key];
+    }
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      var symbols = Object.getOwnPropertySymbols(source);
+      for (var symbolIndex = 0; symbolIndex < symbols.length; symbolIndex += 1) {
+        var symbol = symbols[symbolIndex];
+        var symbolDescriptor = null;
+        try {
+          symbolDescriptor = Object.getOwnPropertyDescriptor(source, symbol);
+        } catch (symbolDescriptorError) {
+          symbolDescriptor = null;
+          void symbolDescriptorError;
+        }
+        if (symbolDescriptor) {
+          try {
+            Object.defineProperty(clone, symbol, symbolDescriptor);
+            continue;
+          } catch (symbolDefineError) {
+            void symbolDefineError;
+          }
+        }
+        try {
+          clone[symbol] = source[symbol];
+        } catch (symbolAssignError) {
+          void symbolAssignError;
+        }
+      }
+    }
+    return clone;
+  }
+  function ensureMountVoltageInputsProperty(target) {
+    if (!target || _typeof(target) !== 'object') {
+      return target;
+    }
+    var existingDescriptor = Object.getOwnPropertyDescriptor(target, 'mountVoltageInputs');
+    if (existingDescriptor && existingDescriptor.get === mountVoltageInputsGetter) {
+      return target;
+    }
+    try {
+      Object.defineProperty(target, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
+      return target;
+    } catch (defineError) {
+      var clonedTarget = cloneNamespace(target);
+      try {
+        Object.defineProperty(clonedTarget, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
+        return clonedTarget;
+      } catch (cloneDefineError) {
+        void cloneDefineError;
+      }
+    }
+    return target;
+  }
   var runtimeExports = {
     SUPPORTED_MOUNT_VOLTAGE_TYPES: SUPPORTED_MOUNT_VOLTAGE_TYPES,
     DEFAULT_MOUNT_VOLTAGES: DEFAULT_MOUNT_VOLTAGES,
@@ -526,12 +612,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     updateMountVoltageInputsFromState: updateMountVoltageInputsFromState,
     persistMountVoltagePreferences: persistMountVoltagePreferences
   };
-  Object.defineProperty(runtimeExports, 'mountVoltageInputs', {
-    enumerable: true,
-    get: function get() {
-      return mountVoltageInputs;
-    }
-  });
+  Object.defineProperty(runtimeExports, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
   Object.freeze(runtimeExports);
   var namespace = {
     SUPPORTED_MOUNT_VOLTAGE_TYPES: SUPPORTED_MOUNT_VOLTAGE_TYPES,
@@ -555,25 +636,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     getMountVoltageBackupStorageKey: getMountVoltageBackupStorageKey,
     runtimeExports: runtimeExports
   };
-  Object.defineProperty(namespace, 'mountVoltageInputs', {
-    enumerable: true,
-    get: function get() {
-      return mountVoltageInputs;
-    }
-  });
+  Object.defineProperty(namespace, 'mountVoltageInputs', MOUNT_VOLTAGE_INPUTS_DESCRIPTOR);
   if (CORE_SCOPE && _typeof(CORE_SCOPE) === 'object') {
     var targetName = 'cineCoreMountVoltage';
     var existingNamespace = CORE_SCOPE[targetName] && _typeof(CORE_SCOPE[targetName]) === 'object' ? CORE_SCOPE[targetName] : {};
+    if (existingNamespace && _typeof(existingNamespace) === 'object' && typeof Object.isExtensible === 'function' && !Object.isExtensible(existingNamespace)) {
+      existingNamespace = cloneNamespace(existingNamespace);
+    }
     for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
       var key = _Object$keys[_i];
       existingNamespace[key] = namespace[key];
     }
-    Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: function get() {
-        return mountVoltageInputs;
-      }
-    });
+    existingNamespace = ensureMountVoltageInputsProperty(existingNamespace);
     try {
       CORE_SCOPE[targetName] = existingNamespace;
     } catch (assignError) {
@@ -608,16 +682,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       runtimeNamespace = {};
     }
 
+    if (runtimeNamespace && _typeof(runtimeNamespace) === 'object' && typeof Object.isExtensible === 'function' && !Object.isExtensible(runtimeNamespace)) {
+      runtimeNamespace = cloneNamespace(runtimeNamespace);
+    }
+
     Object.keys(runtimeExports).forEach(function (runtimeKey) {
       runtimeNamespace[runtimeKey] = runtimeExports[runtimeKey];
     });
 
-    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: function get() {
-        return mountVoltageInputs;
-      }
-    });
+    runtimeNamespace = ensureMountVoltageInputsProperty(runtimeNamespace);
 
     try {
       CORE_SCOPE[runtimeTargetName] = runtimeNamespace;

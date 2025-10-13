@@ -443,87 +443,89 @@ var CORE_GLOBAL_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_S
 var autoGearAddOwnGearSelect = typeof autoGearAddOwnGearSelect !== 'undefined' ? autoGearAddOwnGearSelect : __cineCommitGlobalValue('autoGearAddOwnGearSelect', null);
 var autoGearRemoveOwnGearSelect = typeof autoGearRemoveOwnGearSelect !== 'undefined' ? autoGearRemoveOwnGearSelect : __cineCommitGlobalValue('autoGearRemoveOwnGearSelect', null);
 var currentLang = typeof currentLang !== 'undefined' && typeof currentLang === 'string' ? currentLang : __cineCommitGlobalValue('currentLang', 'en');
-var getLanguageTexts = typeof getLanguageTexts === 'function' ? getLanguageTexts : function defineGetLanguageTextsFallback() {
-  function normalizeLanguageCode(candidate) {
-    if (typeof candidate === 'string' && candidate) {
-      try {
-        return candidate.trim().toLowerCase();
-      } catch (normalizeError) {
-        void normalizeError;
+if (typeof getLanguageTexts !== 'function') {
+  (function defineGetLanguageTextsFallback() {
+    function normalizeLanguageCode(candidate) {
+      if (typeof candidate === 'string' && candidate) {
+        try {
+          return candidate.trim().toLowerCase();
+        } catch (normalizeError) {
+          void normalizeError;
+        }
       }
+      return '';
     }
-    return '';
-  }
-  function resolveDefaultLanguage() {
-    var defaultLanguage = __cineResolveGlobalValue('DEFAULT_LANGUAGE', null);
-    if (typeof defaultLanguage === 'string' && defaultLanguage) {
-      return defaultLanguage;
+    function resolveDefaultLanguage() {
+      var defaultLanguage = __cineResolveGlobalValue('DEFAULT_LANGUAGE', null);
+      if (typeof defaultLanguage === 'string' && defaultLanguage) {
+        return defaultLanguage;
+      }
+      return 'en';
     }
-    return 'en';
-  }
-  function resolveTextsDictionary() {
-    var scopeTexts = __cineResolveGlobalValue('texts', null);
-    if (scopeTexts && _typeof(scopeTexts) === 'object') {
-      return scopeTexts;
-    }
-    return {};
-  }
-  function fallbackGetLanguageTexts(lang) {
-    var dictionary = resolveTextsDictionary();
-    if (!dictionary || _typeof(dictionary) !== 'object') {
+    function resolveTextsDictionary() {
+      var scopeTexts = __cineResolveGlobalValue('texts', null);
+      if (scopeTexts && _typeof(scopeTexts) === 'object') {
+        return scopeTexts;
+      }
       return {};
     }
-    var normalized = normalizeLanguageCode(lang);
-    var defaultLang = resolveDefaultLanguage();
-    var fallbackNormalized = normalizeLanguageCode(defaultLang);
-    if (normalized && Object.prototype.hasOwnProperty.call(dictionary, normalized)) {
-      var direct = dictionary[normalized];
-      if (direct && _typeof(direct) === 'object') {
-        return direct;
+    function fallbackGetLanguageTexts(lang) {
+      var dictionary = resolveTextsDictionary();
+      if (!dictionary || _typeof(dictionary) !== 'object') {
+        return {};
       }
-    }
-    if (normalized && normalized.length > 2) {
-      var shortCode = normalized.slice(0, 2);
-      if (Object.prototype.hasOwnProperty.call(dictionary, shortCode)) {
-        var regionalMatch = dictionary[shortCode];
-        if (regionalMatch && _typeof(regionalMatch) === 'object') {
-          return regionalMatch;
+      var normalized = normalizeLanguageCode(lang);
+      var defaultLang = resolveDefaultLanguage();
+      var fallbackNormalized = normalizeLanguageCode(defaultLang);
+      if (normalized && Object.prototype.hasOwnProperty.call(dictionary, normalized)) {
+        var direct = dictionary[normalized];
+        if (direct && _typeof(direct) === 'object') {
+          return direct;
         }
       }
-    }
-    if (fallbackNormalized && Object.prototype.hasOwnProperty.call(dictionary, fallbackNormalized)) {
-      var fallbackEntry = dictionary[fallbackNormalized];
-      if (fallbackEntry && _typeof(fallbackEntry) === 'object') {
-        return fallbackEntry;
-      }
-    }
-    if (Object.prototype.hasOwnProperty.call(dictionary, 'en')) {
-      var englishEntry = dictionary.en;
-      if (englishEntry && _typeof(englishEntry) === 'object') {
-        return englishEntry;
-      }
-    }
-    var firstKey = null;
-    try {
-      for (var key in dictionary) {
-        if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
-          firstKey = key;
-          break;
+      if (normalized && normalized.length > 2) {
+        var shortCode = normalized.slice(0, 2);
+        if (Object.prototype.hasOwnProperty.call(dictionary, shortCode)) {
+          var regionalMatch = dictionary[shortCode];
+          if (regionalMatch && _typeof(regionalMatch) === 'object') {
+            return regionalMatch;
+          }
         }
       }
-    } catch (iterateError) {
-      void iterateError;
-    }
-    if (firstKey) {
-      var firstEntry = dictionary[firstKey];
-      if (firstEntry && _typeof(firstEntry) === 'object') {
-        return firstEntry;
+      if (fallbackNormalized && Object.prototype.hasOwnProperty.call(dictionary, fallbackNormalized)) {
+        var fallbackEntry = dictionary[fallbackNormalized];
+        if (fallbackEntry && _typeof(fallbackEntry) === 'object') {
+          return fallbackEntry;
+        }
       }
+      if (Object.prototype.hasOwnProperty.call(dictionary, 'en')) {
+        var englishEntry = dictionary.en;
+        if (englishEntry && _typeof(englishEntry) === 'object') {
+          return englishEntry;
+        }
+      }
+      var firstKey = null;
+      try {
+        for (var key in dictionary) {
+          if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+            firstKey = key;
+            break;
+          }
+        }
+      } catch (iterateError) {
+        void iterateError;
+      }
+      if (firstKey) {
+        var firstEntry = dictionary[firstKey];
+        if (firstEntry && _typeof(firstEntry) === 'object') {
+          return firstEntry;
+        }
+      }
+      return {};
     }
-    return {};
-  }
-  return __cineCommitGlobalValue('getLanguageTexts', fallbackGetLanguageTexts);
-}();
+    __cineCommitGlobalValue('getLanguageTexts', fallbackGetLanguageTexts);
+  })();
+}
 var resolveTextEntry = typeof resolveTextEntry === 'function' ? resolveTextEntry : function defineResolveTextEntryFallback() {
   function normalizeResolvedValue(value) {
     if (typeof value === 'string') {
