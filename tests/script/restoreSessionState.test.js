@@ -220,7 +220,7 @@ describe('restoreSessionState', () => {
       <div class="requirements-grid">
         <div class="requirement-box" data-field="productionCompany">
           <span class="req-label">Production Company</span>
-          <span class="req-value"><span class="req-primary-line">Acme Studios</span><br><span class="req-sub-label">Production Company Address</span><br><span class="req-sub-line" data-fields="productionCompanyAddress">200 Backlot Ave</span></span>
+          <span class="req-value"><span class="req-primary-line">Acme Studios</span><br><span class="req-sub-line" data-fields="productionCompanyAddress">200 Backlot Ave</span></span>
         </div>
       </div>
       <h3>Gear List</h3>

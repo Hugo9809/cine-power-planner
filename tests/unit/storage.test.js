@@ -1428,7 +1428,7 @@ describe('project storage', () => {
       '<div class="requirements-grid">',
       '  <div class="requirement-box" data-field="productionCompany">',
       '    <span class="req-label">Production Company</span>',
-      '    <span class="req-value"><span class="req-primary-line">Studio X</span><br><span class="req-sub-label">Production Company Address</span><br><span class="req-sub-line" data-fields="productionCompanyAddress">123 Stage Rd</span><br><span class="req-sub-line" data-fields="productionCompanyStreet">123 Production Way</span><br><span class="req-sub-line" data-fields="productionCompanyStreet2">Suite 4</span><br><span class="req-sub-line" data-fields="productionCompanyCity">Film City</span><br><span class="req-sub-line" data-fields="productionCompanyRegion">CA</span><br><span class="req-sub-line" data-fields="productionCompanyPostalCode">90001</span><br><span class="req-sub-line" data-fields="productionCompanyCountry">USA</span></span>',
+      '    <span class="req-value"><span class="req-primary-line">Studio X</span><br><span class="req-sub-line" data-fields="productionCompanyAddress">123 Stage Rd</span><br><span class="req-sub-line" data-fields="productionCompanyStreet">123 Production Way</span><br><span class="req-sub-line" data-fields="productionCompanyStreet2">Suite 4</span><br><span class="req-sub-line" data-fields="productionCompanyCity">Film City</span><br><span class="req-sub-line" data-fields="productionCompanyRegion">CA</span><br><span class="req-sub-line" data-fields="productionCompanyPostalCode">90001</span><br><span class="req-sub-line" data-fields="productionCompanyCountry">USA</span></span>',
       '  </div>',
       '</div>',
     ].join('');
