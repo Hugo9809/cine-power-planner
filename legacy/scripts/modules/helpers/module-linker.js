@@ -147,7 +147,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           additionalScopes: settings.additionalScopes,
           detect: settings.detect || detectGlobalScope
         });
-
         if (resolvedScope && (_typeof(resolvedScope) === 'object' || typeof resolvedScope === 'function')) {
           try {
             if (propertyName in resolvedScope) {

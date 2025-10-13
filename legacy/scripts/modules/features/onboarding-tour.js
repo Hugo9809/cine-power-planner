@@ -2192,7 +2192,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     cardActionsEl = actions;
     backButton = DOCUMENT.createElement('button');
     backButton.type = 'button';
-    backButton.className = 'onboarding-back-button';
+    backButton.className = 'onboarding-back-button secondary';
     backButton.addEventListener('click', function () {
       if (!active) return;
       goToPreviousStep();
@@ -2200,7 +2200,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     actions.appendChild(backButton);
     nextButton = DOCUMENT.createElement('button');
     nextButton.type = 'button';
-    nextButton.className = 'onboarding-next-button';
+    nextButton.className = 'onboarding-next-button primary';
     nextButton.addEventListener('click', function () {
       if (!active) return;
       goToNextStep();
@@ -3700,7 +3700,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var avatarActionLabel = !normalizedAvatarAction ? fallbackAvatarAction : avatarChangeLabel && normalizedAvatarAction.toLowerCase() === avatarChangeLabel.toLowerCase() ? fallbackAvatarAction : normalizedAvatarAction;
     var avatarAction = DOCUMENT.createElement('button');
     avatarAction.type = 'button';
-    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button';
+    avatarAction.className = 'onboarding-interaction-button onboarding-avatar-button secondary';
     avatarAction.textContent = avatarActionLabel;
     var handleAvatarActionClick = function handleAvatarActionClick() {
       if (avatarButton && typeof avatarButton.click === 'function') {
@@ -4330,7 +4330,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     actions.className = 'onboarding-interaction-actions';
     var requestButton = DOCUMENT.createElement('button');
     requestButton.type = 'button';
-    requestButton.className = 'onboarding-interaction-button';
+    requestButton.className = 'onboarding-interaction-button primary';
     requestButton.textContent = getTourString('unitsPreferencesPersistenceAction', 'Protect storage on this device');
     requestButton.disabled = !persistenceButton;
     var handleRequest = function handleRequest() {
