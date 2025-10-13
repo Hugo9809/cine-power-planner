@@ -418,7 +418,13 @@ function resolvePreferredTemperatureStorageKey() {
   return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
 }
 
-var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
+const PREEXISTING_TEMPERATURE_STORAGE_KEY =
+  typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY
+    ? TEMPERATURE_STORAGE_KEY
+    : null;
+
+const CORE_TEMPERATURE_STORAGE_KEY =
+  PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey();
 
 (function ensureTemperatureStorageKeyGlobal(key) {
   const candidates = [
@@ -443,7 +449,43 @@ var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
       void temperatureKeyAssignError;
     }
   }
-})(TEMPERATURE_STORAGE_KEY);
+
+  const sharedCandidates = candidates
+    .map(scope => {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return null;
+      }
+      try {
+        return scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object'
+          ? scope.CORE_SHARED
+          : null;
+      } catch (sharedLookupError) {
+        void sharedLookupError;
+      }
+      return null;
+    })
+    .filter(sharedScopeCandidate => sharedScopeCandidate);
+
+  for (let index = 0; index < sharedCandidates.length; index += 1) {
+    const sharedScope = sharedCandidates[index];
+    if (!sharedScope || typeof sharedScope !== 'object') {
+      continue;
+    }
+
+    if (
+      typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' &&
+      sharedScope.TEMPERATURE_STORAGE_KEY
+    ) {
+      continue;
+    }
+
+    try {
+      sharedScope.TEMPERATURE_STORAGE_KEY = key;
+    } catch (sharedAssignError) {
+      void sharedAssignError;
+    }
+  }
+})(CORE_TEMPERATURE_STORAGE_KEY);
 
 function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (typeof primaryScope === 'object' || typeof primaryScope === 'function')) {
@@ -24014,7 +24056,7 @@ const CORE_RUNTIME_CONSTANTS = {
   AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
   AUTO_GEAR_MONITOR_DEFAULT_TYPES,
   GEAR_LIST_CATEGORIES,
-  TEMPERATURE_STORAGE_KEY,
+  TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
   TEMPERATURE_UNITS,
   TEMPERATURE_SCENARIOS,
   FOCUS_SCALE_STORAGE_KEY,
