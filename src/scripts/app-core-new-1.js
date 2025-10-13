@@ -8744,7 +8744,18 @@ function normalizeBatteryPlateValue(plateValue, batteryName) {
   return normalizedPlate;
 }
 
+function ensureBatteryPlateElements() {
+  if (typeof document === 'undefined') {
+    if (typeof batteryPlateRow === 'undefined') batteryPlateRow = null;
+    if (typeof batteryPlateSelect === 'undefined') batteryPlateSelect = null;
+    return;
+  }
+  batteryPlateRow = document.getElementById('batteryPlateRow');
+  batteryPlateSelect = document.getElementById('batteryPlateSelect');
+}
+
 function applyBatteryPlateSelectionFromBattery(batteryName, currentPlateValue) {
+  ensureBatteryPlateElements();
   const normalizedPlate = typeof currentPlateValue === 'string' ? currentPlateValue.trim() : '';
   const desiredPlate = normalizeBatteryPlateValue(normalizedPlate, batteryName);
   if (!batteryPlateSelect || !desiredPlate) {
@@ -8762,6 +8773,7 @@ function applyBatteryPlateSelectionFromBattery(batteryName, currentPlateValue) {
 }
 
 function getSelectedPlate() {
+  ensureBatteryPlateElements();
   const camName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
   const plates = typeof getAvailableBatteryPlates === 'function'
     ? getAvailableBatteryPlates(camName)
@@ -8968,6 +8980,7 @@ function connectionLabel(outType, inType) {
 
 
 function updateBatteryPlateVisibility() {
+  ensureBatteryPlateElements();
   const camName = cameraSelect.value;
   const plates = getAvailableBatteryPlates(camName);
   const current = batteryPlateSelect.value;
@@ -9948,6 +9961,7 @@ function setLanguage(lang) {
   lang = normalizedLang;
   const previousLang = currentLang;
   currentLang = lang;
+  ensureInstallPromptElements();
   const shouldDispatchLanguageChange = previousLang !== lang;
   const dispatchLanguageChange = () => {
     if (
@@ -19142,13 +19156,21 @@ function formatTemperatureForDisplay(celsius, options = {}) {
     return;
   }
 
-  const viewfinderContainerEl = typeof viewfinderContainer !== 'undefined' ? viewfinderContainer : null;
-  const viewfinderInputsContainerEl = typeof viewfinderVideoInputsContainer !== 'undefined'
-    ? viewfinderVideoInputsContainer
-    : null;
-  const viewfinderOutputsContainerEl = typeof viewfinderVideoOutputsContainer !== 'undefined'
-    ? viewfinderVideoOutputsContainer
-    : null;
+  const resolveContainer = id => {
+    if (!hasDocument || typeof document?.getElementById !== 'function') {
+      return null;
+    }
+    try {
+      return document.getElementById(id);
+    } catch (resolveError) {
+      void resolveError;
+      return null;
+    }
+  };
+
+  const viewfinderContainerEl = resolveContainer('viewfinderContainer');
+  const viewfinderInputsContainerEl = resolveContainer('viewfinderVideoInputsContainer');
+  const viewfinderOutputsContainerEl = resolveContainer('viewfinderVideoOutputsContainer');
 
   const ensureContainers = [
     ['setViewfinders', viewfinderContainerEl],
@@ -19565,8 +19587,8 @@ const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 var batteryFieldsDiv = document.getElementById("batteryFields");
-const batteryPlateRow = document.getElementById("batteryPlateRow");
-var batteryPlateSelect = document.getElementById("batteryPlateSelect");
+let batteryPlateRow;
+let batteryPlateSelect;
 var newCapacityInput = document.getElementById("newCapacity");
 var newPinAInput    = document.getElementById("newPinA");
 var newDtapAInput   = document.getElementById("newDtapA");
@@ -20080,26 +20102,77 @@ var helpSectionsContainer = document.getElementById("helpSections");
 var helpQuickLinksNav = document.getElementById("helpQuickLinks");
 var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 var helpQuickLinksList = document.getElementById("helpQuickLinksList");
-const installPromptBanner = document.getElementById("installPromptBanner");
-const installPromptBannerText = document.getElementById("installPromptBannerText");
-const installPromptBannerAction = document.getElementById("installPromptBannerAction");
-const installPromptBannerIcon = document.getElementById("installPromptBannerIcon");
-const installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
-const installGuideDialog = document.getElementById("installGuideDialog");
-const installGuideTitle = document.getElementById("installGuideTitle");
-const installGuideIntro = document.getElementById("installGuideIntro");
-const installGuideSteps = document.getElementById("installGuideSteps");
-const installGuideNote = document.getElementById("installGuideNote");
-const installGuideMigration = document.getElementById("installGuideMigration");
-const installGuideMigrationTitle = document.getElementById("installGuideMigrationTitle");
-const installGuideMigrationIntro = document.getElementById("installGuideMigrationIntro");
-const installGuideMigrationSteps = document.getElementById("installGuideMigrationSteps");
-const installGuideMigrationNote = document.getElementById("installGuideMigrationNote");
-const installGuideClose = document.getElementById("installGuideClose");
+let installPromptBanner;
+let installPromptBannerText;
+let installPromptBannerAction;
+let installPromptBannerIcon;
+let installPromptBannerDismiss;
+let installGuideDialog;
+let installGuideTitle;
+let installGuideIntro;
+let installGuideSteps;
+let installGuideNote;
+let installGuideMigration;
+let installGuideMigrationTitle;
+let installGuideMigrationIntro;
+let installGuideMigrationSteps;
+let installGuideMigrationNote;
+let installGuideClose;
 var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
-const iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
-const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
-const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
+let iosPwaHelpTitle;
+let iosPwaHelpIntro;
+let iosPwaHelpStep1;
+let installPromptElementsInitialized = false;
+
+function ensureInstallPromptElements() {
+  if (installPromptElementsInitialized && installPromptBanner) {
+    return;
+  }
+  if (typeof document === 'undefined') {
+    installPromptElementsInitialized = true;
+    installPromptBanner = installPromptBanner || null;
+    installPromptBannerText = installPromptBannerText || null;
+    installPromptBannerAction = installPromptBannerAction || null;
+    installPromptBannerIcon = installPromptBannerIcon || null;
+    installPromptBannerDismiss = installPromptBannerDismiss || null;
+    installGuideDialog = installGuideDialog || null;
+    installGuideTitle = installGuideTitle || null;
+    installGuideIntro = installGuideIntro || null;
+    installGuideSteps = installGuideSteps || null;
+    installGuideNote = installGuideNote || null;
+    installGuideMigration = installGuideMigration || null;
+    installGuideMigrationTitle = installGuideMigrationTitle || null;
+    installGuideMigrationIntro = installGuideMigrationIntro || null;
+    installGuideMigrationSteps = installGuideMigrationSteps || null;
+    installGuideMigrationNote = installGuideMigrationNote || null;
+    installGuideClose = installGuideClose || null;
+    iosPwaHelpTitle = iosPwaHelpTitle || null;
+    iosPwaHelpIntro = iosPwaHelpIntro || null;
+    iosPwaHelpStep1 = iosPwaHelpStep1 || null;
+    return;
+  }
+
+  installPromptBanner = document.getElementById('installPromptBanner');
+  installPromptBannerText = document.getElementById('installPromptBannerText');
+  installPromptBannerAction = document.getElementById('installPromptBannerAction');
+  installPromptBannerIcon = document.getElementById('installPromptBannerIcon');
+  installPromptBannerDismiss = document.getElementById('installPromptBannerDismiss');
+  installGuideDialog = document.getElementById('installGuideDialog');
+  installGuideTitle = document.getElementById('installGuideTitle');
+  installGuideIntro = document.getElementById('installGuideIntro');
+  installGuideSteps = document.getElementById('installGuideSteps');
+  installGuideNote = document.getElementById('installGuideNote');
+  installGuideMigration = document.getElementById('installGuideMigration');
+  installGuideMigrationTitle = document.getElementById('installGuideMigrationTitle');
+  installGuideMigrationIntro = document.getElementById('installGuideMigrationIntro');
+  installGuideMigrationSteps = document.getElementById('installGuideMigrationSteps');
+  installGuideMigrationNote = document.getElementById('installGuideMigrationNote');
+  installGuideClose = document.getElementById('installGuideClose');
+  iosPwaHelpTitle = document.getElementById('iosPwaHelpTitle');
+  iosPwaHelpIntro = document.getElementById('iosPwaHelpIntro');
+  iosPwaHelpStep1 = document.getElementById('iosPwaHelpStep1');
+  installPromptElementsInitialized = true;
+}
 const mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
 const mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
 const mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
@@ -20350,6 +20423,7 @@ function markInstallBannerDismissed() {
 }
 
 function shouldShowInstallBanner() {
+  ensureInstallPromptElements();
   if (!installPromptBanner) return false;
   if (isStandaloneDisplayMode()) return false;
   if (hasDismissedInstallBanner()) return false;
@@ -20357,6 +20431,7 @@ function shouldShowInstallBanner() {
 }
 
 function updateInstallBannerVisibility() {
+  ensureInstallPromptElements();
   if (!installPromptBanner) return;
   const shouldShow = shouldShowInstallBanner();
   const root = typeof document !== 'undefined' ? document.documentElement : null;
@@ -20375,6 +20450,7 @@ function updateInstallBannerVisibility() {
 }
 
 function updateInstallBannerColors() {
+  ensureInstallPromptElements();
   if (!installPromptBanner) return;
   if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
     return;
@@ -20399,6 +20475,7 @@ function updateInstallBannerColors() {
 }
 
 function renderInstallGuideContent(platform, lang = currentLang) {
+  ensureInstallPromptElements();
   if (!installGuideDialog) return;
   const fallbackTexts = texts.en || {};
   const langTexts = texts[lang] || fallbackTexts;
@@ -20473,6 +20550,7 @@ function renderInstallGuideContent(platform, lang = currentLang) {
 }
 
 function openInstallGuide(platform) {
+  ensureInstallPromptElements();
   if (!installGuideDialog) return;
   currentInstallGuidePlatform = platform;
   lastActiveBeforeInstallGuide = document.activeElement;
@@ -20489,6 +20567,7 @@ function openInstallGuide(platform) {
 }
 
 function closeInstallGuide() {
+  ensureInstallPromptElements();
   if (!installGuideDialog) return;
   installGuideDialog.setAttribute('hidden', '');
   currentInstallGuidePlatform = null;
@@ -20502,6 +20581,7 @@ function closeInstallGuide() {
 }
 
 function setupInstallBanner() {
+  ensureInstallPromptElements();
   if (!installPromptBanner) return false;
 
   if (installBannerSetupComplete) {
@@ -20576,6 +20656,7 @@ function setupInstallBanner() {
 }
 
 function applyInstallTexts(lang) {
+  ensureInstallPromptElements();
   const fallbackTexts = texts.en || {};
   const langTexts = texts[lang] || fallbackTexts;
   const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText || '';
