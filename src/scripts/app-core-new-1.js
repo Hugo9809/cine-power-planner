@@ -536,9 +536,19 @@ var resolveTextEntry =
       }
     : inlineResolveTextEntry;
 
-const CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
+const CORE_RUNTIME_TEMPERATURE_SUPPORT = resolveCoreSupportModule(
+  'cineCoreRuntimeTemperature',
+  './modules/core/runtime-temperature.js'
+);
 
-function resolvePreferredTemperatureStorageKey() {
+const CORE_TEMPERATURE_STORAGE_KEY_DEFAULT =
+  CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+  typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY === 'string' &&
+  CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY
+    ? CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY
+    : 'cameraPowerPlanner_temperatureUnit';
+
+function fallbackResolvePreferredTemperatureStorageKey() {
   const candidates = collectRuntimeScopeCandidates();
 
   for (let index = 0; index < candidates.length; index += 1) {
@@ -567,10 +577,7 @@ function resolvePreferredTemperatureStorageKey() {
       return scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY;
     }
 
-    if (
-      scope.__cineStorageApi &&
-      typeof scope.__cineStorageApi === 'object'
-    ) {
+    if (scope.__cineStorageApi && typeof scope.__cineStorageApi === 'object') {
       const storageApi = scope.__cineStorageApi;
       if (
         typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' &&
@@ -603,7 +610,7 @@ function resolvePreferredTemperatureStorageKey() {
     }
   }
 
-  return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
+  return CORE_TEMPERATURE_STORAGE_KEY_DEFAULT;
 }
 
 const PREEXISTING_TEMPERATURE_STORAGE_KEY =
@@ -611,69 +618,107 @@ const PREEXISTING_TEMPERATURE_STORAGE_KEY =
     ? TEMPERATURE_STORAGE_KEY
     : null;
 
-const CORE_TEMPERATURE_STORAGE_KEY =
-  PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey();
+const CORE_TEMPERATURE_STORAGE_KEY = (function ensureCoreTemperatureStorageKey() {
+  const initialKey = PREEXISTING_TEMPERATURE_STORAGE_KEY;
 
-(function ensureTemperatureStorageKeyGlobal(key) {
-  const candidates = [
-    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-    typeof globalThis !== 'undefined' ? globalThis : null,
-    typeof window !== 'undefined' ? window : null,
-  ];
-
-  for (let index = 0; index < candidates.length; index += 1) {
-    const scope = candidates[index];
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      continue;
-    }
-
-    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
-      continue;
-    }
-
+  if (
+    CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+    typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperaturePreferences === 'function'
+  ) {
     try {
-      scope.TEMPERATURE_STORAGE_KEY = key;
-    } catch (temperatureKeyAssignError) {
-      void temperatureKeyAssignError;
+      return CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperaturePreferences({
+        primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+        candidateScopes: collectRuntimeScopeCandidates(),
+        initialKey,
+      });
+    } catch (ensureTemperaturePreferencesError) {
+      void ensureTemperaturePreferencesError;
     }
   }
 
-  const sharedCandidates = candidates
-    .map(scope => {
+  const fallbackKey = initialKey || fallbackResolvePreferredTemperatureStorageKey();
+
+  if (
+    CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+    typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperatureStorageKeyGlobal === 'function'
+  ) {
+    try {
+      CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperatureStorageKeyGlobal(
+        fallbackKey,
+        {
+          primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+          candidateScopes: collectRuntimeScopeCandidates(),
+        }
+      );
+      return fallbackKey;
+    } catch (ensureTemperatureStorageKeyGlobalError) {
+      void ensureTemperatureStorageKeyGlobalError;
+    }
+  }
+
+  (function fallbackEnsureTemperatureStorageKeyGlobal(key) {
+    const candidates = [
+      CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+    ];
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
       if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-        return null;
+        continue;
       }
+
+      if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+        continue;
+      }
+
       try {
-        return scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object'
-          ? scope.CORE_SHARED
-          : null;
-      } catch (sharedLookupError) {
-        void sharedLookupError;
+        scope.TEMPERATURE_STORAGE_KEY = key;
+      } catch (temperatureKeyAssignError) {
+        void temperatureKeyAssignError;
       }
-      return null;
-    })
-    .filter(sharedScopeCandidate => sharedScopeCandidate);
-
-  for (let index = 0; index < sharedCandidates.length; index += 1) {
-    const sharedScope = sharedCandidates[index];
-    if (!sharedScope || typeof sharedScope !== 'object') {
-      continue;
     }
 
-    if (
-      typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' &&
-      sharedScope.TEMPERATURE_STORAGE_KEY
-    ) {
-      continue;
-    }
+    const sharedCandidates = candidates
+      .map(scope => {
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          return null;
+        }
+        try {
+          return scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object'
+            ? scope.CORE_SHARED
+            : null;
+        } catch (sharedLookupError) {
+          void sharedLookupError;
+        }
+        return null;
+      })
+      .filter(sharedScopeCandidate => sharedScopeCandidate);
 
-    try {
-      sharedScope.TEMPERATURE_STORAGE_KEY = key;
-    } catch (sharedAssignError) {
-      void sharedAssignError;
+    for (let index = 0; index < sharedCandidates.length; index += 1) {
+      const sharedScope = sharedCandidates[index];
+      if (!sharedScope || typeof sharedScope !== 'object') {
+        continue;
+      }
+
+      if (
+        typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' &&
+        sharedScope.TEMPERATURE_STORAGE_KEY
+      ) {
+        continue;
+      }
+
+      try {
+        sharedScope.TEMPERATURE_STORAGE_KEY = key;
+      } catch (sharedAssignError) {
+        void sharedAssignError;
+      }
     }
-  }
-})(CORE_TEMPERATURE_STORAGE_KEY);
+  })(fallbackKey);
+
+  return fallbackKey;
+})();
 
 const CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = (function resolveRuntimeSupportDefaultsNamespace() {
   const namespaceName = 'cineCoreRuntimeSupportDefaults';

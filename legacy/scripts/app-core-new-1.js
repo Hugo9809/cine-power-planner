@@ -308,28 +308,56 @@ var resolveTextEntry =
         );
       }
     : inlineResolveTextEntry;
-var CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
-function resolvePreferredTemperatureStorageKey() {
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+var CORE_RUNTIME_TEMPERATURE_SUPPORT = resolveCoreSupportModule(
+  'cineCoreRuntimeTemperature',
+  './modules/core/runtime-temperature.js'
+);
+
+var CORE_TEMPERATURE_STORAGE_KEY_DEFAULT =
+  CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+  typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY === 'string' &&
+  CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY
+    ? CORE_RUNTIME_TEMPERATURE_SUPPORT.DEFAULT_STORAGE_KEY
+    : 'cameraPowerPlanner_temperatureUnit';
+
+function fallbackResolvePreferredTemperatureStorageKey() {
+  var candidates = collectRuntimeScopeCandidates();
+
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
       continue;
     }
+
     if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
       return scope.TEMPERATURE_STORAGE_KEY;
     }
-    if (typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' && scope.TEMPERATURE_UNIT_STORAGE_KEY) {
+
+    if (
+      typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' &&
+      scope.TEMPERATURE_UNIT_STORAGE_KEY
+    ) {
       return scope.TEMPERATURE_UNIT_STORAGE_KEY;
     }
-    if (scope.CORE_SHARED && _typeof(scope.CORE_SHARED) === 'object' && typeof scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY === 'string' && scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY) {
+
+    if (
+      scope.CORE_SHARED &&
+      typeof scope.CORE_SHARED === 'object' &&
+      typeof scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY === 'string' &&
+      scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY
+    ) {
       return scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY;
     }
-    if (scope.__cineStorageApi && _typeof(scope.__cineStorageApi) === 'object') {
+
+    if (scope.__cineStorageApi && typeof scope.__cineStorageApi === 'object') {
       var storageApi = scope.__cineStorageApi;
-      if (typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' && storageApi.TEMPERATURE_STORAGE_KEY) {
+      if (
+        typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' &&
+        storageApi.TEMPERATURE_STORAGE_KEY
+      ) {
         return storageApi.TEMPERATURE_STORAGE_KEY;
       }
+
       if (typeof storageApi.getTemperaturePreferenceStorageKey === 'function') {
         try {
           var key = storageApi.getTemperaturePreferenceStorageKey();
@@ -352,54 +380,114 @@ function resolvePreferredTemperatureStorageKey() {
       }
     }
   }
-  return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
+
+  return CORE_TEMPERATURE_STORAGE_KEY_DEFAULT;
 }
-var PREEXISTING_TEMPERATURE_STORAGE_KEY = typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY ? TEMPERATURE_STORAGE_KEY : null;
-var CORE_TEMPERATURE_STORAGE_KEY = PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey();
-(function ensureTemperatureStorageKeyGlobal(key) {
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null];
-  for (var index = 0; index < candidates.length; index += 1) {
-    var scope = candidates[index];
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      continue;
-    }
-    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
-      continue;
-    }
+
+var PREEXISTING_TEMPERATURE_STORAGE_KEY =
+  typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY
+    ? TEMPERATURE_STORAGE_KEY
+    : null;
+
+var CORE_TEMPERATURE_STORAGE_KEY = (function ensureCoreTemperatureStorageKey() {
+  var initialKey = PREEXISTING_TEMPERATURE_STORAGE_KEY;
+
+  if (
+    CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+    typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperaturePreferences === 'function'
+  ) {
     try {
-      scope.TEMPERATURE_STORAGE_KEY = key;
-    } catch (temperatureKeyAssignError) {
-      void temperatureKeyAssignError;
+      return CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperaturePreferences({
+        primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+        candidateScopes: collectRuntimeScopeCandidates(),
+        initialKey: initialKey,
+      });
+    } catch (ensureTemperaturePreferencesError) {
+      void ensureTemperaturePreferencesError;
     }
   }
-  var sharedCandidates = candidates.map(function (scope) {
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      return null;
-    }
+
+  var fallbackKey = initialKey || fallbackResolvePreferredTemperatureStorageKey();
+
+  if (
+    CORE_RUNTIME_TEMPERATURE_SUPPORT &&
+    typeof CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperatureStorageKeyGlobal === 'function'
+  ) {
     try {
-      return scope.CORE_SHARED && _typeof(scope.CORE_SHARED) === 'object' ? scope.CORE_SHARED : null;
-    } catch (sharedLookupError) {
-      void sharedLookupError;
-    }
-    return null;
-  }).filter(function (sharedScopeCandidate) {
-    return sharedScopeCandidate;
-  });
-  for (var _index3 = 0; _index3 < sharedCandidates.length; _index3 += 1) {
-    var sharedScope = sharedCandidates[_index3];
-    if (!sharedScope || _typeof(sharedScope) !== 'object') {
-      continue;
-    }
-    if (typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' && sharedScope.TEMPERATURE_STORAGE_KEY) {
-      continue;
-    }
-    try {
-      sharedScope.TEMPERATURE_STORAGE_KEY = key;
-    } catch (sharedAssignError) {
-      void sharedAssignError;
+      CORE_RUNTIME_TEMPERATURE_SUPPORT.ensureTemperatureStorageKeyGlobal(fallbackKey, {
+        primaryScope: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+        candidateScopes: collectRuntimeScopeCandidates(),
+      });
+      return fallbackKey;
+    } catch (ensureTemperatureStorageKeyGlobalError) {
+      void ensureTemperatureStorageKeyGlobalError;
     }
   }
-})(CORE_TEMPERATURE_STORAGE_KEY);
+
+  (function fallbackEnsureTemperatureStorageKeyGlobal(key) {
+    var candidates = [
+      CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+    ];
+
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+        continue;
+      }
+
+      try {
+        scope.TEMPERATURE_STORAGE_KEY = key;
+      } catch (temperatureKeyAssignError) {
+        void temperatureKeyAssignError;
+      }
+    }
+    var sharedCandidates = candidates
+      .map(function (scope) {
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          return null;
+        }
+        try {
+          return scope.CORE_SHARED && typeof scope.CORE_SHARED === 'object'
+            ? scope.CORE_SHARED
+            : null;
+        } catch (sharedLookupError) {
+          void sharedLookupError;
+        }
+        return null;
+      })
+      .filter(function (sharedScopeCandidate) {
+        return sharedScopeCandidate;
+      });
+
+    for (var sharedIndex = 0; sharedIndex < sharedCandidates.length; sharedIndex += 1) {
+      var sharedScope = sharedCandidates[sharedIndex];
+      if (!sharedScope || typeof sharedScope !== 'object') {
+        continue;
+      }
+
+      if (
+        typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' &&
+        sharedScope.TEMPERATURE_STORAGE_KEY
+      ) {
+        continue;
+      }
+
+      try {
+        sharedScope.TEMPERATURE_STORAGE_KEY = key;
+      } catch (sharedAssignError) {
+        void sharedAssignError;
+      }
+    }
+  })(fallbackKey);
+
+  return fallbackKey;
+})();
 function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
