@@ -6167,17 +6167,17 @@ const texts = {
     helpOnboardingTutorialCopy:
       "para recorrer cada flujo de trabajo con seguimiento del progreso sin conexión—incluido el punto de control del Resumen de energía y el simulacro de red de seguridad offline—antes de configurar tu primer proyecto. Usa el navegador de pasos y el medidor de progreso para revisar sin conexión las secciones terminadas.",
     onboardingTour: {
-      startLabel: "Iniciar tutorial guiado",
-      restartLabel: "Repetir tutorial guiado",
-      resumeLabel: "Reanudar tutorial guiado",
+      startLabel: "Comenzar tutorial guiado",
+      restartLabel: "Volver a iniciar el tutorial guiado",
+      resumeLabel: "Continuar tutorial guiado",
       skipLabel: "Omitir tutorial",
       backLabel: "Atrás",
       nextLabel: "Siguiente",
-      introStartLabel: "Iniciar recorrido de introducción",
+      introStartLabel: "Comenzar recorrido de bienvenida",
       doneLabel: "Finalizar tutorial",
       stepIndicator: "Paso {current} de {total}",
       completionIndicator: "Primer proyecto guardado sin conexión",
-      prefaceIndicator: "Bienvenido",
+      prefaceIndicator: "Bienvenida",
       stepListAriaLabel: "Pasos del tutorial",
       stepStatusCurrent: "Paso actual",
       stepStatusComplete: "Completado",
@@ -6185,7 +6185,7 @@ const texts = {
       resumeHint:
         "Retomas justo donde hiciste la pausa. Usa el navegador de pasos para repasar flujos anteriores sin borrar el progreso guardado sin conexión.",
       resumeHintDetailed:
-        "Retomas en el paso {current} de {total}. {completed} pasos ya están completos y asegurados en tus guardados sin conexión.",
+        "Retomas en el paso {current} de {total}. Ya completaste {completed} pasos y permanecen protegidos en tus guardados sin conexión.",
       userProfileInteractionIntro:
         "Introduce los datos de tu equipo una sola vez. Cada actualización se sincroniza al instante con Contactos, permanece guardada sin conexión y se refleja en las exportaciones para que el equipo siempre sepa quién es el responsable del set.",
       userProfileInteractionSkipHint:
@@ -6203,14 +6203,14 @@ const texts = {
         "Solicita almacenamiento persistente para que el navegador conserve los datos del planificador incluso cuando haya poco espacio.",
       unitsPreferencesPersistenceAction: "Proteger almacenamiento en este dispositivo",
       progressMeterLabel: "Progreso del tutorial",
-      progressValueLabel: "Completados {completed} de {total} pasos",
-      resumeLabelWithProgress: "Reanudar tutorial guiado ({completed}/{total} completados)",
+      progressValueLabel: "Has completado {completed} de {total} pasos",
+      resumeLabelWithProgress: "Continuar tutorial guiado ({completed}/{total} completados)",
       helpStatusNotStarted:
-        "El progreso del tutorial guiado se guardará sin conexión mientras avanzas. Siguiente: {next}.",
+        "El progreso del tutorial guiado se guarda sin conexión mientras avanzas. Próximo paso: {next}.",
         helpStatusInProgress:
-          "Progreso guardado sin conexión: {completed} de {total} pasos completados. Siguiente flujo: {next}.",
+          "Progreso guardado sin conexión: {completed} de {total} pasos completados. Próximo flujo de trabajo: {next}.",
         helpStatusResume:
-          "En pausa en {current}. {completed} de {total} pasos ya quedan protegidos sin conexión.",
+          "En pausa en {current}. {completed} de {total} pasos ya están protegidos sin conexión.",
       helpStatusSkipped:
         "Tutorial omitido. Cuando quieras reiniciarlo los avances guardados seguirán disponibles sin conexión.",
       helpStatusCompleted:
@@ -6225,55 +6225,55 @@ const texts = {
       helpStatusTimeHours: "hace {count} horas",
       helpStatusTimeDay: "hace 1 día",
       helpStatusTimeDays: "hace {count} días",
-      skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
+      skipConfirmationTitle: "¿Omitir el tutorial guiado?",
       skipConfirmationBody:
-        "Puedes volver a abrir el tutorial desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
+        "Puedes volver a abrirlo desde Ayuda o usar el navegador de pasos para repasar cualquier sección más tarde.",
       skipConfirmationAccept: "Omitir tutorial",
       skipConfirmationCancel: "Continuar tutorial",
       steps: {
         intro: {
-          title: "Bienvenido a Cine Power Planner",
+          title: "Bienvenida a Cine Power Planner",
           body:
-            "Este recorrido guiado presenta las salvaguardas fuera de línea, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
+            "Este recorrido guiado explica las defensas sin conexión, la automatización centrada en el equipo y los ensayos de restauración que mantienen cada proyecto listo para rodar.",
           hero: {
-            heading: "Bienvenido a Cine Power Planner",
-            subheading: "Planificación de energía, gear y handoff enfocada en el equipo, totalmente offline.",
+            heading: "Bienvenida a Cine Power Planner",
+            subheading: "Planificación de energía, gear y handoff centrada en el equipo — totalmente sin conexión.",
             summary:
-              "Planifica cargas seguras, genera kits AutoGear y prepara las entregas mientras cada guardado permanece local. Sigue los hitos para ver cómo protegemos tus datos antes del primer día de rodaje.",
+              "Planifica consumos seguros, genera kits AutoGear y documenta las entregas mientras cada guardado permanece local. Sigue los hitos para comprobar cómo protegemos tus datos antes del primer día de rodaje.",
             badgeIcon: "\uE9C3",
-            badgeLabel: "Crew-first · Offline para siempre",
+            badgeLabel: "Crew-first · Siempre sin conexión",
             badgeDescription:
-              "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, backup, restauración, compartición e importación vive en este dispositivo.",
+              "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, copia de seguridad, restauración, compartición e importación permanece en este dispositivo.",
             highlights: [
               {
                 icon: "\uE1A9",
-                title: "Asegura potencia, seguridad y backups",
+                title: "Protege potencia, seguridad y respaldos",
                 body:
                   "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar.",
               },
               {
                 icon: "\uE467",
-                title: "AutoGear arma kits reutilizables",
+                title: "AutoGear crea kits reutilizables",
                 body:
                   "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets.",
               },
               {
                 icon: "\uE469",
-                title: "Requisitos del proyecto listos para entregar",
+                title: "Requisitos del proyecto listos para el handoff",
                 body:
-                  "Lleva el seguimiento de requisitos, cobertura de equipo y notas de alquiler; luego exporta paquetes PDF fiables para el equipo, las casas de renta y producción.",
+                  "Controla requisitos, cobertura del equipo y notas de alquiler; después exporta paquetes PDF confiables para el equipo, las casas de renta y producción.",
               },
               {
                 icon: "\uE9D4",
-                title: "PWA offline y sin suscripción",
+                title: "PWA sin conexión y sin suscripciones",
                 body:
-                  "Ejecuta el planner completamente offline, instálalo como PWA móvil y mantén cada workflow disponible sin servidores ni suscripciones.",
+                  "Ejecuta el planner completamente sin conexión, instálalo como PWA móvil y mantén cada flujo de trabajo disponible sin servidores ni suscripciones.",
               },
               {
                 icon: "\uE5BD",
-                title: "Los datos son sagrados",
+                title: "Los datos son intocables",
                 body:
-                  "Autosave, backup/restauración, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde.",
+                  "Autosave, copias de seguridad/restauraciones, compartir e importar protegen cada instantánea del proyecto. Los ensayos de restauración demuestran que nada se pierde.",
               },
             ],
             languageLabel: "Idioma",
