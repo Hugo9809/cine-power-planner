@@ -54,4 +54,22 @@ describe('environment-bridge', () => {
     expect(Object.isFrozen(target)).toBe(true);
     expect(accessSpy).not.toHaveBeenCalled();
   });
+
+  test('freezeDeep freezes nested objects when running in Node', () => {
+    const bridge = require('../../src/scripts/modules/environment-bridge.js');
+    const nested = {
+      levelOne: {
+        levelTwo: {
+          value: 'persist',
+        },
+      },
+    };
+
+    const frozen = bridge.freezeDeep(nested);
+
+    expect(frozen).toBe(nested);
+    expect(Object.isFrozen(nested)).toBe(true);
+    expect(Object.isFrozen(nested.levelOne)).toBe(true);
+    expect(Object.isFrozen(nested.levelOne.levelTwo)).toBe(true);
+  });
 });
