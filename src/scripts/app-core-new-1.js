@@ -136,34 +136,58 @@ const CORE_LOCALIZATION_FALLBACK_FACTORIES = resolveCoreSupportModule(
   './modules/core/localization-fallback-factories.js'
 );
 
-let LOCALIZATION_FALLBACK_FACTORY_NAMESPACE =
-  CORE_LOCALIZATION_FALLBACK_FACTORIES && typeof CORE_LOCALIZATION_FALLBACK_FACTORIES === 'object'
-    ? CORE_LOCALIZATION_FALLBACK_FACTORIES
+const CORE_LOCALIZATION_INLINE_SUPPORT = resolveCoreSupportModule(
+  'cineCoreLocalizationFallbackInlineSupport',
+  './modules/core/localization-fallback-inline-support.js'
+);
+
+const LOCALIZATION_INLINE_SUPPORT =
+  CORE_LOCALIZATION_INLINE_SUPPORT && typeof CORE_LOCALIZATION_INLINE_SUPPORT === 'object'
+    ? CORE_LOCALIZATION_INLINE_SUPPORT
     : null;
 
-function collectLocalizationFactoryScopes(primaryScope) {
-  const scopes = [];
+if (LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.configure === 'function') {
+  try {
+    LOCALIZATION_INLINE_SUPPORT.configure({
+      runtimeScope:
+        typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined'
+          ? CORE_PART1_RUNTIME_SCOPE
+          : null,
+      coreGlobalScope:
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      coreLocalizationFallbackFactories: CORE_LOCALIZATION_FALLBACK_FACTORIES,
+      resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null,
+    });
+  } catch (localizationInlineSupportConfigureError) {
+    void localizationInlineSupportConfigureError;
+  }
+}
 
-  function register(scope) {
-    if (
-      !scope ||
-      (typeof scope !== 'object' && typeof scope !== 'function') ||
-      scopes.indexOf(scope) !== -1
-    ) {
-      return;
-    }
-
-    scopes.push(scope);
+function fallbackRegisterLocalizationScope(scopes, scope) {
+  if (
+    !scope ||
+    (typeof scope !== 'object' && typeof scope !== 'function') ||
+    scopes.indexOf(scope) !== -1
+  ) {
+    return;
   }
 
-  register(primaryScope);
+  scopes.push(scope);
+}
+
+function fallbackCollectLocalizationFactoryScopes(primaryScope) {
+  const scopes = [];
+
+  fallbackRegisterLocalizationScope(scopes, primaryScope);
 
   if (
     typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' &&
     CORE_PART1_RUNTIME_SCOPE &&
-    (typeof CORE_PART1_RUNTIME_SCOPE === 'object' || typeof CORE_PART1_RUNTIME_SCOPE === 'function')
+    (typeof CORE_PART1_RUNTIME_SCOPE === 'object' ||
+      typeof CORE_PART1_RUNTIME_SCOPE === 'function')
   ) {
-    register(CORE_PART1_RUNTIME_SCOPE);
+    fallbackRegisterLocalizationScope(scopes, CORE_PART1_RUNTIME_SCOPE);
   }
 
   if (
@@ -171,83 +195,46 @@ function collectLocalizationFactoryScopes(primaryScope) {
     CORE_GLOBAL_SCOPE &&
     (typeof CORE_GLOBAL_SCOPE === 'object' || typeof CORE_GLOBAL_SCOPE === 'function')
   ) {
-    register(CORE_GLOBAL_SCOPE);
+    fallbackRegisterLocalizationScope(scopes, CORE_GLOBAL_SCOPE);
   }
 
   if (typeof globalThis !== 'undefined') {
-    register(globalThis);
+    fallbackRegisterLocalizationScope(scopes, globalThis);
   }
 
   if (typeof window !== 'undefined') {
-    register(window);
+    fallbackRegisterLocalizationScope(scopes, window);
   }
 
   if (typeof self !== 'undefined') {
-    register(self);
+    fallbackRegisterLocalizationScope(scopes, self);
   }
 
   if (typeof global !== 'undefined') {
-    register(global);
+    fallbackRegisterLocalizationScope(scopes, global);
   }
 
   return scopes;
 }
 
-function ensureLocalizationFallbackFactories(primaryScope) {
-  if (
-    LOCALIZATION_FALLBACK_FACTORY_NAMESPACE &&
-    typeof LOCALIZATION_FALLBACK_FACTORY_NAMESPACE === 'object'
-  ) {
-    return LOCALIZATION_FALLBACK_FACTORY_NAMESPACE;
-  }
-
+function fallbackEnsureLocalizationFallbackFactories(primaryScope) {
   if (
     CORE_LOCALIZATION_FALLBACK_FACTORIES &&
     typeof CORE_LOCALIZATION_FALLBACK_FACTORIES === 'object'
   ) {
-    LOCALIZATION_FALLBACK_FACTORY_NAMESPACE = CORE_LOCALIZATION_FALLBACK_FACTORIES;
-    return LOCALIZATION_FALLBACK_FACTORY_NAMESPACE;
+    return CORE_LOCALIZATION_FALLBACK_FACTORIES;
   }
 
-  if (typeof resolveCoreSupportModule === 'function') {
-    try {
-      const resolvedFactories = resolveCoreSupportModule(
-        'cineCoreLocalizationFallbackFactories',
-        './modules/core/localization-fallback-factories.js',
-        primaryScope
-      );
-
-      if (resolvedFactories && typeof resolvedFactories === 'object') {
-        LOCALIZATION_FALLBACK_FACTORY_NAMESPACE = resolvedFactories;
-        return LOCALIZATION_FALLBACK_FACTORY_NAMESPACE;
-      }
-    } catch (factoryResolveError) {
-      void factoryResolveError;
-    }
-  }
-
-  if (typeof require === 'function') {
-    try {
-      const requiredFactories = require('./modules/core/localization-fallback-factories.js');
-      if (requiredFactories && typeof requiredFactories === 'object') {
-        LOCALIZATION_FALLBACK_FACTORY_NAMESPACE = requiredFactories;
-        return LOCALIZATION_FALLBACK_FACTORY_NAMESPACE;
-      }
-    } catch (factoryRequireError) {
-      void factoryRequireError;
-    }
-  }
-
-  const candidateScopes = collectLocalizationFactoryScopes(primaryScope);
+  const candidateScopes = fallbackCollectLocalizationFactoryScopes(primaryScope);
 
   for (let index = 0; index < candidateScopes.length; index += 1) {
     const candidateScope = candidateScopes[index];
 
     try {
-      const candidate = candidateScope.cineCoreLocalizationFallbackFactories;
+      const candidate =
+        candidateScope && candidateScope.cineCoreLocalizationFallbackFactories;
       if (candidate && typeof candidate === 'object') {
-        LOCALIZATION_FALLBACK_FACTORY_NAMESPACE = candidate;
-        return LOCALIZATION_FALLBACK_FACTORY_NAMESPACE;
+        return candidate;
       }
     } catch (candidateLookupError) {
       void candidateLookupError;
@@ -257,23 +244,15 @@ function ensureLocalizationFallbackFactories(primaryScope) {
   return null;
 }
 
-function inlineResolveLocalizationFallbackContextNamespace(primaryScope) {
-  const namespace = resolveCoreSupportModule(
-    'cineCoreLocalizationFallbackContext',
-    './modules/core/localization-fallback-context.js'
-  );
-
-  if (namespace && typeof namespace === 'object') {
-    return namespace;
-  }
-
-  const scopeCandidates = collectLocalizationFactoryScopes(primaryScope);
+function fallbackResolveLocalizationFallbackContextNamespace(primaryScope) {
+  const scopeCandidates = fallbackCollectLocalizationFactoryScopes(primaryScope);
 
   for (let index = 0; index < scopeCandidates.length; index += 1) {
     const candidateScope = scopeCandidates[index];
 
     try {
-      const candidate = candidateScope.cineCoreLocalizationFallbackContext;
+      const candidate =
+        candidateScope && candidateScope.cineCoreLocalizationFallbackContext;
       if (candidate && typeof candidate === 'object') {
         return candidate;
       }
@@ -293,23 +272,10 @@ function inlineResolveLocalizationFallbackContextNamespace(primaryScope) {
     }
   }
 
-  for (let retryIndex = 0; retryIndex < scopeCandidates.length; retryIndex += 1) {
-    const retryScope = scopeCandidates[retryIndex];
-
-    try {
-      const retryCandidate = retryScope.cineCoreLocalizationFallbackContext;
-      if (retryCandidate && typeof retryCandidate === 'object') {
-        return retryCandidate;
-      }
-    } catch (fallbackContextRetryError) {
-      void fallbackContextRetryError;
-    }
-  }
-
   return null;
 }
 
-function inlineNormalizeLanguageCodeValue(lang, defaultLanguage) {
+function fallbackNormalizeLanguageCodeValue(lang, defaultLanguage) {
   if (!lang) {
     return defaultLanguage;
   }
@@ -324,13 +290,16 @@ function inlineNormalizeLanguageCodeValue(lang, defaultLanguage) {
   return defaultLanguage;
 }
 
-function inlineResolveRtlCodes(config) {
+function fallbackResolveRtlCodes(config) {
   if (config && Array.isArray(config.rtlLanguageCodes)) {
     const codes = [];
 
     for (let index = 0; index < config.rtlLanguageCodes.length; index += 1) {
       const rawCode = config.rtlLanguageCodes[index];
-      const normalized = inlineNormalizeLanguageCodeValue(String(rawCode || ''), '');
+      const normalized = fallbackNormalizeLanguageCodeValue(
+        String(rawCode || ''),
+        ''
+      );
       if (normalized && codes.indexOf(normalized) === -1) {
         codes.push(normalized);
       }
@@ -344,17 +313,20 @@ function inlineResolveRtlCodes(config) {
   return ['ar', 'fa', 'he', 'ur'];
 }
 
-function inlineCreateLocaleFallbackHelpers(baseOptions) {
+function fallbackCreateLocaleFallbackHelpers(baseOptions) {
   const config = baseOptions || {};
-  const defaultLanguage = inlineNormalizeLanguageCodeValue(config.defaultLanguage, 'en');
-  const rtlLanguageCodes = inlineResolveRtlCodes(config);
+  const defaultLanguage = fallbackNormalizeLanguageCodeValue(
+    config.defaultLanguage,
+    'en'
+  );
+  const rtlLanguageCodes = fallbackResolveRtlCodes(config);
 
   function normalizeLanguageCode(lang) {
-    return inlineNormalizeLanguageCodeValue(lang, defaultLanguage);
+    return fallbackNormalizeLanguageCodeValue(lang, defaultLanguage);
   }
 
   function isRtlLanguage(lang) {
-    const normalized = inlineNormalizeLanguageCodeValue(lang, defaultLanguage);
+    const normalized = fallbackNormalizeLanguageCodeValue(lang, defaultLanguage);
     const base = normalized.split('-')[0];
     return rtlLanguageCodes.indexOf(base) !== -1;
   }
@@ -413,7 +385,7 @@ function inlineCreateLocaleFallbackHelpers(baseOptions) {
   };
 }
 
-function inlineCreateBasicLocalizationFallbackResolvers(options) {
+function fallbackCreateBasicLocalizationFallbackResolvers(options) {
   const baseOptions = options || {};
 
   return {
@@ -422,20 +394,20 @@ function inlineCreateBasicLocalizationFallbackResolvers(options) {
         return null;
       },
       createLocaleFallbacks(fallbackOptions) {
-        return inlineCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
+        return fallbackCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
       },
     },
     fallbackResolveLocaleModule() {
       return null;
     },
     createLocaleFallbacks(fallbackOptions) {
-      return inlineCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
+      return fallbackCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
     },
   };
 }
 
-function inlineCreateLegacyLocalizationFallbackContext(options) {
-  const resolvers = inlineCreateBasicLocalizationFallbackResolvers(options);
+function fallbackCreateLegacyLocalizationFallbackContext(options) {
+  const resolvers = fallbackCreateBasicLocalizationFallbackResolvers(options);
   const namespace =
     resolvers && resolvers.namespace && typeof resolvers.namespace === 'object'
       ? resolvers.namespace
@@ -452,7 +424,9 @@ function inlineCreateLegacyLocalizationFallbackContext(options) {
     support: null,
     registry: {
       createFallbackResolvers(fallbackOptions) {
-        return inlineCreateBasicLocalizationFallbackResolvers(fallbackOptions || options);
+        return fallbackCreateBasicLocalizationFallbackResolvers(
+          fallbackOptions || options
+        );
       },
     },
     resolvers,
@@ -462,10 +436,10 @@ function inlineCreateLegacyLocalizationFallbackContext(options) {
   };
 }
 
-function createFallbackFactoryAccessor(methodName, inlineImplementation) {
+function fallbackCreateFallbackFactoryAccessor(methodName, inlineImplementation) {
   return function fallbackFactoryAccessor() {
     const args = arguments;
-    const factories = ensureLocalizationFallbackFactories(args[0]);
+    const factories = fallbackEnsureLocalizationFallbackFactories(args[0]);
 
     if (factories && typeof factories[methodName] === 'function') {
       try {
@@ -484,6 +458,67 @@ function createFallbackFactoryAccessor(methodName, inlineImplementation) {
     return null;
   };
 }
+
+const collectLocalizationFactoryScopes =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.collectLocalizationFactoryScopes === 'function'
+    ? function collectLocalizationFactoryScopesProxy(primaryScope) {
+        return LOCALIZATION_INLINE_SUPPORT.collectLocalizationFactoryScopes(
+          primaryScope
+        );
+      }
+    : fallbackCollectLocalizationFactoryScopes;
+
+const ensureLocalizationFallbackFactories =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.ensureLocalizationFallbackFactories === 'function'
+    ? function ensureLocalizationFallbackFactoriesProxy(primaryScope) {
+        return LOCALIZATION_INLINE_SUPPORT.ensureLocalizationFallbackFactories(
+          primaryScope
+        );
+      }
+    : fallbackEnsureLocalizationFallbackFactories;
+
+const inlineResolveLocalizationFallbackContextNamespace =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.inlineResolveLocalizationFallbackContextNamespace === 'function'
+    ? function inlineResolveLocalizationFallbackContextNamespaceProxy(primaryScope) {
+        return LOCALIZATION_INLINE_SUPPORT.inlineResolveLocalizationFallbackContextNamespace(
+          primaryScope
+        );
+      }
+    : fallbackResolveLocalizationFallbackContextNamespace;
+
+const inlineCreateBasicLocalizationFallbackResolvers =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.inlineCreateBasicLocalizationFallbackResolvers === 'function'
+    ? function inlineCreateBasicLocalizationFallbackResolversProxy(options) {
+        return LOCALIZATION_INLINE_SUPPORT.inlineCreateBasicLocalizationFallbackResolvers(
+          options
+        );
+      }
+    : fallbackCreateBasicLocalizationFallbackResolvers;
+
+const inlineCreateLegacyLocalizationFallbackContext =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.inlineCreateLegacyLocalizationFallbackContext === 'function'
+    ? function inlineCreateLegacyLocalizationFallbackContextProxy(options) {
+        return LOCALIZATION_INLINE_SUPPORT.inlineCreateLegacyLocalizationFallbackContext(
+          options
+        );
+      }
+    : fallbackCreateLegacyLocalizationFallbackContext;
+
+const createFallbackFactoryAccessor =
+  LOCALIZATION_INLINE_SUPPORT &&
+  typeof LOCALIZATION_INLINE_SUPPORT.createFallbackFactoryAccessor === 'function'
+    ? function createFallbackFactoryAccessorProxy(methodName, inlineImplementation) {
+        return LOCALIZATION_INLINE_SUPPORT.createFallbackFactoryAccessor(
+          methodName,
+          inlineImplementation
+        );
+      }
+    : fallbackCreateFallbackFactoryAccessor;
 
 const resolveLocalizationFallbackContextNamespace = createFallbackFactoryAccessor(
   'resolveLocalizationFallbackContextNamespace',
