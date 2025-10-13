@@ -1035,14 +1035,10 @@ main.legal-content {
 }
 
 .person-avatar button:hover,
-.person-avatar button:focus {
+.person-avatar button:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
-}
-
-.person-avatar button:hover,
-.person-avatar button:focus-visible {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: transparent;
 }
 
 .person-contact-select {
@@ -1354,9 +1350,14 @@ main.legal-content {
   transition: background-color 0.2s ease;
 }
 
-.contact-card-avatar button:hover,
+.contact-card-avatar button:hover {
+  background-color: transparent;
+}
+
 .contact-card-avatar button:focus-visible {
-  background-color: rgba(0, 0, 0, 0.2);
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  background-color: transparent;
 }
 
 .avatar-change-icon {
