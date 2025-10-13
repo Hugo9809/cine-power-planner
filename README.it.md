@@ -341,7 +341,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Usa **Impostazioni → Backup e ripristino → Confronta versioni** per confrontare due salvataggi, annotare il contesto nelle **Note sull’incidente** ed esportare un registro per il passaggio di consegne.
 - Avvia **Prova di ripristino** da **Impostazioni → Backup e ripristino** per caricare un backup in un’area temporanea, rivedere la tabella di confronto e confermare che sia integro prima di applicare **Ripristina** ai dati attivi.
 - Aprire il repository dal disco o da una rete interna mantiene i dati sensibili lontani da servizi esterni. Gli export JSON sono leggibili e auditabili.
-- L’header mostra l’indicatore offline quando manca connessione; **Forza ricarica** aggiorna gli asset senza toccare i salvataggi.
+- L’header mostra l’indicatore offline quando manca connessione; **Forza ricarica** aggiorna gli asset senza toccare i salvataggi e ora avvia un salvataggio automatico immediato con backup prima di svuotare le cache.
 - **Ripristino impostazioni di fabbrica** o pulizia dei dati del sito avviene solo dopo aver generato automaticamente un backup.
 - Gli aggiornamenti del service worker vengono scaricati in background e attendono la tua approvazione. Quando compare **Aggiornamento pronto**, completa le modifiche, crea un backup e poi premi **Forza ricarica**.
 - I dati risiedono in un `localStorage` rinforzato; i profili bloccati ricadono su `sessionStorage`. Ogni scrittura crea anche uno snapshot `__legacyMigrationBackup` per recuperare senza perdite eventuali errori di quota o di schema. Usa gli strumenti del browser per ispezionare o esportare i record prima di svuotare cache o fare prove.

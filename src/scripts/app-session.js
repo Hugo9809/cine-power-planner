@@ -5513,8 +5513,27 @@ forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('cha
 forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', autoSaveCurrentSetup); });
 if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSetup);
 
-const flushProjectAutoSaveOnExit = () => {
+function flushProjectAutoSaveOnExit(eventOrOptions) {
   if (factoryResetInProgress) return;
+
+  let event = null;
+  let options = null;
+  if (eventOrOptions && typeof eventOrOptions === 'object') {
+    if (typeof eventOrOptions.type === 'string') {
+      event = eventOrOptions;
+    } else {
+      options = eventOrOptions;
+    }
+  }
+
+  const providedReason = options && typeof options.reason === 'string' && options.reason.trim()
+    ? options.reason.trim()
+    : null;
+  const eventReason = event && typeof event.type === 'string' && event.type
+    ? `before-${event.type}`
+    : null;
+  const flushReason = providedReason || eventReason || 'before-exit';
+
   const scope = typeof globalThis !== 'undefined'
     ? globalThis
     : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
@@ -5532,7 +5551,7 @@ const flushProjectAutoSaveOnExit = () => {
       hideIndicator = null;
     }
   }
-  notifyAutoBackupChange({ immediate: true, reason: 'before-exit', pending: true });
+  notifyAutoBackupChange({ immediate: true, reason: flushReason, pending: true });
   try {
     if (scope && typeof scope.autoBackup === 'function') {
       scope.autoBackup({
@@ -5553,16 +5572,16 @@ const flushProjectAutoSaveOnExit = () => {
     }
   }
   scheduleProjectAutoSave(true);
-};
+}
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-      flushProjectAutoSaveOnExit();
+      flushProjectAutoSaveOnExit({ reason: 'before-visibility-hidden' });
     }
   });
 }
 if (typeof window !== 'undefined') {
-  ['pagehide', 'beforeunload'].forEach((eventName) => {
+  ['pagehide', 'beforeunload', 'freeze'].forEach((eventName) => {
     window.addEventListener(eventName, flushProjectAutoSaveOnExit);
   });
 }
@@ -12767,6 +12786,12 @@ function awaitPromiseWithSoftTimeout(promise, timeoutMs, onTimeout, onLateReject
 }
 
 async function clearCachesAndReload() {
+  try {
+    flushProjectAutoSaveOnExit({ reason: 'before-manual-reload' });
+  } catch (flushError) {
+    console.warn('Failed to flush auto save before manual reload', flushError);
+  }
+
   const reloadFallback =
     typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
 
