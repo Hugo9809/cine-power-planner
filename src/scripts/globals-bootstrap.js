@@ -939,6 +939,485 @@ var MOUNT_VOLTAGE_RUNTIME_EXPORTS =
     ? __cineCommitGlobalValue('MOUNT_VOLTAGE_RUNTIME_EXPORTS', MOUNT_VOLTAGE_RUNTIME_EXPORTS)
     : __cineCommitGlobalValue('MOUNT_VOLTAGE_RUNTIME_EXPORTS', {});
 
+(function ensureMountVoltageGlobalDelegates() {
+  var scope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
+
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  var DEFAULT_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
+  var STATE_KEY = '__cineMountVoltageSessionState';
+  var SYNC_TIMER_KEY = '__cineMountVoltageSyncTimer';
+
+  function resolveRuntime() {
+    var runtime = null;
+    try {
+      runtime = scope.MOUNT_VOLTAGE_RUNTIME_EXPORTS;
+    } catch (resolveError) {
+      runtime = null;
+      void resolveError;
+    }
+    return runtime && typeof runtime === 'object' ? runtime : null;
+  }
+
+  function resolveRuntimeFunction(name) {
+    var runtime = resolveRuntime();
+    if (runtime && typeof runtime[name] === 'function') {
+      return runtime[name];
+    }
+    return null;
+  }
+
+  function assignGlobal(name, value) {
+    if (typeof value !== 'function') {
+      return;
+    }
+    if (typeof scope[name] === 'function') {
+      return;
+    }
+    try {
+      scope[name] = value;
+      return;
+    } catch (assignError) {
+      void assignError;
+    }
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        value: value,
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+
+  function getSupportedMountTypes() {
+    var types;
+    try {
+      types = scope.SUPPORTED_MOUNT_VOLTAGE_TYPES;
+    } catch (resolveError) {
+      types = null;
+      void resolveError;
+    }
+    if (Array.isArray(types) && types.length) {
+      return types.slice();
+    }
+    return ['V-Mount', 'Gold-Mount', 'B-Mount'];
+  }
+
+  function getDefaultMountVoltages() {
+    var defaults;
+    try {
+      defaults = scope.DEFAULT_MOUNT_VOLTAGES;
+    } catch (resolveError) {
+      defaults = null;
+      void resolveError;
+    }
+    if (defaults && typeof defaults === 'object') {
+      return defaults;
+    }
+    var generated = {};
+    var types = getSupportedMountTypes();
+    for (var index = 0; index < types.length; index += 1) {
+      var type = types[index];
+      if (type === 'B-Mount') {
+        generated[type] = { high: 33.6, low: 21.6 };
+      } else {
+        generated[type] = { high: 14.4, low: 12 };
+      }
+    }
+    return generated;
+  }
+
+  function clampVoltageValue(numeric) {
+    if (!Number.isFinite(numeric)) {
+      return 0;
+    }
+    var clamped = Math.min(1000, Math.max(0.1, numeric));
+    return Math.round(clamped * 100) / 100;
+  }
+
+  function fallbackParseVoltageValue(value, fallback) {
+    if (typeof value === 'number') {
+      return clampVoltageValue(value);
+    }
+    if (typeof value === 'string') {
+      var normalized = value.replace(',', '.');
+      var parsed = Number.parseFloat(normalized);
+      if (Number.isFinite(parsed)) {
+        return clampVoltageValue(parsed);
+      }
+    }
+    if (typeof fallback === 'number') {
+      return clampVoltageValue(fallback);
+    }
+    if (typeof fallback === 'string') {
+      var fallbackParsed = Number.parseFloat(fallback.replace(',', '.'));
+      if (Number.isFinite(fallbackParsed)) {
+        return clampVoltageValue(fallbackParsed);
+      }
+    }
+    return 0;
+  }
+
+  function cloneWithDefaults(source) {
+    var defaults = getDefaultMountVoltages();
+    var types = getSupportedMountTypes();
+    var result = {};
+    for (var index = 0; index < types.length; index += 1) {
+      var type = types[index];
+      var entry = source && source[type] ? source[type] : defaults[type];
+      var defaultEntry = defaults[type] || { high: 0, low: 0 };
+      result[type] = {
+        high: fallbackParseVoltageValue(entry && entry.high, defaultEntry.high),
+        low: fallbackParseVoltageValue(entry && entry.low, defaultEntry.low),
+      };
+    }
+    return result;
+  }
+
+  function normalizeSource(source) {
+    if (!source || typeof source !== 'object') {
+      return cloneWithDefaults(null);
+    }
+    return cloneWithDefaults(source);
+  }
+
+  function resolveStorageKeys() {
+    var primary = '';
+    var backup = '';
+    try {
+      primary =
+        (typeof scope.getMountVoltageStorageKeyName === 'function' && scope.getMountVoltageStorageKeyName()) ||
+        (typeof scope.MOUNT_VOLTAGE_STORAGE_KEY === 'string' && scope.MOUNT_VOLTAGE_STORAGE_KEY) ||
+        (typeof scope.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED === 'string' && scope.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED) ||
+        DEFAULT_STORAGE_KEY;
+    } catch (storageKeyError) {
+      primary = DEFAULT_STORAGE_KEY;
+      void storageKeyError;
+    }
+
+    try {
+      backup =
+        (typeof scope.getMountVoltageStorageBackupKeyName === 'function' && scope.getMountVoltageStorageBackupKeyName()) ||
+        (typeof scope.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' && scope.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY) ||
+        (typeof scope.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED === 'string' && scope.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED) ||
+        (primary ? primary + '__backup' : DEFAULT_STORAGE_KEY + '__backup');
+    } catch (backupKeyError) {
+      backup = primary ? primary + '__backup' : DEFAULT_STORAGE_KEY + '__backup';
+      void backupKeyError;
+    }
+
+    if (!primary) {
+      primary = DEFAULT_STORAGE_KEY;
+    }
+    if (!backup) {
+      backup = primary + '__backup';
+    }
+
+    return { primary: primary, backup: backup };
+  }
+
+  function persistToStorage(preferences) {
+    var storage = null;
+    try {
+      storage = scope.localStorage;
+    } catch (resolveError) {
+      storage = null;
+      void resolveError;
+    }
+    if (!storage || typeof storage.setItem !== 'function') {
+      return false;
+    }
+
+    var serialized;
+    try {
+      serialized = JSON.stringify(preferences);
+    } catch (serializationError) {
+      if (scope.console && typeof scope.console.warn === 'function') {
+        scope.console.warn('Mount voltage fallback: unable to serialize preferences.', serializationError);
+      }
+      return false;
+    }
+
+    var keys = resolveStorageKeys();
+
+    try {
+      storage.setItem(keys.primary, serialized);
+    } catch (storageError) {
+      if (scope.console && typeof scope.console.warn === 'function') {
+        scope.console.warn('Mount voltage fallback: unable to persist primary preferences.', storageError);
+      }
+    }
+
+    try {
+      storage.setItem(keys.backup, serialized);
+    } catch (backupError) {
+      if (scope.console && typeof scope.console.warn === 'function') {
+        scope.console.warn('Mount voltage fallback: unable to persist backup preferences.', backupError);
+      }
+    }
+
+    return true;
+  }
+
+  function parseStoredVoltages(raw) {
+    if (!raw) {
+      return null;
+    }
+    try {
+      if (typeof raw === 'string') {
+        var parsed = JSON.parse(raw);
+        return normalizeSource(parsed);
+      }
+      if (typeof raw === 'object') {
+        return normalizeSource(raw);
+      }
+    } catch (parseError) {
+      if (scope.console && typeof scope.console.warn === 'function') {
+        scope.console.warn('Mount voltage fallback: unable to parse stored voltages.', parseError);
+      }
+    }
+    return null;
+  }
+
+  function resolveState() {
+    var existing = null;
+    try {
+      existing = scope[STATE_KEY];
+    } catch (stateError) {
+      existing = null;
+      void stateError;
+    }
+    if (!existing || typeof existing !== 'object') {
+      existing = {
+        preferences: cloneWithDefaults(null),
+        pendingPersist: false,
+        pendingUpdate: false,
+      };
+    } else if (!existing.preferences || typeof existing.preferences !== 'object') {
+      existing.preferences = cloneWithDefaults(null);
+    } else {
+      existing.preferences = cloneWithDefaults(existing.preferences);
+    }
+    try {
+      scope[STATE_KEY] = existing;
+    } catch (assignError) {
+      void assignError;
+    }
+    return existing;
+  }
+
+  var state = resolveState();
+
+  function scheduleRuntimeSync() {
+    if (!state.pendingPersist && !state.pendingUpdate) {
+      return;
+    }
+
+    var scheduleFn = null;
+    try {
+      scheduleFn = scope.setTimeout;
+    } catch (resolveError) {
+      scheduleFn = null;
+      void resolveError;
+    }
+    if (typeof scheduleFn !== 'function') {
+      try {
+        scheduleFn = setTimeout;
+      } catch (fallbackError) {
+        scheduleFn = null;
+        void fallbackError;
+      }
+    }
+
+    if (typeof scheduleFn !== 'function') {
+      return;
+    }
+
+    var activeTimer = null;
+    try {
+      activeTimer = scope[SYNC_TIMER_KEY];
+    } catch (timerError) {
+      activeTimer = null;
+      void timerError;
+    }
+    if (activeTimer) {
+      return;
+    }
+
+    var attemptSync = function () {
+      try {
+        scope[SYNC_TIMER_KEY] = null;
+      } catch (clearError) {
+        void clearError;
+      }
+
+      var runtime = resolveRuntime();
+      var applyFn = runtime && typeof runtime.applyMountVoltagePreferences === 'function'
+        ? runtime.applyMountVoltagePreferences
+        : null;
+      var cloneFn = runtime && typeof runtime.cloneMountVoltageMap === 'function'
+        ? runtime.cloneMountVoltageMap
+        : null;
+
+      if (!applyFn || !cloneFn) {
+        scheduleRuntimeSync();
+        return;
+      }
+
+      var pendingPreferences = state.preferences;
+      try {
+        pendingPreferences = cloneFn(state.preferences);
+      } catch (cloneError) {
+        void cloneError;
+      }
+
+      try {
+        applyFn(pendingPreferences, {
+          persist: state.pendingPersist,
+          triggerUpdate: state.pendingUpdate,
+        });
+        state.pendingPersist = false;
+        state.pendingUpdate = false;
+      } catch (syncError) {
+        if (scope.console && typeof scope.console.warn === 'function') {
+          scope.console.warn('Mount voltage fallback: runtime sync failed.', syncError);
+        }
+        scheduleRuntimeSync();
+      }
+    };
+
+    var timerId = scheduleFn(attemptSync, 50);
+    try {
+      scope[SYNC_TIMER_KEY] = timerId;
+    } catch (assignTimerError) {
+      void assignTimerError;
+    }
+  }
+
+  function createDelegate(name, fallback) {
+    var delegate = function () {
+      var runtimeFn = resolveRuntimeFunction(name);
+      if (runtimeFn) {
+        try {
+          if (scope[name] === delegate) {
+            scope[name] = runtimeFn;
+          }
+        } catch (promoteError) {
+          void promoteError;
+        }
+        var runtimeScope = resolveRuntime() || scope;
+        try {
+          return runtimeFn.apply(runtimeScope, arguments);
+        } catch (invokeError) {
+          if (scope.console && typeof scope.console.warn === 'function') {
+            scope.console.warn('Mount voltage delegate: runtime helper invocation failed.', invokeError);
+          }
+        }
+      }
+      return fallback.apply(this, arguments);
+    };
+    return delegate;
+  }
+
+  var fallbackCloneMountVoltageMap = function (source) {
+    var runtimeFn = resolveRuntimeFunction('cloneMountVoltageMap');
+    if (runtimeFn) {
+      return runtimeFn(source);
+    }
+    return cloneWithDefaults(source);
+  };
+
+  var fallbackGetMountVoltagePreferencesClone = function () {
+    var runtimeFn = resolveRuntimeFunction('getMountVoltagePreferencesClone');
+    if (runtimeFn) {
+      return runtimeFn();
+    }
+    var clone = cloneWithDefaults(state.preferences);
+    state.preferences = cloneWithDefaults(clone);
+    return cloneWithDefaults(clone);
+  };
+
+  var fallbackApplyMountVoltagePreferences = function (preferences, options) {
+    var runtimeFn = resolveRuntimeFunction('applyMountVoltagePreferences');
+    if (runtimeFn) {
+      return runtimeFn(preferences, options);
+    }
+    var normalized = normalizeSource(preferences);
+    state.preferences = cloneWithDefaults(normalized);
+    var persist = !options || options.persist !== false;
+    var triggerUpdate = !options || options.triggerUpdate !== false;
+    if (persist) {
+      persistToStorage(state.preferences);
+      state.pendingPersist = true;
+    }
+    if (triggerUpdate) {
+      state.pendingUpdate = true;
+    }
+    scheduleRuntimeSync();
+    return normalized;
+  };
+
+  var fallbackParseStoredMountVoltages = function (raw) {
+    var runtimeFn = resolveRuntimeFunction('parseStoredMountVoltages');
+    if (runtimeFn) {
+      return runtimeFn(raw);
+    }
+    return parseStoredVoltages(raw);
+  };
+
+  var fallbackResetMountVoltagePreferences = function (options) {
+    return fallbackApplyMountVoltagePreferences(getDefaultMountVoltages(), options);
+  };
+
+  var fallbackUpdateMountVoltageInputsFromState = function () {
+    var runtimeFn = resolveRuntimeFunction('updateMountVoltageInputsFromState');
+    if (runtimeFn) {
+      return runtimeFn();
+    }
+    state.pendingUpdate = true;
+    scheduleRuntimeSync();
+    return undefined;
+  };
+
+  var fallbackPersistMountVoltagePreferences = function (preferences) {
+    var runtimeFn = resolveRuntimeFunction('persistMountVoltagePreferences');
+    if (runtimeFn) {
+      return runtimeFn(preferences);
+    }
+    var normalized = normalizeSource(preferences);
+    state.preferences = cloneWithDefaults(normalized);
+    state.pendingPersist = true;
+    scheduleRuntimeSync();
+    return persistToStorage(state.preferences);
+  };
+
+  assignGlobal('parseVoltageValue', createDelegate('parseVoltageValue', fallbackParseVoltageValue));
+  assignGlobal('cloneMountVoltageMap', createDelegate('cloneMountVoltageMap', fallbackCloneMountVoltageMap));
+  assignGlobal('getMountVoltagePreferencesClone', createDelegate('getMountVoltagePreferencesClone', fallbackGetMountVoltagePreferencesClone));
+  assignGlobal('applyMountVoltagePreferences', createDelegate('applyMountVoltagePreferences', fallbackApplyMountVoltagePreferences));
+  assignGlobal('parseStoredMountVoltages', createDelegate('parseStoredMountVoltages', fallbackParseStoredMountVoltages));
+  assignGlobal('resetMountVoltagePreferences', createDelegate('resetMountVoltagePreferences', fallbackResetMountVoltagePreferences));
+  assignGlobal('updateMountVoltageInputsFromState', createDelegate('updateMountVoltageInputsFromState', fallbackUpdateMountVoltageInputsFromState));
+  assignGlobal('persistMountVoltagePreferences', createDelegate('persistMountVoltagePreferences', fallbackPersistMountVoltagePreferences));
+
+  if (typeof scope.mountVoltageInputs === 'undefined') {
+    try {
+      scope.mountVoltageInputs = null;
+    } catch (mountInputsError) {
+      void mountInputsError;
+    }
+  }
+})();
+
 var syncMountVoltageResetButtonGlobal =
   typeof syncMountVoltageResetButtonGlobal === 'function'
     ? syncMountVoltageResetButtonGlobal
