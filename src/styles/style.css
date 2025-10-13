@@ -8812,7 +8812,8 @@ body.high-contrast .feature-search-option mark.feature-search-highlight {
   height: var(--select-height);
   margin: 0;
   font-size: var(--font-size-relative-base);
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-regular);
+  font-family: inherit;
   padding: 2px 4px;
   text-align: center;
   text-align-last: center;
@@ -8853,7 +8854,7 @@ body.light-mode #topBar .controls button:focus-visible {
 
 body.light-mode #topBar select {
   color: var(--accent-color);
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-regular);
 }
 
 body.light-mode #topBar select:hover,
