@@ -1,40 +1,34 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function detectScope() {
-    if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
+    if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
       return globalThis;
     }
-
-    if (typeof window !== 'undefined' && window && _typeof(window) === 'object') {
+    if (typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
       return window;
     }
-
-    if (typeof self !== 'undefined' && self && _typeof(self) === 'object') {
+    if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
       return self;
     }
-
-    if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
+    if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
       return global;
     }
-
     return null;
   }
-
   function isObject(value) {
     return !!value && (_typeof(value) === 'object' || typeof value === 'function');
   }
-
   function createSafeResolvedPromise(value) {
     if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
       return Promise.resolve(value);
     }
-
     var promiseLike = {
       then: function then(callback) {
         if (typeof callback === 'function') {
           try {
             return createSafeResolvedPromise(callback(value));
           } catch (callbackError) {
+            void callbackError;
             return createSafeResolvedPromise(undefined);
           }
         }
@@ -44,36 +38,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return promiseLike;
       }
     };
-
     return promiseLike;
   }
-
   function createFallbackSupport() {
     var fallbackIcons = Object.freeze({
-      off: Object.freeze({ className: 'icon-svg pink-mode-icon', markup: '' }),
+      off: Object.freeze({
+        className: 'icon-svg pink-mode-icon',
+        markup: ''
+      }),
       onSequence: Object.freeze([])
     });
-
     var fallbackMarkup = Object.freeze([]);
-
     function ensureSvgHasAriaHidden(markup) {
       return typeof markup === 'string' ? markup.trim() : '';
     }
-
     function noop() {}
-
     function returnFalse() {
       return false;
     }
-
     function getNull() {
       return null;
     }
-
     function getZero() {
       return 0;
     }
-
     return {
       pinkModeIcons: fallbackIcons,
       ensureSvgHasAriaHidden: ensureSvgHasAriaHidden,
@@ -98,16 +86,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       PINK_MODE_ICON_FALLBACK_MARKUP: fallbackMarkup
     };
   }
-
   function resolvePinkModeAnimations(scope) {
     if (typeof cineCorePinkModeAnimations !== 'undefined' && isObject(cineCorePinkModeAnimations)) {
       return cineCorePinkModeAnimations;
     }
-
     if (scope && isObject(scope.cineCorePinkModeAnimations)) {
       return scope.cineCorePinkModeAnimations;
     }
-
     if (typeof require === 'function') {
       try {
         var required = require('./pink-mode-animations.js');
@@ -118,18 +103,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void pinkModeRequireError;
       }
     }
-
     return null;
   }
-
   function resolvePinkModeSupport(scope) {
     var fallback = createFallbackSupport();
     var animations = resolvePinkModeAnimations(scope);
-
     if (!isObject(animations)) {
       return fallback;
     }
-
     return {
       pinkModeIcons: isObject(animations.pinkModeIcons) ? animations.pinkModeIcons : fallback.pinkModeIcons,
       ensureSvgHasAriaHidden: typeof animations.ensureSvgHasAriaHidden === 'function' ? animations.ensureSvgHasAriaHidden : fallback.ensureSvgHasAriaHidden,
@@ -150,10 +131,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       PINK_MODE_ICON_FALLBACK_MARKUP: Array.isArray(animations.PINK_MODE_ICON_FALLBACK_MARKUP) ? animations.PINK_MODE_ICON_FALLBACK_MARKUP : fallback.PINK_MODE_ICON_FALLBACK_MARKUP
     };
   }
-
   var scope = detectScope();
   var support = resolvePinkModeSupport(scope);
-
   var api = {
     resolvePinkModeSupport: function resolvePinkModeSupport() {
       return support;
@@ -177,11 +156,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     PINK_MODE_ICON_ANIMATION_RESET_DELAY: support.PINK_MODE_ICON_ANIMATION_RESET_DELAY,
     PINK_MODE_ICON_FALLBACK_MARKUP: support.PINK_MODE_ICON_FALLBACK_MARKUP
   };
-
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
   }
-
   if (scope && isObject(scope)) {
     try {
       var target = scope.cineCorePinkModeSupport || {};

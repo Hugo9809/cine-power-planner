@@ -31,6 +31,248 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var GLOBAL_SCOPE = detectGlobalScope();
+  function createModuleBaseFallback(scope) {
+    var targetScope = scope && (_typeof(scope) === 'object' || typeof scope === 'function') ? scope : detectGlobalScope();
+    var resolvedScope = targetScope && (_typeof(targetScope) === 'object' || typeof targetScope === 'function') ? targetScope : null;
+    if (!resolvedScope) {
+      return null;
+    }
+    var existingBase = null;
+    try {
+      if (resolvedScope && _typeof(resolvedScope.cineModuleBase) === 'object') {
+        existingBase = resolvedScope.cineModuleBase;
+      }
+    } catch (readBaseError) {
+      void readBaseError;
+      existingBase = null;
+    }
+    if (existingBase) {
+      return existingBase;
+    }
+    var moduleStorage = Object.create(null);
+    var listenerStorage = Object.create(null);
+    var notifyListeners = function notifyListeners(name, api) {
+      if (typeof name !== 'string' || !name) {
+        return;
+      }
+      var queue = listenerStorage[name];
+      if (!Array.isArray(queue) || queue.length === 0) {
+        return;
+      }
+      listenerStorage[name] = [];
+      for (var index = 0; index < queue.length; index += 1) {
+        var listener = queue[index];
+        if (typeof listener !== 'function') {
+          continue;
+        }
+        try {
+          listener(api);
+        } catch (listenerError) {
+          void listenerError;
+        }
+      }
+    };
+    var storeModule = function storeModule(name, api) {
+      if (typeof name !== 'string' || !name) {
+        return;
+      }
+      moduleStorage[name] = api;
+      notifyListeners(name, api);
+    };
+    var getStoredModule = function getStoredModule(name) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+      if (Object.prototype.hasOwnProperty.call(moduleStorage, name)) {
+        return moduleStorage[name];
+      }
+      return null;
+    };
+    var whenModuleAvailable = function whenModuleAvailable(name, handler) {
+      if (typeof handler !== 'function' || typeof name !== 'string' || !name) {
+        return false;
+      }
+      var existing = getStoredModule(name);
+      if (existing) {
+        try {
+          handler(existing);
+        } catch (listenerError) {
+          void listenerError;
+        }
+        return true;
+      }
+      if (!Array.isArray(listenerStorage[name])) {
+        listenerStorage[name] = [];
+      }
+      listenerStorage[name].push(handler);
+      return true;
+    };
+    var ensureModuleGlobals = function ensureModuleGlobals() {
+      var globals = null;
+      try {
+        globals = resolvedScope.cineModuleGlobals;
+      } catch (readError) {
+        void readError;
+        globals = null;
+      }
+      if (!globals || _typeof(globals) !== 'object') {
+        globals = {};
+      }
+      if (typeof globals.getModule !== 'function') {
+        globals.getModule = function (name) {
+          return getStoredModule(name);
+        };
+      }
+      if (typeof globals.whenModuleAvailable !== 'function') {
+        globals.whenModuleAvailable = function (name, handler) {
+          return whenModuleAvailable(name, handler);
+        };
+      }
+      if (typeof globals.register !== 'function') {
+        globals.register = function (name, api) {
+          storeModule(name, api);
+          return true;
+        };
+      }
+      try {
+        Object.defineProperty(resolvedScope, 'cineModuleGlobals', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: globals
+        });
+      } catch (defineGlobalsError) {
+        void defineGlobalsError;
+        try {
+          resolvedScope.cineModuleGlobals = globals;
+        } catch (assignGlobalsError) {
+          void assignGlobalsError;
+        }
+      }
+      return globals;
+    };
+    var ensureModuleRegistry = function ensureModuleRegistry() {
+      var registry = null;
+      try {
+        registry = resolvedScope.cineModules;
+      } catch (readError) {
+        void readError;
+        registry = null;
+      }
+      if (!registry || _typeof(registry) !== 'object') {
+        registry = {};
+      }
+      if (typeof registry.get !== 'function') {
+        registry.get = function (name) {
+          return getStoredModule(name);
+        };
+      }
+      if (typeof registry.register !== 'function') {
+        registry.register = function (name, api) {
+          storeModule(name, api);
+          return true;
+        };
+      }
+      try {
+        Object.defineProperty(resolvedScope, 'cineModules', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: registry
+        });
+      } catch (defineRegistryError) {
+        void defineRegistryError;
+        try {
+          resolvedScope.cineModules = registry;
+        } catch (assignRegistryError) {
+          void assignRegistryError;
+        }
+      }
+      return registry;
+    };
+    var fallbackBase = {
+      freezeDeep: function freezeDeep(value) {
+        return value;
+      },
+      safeWarn: function safeWarn(message, detail) {
+        if (typeof console === 'undefined' || !console || typeof console.warn !== 'function') {
+          return;
+        }
+        try {
+          if (typeof detail === 'undefined') {
+            console.warn(message);
+          } else {
+            console.warn(message, detail);
+          }
+        } catch (warnError) {
+          void warnError;
+        }
+      },
+      informModuleGlobals: function informModuleGlobals(name, api) {
+        var globals = ensureModuleGlobals();
+        if (globals && typeof globals.register === 'function') {
+          try {
+            globals.register(name, api);
+            return true;
+          } catch (registerError) {
+            void registerError;
+          }
+        }
+        storeModule(name, api);
+        return true;
+      },
+      registerOrQueueModule: function registerOrQueueModule(name, api) {
+        var registry = ensureModuleRegistry();
+        if (registry && typeof registry.register === 'function') {
+          try {
+            registry.register(name, api);
+          } catch (registerError) {
+            void registerError;
+            storeModule(name, api);
+          }
+        } else {
+          storeModule(name, api);
+        }
+        ensureModuleGlobals();
+        return true;
+      },
+      exposeGlobal: function exposeGlobal(name, value, target) {
+        var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+        var scopeTarget = target && (_typeof(target) === 'object' || typeof target === 'function') ? target : resolvedScope;
+        if (!scopeTarget || _typeof(scopeTarget) !== 'object' && typeof scopeTarget !== 'function') {
+          return false;
+        }
+        var descriptor = {
+          configurable: options.configurable !== false,
+          enumerable: !!options.enumerable,
+          writable: options.writable === true,
+          value: value
+        };
+        try {
+          Object.defineProperty(scopeTarget, name, descriptor);
+          return true;
+        } catch (defineError) {
+          void defineError;
+          try {
+            scopeTarget[name] = value;
+            return true;
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+        return false;
+      }
+    };
+    fallbackBase.registerOrQueueModule('cineModuleBase', fallbackBase);
+    fallbackBase.exposeGlobal('cineModuleBase', fallbackBase, resolvedScope, {
+      configurable: true,
+      enumerable: false,
+      writable: false
+    });
+    ensureModuleGlobals();
+    ensureModuleRegistry();
+    return fallbackBase;
+  }
   function moduleJsonDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
@@ -110,7 +352,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE);
+  var MODULE_BASE = resolveModuleBase(GLOBAL_SCOPE) || createModuleBaseFallback(GLOBAL_SCOPE);
   if (!MODULE_BASE) {
     return;
   }

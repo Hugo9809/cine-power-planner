@@ -1,3 +1,9 @@
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -107,7 +113,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var HEADER_ANCHOR_ID = 'topBar';
   var HERO_MAX_WIDTH_REM = 44;
   var HERO_MARGIN_REM = 1.5;
-  var HERO_MIN_VIEWPORT_FRACTION = 0.92;
+  var HERO_MIN_VIEWPORT_FRACTION = 0.97;
+  var HERO_MARGIN_BREAKPOINTS = [{
+    maxViewportRem: 48,
+    marginRem: 1.15
+  }, {
+    maxViewportRem: 26,
+    marginRem: 0.75
+  }];
+  function resolveHeroMarginPx(viewportWidth, rootFontSize) {
+    var safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0 ? rootFontSize : 16;
+    if (!Number.isFinite(viewportWidth) || viewportWidth <= 0) {
+      return Math.max(0, HERO_MARGIN_REM * safeRootFont);
+    }
+    var widthInRem = viewportWidth / safeRootFont;
+    var resolvedMarginRem = HERO_MARGIN_REM;
+    if (Number.isFinite(widthInRem)) {
+      for (var index = 0; index < HERO_MARGIN_BREAKPOINTS.length; index += 1) {
+        var breakpoint = HERO_MARGIN_BREAKPOINTS[index];
+        if (breakpoint && Number.isFinite(breakpoint.maxViewportRem) && widthInRem <= breakpoint.maxViewportRem) {
+          resolvedMarginRem = breakpoint.marginRem;
+        }
+      }
+    }
+    return Math.max(0, resolvedMarginRem * safeRootFont);
+  }
   var supportsDialogTopLayer = function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
       return false;
@@ -1545,13 +1575,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       focus: '#monitorSelect'
     }, {
       key: 'selectBattery',
-      highlight: '#batterySelect',
-      cardOverlap: {
-        right: 1 / 3
-      }
+      highlight: '#batterySelect'
     }, {
       key: 'resultsTotalDraw',
-      highlight: ['#powerDiagram', '#totalPowerLabel', '#totalPower', '#totalCurrent144Label', '#totalCurrent12Label']
+      highlight: ['#totalPowerLabel', '#totalPower', '#totalCurrent144Label', '#totalCurrent144', '#totalCurrent12Label', '#totalCurrent12']
     }, {
       key: 'resultsBatteryPacks',
       highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryCountLabel', '#batteryCount']
@@ -1921,7 +1948,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       viewportHeight: viewportHeight
     };
   }
-  function updateHeroInlineSize(size, metrics) {
+  function updateHeroInlineSize(size, metrics, forcedRootFontSize) {
     if (!cardEl) {
       return;
     }
@@ -1939,9 +1966,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
       return;
     }
-    var rootFontSize = getRootFontSizePx();
+    var rootFontSize = Number.isFinite(forcedRootFontSize) && forcedRootFontSize > 0 ? forcedRootFontSize : getRootFontSizePx();
     var heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
-    var heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
+    var heroMargin = resolveHeroMarginPx(viewportWidth, rootFontSize);
     var marginLimitedWidth = viewportWidth - heroMargin * 2;
     var fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
     var widthCandidates = [heroMaxWidth, viewportWidth];
@@ -1958,7 +1985,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       cardEl.style.removeProperty('--onboarding-card-hero-inline-size');
       return;
     }
-    var resolvedWidth = Math.min.apply(Math, positiveCandidates);
+    var resolvedWidth = Math.min.apply(Math, _toConsumableArray(positiveCandidates));
     cardEl.style.setProperty('--onboarding-card-hero-inline-size', "".concat(resolvedWidth, "px"));
   }
   function schedulePositionUpdate() {
@@ -2437,7 +2464,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var overlayMetrics = getOverlayMetrics();
-    updateHeroInlineSize(currentStep && currentStep.size, overlayMetrics);
+    var rootFontSize = getRootFontSizePx();
+    updateHeroInlineSize(currentStep && currentStep.size, overlayMetrics, rootFontSize);
     var scrollX = overlayMetrics && typeof overlayMetrics.offsetLeft === 'number' ? overlayMetrics.offsetLeft : 0;
     var scrollY = overlayMetrics && typeof overlayMetrics.offsetTop === 'number' ? overlayMetrics.offsetTop : 0;
     var viewportWidth = overlayMetrics && typeof overlayMetrics.viewportWidth === 'number' ? overlayMetrics.viewportWidth : 0;
@@ -2447,6 +2475,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var forceFloating = Boolean(currentStep && currentStep.forceFloating);
     var cardRect = cardEl.getBoundingClientRect();
     var margin = 16;
+    if (currentStep && currentStep.size === 'hero') {
+      var heroMarginPx = resolveHeroMarginPx(viewportWidth, rootFontSize);
+      if (Number.isFinite(heroMarginPx)) {
+        var responsiveMargin = Math.max(8, heroMarginPx);
+        margin = Math.min(margin, responsiveMargin);
+      }
+    }
     var viewportRight = scrollX + viewportWidth;
     var viewportBottom = scrollY + viewportHeight;
     var minLeft = scrollX + margin;

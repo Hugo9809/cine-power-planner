@@ -81,7 +81,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function fallbackValue(value, fallback) {
     return typeof value === 'undefined' ? fallback : value;
   }
-
   function optionalFunction(value) {
     return typeof value === 'function' ? value : null;
   }

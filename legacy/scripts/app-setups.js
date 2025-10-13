@@ -1313,35 +1313,6 @@ var rentalHouseLookup = function () {
   return map;
 }();
 var RENTAL_HOUSE_SUFFIX_TOKENS = new Set(['AG', 'BV', 'BVBA', 'CO', 'GMBH', 'INC', 'KG', 'LLC', 'LTD', 'PLC', 'PTY', 'SAS', 'SARL', 'SL', 'SPA', 'S.P.A', 'SRL']);
-function stripParentheticalSegments(value) {
-  if (!value) return '';
-  var result = '';
-  var depth = 0;
-  for (var i = 0; i < value.length; i += 1) {
-    var char = value[i];
-    if (char === '(') {
-      if (depth === 0) {
-        while (result.length && /\s/.test(result[result.length - 1])) {
-          result = result.slice(0, -1);
-        }
-      }
-      depth += 1;
-      continue;
-    }
-    if (char === ')' && depth) {
-      depth -= 1;
-      if (depth === 0 && result.length && result[result.length - 1] !== ' ') {
-        result += ' ';
-      }
-      continue;
-    }
-    if (depth === 0) {
-      result += char;
-    }
-  }
-  return result;
-}
-
 function formatRentalHouseShortName(entryOrName) {
   if (!entryOrName) return '';
   var explicit = _typeof(entryOrName) === 'object' && entryOrName && typeof entryOrName.shortName === 'string' ? entryOrName.shortName.trim() : '';
@@ -1351,8 +1322,7 @@ function formatRentalHouseShortName(entryOrName) {
   var rawName = typeof entryOrName === 'string' ? entryOrName : entryOrName && entryOrName.name;
   var name = rawName ? String(rawName).trim() : '';
   if (!name) return '';
-  var withoutParentheses = stripParentheticalSegments(name);
-  var base = withoutParentheses.replace(/\s+/g, ' ').trim();
+  var base = name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
   var separatorMatch = base.match(/\s*[\u2012\u2013\u2014\u2015-]\s*/);
   if (separatorMatch) {
     var index = base.indexOf(separatorMatch[0]);
@@ -9987,7 +9957,7 @@ function gearListGenerateHtmlImpl() {
     arr.filter(Boolean).map(addArriKNumber).forEach(function (rawItem) {
       var item = rawItem.trim();
       if (!item) return;
-      var quantityMatch = item.match(/^(\d+)x\s+(\S.*)$/);
+      var quantityMatch = item.match(/^(\d+)x\s+(.*)$/);
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
