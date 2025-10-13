@@ -49,6 +49,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/gear-list.js',
     'modules/runtime-guard.js',
     'modules/results.js',
+    'modules/app-core/pink-mode-support-bridge.js',
     'modules/app-core/localization-support.js',
     'app-core-runtime-scopes.js',
     'app-core-runtime-support.js',

@@ -118,18 +118,44 @@ var CORE_RUNTIME_SHARED = EXISTING_CORE_RUNTIME_SHARED || (CORE_RUNTIME_SHARED_R
   runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
   coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
 }) : fallbackResolveRuntimeSharedFromGlobal());
-var PINK_MODE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeRuntime', './modules/app-core/pink-mode-runtime.js');
-var PINK_MODE_RUNTIME_FACTORY = PINK_MODE_RUNTIME_TOOLS && typeof PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime === 'function' ? PINK_MODE_RUNTIME_TOOLS.createPinkModeRuntime : function attemptRequirePinkModeRuntimeFactory() {
+var PINK_MODE_SUPPORT_BRIDGE_TOOLS = resolveCoreSupportModule('cineCoreAppPinkModeSupportBridge', './modules/app-core/pink-mode-support-bridge.js');
+var createPinkModeSupportBridge = PINK_MODE_SUPPORT_BRIDGE_TOOLS && typeof PINK_MODE_SUPPORT_BRIDGE_TOOLS.createPinkModeSupportBridge === 'function' ? PINK_MODE_SUPPORT_BRIDGE_TOOLS.createPinkModeSupportBridge : function attemptResolvePinkModeSupportBridge() {
   if (typeof require === 'function') {
     try {
-      var requiredPinkModeRuntime = require('./modules/app-core/pink-mode-runtime.js');
-      if (requiredPinkModeRuntime && typeof requiredPinkModeRuntime.createPinkModeRuntime === 'function') {
-        return requiredPinkModeRuntime.createPinkModeRuntime;
+      var requiredPinkModeSupportBridge = require('./modules/app-core/pink-mode-support-bridge.js');
+      if (requiredPinkModeSupportBridge && typeof requiredPinkModeSupportBridge.createPinkModeSupportBridge === 'function') {
+        return requiredPinkModeSupportBridge.createPinkModeSupportBridge;
       }
-    } catch (pinkModeRuntimeRequireError) {
-      void pinkModeRuntimeRequireError;
+    } catch (pinkModeSupportBridgeRequireError) {
+      void pinkModeSupportBridgeRequireError;
     }
   }
+
+  var fallbackScopes = [
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null
+  ];
+
+  for (var index = 0; index < fallbackScopes.length; index += 1) {
+    var scope = fallbackScopes[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+
+    try {
+      var candidate = scope.cineCoreAppPinkModeSupportBridge;
+      if (candidate && typeof candidate.createPinkModeSupportBridge === 'function') {
+        return candidate.createPinkModeSupportBridge;
+      }
+    } catch (pinkModeSupportBridgeLookupError) {
+      void pinkModeSupportBridgeLookupError;
+    }
+  }
+
   return null;
 }();
 function createInlinePinkModeFallbackApi() {
@@ -209,13 +235,15 @@ function createInlinePinkModeFallbackApi() {
     PINK_MODE_ICON_FALLBACK_MARKUP: Object.freeze([])
   };
 }
-var PINK_MODE_SUPPORT_API_UNSAFE = PINK_MODE_RUNTIME_FACTORY ? PINK_MODE_RUNTIME_FACTORY({
+var PINK_MODE_SUPPORT_API = typeof createPinkModeSupportBridge === 'function' ? createPinkModeSupportBridge({
   resolveCoreSupportModule: resolveCoreSupportModule,
   requireFn: typeof require === 'function' ? require : null,
   runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
   coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null
 }) : null;
-var PINK_MODE_SUPPORT_API = PINK_MODE_SUPPORT_API_UNSAFE && _typeof(PINK_MODE_SUPPORT_API_UNSAFE) === 'object' ? PINK_MODE_SUPPORT_API_UNSAFE : createInlinePinkModeFallbackApi();
+if (!PINK_MODE_SUPPORT_API || _typeof(PINK_MODE_SUPPORT_API) !== 'object') {
+  PINK_MODE_SUPPORT_API = createInlinePinkModeFallbackApi();
+}
 var pinkModeIcons = PINK_MODE_SUPPORT_API.pinkModeIcons,
 
   ensureSvgHasAriaHidden = PINK_MODE_SUPPORT_API.ensureSvgHasAriaHidden,
