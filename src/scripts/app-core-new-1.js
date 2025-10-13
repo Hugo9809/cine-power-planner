@@ -312,13 +312,69 @@ const PINK_MODE_RUNTIME_FACTORY =
     return null;
   })();
 
-function createInlinePinkModeFallbackApi() {
+const PINK_MODE_FALLBACK_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppPinkModeFallback',
+  './modules/app-core/pink-mode-fallback.js'
+);
+
+const PINK_MODE_FALLBACK_FACTORY =
+  (PINK_MODE_FALLBACK_TOOLS &&
+  typeof PINK_MODE_FALLBACK_TOOLS.createPinkModeFallbackApi === 'function'
+    ? PINK_MODE_FALLBACK_TOOLS.createPinkModeFallbackApi
+    : null) ||
+  (function attemptResolvePinkModeFallbackFactory() {
+    if (typeof require === 'function') {
+      try {
+        const requiredPinkModeFallback = require('./modules/app-core/pink-mode-fallback.js');
+        if (
+          requiredPinkModeFallback &&
+          typeof requiredPinkModeFallback.createPinkModeFallbackApi === 'function'
+        ) {
+          return requiredPinkModeFallback.createPinkModeFallbackApi;
+        }
+      } catch (pinkModeFallbackRequireError) {
+        void pinkModeFallbackRequireError;
+      }
+    }
+
+    const fallbackScopes = [
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!scope || typeof scope !== 'object') {
+        continue;
+      }
+
+      try {
+        const candidate = scope.cineCoreAppPinkModeFallback;
+        if (
+          candidate &&
+          typeof candidate.createPinkModeFallbackApi === 'function'
+        ) {
+          return candidate.createPinkModeFallbackApi;
+        }
+      } catch (pinkModeFallbackLookupError) {
+        void pinkModeFallbackLookupError;
+      }
+    }
+
+    return null;
+  })();
+
+function createLastResortPinkModeFallbackApi() {
   const fallbackIcons = Object.freeze({
     off: Object.freeze({ className: 'icon-svg pink-mode-icon', markup: '' }),
     onSequence: Object.freeze([]),
   });
 
-  function createSafeResolvedPromise(value) {
+  function ensureSafePromise(value) {
     if (typeof Promise !== 'undefined' && typeof Promise.resolve === 'function') {
       return Promise.resolve(value);
     }
@@ -327,10 +383,9 @@ function createInlinePinkModeFallbackApi() {
       then(callback) {
         if (typeof callback === 'function') {
           try {
-            return createSafeResolvedPromise(callback(value));
+            return ensureSafePromise(callback(value));
           } catch (callbackError) {
             void callbackError;
-            return createSafeResolvedPromise(undefined);
           }
         }
 
@@ -350,35 +405,31 @@ function createInlinePinkModeFallbackApi() {
 
   function noop() {}
 
-  function returnFalse() {
-    return false;
-  }
-
-  function returnNull() {
-    return null;
-  }
-
-  function returnZero() {
-    return 0;
-  }
-
   return {
     pinkModeIcons: fallbackIcons,
     ensureSvgHasAriaHidden: trimMarkup,
-    setPinkModeIconSequence: returnFalse,
+    setPinkModeIconSequence() {
+      return false;
+    },
     loadPinkModeIconsFromFiles() {
-      return createSafeResolvedPromise();
+      return ensureSafePromise();
     },
     ensurePinkModeLottieRuntime() {
-      return createSafeResolvedPromise(null);
+      return ensureSafePromise(null);
     },
-    resolvePinkModeLottieRuntime: returnNull,
+    resolvePinkModeLottieRuntime() {
+      return null;
+    },
     startPinkModeAnimatedIcons: noop,
     stopPinkModeAnimatedIcons: noop,
     triggerPinkModeIconRain: noop,
-    getPinkModeIconRotationTimer: returnNull,
+    getPinkModeIconRotationTimer() {
+      return null;
+    },
     setPinkModeIconRotationTimer: noop,
-    getPinkModeIconIndex: returnZero,
+    getPinkModeIconIndex() {
+      return 0;
+    },
     setPinkModeIconIndex: noop,
     PINK_MODE_ICON_INTERVAL_MS: 30000,
     PINK_MODE_ICON_ANIMATION_CLASS: 'pink-mode-icon-pop',
@@ -401,7 +452,20 @@ const PINK_MODE_SUPPORT_API_UNSAFE =
 const PINK_MODE_SUPPORT_API =
   PINK_MODE_SUPPORT_API_UNSAFE && typeof PINK_MODE_SUPPORT_API_UNSAFE === 'object'
     ? PINK_MODE_SUPPORT_API_UNSAFE
-    : createInlinePinkModeFallbackApi();
+    : (function resolvePinkModeFallbackApi() {
+        if (typeof PINK_MODE_FALLBACK_FACTORY === 'function') {
+          try {
+            const fallbackApi = PINK_MODE_FALLBACK_FACTORY();
+            if (fallbackApi && typeof fallbackApi === 'object') {
+              return fallbackApi;
+            }
+          } catch (pinkModeFallbackFactoryError) {
+            void pinkModeFallbackFactoryError;
+          }
+        }
+
+        return createLastResortPinkModeFallbackApi();
+      })();
 
 const {
   pinkModeIcons,
