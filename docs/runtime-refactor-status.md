@@ -169,3 +169,18 @@
 - Moved the shared runtime scope candidate collectors into a dedicated helper so part one of the app core can shrink while still leaning on the defensive fallbacks that protect autosave, backup, and restore flows.【F:src/scripts/app-core-runtime-scopes.js†L1-L132】【F:src/scripts/app-core-new-1.js†L124-L205】
 - Legacy bundles load the same helper to keep older browsers aligned during the refactor without dropping any offline-safe guards.【F:legacy/scripts/app-core-runtime-scopes.js†L1-L109】【F:legacy/scripts/app-core-new-1.js†L119-L205】
 - Loader manifests, bundler scripts, integrity tests, and the service worker manifest now reference the new helper so offline caching and scripted builds continue to include the extracted runtime scopes.【F:src/scripts/script.js†L32-L58】【F:legacy/scripts/script.js†L12-L37】【F:src/scripts/loader.js†L2880-L2960】【F:tests/script/scriptIntegrity.test.js†L106-L133】【F:service-worker-assets.js†L1-L46】【F:service-worker-assets.js†L140-L187】
+
+## Step 14 – Runtime support bridge extraction
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-1.js` | 24408 | 23797 | -611 |
+| `src/scripts/app-core-runtime-support.js` | – | 728 | +728 |
+| `legacy/scripts/app-core-new-1.js` | 21681 | 21232 | -449 |
+| `legacy/scripts/app-core-runtime-support.js` | – | 458 | +458 |
+
+*Notes:*
+
+- Extracted the runtime support resolvers into a dedicated bridge so the remaining app core split can focus on UI logic while preserving the autosave, backup, and restore fallbacks that guard offline data.【F:src/scripts/app-core-runtime-support.js†L1-L724】【F:src/scripts/app-core-new-1.js†L92-L162】
+- Legacy bundles load the mirrored bridge to keep older browsers aligned with the same defensive module resolution helpers during cold starts and cache restores.【F:legacy/scripts/app-core-runtime-support.js†L1-L458】【F:legacy/scripts/app-core-new-1.js†L392-L460】
+- Updated loaders, script aggregators, integrity tests, and the service worker manifest so the new bridge is always bundled and cached for offline use alongside the existing runtime scope helper.【F:src/scripts/script.js†L41-L50】【F:legacy/scripts/script.js†L1-L13】【F:src/scripts/loader.js†L2880-L2958】【F:tests/script/scriptIntegrity.test.js†L100-L123】【F:service-worker-assets.js†L23-L207】
