@@ -80,32 +80,53 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
-var CORE_PART1_RUNTIME_SCOPE =
-  typeof globalThis !== 'undefined'
-    ? globalThis
-    : typeof window !== 'undefined'
-      ? window
-      : typeof self !== 'undefined'
-        ? self
-        : typeof global !== 'undefined'
-          ? global
-          : null;
-
-// The planner shares a handful of helper modules across legacy and modern
-// bundles. Rather than assuming a module loader exists we defensively look for
-// pre-attached namespaces first and then fall back to CommonJS style requires.
-// This defensive dance keeps offline builds and automated backups aligned.
-function resolveCoreSupportModule(namespaceName, requirePath) {
+function fallbackDetectRuntimeScope(primaryScope) {
   if (
-    CORE_PART1_RUNTIME_SCOPE &&
-    typeof CORE_PART1_RUNTIME_SCOPE === 'object' &&
-    CORE_PART1_RUNTIME_SCOPE[namespaceName] &&
-    typeof CORE_PART1_RUNTIME_SCOPE[namespaceName] === 'object'
+    primaryScope &&
+    (typeof primaryScope === 'object' || typeof primaryScope === 'function')
   ) {
-    return CORE_PART1_RUNTIME_SCOPE[namespaceName];
+    return primaryScope;
   }
 
-  if (typeof require === 'function') {
+  if (
+    typeof globalThis !== 'undefined' &&
+    typeof globalThis === 'object' &&
+    globalThis
+  ) {
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined' && typeof window === 'object' && window) {
+    return window;
+  }
+
+  if (typeof self !== 'undefined' && typeof self === 'object' && self) {
+    return self;
+  }
+
+  if (typeof global !== 'undefined' && typeof global === 'object' && global) {
+    return global;
+  }
+
+  return null;
+}
+
+function fallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
+  if (typeof namespaceName !== 'string' || !namespaceName) {
+    return null;
+  }
+
+  const runtimeScope = fallbackDetectRuntimeScope(primaryScope);
+
+  if (
+    runtimeScope &&
+    runtimeScope[namespaceName] &&
+    typeof runtimeScope[namespaceName] === 'object'
+  ) {
+    return runtimeScope[namespaceName];
+  }
+
+  if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
     try {
       const required = require(requirePath);
       if (required && typeof required === 'object') {
@@ -117,6 +138,93 @@ function resolveCoreSupportModule(namespaceName, requirePath) {
   }
 
   return null;
+}
+
+const CORE_SUPPORT_RESOLVER = (function ensureCoreSupportResolver() {
+  const namespaceName = 'cineCoreSupportResolver';
+
+  function readFromScope(candidateScope) {
+    if (
+      !candidateScope ||
+      (typeof candidateScope !== 'object' && typeof candidateScope !== 'function')
+    ) {
+      return null;
+    }
+
+    try {
+      const resolver = candidateScope[namespaceName];
+      return resolver && typeof resolver === 'object' ? resolver : null;
+    } catch (resolverLookupError) {
+      void resolverLookupError;
+    }
+
+    return null;
+  }
+
+  const primaryScope =
+    typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
+
+  const candidates = [
+    primaryScope,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const resolver = readFromScope(candidates[index]);
+    if (resolver) {
+      return resolver;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const requiredResolver = require('./modules/core/support-resolver.js');
+      if (requiredResolver && typeof requiredResolver === 'object') {
+        return requiredResolver;
+      }
+    } catch (supportResolverRequireError) {
+      void supportResolverRequireError;
+    }
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const resolver = readFromScope(candidates[index]);
+    if (resolver) {
+      return resolver;
+    }
+  }
+
+  return null;
+})();
+
+const detectRuntimeScope =
+  CORE_SUPPORT_RESOLVER && typeof CORE_SUPPORT_RESOLVER.detectRuntimeScope === 'function'
+    ? CORE_SUPPORT_RESOLVER.detectRuntimeScope
+    : fallbackDetectRuntimeScope;
+
+const resolveSupportModuleFromResolver =
+  CORE_SUPPORT_RESOLVER &&
+  typeof CORE_SUPPORT_RESOLVER.resolveCoreSupportModule === 'function'
+    ? CORE_SUPPORT_RESOLVER.resolveCoreSupportModule
+    : fallbackResolveCoreSupportModule;
+
+var CORE_PART1_RUNTIME_SCOPE = detectRuntimeScope(
+  typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+);
+
+// The planner shares a handful of helper modules across legacy and modern
+// bundles. Rather than assuming a module loader exists we defensively look for
+// pre-attached namespaces first and then fall back to CommonJS style requires.
+// This defensive dance keeps offline builds and automated backups aligned.
+function resolveCoreSupportModule(namespaceName, requirePath) {
+  return resolveSupportModuleFromResolver(
+    namespaceName,
+    requirePath,
+    CORE_PART1_RUNTIME_SCOPE
+  );
 }
 
 // All localisation strings live in a dedicated bridge so that translations can
@@ -376,7 +484,12 @@ const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
   return null;
 })();
 
-function collectCoreRuntimeCandidateScopes(primaryScope) {
+const CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = resolveCoreSupportModule(
+  'cineCoreRuntimeCandidateScopes',
+  './modules/core/runtime-candidate-scopes.js'
+);
+
+function fallbackCollectRuntimeCandidateScopes(primaryScope) {
   if (
     CORE_RUNTIME_SHARED &&
     typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function'
@@ -395,9 +508,19 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   }
 
   const scopes = [];
+  const seenScopes = typeof Set === 'function' ? new Set() : null;
 
   function registerScope(scope) {
     if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (seenScopes) {
+      if (seenScopes.has(scope)) {
+        return;
+      }
+      seenScopes.add(scope);
+      scopes.push(scope);
       return;
     }
 
@@ -415,13 +538,67 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandidateScopes() {
+function collectCoreRuntimeCandidateScopes(primaryScope) {
   if (
-    typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
-    CORE_RUNTIME_CANDIDATE_SCOPES &&
-    typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+    CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE &&
+    typeof CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE.collectCandidateScopesWithFallback === 'function'
   ) {
-    return CORE_RUNTIME_CANDIDATE_SCOPES;
+    try {
+      return CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE.collectCandidateScopesWithFallback(
+        primaryScope,
+        CORE_RUNTIME_SHARED,
+        CORE_ENVIRONMENT_HELPERS
+      );
+    } catch (collectCandidateScopesError) {
+      void collectCandidateScopesError;
+    }
+  }
+
+  return fallbackCollectRuntimeCandidateScopes(primaryScope);
+}
+
+const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
+  const primaryScope =
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null;
+
+  if (
+    CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE &&
+    typeof CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE.ensureCandidateScopes === 'function'
+  ) {
+    const options = {
+      primaryScope,
+      runtimeShared: CORE_RUNTIME_SHARED,
+      environmentHelpers: CORE_ENVIRONMENT_HELPERS,
+      currentCandidateScopes:
+        typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
+        CORE_RUNTIME_CANDIDATE_SCOPES &&
+        typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+          ? CORE_RUNTIME_CANDIDATE_SCOPES
+          : null,
+      globalScope:
+        (typeof globalThis !== 'undefined' && globalThis) ||
+        (typeof window !== 'undefined' && window) ||
+        (typeof self !== 'undefined' && self) ||
+        (typeof global !== 'undefined' && global) ||
+        null,
+      assignCurrentCandidateScopes(value) {
+        try {
+          CORE_RUNTIME_CANDIDATE_SCOPES = value;
+        } catch (candidateAssignError) {
+          void candidateAssignError;
+        }
+      },
+    };
+
+    try {
+      const ensuredScopes =
+        CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE.ensureCandidateScopes(options);
+      if (Array.isArray(ensuredScopes)) {
+        return ensuredScopes;
+      }
+    } catch (ensureCandidateScopesError) {
+      void ensureCandidateScopesError;
+    }
   }
 
   let resolvedScopes = null;
@@ -432,7 +609,7 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandi
   ) {
     try {
       resolvedScopes = CORE_RUNTIME_SHARED.resolveCandidateScopes(
-        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+        primaryScope,
         CORE_ENVIRONMENT_HELPERS
       );
     } catch (resolveCandidateScopesError) {
@@ -442,9 +619,7 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandi
   }
 
   if (!resolvedScopes) {
-    resolvedScopes = collectCoreRuntimeCandidateScopes(
-      typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-    );
+    resolvedScopes = fallbackCollectRuntimeCandidateScopes(primaryScope);
   }
 
   if (
@@ -454,41 +629,43 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandi
     try {
       CORE_RUNTIME_SHARED.syncCandidateScopes(
         resolvedScopes,
-        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+        primaryScope,
         CORE_ENVIRONMENT_HELPERS
       );
+      return resolvedScopes;
     } catch (syncCandidateScopesError) {
       void syncCandidateScopesError;
     }
-  } else {
-    const scope =
-      (typeof globalThis !== 'undefined' && globalThis) ||
-      (typeof window !== 'undefined' && window) ||
-      (typeof self !== 'undefined' && self) ||
-      (typeof global !== 'undefined' && global) ||
-      null;
+  }
 
-    if (
-      scope &&
-      (!scope.CORE_RUNTIME_CANDIDATE_SCOPES || scope.CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes)
-    ) {
-      try {
-        scope.CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
-      } catch (assignError) {
-        void assignError;
-      }
-    }
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
 
+  if (
+    scope &&
+    (!scope.CORE_RUNTIME_CANDIDATE_SCOPES ||
+      scope.CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes)
+  ) {
     try {
-      if (
-        typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' ||
-        CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes
-      ) {
-        CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
-      }
-    } catch (candidateAssignError) {
-      void candidateAssignError;
+      scope.CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    } catch (assignError) {
+      void assignError;
     }
+  }
+
+  try {
+    if (
+      typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' ||
+      CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes
+    ) {
+      CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+    }
+  } catch (candidateAssignError) {
+    void candidateAssignError;
   }
 
   return resolvedScopes;
