@@ -6039,7 +6039,7 @@ try {
 applyHighContrast(highContrastEnabled);
 
 if (typeof window !== 'undefined') {
-  window.handlePinkModeIconPress = handlePinkModeIconPress;
+  window.handlePinkModeIconPress = (...args) => handlePinkModeIconPress(...args);
 }
 
 let pinkModeEnabled = false;
