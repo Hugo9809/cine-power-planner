@@ -7,7 +7,7 @@ teams can trace historical issues offline.
 | Date | Reviewer | Area | Finding | Impact | Follow-up reference |
 | --- | --- | --- | --- | --- | --- |
 | _(YYYY-MM-DD)_ | _(Name)_ | _(e.g. Backup restore)_ | _(Description)_ | _(High/Medium/Low)_ | _(Link to review-tasks entry / commit)_ |
-|  |  |  |  |  |  |
+| 2025-10-13 | Automated QA | Offline cache manifest | `service-worker-assets.js` excluded schema and runtime helpers so offline loads miss critical modules. | High | TASK-001 |
 
 ## Usage guidelines
 
