@@ -6938,7 +6938,7 @@ textarea:disabled {
 .onboarding-highlight {
   position: absolute;
   border-radius: 16px;
-  border: 3px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
   background: color-mix(in srgb, var(--accent-color) 10%, transparent);
   transition:
     transform 0.2s ease,
@@ -6953,7 +6953,7 @@ textarea:disabled {
 
 @supports not (color-mix(in srgb, black 50%, white 50%)) {
   .onboarding-highlight {
-    border-width: 3px;
+    border-width: 1px;
     border-color: var(--accent-color);
     background: transparent;
   }
