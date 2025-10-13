@@ -5310,6 +5310,8 @@ if (!appearanceModuleReady) {
     candidate => !!candidate && typeof candidate.initialize === 'function',
     candidate => {
       if (initializeAppearanceModule(candidate)) {
+        synchronizeThemePreferenceControls();
+        refreshThemePreferenceGlobalBridge();
         if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
           console.info('cineSettingsAppearance module became available after deferred load.');
         }
@@ -5737,14 +5739,38 @@ const registerThemeControl = (element, config) => {
 let unregisterHeaderThemeControl = () => {};
 let unregisterSettingsThemeControl = () => {};
 
-if (themePreferenceController) {
-  if (darkModeToggle) {
-    unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+let removeFallbackHeaderThemeListener = () => {};
+let removeFallbackSettingsThemeListener = () => {};
+let themePreferenceFallbackInitialized = false;
+
+function synchronizeThemePreferenceControls() {
+  unregisterHeaderThemeControl();
+  unregisterHeaderThemeControl = () => {};
+  unregisterSettingsThemeControl();
+  unregisterSettingsThemeControl = () => {};
+
+  removeFallbackHeaderThemeListener();
+  removeFallbackHeaderThemeListener = () => {};
+  removeFallbackSettingsThemeListener();
+  removeFallbackSettingsThemeListener = () => {};
+
+  if (themePreferenceController) {
+    if (darkModeToggle) {
+      unregisterHeaderThemeControl = registerThemeControl(darkModeToggle, { type: 'button' });
+    }
+    if (settingsDarkMode) {
+      unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+    }
+    themePreferenceFallbackInitialized = false;
+    return;
   }
-  if (settingsDarkMode) {
-    unregisterSettingsThemeControl = registerThemeControl(settingsDarkMode, { type: 'checkbox' });
+
+  if (themePreferenceFallbackInitialized) {
+    return;
   }
-} else {
+
+  themePreferenceFallbackInitialized = true;
+
   let fallbackDarkMode = false;
   try {
     const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('darkMode') : null;
@@ -5756,20 +5782,35 @@ if (themePreferenceController) {
   } catch (loadError) {
     console.warn('Could not load dark mode preference', loadError);
   }
+
   applyDarkMode(fallbackDarkMode);
+
   if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', () => {
+    const handleHeaderToggleClick = () => {
       setThemePreference(!document.body.classList.contains('dark-mode'));
-    });
+    };
+    darkModeToggle.addEventListener('click', handleHeaderToggleClick);
+    removeFallbackHeaderThemeListener = () => {
+      darkModeToggle.removeEventListener('click', handleHeaderToggleClick);
+    };
   }
+
   if (settingsDarkMode) {
-    settingsDarkMode.addEventListener('change', () => {
+    const handleSettingsToggleChange = () => {
       setThemePreference(settingsDarkMode.checked);
-    });
+    };
+    settingsDarkMode.addEventListener('change', handleSettingsToggleChange);
+    removeFallbackSettingsThemeListener = () => {
+      settingsDarkMode.removeEventListener('change', handleSettingsToggleChange);
+    };
   }
 }
 
-if (themePreferenceGlobalScope) {
+function refreshThemePreferenceGlobalBridge() {
+  if (!themePreferenceGlobalScope) {
+    return;
+  }
+
   try {
     themePreferenceGlobalScope.cineThemePreference = themePreferenceController
       ? {
@@ -5787,6 +5828,9 @@ if (themePreferenceGlobalScope) {
     console.warn('Unable to expose theme preference bridge', exposeError);
   }
 }
+
+synchronizeThemePreferenceControls();
+refreshThemePreferenceGlobalBridge();
 
 let sessionFocusScale = typeof focusScalePreference === 'string'
   ? focusScalePreference
