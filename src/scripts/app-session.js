@@ -17644,6 +17644,6 @@ function collectMountVoltageFormValues() {
 
 function handleMountVoltageInputChange() {
   const values = collectMountVoltageFormValues();
-  applySessionMountVoltagePreferences(values, { persist: false, triggerUpdate: true });
+  applySessionMountVoltagePreferences(values, { persist: true, triggerUpdate: true });
 }
 
