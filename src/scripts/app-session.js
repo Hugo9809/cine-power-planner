@@ -5353,6 +5353,47 @@ const appearanceModuleValidator = candidate => !!candidate && typeof candidate.i
 let appearanceModule = null;
 let themePreferenceController = null;
 let appearanceModuleInitialized = false;
+let appearanceModuleUnavailableWarningHandle = null;
+
+function clearAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle === null) {
+    return;
+  }
+
+  try {
+    clearTimeout(appearanceModuleUnavailableWarningHandle);
+  } catch (clearError) {
+    void clearError;
+  }
+
+  appearanceModuleUnavailableWarningHandle = null;
+}
+
+function warnAppearanceModuleUnavailable() {
+  if (appearanceModuleInitialized) {
+    return;
+  }
+
+  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+  }
+}
+
+function scheduleAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle !== null) {
+    return;
+  }
+
+  if (typeof setTimeout !== 'function') {
+    warnAppearanceModuleUnavailable();
+    return;
+  }
+
+  appearanceModuleUnavailableWarningHandle = setTimeout(() => {
+    appearanceModuleUnavailableWarningHandle = null;
+    warnAppearanceModuleUnavailable();
+  }, 1500);
+}
 
 const appearanceContext = {
   document: typeof document !== 'undefined' ? document : null,
@@ -5546,6 +5587,7 @@ function applyAppearanceModuleBindings(module) {
   }
 
   appearanceModule = module;
+  clearAppearanceModuleUnavailableWarning();
 
   updateThemeColor = module.updateThemeColor || updateThemeColor;
   setToggleIcon = module.setToggleIcon || setToggleIcon;
@@ -5615,6 +5657,7 @@ function attemptAppearanceModuleInitialization(moduleCandidate) {
   const initialized = initializeAppearanceModule(moduleCandidate);
   if (initialized) {
     appearanceModuleInitialized = true;
+    clearAppearanceModuleUnavailableWarning();
   }
   return initialized;
 }
@@ -5626,9 +5669,7 @@ const resolvedAppearanceModuleFactory = appearanceModuleValidator(appearanceModu
 const appearanceModuleReady = attemptAppearanceModuleInitialization(resolvedAppearanceModuleFactory);
 
 if (!appearanceModuleReady) {
-  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-  }
+  scheduleAppearanceModuleUnavailableWarning();
 
   const appearanceModuleWaitOptions = {
     interval: 200,
@@ -5637,12 +5678,14 @@ if (!appearanceModuleReady) {
       if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
         console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
       }
+      clearAppearanceModuleUnavailableWarning();
     },
   };
 
   const announceIfInitialized = moduleCandidate => {
     const wasInitialized = appearanceModuleInitialized;
     if (attemptAppearanceModuleInitialization(moduleCandidate) && !wasInitialized) {
+      clearAppearanceModuleUnavailableWarning();
       if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
         console.info('cineSettingsAppearance module became available after deferred load.');
       }
@@ -6620,6 +6663,44 @@ const resolveResetAutoGearRulesHandler = () => {
 };
 
 if (autoGearResetFactoryButton) {
+  let autoGearResetUnavailableWarningHandle = null;
+
+  const clearAutoGearResetUnavailableWarning = () => {
+    if (autoGearResetUnavailableWarningHandle === null) {
+      return;
+    }
+
+    try {
+      clearTimeout(autoGearResetUnavailableWarningHandle);
+    } catch (clearError) {
+      void clearError;
+    }
+
+    autoGearResetUnavailableWarningHandle = null;
+  };
+
+  const warnAutoGearResetUnavailable = () => {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function' && !resetHandlerAttached) {
+      console.warn('Automatic gear reset action unavailable: reset handler missing.');
+    }
+  };
+
+  const scheduleAutoGearResetUnavailableWarning = () => {
+    if (autoGearResetUnavailableWarningHandle !== null) {
+      return;
+    }
+
+    if (typeof setTimeout !== 'function') {
+      warnAutoGearResetUnavailable();
+      return;
+    }
+
+    autoGearResetUnavailableWarningHandle = setTimeout(() => {
+      autoGearResetUnavailableWarningHandle = null;
+      warnAutoGearResetUnavailable();
+    }, 1500);
+  };
+
   const enableResetButton = () => {
     autoGearResetFactoryButton.disabled = false;
     autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
@@ -6640,6 +6721,7 @@ if (autoGearResetFactoryButton) {
     autoGearResetFactoryButton.addEventListener('click', handler);
     enableResetButton();
     resetHandlerAttached = true;
+    clearAutoGearResetUnavailableWarning();
     return true;
   };
 
@@ -6657,9 +6739,7 @@ if (autoGearResetFactoryButton) {
 
   if (!attachHandlerIfAvailable(initialHandler)) {
     disableResetButton();
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Automatic gear reset action unavailable: reset handler missing.');
-    }
+    scheduleAutoGearResetUnavailableWarning();
 
     whenGlobalValueAvailable(
       'resetAutoGearRulesToFactoryAdditions',
@@ -6671,6 +6751,7 @@ if (autoGearResetFactoryButton) {
         interval: 200,
         maxAttempts: 300,
         onTimeout: () => {
+          clearAutoGearResetUnavailableWarning();
           if (typeof console !== 'undefined' && typeof console.warn === 'function') {
             console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
           }

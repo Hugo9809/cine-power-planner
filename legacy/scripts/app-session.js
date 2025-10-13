@@ -4763,6 +4763,48 @@ var appearanceContext = {
 };
 var appearanceModule = null;
 var themePreferenceController = null;
+var appearanceModuleInitialized = false;
+var appearanceModuleUnavailableWarningHandle = null;
+
+function clearAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle === null) {
+    return;
+  }
+
+  try {
+    clearTimeout(appearanceModuleUnavailableWarningHandle);
+  } catch (clearError) {
+    void clearError;
+  }
+
+  appearanceModuleUnavailableWarningHandle = null;
+}
+
+function warnAppearanceModuleUnavailable() {
+  if (appearanceModuleInitialized) {
+    return;
+  }
+
+  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+  }
+}
+
+function scheduleAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle !== null) {
+    return;
+  }
+
+  if (typeof setTimeout !== 'function') {
+    warnAppearanceModuleUnavailable();
+    return;
+  }
+
+  appearanceModuleUnavailableWarningHandle = setTimeout(function () {
+    appearanceModuleUnavailableWarningHandle = null;
+    warnAppearanceModuleUnavailable();
+  }, 1500);
+}
 
 function detectSystemThemePreference() {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -4802,6 +4844,8 @@ function applyAppearanceModuleBindings(module) {
   }
 
   appearanceModule = module;
+  appearanceModuleInitialized = true;
+  clearAppearanceModuleUnavailableWarning();
 
   updateThemeColor = module.updateThemeColor || updateThemeColor;
   setToggleIcon = module.setToggleIcon || setToggleIcon;
@@ -4858,21 +4902,25 @@ function initializeAppearanceModule(factory) {
     return false;
   }
 
-  return applyAppearanceModuleBindings(module);
+  var bound = applyAppearanceModuleBindings(module);
+  if (bound) {
+    appearanceModuleInitialized = true;
+  }
+  return bound;
 }
 
 var appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
+appearanceModuleInitialized = appearanceModuleReady;
 
 if (!appearanceModuleReady) {
-  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-  }
+  scheduleAppearanceModuleUnavailableWarning();
 
   whenGlobalValueAvailable(
     'cineSettingsAppearance',
     function (candidate) { return !!candidate && typeof candidate.initialize === 'function'; },
     function (candidate) {
       if (initializeAppearanceModule(candidate)) {
+        clearAppearanceModuleUnavailableWarning();
         if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
           console.info('cineSettingsAppearance module became available after deferred load.');
         }
@@ -4882,6 +4930,7 @@ if (!appearanceModuleReady) {
       interval: 200,
       maxAttempts: 300,
       onTimeout: function onTimeout() {
+        clearAppearanceModuleUnavailableWarning();
         if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
           console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
         }
@@ -5533,6 +5582,44 @@ if (settingsButton && settingsDialog) {
     return null;
   };
   if (autoGearResetFactoryButton) {
+    var autoGearResetUnavailableWarningHandle = null;
+
+    var clearAutoGearResetUnavailableWarning = function clearAutoGearResetUnavailableWarning() {
+      if (autoGearResetUnavailableWarningHandle === null) {
+        return;
+      }
+
+      try {
+        clearTimeout(autoGearResetUnavailableWarningHandle);
+      } catch (clearError) {
+        void clearError;
+      }
+
+      autoGearResetUnavailableWarningHandle = null;
+    };
+
+    var warnAutoGearResetUnavailable = function warnAutoGearResetUnavailable() {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function' && !resetHandlerAttached) {
+        console.warn('Automatic gear reset action unavailable: reset handler missing.');
+      }
+    };
+
+    var scheduleAutoGearResetUnavailableWarning = function scheduleAutoGearResetUnavailableWarning() {
+      if (autoGearResetUnavailableWarningHandle !== null) {
+        return;
+      }
+
+      if (typeof setTimeout !== 'function') {
+        warnAutoGearResetUnavailable();
+        return;
+      }
+
+      autoGearResetUnavailableWarningHandle = setTimeout(function () {
+        autoGearResetUnavailableWarningHandle = null;
+        warnAutoGearResetUnavailable();
+      }, 1500);
+    };
+
     var enableResetButton = function enableResetButton() {
       autoGearResetFactoryButton.disabled = false;
       autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
@@ -5553,6 +5640,7 @@ if (settingsButton && settingsDialog) {
       autoGearResetFactoryButton.addEventListener('click', handler);
       enableResetButton();
       resetHandlerAttached = true;
+      clearAutoGearResetUnavailableWarning();
       return true;
     };
 
@@ -5560,15 +5648,14 @@ if (settingsButton && settingsDialog) {
 
     if (!attachResetHandler(initialHandler)) {
       disableResetButton();
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Automatic gear reset action unavailable: reset handler missing.');
-      }
+      scheduleAutoGearResetUnavailableWarning();
 
       whenGlobalValueAvailable(
         'resetAutoGearRulesToFactoryAdditions',
         function (candidate) { return typeof candidate === 'function'; },
         function (candidate) {
           if (attachResetHandler(candidate)) {
+            clearAutoGearResetUnavailableWarning();
             if (typeof console !== 'undefined' && typeof console.info === 'function') {
               console.info('Automatic gear reset action re-enabled after deferred module load.');
             }
@@ -5578,6 +5665,7 @@ if (settingsButton && settingsDialog) {
           interval: 200,
           maxAttempts: 300,
           onTimeout: function onTimeout() {
+            clearAutoGearResetUnavailableWarning();
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
             }
