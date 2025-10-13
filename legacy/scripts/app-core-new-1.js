@@ -8703,6 +8703,28 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       return (TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.celsius) || "celsius";
     };
+    var normalizeFocusScaleSafe = function(value) {
+      if (typeof normalizeFocusScale === "function") {
+        try {
+          var normalized = normalizeFocusScale(value);
+          if (normalized === "imperial" || normalized === "metric") {
+            return normalized;
+          }
+        } catch (focusScaleNormalizeError) {
+          console.warn(
+            "normalizeFocusScale helper threw an error; falling back to safe normalization",
+            focusScaleNormalizeError
+          );
+        }
+      }
+      if (typeof value === "string") {
+        var trimmed = value.trim().toLowerCase();
+        if (trimmed === "imperial" || trimmed === "metric") {
+          return trimmed;
+        }
+      }
+      return "metric";
+    };
     var resolveLocaleString = function resolveLocaleString(key) {
       if (!key) return "";
       var bundle = texts[lang];
@@ -9694,7 +9716,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         settingsFocusScale.setAttribute('aria-label', texts[lang].focusScaleSetting);
         Array.from(settingsFocusScale.options || []).forEach(function (option) {
           if (!option) return;
-          var normalized = normalizeFocusScale(option.value);
+          var normalized = normalizeFocusScaleSafe(option.value);
           option.textContent = getFocusScaleLabelForLang(lang, normalized);
         });
         settingsFocusScale.value = focusScalePreference;
