@@ -259,7 +259,13 @@ function resolvePreferredTemperatureStorageKey() {
   }
   return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
 }
-var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
+var PREEXISTING_TEMPERATURE_STORAGE_KEY =
+  typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY
+    ? TEMPERATURE_STORAGE_KEY
+    : null;
+
+var CORE_TEMPERATURE_STORAGE_KEY =
+  PREEXISTING_TEMPERATURE_STORAGE_KEY || resolvePreferredTemperatureStorageKey();
 (function ensureTemperatureStorageKeyGlobal(key) {
   var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null];
   for (var index = 0; index < candidates.length; index += 1) {
@@ -276,7 +282,47 @@ var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
       void temperatureKeyAssignError;
     }
   }
-})(TEMPERATURE_STORAGE_KEY);
+
+  var sharedCandidates = candidates
+    .map(function (scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return null;
+      }
+
+      try {
+        return scope.CORE_SHARED && _typeof(scope.CORE_SHARED) === 'object'
+          ? scope.CORE_SHARED
+          : null;
+      } catch (sharedLookupError) {
+        void sharedLookupError;
+      }
+
+      return null;
+    })
+    .filter(function (sharedScopeCandidate) {
+      return sharedScopeCandidate;
+    });
+
+  for (var sharedIndex = 0; sharedIndex < sharedCandidates.length; sharedIndex += 1) {
+    var sharedScope = sharedCandidates[sharedIndex];
+    if (!sharedScope || _typeof(sharedScope) !== 'object') {
+      continue;
+    }
+
+    if (
+      typeof sharedScope.TEMPERATURE_STORAGE_KEY === 'string' &&
+      sharedScope.TEMPERATURE_STORAGE_KEY
+    ) {
+      continue;
+    }
+
+    try {
+      sharedScope.TEMPERATURE_STORAGE_KEY = key;
+    } catch (sharedAssignError) {
+      void sharedAssignError;
+    }
+  }
+})(CORE_TEMPERATURE_STORAGE_KEY);
 function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
@@ -20762,7 +20808,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
     AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
     GEAR_LIST_CATEGORIES: GEAR_LIST_CATEGORIES,
-    TEMPERATURE_STORAGE_KEY: TEMPERATURE_STORAGE_KEY,
+    TEMPERATURE_STORAGE_KEY: CORE_TEMPERATURE_STORAGE_KEY,
     TEMPERATURE_UNITS: TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
     FOCUS_SCALE_STORAGE_KEY: FOCUS_SCALE_STORAGE_KEY,
