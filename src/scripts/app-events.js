@@ -3405,7 +3405,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
   callEventsCoreFunction('updatePowerDistVoltageOptions');
   callEventsCoreFunction('updatePowerDistCurrentOptions');
   callEventsCoreFunction('updateRecordingMediaOptions');
-  updateTimecodeTypeOptions();
+  callEventsCoreFunction('updateTimecodeTypeOptions');
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
