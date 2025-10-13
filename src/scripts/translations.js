@@ -1965,7 +1965,7 @@ const texts = {
         resultsWarnings: {
           title: "Power Summary pass: Warnings and backups",
           body:
-            "Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state.",
+            "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the battery feed is near its limit, and red means the camera rig is pulling more power than the battery can supply.",
         },
         batteryComparison: {
           title: "Compare battery options",
@@ -4149,7 +4149,7 @@ const texts = {
         resultsWarnings: {
           title: "Passaggio Power Summary: Avvisi e backup",
             body:
-              "Registra gli avvisi sui connettori quando i D-Tap o i pin non reggono il carico, scarica il rapporto offline per backup ridondanti e conferma il banner di autosalvataggio affinché condivisioni ed esportazioni riflettano lo stesso stato.",
+              "Controlla i riquadri di avviso dei connettori: il verde indica che l'alimentazione della batteria pin o D-Tap è sicura, il giallo che l'alimentazione della batteria è vicina al limite e il rosso che il rig di camera sta assorbendo più potenza di quanta la batteria possa fornire.",
         },
         batteryComparison: {
           title: "Confronta le batterie",
@@ -6346,7 +6346,7 @@ const texts = {
         resultsWarnings: {
           title: "Pasada por Power Summary: Avisos y copias",
             body:
-              "Registra las advertencias de conectores cuando los D-Tap o los pines no soportan la carga, descarga el informe offline como copia de seguridad redundante y confirma el banner de guardado automático para que las comparticiones y exportaciones reflejen el mismo estado.",
+              "Revisa los cuadros de alerta de conectores: el verde muestra que la alimentación de batería de pines o D-Tap es segura, el amarillo indica que la alimentación de batería está cerca de su máximo y el rojo que el rig de cámara demanda más potencia de la que el paquete de baterías puede entregar.",
         },
         batteryComparison: {
           title: "Compara opciones de batería",
@@ -8556,7 +8556,7 @@ const texts = {
         resultsWarnings: {
           title: "Passage Power Summary : Alertes et sauvegardes",
             body:
-              "Consignez les alertes de connecteur lorsque les D-Tap ou les broches ne supportent pas la charge, téléchargez le rapport hors ligne pour des sauvegardes redondantes et vérifiez la bannière d’enregistrement automatique afin que partages et exports reflètent le même état.",
+              "Vérifiez les encadrés d’alerte des connecteurs : le vert signifie que l’alimentation de batterie à broches ou D-Tap est sûre, le jaune que l’alimentation de batterie approche de sa limite maximale et le rouge que le rig caméra demande plus de puissance que le pack ne peut fournir.",
         },
         batteryComparison: {
           title: "Comparez les options de batterie",
@@ -10769,7 +10769,7 @@ const texts = {
         resultsWarnings: {
           title: "Power Summary-Durchgang: Warnungen und Backups",
             body:
-              "Protokolliere Anschlusswarnungen, wenn D-Tap oder Pins die Last nicht tragen können, lade den Offline-Bericht für redundante Backups herunter und prüfe das Autosave-Banner, damit Freigaben und Exporte denselben Stand widerspiegeln.",
+              "Prüfe die Warnfelder für die Anschlüsse: Grün bedeutet, dass die Pin- oder D-Tap-Batterieversorgung sicher ist, Gelb, dass die Batterieversorgung nahe ihrer Maximalbelastung liegt, und Rot, dass das Kamerarig mehr Leistung zieht, als das Pack liefern kann.",
         },
         batteryComparison: {
           title: "Batterieoptionen vergleichen",
