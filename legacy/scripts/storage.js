@@ -6775,7 +6775,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
     var parsedSuffix = importedMatch && importedMatch[2] ? Number(importedMatch[2]) : NaN;
-    var suffixStart = typeof parsedSuffix === "number" && !isNaN(parsedSuffix) ? parsedSuffix + 1 : 2;
+    var suffixStart = Number.isFinite(parsedSuffix) ? parsedSuffix + 1 : 2;
     if (importedMatch) {
       return {
         base: base,

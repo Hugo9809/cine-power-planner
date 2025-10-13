@@ -64,6 +64,39 @@ function getGlobalScope() {
   if (typeof global !== 'undefined' && global) return global;
   return null;
 }
+var resolvedDeviceManagerElements = {
+  categorySelect: null
+};
+function resolveNewCategorySelect() {
+  var cached = resolvedDeviceManagerElements.categorySelect;
+  if (cached && _typeof(cached) === 'object') {
+    if (typeof cached.isConnected === 'boolean') {
+      if (cached.isConnected) {
+        return cached;
+      }
+    } else if (cached.ownerDocument) {
+      return cached;
+    }
+  }
+  var element = null;
+  if (typeof newCategorySelect !== 'undefined' && newCategorySelect) {
+    element = newCategorySelect;
+  } else if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+    element = document.getElementById('newCategory');
+  }
+  if (element) {
+    resolvedDeviceManagerElements.categorySelect = element;
+    var scope = getGlobalScope();
+    if (scope && _typeof(scope) === 'object') {
+      try {
+        scope.newCategorySelect = scope.newCategorySelect || element;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  }
+  return element;
+}
 var AUTO_BACKUP_CHANGE_THRESHOLD = 50;
 var AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 var AUTO_BACKUP_ALLOWED_REASONS = ['interval', 'project-switch', 'import', 'export', 'export-revert', 'before-reload', 'change-threshold'];
@@ -2349,14 +2382,19 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
     var name = button.dataset.name;
     var categoryKey = button.dataset.category;
     var subcategory = button.dataset.subcategory;
-    if (!Array.from(newCategorySelect.options).some(function (opt) {
+    var categorySelect = resolveNewCategorySelect();
+    if (!categorySelect) {
+      console.warn('Cannot edit device: category select is unavailable');
+      return;
+    }
+    if (!Array.from(categorySelect.options).some(function (opt) {
       return opt.value === categoryKey;
     })) {
       var _categoryNames$curren;
       var opt = document.createElement("option");
       opt.value = categoryKey;
       opt.textContent = ((_categoryNames$curren = categoryNames[currentLang]) === null || _categoryNames$curren === void 0 ? void 0 : _categoryNames$curren[categoryKey]) || categoryKey;
-      newCategorySelect.appendChild(opt);
+      categorySelect.appendChild(opt);
     }
     addDeviceBtn.dataset.mode = "edit";
     addDeviceBtn.dataset.originalName = name;
@@ -2366,9 +2404,9 @@ addSafeEventListener(deviceManagerSection, "click", function (event) {
     } else {
       delete addDeviceBtn.dataset.originalSubcategory;
     }
-    newCategorySelect.value = categoryKey;
+    categorySelect.value = categoryKey;
     newNameInput.value = name;
-    newCategorySelect.dispatchEvent(new Event('change'));
+    categorySelect.dispatchEvent(new Event('change'));
     var deviceData;
     if (categoryKey === "accessories.cables") {
       deviceData = devices.accessories.cables[subcategory][name];
@@ -2448,165 +2486,171 @@ addSafeEventListener(deviceManagerSection, 'keydown', function (event) {
     toggleDeviceDetails(event.target);
   }
 });
-addSafeEventListener(newCategorySelect, "change", function () {
-  var _addDeviceBtn;
-  var wasEditing = ((_addDeviceBtn = addDeviceBtn) === null || _addDeviceBtn === void 0 ? void 0 : _addDeviceBtn.dataset.mode) === "edit";
-  var previousName = newNameInput ? newNameInput.value : "";
-  var val = newCategorySelect.value;
-  placeWattField(val);
-  clearDynamicFields();
-  subcategoryFieldDiv.hidden = true;
-  newSubcategorySelect.innerHTML = "";
-  newSubcategorySelect.disabled = false;
-  if (dtapRow) dtapRow.style.display = "";
-  if (wattFieldDiv) wattFieldDiv.style.display = "block";
-  hideFormSection(batteryFieldsDiv);
-  hideFormSection(cameraFieldsDiv);
-  hideFormSection(monitorFieldsDiv);
-  hideFormSection(viewfinderFieldsDiv);
-  hideFormSection(videoFieldsDiv);
-  hideFormSection(motorFieldsDiv);
-  hideFormSection(controllerFieldsDiv);
-  hideFormSection(distanceFieldsDiv);
-  if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(batteryFieldsDiv);
-    if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
-  } else if (val === "cameras") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(cameraFieldsDiv);
-  } else if (val === "lenses") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(lensFieldsDiv);
-    setLensDeviceMountOptions([], resolveDefaultLensMountType());
+var newCategorySelectElement = resolveNewCategorySelect();
+if (newCategorySelectElement) {
+  addSafeEventListener(newCategorySelectElement, "change", function () {
+    var _addDeviceBtn;
+    var wasEditing = ((_addDeviceBtn = addDeviceBtn) === null || _addDeviceBtn === void 0 ? void 0 : _addDeviceBtn.dataset.mode) === "edit";
+    var previousName = newNameInput ? newNameInput.value : "";
+    var val = newCategorySelectElement.value;
+    placeWattField(val);
+    clearDynamicFields();
+    subcategoryFieldDiv.hidden = true;
+    newSubcategorySelect.innerHTML = "";
+    newSubcategorySelect.disabled = false;
+    if (dtapRow) dtapRow.style.display = "";
+    if (wattFieldDiv) wattFieldDiv.style.display = "block";
+    hideFormSection(batteryFieldsDiv);
+    hideFormSection(cameraFieldsDiv);
+    hideFormSection(monitorFieldsDiv);
+    hideFormSection(viewfinderFieldsDiv);
+    hideFormSection(videoFieldsDiv);
+    hideFormSection(motorFieldsDiv);
+    hideFormSection(controllerFieldsDiv);
+    hideFormSection(distanceFieldsDiv);
+    if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(batteryFieldsDiv);
+      if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
+    } else if (val === "cameras") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(cameraFieldsDiv);
+    } else if (val === "lenses") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(lensFieldsDiv);
+      setLensDeviceMountOptions([], resolveDefaultLensMountType());
+      if (lensFocusScaleSelect) {
+        updateLensFocusScaleSelectOptions();
+        lensFocusScaleSelect.value = '';
+      }
+    } else if (val === "monitors" || val === "directorMonitors") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(monitorFieldsDiv);
+    } else if (val === "viewfinders") {
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      showFormSection(viewfinderFieldsDiv);
+    } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
+      showFormSection(videoFieldsDiv);
+    } else if (val === "fiz.motors") {
+      showFormSection(motorFieldsDiv);
+    } else if (val === "fiz.controllers") {
+      showFormSection(controllerFieldsDiv);
+    } else if (val === "fiz.distance") {
+      showFormSection(distanceFieldsDiv);
+    } else if (val === "accessories.cables") {
+      var _devices$accessories2;
+      if (wattFieldDiv) wattFieldDiv.style.display = "none";
+      subcategoryFieldDiv.hidden = false;
+      var subcats = Object.keys(((_devices$accessories2 = devices.accessories) === null || _devices$accessories2 === void 0 ? void 0 : _devices$accessories2.cables) || {});
+      for (var _i2 = 0, _subcats2 = subcats; _i2 < _subcats2.length; _i2++) {
+        var sc = _subcats2[_i2];
+        var opt = document.createElement('option');
+        opt.value = sc;
+        opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
+        newSubcategorySelect.appendChild(opt);
+      }
+      if (newSubcategorySelect.value) {
+        buildDynamicFields("accessories.cables.".concat(newSubcategorySelect.value), {}, categoryExcludedAttrs["accessories.cables.".concat(newSubcategorySelect.value)] || []);
+      }
+    } else {
+      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+    }
+    newWattInput.value = "";
+    newCapacityInput.value = "";
+    newPinAInput.value = "";
+    newDtapAInput.value = "";
+    cameraWattInput.value = "";
+    cameraVoltageInput.value = "";
+    cameraPortTypeInput.value = "";
+    monitorScreenSizeInput.value = "";
+    monitorBrightnessInput.value = "";
+    monitorWattInput.value = "";
+    monitorVoltageInput.value = "";
+    monitorPortTypeInput.value = "";
+    monitorWirelessTxInput.checked = false;
+    monitorLatencyInput.value = "";
+    monitorAudioOutputInput.value = "";
+    clearMonitorVideoInputs();
+    clearMonitorVideoOutputs();
+    viewfinderScreenSizeInput.value = "";
+    viewfinderBrightnessInput.value = "";
+    viewfinderWattInput.value = "";
+    viewfinderVoltageInput.value = "";
+    viewfinderPortTypeInput.value = "";
+    viewfinderWirelessTxInput.checked = false;
+    viewfinderLatencyInput.value = "";
+    clearViewfinderVideoInputs();
+    clearViewfinderVideoOutputs();
+    clearBatteryPlates();
+    clearRecordingMedia();
+    clearLensMounts();
+    clearLensDeviceMountOptions();
     if (lensFocusScaleSelect) {
-      updateLensFocusScaleSelectOptions();
       lensFocusScaleSelect.value = '';
     }
-  } else if (val === "monitors" || val === "directorMonitors") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(monitorFieldsDiv);
-  } else if (val === "viewfinders") {
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    showFormSection(viewfinderFieldsDiv);
-  } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
-    showFormSection(videoFieldsDiv);
-  } else if (val === "fiz.motors") {
-    showFormSection(motorFieldsDiv);
-  } else if (val === "fiz.controllers") {
-    showFormSection(controllerFieldsDiv);
-  } else if (val === "fiz.distance") {
-    showFormSection(distanceFieldsDiv);
-  } else if (val === "accessories.cables") {
-    var _devices$accessories2;
-    if (wattFieldDiv) wattFieldDiv.style.display = "none";
-    subcategoryFieldDiv.hidden = false;
-    var subcats = Object.keys(((_devices$accessories2 = devices.accessories) === null || _devices$accessories2 === void 0 ? void 0 : _devices$accessories2.cables) || {});
-    for (var _i2 = 0, _subcats2 = subcats; _i2 < _subcats2.length; _i2++) {
-      var sc = _subcats2[_i2];
-      var opt = document.createElement('option');
-      opt.value = sc;
-      opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
-      newSubcategorySelect.appendChild(opt);
+    callEventsCoreFunction('clearPowerDistribution', [], {
+      defer: true
+    });
+    clearVideoOutputs();
+    clearFizConnectors();
+    clearViewfinders();
+    clearTimecodes();
+    videoPowerInput.value = "";
+    clearVideoInputs();
+    clearVideoOutputsIO();
+    videoFrequencyInput.value = "";
+    videoLatencyInput.value = "";
+    motorConnectorInput.value = "";
+    motorInternalInput.checked = false;
+    motorTorqueInput.value = "";
+    motorGearInput.value = "";
+    motorNotesInput.value = "";
+    controllerConnectorInput.value = "";
+    controllerPowerInput.value = "";
+    controllerBatteryInput.value = "";
+    controllerConnectivityInput.value = "";
+    controllerNotesInput.value = "";
+    distanceConnectionInput.value = "";
+    distanceMethodInput.value = "";
+    distanceRangeInput.value = "";
+    distanceAccuracyInput.value = "";
+    distanceOutputInput.value = "";
+    distanceNotesInput.value = "";
+    if (val !== 'accessories.cables') {
+      buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
     }
-    if (newSubcategorySelect.value) {
-      buildDynamicFields("accessories.cables.".concat(newSubcategorySelect.value), {}, categoryExcludedAttrs["accessories.cables.".concat(newSubcategorySelect.value)] || []);
+    if (newNameInput) {
+      if (wasEditing) {
+        newNameInput.value = previousName;
+      } else {
+        newNameInput.value = "";
+      }
     }
-  } else {
-    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
-  }
-  newWattInput.value = "";
-  newCapacityInput.value = "";
-  newPinAInput.value = "";
-  newDtapAInput.value = "";
-  cameraWattInput.value = "";
-  cameraVoltageInput.value = "";
-  cameraPortTypeInput.value = "";
-  monitorScreenSizeInput.value = "";
-  monitorBrightnessInput.value = "";
-  monitorWattInput.value = "";
-  monitorVoltageInput.value = "";
-  monitorPortTypeInput.value = "";
-  monitorWirelessTxInput.checked = false;
-  monitorLatencyInput.value = "";
-  monitorAudioOutputInput.value = "";
-  clearMonitorVideoInputs();
-  clearMonitorVideoOutputs();
-  viewfinderScreenSizeInput.value = "";
-  viewfinderBrightnessInput.value = "";
-  viewfinderWattInput.value = "";
-  viewfinderVoltageInput.value = "";
-  viewfinderPortTypeInput.value = "";
-  viewfinderWirelessTxInput.checked = false;
-  viewfinderLatencyInput.value = "";
-  clearViewfinderVideoInputs();
-  clearViewfinderVideoOutputs();
-  clearBatteryPlates();
-  clearRecordingMedia();
-  clearLensMounts();
-  clearLensDeviceMountOptions();
-  if (lensFocusScaleSelect) {
-    lensFocusScaleSelect.value = '';
-  }
-  callEventsCoreFunction('clearPowerDistribution', [], {
-    defer: true
-  });
-  clearVideoOutputs();
-  clearFizConnectors();
-  clearViewfinders();
-  clearTimecodes();
-  videoPowerInput.value = "";
-  clearVideoInputs();
-  clearVideoOutputsIO();
-  videoFrequencyInput.value = "";
-  videoLatencyInput.value = "";
-  motorConnectorInput.value = "";
-  motorInternalInput.checked = false;
-  motorTorqueInput.value = "";
-  motorGearInput.value = "";
-  motorNotesInput.value = "";
-  controllerConnectorInput.value = "";
-  controllerPowerInput.value = "";
-  controllerBatteryInput.value = "";
-  controllerConnectivityInput.value = "";
-  controllerNotesInput.value = "";
-  distanceConnectionInput.value = "";
-  distanceMethodInput.value = "";
-  distanceRangeInput.value = "";
-  distanceAccuracyInput.value = "";
-  distanceOutputInput.value = "";
-  distanceNotesInput.value = "";
-  if (val !== 'accessories.cables') {
-    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
-  }
-  if (newNameInput) {
+    var cancelLabel = texts[currentLang].cancelEditBtn;
     if (wasEditing) {
-      newNameInput.value = previousName;
+      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      showFormSection(cancelEditBtn);
     } else {
-      newNameInput.value = "";
+      setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
+      addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+      addDeviceBtn.dataset.mode = "add";
+      delete addDeviceBtn.dataset.originalName;
+      delete addDeviceBtn.dataset.originalSubcategory;
+      delete addDeviceBtn.dataset.originalCategory;
+      setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
+      cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+      hideFormSection(cancelEditBtn);
     }
-  }
-  var cancelLabel = texts[currentLang].cancelEditBtn;
-  if (wasEditing) {
-    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
-    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    showFormSection(cancelEditBtn);
-  } else {
-    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
-    addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-    addDeviceBtn.dataset.mode = "add";
-    delete addDeviceBtn.dataset.originalName;
-    delete addDeviceBtn.dataset.originalSubcategory;
-    delete addDeviceBtn.dataset.originalCategory;
-    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
-    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    hideFormSection(cancelEditBtn);
-  }
-});
+  });
+} else {
+  console.warn('Device manager category select is unavailable; change handler not registered');
+}
 addSafeEventListener(newSubcategorySelect, 'change', function () {
-  if (newCategorySelect.value === 'accessories.cables') {
+  var categorySelect = resolveNewCategorySelect();
+  if (categorySelect && categorySelect.value === 'accessories.cables') {
     buildDynamicFields("accessories.cables.".concat(newSubcategorySelect.value), {}, categoryExcludedAttrs["accessories.cables.".concat(newSubcategorySelect.value)] || []);
   }
 });
@@ -2622,9 +2666,10 @@ function resetDeviceForm() {
     setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   }
-  if (newCategorySelect.isConnected) {
+  var categorySelect = resolveNewCategorySelect();
+  if (categorySelect && categorySelect.isConnected) {
     try {
-      newCategorySelect.dispatchEvent(new Event('change'));
+      categorySelect.dispatchEvent(new Event('change'));
     } catch (err) {
       console.warn('resetDeviceForm dispatch failed', err);
     }
@@ -2632,7 +2677,8 @@ function resetDeviceForm() {
 }
 addSafeEventListener(addDeviceBtn, "click", function () {
   var name = newNameInput.value.trim();
-  var category = newCategorySelect.value;
+  var categorySelect = resolveNewCategorySelect();
+  var category = categorySelect ? categorySelect.value : '';
   var isEditing = addDeviceBtn.dataset.mode === "edit";
   var originalName = addDeviceBtn.dataset.originalName;
   var originalCategory = addDeviceBtn.dataset.originalCategory;

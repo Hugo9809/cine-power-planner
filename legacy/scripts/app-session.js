@@ -1538,6 +1538,51 @@ function deriveSessionProjectInfo(info) {
   return fallback;
 }
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
+var sessionGlobalScope = getSessionCloneScope();
+function normalizeTemperatureUnitValue(value) {
+  if (value === 'fahrenheit' || value === 'celsius') {
+    return value;
+  }
+  return value && typeof value === 'string' ? value.toLowerCase() : 'celsius';
+}
+function resolveInitialTemperatureUnit() {
+  if (sessionGlobalScope && typeof sessionGlobalScope.temperatureUnit === 'string') {
+    return normalizeTemperatureUnitValue(sessionGlobalScope.temperatureUnit);
+  }
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      var stored = localStorage.getItem(temperaturePreferenceStorageKey);
+      if (typeof stored === 'string' && stored) {
+        return normalizeTemperatureUnitValue(stored);
+      }
+    }
+  } catch (temperatureStorageError) {
+    console.warn('Unable to read stored temperature unit preference', temperatureStorageError);
+  }
+  return 'celsius';
+}
+var localTemperatureUnit = resolveInitialTemperatureUnit();
+if (sessionGlobalScope && _typeof(sessionGlobalScope) === 'object') {
+  try {
+    Object.defineProperty(sessionGlobalScope, 'temperatureUnit', {
+      configurable: true,
+      enumerable: true,
+      get: function get() {
+        return localTemperatureUnit;
+      },
+      set: function set(value) {
+        localTemperatureUnit = normalizeTemperatureUnitValue(value);
+      }
+    });
+  } catch (defineTemperaturePropertyError) {
+    void defineTemperaturePropertyError;
+    try {
+      sessionGlobalScope.temperatureUnit = localTemperatureUnit;
+    } catch (sessionTemperatureExposeError) {
+      void sessionTemperatureExposeError;
+    }
+  }
+}
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
 var ensureCriticalStorageBackupsFn = function ensureCriticalStorageBackupsFn() {
   return {
@@ -3733,7 +3778,7 @@ function resolveImportedProjectNamingContextSession(rawName) {
   }
   var importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
   var parsedSuffix = importedMatch && importedMatch[2] ? Number(importedMatch[2]) : NaN;
-  var suffixStart = typeof parsedSuffix === 'number' && !isNaN(parsedSuffix) ? parsedSuffix + 1 : 2;
+  var suffixStart = Number.isFinite(parsedSuffix) ? parsedSuffix + 1 : 2;
   if (importedMatch) {
     return {
       base: base,
@@ -4711,10 +4756,10 @@ var appearanceContext = {
   },
   preferences: {
     getTemperatureUnit: function getTemperatureUnit() {
-      return temperatureUnit;
+      return localTemperatureUnit;
     },
     setTemperatureUnit: function setTemperatureUnit(value) {
-      temperatureUnit = value;
+      localTemperatureUnit = normalizeTemperatureUnitValue(value);
     },
     applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
     getFocusScale: function getFocusScale() {
@@ -5397,7 +5442,7 @@ if (settingsButton && settingsDialog) {
       }
     }
     updateCameraColorInputsFromState();
-    if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
+    if (settingsTemperatureUnit) settingsTemperatureUnit.value = localTemperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
