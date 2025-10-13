@@ -8235,30 +8235,33 @@ body:not(.dark-mode) .onboarding-step-status {
   align-self: center;
 }
 
-.onboarding-back-button {
-  font-weight: var(--font-weight-medium);
-}
-
+.onboarding-back-button,
 .onboarding-next-button {
-  background: var(--accent-color);
-  color: var(--inverse-text-color);
-  box-shadow: var(--panel-shadow);
-}
-
-.onboarding-next-button:hover,
-.onboarding-next-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 88%, #ffffff 12%);
-  color: var(--inverse-text-color);
-}
-
-.onboarding-next-button:active {
-  background: color-mix(in srgb, var(--accent-color) 76%, var(--control-active-bg) 24%);
+  font-weight: var(--font-weight-medium);
+  background: var(--control-bg);
+  color: var(--control-text);
   box-shadow: none;
 }
 
-.onboarding-next-button[disabled] {
-  background: color-mix(in srgb, var(--control-disabled-bg) 55%, var(--accent-color) 45%);
-  color: color-mix(in srgb, var(--inverse-text-color) 80%, rgba(255, 255, 255, 0.45) 20%);
+.onboarding-back-button:hover,
+.onboarding-back-button:focus-visible,
+.onboarding-next-button:hover,
+.onboarding-next-button:focus-visible {
+  background: var(--control-hover-bg);
+  color: var(--control-text);
+}
+
+.onboarding-back-button:active,
+.onboarding-next-button:active {
+  background: var(--control-active-bg);
+  color: var(--control-text);
+  box-shadow: none;
+}
+
+.onboarding-back-button:disabled,
+.onboarding-next-button:disabled {
+  background: var(--control-disabled-bg);
+  color: color-mix(in srgb, var(--control-text) 80%, transparent);
   box-shadow: none;
 }
 
