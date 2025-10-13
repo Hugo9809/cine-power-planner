@@ -2711,6 +2711,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/modules/core/runtime-state.js',
       'legacy/scripts/modules/core/mount-voltage.js',
       'legacy/scripts/modules/logging.js',
+      'legacy/scripts/modules/core/mount-voltage.js',
       'legacy/scripts/modules/features/backup.js',
       'legacy/scripts/modules/features/onboarding-tour.js',
       'legacy/scripts/modules/features/print-workflow.js',

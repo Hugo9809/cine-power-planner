@@ -1087,6 +1087,153 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
 var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
 
+function resolveTranslationScopeCandidates() {
+  return [
+    CORE_PART1_RUNTIME_SCOPE && typeof CORE_PART1_RUNTIME_SCOPE === 'object'
+      ? CORE_PART1_RUNTIME_SCOPE
+      : null,
+    CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && window && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && self && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && global && typeof global === 'object' ? global : null,
+  ];
+}
+
+function resolveTranslationDataset() {
+  const candidates = resolveTranslationScopeCandidates();
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    const dataset = scope.texts;
+    if (dataset && typeof dataset === 'object') {
+      return dataset;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const translationsModule = require('./translations.js');
+      if (translationsModule && typeof translationsModule === 'object' && translationsModule.texts) {
+        return translationsModule.texts;
+      }
+    } catch (translationRequireError) {
+      void translationRequireError;
+    }
+  }
+
+  return {};
+}
+
+function fallbackGetLanguageTexts(lang) {
+  const dataset = resolveTranslationDataset();
+  const fallbackLang = typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : 'en';
+
+  let normalized = null;
+  if (typeof lang === 'string' && lang) {
+    try {
+      normalized = String(lang).trim().toLowerCase();
+    } catch (normalizeError) {
+      void normalizeError;
+      normalized = null;
+    }
+  }
+
+  let resolved = normalized && Object.prototype.hasOwnProperty.call(dataset, normalized) ? normalized : '';
+  if (!resolved && normalized) {
+    const base = normalized.split('-')[0];
+    if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
+      resolved = base;
+    }
+  }
+  if (!resolved) {
+    resolved = fallbackLang;
+  }
+
+  const candidate = dataset && resolved && typeof dataset[resolved] === 'object' ? dataset[resolved] : null;
+  if (candidate) {
+    return candidate;
+  }
+
+  if (resolved !== fallbackLang) {
+    const fallback = dataset && typeof dataset[fallbackLang] === 'object' ? dataset[fallbackLang] : null;
+    if (fallback) {
+      return fallback;
+    }
+  }
+
+  if (dataset && typeof dataset.en === 'object') {
+    return dataset.en;
+  }
+
+  const languages = dataset ? Object.keys(dataset) : [];
+  if (languages.length) {
+    const firstLang = languages[0];
+    const firstTexts = dataset[firstLang];
+    if (firstTexts && typeof firstTexts === 'object') {
+      return firstTexts;
+    }
+  }
+
+  return {};
+}
+
+function resolveExistingGetLanguageTexts() {
+  const candidates = resolveTranslationScopeCandidates();
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    const helper = scope.getLanguageTexts;
+    if (typeof helper === 'function') {
+      return helper;
+    }
+  }
+  return null;
+}
+
+var getLanguageTexts = (function initialiseGetLanguageTexts() {
+  const existing = resolveExistingGetLanguageTexts();
+  if (existing) {
+    return function getLanguageTextsProxy(lang) {
+      try {
+        const result = existing.call(null, lang);
+        if (result && typeof result === 'object') {
+          return result;
+        }
+      } catch (existingError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Existing getLanguageTexts helper failed. Falling back to local resolution.', existingError);
+        }
+      }
+      return fallbackGetLanguageTexts(lang);
+    };
+  }
+  return function getLanguageTextsFallback(lang) {
+    return fallbackGetLanguageTexts(lang);
+  };
+})();
+
+(function ensureGlobalGetLanguageTextsAvailability() {
+  const candidates = resolveTranslationScopeCandidates();
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    if (typeof scope.getLanguageTexts !== 'function') {
+      try {
+        scope.getLanguageTexts = getLanguageTexts;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  }
+})();
+
 function fallbackGetCoreGlobalObject() {
   if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
     return CORE_GLOBAL_SCOPE;
