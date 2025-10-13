@@ -937,6 +937,14 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 });
 
 CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'crewRoles',
+  validator: Array.isArray,
+  fallback: function () {
+    return [];
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'getLanguageTexts',
   validator: function (value) {
     return typeof value === 'function';
@@ -1385,6 +1393,302 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         void freezeError;
         return { char: glyphChar, font: normalizedFont };
       }
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'updateGlobalDevicesReference',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackUpdateGlobalDevicesReference(devices) {
+      if (!devices || typeof devices !== 'object') {
+        return;
+      }
+
+      var normalized = devices;
+      try {
+        if (typeof structuredClone === 'function') {
+          normalized = structuredClone(devices);
+        } else {
+          normalized = JSON.parse(JSON.stringify(devices));
+        }
+      } catch (cloneError) {
+        void cloneError;
+        normalized = devices;
+      }
+
+      var scope = resolveCriticalGlobalScope();
+      var candidates = [];
+
+      if (scope) {
+        candidates.push(scope);
+        if (scope.CORE_GLOBAL_SCOPE) {
+          candidates.push(scope.CORE_GLOBAL_SCOPE);
+        }
+        if (scope.DEVICE_GLOBAL_SCOPE) {
+          candidates.push(scope.DEVICE_GLOBAL_SCOPE);
+        }
+      }
+
+      for (var index = 0; index < candidates.length; index += 1) {
+        var target = candidates[index];
+        if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+          continue;
+        }
+
+        try {
+          target.devices = normalized;
+        } catch (assignError) {
+          void assignError;
+          try {
+            Object.defineProperty(target, 'devices', {
+              configurable: true,
+              writable: true,
+              value: normalized,
+            });
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+      }
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'configureIconOnlyButton',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackConfigureIconOnlyButton(button, glyph, options) {
+      if (!button || (typeof button !== 'object' && typeof button !== 'function')) {
+        return;
+      }
+
+      try {
+        if (typeof button.classList !== 'undefined' && button.classList.add) {
+          button.classList.add('icon-only-btn');
+        }
+      } catch (classError) {
+        void classError;
+      }
+
+      var glyphChar = null;
+      if (glyph && typeof glyph === 'object' && typeof glyph.char === 'string') {
+        glyphChar = glyph.char;
+      } else if (typeof glyph === 'string') {
+        glyphChar = glyph;
+      }
+
+      if (glyphChar && typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('data-icon-glyph', glyphChar);
+        } catch (glyphError) {
+          void glyphError;
+        }
+      }
+
+      var fallbackContext = '';
+      if (options && typeof options === 'object') {
+        if (typeof options.fallbackContext === 'string') {
+          fallbackContext = options.fallbackContext;
+        } else if (Array.isArray(options.contextPaths) && options.contextPaths.length) {
+          var contextPath = options.contextPaths[0];
+          if (typeof contextPath === 'string') {
+            fallbackContext = contextPath;
+          }
+        }
+      }
+
+      if (fallbackContext && typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('aria-label', fallbackContext);
+          button.setAttribute('title', fallbackContext);
+        } catch (labelError) {
+          void labelError;
+        }
+      }
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getCurrentProjectName',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackGetCurrentProjectName() {
+      var scope = resolveCriticalGlobalScope();
+      var doc = scope && scope.document ? scope.document : null;
+      var typedName = '';
+
+      if (doc) {
+        var input = null;
+        try {
+          input = doc.getElementById('setupName');
+        } catch (inputError) {
+          void inputError;
+          input = null;
+        }
+
+        if (input && typeof input.value === 'string') {
+          typedName = input.value.trim();
+        }
+
+        if (typedName) {
+          return typedName;
+        }
+
+        var select = null;
+        try {
+          select = doc.getElementById('setupSelect');
+        } catch (selectError) {
+          void selectError;
+          select = null;
+        }
+
+        if (select && typeof select.value === 'string' && select.value) {
+          return select.value.trim();
+        }
+      }
+
+      var storageKey = 'cameraPowerPlanner_project';
+      if (scope && scope.localStorage && typeof scope.localStorage.getItem === 'function') {
+        try {
+          var stored = scope.localStorage.getItem(storageKey);
+          if (stored) {
+            var parsed = null;
+            try {
+              parsed = JSON.parse(stored);
+            } catch (parseError) {
+              void parseError;
+              parsed = null;
+            }
+            if (
+              parsed &&
+              typeof parsed === 'object' &&
+              typeof parsed.projectName === 'string' &&
+              parsed.projectName.trim()
+            ) {
+              return parsed.projectName.trim();
+            }
+          }
+        } catch (storageError) {
+          void storageError;
+        }
+      }
+
+      return '';
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'setLanguage',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackSetLanguage(candidate) {
+      var scope = resolveCriticalGlobalScope();
+      var requested = typeof candidate === 'string' && candidate ? candidate : 'en';
+      var translations = scope && scope.texts && typeof scope.texts === 'object' ? scope.texts : {};
+      var normalized = requested;
+
+      if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
+        var lowerCase = requested.toLowerCase();
+        var keys = Object.keys(translations);
+        for (var index = 0; index < keys.length; index += 1) {
+          if (keys[index].toLowerCase() === lowerCase) {
+            normalized = keys[index];
+            break;
+          }
+        }
+        if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
+          normalized = 'en';
+        }
+      }
+
+      if (scope) {
+        scope.currentLang = normalized;
+      }
+
+      if (scope && scope.localStorage && typeof scope.localStorage.setItem === 'function') {
+        try {
+          scope.localStorage.setItem('language', normalized);
+        } catch (persistError) {
+          void persistError;
+        }
+      }
+
+      var doc = scope && scope.document ? scope.document : null;
+      if (doc && doc.documentElement) {
+        doc.documentElement.lang = normalized;
+      }
+
+      var updateSelectValue = function (element) {
+        if (!element || typeof element !== 'object') {
+          return;
+        }
+        try {
+          element.value = normalized;
+        } catch (assignValueError) {
+          void assignValueError;
+        }
+      };
+
+      if (doc) {
+        try {
+          updateSelectValue(doc.getElementById('languageSelect'));
+        } catch (languageSelectError) {
+          void languageSelectError;
+        }
+
+        try {
+          updateSelectValue(doc.getElementById('settingsLanguage'));
+        } catch (settingsLanguageError) {
+          void settingsLanguageError;
+        }
+
+        try {
+          var title = translations[normalized] && translations[normalized].appTitle;
+          if (typeof title === 'string' && title) {
+            doc.title = title;
+            var mainTitle = doc.getElementById('mainTitle');
+            if (mainTitle) {
+              mainTitle.textContent = title;
+            }
+          }
+        } catch (titleError) {
+          void titleError;
+        }
+      }
+
+      if (scope && typeof scope.dispatchEvent === 'function' && typeof scope.Event === 'function') {
+        try {
+          scope.dispatchEvent(new scope.Event('languagechange'));
+        } catch (eventError) {
+          void eventError;
+        }
+      } else if (
+        scope &&
+        scope.window &&
+        typeof scope.window.dispatchEvent === 'function' &&
+        typeof scope.window.Event === 'function'
+      ) {
+        try {
+          scope.window.dispatchEvent(new scope.window.Event('languagechange'));
+        } catch (windowEventError) {
+          void windowEventError;
+        }
+      }
+
+      return normalized;
     };
   },
 });
