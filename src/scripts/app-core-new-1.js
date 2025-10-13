@@ -18869,6 +18869,640 @@ const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsCon
 var videoFrequencyInput = document.getElementById("videoFrequency");
 var videoLatencyInput = document.getElementById("videoLatency");
 
+function normalizeTemperatureUnit(unit) {
+  if (typeof unit === 'string') {
+    const normalized = unit.trim().toLowerCase();
+    if (normalized === TEMPERATURE_UNITS.fahrenheit) {
+      return TEMPERATURE_UNITS.fahrenheit;
+    }
+    if (normalized === TEMPERATURE_UNITS.celsius) {
+      return TEMPERATURE_UNITS.celsius;
+    }
+  }
+  if (unit === TEMPERATURE_UNITS.fahrenheit) {
+    return TEMPERATURE_UNITS.fahrenheit;
+  }
+  return TEMPERATURE_UNITS.celsius;
+}
+
+function getRuntimeTemperatureUnit() {
+  const fallbackUnitCandidates = [];
+  if (typeof temperatureUnit !== 'undefined') {
+    fallbackUnitCandidates.push(temperatureUnit);
+  }
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    fallbackUnitCandidates.push(CORE_GLOBAL_SCOPE.temperatureUnit);
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    fallbackUnitCandidates.push(globalThis.temperatureUnit);
+  }
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    fallbackUnitCandidates.push(window.temperatureUnit);
+  }
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    fallbackUnitCandidates.push(self.temperatureUnit);
+  }
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    fallbackUnitCandidates.push(global.temperatureUnit);
+  }
+
+  for (let index = 0; index < fallbackUnitCandidates.length; index += 1) {
+    const candidate = fallbackUnitCandidates[index];
+    if (typeof candidate === 'string' && candidate) {
+      return candidate;
+    }
+  }
+
+  return TEMPERATURE_UNITS.celsius;
+}
+
+function convertCelsiusToUnit(value, unit) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return Number.NaN;
+  }
+  const resolvedUnit = normalizeTemperatureUnit(
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
+    return (numeric * 9) / 5 + 32;
+  }
+  return numeric;
+}
+
+function getTemperatureUnitSymbolForLang(lang = currentLang, unit) {
+  const resolvedUnit = normalizeTemperatureUnit(
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  const textsForLang = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts('en');
+  const key =
+    resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      ? 'temperatureUnitSymbolFahrenheit'
+      : 'temperatureUnitSymbolCelsius';
+  return (
+    textsForLang[key] ||
+    fallbackTexts[key] ||
+    (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C')
+  );
+}
+
+function getTemperatureUnitLabelForLang(lang = currentLang, unit) {
+  const resolvedUnit = normalizeTemperatureUnit(
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  const textsForLang = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts('en');
+  const key =
+    resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      ? 'temperatureUnitFahrenheit'
+      : 'temperatureUnitCelsius';
+  return (
+    textsForLang[key] ||
+    fallbackTexts[key] ||
+    (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)')
+  );
+}
+
+function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
+  const textsForLang = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts('en');
+  const baseLabel =
+    textsForLang.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
+  const symbol = getTemperatureUnitSymbolForLang(
+    lang,
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  return `${baseLabel} (${symbol})`;
+}
+
+function formatTemperatureForDisplay(celsius, options = {}) {
+  const {
+    unit,
+    lang = currentLang,
+    includeSign = true,
+  } = options || {};
+  const resolvedUnit = normalizeTemperatureUnit(
+    typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+  );
+  let converted = convertCelsiusToUnit(celsius, resolvedUnit);
+  if (!Number.isFinite(converted)) {
+    return '';
+  }
+  const textsForLang = getLanguageTexts(lang);
+  const fallbackTexts = getLanguageTexts('en');
+  const formatter =
+    resolvedUnit === TEMPERATURE_UNITS.fahrenheit
+      ? textsForLang.temperatureFormatterFahrenheit || fallbackTexts.temperatureFormatterFahrenheit
+      : textsForLang.temperatureFormatterCelsius || fallbackTexts.temperatureFormatterCelsius;
+  if (typeof formatter === 'function') {
+    return formatter(converted, { includeSign });
+  }
+  const rounded = Math.round(converted * 10) / 10;
+  const formatted = includeSign && rounded > 0 ? `+${rounded}` : String(rounded);
+  const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
+  return `${formatted} ${symbol}`.trim();
+}
+
+(function installViewfinderFallbacks() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || {};
+
+  const hasDocument = typeof document !== 'undefined' && !!document && typeof document.createElement === 'function';
+
+  const ensureFunction = (name, factory) => {
+    if (typeof scope[name] === 'function') {
+      return scope[name];
+    }
+    const created = typeof factory === 'function' ? factory() : factory;
+    if (typeof created === 'function') {
+      try {
+        scope[name] = created;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    return created;
+  };
+
+  const ensureArrayBinding = (name, values) => {
+    if (Array.isArray(scope[name])) {
+      return scope[name];
+    }
+    const copy = Array.isArray(values) ? values.slice() : [];
+    try {
+      scope[name] = copy;
+    } catch (assignError) {
+      void assignError;
+      scope[name] = copy;
+    }
+    return scope[name];
+  };
+
+  const defaultVideoPortOptions = ['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI'];
+  const defaultViewfinderTypes = ['Electronic Viewfinder', 'Optical Viewfinder', 'LCD Monitor', 'OLED Viewfinder'];
+  const defaultViewfinderConnectors = ['BNC', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI'];
+
+  const safeLocaleSort = typeof localeSort === 'function'
+    ? localeSort
+    : (a, b) => String(a || '').localeCompare(String(b || ''), undefined, { sensitivity: 'base' });
+
+  const readDevices = () => (typeof devices !== 'undefined' && devices && typeof devices === 'object') ? devices : {};
+
+  const collectValues = (defaults, collector) => {
+    const values = new Set((defaults || []).filter(Boolean));
+    try {
+      collector(values);
+    } catch (collectionError) {
+      void collectionError;
+    }
+    return Array.from(values).filter(Boolean).sort(safeLocaleSort);
+  };
+
+  const collectViewfinderTypes = () => {
+    const result = collectValues(defaultViewfinderTypes, valueSet => {
+      const data = readDevices();
+      Object.values(data.cameras || {}).forEach(camera => {
+        if (!camera) return;
+        const list = Array.isArray(camera.viewfinder) ? camera.viewfinder : [];
+        list.forEach(entry => {
+          const type = typeof entry?.type === 'string' ? entry.type.trim() : '';
+          if (type) valueSet.add(type);
+        });
+      });
+    });
+    ensureArrayBinding('viewfinderTypeOptions', result);
+    return result;
+  };
+
+  const collectViewfinderConnectors = () => {
+    const result = collectValues(defaultViewfinderConnectors, valueSet => {
+      const data = readDevices();
+      Object.values(data.cameras || {}).forEach(camera => {
+        if (!camera) return;
+        const list = Array.isArray(camera.viewfinder) ? camera.viewfinder : [];
+        list.forEach(entry => {
+          const connector = typeof entry?.connector === 'string' ? entry.connector.trim() : '';
+          if (connector) valueSet.add(connector);
+        });
+      });
+    });
+    ensureArrayBinding('viewfinderConnectorOptions', result);
+    return result;
+  };
+
+  const collectVideoPortOptions = () => {
+    const result = collectValues(defaultVideoPortOptions, valueSet => {
+      const data = readDevices();
+      const appendPorts = list => {
+        if (!Array.isArray(list)) return;
+        list.forEach(entry => {
+          if (typeof entry === 'string') {
+            const normalized = entry.trim();
+            if (normalized) valueSet.add(normalized);
+            return;
+          }
+          const type = typeof entry?.type === 'string' ? entry.type.trim() : '';
+          if (type) valueSet.add(type);
+          const portType = typeof entry?.portType === 'string' ? entry.portType.trim() : '';
+          if (portType) valueSet.add(portType);
+        });
+      };
+      Object.values(data.cameras || {}).forEach(camera => {
+        if (!camera) return;
+        appendPorts(camera.videoInputs);
+        appendPorts(camera.videoOutputs);
+      });
+      Object.values(data.monitors || {}).forEach(monitor => {
+        if (!monitor) return;
+        appendPorts(monitor.videoInputs);
+        appendPorts(monitor.videoOutputs);
+      });
+    });
+    return result;
+  };
+
+  ensureFunction('getAllViewfinderTypes', () => collectViewfinderTypes);
+  ensureFunction('getAllViewfinderConnectors', () => collectViewfinderConnectors);
+
+  if (!hasDocument) {
+    ensureFunction('setViewfinders', () => function noopSetViewfinders() {});
+    ensureFunction('getViewfinders', () => function noopGetViewfinders() { return []; });
+    ensureFunction('clearViewfinders', () => function noopClearViewfinders() {});
+    ensureFunction('setViewfinderVideoInputs', () => function noopSetViewfinderVideoInputs() {});
+    ensureFunction('getViewfinderVideoInputs', () => function noopGetViewfinderVideoInputs() { return []; });
+    ensureFunction('clearViewfinderVideoInputs', () => function noopClearViewfinderVideoInputs() {});
+    ensureFunction('setViewfinderVideoOutputs', () => function noopSetViewfinderVideoOutputs() {});
+    ensureFunction('getViewfinderVideoOutputs', () => function noopGetViewfinderVideoOutputs() { return []; });
+    ensureFunction('clearViewfinderVideoOutputs', () => function noopClearViewfinderVideoOutputs() {});
+    return;
+  }
+
+  const viewfinderContainerEl = typeof viewfinderContainer !== 'undefined' ? viewfinderContainer : null;
+  const viewfinderInputsContainerEl = typeof viewfinderVideoInputsContainer !== 'undefined'
+    ? viewfinderVideoInputsContainer
+    : null;
+  const viewfinderOutputsContainerEl = typeof viewfinderVideoOutputsContainer !== 'undefined'
+    ? viewfinderVideoOutputsContainer
+    : null;
+
+  const ensureContainers = [
+    ['setViewfinders', viewfinderContainerEl],
+    ['getViewfinders', viewfinderContainerEl],
+    ['clearViewfinders', viewfinderContainerEl],
+  ];
+
+  const missingRequiredContainer = ensureContainers.some(([name, container]) => {
+    if (container) {
+      return false;
+    }
+    ensureFunction(name, () => (name === 'getViewfinders' ? () => [] : () => {}));
+    return true;
+  });
+
+  if (missingRequiredContainer) {
+    return;
+  }
+
+  let fallbackIdCounter = 0;
+  const ensureElementId = (element, baseText) => {
+    if (!element) {
+      return '';
+    }
+    if (element.id) {
+      return element.id;
+    }
+    const base = typeof baseText === 'string' && baseText ? baseText : 'field';
+    fallbackIdCounter += 1;
+    const candidate = `${base.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'field'}-${fallbackIdCounter}`;
+    try {
+      element.id = candidate;
+    } catch (assignError) {
+      void assignError;
+    }
+    return element.id || candidate;
+  };
+
+  const createHiddenLabel = (id, text) => {
+    const label = document.createElement('label');
+    label.className = 'visually-hidden';
+    if (id) {
+      label.setAttribute('for', id);
+    }
+    label.textContent = typeof text === 'string' ? text : '';
+    return label;
+  };
+
+  const createFieldWithLabel = (field, labelText) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'field-with-label';
+    wrapper.dataset.label = labelText;
+    const fieldId = ensureElementId(field, labelText);
+    wrapper.appendChild(createHiddenLabel(fieldId, labelText));
+    wrapper.appendChild(field);
+    return wrapper;
+  };
+
+  const populateSelectOptions = (select, options, value) => {
+    if (!select) {
+      return;
+    }
+    const seen = new Set();
+    select.innerHTML = '';
+    const addOption = (val, label) => {
+      if (seen.has(val)) {
+        return;
+      }
+      const option = document.createElement('option');
+      option.value = val;
+      option.textContent = typeof label === 'string' ? label : val;
+      select.appendChild(option);
+      seen.add(val);
+    };
+    addOption('', '');
+    options.forEach(optVal => {
+      if (typeof optVal !== 'string') {
+        return;
+      }
+      const trimmed = optVal.trim();
+      if (!trimmed) {
+        return;
+      }
+      addOption(trimmed, trimmed);
+    });
+    if (typeof value === 'string' && value && !seen.has(value)) {
+      addOption(value, value);
+    }
+    select.value = typeof value === 'string' ? value : '';
+  };
+
+  const createViewfinderRow = (type = '', resolution = '', connector = '', notes = '') => {
+    const row = document.createElement('div');
+    row.className = 'form-row';
+
+    const typeSelect = document.createElement('select');
+    typeSelect.className = 'viewfinder-type-select';
+    typeSelect.name = 'viewfinderType';
+    populateSelectOptions(typeSelect, collectViewfinderTypes(), typeof type === 'string' ? type.trim() : '');
+    row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+
+    const resolutionInput = document.createElement('input');
+    resolutionInput.type = 'text';
+    resolutionInput.name = 'viewfinderResolution';
+    resolutionInput.placeholder = 'Resolution';
+    resolutionInput.value = typeof resolution === 'string' ? resolution : '';
+    row.appendChild(createFieldWithLabel(resolutionInput, 'Resolution'));
+
+    const connectorSelect = document.createElement('select');
+    connectorSelect.className = 'viewfinder-connector-select';
+    connectorSelect.name = 'viewfinderConnector';
+    populateSelectOptions(connectorSelect, collectViewfinderConnectors(), typeof connector === 'string' ? connector.trim() : '');
+    row.appendChild(createFieldWithLabel(connectorSelect, 'Connector'));
+
+    const notesInput = document.createElement('input');
+    notesInput.type = 'text';
+    notesInput.name = 'viewfinderNotes';
+    notesInput.placeholder = 'Notes';
+    notesInput.value = typeof notes === 'string' ? notes : '';
+    row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+      fallbackContext: 'Viewfinder',
+      actionKey: 'addEntry',
+    });
+    addBtn.addEventListener('click', () => {
+      row.after(createViewfinderRow());
+    });
+    row.appendChild(addBtn);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+      fallbackContext: 'Viewfinder',
+      actionKey: 'removeEntry',
+    });
+    removeBtn.addEventListener('click', () => {
+      if (viewfinderContainerEl && viewfinderContainerEl.children.length > 1) {
+        row.remove();
+      } else {
+        Array.from(row.querySelectorAll('select, input')).forEach(field => {
+          if (field) {
+            field.value = '';
+          }
+        });
+      }
+    });
+    row.appendChild(removeBtn);
+
+    return row;
+  };
+
+  const createViewfinderVideoRow = (container, name, contextHeadingId, contextLabelId, fallbackContext, value = '') => {
+    if (!container) {
+      return null;
+    }
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    const select = document.createElement('select');
+    select.name = name;
+    select.className = `${name}-select`;
+    populateSelectOptions(select, collectVideoPortOptions(), typeof value === 'string' ? value.trim() : '');
+    row.appendChild(createFieldWithLabel(select, 'Type'));
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+      contextPaths: [contextHeadingId, [contextLabelId]],
+      fallbackContext,
+      actionKey: 'addEntry',
+    });
+    addBtn.addEventListener('click', () => {
+      row.after(createViewfinderVideoRow(container, name, contextHeadingId, contextLabelId, fallbackContext));
+    });
+    row.appendChild(addBtn);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+      contextPaths: [contextHeadingId, [contextLabelId]],
+      fallbackContext,
+      actionKey: 'removeEntry',
+    });
+    removeBtn.addEventListener('click', () => {
+      if (container.children.length > 1) {
+        row.remove();
+      } else {
+        select.value = '';
+      }
+    });
+    row.appendChild(removeBtn);
+
+    return row;
+  };
+
+  const setViewfindersFallback = list => {
+    if (!viewfinderContainerEl) {
+      return;
+    }
+    viewfinderContainerEl.innerHTML = '';
+    const entries = Array.isArray(list) ? list : [];
+    if (!entries.length) {
+      viewfinderContainerEl.appendChild(createViewfinderRow());
+      return;
+    }
+    entries.forEach(entry => {
+      const type = typeof entry?.type === 'string' ? entry.type : '';
+      const resolution = typeof entry?.resolution === 'string' ? entry.resolution : '';
+      const connector = typeof entry?.connector === 'string' ? entry.connector : '';
+      const notes = typeof entry?.notes === 'string' ? entry.notes : '';
+      viewfinderContainerEl.appendChild(createViewfinderRow(type, resolution, connector, notes));
+    });
+  };
+
+  const getViewfindersFallback = () => {
+    if (!viewfinderContainerEl) {
+      return [];
+    }
+    return Array.from(viewfinderContainerEl.querySelectorAll('.form-row')).map(row => {
+      const [typeSelect, resolutionInput, connectorSelect, notesInput] = row.querySelectorAll('select, input');
+      return {
+        type: typeSelect ? typeSelect.value : '',
+        resolution: resolutionInput ? resolutionInput.value : '',
+        connector: connectorSelect ? connectorSelect.value : '',
+        notes: notesInput ? notesInput.value : '',
+      };
+    }).filter(entry => entry.type);
+  };
+
+  const clearViewfindersFallback = () => {
+    setViewfindersFallback([]);
+  };
+
+  const setViewfinderVideoInputsFallback = list => {
+    if (!viewfinderInputsContainerEl) {
+      return;
+    }
+    viewfinderInputsContainerEl.innerHTML = '';
+    const entries = Array.isArray(list) ? list : [];
+    if (!entries.length) {
+      const row = createViewfinderVideoRow(
+        viewfinderInputsContainerEl,
+        'viewfinderVideoInput',
+        'viewfinderVideoInputsHeading',
+        'viewfinderVideoInputsLabel',
+        'Video Inputs'
+      );
+      if (row) {
+        viewfinderInputsContainerEl.appendChild(row);
+      }
+      return;
+    }
+    entries.forEach(entry => {
+      const value = typeof entry === 'string' ? entry : (typeof entry?.type === 'string' ? entry.type : '');
+      const row = createViewfinderVideoRow(
+        viewfinderInputsContainerEl,
+        'viewfinderVideoInput',
+        'viewfinderVideoInputsHeading',
+        'viewfinderVideoInputsLabel',
+        'Video Inputs',
+        value
+      );
+      if (row) {
+        viewfinderInputsContainerEl.appendChild(row);
+      }
+    });
+  };
+
+  const getViewfinderVideoInputsFallback = () => {
+    if (!viewfinderInputsContainerEl) {
+      return [];
+    }
+    return Array.from(viewfinderInputsContainerEl.querySelectorAll('select')).map(select => ({
+      type: select.value,
+    })).filter(entry => entry.type);
+  };
+
+  const clearViewfinderVideoInputsFallback = () => {
+    setViewfinderVideoInputsFallback([]);
+  };
+
+  const setViewfinderVideoOutputsFallback = list => {
+    if (!viewfinderOutputsContainerEl) {
+      return;
+    }
+    viewfinderOutputsContainerEl.innerHTML = '';
+    const entries = Array.isArray(list) ? list : [];
+    if (!entries.length) {
+      const row = createViewfinderVideoRow(
+        viewfinderOutputsContainerEl,
+        'viewfinderVideoOutput',
+        'viewfinderVideoOutputsHeading',
+        'viewfinderVideoOutputsLabel',
+        'Video Outputs'
+      );
+      if (row) {
+        viewfinderOutputsContainerEl.appendChild(row);
+      }
+      return;
+    }
+    entries.forEach(entry => {
+      const value = typeof entry === 'string' ? entry : (typeof entry?.type === 'string' ? entry.type : '');
+      const row = createViewfinderVideoRow(
+        viewfinderOutputsContainerEl,
+        'viewfinderVideoOutput',
+        'viewfinderVideoOutputsHeading',
+        'viewfinderVideoOutputsLabel',
+        'Video Outputs',
+        value
+      );
+      if (row) {
+        viewfinderOutputsContainerEl.appendChild(row);
+      }
+    });
+  };
+
+  const getViewfinderVideoOutputsFallback = () => {
+    if (!viewfinderOutputsContainerEl) {
+      return [];
+    }
+    return Array.from(viewfinderOutputsContainerEl.querySelectorAll('select')).map(select => ({
+      type: select.value,
+    })).filter(entry => entry.type);
+  };
+
+  const clearViewfinderVideoOutputsFallback = () => {
+    setViewfinderVideoOutputsFallback([]);
+  };
+
+  ensureFunction('setViewfinders', () => setViewfindersFallback);
+  ensureFunction('getViewfinders', () => getViewfindersFallback);
+  ensureFunction('clearViewfinders', () => clearViewfindersFallback);
+  ensureFunction('setViewfinderVideoInputs', () => setViewfinderVideoInputsFallback);
+  ensureFunction('getViewfinderVideoInputs', () => getViewfinderVideoInputsFallback);
+  ensureFunction('clearViewfinderVideoInputs', () => clearViewfinderVideoInputsFallback);
+  ensureFunction('setViewfinderVideoOutputs', () => setViewfinderVideoOutputsFallback);
+  ensureFunction('getViewfinderVideoOutputs', () => getViewfinderVideoOutputsFallback);
+  ensureFunction('clearViewfinderVideoOutputs', () => clearViewfinderVideoOutputsFallback);
+
+  if (viewfinderContainerEl && !viewfinderContainerEl.children.length) {
+    setViewfindersFallback([]);
+  }
+  if (viewfinderInputsContainerEl && !viewfinderInputsContainerEl.children.length) {
+    setViewfinderVideoInputsFallback([]);
+  }
+  if (viewfinderOutputsContainerEl && !viewfinderOutputsContainerEl.children.length) {
+    setViewfinderVideoOutputsFallback([]);
+  }
+})();
+
 function showFormSection(section) {
   if (!section) return;
   section.classList.remove('hidden');
