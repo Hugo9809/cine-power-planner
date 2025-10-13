@@ -1224,6 +1224,15 @@
       const popup = setupDiagramContainer.querySelector('#diagramPopup');
       let activePopupNode = null;
       let activePopupEntry = null;
+      const normaliseTargetElement = target => {
+        if (!target || typeof target !== 'object') return null;
+        if (typeof target.closest === 'function') return target;
+        if ('parentElement' in target && target.parentElement) return target.parentElement;
+        if ('parentNode' in target && target.parentNode && target.parentNode !== target) {
+          return normaliseTargetElement(target.parentNode);
+        }
+        return null;
+      };
       const hidePopup = () => {
         if (!popup) return;
         popup.style.display = 'none';
@@ -1684,6 +1693,15 @@
         hidePopup();
       };
 
+      const onPointerDownOutsidePopup = event => {
+        if (!popup || popup.hasAttribute('hidden')) return;
+        const element = normaliseTargetElement(event?.target || null);
+        if (!element) return;
+        if (element === popup || (typeof popup.contains === 'function' && popup.contains(element))) return;
+        if (typeof element.closest === 'function' && element.closest('.diagram-node')) return;
+        hidePopup();
+      };
+
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, { passive: false });
       if (windowObj) {
@@ -1751,6 +1769,10 @@
 
       svg.addEventListener('mousemove', updatePointerPosition);
       svg.addEventListener('touchstart', updatePointerPosition, { passive: true });
+      if (document) {
+        document.addEventListener('mousedown', onPointerDownOutsidePopup);
+        document.addEventListener('touchstart', onPointerDownOutsidePopup, { passive: true });
+      }
       if (windowObj) {
         windowObj.addEventListener('resize', repositionActivePopup);
       }
@@ -1779,6 +1801,10 @@
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
         svg.removeEventListener('dblclick', onNodeDoubleClick);
+        if (document) {
+          document.removeEventListener('mousedown', onPointerDownOutsidePopup);
+          document.removeEventListener('touchstart', onPointerDownOutsidePopup, { passive: true });
+        }
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
         }
