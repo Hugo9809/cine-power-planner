@@ -3711,10 +3711,41 @@ function ensureImportedProjectBaseNameSession(rawName) {
   if (!trimmed) {
     return 'Project-imported';
   }
+  var importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
+  if (importedMatch) {
+    var prefix = typeof importedMatch[1] === 'string' ? importedMatch[1].trim() : '';
+    return prefix ? "".concat(prefix, "-imported") : 'Project-imported';
+  }
   if (trimmed.toLowerCase().endsWith('-imported')) {
     return trimmed;
   }
   return "".concat(trimmed, "-imported");
+}
+function resolveImportedProjectNamingContextSession(rawName) {
+  var trimmed = typeof rawName === 'string' ? rawName.trim() : '';
+  var base = ensureImportedProjectBaseNameSession(rawName);
+  if (!trimmed) {
+    return {
+      base: base,
+      initialCandidate: base,
+      suffixStart: 2
+    };
+  }
+  var importedMatch = trimmed.match(/^(.*?)-imported(?:-(\d+))?$/i);
+  var parsedSuffix = importedMatch && importedMatch[2] ? Number(importedMatch[2]) : NaN;
+  var suffixStart = typeof parsedSuffix === 'number' && !isNaN(parsedSuffix) ? parsedSuffix + 1 : 2;
+  if (importedMatch) {
+    return {
+      base: base,
+      initialCandidate: trimmed,
+      suffixStart: suffixStart
+    };
+  }
+  return {
+    base: base,
+    initialCandidate: base,
+    suffixStart: 2
+  };
 }
 function generateUniqueImportedProjectNameSession(baseName, usedNames, normalizedNames) {
   var normalized = normalizedNames || new Set(_toConsumableArray(usedNames).map(function (name) {
@@ -3722,14 +3753,15 @@ function generateUniqueImportedProjectNameSession(baseName, usedNames, normalize
   }).filter(function (name) {
     return name;
   }));
-  var base = ensureImportedProjectBaseNameSession(baseName);
-  var candidate = base.trim();
+  var context = resolveImportedProjectNamingContextSession(baseName);
+  var candidate = typeof context.initialCandidate === 'string' ? context.initialCandidate.trim() : '';
   if (!candidate) {
-    candidate = 'Project-imported';
+    candidate = context.base || 'Project-imported';
   }
-  var normalizedCandidate = candidate.toLowerCase();
-  var suffix = 2;
+  var normalizedCandidate = candidate.trim().toLowerCase();
+  var suffix = context.suffixStart;
   while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    var base = context.base || 'Project-imported';
     candidate = "".concat(base, "-").concat(suffix++);
     normalizedCandidate = candidate.trim().toLowerCase();
   }
