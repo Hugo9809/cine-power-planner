@@ -2977,13 +2977,18 @@ const helpModuleApi = resolveHelpModuleApi();
 
 var deviceSchema = null;
 
+const coreDeviceSchemaModule =
+  (typeof CORE_DEVICE_SCHEMA !== 'undefined' && CORE_DEVICE_SCHEMA)
+    || (typeof cineCoreDeviceSchema !== 'undefined' && cineCoreDeviceSchema)
+    || null;
+
 const deviceSchemaManager = (function initializeDeviceSchemaManager() {
   if (
-    CORE_DEVICE_SCHEMA &&
-    typeof CORE_DEVICE_SCHEMA.createDeviceSchemaManager === 'function'
+    coreDeviceSchemaModule &&
+    typeof coreDeviceSchemaModule.createDeviceSchemaManager === 'function'
   ) {
     try {
-      return CORE_DEVICE_SCHEMA.createDeviceSchemaManager({
+      return coreDeviceSchemaModule.createDeviceSchemaManager({
         onSchemaChange: schema => {
           deviceSchema = schema;
         },
