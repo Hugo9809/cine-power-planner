@@ -24480,6 +24480,8 @@ exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
 exposeCoreRuntimeConstant('updateGlobalDevicesReference', updateGlobalDevicesReference);
 exposeCoreRuntimeConstant('setLanguage', setLanguage);
 exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
+exposeCoreRuntimeConstant('encodeSharedSetup', encodeSharedSetup);
+exposeCoreRuntimeConstant('decodeSharedSetup', decodeSharedSetup);
 const CORE_RUNTIME_CONSTANTS = {
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,
