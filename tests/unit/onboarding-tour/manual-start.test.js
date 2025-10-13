@@ -414,6 +414,83 @@ describe('onboarding tour manual start', () => {
     }
   });
 
+  test('hero welcome step keeps compact viewport margins balanced', async () => {
+    const originalInnerWidth = global.innerWidth;
+    const originalVisualViewport = global.visualViewport;
+
+    global.innerWidth = 320;
+    global.visualViewport = {
+      width: 320,
+      height: 640,
+      offsetLeft: 0,
+      offsetTop: 0,
+      pageLeft: 0,
+      pageTop: 0,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    };
+
+    try {
+      loadModule();
+
+      const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+      const helpDialog = document.getElementById('helpDialog');
+      expect(trigger).not.toBeNull();
+      expect(helpDialog).not.toBeNull();
+
+      helpDialog.removeAttribute('hidden');
+      helpDialog.setAttribute('open', '');
+
+      trigger.click();
+      await new Promise(resolve => setTimeout(resolve, 40));
+
+      const overlay = document.getElementById('onboardingTutorialOverlay');
+      expect(overlay).not.toBeNull();
+
+      overlay.getBoundingClientRect = () => ({
+        width: 320,
+        height: 640,
+        left: 0,
+        top: 0,
+        right: 320,
+        bottom: 640,
+      });
+
+      window.dispatchEvent(new Event('resize'));
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      const card = overlay.querySelector('.onboarding-card');
+      expect(card).not.toBeNull();
+
+      const inlineSizeValue = card.style.getPropertyValue('--onboarding-card-hero-inline-size');
+      const inlineSize = parseFloat(inlineSizeValue);
+      const measuredWidth = Number.isFinite(inlineSize) && inlineSize > 0 ? inlineSize : 296;
+
+      card.getBoundingClientRect = () => ({
+        width: measuredWidth,
+        height: 420,
+        top: 0,
+        left: 0,
+        right: measuredWidth,
+        bottom: 420,
+      });
+
+      window.dispatchEvent(new Event('resize'));
+      await new Promise(resolve => setTimeout(resolve, 20));
+
+      const left = parseFloat(card.style.left);
+      expect(Number.isFinite(left)).toBe(true);
+      expect(left).toBeCloseTo(12, 1);
+    } finally {
+      if (typeof originalInnerWidth === 'number') {
+        global.innerWidth = originalInnerWidth;
+      } else {
+        delete global.innerWidth;
+      }
+      global.visualViewport = originalVisualViewport;
+    }
+  });
+
   test('language step counts from one and stays synchronized', async () => {
     loadModule();
 

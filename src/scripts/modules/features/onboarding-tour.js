@@ -120,11 +120,39 @@
   const HEADER_ANCHOR_ID = 'topBar';
   const HERO_MAX_WIDTH_REM = 44;
   const HERO_MARGIN_REM = 1.5;
-  const HERO_MIN_VIEWPORT_FRACTION = 0.92;
+  const HERO_MIN_VIEWPORT_FRACTION = 0.97;
   const HERO_MARGIN_BREAKPOINTS = [
     { maxViewportRem: 48, marginRem: 1.15 },
     { maxViewportRem: 26, marginRem: 0.75 },
   ];
+
+  function resolveHeroMarginPx(viewportWidth, rootFontSize) {
+    const safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0
+      ? rootFontSize
+      : 16;
+
+    if (!Number.isFinite(viewportWidth) || viewportWidth <= 0) {
+      return Math.max(0, HERO_MARGIN_REM * safeRootFont);
+    }
+
+    const widthInRem = viewportWidth / safeRootFont;
+    let resolvedMarginRem = HERO_MARGIN_REM;
+
+    if (Number.isFinite(widthInRem)) {
+      for (let index = 0; index < HERO_MARGIN_BREAKPOINTS.length; index += 1) {
+        const breakpoint = HERO_MARGIN_BREAKPOINTS[index];
+        if (
+          breakpoint
+          && Number.isFinite(breakpoint.maxViewportRem)
+          && widthInRem <= breakpoint.maxViewportRem
+        ) {
+          resolvedMarginRem = breakpoint.marginRem;
+        }
+      }
+    }
+
+    return Math.max(0, resolvedMarginRem * safeRootFont);
+  }
 
   const supportsDialogTopLayer = (function detectDialogSupport() {
     if (!DOCUMENT || typeof DOCUMENT.createElement !== 'function') {
@@ -2259,7 +2287,7 @@
     };
   }
 
-  function updateHeroInlineSize(size, metrics) {
+  function updateHeroInlineSize(size, metrics, forcedRootFontSize) {
     if (!cardEl) {
       return;
     }
@@ -2281,28 +2309,11 @@
       return;
     }
 
-    const rootFontSize = getRootFontSizePx();
+    const rootFontSize = Number.isFinite(forcedRootFontSize) && forcedRootFontSize > 0
+      ? forcedRootFontSize
+      : getRootFontSizePx();
     const heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
-    const heroMargin = (() => {
-      const safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0
-        ? rootFontSize
-        : 16;
-      const widthInRem = Number.isFinite(viewportWidth) && viewportWidth > 0
-        ? viewportWidth / safeRootFont
-        : Infinity;
-
-      let resolvedMarginRem = HERO_MARGIN_REM;
-      if (Number.isFinite(widthInRem)) {
-        for (let index = 0; index < HERO_MARGIN_BREAKPOINTS.length; index += 1) {
-          const breakpoint = HERO_MARGIN_BREAKPOINTS[index];
-          if (breakpoint && Number.isFinite(breakpoint.maxViewportRem) && widthInRem <= breakpoint.maxViewportRem) {
-            resolvedMarginRem = breakpoint.marginRem;
-          }
-        }
-      }
-
-      return Math.max(0, resolvedMarginRem * safeRootFont);
-    })();
+    const heroMargin = resolveHeroMarginPx(viewportWidth, rootFontSize);
     const marginLimitedWidth = viewportWidth - (heroMargin * 2);
     const fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
     const widthCandidates = [heroMaxWidth, viewportWidth];
@@ -2880,7 +2891,8 @@
       return;
     }
     const overlayMetrics = getOverlayMetrics();
-    updateHeroInlineSize(currentStep && currentStep.size, overlayMetrics);
+    const rootFontSize = getRootFontSizePx();
+    updateHeroInlineSize(currentStep && currentStep.size, overlayMetrics, rootFontSize);
     const scrollX = overlayMetrics && typeof overlayMetrics.offsetLeft === 'number'
       ? overlayMetrics.offsetLeft
       : 0;
@@ -2897,7 +2909,15 @@
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const forceFloating = Boolean(currentStep && currentStep.forceFloating);
     const cardRect = cardEl.getBoundingClientRect();
-    const margin = 16;
+    let margin = 16;
+    if (currentStep && currentStep.size === 'hero') {
+      const heroMarginPx = resolveHeroMarginPx(viewportWidth, rootFontSize);
+      if (Number.isFinite(heroMarginPx)) {
+        const responsiveMargin = Math.max(8, heroMarginPx);
+        margin = Math.min(margin, responsiveMargin);
+      }
+    }
+
     const viewportRight = scrollX + viewportWidth;
     const viewportBottom = scrollY + viewportHeight;
     const minLeft = scrollX + margin;
