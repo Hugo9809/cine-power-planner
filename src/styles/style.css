@@ -7692,21 +7692,21 @@ body.dark-mode .onboarding-progress-fill {
   position: relative;
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--accent-color) 90%, transparent),
-    0 0 0 7px color-mix(in srgb, var(--accent-color) 28%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--accent-color) 28%, transparent);
   border-radius: 14px;
   transition: box-shadow 0.2s ease;
 }
 
 @supports not (color-mix(in srgb, black 50%, white 50%)) {
   .onboarding-active-target {
-    box-shadow: 0 0 0 2px var(--accent-color), 0 0 0 7px var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-color), 0 0 0 3px var(--accent-color);
   }
 }
 
 body.dark-mode .onboarding-active-target {
   box-shadow:
     0 0 0 2px color-mix(in srgb, var(--accent-color) 96%, rgba(255, 255, 255, 0.35)),
-    0 0 0 8px color-mix(in srgb, var(--accent-color) 36%, rgba(0, 0, 0, 0.35));
+    0 0 0 3px color-mix(in srgb, var(--accent-color) 36%, rgba(0, 0, 0, 0.35));
 }
 
 body.dark-mode .onboarding-field-label {
