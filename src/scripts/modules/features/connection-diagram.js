@@ -77,6 +77,10 @@
     return typeof value === 'undefined' ? fallback : value;
   }
 
+  function optionalFunction(value) {
+    return typeof value === 'function' ? value : null;
+  }
+
   function createConnectionDiagram(context = {}) {
     // The connection diagram is driven by lazy getters so the module can be
     // initialised before the DOM is ready (for example when restore flows or
@@ -130,9 +134,9 @@
     // saving behaviour without creating hard dependencies on the main runtime.
     // This keeps backup / restore pathways resilient even when the diagram is
     // rendered in isolation (for example inside onboarding documentation).
-    const scheduleProjectAutoSave = fallbackGetter(context.scheduleProjectAutoSave);
-    const saveCurrentSession = fallbackGetter(context.saveCurrentSession);
-    const checkSetupChanged = fallbackGetter(context.checkSetupChanged);
+    const scheduleProjectAutoSave = optionalFunction(context.scheduleProjectAutoSave);
+    const saveCurrentSession = optionalFunction(context.saveCurrentSession);
+    const checkSetupChanged = optionalFunction(context.checkSetupChanged);
 
     const motorPriority = fallbackGetter(context.motorPriority, () => 0);
     const controllerPriority = fallbackGetter(context.controllerPriority, () => 0);
