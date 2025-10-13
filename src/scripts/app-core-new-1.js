@@ -1399,7 +1399,11 @@ function fallbackGetLanguageTextsProxy(lang) {
 }
 
 const existingGetLanguageTexts =
-  typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
+  typeof globalThis !== 'undefined' &&
+  globalThis &&
+  typeof globalThis.getLanguageTexts === 'function'
+    ? globalThis.getLanguageTexts
+    : null;
 
 const resolvedGetLanguageTexts =
   CORE_LOCALIZATION_RUNTIME &&
@@ -1407,10 +1411,19 @@ const resolvedGetLanguageTexts =
     ? CORE_LOCALIZATION_RUNTIME.getLanguageTexts
     : existingGetLanguageTexts || fallbackGetLanguageTextsProxy;
 
-try {
-  getLanguageTexts = resolvedGetLanguageTexts;
-} catch (assignGetLanguageTextsError) {
-  void assignGetLanguageTextsError;
+let getLanguageTexts = resolvedGetLanguageTexts;
+
+if (
+  typeof globalThis !== 'undefined' &&
+  globalThis &&
+  typeof getLanguageTexts === 'function' &&
+  globalThis.getLanguageTexts !== getLanguageTexts
+) {
+  try {
+    globalThis.getLanguageTexts = getLanguageTexts;
+  } catch (assignGlobalGetLanguageTextsError) {
+    void assignGlobalGetLanguageTextsError;
+  }
 }
 
 if (
