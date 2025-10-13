@@ -66,6 +66,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     registerCandidateScope(scopes, detected);
     return scopes;
   }
+  function isScopeList(candidate) {
+    return !!candidate && typeof candidate.length === 'number';
+  }
+  function readCandidateScopesFromScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+    try {
+      var candidate = scope.CORE_RUNTIME_CANDIDATE_SCOPES;
+      return isScopeList(candidate) ? candidate : null;
+    } catch (candidateLookupError) {
+      void candidateLookupError;
+    }
+    return null;
+  }
+  var cachedCandidateScopes = null;
+  function syncCandidateScopes(candidateScopes, primaryScope, environmentHelpers) {
+    if (!isScopeList(candidateScopes)) {
+      return candidateScopes;
+    }
+    cachedCandidateScopes = candidateScopes;
+    var referenceScope = detectScope(primaryScope);
+    var scopes = collectCandidateScopes(referenceScope, environmentHelpers);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      try {
+        if (scope.CORE_RUNTIME_CANDIDATE_SCOPES !== candidateScopes) {
+          scope.CORE_RUNTIME_CANDIDATE_SCOPES = candidateScopes;
+        }
+      } catch (assignCandidateError) {
+        void assignCandidateError;
+      }
+    }
+    return candidateScopes;
+  }
+  function resolveCandidateScopes(primaryScope, environmentHelpers) {
+    var referenceScope = detectScope(primaryScope);
+    var existing = cachedCandidateScopes || readCandidateScopesFromScope(referenceScope);
+    if (isScopeList(existing)) {
+      return syncCandidateScopes(existing, referenceScope, environmentHelpers);
+    }
+    var candidateScopes = collectCandidateScopes(referenceScope, environmentHelpers);
+    return syncCandidateScopes(candidateScopes, referenceScope, environmentHelpers);
+  }
   function registerScope(runtimeState, scope) {
     if (!runtimeState || typeof runtimeState.registerScope !== 'function') {
       return;
@@ -231,6 +278,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var namespace = {
     collectCandidateScopes: collectCandidateScopes,
+    resolveCandidateScopes: resolveCandidateScopes,
+    syncCandidateScopes: syncCandidateScopes,
     registerScope: registerScope,
     registerScopes: registerScopes,
     getScopesSnapshot: getScopesSnapshot,

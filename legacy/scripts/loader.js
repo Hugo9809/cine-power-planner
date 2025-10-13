@@ -127,6 +127,67 @@ function ensureCriticalGlobalVariable(name, fallback) {
 function resolveCriticalFallback(fallback) {
   return typeof fallback === 'function' ? fallback() : fallback;
 }
+function createCoreFunctionProxy(functionName, options) {
+  function computeDefault(args) {
+    if (!options || !Object.prototype.hasOwnProperty.call(options, 'defaultValue')) {
+      return undefined;
+    }
+    var fallback = options.defaultValue;
+    if (typeof fallback === 'function') {
+      try {
+        return fallback.apply(null, args);
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+    return fallback;
+  }
+  function invokeCore(scope, args, defaultValue, proxyRef) {
+    if (scope && typeof scope.callCoreFunctionIfAvailable === 'function') {
+      try {
+        return scope.callCoreFunctionIfAvailable(functionName, args, typeof defaultValue === 'undefined' ? undefined : {
+          defaultValue: defaultValue
+        });
+      } catch (callCoreError) {
+        void callCoreError;
+      }
+    }
+    var target = scope && scope[functionName];
+    if (typeof target === 'function' && target !== proxyRef) {
+      try {
+        return target.apply(scope, args);
+      } catch (invokeError) {
+        void invokeError;
+      }
+    }
+    return undefined;
+  }
+  var proxy = function coreFunctionProxy() {
+    var scope = resolveCriticalGlobalScope();
+    var args = Array.prototype.slice.call(arguments);
+    var defaultValue = computeDefault(args);
+    var result = invokeCore(scope, args, defaultValue, proxy);
+    if (typeof result !== 'undefined') {
+      return result;
+    }
+    if (options && options.defer === true) {
+      var queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+      if (queue) {
+        queue.push(function deferredCoreFunctionProxy() {
+          var currentScope = resolveCriticalGlobalScope();
+          var deferredResult = invokeCore(currentScope, args, defaultValue, proxy);
+          if (typeof deferredResult !== 'undefined') {
+            return deferredResult;
+          }
+          return defaultValue;
+        });
+      }
+    }
+    return defaultValue;
+  };
+  return proxy;
+}
 function normaliseCriticalGlobalVariable(name, validator, fallback) {
   var fallbackValue = resolveCriticalFallback(fallback);
   var scope = ensureCriticalGlobalVariable(name, fallbackValue) || resolveCriticalGlobalScope();
@@ -717,6 +778,57 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return function loaderFallbackGetCurrentSetupState() {
       return {};
     };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'deriveProjectInfo',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    function cloneProjectInfoFallback(info) {
+      if (!info || _typeof(info) !== 'object') {
+        return {};
+      }
+      var clone;
+      try {
+        clone = JSON.parse(JSON.stringify(info));
+        if (clone && _typeof(clone) === 'object') {
+          return clone;
+        }
+      } catch (jsonCloneError) {
+        void jsonCloneError;
+        clone = null;
+      }
+      if (!clone || _typeof(clone) !== 'object') {
+        clone = {};
+        try {
+          var keys = Object.keys(info);
+          for (var index = 0; index < keys.length; index += 1) {
+            var key = keys[index];
+            clone[key] = info[key];
+          }
+        } catch (copyError) {
+          void copyError;
+          clone = info;
+        }
+      }
+      return clone;
+    }
+    return createCoreFunctionProxy('deriveProjectInfo', {
+      defaultValue: cloneProjectInfoFallback
+    });
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'saveAutoGearRuleFromEditor',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return createCoreFunctionProxy('saveAutoGearRuleFromEditor', {
+      defer: true
+    });
   }
 });
 CRITICAL_GLOBAL_DEFINITIONS.push({
@@ -1798,7 +1910,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var legacyScriptBundle = {
     core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/rental-houses.js', {
       parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js']
-    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/device-schema.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
+    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
     deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
   };
   function startLoading() {

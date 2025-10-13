@@ -1002,6 +1002,71 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof value.details !== 'undefined') {
         errorOutput.details = sanitizeForLog(value.details, nextDepth + 1, visited);
       }
+      if (typeof value.errors !== 'undefined' && value.errors !== null) {
+        var collectedErrors = [];
+        var maxErrors = 10;
+        var truncatedErrors = 0;
+        var appendErrorDetail = function appendErrorDetail(candidate) {
+          if (collectedErrors.length >= maxErrors) {
+            truncatedErrors += 1;
+            return;
+          }
+          try {
+            collectedErrors.push(sanitizeForLog(candidate, nextDepth + 1, visited));
+          } catch (error) {
+            collectedErrors.push(error && error.message ? "[Unserializable error: ".concat(error.message, "]") : '[Unserializable error]');
+          }
+        };
+        var rawErrors = value.errors;
+        if (Array.isArray(rawErrors)) {
+          for (var index = 0; index < rawErrors.length; index += 1) {
+            appendErrorDetail(rawErrors[index]);
+          }
+          if (rawErrors.length > collectedErrors.length) {
+            truncatedErrors += rawErrors.length - collectedErrors.length;
+          }
+        } else if (rawErrors && _typeof(rawErrors) === 'object') {
+          var iterator = null;
+          try {
+            var symbolIterator = typeof Symbol === 'function' ? Symbol.iterator : null;
+            if (symbolIterator && typeof rawErrors[symbolIterator] === 'function') {
+              iterator = rawErrors[symbolIterator].call(rawErrors);
+            }
+          } catch (iteratorError) {
+            iterator = null;
+            void iteratorError;
+          }
+          if (iterator && typeof iterator.next === 'function') {
+            var result = iterator.next();
+            var count = 0;
+            while (!result.done) {
+              if (count < maxErrors) {
+                appendErrorDetail(result.value);
+              } else {
+                truncatedErrors += 1;
+              }
+              count += 1;
+              try {
+                result = iterator.next();
+              } catch (iterationError) {
+                truncatedErrors += 1;
+                void iterationError;
+                break;
+              }
+            }
+          } else {
+            appendErrorDetail(rawErrors);
+          }
+        } else {
+          appendErrorDetail(rawErrors);
+        }
+        if (collectedErrors.length) {
+          errorOutput.errors = collectedErrors;
+          if (truncatedErrors > 0) {
+            errorOutput.errorsTruncated = truncatedErrors;
+          }
+        }
+      }
       return errorOutput;
     }
     if (valueType === 'object') {
@@ -1034,8 +1099,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var _length = typeof value.length === 'number' ? value.length : 0;
         var preview = [];
         var previewLength = Math.min(_length, maxPreview);
-        for (var index = 0; index < previewLength; index += 1) {
-          preview.push(value[index]);
+        for (var _index = 0; _index < previewLength; _index += 1) {
+          preview.push(value[_index]);
         }
         var summary = {
           __type: ctorName || 'TypedArray',
@@ -1055,79 +1120,79 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (mapCtor && value instanceof mapCtor) {
         var entries = [];
         var maxEntries = 30;
-        var _index = 0;
+        var _index2 = 0;
         value.forEach(function (mapValue, mapKey) {
-          if (_index < maxEntries) {
+          if (_index2 < maxEntries) {
             entries.push({
               key: sanitizeForLog(mapKey, nextDepth + 1, visited),
               value: sanitizeForLog(mapValue, nextDepth + 1, visited)
             });
           }
-          _index += 1;
+          _index2 += 1;
         });
-        var result = {
+        var _result = {
           __type: 'Map',
-          size: typeof value.size === 'number' ? value.size : _index,
+          size: typeof value.size === 'number' ? value.size : _index2,
           entries: entries
         };
-        if (_index > maxEntries) {
-          result.__truncatedEntries = _index - maxEntries;
+        if (_index2 > maxEntries) {
+          _result.__truncatedEntries = _index2 - maxEntries;
         }
-        return result;
+        return _result;
       }
       var setCtor = typeof Set === 'function' ? Set : null;
       if (setCtor && value instanceof setCtor) {
         var items = [];
         var maxItems = 30;
-        var _index2 = 0;
+        var _index3 = 0;
         value.forEach(function (item) {
-          if (_index2 < maxItems) {
+          if (_index3 < maxItems) {
             items.push(sanitizeForLog(item, nextDepth + 1, visited));
           }
-          _index2 += 1;
+          _index3 += 1;
         });
-        var _result = {
+        var _result2 = {
           __type: 'Set',
-          size: typeof value.size === 'number' ? value.size : _index2,
+          size: typeof value.size === 'number' ? value.size : _index3,
           values: items
         };
-        if (_index2 > maxItems) {
-          _result.__truncatedValues = _index2 - maxItems;
+        if (_index3 > maxItems) {
+          _result2.__truncatedValues = _index3 - maxItems;
         }
-        return _result;
+        return _result2;
       }
       var urlParamsCtor = typeof URLSearchParams === 'function' ? URLSearchParams : null;
       if (urlParamsCtor && value instanceof urlParamsCtor) {
         var params = [];
-        var iterator = typeof value.entries === 'function' ? value.entries() : null;
+        var _iterator = typeof value.entries === 'function' ? value.entries() : null;
         var truncated = 0;
-        if (iterator && typeof iterator.next === 'function') {
+        if (_iterator && typeof _iterator.next === 'function') {
           var maxPairs = 40;
-          var count = 0;
-          var next = iterator.next();
+          var _count = 0;
+          var next = _iterator.next();
           while (!next.done) {
-            if (count < maxPairs) {
+            if (_count < maxPairs) {
               var pair = next.value || [];
               params.push({
                 key: sanitizeForLog(pair[0], nextDepth + 1, visited),
                 value: sanitizeForLog(pair[1], nextDepth + 1, visited)
               });
             }
-            count += 1;
-            next = iterator.next();
+            _count += 1;
+            next = _iterator.next();
           }
-          if (count > params.length) {
-            truncated = count - params.length;
+          if (_count > params.length) {
+            truncated = _count - params.length;
           }
         }
-        var _result2 = {
+        var _result3 = {
           __type: 'URLSearchParams',
           entries: params
         };
         if (truncated > 0) {
-          _result2.__truncatedEntries = truncated;
+          _result3.__truncatedEntries = truncated;
         }
-        return _result2;
+        return _result3;
       }
       if (typeof URL === 'function' && value instanceof URL) {
         try {
@@ -1142,22 +1207,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (Array.isArray(value)) {
         var _maxItems = 20;
-        var _result3 = [];
+        var _result4 = [];
         var len = Math.min(value.length, _maxItems);
-        for (var _index3 = 0; _index3 < len; _index3 += 1) {
-          _result3.push(sanitizeForLog(value[_index3], nextDepth + 1, visited));
+        for (var _index4 = 0; _index4 < len; _index4 += 1) {
+          _result4.push(sanitizeForLog(value[_index4], nextDepth + 1, visited));
         }
         if (value.length > _maxItems) {
-          _result3.push("\u2026 (".concat(value.length - _maxItems, " more)"));
+          _result4.push("\u2026 (".concat(value.length - _maxItems, " more)"));
         }
-        return _result3;
+        return _result4;
       }
       var output = {};
       var keys = Object.keys(value);
       var maxKeys = 30;
       var length = Math.min(keys.length, maxKeys);
-      for (var _index4 = 0; _index4 < length; _index4 += 1) {
-        var key = keys[_index4];
+      for (var _index5 = 0; _index5 < length; _index5 += 1) {
+        var key = keys[_index5];
         try {
           output[key] = sanitizeForLog(value[key], nextDepth + 1, visited);
         } catch (error) {
@@ -1170,8 +1235,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof Object.getOwnPropertySymbols === 'function') {
         var symbols = Object.getOwnPropertySymbols(value);
         var symbolLength = Math.min(symbols.length, 5);
-        for (var _index5 = 0; _index5 < symbolLength; _index5 += 1) {
-          var symbolKey = symbols[_index5];
+        for (var _index6 = 0; _index6 < symbolLength; _index6 += 1) {
+          var symbolKey = symbols[_index6];
           var symbolName = _typeof(symbolKey) === 'symbol' ? symbolKey.toString() : String(symbolKey);
           try {
             output[symbolName] = sanitizeForLog(value[symbolKey], nextDepth + 1, visited);
@@ -1257,8 +1322,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     } else if (stackSummary && Array.isArray(stackSummary.frames)) {
-      for (var _index6 = 0; _index6 < stackSummary.frames.length; _index6 += 1) {
-        frames.push(stackSummary.frames[_index6]);
+      for (var _index7 = 0; _index7 < stackSummary.frames.length; _index7 += 1) {
+        frames.push(stackSummary.frames[_index7]);
       }
     }
     var truncated = origin.truncated === true || (stackSummary ? stackSummary.truncated === true : false) || frames.length > 0 && frames.length >= 40;
@@ -1418,6 +1483,48 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return false;
     }
     return getLevelPriority(level) >= getLevelPriority(activeConfig.level);
+  }
+  function _getLevelState(level) {
+    var normalizedLevel = normalizeLevel(level, 'info');
+    var consoleEnabled = shouldOutputToConsole(normalizedLevel);
+    var historyEnabled = shouldRecord(normalizedLevel);
+    return freezeDeep({
+      level: normalizedLevel,
+      enabled: consoleEnabled || historyEnabled,
+      console: consoleEnabled,
+      history: historyEnabled,
+      thresholds: freezeDeep({
+        console: normalizeLevel(activeConfig.level, DEFAULT_CONFIG_VALUES.level),
+        history: normalizeLevel(activeConfig.historyLevel, DEFAULT_CONFIG_VALUES.historyLevel)
+      })
+    });
+  }
+  function _isLevelEnabled(level, options) {
+    var state = _getLevelState(level);
+    if (!options || _typeof(options) !== 'object') {
+      return state.enabled;
+    }
+    var checkConsole = options.console !== false;
+    var checkHistory = options.history !== false;
+    if (!checkConsole && !checkHistory) {
+      return false;
+    }
+    if (options.requireAll === true) {
+      if (checkConsole && !state.console) {
+        return false;
+      }
+      if (checkHistory && !state.history) {
+        return false;
+      }
+      return true;
+    }
+    if (checkConsole && state.console) {
+      return true;
+    }
+    if (checkHistory && state.history) {
+      return true;
+    }
+    return false;
   }
   function createEntryId(timestamp) {
     return "log-".concat(timestamp, "-").concat(Math.random().toString(36).slice(2, 10));
@@ -1611,8 +1718,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     if (meta && _typeof(meta) === 'object') {
       var metaKeys = Object.keys(meta);
-      for (var _index7 = 0; _index7 < metaKeys.length; _index7 += 1) {
-        var key = metaKeys[_index7];
+      for (var _index8 = 0; _index8 < metaKeys.length; _index8 += 1) {
+        var key = metaKeys[_index8];
         try {
           contextMeta[key] = sanitizeForLog(meta[key]);
         } catch (metaError) {
@@ -2080,8 +2187,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       merged[key] = baseMeta[key];
     }
     var metaKeys = Object.keys(meta);
-    for (var _index8 = 0; _index8 < metaKeys.length; _index8 += 1) {
-      var _key = metaKeys[_index8];
+    for (var _index9 = 0; _index9 < metaKeys.length; _index9 += 1) {
+      var _key = metaKeys[_index9];
       merged[_key] = sanitizeForLog(meta[_key]);
     }
     return merged;
@@ -2113,7 +2220,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       error: function error(message, detail, meta) {
         return logWithNamespace('error', message, detail, meta);
       },
-      getConfig: getConfigSnapshot
+      getConfig: getConfigSnapshot,
+      isLevelEnabled: function isLevelEnabled(level, optionOverrides) {
+        return _isLevelEnabled(level, optionOverrides);
+      },
+      getLevelState: function getLevelState(level) {
+        return _getLevelState(level);
+      }
     });
   }
   function markEventHandled(event) {
@@ -2578,6 +2691,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     clearHistory: clearHistory,
     getConfig: getConfigSnapshot,
     setConfig: setConfig,
+    getLevelState: _getLevelState,
+    isLevelEnabled: _isLevelEnabled,
     subscribe: subscribe,
     subscribeConfig: subscribeConfig,
     enableConsoleCapture: enableConsoleCapture,

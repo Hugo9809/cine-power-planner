@@ -131,7 +131,6 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
     return fallbackProvider();
   }
 }
-
 function detectPrimaryGlobalScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
@@ -147,7 +146,6 @@ function detectPrimaryGlobalScope() {
   }
   return null;
 }
-
 function whenGlobalValueAvailable(name, validator, onResolve) {
   var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   if (typeof name !== 'string' || !name) {
@@ -179,15 +177,16 @@ function whenGlobalValueAvailable(name, validator, onResolve) {
     invokeResolve(value);
     return true;
   };
-  var initialCandidate;
-  try {
-    initialCandidate = scope[name];
-  } catch (accessError) {
-    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-      console.warn("whenGlobalValueAvailable: unable to read ".concat(name, " during initial attempt."), accessError);
+  var initialCandidate = function () {
+    try {
+      return scope[name];
+    } catch (accessError) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn("whenGlobalValueAvailable: unable to read ".concat(name, " during initial attempt."), accessError);
+      }
+      return undefined;
     }
-    initialCandidate = undefined;
-  }
+  }();
   if (attempt(initialCandidate)) {
     return true;
   }
@@ -216,12 +215,12 @@ function whenGlobalValueAvailable(name, validator, onResolve) {
       }
     }
   };
-  var poll = function poll() {
+  var _poll = function poll() {
     if (cancelled) {
       return;
     }
     attempts += 1;
-    var candidate;
+    var candidate = undefined;
     try {
       candidate = scope[name];
     } catch (accessError) {
@@ -239,10 +238,10 @@ function whenGlobalValueAvailable(name, validator, onResolve) {
       handleTimeout();
       return;
     }
-    var handle = setTimeout(poll, interval);
+    var handle = setTimeout(_poll, interval);
     timers.push(handle);
   };
-  var initialHandle = setTimeout(poll, interval);
+  var initialHandle = setTimeout(_poll, interval);
   timers.push(initialHandle);
   return true;
 }
@@ -268,6 +267,119 @@ function getSessionRuntimeScopes() {
   addScope(typeof self !== 'undefined' ? self : null);
   addScope(typeof global !== 'undefined' ? global : null);
   return scopes;
+}
+function resolveModuleApi(name, validator) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+  var validate = typeof validator === 'function' ? validator : function (value) {
+    return !!value;
+  };
+  var seen = new Set();
+  var queue = [];
+  var enqueueScope = function enqueueScope(candidate) {
+    if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+      return;
+    }
+    if (seen.has(candidate)) {
+      return;
+    }
+    seen.add(candidate);
+    queue.push(candidate);
+  };
+  var nestedKeys = ['CORE_SHARED', 'CORE_GLOBAL_SCOPE', 'CORE_AGGREGATED_EXPORTS', 'CORE_RUNTIME_SCOPE', 'CORE_PART2_RUNTIME_SCOPE', 'CORE_SCOPE', 'CORE_SHARED_SCOPE_PART2', 'cine', 'cineGlobals', 'cineModuleGlobals', 'cineModuleBase', 'cineModuleContext', 'cineRuntime', 'cinePersistence', 'cineOffline', 'cineUi', 'APP', 'app', '__cineGlobal', '__cineScope', '__cineModules', '__cineExports', '__cineRuntime'];
+  var checkCandidate = function checkCandidate(candidate) {
+    if (!candidate) {
+      return null;
+    }
+    try {
+      if (validate(candidate)) {
+        return candidate;
+      }
+    } catch (validationError) {
+      void validationError;
+    }
+    return null;
+  };
+  var tryResolveFromScope = function tryResolveFromScope(scope) {
+    var directCandidate;
+    try {
+      directCandidate = scope[name];
+    } catch (directError) {
+      void directError;
+      directCandidate = undefined;
+    }
+    var validatedDirect = checkCandidate(directCandidate);
+    if (validatedDirect) {
+      return validatedDirect;
+    }
+    var moduleGlobals;
+    try {
+      moduleGlobals = scope.cineModuleGlobals;
+    } catch (globalsError) {
+      void globalsError;
+      moduleGlobals = null;
+    }
+    if (moduleGlobals && typeof moduleGlobals.getModule === 'function') {
+      try {
+        var viaGlobals = moduleGlobals.getModule(name);
+        var validatedGlobal = checkCandidate(viaGlobals);
+        if (validatedGlobal) {
+          return validatedGlobal;
+        }
+      } catch (globalLookupError) {
+        void globalLookupError;
+      }
+    }
+    var registry;
+    try {
+      registry = scope.cineModules;
+    } catch (registryError) {
+      void registryError;
+      registry = null;
+    }
+    if (registry && typeof registry.get === 'function') {
+      try {
+        var viaRegistry = registry.get(name);
+        var validatedRegistry = checkCandidate(viaRegistry);
+        if (validatedRegistry) {
+          return validatedRegistry;
+        }
+      } catch (registryLookupError) {
+        void registryLookupError;
+      }
+    }
+    return null;
+  };
+  enqueueScope(detectPrimaryGlobalScope());
+  var runtimeScopes = getSessionRuntimeScopes();
+  for (var index = 0; index < runtimeScopes.length; index += 1) {
+    enqueueScope(runtimeScopes[index]);
+  }
+  while (queue.length) {
+    var scope = queue.shift();
+    if (!scope) {
+      continue;
+    }
+    var resolved = tryResolveFromScope(scope);
+    if (resolved) {
+      return resolved;
+    }
+    for (var _index = 0; _index < nestedKeys.length; _index += 1) {
+      var key = nestedKeys[_index];
+      var nested = void 0;
+      try {
+        nested = scope[key];
+      } catch (nestedError) {
+        void nestedError;
+        nested = undefined;
+      }
+      if (nested) {
+        enqueueScope(nested);
+      }
+    }
+  }
+  return null;
 }
 function normalizeVersionValue(value) {
   if (typeof value !== 'string') {
@@ -332,8 +444,8 @@ function resolveKnownAppVersion(explicitVersion) {
     if (!candidate) {
       continue;
     }
-    for (var _index = 0; _index < versionKeys.length; _index += 1) {
-      var key = versionKeys[_index];
+    for (var _index2 = 0; _index2 < versionKeys.length; _index2 += 1) {
+      var key = versionKeys[_index2];
       var value = void 0;
       try {
         value = candidate[key];
@@ -346,8 +458,8 @@ function resolveKnownAppVersion(explicitVersion) {
         return _normalized;
       }
     }
-    for (var _index2 = 0; _index2 < nestedKeys.length; _index2 += 1) {
-      var nestedKey = nestedKeys[_index2];
+    for (var _index3 = 0; _index3 < nestedKeys.length; _index3 += 1) {
+      var nestedKey = nestedKeys[_index3];
       var nestedValue = void 0;
       try {
         nestedValue = candidate[nestedKey];
@@ -365,8 +477,8 @@ function resolveKnownAppVersion(explicitVersion) {
       void keysError;
     }
     var limitedKeys = keys.length > 50 ? keys.slice(0, 50) : keys;
-    for (var _index3 = 0; _index3 < limitedKeys.length; _index3 += 1) {
-      var _key = limitedKeys[_index3];
+    for (var _index4 = 0; _index4 < limitedKeys.length; _index4 += 1) {
+      var _key = limitedKeys[_index4];
       if (!/(version|core|cine|shared|global|app)/i.test(_key)) {
         continue;
       }
@@ -1390,8 +1502,8 @@ for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   });
 }
 var AUTO_GEAR_RUNTIME_FUNCTIONS = ['setAutoGearSummaryFocus', 'focusAutoGearRuleById', 'setAutoGearSearchQuery', 'setAutoGearScenarioFilter', 'clearAutoGearFilters'];
-for (var _index4 = 0; _index4 < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index4 += 1) {
-  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index4];
+for (var _index5 = 0; _index5 < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index5 += 1) {
+  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index5];
   ensureSessionRuntimeFunction(functionName, {
     defer: true
   });
@@ -1925,8 +2037,8 @@ function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
   }
-  for (var _index5 = 0; _index5 < keys.length; _index5 += 1) {
-    var key = keys[_index5];
+  for (var _index6 = 0; _index6 < keys.length; _index6 += 1) {
+    var key = keys[_index6];
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       return true;
     }
@@ -3651,8 +3763,8 @@ function persistImportedProjectWithFallback(payload, nameCandidates) {
   }
   var candidates = Array.isArray(nameCandidates) ? nameCandidates : [];
   var baseName = '';
-  for (var _index6 = 0; _index6 < candidates.length; _index6 += 1) {
-    var candidate = typeof candidates[_index6] === 'string' ? candidates[_index6].trim() : '';
+  for (var _index7 = 0; _index7 < candidates.length; _index7 += 1) {
+    var candidate = typeof candidates[_index7] === 'string' ? candidates[_index7].trim() : '';
     if (candidate) {
       baseName = candidate;
       break;
@@ -4040,8 +4152,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var _index7 = 0; _index7 < pairs.length; _index7 += 1) {
-    var pair = pairs[_index7];
+  for (var _index8 = 0; _index8 < pairs.length; _index8 += 1) {
+    var pair = pairs[_index8];
     if (!pair) {
       continue;
     }
@@ -4359,184 +4471,47 @@ var applyPinkModeIcon = function applyPinkModeIcon() {};
 var isPinkModeActive = function isPinkModeActive() {
   return !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 };
-var appearanceModuleFactory = ensureSessionRuntimePlaceholder('cineSettingsAppearance', function () {
+var appearanceModuleFactoryPlaceholder = ensureSessionRuntimePlaceholder('cineSettingsAppearance', function () {
   return null;
 });
-var CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
-var CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
-function normalizeCameraColorValue(value) {
-  if (typeof value !== 'string') {
-    return '';
+var appearanceModuleValidator = function appearanceModuleValidator(candidate) {
+  return !!candidate && typeof candidate.initialize === 'function';
+};
+var appearanceModule = null;
+var themePreferenceController = null;
+var appearanceModuleInitialized = false;
+var appearanceModuleUnavailableWarningHandle = null;
+function clearAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle === null) {
+    return;
   }
-  var trimmed = value.trim();
-  if (!trimmed) {
-    return '';
-  }
-  if (/^#[0-9a-f]{6}$/i.test(trimmed)) {
-    return trimmed.toLowerCase();
-  }
-  if (/^[0-9a-f]{6}$/i.test(trimmed)) {
-    return "#".concat(trimmed.toLowerCase());
-  }
-  return '';
-}
-function generateDefaultCameraColor(letter) {
-  if (letter !== 'E') {
-    return '';
-  }
-  var generateChannel = function generateChannel() {
-    var value = 0;
-    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
-      var array = new Uint8Array(1);
-      crypto.getRandomValues(array);
-      value = array[0] / 255;
-    } else {
-      value = Math.random();
-    }
-    var channel = Math.floor(value * 200) + 28;
-    return Math.max(24, Math.min(232, channel));
-  };
-  var components = [generateChannel(), generateChannel(), generateChannel()];
-  return "#".concat(components.map(function (component) {
-    return component.toString(16).padStart(2, '0');
-  }).join(''));
-}
-function getDefaultCameraLetterColors() {
-  var defaults = {
-    A: '#d32f2f',
-    B: '#1e88e5',
-    C: '#fdd835',
-    D: '#43a047',
-    E: '#7b1fa2'
-  };
-  var generated = generateDefaultCameraColor('E');
-  if (generated) {
-    defaults.E = generated;
-  }
-  return defaults;
-}
-var cachedCameraLetterColors = null;
-function loadCameraLetterColors() {
-  if (cachedCameraLetterColors) {
-    return cachedCameraLetterColors;
-  }
-  var defaults = getDefaultCameraLetterColors();
-  var stored = null;
   try {
-    var raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY_SESSION);
-    if (raw) {
-      stored = JSON.parse(raw);
-    }
-  } catch (error) {
-    console.warn('Failed to read stored camera colors', error);
-    stored = null;
+    clearTimeout(appearanceModuleUnavailableWarningHandle);
+  } catch (clearError) {
+    void clearError;
   }
-  var resolved = _objectSpread({}, defaults);
-  if (stored && _typeof(stored) === 'object') {
-    CAMERA_LETTERS.forEach(function (letter) {
-      var incoming = stored[letter] || stored[letter.toLowerCase()];
-      var normalized = normalizeCameraColorValue(incoming);
-      if (normalized) {
-        resolved[letter] = normalized;
-      }
-    });
-  } else {
-    try {
-      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(resolved));
-    } catch (persistError) {
-      console.warn('Unable to persist default camera colors', persistError);
-    }
-  }
-  cachedCameraLetterColors = resolved;
-  return resolved;
+  appearanceModuleUnavailableWarningHandle = null;
 }
-function getCameraLetterColorsSafeSession() {
-  var colors = loadCameraLetterColors();
-  return _objectSpread({}, colors);
-}
-function setCameraLetterColors() {
-  var newColors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var current = _objectSpread({}, loadCameraLetterColors());
-  var changed = false;
-  CAMERA_LETTERS.forEach(function (letter) {
-    var incoming = newColors[letter] || newColors[letter.toLowerCase()];
-    var normalized = normalizeCameraColorValue(incoming);
-    if (normalized && current[letter] !== normalized) {
-      current[letter] = normalized;
-      changed = true;
-    }
-  });
-  if (!changed) {
-    return current;
+function warnAppearanceModuleUnavailable() {
+  if (appearanceModuleInitialized) {
+    return;
   }
-  cachedCameraLetterColors = current;
-  try {
-    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(current));
-  } catch (storeError) {
-    console.warn('Failed to persist camera color preferences', storeError);
+  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
   }
-  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
-    try {
-      document.dispatchEvent(new CustomEvent('camera-colors-changed'));
-    } catch (dispatchError) {
-      console.warn('Failed to broadcast camera color change', dispatchError);
-    }
+}
+function scheduleAppearanceModuleUnavailableWarning() {
+  if (appearanceModuleUnavailableWarningHandle !== null) {
+    return;
   }
-  return current;
-}
-function getCameraColorInputElements() {
-  if (typeof document === 'undefined') {
-    return [];
+  if (typeof setTimeout !== 'function') {
+    warnAppearanceModuleUnavailable();
+    return;
   }
-  return CAMERA_LETTERS.map(function (letter) {
-    var id = "cameraColor".concat(letter);
-    var element = null;
-    try {
-      element = typeof window !== 'undefined' && window[id] ? window[id] : document.getElementById(id);
-    } catch (error) {
-      void error;
-      element = null;
-    }
-    return element ? {
-      letter: letter,
-      element: element
-    } : null;
-  }).filter(Boolean);
-}
-function updateCameraColorInputsFromState() {
-  var colors = getCameraLetterColorsSafeSession();
-  getCameraColorInputElements().forEach(function (entry) {
-    if (!entry || !entry.element) {
-      return;
-    }
-    var value = colors[entry.letter] || '';
-    if (value) {
-      entry.element.value = value;
-    }
-  });
-}
-function collectCameraColorInputValues() {
-  var result = {};
-  getCameraColorInputElements().forEach(function (entry) {
-    if (!entry || !entry.element) return;
-    var normalized = normalizeCameraColorValue(entry.element.value || '');
-    if (normalized) {
-      result[entry.letter] = normalized;
-    }
-  });
-  return result;
-}
-try {
-  if (typeof window !== 'undefined') {
-    window.getCameraLetterColors = function () {
-      return getCameraLetterColorsSafeSession();
-    };
-    window.setCameraLetterColors = function (palette) {
-      return setCameraLetterColors(palette);
-    };
-  }
-} catch (cameraColorExposeError) {
-  console.warn('Unable to expose camera color helpers', cameraColorExposeError);
+  appearanceModuleUnavailableWarningHandle = setTimeout(function () {
+    appearanceModuleUnavailableWarningHandle = null;
+    warnAppearanceModuleUnavailable();
+  }, 1500);
 }
 var appearanceContext = {
   document: typeof document !== 'undefined' ? document : null,
@@ -4761,51 +4736,6 @@ var appearanceContext = {
     }
   }
 };
-var appearanceModule = null;
-var themePreferenceController = null;
-var appearanceModuleInitialized = false;
-var appearanceModuleUnavailableWarningHandle = null;
-
-function clearAppearanceModuleUnavailableWarning() {
-  if (appearanceModuleUnavailableWarningHandle === null) {
-    return;
-  }
-
-  try {
-    clearTimeout(appearanceModuleUnavailableWarningHandle);
-  } catch (clearError) {
-    void clearError;
-  }
-
-  appearanceModuleUnavailableWarningHandle = null;
-}
-
-function warnAppearanceModuleUnavailable() {
-  if (appearanceModuleInitialized) {
-    return;
-  }
-
-  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-  }
-}
-
-function scheduleAppearanceModuleUnavailableWarning() {
-  if (appearanceModuleUnavailableWarningHandle !== null) {
-    return;
-  }
-
-  if (typeof setTimeout !== 'function') {
-    warnAppearanceModuleUnavailable();
-    return;
-  }
-
-  appearanceModuleUnavailableWarningHandle = setTimeout(function () {
-    appearanceModuleUnavailableWarningHandle = null;
-    warnAppearanceModuleUnavailable();
-  }, 1500);
-}
-
 function detectSystemThemePreference() {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return null;
@@ -4819,34 +4749,27 @@ function detectSystemThemePreference() {
   }
   return null;
 }
-
 function buildThemePreferenceController(module) {
   if (!module || typeof module.createThemePreferenceController !== 'function') {
     return null;
   }
-
   try {
     return module.createThemePreferenceController({
-      detectSystemPreference: detectSystemThemePreference,
+      detectSystemPreference: detectSystemThemePreference
     });
   } catch (error) {
     if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
       console.warn('cineSettingsAppearance: failed to create theme preference controller.', error);
     }
   }
-
   return null;
 }
-
 function applyAppearanceModuleBindings(module) {
-  if (!module || typeof module !== 'object') {
+  if (!module || _typeof(module) !== 'object') {
     return false;
   }
-
   appearanceModule = module;
-  appearanceModuleInitialized = true;
   clearAppearanceModuleUnavailableWarning();
-
   updateThemeColor = module.updateThemeColor || updateThemeColor;
   setToggleIcon = module.setToggleIcon || setToggleIcon;
   applyDarkMode = module.applyDarkMode || applyDarkMode;
@@ -4874,20 +4797,16 @@ function applyAppearanceModuleBindings(module) {
   stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
   applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
   isPinkModeActive = module.isPinkModeActive || isPinkModeActive;
-
   var controller = buildThemePreferenceController(module);
   if (controller) {
     themePreferenceController = controller;
   }
-
   return true;
 }
-
 function initializeAppearanceModule(factory) {
   if (!factory || typeof factory.initialize !== 'function') {
     return false;
   }
-
   var module = null;
   try {
     module = factory.initialize(appearanceContext) || null;
@@ -4897,49 +4816,280 @@ function initializeAppearanceModule(factory) {
     }
     return false;
   }
-
-  if (!module || typeof module !== 'object') {
+  if (!module || _typeof(module) !== 'object') {
     return false;
   }
-
-  var bound = applyAppearanceModuleBindings(module);
-  if (bound) {
-    appearanceModuleInitialized = true;
-  }
-  return bound;
+  return applyAppearanceModuleBindings(module);
 }
-
-var appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
-appearanceModuleInitialized = appearanceModuleReady;
-
+function attemptAppearanceModuleInitialization(moduleCandidate) {
+  if (!appearanceModuleValidator(moduleCandidate)) {
+    return false;
+  }
+  if (appearanceModuleInitialized) {
+    return true;
+  }
+  var initialized = initializeAppearanceModule(moduleCandidate);
+  if (initialized) {
+    appearanceModuleInitialized = true;
+    clearAppearanceModuleUnavailableWarning();
+  }
+  return initialized;
+}
+var resolvedAppearanceModuleFactory = appearanceModuleValidator(appearanceModuleFactoryPlaceholder) ? appearanceModuleFactoryPlaceholder : resolveModuleApi('cineSettingsAppearance', appearanceModuleValidator);
+var appearanceModuleReady = attemptAppearanceModuleInitialization(resolvedAppearanceModuleFactory);
 if (!appearanceModuleReady) {
   scheduleAppearanceModuleUnavailableWarning();
-
-  whenGlobalValueAvailable(
-    'cineSettingsAppearance',
-    function (candidate) { return !!candidate && typeof candidate.initialize === 'function'; },
-    function (candidate) {
-      if (initializeAppearanceModule(candidate)) {
-        clearAppearanceModuleUnavailableWarning();
-        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
-          console.info('cineSettingsAppearance module became available after deferred load.');
-        }
+  var appearanceModuleWaitOptions = {
+    interval: 200,
+    maxAttempts: 300,
+    onTimeout: function onTimeout() {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
       }
-    },
-    {
-      interval: 200,
-      maxAttempts: 300,
-      onTimeout: function onTimeout() {
-        clearAppearanceModuleUnavailableWarning();
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
-        }
-      },
-    },
-  );
+      clearAppearanceModuleUnavailableWarning();
+    }
+  };
+  var announceIfInitialized = function announceIfInitialized(moduleCandidate) {
+    var wasInitialized = appearanceModuleInitialized;
+    if (attemptAppearanceModuleInitialization(moduleCandidate) && !wasInitialized) {
+      clearAppearanceModuleUnavailableWarning();
+      if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
+        console.info('cineSettingsAppearance module became available after deferred load.');
+      }
+    }
+  };
+  whenGlobalValueAvailable('cineSettingsAppearance', appearanceModuleValidator, announceIfInitialized, appearanceModuleWaitOptions);
+  whenGlobalValueAvailable('cineModuleGlobals', function (candidate) {
+    return candidate && typeof candidate.whenModuleAvailable === 'function';
+  }, function (moduleGlobals) {
+    if (appearanceModuleInitialized) {
+      return;
+    }
+    var resolvedModule = null;
+    if (typeof moduleGlobals.getModule === 'function') {
+      try {
+        resolvedModule = moduleGlobals.getModule('cineSettingsAppearance');
+      } catch (moduleLookupError) {
+        void moduleLookupError;
+        resolvedModule = null;
+      }
+    }
+    if (appearanceModuleValidator(resolvedModule)) {
+      announceIfInitialized(resolvedModule);
+      return;
+    }
+    if (typeof moduleGlobals.whenModuleAvailable === 'function') {
+      try {
+        moduleGlobals.whenModuleAvailable('cineSettingsAppearance', function (moduleCandidate) {
+          if (appearanceModuleValidator(moduleCandidate)) {
+            announceIfInitialized(moduleCandidate);
+          }
+        });
+      } catch (subscriptionError) {
+        void subscriptionError;
+      }
+    }
+  }, {
+    interval: 200,
+    maxAttempts: 150
+  });
+  whenGlobalValueAvailable('cineModules', function (candidate) {
+    return candidate && typeof candidate.get === 'function';
+  }, function (registry) {
+    if (appearanceModuleInitialized) {
+      return;
+    }
+    var resolvedModule = null;
+    try {
+      resolvedModule = registry.get('cineSettingsAppearance');
+    } catch (registryLookupError) {
+      void registryLookupError;
+      resolvedModule = null;
+    }
+    if (appearanceModuleValidator(resolvedModule)) {
+      announceIfInitialized(resolvedModule);
+    }
+  }, {
+    interval: 200,
+    maxAttempts: 150
+  });
 }
-
-
+var CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
+var CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
+function normalizeCameraColorValue(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^#[0-9a-f]{6}$/i.test(trimmed)) {
+    return trimmed.toLowerCase();
+  }
+  if (/^[0-9a-f]{6}$/i.test(trimmed)) {
+    return "#".concat(trimmed.toLowerCase());
+  }
+  return '';
+}
+function generateDefaultCameraColor(letter) {
+  if (letter !== 'E') {
+    return '';
+  }
+  var generateChannel = function generateChannel() {
+    var value = 0;
+    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+      var array = new Uint8Array(1);
+      crypto.getRandomValues(array);
+      value = array[0] / 255;
+    } else {
+      value = Math.random();
+    }
+    var channel = Math.floor(value * 200) + 28;
+    return Math.max(24, Math.min(232, channel));
+  };
+  var components = [generateChannel(), generateChannel(), generateChannel()];
+  return "#".concat(components.map(function (component) {
+    return component.toString(16).padStart(2, '0');
+  }).join(''));
+}
+function getDefaultCameraLetterColors() {
+  var defaults = {
+    A: '#d32f2f',
+    B: '#1e88e5',
+    C: '#fdd835',
+    D: '#43a047',
+    E: '#7b1fa2'
+  };
+  var generated = generateDefaultCameraColor('E');
+  if (generated) {
+    defaults.E = generated;
+  }
+  return defaults;
+}
+var cachedCameraLetterColors = null;
+function loadCameraLetterColors() {
+  if (cachedCameraLetterColors) {
+    return cachedCameraLetterColors;
+  }
+  var defaults = getDefaultCameraLetterColors();
+  var stored = null;
+  try {
+    var raw = localStorage.getItem(CAMERA_COLOR_STORAGE_KEY_SESSION);
+    if (raw) {
+      stored = JSON.parse(raw);
+    }
+  } catch (error) {
+    console.warn('Failed to read stored camera colors', error);
+    stored = null;
+  }
+  var resolved = _objectSpread({}, defaults);
+  if (stored && _typeof(stored) === 'object') {
+    CAMERA_LETTERS.forEach(function (letter) {
+      var incoming = stored[letter] || stored[letter.toLowerCase()];
+      var normalized = normalizeCameraColorValue(incoming);
+      if (normalized) {
+        resolved[letter] = normalized;
+      }
+    });
+  } else {
+    try {
+      localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(resolved));
+    } catch (persistError) {
+      console.warn('Unable to persist default camera colors', persistError);
+    }
+  }
+  cachedCameraLetterColors = resolved;
+  return resolved;
+}
+function getCameraLetterColorsSafeSession() {
+  var colors = loadCameraLetterColors();
+  return _objectSpread({}, colors);
+}
+function setCameraLetterColors() {
+  var newColors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var current = _objectSpread({}, loadCameraLetterColors());
+  var changed = false;
+  CAMERA_LETTERS.forEach(function (letter) {
+    var incoming = newColors[letter] || newColors[letter.toLowerCase()];
+    var normalized = normalizeCameraColorValue(incoming);
+    if (normalized && current[letter] !== normalized) {
+      current[letter] = normalized;
+      changed = true;
+    }
+  });
+  if (!changed) {
+    return current;
+  }
+  cachedCameraLetterColors = current;
+  try {
+    localStorage.setItem(CAMERA_COLOR_STORAGE_KEY_SESSION, JSON.stringify(current));
+  } catch (storeError) {
+    console.warn('Failed to persist camera color preferences', storeError);
+  }
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('camera-colors-changed'));
+    } catch (dispatchError) {
+      console.warn('Failed to broadcast camera color change', dispatchError);
+    }
+  }
+  return current;
+}
+function getCameraColorInputElements() {
+  if (typeof document === 'undefined') {
+    return [];
+  }
+  return CAMERA_LETTERS.map(function (letter) {
+    var id = "cameraColor".concat(letter);
+    var element = null;
+    try {
+      element = typeof window !== 'undefined' && window[id] ? window[id] : document.getElementById(id);
+    } catch (error) {
+      void error;
+      element = null;
+    }
+    return element ? {
+      letter: letter,
+      element: element
+    } : null;
+  }).filter(Boolean);
+}
+function updateCameraColorInputsFromState() {
+  var colors = getCameraLetterColorsSafeSession();
+  getCameraColorInputElements().forEach(function (entry) {
+    if (!entry || !entry.element) {
+      return;
+    }
+    var value = colors[entry.letter] || '';
+    if (value) {
+      entry.element.value = value;
+    }
+  });
+}
+function collectCameraColorInputValues() {
+  var result = {};
+  getCameraColorInputElements().forEach(function (entry) {
+    if (!entry || !entry.element) return;
+    var normalized = normalizeCameraColorValue(entry.element.value || '');
+    if (normalized) {
+      result[entry.letter] = normalized;
+    }
+  });
+  return result;
+}
+try {
+  if (typeof window !== 'undefined') {
+    window.getCameraLetterColors = function () {
+      return getCameraLetterColorsSafeSession();
+    };
+    window.setCameraLetterColors = function (palette) {
+      return setCameraLetterColors(palette);
+    };
+  }
+} catch (cameraColorExposeError) {
+  console.warn('Unable to expose camera color helpers', cameraColorExposeError);
+}
 var themePreferenceGlobalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
 var setThemePreference = function setThemePreference(value) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5129,8 +5279,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var _index8 = 0; _index8 < candidateScopes.length; _index8 += 1) {
-    var scope = candidateScopes[_index8];
+  for (var _index9 = 0; _index9 < candidateScopes.length; _index9 += 1) {
+    var scope = candidateScopes[_index9];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -5577,99 +5727,141 @@ if (settingsButton && settingsDialog) {
     if (typeof globalThis !== 'undefined' && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
       return globalThis.resetAutoGearRulesToFactoryAdditions;
     }
+    var moduleApi = resolveModuleApi('cineFeatureAutoGearRules', function (candidate) {
+      return candidate && typeof candidate.resetAutoGearRulesToFactoryAdditions === 'function';
+    });
+    if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+      return moduleApi.resetAutoGearRulesToFactoryAdditions;
+    }
     return null;
   };
   if (autoGearResetFactoryButton) {
     var autoGearResetUnavailableWarningHandle = null;
-
     var clearAutoGearResetUnavailableWarning = function clearAutoGearResetUnavailableWarning() {
       if (autoGearResetUnavailableWarningHandle === null) {
         return;
       }
-
       try {
         clearTimeout(autoGearResetUnavailableWarningHandle);
       } catch (clearError) {
         void clearError;
       }
-
       autoGearResetUnavailableWarningHandle = null;
     };
-
     var warnAutoGearResetUnavailable = function warnAutoGearResetUnavailable() {
       if (typeof console !== 'undefined' && typeof console.warn === 'function' && !resetHandlerAttached) {
         console.warn('Automatic gear reset action unavailable: reset handler missing.');
       }
     };
-
     var scheduleAutoGearResetUnavailableWarning = function scheduleAutoGearResetUnavailableWarning() {
       if (autoGearResetUnavailableWarningHandle !== null) {
         return;
       }
-
       if (typeof setTimeout !== 'function') {
         warnAutoGearResetUnavailable();
         return;
       }
-
       autoGearResetUnavailableWarningHandle = setTimeout(function () {
         autoGearResetUnavailableWarningHandle = null;
         warnAutoGearResetUnavailable();
       }, 1500);
     };
-
     var enableResetButton = function enableResetButton() {
       autoGearResetFactoryButton.disabled = false;
       autoGearResetFactoryButton.setAttribute('aria-disabled', 'false');
     };
-
     var disableResetButton = function disableResetButton() {
       autoGearResetFactoryButton.disabled = true;
       autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
     };
-
     var resetHandlerAttached = false;
-
     var attachResetHandler = function attachResetHandler(handler) {
       if (resetHandlerAttached || typeof handler !== 'function') {
         return false;
       }
-
       autoGearResetFactoryButton.addEventListener('click', handler);
       enableResetButton();
       resetHandlerAttached = true;
       clearAutoGearResetUnavailableWarning();
       return true;
     };
-
     var initialHandler = resolveResetAutoGearRulesHandler();
-
-    if (!attachResetHandler(initialHandler)) {
+    var attachHandlerIfAvailable = function attachHandlerIfAvailable(handler) {
+      if (!attachResetHandler(handler)) {
+        return false;
+      }
+      if (typeof console !== 'undefined' && typeof console.info === 'function') {
+        console.info('Automatic gear reset action re-enabled after deferred module load.');
+      }
+      return true;
+    };
+    if (!attachHandlerIfAvailable(initialHandler)) {
       disableResetButton();
       scheduleAutoGearResetUnavailableWarning();
-
-      whenGlobalValueAvailable(
-        'resetAutoGearRulesToFactoryAdditions',
-        function (candidate) { return typeof candidate === 'function'; },
-        function (candidate) {
-          if (attachResetHandler(candidate)) {
-            clearAutoGearResetUnavailableWarning();
-            if (typeof console !== 'undefined' && typeof console.info === 'function') {
-              console.info('Automatic gear reset action re-enabled after deferred module load.');
-            }
-          }
-        },
-        {
-          interval: 200,
-          maxAttempts: 300,
-          onTimeout: function onTimeout() {
-            clearAutoGearResetUnavailableWarning();
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-              console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
-            }
+      whenGlobalValueAvailable('resetAutoGearRulesToFactoryAdditions', function (candidate) {
+        return typeof candidate === 'function';
+      }, function (candidate) {
+        attachHandlerIfAvailable(candidate);
+      }, {
+        interval: 200,
+        maxAttempts: 300,
+        onTimeout: function onTimeout() {
+          clearAutoGearResetUnavailableWarning();
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
           }
         }
-      );
+      });
+      whenGlobalValueAvailable('cineModuleGlobals', function (candidate) {
+        return candidate && typeof candidate.whenModuleAvailable === 'function';
+      }, function (moduleGlobals) {
+        if (resetHandlerAttached) {
+          return;
+        }
+        var attachFromModule = function attachFromModule(moduleApi) {
+          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+          }
+        };
+        if (typeof moduleGlobals.getModule === 'function') {
+          try {
+            var moduleApi = moduleGlobals.getModule('cineFeatureAutoGearRules');
+            attachFromModule(moduleApi);
+          } catch (moduleLookupError) {
+            void moduleLookupError;
+          }
+        }
+        if (!resetHandlerAttached && typeof moduleGlobals.whenModuleAvailable === 'function') {
+          try {
+            moduleGlobals.whenModuleAvailable('cineFeatureAutoGearRules', function (moduleApi) {
+              attachFromModule(moduleApi);
+            });
+          } catch (subscriptionError) {
+            void subscriptionError;
+          }
+        }
+      }, {
+        interval: 200,
+        maxAttempts: 150
+      });
+      whenGlobalValueAvailable('cineModules', function (candidate) {
+        return candidate && typeof candidate.get === 'function';
+      }, function (registry) {
+        if (resetHandlerAttached) {
+          return;
+        }
+        try {
+          var moduleApi = registry.get('cineFeatureAutoGearRules');
+          if (moduleApi && typeof moduleApi.resetAutoGearRulesToFactoryAdditions === 'function') {
+            attachHandlerIfAvailable(moduleApi.resetAutoGearRulesToFactoryAdditions);
+          }
+        } catch (registryLookupError) {
+          void registryLookupError;
+        }
+      }, {
+        interval: 200,
+        maxAttempts: 150
+      });
     }
   }
   if (autoGearExportButton) {
@@ -5833,11 +6025,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var _index9 = list.findIndex(function (item) {
+        var _index0 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (_index9 >= 0) {
-          list.splice(_index9, 1);
+        if (_index0 >= 0) {
+          list.splice(_index0, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -5898,24 +6090,68 @@ var getNotificationTopOffset = function getNotificationTopOffset() {
   }
   return "".concat(Math.ceil(offset), "px");
 };
-var ensureNotificationContainer = function ensureNotificationContainer() {
+var notificationContainerEnsureScheduled = false;
+var scheduleNotificationContainerEnsure = function scheduleNotificationContainerEnsure() {
+  if (notificationContainerEnsureScheduled) {
+    return;
+  }
+  notificationContainerEnsureScheduled = true;
+  var trigger = function trigger() {
+    notificationContainerEnsureScheduled = false;
+    try {
+      _ensureNotificationContainer();
+    } catch (scheduleError) {
+      console.warn('Failed to ensure notification container after scheduling', scheduleError);
+    }
+  };
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(trigger);
+  } else if (typeof setTimeout === 'function') {
+    setTimeout(trigger, 16);
+  }
+};
+var _ensureNotificationContainer = function ensureNotificationContainer() {
   if (typeof document === 'undefined') return null;
   var id = 'backupNotificationContainer';
   var container = document.getElementById(id);
+  var isNew = false;
   if (!container) {
     container = document.createElement('div');
     container.id = id;
     container.style.position = 'fixed';
     container.style.right = '1rem';
     container.style.zIndex = '10000';
-    document.body.appendChild(container);
+    isNew = true;
   }
-  container.style.top = getNotificationTopOffset();
+  var preferredParent = typeof document.body !== 'undefined' && document.body ? document.body : typeof document.documentElement !== 'undefined' ? document.documentElement : null;
+  if (preferredParent) {
+    if (container.parentNode !== preferredParent) {
+      preferredParent.appendChild(container);
+    }
+    container.style.top = getNotificationTopOffset();
+  } else if (!container.parentNode) {
+    scheduleNotificationContainerEnsure();
+  }
+  if (isNew && typeof document.addEventListener === 'function') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          _ensureNotificationContainer();
+        } catch (ensureError) {
+          console.warn('Failed to ensure notification container after DOMContentLoaded', ensureError);
+        }
+      }, {
+        once: true
+      });
+    } else {
+      scheduleNotificationContainerEnsure();
+    }
+  }
   return container;
 };
 function showNotification(type, message) {
   if (typeof document === 'undefined') return;
-  var container = ensureNotificationContainer();
+  var container = _ensureNotificationContainer();
   if (!container) {
     return;
   }
@@ -5955,7 +6191,7 @@ var showAutoBackupActivityIndicator = function showAutoBackupActivityIndicator(m
   if (typeof document === 'undefined') {
     return function () {};
   }
-  var container = ensureNotificationContainer();
+  var container = _ensureNotificationContainer();
   if (!container) {
     return function () {};
   }
@@ -6054,7 +6290,7 @@ var showGlobalLoadingIndicator = function showGlobalLoadingIndicator(message) {
   if (typeof document === 'undefined') {
     return function () {};
   }
-  var container = ensureNotificationContainer();
+  var container = _ensureNotificationContainer();
   if (!container) {
     return function () {};
   }
@@ -6606,12 +6842,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index0 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index0) || _index0 < 0) {
+    var _index1 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index1) || _index1 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index0 + 1));
+    return template.replace('%s', formatNumberForComparison(_index1 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -6795,26 +7031,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index1 = 0; _index1 < maxLength; _index1 += 1) {
-        var hasBase = _index1 < baseValue.length;
-        var hasCompare = _index1 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index1, "]"));
+      for (var _index10 = 0; _index10 < maxLength; _index10 += 1) {
+        var hasBase = _index10 < baseValue.length;
+        var hasCompare = _index10 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index10, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index1]
+            after: compareValue[_index10]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index1],
+            before: baseValue[_index10],
             after: undefined
           });
         } else {
-          walk(baseValue[_index1], compareValue[_index1], nextPath);
+          walk(baseValue[_index10], compareValue[_index10], nextPath);
         }
       }
       return;
@@ -7988,8 +8224,8 @@ function resolveLoggingApi() {
   if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
   if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
   if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
-  for (var _index10 = 0; _index10 < scopes.length; _index10 += 1) {
-    var _scope = scopes[_index10];
+  for (var _index11 = 0; _index11 < scopes.length; _index11 += 1) {
+    var _scope = scopes[_index11];
     if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
       continue;
     }
@@ -10009,8 +10245,8 @@ function clearUiCacheEntriesFallback() {
 var CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
 function resolveCineCacheNameForReload() {
   var scopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var _index11 = 0; _index11 < scopes.length; _index11 += 1) {
-    var _scope2 = scopes[_index11];
+  for (var _index12 = 0; _index12 < scopes.length; _index12 += 1) {
+    var _scope2 = scopes[_index12];
     if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
       continue;
     }
@@ -10033,8 +10269,8 @@ function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
     return true;
   }
   var lowerKey = key.toLowerCase();
-  for (var _index12 = 0; _index12 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index12 += 1) {
-    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index12])) {
+  for (var _index13 = 0; _index13 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index13 += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index13])) {
       return true;
     }
   }
@@ -10166,10 +10402,10 @@ function buildForceReloadHref(locationLike, paramName) {
   }
   if (typeof URL === 'function') {
     var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
-    for (var _index13 = 0; _index13 < urlCandidates.length; _index13 += 1) {
-      var candidate = urlCandidates[_index13];
+    for (var _index14 = 0; _index14 < urlCandidates.length; _index14 += 1) {
+      var candidate = urlCandidates[_index14];
       try {
-        var url = _index13 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index14 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -10199,8 +10435,8 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var _index14 = 0; _index14 < baseCandidates.length; _index14 += 1) {
-      var _candidate = baseCandidates[_index14];
+    for (var _index15 = 0; _index15 < baseCandidates.length; _index15 += 1) {
+      var _candidate = baseCandidates[_index15];
       try {
         var absolute = new URL(href + hash, _candidate).toString();
         return {
@@ -13327,8 +13563,8 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index15 = 0; _index15 < scopes.length; _index15 += 1) {
-    var _scope3 = scopes[_index15];
+  for (var _index16 = 0; _index16 < scopes.length; _index16 += 1) {
+    var _scope3 = scopes[_index16];
     if (!_scope3 || _typeof(_scope3) !== 'object') {
       continue;
     }
@@ -13780,9 +14016,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index16 = 0; _index16 < lensNames.length; _index16 += 1) {
+  for (var _index17 = 0; _index17 < lensNames.length; _index17 += 1) {
     var _ref25, _lens$minFocusMeters;
-    var name = lensNames[_index16];
+    var name = lensNames[_index17];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -14212,8 +14448,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index17 = 0; _index17 < devices.filterOptions.length; _index17 += 1) {
-      var value = devices.filterOptions[_index17];
+    for (var _index18 = 0; _index18 < devices.filterOptions.length; _index18 += 1) {
+      var value = devices.filterOptions[_index18];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -14308,8 +14544,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index18 = 0; _index18 < opts.length; _index18 += 1) {
-    var value = opts[_index18];
+  for (var _index19 = 0; _index19 < opts.length; _index19 += 1) {
+    var value = opts[_index19];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -14326,7 +14562,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index19];
+    var value = opts[_index20];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -14347,7 +14583,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index19 = 0; _index19 < opts.length; _index19 += 1) {
+  for (var _index20 = 0; _index20 < opts.length; _index20 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -15146,8 +15382,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index20 = 0; _index20 < items.length; _index20 += 1) {
-      var _items$_index = items[_index20],
+    for (var _index21 = 0; _index21 < items.length; _index21 += 1) {
+      var _items$_index = items[_index21],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {
