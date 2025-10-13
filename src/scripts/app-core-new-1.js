@@ -3014,11 +3014,42 @@ const helpModuleApi = resolveHelpModuleApi();
 
 var deviceSchema = null;
 
+function resolveCoreDeviceSchema() {
+  const scopeCandidates = [];
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    scopeCandidates.push(CORE_GLOBAL_SCOPE);
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    scopeCandidates.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    scopeCandidates.push(window);
+  }
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    scopeCandidates.push(self);
+  }
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    scopeCandidates.push(global);
+  }
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    if (scope.CORE_DEVICE_SCHEMA && typeof scope.CORE_DEVICE_SCHEMA === 'object') {
+      return scope.CORE_DEVICE_SCHEMA;
+    }
+    if (scope.cineCoreDeviceSchema && typeof scope.cineCoreDeviceSchema === 'object') {
+      return scope.cineCoreDeviceSchema;
+    }
+  }
+
+  return null;
+}
+
 const deviceSchemaManager = (function initializeDeviceSchemaManager() {
-  const coreDeviceSchema =
-    typeof CORE_DEVICE_SCHEMA !== 'undefined' && CORE_DEVICE_SCHEMA
-      ? CORE_DEVICE_SCHEMA
-      : null;
+  const coreDeviceSchema = resolveCoreDeviceSchema();
 
   if (
     coreDeviceSchema &&
@@ -17931,26 +17962,26 @@ function getCurrentProjectStorageKey(options = {}) {
 
   return '';
 }
-newCategorySelect = document.getElementById("newCategory");
-newSubcategorySelect = document.getElementById("newSubcategory");
-subcategoryFieldDiv = document.getElementById("subcategoryField");
-newNameInput = document.getElementById("newName");
-newWattInput = document.getElementById("newWatt");
-wattFieldDiv = document.getElementById("wattField");
-dynamicFieldsDiv = document.getElementById("dynamicFields");
-cameraFieldsDiv = document.getElementById("cameraFields");
-cameraWattInput = document.getElementById("cameraWatt");
-cameraVoltageInput = document.getElementById("cameraVoltage");
-cameraPortTypeInput = document.getElementById("cameraPortType");
-monitorFieldsDiv = document.getElementById("monitorFields");
-monitorScreenSizeInput = document.getElementById("monitorScreenSize");
-monitorBrightnessInput = document.getElementById("monitorBrightness");
-monitorWattInput = document.getElementById("monitorWatt");
-monitorVoltageInput = document.getElementById("monitorVoltage");
-monitorPortTypeInput = document.getElementById("monitorPortType");
-monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
-lensFieldsDiv = document.getElementById("lensFields");
-lensMountOptionsContainer = document.getElementById("lensMountOptionsContainer");
+var newCategorySelect = document.getElementById("newCategory");
+var newSubcategorySelect = document.getElementById("newSubcategory");
+var subcategoryFieldDiv = document.getElementById("subcategoryField");
+var newNameInput = document.getElementById("newName");
+var newWattInput = document.getElementById("newWatt");
+var wattFieldDiv = document.getElementById("wattField");
+var dynamicFieldsDiv = document.getElementById("dynamicFields");
+var cameraFieldsDiv = document.getElementById("cameraFields");
+var cameraWattInput = document.getElementById("cameraWatt");
+var cameraVoltageInput = document.getElementById("cameraVoltage");
+var cameraPortTypeInput = document.getElementById("cameraPortType");
+var monitorFieldsDiv = document.getElementById("monitorFields");
+var monitorScreenSizeInput = document.getElementById("monitorScreenSize");
+var monitorBrightnessInput = document.getElementById("monitorBrightness");
+var monitorWattInput = document.getElementById("monitorWatt");
+var monitorVoltageInput = document.getElementById("monitorVoltage");
+var monitorPortTypeInput = document.getElementById("monitorPortType");
+var monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
+var lensFieldsDiv = document.getElementById("lensFields");
+var lensMountOptionsContainer = document.getElementById("lensMountOptionsContainer");
 
 function populateCategoryOptions() {
   if (!newCategorySelect && typeof document !== 'undefined') {
