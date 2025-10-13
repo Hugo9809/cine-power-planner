@@ -10405,7 +10405,8 @@ async function refreshStoragePersistenceStatus(options = {}) {
     return;
   }
 
-  storagePersistenceState.supported = true;
+  const supportsPersist = typeof storageManager.persist === 'function';
+  storagePersistenceState.supported = supportsPersist;
   let persistedValue = storagePersistenceState.persisted;
   if (typeof storageManager.persisted === 'function') {
     try {
@@ -10461,8 +10462,11 @@ async function handleStoragePersistenceRequest(event) {
   }
   const storageManager = getStorageManagerInstance();
   storagePersistenceState.requestAttempted = true;
-  if (!storageManager || typeof storageManager.persist !== 'function') {
-    storagePersistenceState.supported = Boolean(storageManager);
+  const supportsPersist = Boolean(
+    storageManager && typeof storageManager.persist === 'function'
+  );
+  if (!supportsPersist) {
+    storagePersistenceState.supported = supportsPersist;
     storagePersistenceState.lastRequestDenied = true;
     storagePersistenceState.lastError = null;
     renderStoragePersistenceStatus();

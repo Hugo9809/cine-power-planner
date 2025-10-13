@@ -4682,7 +4682,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var supportsPersist = storageManager && typeof storageManager.persist === 'function';
     if (!supportsPersist) {
       return Promise.resolve({
-        supported: Boolean(storageManager),
+        supported: false,
         granted: false,
         alreadyGranted: false
       });
