@@ -188,6 +188,54 @@ describe('cineOffline module', () => {
     delete global.clearUiCacheStorageEntries;
   });
 
+  test('reload warmup retries with cached response when reload fetch fails', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const responseClone = { bodyUsed: false, text: jest.fn(() => Promise.resolve('<html></html>')) };
+      const warmupResponse = {
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      };
+
+      const fetchError = new TypeError('Load failed');
+      const fetchMock = jest
+        .fn()
+        .mockImplementationOnce(() => Promise.reject(fetchError))
+        .mockImplementationOnce(() => Promise.resolve(warmupResponse));
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app?foo=bar',
+        navigator: { onLine: true },
+        window: {},
+        serviceWorkerPromise: Promise.resolve(true),
+        cachePromise: Promise.resolve(true),
+        allowCache: true,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+      await warmupHandle.promise;
+
+      jest.runOnlyPendingTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock.mock.calls[0][1]).toEqual(
+        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow' }),
+      );
+      expect(fetchMock.mock.calls[1][1]).toEqual(
+        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow' }),
+      );
+
+      const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
+      expect(warmupWarnings).toHaveLength(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   test('cleans up forceReload markers from the current URL during initialization', () => {
     if (harness) {
       harness.teardown();
