@@ -83,10 +83,114 @@
 const CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE =
   typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null;
 
-const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap() {
-  const namespaceName = 'cineCoreRuntimeSupportBootstrap';
+function createInlineRuntimeSupportContext(options, utilities) {
+  const fallbackUtilities =
+    utilities && typeof utilities === 'object' ? utilities : null;
 
-  function readFromScope(candidateScope) {
+  const fallbackDetectImplementation =
+    fallbackUtilities &&
+    typeof fallbackUtilities.defaultFallbackDetectRuntimeScope === 'function'
+      ? fallbackUtilities.defaultFallbackDetectRuntimeScope
+      : function inlineFallbackDetectRuntimeScope(primaryScope) {
+          if (
+            primaryScope &&
+            (typeof primaryScope === 'object' || typeof primaryScope === 'function')
+          ) {
+            return primaryScope;
+          }
+
+          if (typeof globalThis !== 'undefined' && typeof globalThis === 'object' && globalThis) {
+            return globalThis;
+          }
+
+          if (typeof window !== 'undefined' && typeof window === 'object' && window) {
+            return window;
+          }
+
+          if (typeof self !== 'undefined' && typeof self === 'object' && self) {
+            return self;
+          }
+
+          if (typeof global !== 'undefined' && typeof global === 'object' && global) {
+            return global;
+          }
+
+          return null;
+        };
+
+  const fallbackResolveImplementation =
+    fallbackUtilities &&
+    typeof fallbackUtilities.defaultFallbackResolveCoreSupportModule === 'function'
+      ? fallbackUtilities.defaultFallbackResolveCoreSupportModule
+      : function inlineFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
+          if (typeof namespaceName !== 'string' || !namespaceName) {
+            return null;
+          }
+
+          const runtimeScope = fallbackDetectImplementation(primaryScope);
+
+          if (runtimeScope && typeof runtimeScope[namespaceName] === 'object') {
+            return runtimeScope[namespaceName];
+          }
+
+          if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+            try {
+              const required = require(requirePath);
+              if (required && typeof required === 'object') {
+                return required;
+              }
+            } catch (supportModuleError) {
+              void supportModuleError;
+            }
+          }
+
+          return null;
+        };
+
+  const primaryScopeCandidate =
+    options &&
+    (typeof options.primaryScopeCandidate === 'object' ||
+      typeof options.primaryScopeCandidate === 'function')
+      ? options.primaryScopeCandidate
+      : null;
+
+  function detectRuntimeScope(candidateScope) {
+    return fallbackDetectImplementation(candidateScope);
+  }
+
+  const runtimeScope = detectRuntimeScope(primaryScopeCandidate);
+
+  function fallbackResolveCoreSupportModule(namespaceName, requirePath, candidateScope) {
+    const scope =
+      typeof candidateScope === 'undefined'
+        ? runtimeScope
+        : detectRuntimeScope(candidateScope);
+
+    return fallbackResolveImplementation(namespaceName, requirePath, scope);
+  }
+
+  function resolveCoreSupportModule(namespaceName, requirePath, candidateScope) {
+    return fallbackResolveCoreSupportModule(namespaceName, requirePath, candidateScope);
+  }
+
+  return Object.freeze({
+    primaryScopeCandidate,
+    bootstrap: null,
+    bootstrapTools: null,
+    fallbackTools: null,
+    runtimeScope,
+    detectRuntimeScope,
+    fallbackDetectRuntimeScope: detectRuntimeScope,
+    fallbackResolveCoreSupportModule,
+    resolveCoreSupportModule,
+  });
+}
+
+const CORE_RUNTIME_SUPPORT_CONTEXT = (function resolveCoreRuntimeSupportContext() {
+  const namespaceName = 'cineCoreRuntimeSupportContext';
+  const options = { primaryScopeCandidate: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE };
+
+  function readContextNamespace(candidateScope) {
     if (
       !candidateScope ||
       (typeof candidateScope !== 'object' && typeof candidateScope !== 'function')
@@ -95,12 +199,10 @@ const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap(
     }
 
     try {
-      const bootstrapCandidate = candidateScope[namespaceName];
-      return bootstrapCandidate && typeof bootstrapCandidate === 'object'
-        ? bootstrapCandidate
-        : null;
-    } catch (candidateLookupError) {
-      void candidateLookupError;
+      const namespace = candidateScope[namespaceName];
+      return namespace && typeof namespace === 'object' ? namespace : null;
+    } catch (namespaceLookupError) {
+      void namespaceLookupError;
     }
 
     return null;
@@ -114,138 +216,158 @@ const CORE_RUNTIME_SUPPORT_BOOTSTRAP = (function resolveRuntimeSupportBootstrap(
     typeof global !== 'undefined' ? global : null,
   ];
 
+  let namespace = null;
+
   for (let index = 0; index < candidates.length; index += 1) {
-    const bootstrap = readFromScope(candidates[index]);
-    if (bootstrap) {
-      return bootstrap;
+    const candidateNamespace = readContextNamespace(candidates[index]);
+    if (candidateNamespace) {
+      namespace = candidateNamespace;
+      break;
     }
   }
 
-  if (typeof require === 'function') {
+  if (!namespace && typeof require === 'function') {
     try {
-      const requiredBootstrap = require('./modules/core/runtime-support-bootstrap.js');
-      if (requiredBootstrap && typeof requiredBootstrap === 'object') {
-        return requiredBootstrap;
+      const requiredNamespace = require('./modules/core/runtime-support-context.js');
+      if (requiredNamespace && typeof requiredNamespace === 'object') {
+        namespace = requiredNamespace;
       }
-    } catch (runtimeSupportBootstrapRequireError) {
-      void runtimeSupportBootstrapRequireError;
+    } catch (runtimeSupportContextRequireError) {
+      void runtimeSupportContextRequireError;
     }
   }
 
-  for (let index = 0; index < candidates.length; index += 1) {
-    const bootstrap = readFromScope(candidates[index]);
-    if (bootstrap) {
-      return bootstrap;
+  function attemptResolveContext(factory) {
+    if (typeof factory !== 'function') {
+      return null;
     }
-  }
 
-  return null;
-})();
+    try {
+      const context = factory(options);
+      return context && typeof context === 'object' ? context : null;
+    } catch (runtimeSupportContextFactoryError) {
+      void runtimeSupportContextFactoryError;
+    }
 
-function defaultFallbackDetectRuntimeScope(primaryScope) {
-  if (primaryScope && (typeof primaryScope === 'object' || typeof primaryScope === 'function')) {
-    return primaryScope;
-  }
-
-  if (typeof globalThis !== 'undefined' && typeof globalThis === 'object' && globalThis) {
-    return globalThis;
-  }
-
-  if (typeof window !== 'undefined' && typeof window === 'object' && window) {
-    return window;
-  }
-
-  if (typeof self !== 'undefined' && typeof self === 'object' && self) {
-    return self;
-  }
-
-  if (typeof global !== 'undefined' && typeof global === 'object' && global) {
-    return global;
-  }
-
-  return null;
-}
-
-function defaultFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
-  if (typeof namespaceName !== 'string' || !namespaceName) {
     return null;
   }
 
-  const runtimeScope = defaultFallbackDetectRuntimeScope(primaryScope);
+  if (namespace) {
+    const resolvedContext =
+      attemptResolveContext(namespace.readRuntimeSupportContext) ||
+      attemptResolveContext(namespace.createRuntimeSupportContext) ||
+      attemptResolveContext(namespace.createDefaultRuntimeSupportContext);
 
-  if (
-    runtimeScope &&
-    runtimeScope[namespaceName] &&
-    typeof runtimeScope[namespaceName] === 'object'
-  ) {
-    return runtimeScope[namespaceName];
-  }
-
-  if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
-    try {
-      const required = require(requirePath);
-      if (required && typeof required === 'object') {
-        return required;
-      }
-    } catch (supportModuleError) {
-      void supportModuleError;
+    if (resolvedContext) {
+      return resolvedContext;
     }
   }
 
-  return null;
-}
+  return createInlineRuntimeSupportContext(options, namespace);
+})();
+
+const CORE_RUNTIME_SUPPORT_CONTEXT_SAFE =
+  CORE_RUNTIME_SUPPORT_CONTEXT && typeof CORE_RUNTIME_SUPPORT_CONTEXT === 'object'
+    ? CORE_RUNTIME_SUPPORT_CONTEXT
+    : createInlineRuntimeSupportContext(
+        { primaryScopeCandidate: CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE },
+        null
+      );
+
+const CORE_RUNTIME_SUPPORT_BOOTSTRAP =
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE && CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.bootstrap
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.bootstrap
+    : null;
 
 const CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS =
-  CORE_RUNTIME_SUPPORT_BOOTSTRAP &&
-  typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP.resolveBootstrap === 'function'
-    ? CORE_RUNTIME_SUPPORT_BOOTSTRAP.resolveBootstrap(
-        CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
-      )
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE && CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.bootstrapTools
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.bootstrapTools
     : null;
 
 const CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS =
-  !CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS &&
-  CORE_RUNTIME_SUPPORT_BOOTSTRAP &&
-  typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP.readRuntimeSupportTools === 'function'
-    ? CORE_RUNTIME_SUPPORT_BOOTSTRAP.readRuntimeSupportTools(
-        CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
-      )
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE && CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackTools
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackTools
     : null;
 
 const fallbackDetectRuntimeScope =
-  (CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS &&
-    typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope === 'function' &&
-    CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackDetectRuntimeScope) ||
-  (CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS &&
-    typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope === 'function' &&
-    CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackDetectRuntimeScope) ||
-  defaultFallbackDetectRuntimeScope;
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE &&
+  typeof CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackDetectRuntimeScope === 'function'
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackDetectRuntimeScope
+    : function fallbackDetectRuntimeScope(primaryScope) {
+        if (
+          primaryScope &&
+          (typeof primaryScope === 'object' || typeof primaryScope === 'function')
+        ) {
+          return primaryScope;
+        }
+
+        if (typeof globalThis !== 'undefined' && typeof globalThis === 'object' && globalThis) {
+          return globalThis;
+        }
+
+        if (typeof window !== 'undefined' && typeof window === 'object' && window) {
+          return window;
+        }
+
+        if (typeof self !== 'undefined' && typeof self === 'object' && self) {
+          return self;
+        }
+
+        if (typeof global !== 'undefined' && typeof global === 'object' && global) {
+          return global;
+        }
+
+        return null;
+      };
 
 const detectRuntimeScope =
-  (CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS &&
-    typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.detectRuntimeScope === 'function' &&
-    CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.detectRuntimeScope) ||
-  fallbackDetectRuntimeScope;
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE &&
+  typeof CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.detectRuntimeScope === 'function'
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.detectRuntimeScope
+    : fallbackDetectRuntimeScope;
 
 const fallbackResolveCoreSupportModule =
-  (CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS &&
-    typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule === 'function' &&
-    CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.fallbackResolveCoreSupportModule) ||
-  (CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS &&
-    typeof CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule === 'function' &&
-    CORE_RUNTIME_SUPPORT_FALLBACK_TOOLS.fallbackResolveCoreSupportModule) ||
-  defaultFallbackResolveCoreSupportModule;
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE &&
+  typeof CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackResolveCoreSupportModule === 'function'
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.fallbackResolveCoreSupportModule
+    : function fallbackResolveCoreSupportModule(namespaceName, requirePath, candidateScope) {
+        if (typeof namespaceName !== 'string' || !namespaceName) {
+          return null;
+        }
+
+        const scope =
+          typeof candidateScope === 'undefined'
+            ? detectRuntimeScope(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE)
+            : detectRuntimeScope(candidateScope);
+
+        if (scope && typeof scope[namespaceName] === 'object') {
+          return scope[namespaceName];
+        }
+
+        if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+          try {
+            const required = require(requirePath);
+            if (required && typeof required === 'object') {
+              return required;
+            }
+          } catch (supportModuleError) {
+            void supportModuleError;
+          }
+        }
+
+        return null;
+      };
 
 var CORE_PART1_RUNTIME_SCOPE =
-  CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.runtimeScope
-    ? CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.runtimeScope
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE && CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.runtimeScope
+    ? CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.runtimeScope
     : detectRuntimeScope(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE);
 
 const resolveCoreSupportModule =
-  CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS &&
-  typeof CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.resolveCoreSupportModule === 'function'
+  CORE_RUNTIME_SUPPORT_CONTEXT_SAFE &&
+  typeof CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.resolveCoreSupportModule === 'function'
     ? function resolveCoreSupportModule(namespaceName, requirePath) {
-        return CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS.resolveCoreSupportModule(
+        return CORE_RUNTIME_SUPPORT_CONTEXT_SAFE.resolveCoreSupportModule(
           namespaceName,
           requirePath,
           CORE_PART1_RUNTIME_SCOPE
