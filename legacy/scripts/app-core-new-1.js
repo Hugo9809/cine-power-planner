@@ -12521,6 +12521,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var role = sanitizeContactValue(entry.role);
     var phone = sanitizeContactValue(entry.phone);
     var email = sanitizeContactValue(entry.email);
+    var website = sanitizeContactValue(entry.website);
     var avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:') ? entry.avatar : '';
     var createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
     var updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
@@ -12530,6 +12531,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       role: role,
       phone: phone,
       email: email,
+      website: website,
       createdAt: createdAt,
       updatedAt: updatedAt
     };

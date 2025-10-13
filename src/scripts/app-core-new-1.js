@@ -14858,12 +14858,13 @@ function normalizeContactEntry(entry) {
   const role = sanitizeContactValue(entry.role);
   const phone = sanitizeContactValue(entry.phone);
   const email = sanitizeContactValue(entry.email);
+  const website = sanitizeContactValue(entry.website);
   const avatar = typeof entry.avatar === 'string' && entry.avatar.startsWith('data:')
     ? entry.avatar
     : '';
   const createdAt = Number.isFinite(entry.createdAt) ? entry.createdAt : Date.now();
   const updatedAt = Number.isFinite(entry.updatedAt) ? entry.updatedAt : createdAt;
-  const normalized = { id, name, role, phone, email, createdAt, updatedAt };
+  const normalized = { id, name, role, phone, email, website, createdAt, updatedAt };
   if (avatar) normalized.avatar = avatar;
   return normalized;
 }
