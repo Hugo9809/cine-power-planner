@@ -20502,15 +20502,124 @@ function collectDynamicFieldValues(category, exclude = []) {
   return result;
 }
 
-function applyDynamicFieldValues(target, category, exclude = []) {
-  if (!target) {
+function cloneDynamicFieldTarget(target) {
+  const clone = {};
+  if (
+    typeof Object.getPrototypeOf === 'function' &&
+    typeof Object.setPrototypeOf === 'function'
+  ) {
+    try {
+      Object.setPrototypeOf(clone, Object.getPrototypeOf(target));
+    } catch (protoError) {
+      void protoError;
+    }
+  }
+
+  const keys =
+    typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function'
+      ? Reflect.ownKeys(target)
+      : Object.getOwnPropertyNames(target);
+
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(target, key);
+    } catch (descError) {
+      descriptor = null;
+    }
+
+    if (!descriptor) {
+      continue;
+    }
+
+    const nextDescriptor = {
+      configurable: true,
+      enumerable: !!descriptor.enumerable,
+    };
+
+    if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+      nextDescriptor.value = descriptor.value;
+      nextDescriptor.writable = true;
+    } else {
+      nextDescriptor.get = descriptor.get;
+      nextDescriptor.set = descriptor.set;
+    }
+
+    try {
+      Object.defineProperty(clone, key, nextDescriptor);
+    } catch (defineError) {
+      void defineError;
+      clone[key] = descriptor.value;
+    }
+  }
+
+  return clone;
+}
+
+function ensureWritableDynamicFieldTarget(target, attrs) {
+  if (!target || typeof target !== 'object') {
     return {};
   }
+
+  let requiresClone = false;
+
+  try {
+    if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+      requiresClone = true;
+    }
+  } catch (extensibleError) {
+    void extensibleError;
+  }
+
+  if (!requiresClone && Array.isArray(attrs)) {
+    for (let index = 0; index < attrs.length; index += 1) {
+      const attr = attrs[index];
+      let descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(target, attr);
+      } catch (descriptorError) {
+        descriptor = null;
+      }
+      if (
+        descriptor &&
+        Object.prototype.hasOwnProperty.call(descriptor, 'writable') &&
+        descriptor.writable === false &&
+        descriptor.configurable === false
+      ) {
+        requiresClone = true;
+        break;
+      }
+    }
+  }
+
+  if (!requiresClone) {
+    return target;
+  }
+
+  return cloneDynamicFieldTarget(target);
+}
+
+function applyDynamicFieldValues(target, category, exclude = []) {
   const values = collectDynamicFieldValues(category, exclude);
-  Object.assign(target, values);
   const attrs = getCollectedDynamicAttributes(values);
-  removeClearedDynamicAttributes(target, attrs, values);
-  return values;
+  let writableTarget = ensureWritableDynamicFieldTarget(target, attrs);
+
+  try {
+    Object.assign(writableTarget, values);
+  } catch (assignError) {
+    const fallbackTarget = cloneDynamicFieldTarget(writableTarget);
+    try {
+      Object.assign(fallbackTarget, values);
+      writableTarget = fallbackTarget;
+    } catch (fallbackError) {
+      console.error('Failed to apply dynamic field values', fallbackError);
+    }
+  }
+
+  removeClearedDynamicAttributes(writableTarget, attrs, values);
+  return writableTarget;
 }
 var languageSelect  = document.getElementById("languageSelect");
 var pinkModeToggle  = document.getElementById("pinkModeToggle");

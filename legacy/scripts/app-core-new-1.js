@@ -17953,16 +17953,104 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     markCollectedDynamicAttributes(result, filteredAttrs);
     return result;
   }
-  function applyDynamicFieldValues(target, category) {
-    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    if (!target) {
+  function cloneDynamicFieldTarget(target) {
+    var clone = {};
+    if (typeof Object.getPrototypeOf === 'function' && typeof Object.setPrototypeOf === 'function') {
+      try {
+        Object.setPrototypeOf(clone, Object.getPrototypeOf(target));
+      } catch (protoError) {
+        void protoError;
+      }
+    }
+    var keys = typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function'
+      ? Reflect.ownKeys(target)
+      : Object.getOwnPropertyNames(target);
+    for (var index = 0; index < keys.length; index += 1) {
+      var key = keys[index];
+      var descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(target, key);
+      } catch (descError) {
+        descriptor = null;
+      }
+      if (!descriptor) {
+        continue;
+      }
+      var nextDescriptor = {
+        configurable: true,
+        enumerable: !!descriptor.enumerable
+      };
+      if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+        nextDescriptor.value = descriptor.value;
+        nextDescriptor.writable = true;
+      } else {
+        nextDescriptor.get = descriptor.get;
+        nextDescriptor.set = descriptor.set;
+      }
+      try {
+        Object.defineProperty(clone, key, nextDescriptor);
+      } catch (defineError) {
+        void defineError;
+        clone[key] = descriptor.value;
+      }
+    }
+    return clone;
+  }
+  function ensureWritableDynamicFieldTarget(target, attrs) {
+    if (!target || typeof target !== 'object') {
       return {};
     }
+    var requiresClone = false;
+    try {
+      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(target)) {
+        requiresClone = true;
+      }
+    } catch (extensibleError) {
+      void extensibleError;
+    }
+    if (!requiresClone && Array.isArray(attrs)) {
+      for (var index = 0; index < attrs.length; index += 1) {
+        var attr = attrs[index];
+        var descriptor;
+        try {
+          descriptor = Object.getOwnPropertyDescriptor(target, attr);
+        } catch (descriptorError) {
+          descriptor = null;
+        }
+        if (
+          descriptor &&
+          Object.prototype.hasOwnProperty.call(descriptor, 'writable') &&
+          descriptor.writable === false &&
+          descriptor.configurable === false
+        ) {
+          requiresClone = true;
+          break;
+        }
+      }
+    }
+    if (!requiresClone) {
+      return target;
+    }
+    return cloneDynamicFieldTarget(target);
+  }
+  function applyDynamicFieldValues(target, category) {
+    var exclude = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
     var values = collectDynamicFieldValues(category, exclude);
-    Object.assign(target, values);
     var attrs = getCollectedDynamicAttributes(values);
-    removeClearedDynamicAttributes(target, attrs, values);
-    return values;
+    var writableTarget = ensureWritableDynamicFieldTarget(target, attrs);
+    try {
+      Object.assign(writableTarget, values);
+    } catch (assignError) {
+      var fallbackTarget = cloneDynamicFieldTarget(writableTarget);
+      try {
+        Object.assign(fallbackTarget, values);
+        writableTarget = fallbackTarget;
+      } catch (fallbackError) {
+        console.error('Failed to apply dynamic field values', fallbackError);
+      }
+    }
+    removeClearedDynamicAttributes(writableTarget, attrs, values);
+    return writableTarget;
   }
   var languageSelect = document.getElementById("languageSelect");
   var pinkModeToggle = document.getElementById("pinkModeToggle");
