@@ -9260,14 +9260,12 @@ function _handleStoragePersistenceRequest() {
           storagePersistenceState.requestAttempted = true;
           supportsPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
           if (!supportsPersist) {
-            _context3.n = 2;
-            break;
+            storagePersistenceState.supported = supportsPersist;
+            storagePersistenceState.lastRequestDenied = true;
+            storagePersistenceState.lastError = null;
+            renderStoragePersistenceStatus();
+            return _context3.a(2);
           }
-          storagePersistenceState.supported = supportsPersist;
-          storagePersistenceState.lastRequestDenied = true;
-          storagePersistenceState.lastError = null;
-          renderStoragePersistenceStatus();
-          return _context3.a(2);
         case 2:
           storagePersistenceState.requestInFlight = true;
           storagePersistenceState.lastError = null;
