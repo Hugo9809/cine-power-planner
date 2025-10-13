@@ -1591,10 +1591,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: '#batterySelect'
     }, {
       key: 'resultsTotalDraw',
-      highlight: ['#totalPowerLabel', '#totalPower', '#totalCurrent144Label', '#totalCurrent144', '#totalCurrent12Label', '#totalCurrent12'],
-      highlightPadding: {
-        right: 24
-      }
+      highlight: ['#resultsTotalPowerRow', '#resultsTotalCurrent144Row', '#resultsTotalCurrent12Row']
     }, {
       key: 'resultsBatteryPacks',
       highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryCountLabel', '#batteryCount']

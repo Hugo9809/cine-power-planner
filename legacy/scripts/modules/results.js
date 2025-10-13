@@ -632,6 +632,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return current.toFixed(2);
   }
+  function coerceCurrentLimit(rawValue) {
+    if (typeof rawValue === 'number') {
+      return Number.isFinite(rawValue) ? rawValue : null;
+    }
+    if (typeof rawValue === 'string') {
+      var trimmed = rawValue.trim();
+      if (!trimmed) {
+        return null;
+      }
+      var normalized = trimmed.replace(/,/g, '.');
+      var parsed = parseFloat(normalized);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  }
   function resolvePinsStatusText(resolveText, options) {
     var current = Number.isFinite(options.current) ? options.current : 0;
     var limit = Number.isFinite(options.limit) ? options.limit : null;
@@ -1677,22 +1692,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var hsName = safeSelectValue(hotswapSelect, 'hotswap');
       var hotswapData = devices.batteryHotswaps && devices.batteryHotswaps[hsName] ? devices.batteryHotswaps[hsName] : null;
       var capacityWh = (batteryData && typeof batteryData.capacity === 'number' ? batteryData.capacity : 0) + (hotswapData && typeof hotswapData.capacity === 'number' ? hotswapData.capacity : 0);
-      var hasPinLimit = batteryData && typeof batteryData.pinA === 'number';
-      var maxPinA = hasPinLimit ? batteryData.pinA : null;
-      var hasDtapRating = batteryData && typeof batteryData.dtapA === 'number';
-      var maxDtapA = hasDtapRating ? batteryData.dtapA : null;
-      hasPinLimit = hasPinLimit && Number.isFinite(maxPinA) && maxPinA > 0;
-      hasDtapRating = hasDtapRating && Number.isFinite(maxDtapA) && maxDtapA > 0;
-      if (hotswapData && typeof hotswapData.pinA === 'number') {
-        if (!hasPinLimit || hotswapData.pinA < maxPinA) {
-          var hotswapMessage = resolveText('warnHotswapLower').replace('{max}', String(hotswapData.pinA)).replace('{batt}', String(maxPinA));
+      var maxPinA = coerceCurrentLimit(batteryData && batteryData.pinA);
+      var maxDtapA = coerceCurrentLimit(batteryData && batteryData.dtapA);
+      var hasPinLimit = Number.isFinite(maxPinA) && maxPinA > 0;
+      var hasDtapRating = Number.isFinite(maxDtapA) && maxDtapA > 0;
+      var hotswapPinLimit = coerceCurrentLimit(hotswapData && hotswapData.pinA);
+      if (Number.isFinite(hotswapPinLimit)) {
+        if (!hasPinLimit || hotswapPinLimit < maxPinA) {
+          var hotswapMessage = resolveText('warnHotswapLower').replace('{max}', String(hotswapPinLimit)).replace('{batt}', hasPinLimit ? String(maxPinA) : '?');
           setStatusMessageFn(hotswapWarnTarget, hotswapMessage);
           setStatusLevelFn(hotswapWarnTarget, 'warning');
         } else {
           setStatusMessageFn(hotswapWarnTarget, '');
           setStatusLevelFn(hotswapWarnTarget, null);
         }
-        maxPinA = hotswapData.pinA;
+        maxPinA = hotswapPinLimit;
         hasPinLimit = Number.isFinite(maxPinA) && maxPinA > 0;
       } else if (hotswapWarnTarget) {
         setStatusMessageFn(hotswapWarnTarget, '');
@@ -1811,8 +1825,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var pinOk = resolveText('pinOk').replace('{max}', String(maxPinA));
         setStatusMessageFn(pinWarnTarget, pinOk);
         setStatusLevelFn(pinWarnTarget, 'success');
-      } else {
+      } else if (hasPinLimit) {
         setStatusLevelFn(pinWarnTarget, pinSeverity || 'warning');
+      } else {
+        setStatusLevelFn(pinWarnTarget, null);
       }
       if (!bMountCam) {
         if (hasDtapRating && dtapWarnTarget && dtapWarnTarget.textContent === '') {
@@ -1859,8 +1875,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var matchesBMount = supportsB || selData.mount_type !== 'B-Mount';
         var matchesGoldMount = supportsGold || selData.mount_type !== 'Gold-Mount';
         if (matchesPlate && matchesBMount && matchesGoldMount) {
-          var pinOKSel = totalCurrentLow <= selData.pinA;
-          var dtapOKSel = !bMountCam && totalCurrentLow <= selData.dtapA;
+          var selPinLimit = coerceCurrentLimit(selData.pinA);
+          var selDtapLimit = coerceCurrentLimit(selData.dtapA);
+          var pinOKSel = Number.isFinite(selPinLimit) && selPinLimit > 0 ? totalCurrentLow <= selPinLimit : false;
+          var dtapOKSel = !bMountCam && Number.isFinite(selDtapLimit) && selDtapLimit > 0 ? totalCurrentLow <= selDtapLimit : false;
           if (pinOKSel || dtapOKSel) {
             var selHours = totalWatt === 0 ? Infinity : selData.capacity / totalWatt;
             var selMethod;
@@ -1902,8 +1920,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!plateFilter && !supportsGold && batteryInfo.mount_type === 'Gold-Mount') {
           continue;
         }
-        var canPin = totalCurrentLow <= batteryInfo.pinA;
-        var canDtap = !bMountCam && totalCurrentLow <= batteryInfo.dtapA;
+        var pinLimit = coerceCurrentLimit(batteryInfo.pinA);
+        var dtapLimit = coerceCurrentLimit(batteryInfo.dtapA);
+        var canPin = Number.isFinite(pinLimit) && pinLimit > 0 ? totalCurrentLow <= pinLimit : false;
+        var canDtap = !bMountCam && Number.isFinite(dtapLimit) && dtapLimit > 0 ? totalCurrentLow <= dtapLimit : false;
         if (canPin) {
           var hoursPin = batteryInfo.capacity / totalWatt;
           var methodPin = canDtap ? 'both pins and D-Tap' : 'pins';

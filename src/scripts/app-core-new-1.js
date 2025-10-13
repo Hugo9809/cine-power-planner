@@ -10019,8 +10019,8 @@ function normalizeFocusScaleForLabel(value) {
 }
 
 function getFocusScaleLabelForLang(lang = currentLang, scale) {
-  const normalized = normalizeFocusScaleForLabel(scale);
-  const textsForLang = getLanguageTexts(lang) || {};
+  const language = typeof lang === 'string' && lang.trim() ? lang : currentLang;
+  const textsForLang = getLanguageTexts(language) || {};
   const fallbackTexts = getLanguageTexts('en') || {};
   const metricLabel =
     textsForLang.focusScaleMetric ||
@@ -10034,25 +10034,62 @@ function getFocusScaleLabelForLang(lang = currentLang, scale) {
     textsForLang.focusScaleSetting ||
     fallbackTexts.focusScaleSetting ||
     'Imperial';
-  if (normalized === 'imperial') {
-    return imperialLabel;
-  }
-  if (normalized === 'metric') {
-    return metricLabel;
-  }
-  if (typeof scale === 'string') {
-    const trimmed = scale.trim();
-    if (trimmed) {
-      return trimmed;
-    }
-  }
-  return (
+  const defaultLabel =
     textsForLang.focusScaleSetting ||
     textsForLang.lensFocusScaleLabel ||
     fallbackTexts.focusScaleSetting ||
     fallbackTexts.lensFocusScaleLabel ||
-    metricLabel
-  );
+    metricLabel;
+
+  const candidateScales = [];
+
+  if (typeof scale !== 'undefined') {
+    candidateScales.push(scale);
+  }
+
+  if (typeof resolveGlobalFocusScalePreference === 'function') {
+    try {
+      candidateScales.push(resolveGlobalFocusScalePreference());
+    } catch (focusScaleResolveError) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        try {
+          console.warn(
+            'resolveGlobalFocusScalePreference threw while resolving a focus scale label',
+            focusScaleResolveError,
+          );
+        } catch (consoleError) {
+          void consoleError;
+        }
+      }
+    }
+  }
+
+  if (typeof focusScalePreference === 'string') {
+    candidateScales.push(focusScalePreference);
+  }
+
+  candidateScales.push('metric');
+
+  for (const candidate of candidateScales) {
+    const normalized = normalizeFocusScaleForLabel(candidate);
+    if (normalized === 'imperial') {
+      return imperialLabel;
+    }
+    if (normalized === 'metric') {
+      return metricLabel;
+    }
+  }
+
+  for (const candidate of candidateScales) {
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+  }
+
+  return defaultLabel;
 }
 
 // Determine initial language (default English)
@@ -19239,42 +19276,6 @@ function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
     typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
   );
   return `${baseLabel} (${symbol})`;
-}
-
-function getFocusScaleLabelForLang(lang = currentLang, scale) {
-  const language = typeof lang === 'string' && lang.trim() ? lang : currentLang;
-  const textsForLang = getLanguageTexts(language);
-  const fallbackTexts = getLanguageTexts('en');
-
-  const resolveScale = () => {
-    const rawScale =
-      (typeof scale === 'string' && scale) ||
-      (typeof resolveGlobalFocusScalePreference === 'function'
-        ? resolveGlobalFocusScalePreference()
-        : typeof focusScalePreference === 'string'
-          ? focusScalePreference
-          : null);
-
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        const normalized = normalizeFocusScale(rawScale);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (focusScaleNormalizeError) {
-        void focusScaleNormalizeError;
-      }
-    }
-
-    const fallbackValue = typeof rawScale === 'string' ? rawScale.trim().toLowerCase() : '';
-    return fallbackValue === 'imperial' ? 'imperial' : 'metric';
-  };
-
-  const normalizedScale = resolveScale();
-  const key = normalizedScale === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
-  const defaultLabel = normalizedScale === 'imperial' ? 'Imperial' : 'Metric';
-
-  return textsForLang[key] || fallbackTexts[key] || defaultLabel;
 }
 
 function formatTemperatureForDisplay(celsius, options = {}) {
