@@ -3186,6 +3186,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/ui.js',
       'src/scripts/modules/runtime-guard.js',
       'src/scripts/modules/results.js',
+      'src/scripts/modules/app-core/localization-support.js',
       'src/scripts/app-core-text.js',
       'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-new-1.js',
       'src/scripts/app-core-enviroment.js',
