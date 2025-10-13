@@ -3433,9 +3433,25 @@ function resolveAutoGearBackupRetentionMin() {
 
 function resolveAutoGearBackupRetentionDefault() {
   const minValue = resolveAutoGearBackupRetentionMin();
+  const globalScope =
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
+      ? CORE_GLOBAL_SCOPE
+      : typeof globalThis !== 'undefined'
+        ? globalThis
+        : typeof window !== 'undefined'
+          ? window
+          : typeof self !== 'undefined'
+            ? self
+            : typeof global !== 'undefined'
+              ? global
+              : null;
+  const existingMax =
+    globalScope && typeof globalScope.AUTO_GEAR_BACKUP_RETENTION_MAX !== 'undefined'
+      ? globalScope.AUTO_GEAR_BACKUP_RETENTION_MAX
+      : undefined;
   const globalMaxCandidate =
-    typeof AUTO_GEAR_BACKUP_RETENTION_MAX !== 'undefined'
-      ? AUTO_GEAR_BACKUP_RETENTION_MAX
+    typeof existingMax !== 'undefined'
+      ? existingMax
       : readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MAX');
   const parsedMax = Number(globalMaxCandidate);
   const maxValue = Number.isFinite(parsedMax) && parsedMax >= minValue
@@ -3460,8 +3476,12 @@ function resolveAutoGearBackupRetentionDefault() {
 
   const candidates = [];
 
-  if (typeof AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'undefined') {
-    candidates.push(AUTO_GEAR_BACKUP_RETENTION_DEFAULT);
+  const existingDefault =
+    globalScope && typeof globalScope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'undefined'
+      ? globalScope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT
+      : undefined;
+  if (typeof existingDefault !== 'undefined') {
+    candidates.push(existingDefault);
   }
 
   const globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT');
@@ -7760,9 +7780,13 @@ function getSetups() {
   return loadSetups();
 }
 
+exposeCoreRuntimeConstant('getSetups', getSetups);
+
 function storeSetups(setups) {
   saveSetups(setups);
 }
+
+exposeCoreRuntimeConstant('storeSetups', storeSetups);
 
 function storeDevices(deviceData) {
   saveDeviceData(deviceData);
@@ -7772,11 +7796,15 @@ function loadSession() {
   return typeof loadSessionState === 'function' ? loadSessionState() : null;
 }
 
+exposeCoreRuntimeConstant('loadSession', loadSession);
+
 function storeSession(state) {
   if (typeof saveSessionState === 'function') {
     saveSessionState(state);
   }
 }
+
+exposeCoreRuntimeConstant('storeSession', storeSession);
 
 /**
  * Toggle a dialog element's visibility, gracefully handling browsers that do
@@ -14049,6 +14077,8 @@ function configureIconOnlyButton(button, glyph, options = {}) {
   }
 }
 
+exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
+
 let generatedFieldIdCounter = 0;
 
 function sanitizeForId(value, fallback = 'field') {
@@ -18202,6 +18232,8 @@ function getCurrentProjectName() {
   return (setupSelect && setupSelect.value) || '';
 }
 
+exposeCoreRuntimeConstant('getCurrentProjectName', getCurrentProjectName);
+
 function normalizeSetupName(value) {
   if (typeof value !== 'string') {
     return '';
@@ -21782,6 +21814,8 @@ function syncAutoGearMonitorFieldVisibility() {
     updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
   }
 }
+
+exposeCoreRuntimeConstant('syncAutoGearMonitorFieldVisibility', syncAutoGearMonitorFieldVisibility);
 var autoGearExportButton = document.getElementById('autoGearExport');
 var autoGearImportButton = document.getElementById('autoGearImport');
 var autoGearImportInput = document.getElementById('autoGearImportInput');
