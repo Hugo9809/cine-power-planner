@@ -11365,9 +11365,64 @@ function setLanguage(lang) {
     if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
       settingsTemperatureUnit.setAttribute('data-help', tempUnitHelp);
       settingsTemperatureUnit.setAttribute('aria-label', texts[lang].temperatureUnitSetting);
+
+      const resolvedNormalizeTemperatureUnit = (() => {
+        if (typeof normalizeTemperatureUnit === 'function') {
+          return normalizeTemperatureUnit;
+        }
+
+        const fallbackUnits =
+          typeof TEMPERATURE_UNITS !== 'undefined' && TEMPERATURE_UNITS
+            ? TEMPERATURE_UNITS
+            : { celsius: 'celsius', fahrenheit: 'fahrenheit' };
+
+        const fallback = unit => {
+          if (typeof unit === 'string') {
+            const normalized = unit.trim().toLowerCase();
+            if (normalized === fallbackUnits.fahrenheit || normalized === 'fahrenheit') {
+              return fallbackUnits.fahrenheit || 'fahrenheit';
+            }
+            if (normalized === fallbackUnits.celsius || normalized === 'celsius') {
+              return fallbackUnits.celsius || 'celsius';
+            }
+          }
+          if (unit === fallbackUnits.fahrenheit) {
+            return fallbackUnits.fahrenheit || 'fahrenheit';
+          }
+          return fallbackUnits.celsius || 'celsius';
+        };
+
+        const candidateScopes = [
+          runtimeScope,
+          typeof globalThis !== 'undefined' ? globalThis : null,
+          typeof window !== 'undefined' ? window : null,
+          typeof self !== 'undefined' ? self : null,
+        ];
+        candidateScopes.forEach(scope => {
+          if (!scope || typeof scope !== 'object') {
+            return;
+          }
+          try {
+            if (typeof scope.normalizeTemperatureUnit !== 'function') {
+              scope.normalizeTemperatureUnit = fallback;
+            }
+          } catch (exposeError) {
+            void exposeError;
+          }
+        });
+
+        try {
+          exposeCoreRuntimeConstant('normalizeTemperatureUnit', fallback);
+        } catch (exposeError) {
+          void exposeError;
+        }
+
+        return fallback;
+      })();
+
       Array.from(settingsTemperatureUnit.options || []).forEach(option => {
         if (!option) return;
-        const normalized = normalizeTemperatureUnit(option.value);
+        const normalized = resolvedNormalizeTemperatureUnit(option.value);
         option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
       });
       settingsTemperatureUnit.value = temperatureUnit;
