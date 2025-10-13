@@ -9993,6 +9993,36 @@ function setLanguage(lang) {
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
   const fallbackLocale = texts[DEFAULT_LANGUAGE] || {};
+  const normalizeTemperatureUnitSafe = unit => {
+    if (typeof normalizeTemperatureUnit === "function") {
+      try {
+        return normalizeTemperatureUnit(unit);
+      } catch (normalizeError) {
+        console.warn(
+          "normalizeTemperatureUnit helper threw an error; falling back to safe normalization",
+          normalizeError,
+        );
+      }
+    }
+    if (typeof unit === "string") {
+      const trimmed = unit.trim().toLowerCase();
+      if (
+        trimmed === TEMPERATURE_UNITS?.fahrenheit ||
+        trimmed === "fahrenheit" ||
+        trimmed === "f"
+      ) {
+        return TEMPERATURE_UNITS?.fahrenheit || "fahrenheit";
+      }
+      if (
+        trimmed === TEMPERATURE_UNITS?.celsius ||
+        trimmed === "celsius" ||
+        trimmed === "c"
+      ) {
+        return TEMPERATURE_UNITS?.celsius || "celsius";
+      }
+    }
+    return TEMPERATURE_UNITS?.celsius || "celsius";
+  };
   const resolveLocaleString = key => {
     if (!key) return "";
     const bundle = texts[lang];
@@ -11367,7 +11397,7 @@ function setLanguage(lang) {
       settingsTemperatureUnit.setAttribute('aria-label', texts[lang].temperatureUnitSetting);
       Array.from(settingsTemperatureUnit.options || []).forEach(option => {
         if (!option) return;
-        const normalized = normalizeTemperatureUnit(option.value);
+        const normalized = normalizeTemperatureUnitSafe(option.value);
         option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
       });
       settingsTemperatureUnit.value = temperatureUnit;
