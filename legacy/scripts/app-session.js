@@ -5019,9 +5019,7 @@ try {
 }
 applyHighContrast(highContrastEnabled);
 if (typeof window !== 'undefined') {
-  window.handlePinkModeIconPress = function () {
-    handlePinkModeIconPress();
-  };
+  window.handlePinkModeIconPress = handlePinkModeIconPress;
 }
 var pinkModeEnabled = false;
 try {
