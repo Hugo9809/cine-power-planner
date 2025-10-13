@@ -1419,6 +1419,48 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return getLevelPriority(level) >= getLevelPriority(activeConfig.level);
   }
+  function getLevelState(level) {
+    var normalizedLevel = normalizeLevel(level, 'info');
+    var consoleEnabled = shouldOutputToConsole(normalizedLevel);
+    var historyEnabled = shouldRecord(normalizedLevel);
+    return freezeDeep({
+      level: normalizedLevel,
+      enabled: consoleEnabled || historyEnabled,
+      console: consoleEnabled,
+      history: historyEnabled,
+      thresholds: freezeDeep({
+        console: normalizeLevel(activeConfig.level, DEFAULT_CONFIG_VALUES.level),
+        history: normalizeLevel(activeConfig.historyLevel, DEFAULT_CONFIG_VALUES.historyLevel)
+      })
+    });
+  }
+  function isLevelEnabled(level, options) {
+    var state = getLevelState(level);
+    if (!options || _typeof(options) !== 'object') {
+      return state.enabled;
+    }
+    var checkConsole = options.console !== false;
+    var checkHistory = options.history !== false;
+    if (!checkConsole && !checkHistory) {
+      return false;
+    }
+    if (options.requireAll === true) {
+      if (checkConsole && !state.console) {
+        return false;
+      }
+      if (checkHistory && !state.history) {
+        return false;
+      }
+      return true;
+    }
+    if (checkConsole && state.console) {
+      return true;
+    }
+    if (checkHistory && state.history) {
+      return true;
+    }
+    return false;
+  }
   function createEntryId(timestamp) {
     return "log-".concat(timestamp, "-").concat(Math.random().toString(36).slice(2, 10));
   }
@@ -2113,7 +2155,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       error: function error(message, detail, meta) {
         return logWithNamespace('error', message, detail, meta);
       },
-      getConfig: getConfigSnapshot
+      getConfig: getConfigSnapshot,
+      isLevelEnabled: function isLevelEnabledForLogger(level, optionOverrides) {
+        return isLevelEnabled(level, optionOverrides);
+      }
     });
   }
   function markEventHandled(event) {
@@ -2578,6 +2623,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     clearHistory: clearHistory,
     getConfig: getConfigSnapshot,
     setConfig: setConfig,
+    getLevelState: getLevelState,
+    isLevelEnabled: isLevelEnabled,
     subscribe: subscribe,
     subscribeConfig: subscribeConfig,
     enableConsoleCapture: enableConsoleCapture,
