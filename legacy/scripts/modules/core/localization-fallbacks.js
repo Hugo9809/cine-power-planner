@@ -99,7 +99,7 @@
 
     if (typeof require === 'function') {
       try {
-        var required = require('./modules/localization.js');
+        var required = require('../localization.js');
         if (required && typeof required === 'object') {
           return required;
         }
