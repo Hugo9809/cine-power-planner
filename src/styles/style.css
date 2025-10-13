@@ -6939,7 +6939,7 @@ textarea:disabled {
   position: absolute;
   border-radius: 16px;
   border: 3px solid color-mix(in srgb, var(--accent-color) 82%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+  background: transparent;
   transition:
     transform 0.2s ease,
     width 0.2s ease,
@@ -6961,7 +6961,7 @@ textarea:disabled {
 
 body.dark-mode .onboarding-highlight {
   border-color: color-mix(in srgb, var(--accent-color) 90%, rgba(255, 255, 255, 0.35));
-  background: color-mix(in srgb, var(--accent-color) 16%, transparent);
+  background: transparent;
 }
 
 .onboarding-overlay.onboarding-scroll-active .onboarding-highlight {
