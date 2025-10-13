@@ -532,6 +532,58 @@ var CRITICAL_GLOBAL_DEFINITIONS = [
   },
 ];
 
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'CORE_GLOBAL_SCOPE',
+  validator: function (value) {
+    return (
+      typeof value === 'undefined' ||
+      value === null ||
+      typeof value === 'object' ||
+      typeof value === 'function'
+    );
+  },
+  fallback: function () {
+    var scope = resolveCriticalGlobalScope();
+    if (scope && (typeof scope === 'object' || typeof scope === 'function')) {
+      return scope;
+    }
+
+    return {};
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'CORE_RUNTIME_SHARED',
+  validator: function (value) {
+    return typeof value === 'undefined' || value === null || typeof value === 'object';
+  },
+  fallback: null,
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'autoGearAddOwnGearSelect',
+  validator: function (value) {
+    return typeof value === 'undefined' || value === null || typeof value === 'object';
+  },
+  fallback: null,
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'autoGearRemoveOwnGearSelect',
+  validator: function (value) {
+    return typeof value === 'undefined' || value === null || typeof value === 'object';
+  },
+  fallback: null,
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'currentLang',
+  validator: function (value) {
+    return typeof value === 'string' && value.length > 0;
+  },
+  fallback: 'en',
+});
+
 function loaderFallbackSafeGenerateConnectorSummary(device) {
   if (!device || typeof device !== 'object') {
     return '';
