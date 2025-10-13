@@ -4864,30 +4864,47 @@ function initializeAppearanceModule(factory) {
 var appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
 
 if (!appearanceModuleReady) {
-  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-  }
+  var warnAppearanceModuleUnavailable = function warnAppearanceModuleUnavailable() {
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+    }
+  };
 
-  whenGlobalValueAvailable(
-    'cineSettingsAppearance',
-    function (candidate) { return !!candidate && typeof candidate.initialize === 'function'; },
-    function (candidate) {
-      if (initializeAppearanceModule(candidate)) {
-        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
-          console.info('cineSettingsAppearance module became available after deferred load.');
-        }
-      }
-    },
-    {
-      interval: 200,
-      maxAttempts: 300,
-      onTimeout: function onTimeout() {
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
+  var hasAppearanceFactory = Boolean(appearanceModuleFactory && typeof appearanceModuleFactory.initialize === 'function');
+
+  if (!hasAppearanceFactory) {
+    var resolved = false;
+    var waitResult = whenGlobalValueAvailable(
+      'cineSettingsAppearance',
+      function (candidate) { return !!candidate && typeof candidate.initialize === 'function'; },
+      function (candidate) {
+        if (initializeAppearanceModule(candidate)) {
+          resolved = true;
+          if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
+            console.info('cineSettingsAppearance module became available after deferred load.');
+          }
         }
       },
-    },
-  );
+      {
+        interval: 200,
+        maxAttempts: 300,
+        onTimeout: function onTimeout() {
+          if (!resolved) {
+            warnAppearanceModuleUnavailable();
+            if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+              console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
+            }
+          }
+        }
+      }
+    );
+
+    if (!waitResult) {
+      warnAppearanceModuleUnavailable();
+    }
+  } else {
+    warnAppearanceModuleUnavailable();
+  }
 }
 
 
@@ -5560,15 +5577,14 @@ if (settingsButton && settingsDialog) {
 
     if (!attachResetHandler(initialHandler)) {
       disableResetButton();
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Automatic gear reset action unavailable: reset handler missing.');
-      }
 
-      whenGlobalValueAvailable(
+      var resetHandlerResolved = false;
+      var waitResult = whenGlobalValueAvailable(
         'resetAutoGearRulesToFactoryAdditions',
         function (candidate) { return typeof candidate === 'function'; },
         function (candidate) {
           if (attachResetHandler(candidate)) {
+            resetHandlerResolved = true;
             if (typeof console !== 'undefined' && typeof console.info === 'function') {
               console.info('Automatic gear reset action re-enabled after deferred module load.');
             }
@@ -5578,12 +5594,17 @@ if (settingsButton && settingsDialog) {
           interval: 200,
           maxAttempts: 300,
           onTimeout: function onTimeout() {
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            if (!resetHandlerResolved && typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Automatic gear reset action unavailable: reset handler missing.');
               console.warn('Automatic gear reset action unavailable after waiting for handler registration.');
             }
           }
         }
       );
+
+      if (!waitResult && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Automatic gear reset action unavailable: reset handler missing.');
+      }
     }
   }
   if (autoGearExportButton) {
