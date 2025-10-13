@@ -2180,6 +2180,21 @@ function applyStoredPowerSelection(selection) {
   }
   return anyPending ? false : anyMatch;
 }
+function parseBatteryCurrentLimit(value) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    var normalized = trimmed.replace(/,/g, '.');
+    var parsed = parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
 if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
   generateOverviewBtn.addEventListener('click', function () {
     if (!setupSelect.value) {
@@ -2195,14 +2210,18 @@ function batteryPinsSufficient() {
   var battData = devices.batteries[batt];
   var totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
   if (!isFinite(totalCurrentLow)) return true;
-  return totalCurrentLow <= battData.pinA;
+  var pinLimit = parseBatteryCurrentLimit(battData.pinA);
+  if (!Number.isFinite(pinLimit) || pinLimit <= 0) return true;
+  return totalCurrentLow <= pinLimit;
 }
 function alertPinExceeded() {
   var batt = batterySelect && batterySelect.value;
   if (!batt || batt === 'None' || !devices.batteries[batt]) return;
   var battData = devices.batteries[batt];
   var totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
-  alert(texts[currentLang].warnPinExceeded.replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', battData.pinA));
+  var pinLimit = parseBatteryCurrentLimit(battData.pinA);
+  if (!Number.isFinite(pinLimit) || pinLimit <= 0) return;
+  alert(texts[currentLang].warnPinExceeded.replace('{current}', totalCurrentLow.toFixed(2)).replace('{max}', String(pinLimit)));
 }
 generateGearListBtn.addEventListener('click', function () {
   if (!setupSelect.value) {
@@ -3722,8 +3741,9 @@ function generateConnectorSummary(device) {
   if (typeof device.capacity === 'number') {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryFull)).concat(renderInfoLabel('Capacity')).concat(device.capacity, " Wh</span>");
   }
-  if (typeof device.pinA === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('Pins')).concat(device.pinA, "A</span>");
+  var pinLimit = parseBatteryCurrentLimit(device.pinA);
+  if (Number.isFinite(pinLimit) && pinLimit > 0) {
+    specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('Pins')).concat(pinLimit, "A</span>");
   }
   if (typeof device.dtapA === 'number') {
     specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('D-Tap')).concat(device.dtapA, "A</span>");

@@ -1,14 +1,6 @@
-/*
- * Cine Power Planner runtime support bridge (legacy bundle).
- *
- * Mirrors the modern runtime support split so older browsers keep
- * the same offline-safe fallbacks while the refactor trims the
- * monolithic app core. Retain this banner until the refactor is
- * complete to keep Git history readable.
- */
-
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function resolveCoreDeviceSchemaNamespace() {
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -56,7 +48,7 @@ var CORE_RUNTIME_SUPPORT_BOOTSTRAP = function resolveRuntimeSupportBootstrap() {
     }
     return null;
   }
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var bootstrap = readFromScope(candidates[index]);
     if (bootstrap) {
@@ -95,7 +87,7 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
     }
     return null;
   }
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var resolution = readFromScope(candidates[index]);
     if (resolution) {
@@ -122,30 +114,15 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
 }();
 var CORE_TEXT_ENTRY_TOOLS = function resolveCoreTextEntryTools() {
   var namespaceName = 'cineCoreTextEntries';
-
-  if (
-    typeof cineCoreTextEntries !== 'undefined' &&
-    cineCoreTextEntries &&
-    _typeof(cineCoreTextEntries) === 'object'
-  ) {
+  if (typeof cineCoreTextEntries !== 'undefined' && cineCoreTextEntries && (typeof cineCoreTextEntries === "undefined" ? "undefined" : _typeof(cineCoreTextEntries)) === 'object') {
     return cineCoreTextEntries;
   }
-
-  var candidates = [
-    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
-    _typeof(CORE_GLOBAL_SCOPE) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
-    typeof globalThis !== 'undefined' ? globalThis : null,
-    typeof window !== 'undefined' ? window : null,
-    typeof self !== 'undefined' ? self : null,
-    typeof global !== 'undefined' ? global : null,
-  ];
-
+  var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
-    if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function')) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
       continue;
     }
-
     try {
       var tools = scope[namespaceName];
       if (tools && _typeof(tools) === 'object') {
@@ -155,7 +132,6 @@ var CORE_TEXT_ENTRY_TOOLS = function resolveCoreTextEntryTools() {
       void namespaceLookupError;
     }
   }
-
   if (typeof require === 'function') {
     try {
       var requiredTools = require('./app-core-text.js');
@@ -166,22 +142,13 @@ var CORE_TEXT_ENTRY_TOOLS = function resolveCoreTextEntryTools() {
       void textEntriesRequireError;
     }
   }
-
   return null;
 }();
-
-var CORE_TEXT_ENTRY_SEPARATOR =
-  CORE_TEXT_ENTRY_TOOLS &&
-  typeof CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR === 'string' &&
-  CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
-    ? CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR
-    : '\\n';
-
+var CORE_TEXT_ENTRY_SEPARATOR = CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR === 'string' && CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR ? CORE_TEXT_ENTRY_TOOLS.TEXT_ENTRY_SEPARATOR : '\n';
 function inlineNormaliseTextEntryValue(entry) {
   if (typeof entry === 'string') {
     return entry;
   }
-
   if (typeof entry === 'number' || typeof entry === 'boolean') {
     try {
       return String(entry);
@@ -190,7 +157,6 @@ function inlineNormaliseTextEntryValue(entry) {
     }
     return '';
   }
-
   if (Array.isArray(entry)) {
     var parts = [];
     for (var index = 0; index < entry.length; index += 1) {
@@ -201,20 +167,16 @@ function inlineNormaliseTextEntryValue(entry) {
     }
     return parts.join(CORE_TEXT_ENTRY_SEPARATOR);
   }
-
   if (entry && _typeof(entry) === 'object') {
     if (typeof entry.text === 'string') {
       return entry.text;
     }
-
     if (Array.isArray(entry.text)) {
       return inlineNormaliseTextEntryValue(entry.text);
     }
-
     if (typeof entry.label === 'string') {
       return entry.label;
     }
-
     try {
       var objectString = String(entry);
       if (objectString && objectString !== '[object Object]') {
@@ -224,27 +186,18 @@ function inlineNormaliseTextEntryValue(entry) {
       void stringifyObjectError;
     }
   }
-
   return '';
 }
-
 function inlineResolveTextEntry(primaryTexts, fallbackTexts, key) {
   var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
   var normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
   var dictionaries = [];
-
   if (primaryTexts && (_typeof(primaryTexts) === 'object' || typeof primaryTexts === 'function')) {
     dictionaries.push(primaryTexts);
   }
-
-  if (
-    fallbackTexts &&
-    fallbackTexts !== primaryTexts &&
-    (_typeof(fallbackTexts) === 'object' || typeof fallbackTexts === 'function')
-  ) {
+  if (fallbackTexts && fallbackTexts !== primaryTexts && (_typeof(fallbackTexts) === 'object' || typeof fallbackTexts === 'function')) {
     dictionaries.push(fallbackTexts);
   }
-
   for (var index = 0; index < dictionaries.length; index += 1) {
     var dictionary = dictionaries[index];
     var entry = void 0;
@@ -254,43 +207,64 @@ function inlineResolveTextEntry(primaryTexts, fallbackTexts, key) {
       void dictionaryLookupError;
       entry = undefined;
     }
-
     if (typeof entry === 'undefined' || entry === null) {
       continue;
     }
-
     var resolved = inlineNormaliseTextEntryValue(entry);
     if (typeof resolved === 'string') {
       return resolved;
     }
   }
-
   return normalizedDefault;
 }
-
-var normaliseTextEntryValue =
-  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue === 'function'
-    ? function normaliseTextEntryValueProxy(entry) {
-        return CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue(entry, CORE_TEXT_ENTRY_SEPARATOR);
+var normaliseTextEntryValue = CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue === 'function' ? function normaliseTextEntryValueProxy(entry) {
+  return CORE_TEXT_ENTRY_TOOLS.normaliseTextEntryValue(entry, CORE_TEXT_ENTRY_SEPARATOR);
+} : inlineNormaliseTextEntryValue;
+var resolveTextEntryRuntime = CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function' ? function resolveTextEntryProxy(primaryTexts, fallbackTexts, key) {
+  var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  return CORE_TEXT_ENTRY_TOOLS.resolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue, CORE_TEXT_ENTRY_SEPARATOR);
+} : inlineResolveTextEntry;
+var resolveTextEntryInternal = function ensureResolveTextEntryAvailability(resolver) {
+  var candidateScopes = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      if (typeof scope.resolveTextEntry === 'function') {
+        return scope.resolveTextEntry;
       }
-    : inlineNormaliseTextEntryValue;
-
-var resolveTextEntry =
-  CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
-    ? function resolveTextEntryProxy(primaryTexts, fallbackTexts, key) {
-        var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-        return CORE_TEXT_ENTRY_TOOLS.resolveTextEntry(
-          primaryTexts,
-          fallbackTexts,
-          key,
-          defaultValue,
-          CORE_TEXT_ENTRY_SEPARATOR
-        );
+    } catch (scopeLookupError) {
+      void scopeLookupError;
+    }
+  }
+  try {
+    if (typeof resolveTextEntry === 'function') {
+      return resolveTextEntry;
+    }
+  } catch (globalLookupError) {
+    void globalLookupError;
+  }
+  for (var _index3 = 0; _index3 < candidateScopes.length; _index3 += 1) {
+    var _scope = candidateScopes[_index3];
+    if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
+      continue;
+    }
+    try {
+      _scope.resolveTextEntry = resolver;
+      if (typeof _scope.resolveTextEntry === 'function') {
+        return _scope.resolveTextEntry;
       }
-    : inlineResolveTextEntry;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+  return resolver;
+}(resolveTextEntryRuntime);
 var CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
 function resolvePreferredTemperatureStorageKey() {
-  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  var candidates = collectRuntimeScopeCandidates();
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -365,8 +339,8 @@ var CORE_TEMPERATURE_STORAGE_KEY = PREEXISTING_TEMPERATURE_STORAGE_KEY || resolv
   }).filter(function (sharedScopeCandidate) {
     return sharedScopeCandidate;
   });
-  for (var _index3 = 0; _index3 < sharedCandidates.length; _index3 += 1) {
-    var sharedScope = sharedCandidates[_index3];
+  for (var _index4 = 0; _index4 < sharedCandidates.length; _index4 += 1) {
+    var sharedScope = sharedCandidates[_index4];
     if (!sharedScope || _typeof(sharedScope) !== 'object') {
       continue;
     }
@@ -380,42 +354,78 @@ var CORE_TEMPERATURE_STORAGE_KEY = PREEXISTING_TEMPERATURE_STORAGE_KEY || resolv
     }
   }
 })(CORE_TEMPERATURE_STORAGE_KEY);
-function inlineFallbackDetectRuntimeScope(primaryScope) {
-  if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
-    return primaryScope;
-  }
-  var candidates = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var index = 0; index < candidates.length; index += 1) {
-    var scope = candidates[index];
-    if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
-      return scope;
+var CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE = function resolveRuntimeSupportDefaultsNamespace() {
+  var namespaceName = 'cineCoreRuntimeSupportDefaults';
+  function readFromScope(candidateScope) {
+    if (!candidateScope || _typeof(candidateScope) !== 'object' && typeof candidateScope !== 'function') {
+      return null;
     }
-  }
-  return null;
-}
-function inlineFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
-  if (typeof namespaceName !== 'string' || !namespaceName) {
+    try {
+      var namespace = candidateScope[namespaceName];
+      return namespace && _typeof(namespace) === 'object' ? namespace : null;
+    } catch (runtimeSupportDefaultsLookupError) {
+      void runtimeSupportDefaultsLookupError;
+    }
     return null;
   }
-  var runtimeScope = inlineFallbackDetectRuntimeScope(primaryScope);
-  if (runtimeScope && runtimeScope[namespaceName] && _typeof(runtimeScope[namespaceName]) === 'object') {
-    return runtimeScope[namespaceName];
+  var candidates = collectRuntimeScopeCandidates();
+  for (var index = 0; index < candidates.length; index += 1) {
+    var defaults = readFromScope(candidates[index]);
+    if (defaults) {
+      return defaults;
+    }
   }
-  if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+  if (typeof require === 'function') {
     try {
-      var required = require(requirePath);
-      if (required && _typeof(required) === 'object') {
-        return required;
+      var requiredDefaults = require('./modules/core/runtime-support-defaults.js');
+      if (requiredDefaults && _typeof(requiredDefaults) === 'object') {
+        return requiredDefaults;
       }
-    } catch (supportModuleError) {
-      void supportModuleError;
+    } catch (runtimeSupportDefaultsRequireError) {
+      void runtimeSupportDefaultsRequireError;
+    }
+  }
+  for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
+    var _defaults = readFromScope(candidates[_index5]);
+    if (_defaults) {
+      return _defaults;
     }
   }
   return null;
-}
-var CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS = function resolveRuntimeSupportResolutionDefaults() {
-  if (CORE_RUNTIME_SUPPORT_RESOLUTION && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.fallbackDetectRuntimeScope === 'function' && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.fallbackResolveCoreSupportModule === 'function') {
-    return CORE_RUNTIME_SUPPORT_RESOLUTION;
+}();
+function createInlineRuntimeSupportDefaults() {
+  function inlineFallbackDetectRuntimeScope(primaryScope) {
+    if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
+      return primaryScope;
+    }
+    var candidates = collectRuntimeScopeCandidates();
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
+        return scope;
+      }
+    }
+    return null;
+  }
+  function inlineFallbackResolveCoreSupportModule(namespaceName, requirePath, primaryScope) {
+    if (typeof namespaceName !== 'string' || !namespaceName) {
+      return null;
+    }
+    var runtimeScope = inlineFallbackDetectRuntimeScope(primaryScope);
+    if (runtimeScope && runtimeScope[namespaceName] && _typeof(runtimeScope[namespaceName]) === 'object') {
+      return runtimeScope[namespaceName];
+    }
+    if (typeof require === 'function' && typeof requirePath === 'string' && requirePath) {
+      try {
+        var required = require(requirePath);
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (supportModuleError) {
+        void supportModuleError;
+      }
+    }
+    return null;
   }
   return {
     fallbackDetectRuntimeScope: inlineFallbackDetectRuntimeScope,
@@ -427,7 +437,8 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS = function resolveRuntimeSupportRes
       });
     }
   };
-}();
+}
+var CORE_RUNTIME_SUPPORT_RESOLUTION_DEFAULTS = CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE && typeof CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE.fallbackDetectRuntimeScope === 'function' && typeof CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE.fallbackResolveCoreSupportModule === 'function' && typeof CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE.readRuntimeSupportResolver === 'function' ? CORE_RUNTIME_SUPPORT_DEFAULTS_NAMESPACE : createInlineRuntimeSupportDefaults();
 var CORE_RUNTIME_SUPPORT_RESOLUTION_TOOLS = function resolveRuntimeSupportResolutionTools() {
   if (CORE_RUNTIME_SUPPORT_RESOLUTION && typeof CORE_RUNTIME_SUPPORT_RESOLUTION.readRuntimeSupportResolver === 'function') {
     try {
@@ -454,5 +465,3 @@ var resolveCoreSupportModule = CORE_RUNTIME_SUPPORT_BOOTSTRAP_TOOLS && typeof CO
 } : function resolveCoreSupportModule(namespaceName, requirePath) {
   return fallbackResolveCoreSupportModule(namespaceName, requirePath, CORE_PART1_RUNTIME_SCOPE);
 };
-var CORE_LOCALIZATION_BRIDGE = resolveCoreSupportModule('cineCoreLocalizationBridge', './modules/core/localization-bridge.js');
-var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');

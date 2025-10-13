@@ -26,6 +26,116 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var CORE_LOCALIZATION_BRIDGE = resolveCoreSupportModule('cineCoreLocalizationBridge', './modules/core/localization-bridge.js');
+var CORE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule('cineCoreLocalizationFallbacks', './modules/core/localization-fallbacks.js');
+var CORE_INLINE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule('cineCoreLocalizationInlineFallbacks', './modules/core/localization-inline-fallbacks.js');
+var CORE_LOCALIZATION_FALLBACK_REGISTRY = resolveCoreSupportModule('cineCoreLocalizationFallbackRegistry', './modules/core/localization-fallback-registry.js');
+var CORE_LOCALIZATION_FALLBACK_RESOLUTION = resolveCoreSupportModule('cineCoreLocalizationFallbackResolution', './modules/core/localization-fallback-resolution.js');
+var CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE = resolveCoreSupportModule('cineCoreLocalizationFallbackSupportLite', './modules/core/localization-fallback-support-lite.js');
+if (!CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE && typeof require === 'function') {
+  try {
+    CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE = require('./modules/core/localization-fallback-support-lite.js');
+  } catch (localizationFallbackSupportLiteError) {
+    void localizationFallbackSupportLiteError;
+    CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE = null;
+  }
+}
+var CORE_LOCALIZATION_FALLBACK_FACTORIES = resolveCoreSupportModule('cineCoreLocalizationFallbackFactories', './modules/core/localization-fallback-factories.js');
+var CORE_LOCALIZATION_INLINE_SUPPORT = resolveCoreSupportModule('cineCoreLocalizationFallbackInlineSupport', './modules/core/localization-fallback-inline-support.js');
+var LOCALIZATION_INLINE_SUPPORT = CORE_LOCALIZATION_INLINE_SUPPORT && _typeof(CORE_LOCALIZATION_INLINE_SUPPORT) === 'object' ? CORE_LOCALIZATION_INLINE_SUPPORT : null;
+if (LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.configure === 'function') {
+  try {
+    LOCALIZATION_INLINE_SUPPORT.configure({
+      runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      coreLocalizationFallbackFactories: CORE_LOCALIZATION_FALLBACK_FACTORIES,
+      resolveCoreSupportModule: resolveCoreSupportModule,
+      requireFn: typeof require === 'function' ? require : null
+    });
+  } catch (localizationInlineSupportConfigureError) {
+    void localizationInlineSupportConfigureError;
+  }
+}
+var CORE_LOCALIZATION_FALLBACK_BOOTSTRAP = resolveCoreSupportModule('cineCoreLocalizationFallbackBootstrap', './modules/core/localization-fallback-bootstrap.js');
+var LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE = CORE_LOCALIZATION_FALLBACK_BOOTSTRAP;
+if ((!LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE || typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks !== 'function') && typeof require === 'function') {
+  try {
+    var requiredLocalizationFallbackBootstrap = require('./modules/core/localization-fallback-bootstrap.js');
+    if (requiredLocalizationFallbackBootstrap && typeof requiredLocalizationFallbackBootstrap.setupLocalizationFallbacks === 'function') {
+      LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE = requiredLocalizationFallbackBootstrap;
+    }
+  } catch (localizationFallbackBootstrapRequireError) {
+    void localizationFallbackBootstrapRequireError;
+  }
+}
+var LOCALIZATION_FALLBACK_BOOTSTRAP_STATE = LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks === 'function' ? LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.setupLocalizationFallbacks({
+  primaryRuntimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+  coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+  localizationFallbackFactories: CORE_LOCALIZATION_FALLBACK_FACTORIES,
+  localizationFallbacks: CORE_LOCALIZATION_FALLBACKS,
+  inlineLocalizationFallbacks: CORE_INLINE_LOCALIZATION_FALLBACKS,
+  localizationFallbackRegistry: CORE_LOCALIZATION_FALLBACK_REGISTRY,
+  localizationFallbackResolution: CORE_LOCALIZATION_FALLBACK_RESOLUTION,
+  localizationFallbackSupportLite: CORE_LOCALIZATION_FALLBACK_SUPPORT_LITE,
+  localizationInlineSupport: LOCALIZATION_INLINE_SUPPORT,
+  resolveCoreSupportModule: resolveCoreSupportModule,
+  requireFn: typeof require === 'function' ? require : null
+}) : null;
+var LOCALIZATION_FALLBACK_CONTEXT = LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context && _typeof(LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context) === 'object' ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.context : null;
+var LOCALIZATION_FALLBACK_SUPPORT = LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.support || (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.support !== 'undefined' ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.support : null);
+var fallbackCreateBasicLocalizationFallbackResolversFromNamespace = LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.fallbackCreateBasicLocalizationFallbackResolvers === 'function' ? LOCALIZATION_FALLBACK_BOOTSTRAP_NAMESPACE.fallbackCreateBasicLocalizationFallbackResolvers : function fallbackCreateBasicLocalizationFallbackResolversProxy() {
+  return null;
+};
+var createBasicLocalizationFallbackResolvers = LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createBasicLocalizationFallbackResolvers === 'function' ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createBasicLocalizationFallbackResolvers : fallbackCreateBasicLocalizationFallbackResolversFromNamespace;
+var LOCALIZATION_FALLBACK_REGISTRY = LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.registry || (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry && _typeof(LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry) === 'object' ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.registry : CORE_LOCALIZATION_FALLBACK_REGISTRY && typeof CORE_LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function' ? CORE_LOCALIZATION_FALLBACK_REGISTRY : {
+  createFallbackResolvers: function createFallbackResolvers(fallbackOptions) {
+    return createBasicLocalizationFallbackResolvers(fallbackOptions);
+  }
+});
+var LOCALIZATION_FALLBACK_RESOLVERS = LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.resolvers || (LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers && _typeof(LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers) === 'object' ? LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.resolvers : LOCALIZATION_FALLBACK_REGISTRY && typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function' ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
+  directNamespace: CORE_LOCALIZATION_FALLBACKS,
+  inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS
+}) : createBasicLocalizationFallbackResolvers({
+  directNamespace: CORE_LOCALIZATION_FALLBACKS,
+  inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS
+}));
+var LOCALIZATION_FALLBACK_NAMESPACE = LOCALIZATION_FALLBACK_CONTEXT && LOCALIZATION_FALLBACK_CONTEXT.namespace || (LOCALIZATION_FALLBACK_RESOLVERS && LOCALIZATION_FALLBACK_RESOLVERS.namespace && _typeof(LOCALIZATION_FALLBACK_RESOLVERS.namespace) === 'object' ? LOCALIZATION_FALLBACK_RESOLVERS.namespace : null);
+var fallbackResolveLocaleModule = LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.fallbackResolveLocaleModule === 'function' ? function fallbackResolveLocaleModuleProxy(scope) {
+  try {
+    return LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.fallbackResolveLocaleModule(scope);
+  } catch (fallbackError) {
+    void fallbackError;
+  }
+  return null;
+} : LOCALIZATION_FALLBACK_CONTEXT && typeof LOCALIZATION_FALLBACK_CONTEXT.fallbackResolveLocaleModule === 'function' ? function fallbackResolveLocaleModuleProxy(scope) {
+  try {
+    return LOCALIZATION_FALLBACK_CONTEXT.fallbackResolveLocaleModule(scope);
+  } catch (fallbackError) {
+    void fallbackError;
+  }
+  return null;
+} : function fallbackResolveLocaleModuleProxy() {
+  return null;
+};
+var createLocaleFallbacks = LOCALIZATION_FALLBACK_BOOTSTRAP_STATE && typeof LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createLocaleFallbacks === 'function' ? function createLocaleFallbacksProxy(options) {
+  try {
+    return LOCALIZATION_FALLBACK_BOOTSTRAP_STATE.createLocaleFallbacks(options);
+  } catch (createFallbackError) {
+    void createFallbackError;
+  }
+  return null;
+} : LOCALIZATION_FALLBACK_CONTEXT && typeof LOCALIZATION_FALLBACK_CONTEXT.createLocaleFallbacks === 'function' ? function createLocaleFallbacksProxy(options) {
+  try {
+    return LOCALIZATION_FALLBACK_CONTEXT.createLocaleFallbacks(options);
+  } catch (createFallbackError) {
+    void createFallbackError;
+  }
+  return null;
+} : function createLocaleFallbacksProxy() {
+  return null;
+};
+var CORE_RUNTIME_TOOLS = resolveCoreSupportModule('cineCoreRuntimeTools', './modules/core/runtime-tools.js');
+var CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule('cineCoreRuntimeToolFallbacks', './modules/core/runtime-tool-fallbacks.js');
 var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUNTIME_SHARED ? CORE_RUNTIME_SHARED : function resolveCoreRuntimeShared() {
   var shared = null;
   if (typeof resolveCoreSupportModule === 'function') {
@@ -315,477 +425,72 @@ var CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = function ensureCoreRuntimeCandidate
   }
   return resolvedScopes;
 }();
-var CORE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule('cineCoreLocalizationFallbacks', './modules/core/localization-fallbacks.js');
-var CORE_INLINE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule('cineCoreLocalizationInlineFallbacks', './modules/core/localization-inline-fallbacks.js');
-
-var CORE_LOCALIZATION_FALLBACK_REGISTRY = resolveCoreSupportModule('cineCoreLocalizationFallbackRegistry', './modules/core/localization-fallback-registry.js');
-
-function resolveLocalizationFallbackRegistryFromScopes() {
-  var candidateScopes = [
-    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null,
-    typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object' ? globalThis : null,
-    typeof window !== 'undefined' && window && _typeof(window) === 'object' ? window : null,
-    typeof self !== 'undefined' && self && _typeof(self) === 'object' ? self : null,
-    typeof global !== 'undefined' && global && _typeof(global) === 'object' ? global : null
-  ];
-
-  for (var index = 0; index < candidateScopes.length; index += 1) {
-    var scope = candidateScopes[index];
-    if (!scope) {
+var CORE_RUNTIME_LOCALIZATION = function resolveCoreRuntimeLocalization() {
+  if (typeof resolveCoreSupportModule === 'function') {
+    try {
+      var resolved = resolveCoreSupportModule('cineCoreRuntimeLocalization', './modules/core/runtime-localization.js');
+      if (resolved && _typeof(resolved) === 'object') {
+        return resolved;
+      }
+    } catch (coreRuntimeLocalizationResolveError) {
+      void coreRuntimeLocalizationResolveError;
+    }
+  }
+  var scopeCandidates = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  for (var index = 0; index < scopeCandidates.length; index += 1) {
+    var scope = scopeCandidates[index];
+    if (!scope || _typeof(scope) !== 'object') {
       continue;
     }
-
     try {
-      var registryCandidate = scope.cineCoreLocalizationFallbackRegistry;
-      if (registryCandidate && typeof registryCandidate.createFallbackResolvers === 'function') {
-        return registryCandidate;
-      }
-    } catch (registryLookupError) {
-      void registryLookupError;
-    }
-  }
-
-  return null;
-}
-
-var CORE_LOCALIZATION_FALLBACK_FACTORIES = resolveCoreSupportModule('cineCoreLocalizationFallbackFactories', './modules/core/localization-fallback-factories.js');
-
-var CORE_LOCALIZATION_INLINE_SUPPORT = resolveCoreSupportModule('cineCoreLocalizationFallbackInlineSupport', './modules/core/localization-fallback-inline-support.js');
-
-var LOCALIZATION_INLINE_SUPPORT = CORE_LOCALIZATION_INLINE_SUPPORT && _typeof(CORE_LOCALIZATION_INLINE_SUPPORT) === 'object' ? CORE_LOCALIZATION_INLINE_SUPPORT : null;
-
-if (LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.configure === 'function') {
-  try {
-    LOCALIZATION_INLINE_SUPPORT.configure({
-      runtimeScope: typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-      coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-      coreLocalizationFallbackFactories: CORE_LOCALIZATION_FALLBACK_FACTORIES,
-      resolveCoreSupportModule: resolveCoreSupportModule,
-      requireFn: typeof require === 'function' ? require : null,
-    });
-  } catch (localizationInlineSupportConfigureError) {
-    void localizationInlineSupportConfigureError;
-  }
-}
-
-function fallbackRegisterLocalizationScope(scopes, scope) {
-  if (!scope || (_typeof(scope) !== 'object' && typeof scope !== 'function') || scopes.indexOf(scope) !== -1) {
-    return;
-  }
-
-  scopes.push(scope);
-}
-
-function fallbackCollectLocalizationFactoryScopes(primaryScope) {
-  var scopes = [];
-
-  fallbackRegisterLocalizationScope(scopes, primaryScope);
-
-  if (typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE && (_typeof(CORE_PART1_RUNTIME_SCOPE) === 'object' || typeof CORE_PART1_RUNTIME_SCOPE === 'function')) {
-    fallbackRegisterLocalizationScope(scopes, CORE_PART1_RUNTIME_SCOPE);
-  }
-
-  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (_typeof(CORE_GLOBAL_SCOPE) === 'object' || typeof CORE_GLOBAL_SCOPE === 'function')) {
-    fallbackRegisterLocalizationScope(scopes, CORE_GLOBAL_SCOPE);
-  }
-
-  if (typeof globalThis !== 'undefined') {
-    fallbackRegisterLocalizationScope(scopes, globalThis);
-  }
-
-  if (typeof window !== 'undefined') {
-    fallbackRegisterLocalizationScope(scopes, window);
-  }
-
-  if (typeof self !== 'undefined') {
-    fallbackRegisterLocalizationScope(scopes, self);
-  }
-
-  if (typeof global !== 'undefined') {
-    fallbackRegisterLocalizationScope(scopes, global);
-  }
-
-  return scopes;
-}
-
-function fallbackEnsureLocalizationFallbackFactories(primaryScope) {
-  if (CORE_LOCALIZATION_FALLBACK_FACTORIES && _typeof(CORE_LOCALIZATION_FALLBACK_FACTORIES) === 'object') {
-    return CORE_LOCALIZATION_FALLBACK_FACTORIES;
-  }
-
-  var candidateScopes = fallbackCollectLocalizationFactoryScopes(primaryScope);
-
-  for (var index = 0; index < candidateScopes.length; index += 1) {
-    var candidateScope = candidateScopes[index];
-
-    try {
-      var candidate = candidateScope && candidateScope.cineCoreLocalizationFallbackFactories;
+      var candidate = scope.cineCoreRuntimeLocalization;
       if (candidate && _typeof(candidate) === 'object') {
         return candidate;
       }
-    } catch (candidateLookupError) {
-      void candidateLookupError;
+    } catch (coreRuntimeLocalizationLookupError) {
+      void coreRuntimeLocalizationLookupError;
     }
   }
-
-  return null;
-}
-
-function fallbackResolveLocalizationFallbackContextNamespace(primaryScope) {
-  var scopeCandidates = fallbackCollectLocalizationFactoryScopes(primaryScope);
-
-  for (var index = 0; index < scopeCandidates.length; index += 1) {
-    var candidateScope = scopeCandidates[index];
-
-    try {
-      var candidate = candidateScope && candidateScope.cineCoreLocalizationFallbackContext;
-      if (candidate && _typeof(candidate) === 'object') {
-        return candidate;
-      }
-    } catch (fallbackContextLookupError) {
-      void fallbackContextLookupError;
-    }
-  }
-
   if (typeof require === 'function') {
     try {
-      var required = require('./modules/core/localization-fallback-context.js');
+      var required = require('./modules/core/runtime-localization.js');
       if (required && _typeof(required) === 'object') {
         return required;
       }
-    } catch (fallbackContextRequireError) {
-      void fallbackContextRequireError;
+    } catch (coreRuntimeLocalizationRequireError) {
+      void coreRuntimeLocalizationRequireError;
     }
   }
-
   return null;
-}
-
-function fallbackNormalizeLanguageCodeValue(lang, defaultLanguage) {
-  if (!lang) {
-    return defaultLanguage;
-  }
-
-  try {
-    var normalized = String(lang).trim().toLowerCase();
-    return normalized || defaultLanguage;
-  } catch (normalizeError) {
-    void normalizeError;
-  }
-
-  return defaultLanguage;
-}
-
-function fallbackResolveRtlCodes(config) {
-  if (config && Array.isArray(config.rtlLanguageCodes)) {
-    var codes = [];
-
-    for (var index = 0; index < config.rtlLanguageCodes.length; index += 1) {
-      var rawCode = config.rtlLanguageCodes[index];
-      var normalized = fallbackNormalizeLanguageCodeValue(String(rawCode || ''), '');
-      if (normalized && codes.indexOf(normalized) === -1) {
-        codes.push(normalized);
-      }
-    }
-
-    if (codes.length > 0) {
-      return codes;
-    }
-  }
-
-  return ['ar', 'fa', 'he', 'ur'];
-}
-
-function fallbackCreateLocaleFallbackHelpers(baseOptions) {
-  var config = baseOptions || {};
-  var defaultLanguage = fallbackNormalizeLanguageCodeValue(config.defaultLanguage, 'en');
-  var rtlLanguageCodes = fallbackResolveRtlCodes(config);
-
-  function normalizeLanguageCode(lang) {
-    return fallbackNormalizeLanguageCodeValue(lang, defaultLanguage);
-  }
-
-  function isRtlLanguage(lang) {
-    var normalized = fallbackNormalizeLanguageCodeValue(lang, defaultLanguage);
-    var base = normalized.split('-')[0];
-    return rtlLanguageCodes.indexOf(base) !== -1;
-  }
-
-  function resolveDocumentDirection(lang) {
-    if (typeof document !== 'undefined' && document && document.documentElement) {
-      try {
-        var docDir = document.documentElement.getAttribute('dir');
-        if (docDir === 'rtl' || docDir === 'ltr') {
-          return docDir;
-        }
-      } catch (documentDirectionError) {
-        void documentDirectionError;
-      }
-    }
-
-    return isRtlLanguage(lang) ? 'rtl' : 'ltr';
-  }
-
-  function applyLocaleMetadata(target, lang, direction) {
-    if (!target) {
-      return;
-    }
-
-    if (lang) {
-      try {
-        target.lang = lang;
-      } catch (setLangError) {
-        void setLangError;
-      }
-    }
-
-    if (direction) {
-      try {
-        target.dir = direction;
-      } catch (setDirError) {
-        void setDirError;
-      }
-    }
-  }
-
-  return {
-    getDefaultLanguage: function getDefaultLanguage() {
-      return defaultLanguage;
-    },
-    getRtlLanguageCodes: function getRtlLanguageCodes() {
-      return rtlLanguageCodes.slice();
-    },
-    resolveLocaleModule: function resolveLocaleModule() {
-      return null;
-    },
-    normalizeLanguageCode: normalizeLanguageCode,
-    isRtlLanguage: isRtlLanguage,
-    resolveDocumentDirection: resolveDocumentDirection,
-    applyLocaleMetadata: applyLocaleMetadata,
-  };
-}
-
-function fallbackCreateBasicLocalizationFallbackResolvers(options) {
-  var baseOptions = options || {};
-
-  return {
-    namespace: {
-      fallbackResolveLocaleModule: function fallbackResolveLocaleModule() {
-        return null;
-      },
-      createLocaleFallbacks: function createLocaleFallbacks(fallbackOptions) {
-        return fallbackCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
-      },
-    },
-    fallbackResolveLocaleModule: function fallbackResolveLocaleModule() {
-      return null;
-    },
-    createLocaleFallbacks: function createLocaleFallbacks(fallbackOptions) {
-      return fallbackCreateLocaleFallbackHelpers(fallbackOptions || baseOptions);
-    },
-  };
-}
-
-function fallbackCreateLegacyLocalizationFallbackContext(options) {
-  var resolvers = fallbackCreateBasicLocalizationFallbackResolvers(options);
-  var namespace =
-    resolvers && resolvers.namespace && _typeof(resolvers.namespace) === 'object'
-      ? resolvers.namespace
-      : {
-          fallbackResolveLocaleModule: function fallbackResolveLocaleModule() {
-            return null;
-          },
-          createLocaleFallbacks: function createLocaleFallbacks() {
-            return null;
-          },
-        };
-
-  return {
-    support: null,
-    registry: {
-      createFallbackResolvers: function createFallbackResolvers(fallbackOptions) {
-        return fallbackCreateBasicLocalizationFallbackResolvers(fallbackOptions || options);
-      },
-    },
-    resolvers: resolvers,
-    namespace: namespace,
-    fallbackResolveLocaleModule: namespace.fallbackResolveLocaleModule,
-    createLocaleFallbacks: namespace.createLocaleFallbacks,
-  };
-}
-
-function fallbackCreateFallbackFactoryAccessor(methodName, inlineImplementation) {
-  return function fallbackFactoryAccessor() {
-    var args = arguments;
-    var factories = fallbackEnsureLocalizationFallbackFactories(args[0]);
-
-    if (factories && typeof factories[methodName] === 'function') {
-      try {
-        return factories[methodName].apply(factories, args);
-      } catch (factoryInvokeError) {
-        void factoryInvokeError;
-      }
-    }
-
-    try {
-      return inlineImplementation.apply(null, args);
-    } catch (inlineInvokeError) {
-      void inlineInvokeError;
-    }
-
-    return null;
-  };
-}
-
-var collectLocalizationFactoryScopes = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.collectLocalizationFactoryScopes === 'function'
-  ? function collectLocalizationFactoryScopesProxy(primaryScope) {
-      return LOCALIZATION_INLINE_SUPPORT.collectLocalizationFactoryScopes(primaryScope);
-    }
-  : fallbackCollectLocalizationFactoryScopes;
-
-var ensureLocalizationFallbackFactories = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.ensureLocalizationFallbackFactories === 'function'
-  ? function ensureLocalizationFallbackFactoriesProxy(primaryScope) {
-      return LOCALIZATION_INLINE_SUPPORT.ensureLocalizationFallbackFactories(primaryScope);
-    }
-  : fallbackEnsureLocalizationFallbackFactories;
-
-var inlineResolveLocalizationFallbackContextNamespace = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.inlineResolveLocalizationFallbackContextNamespace === 'function'
-  ? function inlineResolveLocalizationFallbackContextNamespaceProxy(primaryScope) {
-      return LOCALIZATION_INLINE_SUPPORT.inlineResolveLocalizationFallbackContextNamespace(primaryScope);
-    }
-  : fallbackResolveLocalizationFallbackContextNamespace;
-
-var inlineCreateBasicLocalizationFallbackResolvers = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.inlineCreateBasicLocalizationFallbackResolvers === 'function'
-  ? function inlineCreateBasicLocalizationFallbackResolversProxy(options) {
-      return LOCALIZATION_INLINE_SUPPORT.inlineCreateBasicLocalizationFallbackResolvers(options);
-    }
-  : fallbackCreateBasicLocalizationFallbackResolvers;
-
-var inlineCreateLegacyLocalizationFallbackContext = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.inlineCreateLegacyLocalizationFallbackContext === 'function'
-  ? function inlineCreateLegacyLocalizationFallbackContextProxy(options) {
-      return LOCALIZATION_INLINE_SUPPORT.inlineCreateLegacyLocalizationFallbackContext(options);
-    }
-  : fallbackCreateLegacyLocalizationFallbackContext;
-
-var createFallbackFactoryAccessor = LOCALIZATION_INLINE_SUPPORT && typeof LOCALIZATION_INLINE_SUPPORT.createFallbackFactoryAccessor === 'function'
-  ? function createFallbackFactoryAccessorProxy(methodName, inlineImplementation) {
-      return LOCALIZATION_INLINE_SUPPORT.createFallbackFactoryAccessor(methodName, inlineImplementation);
-    }
-  : fallbackCreateFallbackFactoryAccessor;
-
-var resolveLocalizationFallbackContextNamespace = createFallbackFactoryAccessor('resolveLocalizationFallbackContextNamespace', inlineResolveLocalizationFallbackContextNamespace);
-
-var createInlineLocalizationFallbackResolversFallback = createFallbackFactoryAccessor('createBasicLocalizationFallbackResolversFallback', inlineCreateBasicLocalizationFallbackResolvers);
-
-var createLegacyLocalizationFallbackContextFallback = createFallbackFactoryAccessor('createLegacyLocalizationFallbackContextFallback', inlineCreateLegacyLocalizationFallbackContext);
-
-var LOCALIZATION_FALLBACK_REGISTRY = function resolveLocalizationFallbackRegistry() {
-  if (CORE_LOCALIZATION_FALLBACK_REGISTRY && typeof CORE_LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function') {
-    return CORE_LOCALIZATION_FALLBACK_REGISTRY;
-  }
-
-  var scopedRegistry = resolveLocalizationFallbackRegistryFromScopes();
-  if (scopedRegistry) {
-    return scopedRegistry;
-  }
-
-  if (typeof require === 'function') {
-    try {
-      var requiredRegistry = require('./modules/core/localization-fallback-registry.js');
-      if (requiredRegistry && typeof requiredRegistry.createFallbackResolvers === 'function') {
-        return requiredRegistry;
-      }
-    } catch (fallbackRegistryRequireError) {
-      void fallbackRegistryRequireError;
-    }
-  }
-
-  return {
-    createFallbackResolvers: createInlineLocalizationFallbackResolversFallback,
-  };
 }();
-
-var LOCALIZATION_FALLBACK_RESOLVERS = LOCALIZATION_FALLBACK_REGISTRY && typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function'
-  ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
-      directNamespace: CORE_LOCALIZATION_FALLBACKS,
-      inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
-      requireInlineFallbackNamespace: function requireInlineFallbackNamespace() {
-        if (typeof require === 'function') {
-          try {
-            return require('./modules/core/localization-inline-fallbacks.js');
-          } catch (inlineRequireError) {
-            void inlineRequireError;
-          }
-        }
-
-        return null;
-      },
-    })
-  : createInlineLocalizationFallbackResolversFallback({
-      directNamespace: CORE_LOCALIZATION_FALLBACKS,
-      inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
-    });
-
-var LOCALIZATION_FALLBACK_NAMESPACE = LOCALIZATION_FALLBACK_RESOLVERS && LOCALIZATION_FALLBACK_RESOLVERS.namespace && _typeof(LOCALIZATION_FALLBACK_RESOLVERS.namespace) === 'object' ? LOCALIZATION_FALLBACK_RESOLVERS.namespace : null;
-
-var fallbackResolveLocaleModule = LOCALIZATION_FALLBACK_RESOLVERS && typeof LOCALIZATION_FALLBACK_RESOLVERS.fallbackResolveLocaleModule === 'function' ? function fallbackResolveLocaleModuleProxy(scope) {
-  try {
-    return LOCALIZATION_FALLBACK_RESOLVERS.fallbackResolveLocaleModule(scope);
-  } catch (fallbackError) {
-    void fallbackError;
-  }
-
-  return null;
-} : function fallbackResolveLocaleModuleProxy() {
-  return null;
-};
-
-var createLocaleFallbacks = LOCALIZATION_FALLBACK_RESOLVERS && typeof LOCALIZATION_FALLBACK_RESOLVERS.createLocaleFallbacks === 'function' ? function createLocaleFallbacksProxy(options) {
-  try {
-    return LOCALIZATION_FALLBACK_RESOLVERS.createLocaleFallbacks(options);
-  } catch (createFallbackError) {
-    void createFallbackError;
-  }
-
-  return null;
-} : function createLocaleFallbacksProxy() {
-  return null;
-};
-
-
-var LOCALE_MODULE = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.resolveLocaleModule === 'function' ? function resolveLocaleWithBridge() {
-  try {
-    return CORE_LOCALIZATION_BRIDGE.resolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
-  } catch (bridgeResolveError) {
-    void bridgeResolveError;
-  }
-  return fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
-}() : fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
-var DEFAULT_LANGUAGE = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.getDefaultLanguage === 'function' ? function resolveDefaultLanguage() {
-  try {
-    return CORE_LOCALIZATION_BRIDGE.getDefaultLanguage(CORE_PART1_RUNTIME_SCOPE);
-  } catch (resolveDefaultLanguageError) {
-    void resolveDefaultLanguageError;
-  }
-  return LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' ? LOCALE_MODULE.DEFAULT_LANGUAGE : 'en';
-}() : LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string' ? LOCALE_MODULE.DEFAULT_LANGUAGE : 'en';
-var RTL_LANGUAGE_CODES = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.getRtlLanguageCodes === 'function' ? function resolveRtlCodes() {
-  try {
-    var codes = CORE_LOCALIZATION_BRIDGE.getRtlLanguageCodes(CORE_PART1_RUNTIME_SCOPE);
-    return Array.isArray(codes) && codes.length > 0 ? codes : ['ar', 'fa', 'he', 'ur'];
-  } catch (resolveRtlCodesError) {
-    void resolveRtlCodesError;
-  }
-  return LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0 ? LOCALE_MODULE.RTL_LANGUAGE_CODES : ['ar', 'fa', 'he', 'ur'];
-}() : LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0 ? LOCALE_MODULE.RTL_LANGUAGE_CODES : ['ar', 'fa', 'he', 'ur'];
-var LOCALIZATION_FALLBACK_HELPERS = typeof createLocaleFallbacks === 'function' ? createLocaleFallbacks({
-  defaultLanguage: DEFAULT_LANGUAGE,
-  rtlLanguageCodes: RTL_LANGUAGE_CODES
+var CORE_LOCALIZATION_RUNTIME = CORE_RUNTIME_LOCALIZATION && typeof CORE_RUNTIME_LOCALIZATION.createLocalizationRuntime === 'function' ? CORE_RUNTIME_LOCALIZATION.createLocalizationRuntime({
+  runtimeScope: CORE_PART1_RUNTIME_SCOPE,
+  coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
+  localizationBridge: CORE_LOCALIZATION_BRIDGE,
+  localizationFallbacks: CORE_LOCALIZATION_FALLBACKS,
+  inlineLocalizationFallbacks: CORE_INLINE_LOCALIZATION_FALLBACKS,
+  localizationFallbackNamespace: LOCALIZATION_FALLBACK_NAMESPACE,
+  localizationFallbackSupport: LOCALIZATION_FALLBACK_SUPPORT,
+  localizationFallbackRegistry: LOCALIZATION_FALLBACK_REGISTRY,
+  localizationFallbackResolvers: LOCALIZATION_FALLBACK_RESOLVERS,
+  fallbackResolveLocaleModule: fallbackResolveLocaleModule,
+  createLocaleFallbacks: createLocaleFallbacks,
+  translationsRequirePath: './translations.js'
 }) : null;
-
-var fallbackNormalizeLanguageCode = LOCALIZATION_FALLBACK_HELPERS && typeof LOCALIZATION_FALLBACK_HELPERS.normalizeLanguageCode === 'function' ? function fallbackNormalizeLanguageCodeProxy(lang) {
-  return LOCALIZATION_FALLBACK_HELPERS.normalizeLanguageCode(lang);
-} : function fallbackNormalizeLanguageCodeProxy(lang) {
+var LOCALE_MODULE = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.localeModule ? CORE_LOCALIZATION_RUNTIME.localeModule : fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
+var DEFAULT_LANGUAGE = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.defaultLanguage ? CORE_LOCALIZATION_RUNTIME.defaultLanguage : function resolveFallbackDefaultLanguage() {
+  if (LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string') {
+    return LOCALE_MODULE.DEFAULT_LANGUAGE;
+  }
+  return 'en';
+}();
+var RTL_LANGUAGE_CODES = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.rtlLanguageCodes ? CORE_LOCALIZATION_RUNTIME.rtlLanguageCodes : function resolveFallbackRtlCodes() {
+  if (LOCALE_MODULE && Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) && LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0) {
+    return LOCALE_MODULE.RTL_LANGUAGE_CODES;
+  }
+  return ['ar', 'fa', 'he', 'ur'];
+}();
+function fallbackNormalizeLanguageCodeProxy(lang) {
   if (!lang) {
     return DEFAULT_LANGUAGE;
   }
@@ -796,36 +501,50 @@ var fallbackNormalizeLanguageCode = LOCALIZATION_FALLBACK_HELPERS && typeof LOCA
     void languageNormalizeError;
   }
   return DEFAULT_LANGUAGE;
-};
-
-var fallbackIsRtlLanguage = LOCALIZATION_FALLBACK_HELPERS && typeof LOCALIZATION_FALLBACK_HELPERS.isRtlLanguage === 'function' ? function fallbackIsRtlLanguageProxy(lang) {
-  return LOCALIZATION_FALLBACK_HELPERS.isRtlLanguage(lang);
-} : function fallbackIsRtlLanguageProxy(lang) {
-  var normalized = fallbackNormalizeLanguageCode(lang);
+}
+var normalizeLanguageCode = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.normalizeLanguageCode ? CORE_LOCALIZATION_RUNTIME.normalizeLanguageCode : CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode === 'function' ? function normalizeLanguageCodeProxy(lang) {
+  try {
+    return CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode(lang, CORE_PART1_RUNTIME_SCOPE);
+  } catch (normalizeError) {
+    void normalizeError;
+  }
+  return fallbackNormalizeLanguageCodeProxy(lang);
+} : fallbackNormalizeLanguageCodeProxy;
+function fallbackIsRtlLanguageProxy(lang) {
+  var normalized = normalizeLanguageCode(lang);
   var base = normalized.split('-')[0];
-  var rtlCodes = Array.isArray(RTL_LANGUAGE_CODES) && RTL_LANGUAGE_CODES.length > 0 ? RTL_LANGUAGE_CODES : ['ar', 'fa', 'he', 'ur'];
-  return rtlCodes.indexOf(base) !== -1;
-};
-
-var fallbackResolveDocumentDirection = LOCALIZATION_FALLBACK_HELPERS && typeof LOCALIZATION_FALLBACK_HELPERS.resolveDocumentDirection === 'function' ? function fallbackResolveDocumentDirectionProxy(lang) {
-  return LOCALIZATION_FALLBACK_HELPERS.resolveDocumentDirection(lang);
-} : function fallbackResolveDocumentDirectionProxy(lang) {
+  return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
+}
+var isRtlLanguage = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.isRtlLanguage ? CORE_LOCALIZATION_RUNTIME.isRtlLanguage : CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.isRtlLanguage === 'function' ? function isRtlLanguageProxy(lang) {
+  try {
+    return CORE_LOCALIZATION_BRIDGE.isRtlLanguage(lang, CORE_PART1_RUNTIME_SCOPE);
+  } catch (isRtlError) {
+    void isRtlError;
+  }
+  return fallbackIsRtlLanguageProxy(lang);
+} : fallbackIsRtlLanguageProxy;
+function fallbackResolveDocumentDirectionProxy(lang) {
   if (typeof document !== 'undefined' && document && document.documentElement) {
     try {
       var docDir = document.documentElement.getAttribute('dir');
-      if (docDir === 'rtl' || docDir === 'ltr') {
+      if (docDir) {
         return docDir;
       }
-    } catch (documentDirectionError) {
-      void documentDirectionError;
+    } catch (resolveDirectionError) {
+      void resolveDirectionError;
     }
   }
-  return fallbackIsRtlLanguage(lang) ? 'rtl' : 'ltr';
-};
-
-var fallbackApplyLocaleMetadata = LOCALIZATION_FALLBACK_HELPERS && typeof LOCALIZATION_FALLBACK_HELPERS.applyLocaleMetadata === 'function' ? function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
-  return LOCALIZATION_FALLBACK_HELPERS.applyLocaleMetadata(target, lang, direction);
-} : function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
+  return isRtlLanguage(lang) ? 'rtl' : 'ltr';
+}
+var resolveDocumentDirection = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.resolveDocumentDirection ? CORE_LOCALIZATION_RUNTIME.resolveDocumentDirection : CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection === 'function' ? function resolveDocumentDirectionProxy(lang) {
+  try {
+    return CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection(lang, CORE_PART1_RUNTIME_SCOPE);
+  } catch (resolveDirectionError) {
+    void resolveDirectionError;
+  }
+  return fallbackResolveDocumentDirectionProxy(lang);
+} : fallbackResolveDocumentDirectionProxy;
+function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
   if (!target) {
     return;
   }
@@ -843,40 +562,110 @@ var fallbackApplyLocaleMetadata = LOCALIZATION_FALLBACK_HELPERS && typeof LOCALI
       void setDirError;
     }
   }
-};
-
-var normalizeLanguageCode = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode === 'function' ? function normalizeLanguageCodeProxy(lang) {
-  try {
-    return CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode(lang, CORE_PART1_RUNTIME_SCOPE);
-  } catch (normalizeError) {
-    void normalizeError;
-  }
-  return fallbackNormalizeLanguageCode(lang);
-} : fallbackNormalizeLanguageCode;
-var isRtlLanguage = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.isRtlLanguage === 'function' ? function isRtlLanguageProxy(lang) {
-  try {
-    return CORE_LOCALIZATION_BRIDGE.isRtlLanguage(lang, CORE_PART1_RUNTIME_SCOPE);
-  } catch (isRtlError) {
-    void isRtlError;
-  }
-  return fallbackIsRtlLanguage(lang);
-} : fallbackIsRtlLanguage;
-var resolveDocumentDirection = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection === 'function' ? function resolveDocumentDirectionProxy(lang) {
-  try {
-    return CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection(lang, CORE_PART1_RUNTIME_SCOPE);
-  } catch (resolveDirectionError) {
-    void resolveDirectionError;
-  }
-  return fallbackResolveDocumentDirection(lang);
-} : fallbackResolveDocumentDirection;
-var applyLocaleMetadata = CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata === 'function' ? function applyLocaleMetadataProxy(target, lang, direction) {
+}
+var applyLocaleMetadata = CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.applyLocaleMetadata ? CORE_LOCALIZATION_RUNTIME.applyLocaleMetadata : CORE_LOCALIZATION_BRIDGE && typeof CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata === 'function' ? function applyLocaleMetadataProxy(target, lang, direction) {
   try {
     return CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata(target, lang, direction, CORE_PART1_RUNTIME_SCOPE);
   } catch (applyLocaleError) {
     void applyLocaleError;
   }
-  return fallbackApplyLocaleMetadata(target, lang, direction);
-} : fallbackApplyLocaleMetadata;
+  return fallbackApplyLocaleMetadataProxy(target, lang, direction);
+} : fallbackApplyLocaleMetadataProxy;
+function fallbackResolveTranslationDataset() {
+  var scopeCandidates = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  for (var index = 0; index < scopeCandidates.length; index += 1) {
+    var scope = scopeCandidates[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    var dataset = scope.texts;
+    if (dataset && _typeof(dataset) === 'object') {
+      return dataset;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var translationsModule = require('./translations.js');
+      if (translationsModule && _typeof(translationsModule) === 'object' && translationsModule.texts) {
+        return translationsModule.texts;
+      }
+    } catch (translationRequireError) {
+      void translationRequireError;
+    }
+  }
+  return {};
+}
+function fallbackGetLanguageTextsProxy(lang) {
+  var dataset = fallbackResolveTranslationDataset();
+  var fallbackLang = typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : 'en';
+  var normalized = null;
+  if (typeof lang === 'string' && lang) {
+    try {
+      normalized = String(lang).trim().toLowerCase();
+    } catch (normalizeError) {
+      void normalizeError;
+      normalized = null;
+    }
+  }
+  var resolved = normalized && Object.prototype.hasOwnProperty.call(dataset, normalized) ? normalized : '';
+  if (!resolved && normalized) {
+    var base = normalized.split('-')[0];
+    if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
+      resolved = base;
+    }
+  }
+  if (!resolved) {
+    resolved = fallbackLang;
+  }
+  var candidate = dataset && resolved && _typeof(dataset[resolved]) === 'object' ? dataset[resolved] : null;
+  if (candidate) {
+    return candidate;
+  }
+  if (resolved !== fallbackLang) {
+    var fallback = dataset && _typeof(dataset[fallbackLang]) === 'object' ? dataset[fallbackLang] : null;
+    if (fallback) {
+      return fallback;
+    }
+  }
+  if (dataset && _typeof(dataset.en) === 'object') {
+    return dataset.en;
+  }
+  var languages = dataset ? Object.keys(dataset) : [];
+  if (languages.length) {
+    var firstLang = languages[0];
+    var firstTexts = dataset[firstLang];
+    if (firstTexts && _typeof(firstTexts) === 'object') {
+      return firstTexts;
+    }
+  }
+  return {};
+}
+var existingGetLanguageTexts = typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
+var resolvedGetLanguageTexts = CORE_LOCALIZATION_RUNTIME && typeof CORE_LOCALIZATION_RUNTIME.getLanguageTexts === 'function' ? CORE_LOCALIZATION_RUNTIME.getLanguageTexts : existingGetLanguageTexts || fallbackGetLanguageTextsProxy;
+try {
+  getLanguageTexts = resolvedGetLanguageTexts;
+} catch (assignGetLanguageTextsError) {
+  void assignGetLanguageTextsError;
+}
+if (CORE_LOCALIZATION_RUNTIME && typeof CORE_LOCALIZATION_RUNTIME.ensureGlobalGetLanguageTextsAvailability === 'function') {
+  CORE_LOCALIZATION_RUNTIME.ensureGlobalGetLanguageTextsAvailability();
+}
+if (!CORE_LOCALIZATION_RUNTIME) {
+  var fallbackScopes = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  for (var index = 0; index < fallbackScopes.length; index += 1) {
+    var scope = fallbackScopes[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    if (typeof scope.getLanguageTexts !== 'function') {
+      try {
+        scope.getLanguageTexts = getLanguageTexts;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  }
+}
 if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
@@ -895,133 +684,214 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       void corePart1InitError;
     }
   }
-  var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
-  function resolveTranslationScopeCandidates() {
-    return [CORE_PART1_RUNTIME_SCOPE && _typeof(CORE_PART1_RUNTIME_SCOPE) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  var CORE_RUNTIME_TOOL_FALLBACK_FACTORY = CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE && typeof CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks === 'function' ? CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE.createRuntimeToolFallbacks : null;
+  if (!CORE_RUNTIME_TOOL_FALLBACK_FACTORY && typeof require === 'function') {
+    try {
+      var requiredFallbacks = require('./modules/core/runtime-tool-fallbacks.js');
+      if (requiredFallbacks && typeof requiredFallbacks.createRuntimeToolFallbacks === 'function') {
+        CORE_RUNTIME_TOOL_FALLBACK_FACTORY = requiredFallbacks.createRuntimeToolFallbacks;
+      }
+    } catch (runtimeToolFallbackRequireError) {
+      void runtimeToolFallbackRequireError;
+    }
   }
-  function resolveTranslationDataset() {
-    var candidates = resolveTranslationScopeCandidates();
-    for (var index = 0; index < candidates.length; index += 1) {
-      var scope = candidates[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
+  function createInlineRuntimeToolFallbacks(primaryScope) {
+    function isValidScope(scope) {
+      return !!scope && (_typeof(scope) === 'object' || typeof scope === 'function');
+    }
+    function detectScope(primary) {
+      if (isValidScope(primary)) {
+        return primary;
       }
-      var dataset = scope.texts;
-      if (dataset && _typeof(dataset) === 'object') {
-        return dataset;
+      if (typeof globalThis !== 'undefined' && isValidScope(globalThis)) {
+        return globalThis;
       }
-    }
-    if (typeof require === 'function') {
-      try {
-        var translationsModule = require('./translations.js');
-        if (translationsModule && _typeof(translationsModule) === 'object' && translationsModule.texts) {
-          return translationsModule.texts;
-        }
-      } catch (translationRequireError) {
-        void translationRequireError;
+      if (typeof window !== 'undefined' && isValidScope(window)) {
+        return window;
       }
-    }
-    return {};
-  }
-  function fallbackGetLanguageTexts(lang) {
-    var dataset = resolveTranslationDataset();
-    var fallbackLang = typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : 'en';
-    var normalized = null;
-    if (typeof lang === 'string' && lang) {
-      try {
-        normalized = String(lang).trim().toLowerCase();
-      } catch (normalizeError) {
-        void normalizeError;
-        normalized = null;
+      if (typeof self !== 'undefined' && isValidScope(self)) {
+        return self;
       }
-    }
-    var resolved = normalized && Object.prototype.hasOwnProperty.call(dataset, normalized) ? normalized : '';
-    if (!resolved && normalized) {
-      var base = normalized.split('-')[0];
-      if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
-        resolved = base;
+      if (typeof global !== 'undefined' && isValidScope(global)) {
+        return global;
       }
+      return null;
     }
-    if (!resolved) {
-      resolved = fallbackLang;
-    }
-    var candidate = dataset && resolved && _typeof(dataset[resolved]) === 'object' ? dataset[resolved] : null;
-    if (candidate) {
-      return candidate;
-    }
-    if (resolved !== fallbackLang) {
-      var fallback = dataset && _typeof(dataset[fallbackLang]) === 'object' ? dataset[fallbackLang] : null;
-      if (fallback) {
-        return fallback;
-      }
-    }
-    if (dataset && _typeof(dataset.en) === 'object') {
-      return dataset.en;
-    }
-    var languages = dataset ? Object.keys(dataset) : [];
-    if (languages.length) {
-      var firstLang = languages[0];
-      var firstTexts = dataset[firstLang];
-      if (firstTexts && _typeof(firstTexts) === 'object') {
-        return firstTexts;
-      }
-    }
-    return {};
-  }
-  function resolveExistingGetLanguageTexts() {
-    var candidates = resolveTranslationScopeCandidates();
-    for (var index = 0; index < candidates.length; index += 1) {
-      var scope = candidates[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
-      }
-      var helper = scope.getLanguageTexts;
-      if (typeof helper === 'function') {
-        return helper;
-      }
-    }
-    return null;
-  }
-  var getLanguageTexts = function initialiseGetLanguageTexts() {
-    var existing = resolveExistingGetLanguageTexts();
-    if (existing) {
-      return function getLanguageTextsProxy(lang) {
+    function ensureGlobalValue(name, fallbackValue, primary) {
+      var provider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+        return fallbackValue;
+      };
+      if (typeof name !== 'string' || !name) {
         try {
-          var result = existing.call(null, lang);
-          if (result && _typeof(result) === 'object') {
-            return result;
-          }
-        } catch (existingError) {
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn('Existing getLanguageTexts helper failed. Falling back to local resolution.', existingError);
-          }
+          return provider();
+        } catch (fallbackError) {
+          void fallbackError;
+          return undefined;
         }
-        return fallbackGetLanguageTexts(lang);
+      }
+      var scope = detectScope(primary);
+      if (!isValidScope(scope)) {
+        return provider();
+      }
+      var existing;
+      try {
+        existing = scope[name];
+      } catch (readError) {
+        existing = undefined;
+        void readError;
+      }
+      if (typeof existing !== 'undefined') {
+        return existing;
+      }
+      var value = provider();
+      try {
+        scope[name] = value;
+        return scope[name];
+      } catch (assignError) {
+        void assignError;
+      }
+      try {
+        Object.defineProperty(scope, name, {
+          configurable: true,
+          writable: true,
+          value: value
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+      try {
+        return scope[name];
+      } catch (finalReadError) {
+        void finalReadError;
+      }
+      return value;
+    }
+    function jsonDeepClone(value) {
+      if (value === null || _typeof(value) !== 'object') {
+        return value;
+      }
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (jsonCloneError) {
+        void jsonCloneError;
+      }
+      return value;
+    }
+    function resolveStructuredClone(primary) {
+      if (typeof structuredClone === 'function') {
+        return structuredClone;
+      }
+      var scope = detectScope(primary);
+      if (scope && typeof scope.structuredClone === 'function') {
+        try {
+          return scope.structuredClone.bind(scope);
+        } catch (bindError) {
+          void bindError;
+        }
+      }
+      if (typeof require === 'function') {
+        try {
+          var nodeUtil = require('node:util');
+          if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+            return nodeUtil.structuredClone.bind(nodeUtil);
+          }
+        } catch (nodeUtilError) {
+          void nodeUtilError;
+        }
+        try {
+          var legacyUtil = require('util');
+          if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+            return legacyUtil.structuredClone.bind(legacyUtil);
+          }
+        } catch (legacyUtilError) {
+          void legacyUtilError;
+        }
+      }
+      return null;
+    }
+    function createResilientDeepClone(primary) {
+      var structuredCloneImpl = resolveStructuredClone(primary);
+      if (!structuredCloneImpl) {
+        return jsonDeepClone;
+      }
+      return function resilientDeepClone(value) {
+        if (value === null || _typeof(value) !== 'object') {
+          return value;
+        }
+        try {
+          return structuredCloneImpl(value);
+        } catch (structuredCloneError) {
+          void structuredCloneError;
+        }
+        return jsonDeepClone(value);
       };
     }
-    return function getLanguageTextsFallback(lang) {
-      return fallbackGetLanguageTexts(lang);
-    };
-  }();
-  (function ensureGlobalGetLanguageTextsAvailability() {
-    var candidates = resolveTranslationScopeCandidates();
-    for (var index = 0; index < candidates.length; index += 1) {
-      var scope = candidates[index];
-      if (!scope || _typeof(scope) !== 'object') {
-        continue;
+    function ensureDeepClone(primary) {
+      var scope = detectScope(primary);
+      if (scope && typeof scope.__cineDeepClone === 'function') {
+        return scope.__cineDeepClone;
       }
-      if (typeof scope.getLanguageTexts !== 'function') {
+      var clone = createResilientDeepClone(scope);
+      if (isValidScope(scope)) {
         try {
-          scope.getLanguageTexts = getLanguageTexts;
-        } catch (assignError) {
-          void assignError;
+          Object.defineProperty(scope, '__cineDeepClone', {
+            configurable: true,
+            writable: true,
+            value: clone
+          });
+        } catch (defineError) {
+          void defineError;
+          try {
+            scope.__cineDeepClone = clone;
+          } catch (assignError) {
+            void assignError;
+          }
         }
       }
+      return clone;
     }
-  })();
+    var resolvedScope = detectScope(primaryScope);
+    function getCoreGlobalObject() {
+      return detectScope(resolvedScope);
+    }
+    function ensureCoreGlobalValue(name, fallbackValue) {
+      return ensureGlobalValue(name, fallbackValue, resolvedScope);
+    }
+    function resolveStructuredCloneForScope(scope) {
+      return resolveStructuredClone(scope || resolvedScope);
+    }
+    function createResilientDeepCloneForScope(scope) {
+      return createResilientDeepClone(scope || resolvedScope);
+    }
+    function ensureDeepCloneForScope(scope) {
+      return ensureDeepClone(scope || resolvedScope);
+    }
+    return {
+      getCoreGlobalObject: getCoreGlobalObject,
+      ensureCoreGlobalValue: ensureCoreGlobalValue,
+      jsonDeepClone: jsonDeepClone,
+      resolveStructuredClone: resolveStructuredCloneForScope,
+      createResilientDeepClone: createResilientDeepCloneForScope,
+      ensureDeepClone: ensureDeepCloneForScope
+    };
+  }
+  var CORE_RUNTIME_TOOL_FALLBACKS = typeof CORE_RUNTIME_TOOL_FALLBACK_FACTORY === 'function' ? CORE_RUNTIME_TOOL_FALLBACK_FACTORY(CORE_PART1_RUNTIME_SCOPE) : null;
+  if (!CORE_RUNTIME_TOOL_FALLBACKS || _typeof(CORE_RUNTIME_TOOL_FALLBACKS) !== 'object') {
+    CORE_RUNTIME_TOOL_FALLBACKS = createInlineRuntimeToolFallbacks(CORE_PART1_RUNTIME_SCOPE);
+  }
   function fallbackGetCoreGlobalObject() {
-    if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
-      return CORE_GLOBAL_SCOPE;
+    if (CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS.getCoreGlobalObject === 'function') {
+      try {
+        var _scope = CORE_RUNTIME_TOOL_FALLBACKS.getCoreGlobalObject();
+        if (_scope) {
+          return _scope;
+        }
+      } catch (fallbackScopeError) {
+        void fallbackScopeError;
+      }
+    }
+    if (typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' && CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object') {
+      return CORE_PART1_RUNTIME_SCOPE;
     }
     if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
       return globalThis;
@@ -1038,6 +908,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return null;
   }
   function fallbackEnsureCoreGlobalValue(name, fallbackValue) {
+    if (CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS.ensureCoreGlobalValue === 'function') {
+      try {
+        return CORE_RUNTIME_TOOL_FALLBACKS.ensureCoreGlobalValue(name, fallbackValue);
+      } catch (ensureError) {
+        void ensureError;
+      }
+    }
     var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
       return fallbackValue;
     };
@@ -1087,66 +964,43 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return value;
   }
   function fallbackJsonDeepClone(value) {
+    if (CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS.jsonDeepClone === 'function') {
+      try {
+        return CORE_RUNTIME_TOOL_FALLBACKS.jsonDeepClone(value);
+      } catch (jsonCloneError) {
+        void jsonCloneError;
+      }
+    }
     if (value === null || _typeof(value) !== 'object') {
       return value;
     }
     try {
       return JSON.parse(JSON.stringify(value));
-    } catch (jsonCloneError) {
-      void jsonCloneError;
+    } catch (fallbackJsonCloneError) {
+      void fallbackJsonCloneError;
     }
     return value;
   }
-  function fallbackResolveStructuredClone(scope) {
-    if (typeof structuredClone === 'function') {
-      return structuredClone;
-    }
-    var targetScope = scope || fallbackGetCoreGlobalObject();
-    if (targetScope && typeof targetScope.structuredClone === 'function') {
-      try {
-        return targetScope.structuredClone.bind(targetScope);
-      } catch (bindError) {
-        void bindError;
-      }
-    }
-    if (typeof require === 'function') {
-      try {
-        var nodeUtil = require('node:util');
-        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
-          return nodeUtil.structuredClone.bind(nodeUtil);
-        }
-      } catch (nodeUtilError) {
-        void nodeUtilError;
-      }
-      try {
-        var legacyUtil = require('util');
-        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
-          return legacyUtil.structuredClone.bind(legacyUtil);
-        }
-      } catch (legacyUtilError) {
-        void legacyUtilError;
-      }
-    }
-    return null;
-  }
   function fallbackCreateResilientDeepClone(scope) {
-    var structuredCloneImpl = fallbackResolveStructuredClone(scope);
-    if (!structuredCloneImpl) {
-      return fallbackJsonDeepClone;
+    if (CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS.createResilientDeepClone === 'function') {
+      try {
+        return CORE_RUNTIME_TOOL_FALLBACKS.createResilientDeepClone(scope);
+      } catch (createDeepCloneError) {
+        void createDeepCloneError;
+      }
     }
     return function fallbackResilientDeepClone(value) {
-      if (value === null || _typeof(value) !== 'object') {
-        return value;
-      }
-      try {
-        return structuredCloneImpl(value);
-      } catch (structuredCloneError) {
-        void structuredCloneError;
-      }
       return fallbackJsonDeepClone(value);
     };
   }
   function fallbackEnsureDeepClone(scope) {
+    if (CORE_RUNTIME_TOOL_FALLBACKS && typeof CORE_RUNTIME_TOOL_FALLBACKS.ensureDeepClone === 'function') {
+      try {
+        return CORE_RUNTIME_TOOL_FALLBACKS.ensureDeepClone(scope);
+      } catch (ensureDeepCloneError) {
+        void ensureDeepCloneError;
+      }
+    }
     var targetScope = scope || fallbackGetCoreGlobalObject();
     var clone = fallbackCreateResilientDeepClone(targetScope);
     if (targetScope && _typeof(targetScope) === 'object') {
@@ -1167,6 +1021,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return clone;
   }
+  var CORE_GLOBAL_SCOPE = fallbackGetCoreGlobalObject();
   var getCoreGlobalObject = CORE_RUNTIME_TOOLS && typeof CORE_RUNTIME_TOOLS.detectScope === 'function' ? function getCoreGlobalObjectProxy() {
     try {
       return CORE_RUNTIME_TOOLS.detectScope(CORE_GLOBAL_SCOPE);
@@ -1513,9 +1368,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       scopes.push(scope);
     }
     if (Array.isArray(candidateScopes)) {
-      for (var index = 0; index < candidateScopes.length; index += 1) {
+      for (var _index = 0; _index < candidateScopes.length; _index += 1) {
         try {
-          registerScope(candidateScopes[index]);
+          registerScope(candidateScopes[_index]);
         } catch (initialiseScopeError) {
           void initialiseScopeError;
         }
@@ -1525,9 +1380,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (typeof callback !== 'function') {
         return;
       }
-      for (var _index4 = 0; _index4 < scopes.length; _index4 += 1) {
+      for (var _index2 = 0; _index2 < scopes.length; _index2 += 1) {
         try {
-          callback(scopes[_index4], _index4);
+          callback(scopes[_index2], _index2);
         } catch (scopeCallbackError) {
           void scopeCallbackError;
         }
@@ -1551,16 +1406,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           return undefined;
         }
       }
-      for (var _index5 = 0; _index5 < scopes.length; _index5 += 1) {
-        var scope = scopes[_index5];
-        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      for (var _index3 = 0; _index3 < scopes.length; _index3 += 1) {
+        var _scope2 = scopes[_index3];
+        if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
           continue;
         }
         try {
-          if (typeof scope[name] === 'undefined') {
-            scope[name] = fallbackProvider();
+          if (typeof _scope2[name] === 'undefined') {
+            _scope2[name] = fallbackProvider();
           }
-          return scope[name];
+          return _scope2[name];
         } catch (ensureError) {
           void ensureError;
         }
@@ -1590,14 +1445,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     }
     function readValue(name) {
-      for (var _index6 = 0; _index6 < scopes.length; _index6 += 1) {
-        var scope = scopes[_index6];
-        if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      for (var _index4 = 0; _index4 < scopes.length; _index4 += 1) {
+        var _scope3 = scopes[_index4];
+        if (!_scope3 || _typeof(_scope3) !== 'object' && typeof _scope3 !== 'function') {
           continue;
         }
         try {
-          if (name in scope) {
-            return scope[name];
+          if (name in _scope3) {
+            return _scope3[name];
           }
         } catch (readError) {
           void readError;
@@ -1876,8 +1731,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var fallbackScopes = [];
     var candidates = [CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = candidates[index];
+    for (var _index5 = 0; _index5 < candidates.length; _index5 += 1) {
+      var candidate = candidates[_index5];
       if (candidate && fallbackScopes.indexOf(candidate) === -1) {
         fallbackScopes.push(candidate);
       }
@@ -1920,14 +1775,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function readInitialGridSnapPreference() {
     var scopes = getGridSnapStateScopes();
-    for (var index = 0; index < scopes.length; index += 1) {
-      var scope = scopes[index];
-      if (!scope || _typeof(scope) !== 'object') {
+    for (var _index6 = 0; _index6 < scopes.length; _index6 += 1) {
+      var _scope4 = scopes[_index6];
+      if (!_scope4 || _typeof(_scope4) !== 'object') {
         continue;
       }
       try {
-        if (Object.prototype.hasOwnProperty.call(scope, GRID_SNAP_STATE_STORAGE_KEY)) {
-          var stored = scope[GRID_SNAP_STATE_STORAGE_KEY];
+        if (Object.prototype.hasOwnProperty.call(_scope4, GRID_SNAP_STATE_STORAGE_KEY)) {
+          var stored = _scope4[GRID_SNAP_STATE_STORAGE_KEY];
           var normalized = normaliseGridSnapPreference(stored, undefined);
           if (typeof normalized === 'boolean') {
             return normalized;
@@ -1937,8 +1792,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         void storageReadError;
       }
       try {
-        if (Object.prototype.hasOwnProperty.call(scope, 'gridSnap')) {
-          var legacy = scope.gridSnap;
+        if (Object.prototype.hasOwnProperty.call(_scope4, 'gridSnap')) {
+          var legacy = _scope4.gridSnap;
           var normalizedLegacy = normaliseGridSnapPreference(legacy, undefined);
           if (typeof normalizedLegacy === 'boolean') {
             return normalizedLegacy;
@@ -1955,16 +1810,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function syncGridSnapStateToScopes(value) {
     var originScope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var scopes = getGridSnapStateScopes();
-    for (var index = 0; index < scopes.length; index += 1) {
-      var scope = scopes[index];
-      if (!scope || _typeof(scope) !== 'object') {
+    for (var _index7 = 0; _index7 < scopes.length; _index7 += 1) {
+      var _scope5 = scopes[_index7];
+      if (!_scope5 || _typeof(_scope5) !== 'object') {
         continue;
       }
       try {
-        scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
+        _scope5[GRID_SNAP_STATE_STORAGE_KEY] = value;
       } catch (assignStorageError) {
         try {
-          Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
+          Object.defineProperty(_scope5, GRID_SNAP_STATE_STORAGE_KEY, {
             configurable: true,
             writable: true,
             value: value
@@ -1973,14 +1828,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           void defineStorageError;
         }
       }
-      if (originScope === scope) {
+      if (originScope === _scope5) {
         continue;
       }
       try {
-        scope.gridSnap = value;
+        _scope5.gridSnap = value;
       } catch (assignLegacyError) {
         try {
-          Object.defineProperty(scope, 'gridSnap', {
+          Object.defineProperty(_scope5, 'gridSnap', {
             configurable: true,
             writable: true,
             value: value
@@ -2057,8 +1912,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return fallback;
     }
     var formatted = typeof template === 'string' ? template : String(template || '');
-    for (var index = 0; index < values.length; index += 1) {
-      var value = values[index];
+    for (var _index8 = 0; _index8 < values.length; _index8 += 1) {
+      var value = values[_index8];
       formatted = formatted.replace('%s', value);
     }
     return formatted;
@@ -2155,11 +2010,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (value === undefined) return 'undefined';
     if (Array.isArray(value)) {
       var serialized = '[';
-      for (var index = 0; index < value.length; index += 1) {
-        if (index > 0) {
+      for (var _index9 = 0; _index9 < value.length; _index9 += 1) {
+        if (_index9 > 0) {
           serialized += ',';
         }
-        serialized += fallbackStableStringify(value[index]);
+        serialized += fallbackStableStringify(value[_index9]);
       }
       serialized += ']';
       return serialized;
@@ -2167,9 +2022,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (_typeof(value) === 'object') {
       var keys = Object.keys(value).sort();
       var _serialized = '{';
-      for (var _index7 = 0; _index7 < keys.length; _index7 += 1) {
-        var key = keys[_index7];
-        if (_index7 > 0) {
+      for (var _index0 = 0; _index0 < keys.length; _index0 += 1) {
+        var key = keys[_index0];
+        if (_index0 > 0) {
           _serialized += ',';
         }
         _serialized += "".concat(JSON.stringify(key), ":").concat(fallbackStableStringify(value[key]));
@@ -2211,9 +2066,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof global !== 'undefined') scopes.push(global);
     if (typeof self !== 'undefined') scopes.push(self);
     for (var _i = 0, _scopes = scopes; _i < _scopes.length; _i++) {
-      var scope = _scopes[_i];
-      if (scope && typeof scope.generateConnectorSummary === 'function') {
-        return scope.generateConnectorSummary;
+      var _scope6 = _scopes[_i];
+      if (_scope6 && typeof _scope6.generateConnectorSummary === 'function') {
+        return _scope6.generateConnectorSummary;
       }
     }
     return null;
@@ -2436,13 +2291,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
       scopeCandidates.push(global);
     }
-    for (var index = 0; index < scopeCandidates.length; index += 1) {
-      var scope = scopeCandidates[index];
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    for (var _index1 = 0; _index1 < scopeCandidates.length; _index1 += 1) {
+      var _scope7 = scopeCandidates[_index1];
+      if (!_scope7 || _typeof(_scope7) !== 'object' && typeof _scope7 !== 'function') {
         continue;
       }
       try {
-        var exposed = scope.cineFeaturesHelp;
+        var exposed = _scope7.cineFeaturesHelp;
         if (exposed && candidates.indexOf(exposed) === -1) {
           candidates.push(exposed);
         }
@@ -2450,16 +2305,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         void error;
       }
       try {
-        var moduleNamespace = scope.cineHelpModule;
+        var moduleNamespace = _scope7.cineHelpModule;
         if (moduleNamespace && _typeof(moduleNamespace) === 'object' && moduleNamespace && _typeof(moduleNamespace.help) === 'object' && candidates.indexOf(moduleNamespace.help) === -1) {
           candidates.push(moduleNamespace.help);
         }
       } catch (error) {
         void error;
       }
-      if (typeof scope.__cineCreateHelpModule === 'function') {
+      if (typeof _scope7.__cineCreateHelpModule === 'function') {
         try {
-          var created = scope.__cineCreateHelpModule();
+          var created = _scope7.__cineCreateHelpModule();
           if (created && _typeof(created) === 'object') {
             if (_typeof(created.help) === 'object' && candidates.indexOf(created.help) === -1) {
               candidates.push(created.help);
@@ -2473,8 +2328,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     var resolvedApi = null;
-    for (var _index8 = 0; _index8 < candidates.length; _index8 += 1) {
-      var candidate = candidates[_index8];
+    for (var _index10 = 0; _index10 < candidates.length; _index10 += 1) {
+      var candidate = candidates[_index10];
       if (candidate && _typeof(candidate) === 'object' && typeof candidate.isIosDevice === 'function') {
         resolvedApi = candidate;
         break;
@@ -2544,13 +2399,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) scopeCandidates.push(window);
     if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) scopeCandidates.push(self);
     if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) scopeCandidates.push(global);
-    for (var index = 0; index < scopeCandidates.length; index += 1) {
-      var scope = scopeCandidates[index];
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    for (var _index11 = 0; _index11 < scopeCandidates.length; _index11 += 1) {
+      var _scope8 = scopeCandidates[_index11];
+      if (!_scope8 || _typeof(_scope8) !== 'object' && typeof _scope8 !== 'function') {
         continue;
       }
       try {
-        var exposed = scope.cineFeaturesContactsOwnGear;
+        var exposed = _scope8.cineFeaturesContactsOwnGear;
         if (exposed && _typeof(exposed) === 'object' && candidates.indexOf(exposed) === -1) {
           candidates.push(exposed);
         }
@@ -2593,13 +2448,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) scopeCandidates.push(window);
     if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) scopeCandidates.push(self);
     if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) scopeCandidates.push(global);
-    for (var index = 0; index < scopeCandidates.length; index += 1) {
-      var scope = scopeCandidates[index];
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    for (var _index12 = 0; _index12 < scopeCandidates.length; _index12 += 1) {
+      var _scope9 = scopeCandidates[_index12];
+      if (!_scope9 || _typeof(_scope9) !== 'object' && typeof _scope9 !== 'function') {
         continue;
       }
       try {
-        var exposed = scope.cineFeaturesContacts;
+        var exposed = _scope9.cineFeaturesContacts;
         if (exposed && _typeof(exposed) === 'object' && candidates.indexOf(exposed) === -1) {
           candidates.push(exposed);
         }
@@ -2642,13 +2497,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) scopeCandidates.push(window);
     if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) scopeCandidates.push(self);
     if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) scopeCandidates.push(global);
-    for (var index = 0; index < scopeCandidates.length; index += 1) {
-      var scope = scopeCandidates[index];
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    for (var _index13 = 0; _index13 < scopeCandidates.length; _index13 += 1) {
+      var _scope0 = scopeCandidates[_index13];
+      if (!_scope0 || _typeof(_scope0) !== 'object' && typeof _scope0 !== 'function') {
         continue;
       }
       try {
-        var exposed = scope.cineFeaturesOwnGear;
+        var exposed = _scope0.cineFeaturesOwnGear;
         if (exposed && _typeof(exposed) === 'object' && candidates.indexOf(exposed) === -1) {
           candidates.push(exposed);
         }
@@ -2681,16 +2536,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
       scopeCandidates.push(global);
     }
-    for (var index = 0; index < scopeCandidates.length; index += 1) {
-      var scope = scopeCandidates[index];
-      if (!scope || _typeof(scope) !== 'object') {
+    for (var _index14 = 0; _index14 < scopeCandidates.length; _index14 += 1) {
+      var _scope1 = scopeCandidates[_index14];
+      if (!_scope1 || _typeof(_scope1) !== 'object') {
         continue;
       }
-      if (scope.CORE_DEVICE_SCHEMA && _typeof(scope.CORE_DEVICE_SCHEMA) === 'object') {
-        return scope.CORE_DEVICE_SCHEMA;
+      if (_scope1.CORE_DEVICE_SCHEMA && _typeof(_scope1.CORE_DEVICE_SCHEMA) === 'object') {
+        return _scope1.CORE_DEVICE_SCHEMA;
       }
-      if (scope.cineCoreDeviceSchema && _typeof(scope.cineCoreDeviceSchema) === 'object') {
-        return scope.cineCoreDeviceSchema;
+      if (_scope1.cineCoreDeviceSchema && _typeof(_scope1.cineCoreDeviceSchema) === 'object') {
+        return _scope1.cineCoreDeviceSchema;
       }
     }
     return null;
@@ -2826,14 +2681,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var AUTO_GEAR_RETENTION_MAX_FALLBACK = 50;
   var AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
   function readGlobalAutoGearValue(propertyName) {
-    var scopes = [CORE_PART1_RUNTIME_SCOPE && _typeof(CORE_PART1_RUNTIME_SCOPE) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE && (_typeof(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE) === 'object' || typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'function') ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-    for (var index = 0; index < scopes.length; index += 1) {
-      var scope = scopes[index];
-      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    var scopes = [CORE_PART1_RUNTIME_SCOPE && (typeof CORE_PART1_RUNTIME_SCOPE === "undefined" ? "undefined" : _typeof(CORE_PART1_RUNTIME_SCOPE)) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE && ((typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === "undefined" ? "undefined" : _typeof(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE)) === 'object' || typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'function') ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+    for (var _index15 = 0; _index15 < scopes.length; _index15 += 1) {
+      var _scope10 = scopes[_index15];
+      if (!_scope10 || _typeof(_scope10) !== 'object' && typeof _scope10 !== 'function') {
         continue;
       }
       try {
-        var value = scope[propertyName];
+        var value = _scope10[propertyName];
         if (typeof value !== 'undefined') {
           return value;
         }
@@ -2849,8 +2704,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof declaredMinCandidate !== 'undefined') {
       candidates.push(declaredMinCandidate);
     }
-    for (var index = 0; index < candidates.length; index += 1) {
-      var numeric = Number(candidates[index]);
+    for (var _index16 = 0; _index16 < candidates.length; _index16 += 1) {
+      var numeric = Number(candidates[_index16]);
       if (!Number.isFinite(numeric)) {
         continue;
       }
@@ -2898,8 +2753,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         void autoGearDefaultError;
       }
     }
-    for (var index = 0; index < candidates.length; index += 1) {
-      var normalized = normalize(candidates[index]);
+    for (var _index17 = 0; _index17 < candidates.length; _index17 += 1) {
+      var normalized = normalize(candidates[_index17]);
       if (normalized !== null) {
         return normalized;
       }
@@ -6440,11 +6295,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var fromCatalog = lookup.has(trimmedName.toLowerCase());
     var source = fromCatalog ? OWN_GEAR_SOURCE_CATALOG : OWN_GEAR_SOURCE_CUSTOM;
     if (ownGearEditingId) {
-      var index = ownGearItems.findIndex(function (item) {
+      var _index18 = ownGearItems.findIndex(function (item) {
         return item && item.id === ownGearEditingId;
       });
-      if (index !== -1) {
-        var updated = _objectSpread(_objectSpread({}, ownGearItems[index]), {}, {
+      if (_index18 !== -1) {
+        var updated = _objectSpread(_objectSpread({}, ownGearItems[_index18]), {}, {
           name: trimmedName,
           source: source
         });
@@ -6458,7 +6313,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         } else {
           delete updated.notes;
         }
-        ownGearItems[index] = updated;
+        ownGearItems[_index18] = updated;
       }
     } else {
       var entry = {
@@ -6557,11 +6412,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (ownGearDialog) {
       var title = document.getElementById('ownGearDialogHeading');
       if (title) {
-        title.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
+        title.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogTitle', 'Own gear');
       }
       var description = document.getElementById('ownGearDialogDescription');
       if (description) {
-        var text = resolveTextEntry(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
+        var text = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearDialogDescription', '');
         description.textContent = text;
         if (text) {
           description.setAttribute('data-help', text);
@@ -6572,10 +6427,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var addHeading = document.getElementById('ownGearAddHeading');
     if (addHeading) {
-      addHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
+      addHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHeading', 'Add gear');
     }
     if (ownGearAddHelp) {
-      var helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearAddHelp', '');
+      var helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearAddHelp', '');
       ownGearAddHelp.textContent = helpText;
       if (helpText) {
         ownGearAddHelp.removeAttribute('hidden');
@@ -6587,16 +6442,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var nameLabel = document.getElementById('ownGearNameLabel');
     if (nameLabel) {
-      nameLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
+      nameLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameLabel', 'Item');
     }
     if (ownGearNameInput) {
-      var placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
+      var placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNamePlaceholder', '');
       if (placeholder) {
         ownGearNameInput.setAttribute('placeholder', placeholder);
       } else {
         ownGearNameInput.removeAttribute('placeholder');
       }
-      var _helpText = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNameHelp', '');
+      var _helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNameHelp', '');
       if (_helpText) {
         ownGearNameInput.setAttribute('data-help', _helpText);
       } else {
@@ -6605,16 +6460,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var quantityLabel = document.getElementById('ownGearQuantityLabel');
     if (quantityLabel) {
-      quantityLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
+      quantityLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityLabel', 'Quantity');
     }
     if (ownGearQuantityInput) {
-      var _placeholder = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
+      var _placeholder = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityPlaceholder', '');
       if (_placeholder) {
         ownGearQuantityInput.setAttribute('placeholder', _placeholder);
       } else {
         ownGearQuantityInput.removeAttribute('placeholder');
       }
-      var _helpText2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
+      var _helpText2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearQuantityHelp', '');
       if (_helpText2) {
         ownGearQuantityInput.setAttribute('data-help', _helpText2);
       } else {
@@ -6623,16 +6478,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     var notesLabel = document.getElementById('ownGearNotesLabel');
     if (notesLabel) {
-      notesLabel.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
+      notesLabel.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesLabel', 'Notes');
     }
     if (ownGearNotesInput) {
-      var _placeholder2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
+      var _placeholder2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesPlaceholder', '');
       if (_placeholder2) {
         ownGearNotesInput.setAttribute('placeholder', _placeholder2);
       } else {
         ownGearNotesInput.removeAttribute('placeholder');
       }
-      var _helpText3 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
+      var _helpText3 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearNotesHelp', '');
       if (_helpText3) {
         ownGearNotesInput.setAttribute('data-help', _helpText3);
       } else {
@@ -6640,19 +6495,19 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (ownGearResetButton) {
-      var label = resolveTextEntry(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
+      var label = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearResetButton', 'Reset');
       setButtonLabelWithIcon(ownGearResetButton, label, ICON_GLYPHS.reload);
     }
     if (ownGearCloseButton) {
-      var _label2 = resolveTextEntry(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
+      var _label2 = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearCloseButton', 'Close');
       setButtonLabelWithIcon(ownGearCloseButton, _label2, ICON_GLYPHS.circleX);
     }
     var listHeading = document.getElementById('ownGearListHeading');
     if (listHeading) {
-      listHeading.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
+      listHeading.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListHeading', 'Your gear');
     }
     if (ownGearEmptyState) {
-      ownGearEmptyState.textContent = resolveTextEntry(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
+      ownGearEmptyState.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'ownGearListEmpty', 'No gear saved yet.');
     }
     updateOwnGearSaveButtonState();
     renderOwnGearList();
@@ -7848,18 +7703,33 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!label) return;
     var langTexts = getLanguageTexts(currentLang);
     var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-    var helpText = resolveTextEntry(langTexts, fallbackTexts, 'batterySelectHelp', '');
+    var helpText = resolveTextEntryInternal(langTexts, fallbackTexts, 'batterySelectHelp', '');
     if (helpText) {
       label.setAttribute('data-help', helpText);
     } else {
       label.removeAttribute('data-help');
     }
     if (getSelectedPlate() === 'B-Mount') {
-      label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
+      label.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'batteryBMountLabel', 'B-Mount Battery:');
     } else {
-      label.textContent = resolveTextEntry(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
+      label.textContent = resolveTextEntryInternal(langTexts, fallbackTexts, 'batteryLabel', 'Battery:');
     }
   }
+  var parseBatteryCurrentLimit = function parseBatteryCurrentLimit(value) {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+      var trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+      var normalized = trimmed.replace(/,/g, '.');
+      var parsed = parseFloat(normalized);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
   function updateBatteryOptions() {
     var current = batterySelect.value;
     var currentSwap = hotswapSelect.value;
@@ -7922,7 +7792,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       swaps = Object.fromEntries(Object.entries(swaps).filter(function (_ref30) {
         var _ref31 = _slicedToArray(_ref30, 2),
           info = _ref31[1];
-        return typeof info.pinA !== 'number' || info.pinA >= totalCurrentLow;
+        var pinLimit = parseBatteryCurrentLimit(info && info.pinA);
+        return !Number.isFinite(pinLimit) || pinLimit >= totalCurrentLow;
       }));
     }
     populateSelect(hotswapSelect, swaps, true);
@@ -8094,7 +7965,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     }
     if (incompatible) {
-      var warning = resolveTextEntry(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
+      var warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'incompatibleFIZWarning', '');
       setStatusMessage(compatElem, warning);
       setStatusLevel(compatElem, 'danger');
     } else {
@@ -8131,7 +8002,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
       var langTexts = getLanguageTexts(currentLang);
       var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-      var warning = resolveTextEntry(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
+      var warning = resolveTextEntryInternal(langTexts, fallbackTexts, 'amiraCforceRemoteWarning', '');
       setStatusMessage(compatElem, warning);
       setStatusLevel(compatElem, 'danger');
       return;
@@ -8160,7 +8031,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (needController && !hasController) {
       var _langTexts = getLanguageTexts(currentLang);
       var _fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-      var _warning = resolveTextEntry(_langTexts, _fallbackTexts, 'missingFIZControllerWarning', '');
+      var _warning = resolveTextEntryInternal(_langTexts, _fallbackTexts, 'missingFIZControllerWarning', '');
       setStatusMessage(compatElem, _warning);
       setStatusLevel(compatElem, 'danger');
     }
@@ -8223,25 +8094,25 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return clmRegex.test(m);
     });
     if (hasCLM && !usesUMC4) {
-      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriCLMNoUMC4Warning', '');
     } else if (usesUMC4 && motors.some(function (m) {
       return !clmRegex.test(m);
     })) {
-      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriUMC4Warning', '');
     } else if ((usesRIA1 || usesRF) && motors.some(function (m) {
       return clmRegex.test(m);
     })) {
-      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'arriRIA1Warning', '');
     } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF || builtInController)) {
-      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'distanceControllerWarning', '');
     } else if (onlyMasterGrip && !usesRF) {
-      msg = resolveTextEntry(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
+      msg = resolveTextEntryInternal(getLanguageTexts(currentLang), getLanguageTexts(DEFAULT_LANGUAGE), 'masterGripWirelessWarning', '');
     }
     if (msg) {
       setStatusMessage(compatElem, msg);
       var langTexts = getLanguageTexts(currentLang);
       var fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-      var umcWarning = resolveTextEntry(langTexts, fallbackTexts, 'arriUMC4Warning', '');
+      var umcWarning = resolveTextEntryInternal(langTexts, fallbackTexts, 'arriUMC4Warning', '');
       if (msg === umcWarning && umcWarning) {
         setStatusLevel(compatElem, 'warning');
       } else {
@@ -8665,6 +8536,92 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     controllers: 'FIZ controllers',
     distance: 'FIZ distance devices'
   };
+  function resolveFocusScalePreference() {
+    if (typeof resolveGlobalFocusScalePreference === 'function') {
+      try {
+        var resolved = resolveGlobalFocusScalePreference();
+        if (resolved === 'imperial' || resolved === 'metric') {
+          return resolved;
+        }
+        if (typeof resolved === 'string') {
+          var trimmedResolved = resolved.trim().toLowerCase();
+          if (trimmedResolved === 'imperial' || trimmedResolved === 'metric') {
+            return trimmedResolved;
+          }
+        }
+      } catch (focusScaleNormalizeError) {
+        console.warn('resolveGlobalFocusScalePreference helper threw an error while resolving a focus scale label', focusScaleNormalizeError);
+      }
+    }
+    if (typeof focusScalePreference === 'string') {
+      var trimmedPreference = focusScalePreference.trim().toLowerCase();
+      if (trimmedPreference === 'imperial' || trimmedPreference === 'metric') {
+        return trimmedPreference;
+      }
+    }
+    return '';
+  }
+  function normalizeFocusScaleForLabel(value) {
+    var attemptNormalize = function attemptNormalize(candidate) {
+      if (typeof normalizeFocusScale === 'function') {
+        try {
+          var normalized = normalizeFocusScale(candidate);
+          if (normalized === 'imperial' || normalized === 'metric') {
+            return normalized;
+          }
+          if (normalized === '' || normalized === null) {
+            return '';
+          }
+        } catch (normalizeError) {
+          console.warn('normalizeFocusScale helper threw an error while resolving a focus scale label', normalizeError);
+        }
+      }
+      if (typeof candidate === 'string') {
+        var trimmed = candidate.trim().toLowerCase();
+        if (trimmed === 'imperial') {
+          return 'imperial';
+        }
+        if (trimmed === 'metric') {
+          return 'metric';
+        }
+        if (!trimmed) {
+          return '';
+        }
+      }
+      return '';
+    };
+    var directNormalized = attemptNormalize(value);
+    if (directNormalized === '' && (typeof value === 'undefined' || value === null || typeof value === 'string' && !value.trim())) {
+      var preference = resolveFocusScalePreference();
+      var normalizedPreference = attemptNormalize(preference);
+      if (normalizedPreference === 'imperial' || normalizedPreference === 'metric') {
+        return normalizedPreference;
+      }
+    }
+    return directNormalized;
+  }
+  function getFocusScaleLabelForLang() {
+    var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+    var scale = arguments.length > 1 ? arguments[1] : undefined;
+    var normalized = normalizeFocusScaleForLabel(scale);
+    var textsForLang = getLanguageTexts(lang) || {};
+    var fallbackTexts = getLanguageTexts('en') || {};
+    var metricLabel = textsForLang.focusScaleMetric || fallbackTexts.focusScaleMetric || textsForLang.focusScaleSetting || fallbackTexts.focusScaleSetting || 'Metric';
+    var imperialLabel = textsForLang.focusScaleImperial || fallbackTexts.focusScaleImperial || textsForLang.focusScaleSetting || fallbackTexts.focusScaleSetting || 'Imperial';
+    if (normalized === 'imperial') {
+      return imperialLabel;
+    }
+    if (normalized === 'metric') {
+      return metricLabel;
+    }
+    if (typeof scale === 'string') {
+      var trimmed = scale.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+    return textsForLang.focusScaleSetting || textsForLang.lensFocusScaleLabel || fallbackTexts.focusScaleSetting || fallbackTexts.lensFocusScaleLabel || metricLabel;
+  }
   var currentLang = DEFAULT_LANGUAGE;
   var updateHelpQuickLinksForLanguage;
   var updateHelpResultsSummaryText;
@@ -8784,7 +8741,6 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       return "metric";
     };
-
     var ensureNormalizeFocusScaleHelper = function ensureNormalizeFocusScaleHelper() {
       if (typeof normalizeFocusScale === "function") {
         return normalizeFocusScale;
@@ -8798,7 +8754,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           Object.defineProperty(scope, "normalizeFocusScale", {
             value: FALLBACK_NORMALIZE_FOCUS_SCALE,
             writable: true,
-            configurable: true,
+            configurable: true
           });
         } catch (defineError) {
           scope.normalizeFocusScale = FALLBACK_NORMALIZE_FOCUS_SCALE;
@@ -8806,9 +8762,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       return FALLBACK_NORMALIZE_FOCUS_SCALE;
     };
-
     ensureNormalizeFocusScaleHelper();
-
     var normalizeFocusScaleSafe = function normalizeFocusScaleSafe(value) {
       if (typeof normalizeFocusScale === "function") {
         try {
@@ -8821,6 +8775,37 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
       return FALLBACK_NORMALIZE_FOCUS_SCALE(value);
+    };
+    var resolveFocusScalePreference = function resolveFocusScalePreference() {
+      var tryNormalize = function tryNormalize(candidate) {
+        if (typeof candidate === "string" && candidate) {
+          return normalizeFocusScaleSafe(candidate);
+        }
+        return null;
+      };
+      var sources = [function () {
+        return typeof focusScalePreference !== "undefined" ? focusScalePreference : null;
+      }, function () {
+        return typeof sessionFocusScale !== "undefined" ? sessionFocusScale : null;
+      }, function () {
+        try {
+          var getter = runtimeScope && runtimeScope.preferences && typeof runtimeScope.preferences.getFocusScale === "function" ? runtimeScope.preferences.getFocusScale : null;
+          if (getter) {
+            return getter();
+          }
+        } catch (focusScaleError) {
+          console.warn("Failed to resolve focus scale preference from runtime scope; using fallback", focusScaleError);
+        }
+        return null;
+      }];
+      for (var _i7 = 0, _sources = sources; _i7 < _sources.length; _i7++) {
+        var getSource = _sources[_i7];
+        var _resolved = tryNormalize(getSource());
+        if (_resolved) {
+          return _resolved;
+        }
+      }
+      return "metric";
     };
     var resolveLocaleString = function resolveLocaleString(key) {
       if (!key) return "";
@@ -8879,8 +8864,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (start > lastIndex) {
           fragment.appendChild(doc.createTextNode(template.slice(lastIndex, start)));
         }
-        var index = typeof match[1] === "string" ? Math.max(parseInt(match[1], 10) - 1, 0) : autoIndex++;
-        var builder = builders[index];
+        var _index19 = typeof match[1] === "string" ? Math.max(parseInt(match[1], 10) - 1, 0) : autoIndex++;
+        var builder = builders[_index19];
         if (typeof builder === "function") {
           var node = builder();
           if (node) {
@@ -9816,7 +9801,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           var normalized = normalizeFocusScaleSafe(option.value);
           option.textContent = getFocusScaleLabelForLang(lang, normalized);
         });
-        settingsFocusScale.value = focusScalePreference;
+        settingsFocusScale.value = resolveFocusScalePreference();
       }
     }
     var fontSizeLabel = document.getElementById("settingsFontSizeLabel");
@@ -13565,8 +13550,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
             }
             return false;
           };
-          for (var index = 0; index < exportOrder.length; index += 1) {
-            var type = exportOrder[index];
+          for (var _index20 = 0; _index20 < exportOrder.length; _index20 += 1) {
+            var type = exportOrder[_index20];
             if (type === 'image/jpeg') {
               var quality = CONTACT_AVATAR_JPEG_QUALITY;
               while (quality + 0.0001 >= CONTACT_AVATAR_JPEG_MIN_QUALITY) {
@@ -15912,8 +15897,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return {};
     }
     var out = {};
-    for (var index = 0; index < sharedKeyMapKeys.length; index += 1) {
-      var _key3 = sharedKeyMapKeys[index];
+    for (var _index21 = 0; _index21 < sharedKeyMapKeys.length; _index21 += 1) {
+      var _key3 = sharedKeyMapKeys[_index21];
       if (_key3 === 'gearList' || _key3 === 'projectHtml') {
         continue;
       }
@@ -15929,8 +15914,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var hasLongKeys = false;
     var hasShortKeys = false;
     var pendingKeys = [];
-    for (var index = 0; index < sharedKeyMapKeys.length; index += 1) {
-      var _key4 = sharedKeyMapKeys[index];
+    for (var _index22 = 0; _index22 < sharedKeyMapKeys.length; _index22 += 1) {
+      var _key4 = sharedKeyMapKeys[_index22];
       var short = sharedKeyMap[_key4];
       var longPresent = sharedHasOwn.call(setup, _key4);
       var shortPresent = sharedHasOwn.call(setup, short);
@@ -15949,8 +15934,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     if (!hasLongKeys) {
       var expanded = {};
-      for (var _index9 = 0; _index9 < sharedKeyMapKeys.length; _index9 += 1) {
-        var _key5 = sharedKeyMapKeys[_index9];
+      for (var _index23 = 0; _index23 < sharedKeyMapKeys.length; _index23 += 1) {
+        var _key5 = sharedKeyMapKeys[_index23];
         var _short = sharedKeyMap[_key5];
         var _value4 = setup[_short];
         if (_value4 != null) {
@@ -15963,8 +15948,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return setup;
     }
     var merged = _objectSpread({}, setup);
-    for (var _index0 = 0; _index0 < pendingKeys.length; _index0 += 1) {
-      var _key6 = pendingKeys[_index0];
+    for (var _index24 = 0; _index24 < pendingKeys.length; _index24 += 1) {
+      var _key6 = pendingKeys[_index24];
       if (!sharedHasOwn.call(merged, _key6)) {
         var _short2 = sharedKeyMap[_key6];
         var _value5 = setup[_short2];
@@ -16456,8 +16441,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     };
     if (deviceSchema) {
       if (deviceSchema.accessories) {
-        for (var _i7 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i7 < _Object$entries6.length; _i7++) {
-          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
+        for (var _i8 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i8 < _Object$entries6.length; _i8++) {
+          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i8], 2),
             _sub = _Object$entries6$_i[0],
             obj = _Object$entries6$_i[1];
           if (_sub === 'cables') {
@@ -16467,16 +16452,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         }
       }
-      for (var _i8 = 0, _Object$entries7 = Object.entries(deviceSchema); _i8 < _Object$entries7.length; _i8++) {
-        var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i8], 2),
+      for (var _i9 = 0, _Object$entries7 = Object.entries(deviceSchema); _i9 < _Object$entries7.length; _i9++) {
+        var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i9], 2),
           _key7 = _Object$entries7$_i[0],
           _obj = _Object$entries7$_i[1];
         if (_key7 === 'accessories' || _key7 === 'fiz') continue;
         if (_obj && _obj.attributes) addOpt(_key7);
       }
       if (deviceSchema.fiz) {
-        for (var _i9 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i9 < _Object$entries8.length; _i9++) {
-          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i9], 2),
+        for (var _i0 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i0 < _Object$entries8.length; _i0++) {
+          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i0], 2),
             _sub2 = _Object$entries8$_i[0],
             _obj2 = _Object$entries8$_i[1];
           if (_obj2 && _obj2.attributes) addOpt("fiz.".concat(_sub2));
@@ -16493,18 +16478,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           existing.add(val);
         }
       };
-      for (var _i0 = 0, _Object$entries9 = Object.entries(devices); _i0 < _Object$entries9.length; _i0++) {
-        var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i0], 2),
+      for (var _i1 = 0, _Object$entries9 = Object.entries(devices); _i1 < _Object$entries9.length; _i1++) {
+        var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i1], 2),
           _key8 = _Object$entries9$_i[0],
           _obj3 = _Object$entries9$_i[1];
         if (_key8 === 'accessories') {
-          for (var _i1 = 0, _Object$keys = Object.keys(_obj3 || {}); _i1 < _Object$keys.length; _i1++) {
-            var _sub3 = _Object$keys[_i1];
+          for (var _i10 = 0, _Object$keys = Object.keys(_obj3 || {}); _i10 < _Object$keys.length; _i10++) {
+            var _sub3 = _Object$keys[_i10];
             addIfMissing("accessories.".concat(_sub3));
           }
         } else if (_key8 === 'fiz') {
-          for (var _i10 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i10 < _Object$keys2.length; _i10++) {
-            var _sub4 = _Object$keys2[_i10];
+          for (var _i11 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i11 < _Object$keys2.length; _i11++) {
+            var _sub4 = _Object$keys2[_i11];
             addIfMissing("fiz.".concat(_sub4));
           }
         } else if (_obj3 && _typeof(_obj3) === 'object' && !Array.isArray(_obj3)) {
@@ -16638,8 +16623,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
       fallbackUnitCandidates.push(global.temperatureUnit);
     }
-    for (var index = 0; index < fallbackUnitCandidates.length; index += 1) {
-      var candidate = fallbackUnitCandidates[index];
+    for (var _index25 = 0; _index25 < fallbackUnitCandidates.length; _index25 += 1) {
+      var candidate = fallbackUnitCandidates[_index25];
       if (typeof candidate === 'string' && candidate) {
         return candidate;
       }
@@ -17693,8 +17678,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       _iterator5.f();
     }
     if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
-      for (var _i11 = 0, _Object$keys3 = Object.keys(data); _i11 < _Object$keys3.length; _i11++) {
-        var _key0 = _Object$keys3[_i11];
+      for (var _i12 = 0, _Object$keys3 = Object.keys(data); _i12 < _Object$keys3.length; _i12++) {
+        var _key0 = _Object$keys3[_i12];
         if (skip(_key0)) continue;
         seen.add(_key0);
         attrs.push(_key0);
