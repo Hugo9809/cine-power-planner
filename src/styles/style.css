@@ -7379,7 +7379,7 @@ body.dark-mode .onboarding-hero-highlight-body {
 }
 
 .onboarding-hero-language-label {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-light);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   color: var(--onboarding-label-color);
 }
@@ -7387,6 +7387,8 @@ body.dark-mode .onboarding-hero-highlight-body {
 .onboarding-hero-language-select {
   width: 100%;
   max-width: 100%;
+  font-family: inherit;
+  font-weight: var(--font-weight-light);
 }
 
 .onboarding-hero-language-hint {
@@ -8813,6 +8815,7 @@ body.high-contrast .feature-search-option mark.feature-search-highlight {
   margin: 0;
   font-size: var(--font-size-relative-base);
   font-weight: var(--font-weight-light);
+  font-family: inherit;
   padding: 2px 4px;
   text-align: center;
   text-align-last: center;
