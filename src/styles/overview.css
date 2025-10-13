@@ -131,13 +131,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 }
 .print-btn,
 .back-btn {
-  padding: 5px 10px;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
-  cursor: pointer;
-  border-radius: var(--border-radius);
-  border: none;
-  background: var(--control-bg);
-  color: var(--control-text);
+  padding: 0.6em 1.2em;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
   margin: 5px;
 }
 .overview-actions {
@@ -162,23 +158,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   margin: 10px 0 20px;
 }
 .overview-gear-actions .overview-delete-gear-btn {
-  background: var(--danger-color);
-  color: var(--inverse-text-color);
-  border: none;
-  border-radius: var(--border-radius);
   padding: 0.6em 1.2em;
-  font-family: inherit;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
-  cursor: pointer;
-  box-shadow: var(--panel-shadow);
-  transition: filter 0.2s ease, transform 0.1s ease;
-}
-.overview-gear-actions .overview-delete-gear-btn:hover,
-.overview-gear-actions .overview-delete-gear-btn:focus-visible {
-  filter: brightness(0.95);
-}
-.overview-gear-actions .overview-delete-gear-btn:active {
-  transform: translateY(1px);
+  font-weight: var(--font-weight-medium);
 }
 .device-block-grid {
   display: grid;

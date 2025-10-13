@@ -47,6 +47,18 @@
   --button-margin-block-end: var(--spacing-sm);
   --button-link-padding-block: var(--button-padding-block);
   --button-link-padding-inline: 12px;
+  --button-default-bg: color-mix(in srgb, var(--surface-color) 90%, var(--accent-color) 10%);
+  --button-default-text: var(--control-text);
+  --button-default-border: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  --button-primary-bg: color-mix(in srgb, var(--accent-color) 94%, var(--surface-color) 6%);
+  --button-primary-border: color-mix(in srgb, var(--accent-color) 70%, transparent);
+  --button-danger-bg: color-mix(in srgb, var(--danger-color) 92%, var(--surface-color) 8%);
+  --button-danger-border: color-mix(in srgb, var(--danger-color) 65%, transparent);
+  --button-hover-brightness: 0.97;
+  --button-active-brightness: 0.92;
+  --button-disabled-opacity: 0.55;
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
   --icon-gap: 0.3em;
   --button-icon-gap: 0.375em;
   --install-banner-font-scale: var(--font-scale-xs);
@@ -821,24 +833,33 @@ main.legal-content {
   line-height: var(--button-line-height);
   padding: var(--button-link-padding-block) var(--button-link-padding-inline);
   border-radius: var(--border-radius);
-  background-color: var(--control-bg);
-  color: var(--control-text);
-  font-size: var(--form-control-font-size);
+  border: 1px solid var(--button-border, var(--button-default-border));
+  background-color: var(--button-bg, var(--button-default-bg));
+  color: var(--button-text, var(--button-default-text));
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: var(--button-shadow, var(--panel-shadow));
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.button-link:hover {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  transform: translateY(-2px);
+.button-link:hover,
+.button-link:focus-visible {
+  filter: brightness(var(--button-hover-factor, var(--button-hover-brightness)));
+  box-shadow: var(--button-hover-shadow, var(--panel-shadow-hover));
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 65%, transparent);
+  outline-offset: 2px;
 }
 
 .button-link:active {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  filter: brightness(0.9);
-  transform: translateY(0);
+  transform: translateY(var(--button-active-translate, 1px));
+  filter: brightness(var(--button-active-factor, var(--button-active-brightness)));
 }
 
 /* Form layout */
@@ -6866,6 +6887,12 @@ textarea:disabled {
   line-height: 1;
   border-radius: var(--border-radius);
   color: inherit;
+  --button-bg: transparent;
+  --button-border: transparent;
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
 }
 
 .clear-input-btn:hover {
@@ -6890,6 +6917,16 @@ textarea:disabled {
   justify-content: center;
   line-height: 1;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  --button-bg: var(--control-bg);
+  --button-border: transparent;
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
+}
+
+.favorite-toggle:focus-visible {
+  outline: none;
 }
 .favorite-toggle:disabled {
   background-color: var(--control-bg);
@@ -8325,15 +8362,16 @@ section:hover {
 
 /* All Buttons */
 button {
-  background-color: var(--control-bg);
-  color: var(--control-text);
-  border: none;
+  background-color: var(--button-bg, var(--button-default-bg));
+  color: var(--button-text, var(--button-default-text));
+  border: 1px solid var(--button-border, var(--button-default-border));
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin: var(--button-margin-block-start) var(--button-margin-inline)
     var(--button-margin-block-end);
   cursor: pointer;
-  font-size: var(--form-control-font-size);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
   min-height: var(--button-size);
   height: auto;
   /* Keep single-line buttons consistent in every locale without preventing wrapping */
@@ -8341,15 +8379,26 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: var(--button-icon-gap);
+  box-shadow: var(--button-shadow, var(--panel-shadow));
   transition:
-    background-color 0.2s,
-    color 0.2s;
+    background-color 0.2s ease,
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 button:hover,
 button:focus-visible {
-  background-color: var(--control-hover-bg);
-  color: var(--control-text);
+  filter: brightness(var(--button-hover-factor, var(--button-hover-brightness)));
+  box-shadow: var(--button-hover-shadow, var(--panel-shadow-hover));
+}
+
+button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 65%, transparent);
+  outline-offset: 2px;
 }
 
 .share-import-group button {
@@ -8364,54 +8413,105 @@ button:focus-visible {
   align-self: center;
 }
 button:active {
-  background-color: var(--control-active-bg);
-  color: var(--control-text);
+  transform: translateY(var(--button-active-translate, 1px));
+  filter: brightness(var(--button-active-factor, var(--button-active-brightness)));
 }
+
 button:disabled {
-  background-color: var(--control-disabled-bg);
+  background-color: var(--button-disabled-bg, var(--control-disabled-bg));
+  color: var(
+    --button-disabled-text,
+    color-mix(in srgb, var(--button-text, var(--button-default-text)) 70%, var(--surface-color))
+  );
+  border-color: var(
+    --button-disabled-border,
+    color-mix(in srgb, var(--button-border, var(--button-default-border)) 30%, transparent)
+  );
+  box-shadow: var(--button-disabled-shadow, none);
   cursor: not-allowed;
+  opacity: var(--button-disabled-opacity);
+  transform: none;
+  filter: none;
+}
+
+button.primary,
+.button-link.primary {
+  --button-bg: var(--button-primary-bg);
+  --button-text: var(--inverse-text-color);
+  --button-border: var(--button-primary-border);
+  --button-hover-factor: 1.05;
+  --button-active-factor: 0.95;
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
+}
+
+button.secondary,
+.button-link.secondary,
+.back-btn,
+.print-btn,
+.export-pdf-btn {
+  --button-bg: color-mix(in srgb, var(--surface-color) 85%, var(--accent-color) 15%);
+  --button-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
+  --button-text: var(--control-text);
+  --button-hover-factor: 0.98;
+  --button-active-factor: 0.94;
+}
+
+button.danger,
+.button-link.danger,
+.overview-delete-gear-btn {
+  --button-bg: var(--button-danger-bg);
+  --button-text: var(--inverse-text-color);
+  --button-border: var(--button-danger-border);
+  --button-hover-factor: 0.95;
+  --button-active-factor: 0.9;
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .ghost-button {
-  background: transparent;
-  color: var(--muted-text-color);
-  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  --button-bg: transparent;
+  --button-text: var(--muted-text-color);
+  --button-border: color-mix(in srgb, var(--panel-border) 70%, transparent);
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
   padding-block: calc(var(--button-padding-block) + 2px);
   padding-inline: calc(var(--button-padding-inline) * 0.7);
   margin: 0;
   min-height: calc(var(--button-size) * 0.85);
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .ghost-button:hover,
 .ghost-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
-  color: var(--text-color);
-  border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
+  --button-bg: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  --button-text: var(--text-color);
+  --button-border: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
 }
 
 .ghost-button:disabled {
-  background: transparent;
-  color: color-mix(in srgb, var(--muted-text-color) 60%, transparent);
-  border-color: color-mix(in srgb, var(--panel-border) 55%, transparent);
+  --button-bg: transparent;
+  --button-text: color-mix(in srgb, var(--muted-text-color) 60%, transparent);
+  --button-border: color-mix(in srgb, var(--panel-border) 55%, transparent);
   opacity: 0.7;
 }
 
 .dark-mode .ghost-button {
-  color: color-mix(in srgb, var(--inverse-text-color) 80%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 30%, var(--panel-border));
+  --button-text: color-mix(in srgb, var(--inverse-text-color) 80%, transparent);
+  --button-border: color-mix(in srgb, var(--accent-color) 30%, var(--panel-border));
 }
 
 .dark-mode .ghost-button:hover,
 .dark-mode .ghost-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 28%, transparent);
-  color: var(--inverse-text-color);
-  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  --button-bg: color-mix(in srgb, var(--accent-color) 28%, transparent);
+  --button-text: var(--inverse-text-color);
+  --button-border: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
 }
 
 .dark-mode .ghost-button:disabled {
-  color: color-mix(in srgb, var(--inverse-text-color) 55%, transparent);
-  border-color: color-mix(in srgb, var(--panel-border) 55%, transparent);
+  --button-text: color-mix(in srgb, var(--inverse-text-color) 55%, transparent);
+  --button-border: color-mix(in srgb, var(--panel-border) 55%, transparent);
 }
 
 body:not(.dark-mode) button .btn-icon.icon-glyph,
@@ -8433,38 +8533,52 @@ body:not(.dark-mode) .button-link[aria-disabled='true'] .btn-icon.icon-glyph {
 /* Style file input buttons to match standard buttons */
 input[type="file"]::file-selector-button,
 input[type="file"]::-webkit-file-upload-button {
-  background-color: var(--control-bg);
-  color: var(--control-text);
-  border: none;
+  background-color: var(--button-default-bg);
+  color: var(--button-default-text);
+  border: 1px solid var(--button-default-border);
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin-inline-end: var(--spacing-sm);
   cursor: pointer;
-  font-size: var(--form-control-font-size);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
   height: 100%;
   min-height: var(--button-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: var(--panel-shadow);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    filter 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 input[type="file"]::file-selector-button:hover,
 input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: var(--control-hover-bg);
-  color: var(--control-text);
+  filter: brightness(var(--button-hover-brightness));
+  box-shadow: var(--panel-shadow-hover);
 }
 
 input[type="file"]::file-selector-button:active,
 input[type="file"]::-webkit-file-upload-button:active {
-  background-color: var(--control-active-bg);
-  color: var(--control-text);
+  transform: translateY(1px);
+  filter: brightness(var(--button-active-brightness));
 }
 
 input[type="file"]:disabled::file-selector-button,
 input[type="file"]:disabled::-webkit-file-upload-button {
   background-color: var(--control-disabled-bg);
+  color: color-mix(in srgb, var(--button-default-text) 70%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--button-default-border) 30%, transparent);
+  box-shadow: none;
   cursor: not-allowed;
+  opacity: var(--button-disabled-opacity);
+  transform: none;
+  filter: none;
 }
 
 
@@ -11182,11 +11296,36 @@ body.dark-mode .requirement-box,
   height: var(--button-size);
   min-height: var(--button-size);
   line-height: 1;
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: none;
+  box-shadow: none;
+  --button-bg: var(--control-bg);
+  --button-text: var(--control-text);
+  --button-border: transparent;
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 #gearListOutput .gear-custom-add-btn:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+}
+
+#gearListOutput .gear-custom-add-btn:hover {
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+}
+
+#gearListOutput .gear-custom-add-btn:active {
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
+  transform: translateY(0);
 }
 
 #gearListOutput .gear-custom-items {
@@ -11232,6 +11371,34 @@ body.dark-mode .requirement-box,
   min-height: 1.5rem;
   min-width: 1.5rem;
   line-height: 1;
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: none;
+  box-shadow: none;
+  --button-bg: var(--control-bg);
+  --button-text: var(--control-text);
+  --button-border: transparent;
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+#gearListOutput .gear-item-edit-btn:hover,
+#gearListOutput .gear-item-edit-btn:focus-visible {
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+}
+
+#gearListOutput .gear-item-edit-btn:focus-visible {
+  outline: none;
+}
+
+#gearListOutput .gear-item-edit-btn:active {
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
+  transform: translateY(0);
 }
 
 #gearListOutput .gear-item-edit-btn .btn-icon {
@@ -11316,6 +11483,13 @@ body.dark-mode #gearListOutput .gear-custom-item.gear-item-rental-excluded {
   color: var(--text-color);
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  --button-bg: transparent;
+  --button-text: var(--text-color);
+  --button-border: transparent;
+  --button-shadow: none;
+  --button-hover-shadow: none;
+  --button-hover-factor: 1;
+  --button-active-factor: 1;
 }
 
 #gearListOutput .gear-custom-remove-btn:hover,
