@@ -398,7 +398,7 @@
         typeof configuration.translationsRequirePath === 'string' &&
         configuration.translationsRequirePath
           ? configuration.translationsRequirePath
-          : './translations.js';
+          : '../translations.js';
 
       if (typeof require === 'function') {
         try {
