@@ -7758,22 +7758,12 @@ body.dark-mode .onboarding-active-target {
 
 .onboarding-field-input {
   width: 100%;
-  border: 1px solid var(--onboarding-control-border);
-  background: var(--onboarding-control-bg);
-  color: var(--onboarding-control-text);
-  box-shadow: var(--onboarding-control-shadow);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  max-width: 100%;
 }
 
 .onboarding-field-select {
   width: 100%;
-}
-
-.onboarding-field-input:focus,
-.onboarding-field-input:focus-visible {
-  outline: none;
-  border-color: var(--onboarding-control-focus-border);
-  box-shadow: var(--onboarding-control-focus-ring);
+  max-width: 100%;
 }
 
 .onboarding-interaction-actions {
@@ -7784,23 +7774,7 @@ body.dark-mode .onboarding-active-target {
 
 .onboarding-interaction-button {
   flex: 1 1 220px;
-  padding-block: calc(var(--button-padding-block) + 6px);
-  padding-inline: calc(var(--button-padding-inline) + 6px);
   text-align: center;
-  --button-border-width: 1px;
-  --button-border: color-mix(in srgb, var(--panel-border) 70%, transparent);
-  --button-shadow: var(--panel-shadow);
-  --button-hover-shadow: var(--panel-shadow-hover);
-  transition: transform 0.2s ease;
-}
-
-.onboarding-interaction-button:hover,
-.onboarding-interaction-button:focus-visible {
-  transform: translateY(-1px);
-}
-
-.onboarding-interaction-button:active {
-  transform: translateY(0);
 }
 
 .onboarding-resume-hint {
@@ -8056,31 +8030,17 @@ body.dark-mode
   width: 100%;
   --onboarding-step-button-min-height: 3.4rem;
   min-height: var(--onboarding-step-button-min-height);
-  padding-block: 0.75rem;
-  padding-inline: calc(var(--button-padding-inline) + 0.35rem);
-  border-radius: var(--border-radius);
-  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
-  background: var(--control-bg);
+  padding: var(--button-padding-block) var(--button-padding-inline);
   text-align: left;
-  box-shadow: none;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-
-.onboarding-step-button:hover,
-.onboarding-step-button:focus-visible {
-  background: var(--control-hover-bg);
-  border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.onboarding-step-button:active {
-  transform: translateY(0);
+  line-height: var(--line-height-snug);
+  --button-border-width: 1px;
+  --button-border: var(--button-default-border);
+  --button-shadow: var(--panel-shadow);
+  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-step-button[disabled] {
   cursor: default;
-  transform: none;
 }
 
 .onboarding-step-title {
@@ -8100,15 +8060,15 @@ body.dark-mode
 }
 
 .onboarding-step-item[data-status='current'] .onboarding-step-button {
-  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
-  background: color-mix(in srgb, var(--accent-color) 22%, var(--control-bg) 78%);
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent-color) 16%, transparent);
-  transform: translateY(-1px);
+  --button-bg: var(--button-primary-bg);
+  --button-text: var(--inverse-text-color);
+  --button-border: var(--button-primary-border);
+  --button-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-step-item[data-status='complete'] .onboarding-step-button {
-  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--panel-border));
-  background: color-mix(in srgb, var(--accent-color) 12%, var(--control-bg) 88%);
+  --button-bg: color-mix(in srgb, var(--button-primary-bg) 22%, var(--button-default-bg));
+  --button-border: color-mix(in srgb, var(--button-primary-border) 50%, transparent);
 }
 
 .onboarding-step-item[data-status='complete'] .onboarding-step-status {
@@ -8117,9 +8077,8 @@ body.dark-mode
 }
 
 .onboarding-step-item[data-status='upcoming'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--control-bg) 94%, transparent);
-  border-style: dashed;
-  opacity: 0.9;
+  --button-border: color-mix(in srgb, var(--button-default-border) 55%, transparent);
+  --button-shadow: none;
 }
 
 @media (max-width: 52rem) {
@@ -8134,34 +8093,7 @@ body.dark-mode
 }
 
 .onboarding-step-item[data-status='upcoming'] .onboarding-step-button[disabled] {
-  color: color-mix(in srgb, var(--control-text) 65%, transparent);
-}
-
-body.dark-mode .onboarding-step-button {
-  background: color-mix(in srgb, var(--control-bg) 92%, rgba(0, 0, 0, 0.28) 8%);
-  border-color: color-mix(in srgb, var(--panel-border) 70%, transparent);
-  color: var(--control-text);
-}
-
-body.dark-mode .onboarding-step-status {
-  background: color-mix(in srgb, var(--panel-border) 45%, transparent);
-  color: var(--control-text);
-}
-
-body.dark-mode .onboarding-step-button:hover,
-body.dark-mode .onboarding-step-button:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 30%, var(--control-bg) 70%);
-  border-color: color-mix(in srgb, var(--accent-color) 65%, var(--panel-border));
-}
-
-body.dark-mode .onboarding-step-item[data-status='current'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--accent-color) 36%, var(--control-bg) 64%);
-  border-color: color-mix(in srgb, var(--accent-color) 80%, var(--panel-border));
-}
-
-body.dark-mode .onboarding-step-item[data-status='complete'] .onboarding-step-button {
-  background: color-mix(in srgb, var(--accent-color) 24%, var(--control-bg) 76%);
-  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  --button-text: color-mix(in srgb, var(--button-default-text) 65%, transparent);
 }
 
 body.dark-mode.pink-mode .onboarding-step-title,
@@ -8194,8 +8126,6 @@ body:not(.dark-mode) .onboarding-step-status {
 .onboarding-step-button,
 .onboarding-skip {
   margin: 0;
-  --button-shadow: var(--panel-shadow);
-  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-card-actions button {
@@ -8211,12 +8141,6 @@ body:not(.dark-mode) .onboarding-step-status {
   min-width: auto;
   padding-inline: 0;
   align-self: center;
-}
-
-.onboarding-back-button,
-.onboarding-next-button {
-  --button-shadow: none;
-  --button-hover-shadow: var(--panel-shadow-hover);
 }
 
 .onboarding-skip {
