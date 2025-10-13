@@ -29,8 +29,9 @@ save/share/import/backup/restore behaviour.
 4. **Asset integrity**
    - [ ] Ensure all referenced icons and fonts exist in the repo and are loaded
          locally (no CDN links).
-   - [ ] Run `npm run lint:docs` (or applicable script) if available to catch
-         broken anchors.
+   - [ ] Run the documentation lint script if one is defined (`npm run` will list
+         options such as `npm run lint:docs`); otherwise run `npm run lint` to
+         catch broken anchors before publishing updates.
 5. **Schema validation**
    - [ ] Compare `docs/schema-inventory.md` against `modules/helpers/schema/`.
    - [ ] Note any mismatches in `review-findings.md` and link to follow-up tasks.

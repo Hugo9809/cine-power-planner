@@ -420,7 +420,7 @@ same online or offline.
 1. Open **Help → Quick start checklist** and press **Start guided tutorial** to
    follow the step-by-step walkthrough of creating a project, selecting
    devices, reviewing the Power Summary (including the quick summary
-   checkpoint) and rehearsing the offline safety net step that calls out the
+   checkpoint) and rehearsing the offline safety next step that calls out the
    top-bar indicator and autosave status safeguards, generating gear lists,
    capturing crew contacts, tracking your own gear, customising automatic gear
    rules, exporting, importing and backing up data. The step navigator and

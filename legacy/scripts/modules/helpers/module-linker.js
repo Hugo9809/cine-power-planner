@@ -142,11 +142,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var settings = options || {};
     if (SCOPE_UTILS && typeof SCOPE_UTILS.resolveFromScopes === 'function') {
       try {
-        return SCOPE_UTILS.resolveFromScopes(propertyName, {
+        var resolvedScope = SCOPE_UTILS.resolveFromScopes(propertyName, {
           primaryScope: settings.primaryScope || PRIMARY_SCOPE,
           additionalScopes: settings.additionalScopes,
           detect: settings.detect || detectGlobalScope
         });
+
+        if (resolvedScope && (_typeof(resolvedScope) === 'object' || typeof resolvedScope === 'function')) {
+          try {
+            if (propertyName in resolvedScope) {
+              return resolvedScope[propertyName];
+            }
+          } catch (error) {
+            void error;
+          }
+        } else if (typeof resolvedScope !== 'undefined') {
+          return resolvedScope;
+        }
       } catch (error) {
         void error;
       }
