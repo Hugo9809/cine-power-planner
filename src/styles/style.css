@@ -7075,6 +7075,13 @@ textarea:disabled {
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
   padding-inline-end: 0.125rem;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-card-content {
+    scroll-behavior: auto;
+  }
 }
 
 .onboarding-card::after {
