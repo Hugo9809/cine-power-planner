@@ -19135,6 +19135,12 @@ function formatTemperatureForDisplay(celsius, options = {}) {
   });
 
   if (missingRequiredContainer) {
+    ensureFunction('setViewfinderVideoInputs', () => function noopSetViewfinderVideoInputs() {});
+    ensureFunction('getViewfinderVideoInputs', () => function noopGetViewfinderVideoInputs() { return []; });
+    ensureFunction('clearViewfinderVideoInputs', () => function noopClearViewfinderVideoInputs() {});
+    ensureFunction('setViewfinderVideoOutputs', () => function noopSetViewfinderVideoOutputs() {});
+    ensureFunction('getViewfinderVideoOutputs', () => function noopGetViewfinderVideoOutputs() { return []; });
+    ensureFunction('clearViewfinderVideoOutputs', () => function noopClearViewfinderVideoOutputs() {});
     return;
   }
 
