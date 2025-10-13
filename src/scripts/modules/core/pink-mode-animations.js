@@ -26,6 +26,222 @@
 
   const GLOBAL_SCOPE = detectGlobalScope();
 
+  function normalizePinkModeAssetKey(path) {
+    if (typeof path !== 'string') {
+      return '';
+    }
+    const trimmed = path.trim();
+    return trimmed;
+  }
+
+  function resolvePinkModeAssetBaseUrl() {
+    if (typeof document !== 'undefined' && document) {
+      if (typeof document.baseURI === 'string' && document.baseURI) {
+        return document.baseURI;
+      }
+      if (document.currentScript && document.currentScript.src) {
+        return document.currentScript.src;
+      }
+    }
+
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.location && GLOBAL_SCOPE.location.href) {
+      return GLOBAL_SCOPE.location.href;
+    }
+
+    if (typeof location !== 'undefined' && location && location.href) {
+      return location.href;
+    }
+
+    return '';
+  }
+
+  function resolvePinkModeAssetUrl(path) {
+    const normalized = normalizePinkModeAssetKey(path);
+    if (!normalized) {
+      return null;
+    }
+    if (normalized.slice(0, 2) === '//' || normalized.indexOf('://') !== -1) {
+      return normalized;
+    }
+
+    const baseUrl = resolvePinkModeAssetBaseUrl();
+    if (!baseUrl) {
+      return normalized;
+    }
+
+    try {
+      return new URL(normalized, baseUrl).href;
+    } catch (error) {
+      void error;
+    }
+
+    if (normalized.charAt(0) === '/') {
+      return normalized;
+    }
+
+    return baseUrl + normalized;
+  }
+
+  function createPinkModeAssetRequest(url) {
+    if (typeof Request !== 'function' || !url) {
+      return null;
+    }
+
+    try {
+      return new Request(url, { credentials: 'same-origin' });
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+
+  async function readResponseTextSafe(response) {
+    if (!response) {
+      return null;
+    }
+
+    try {
+      return await response.text();
+    } catch (error) {
+      console.warn('Could not read pink mode asset response text', error);
+      return null;
+    }
+  }
+
+  async function fetchPinkModeAssetFromNetwork(requestOrUrl) {
+    if (typeof fetch !== 'function' || !requestOrUrl) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(requestOrUrl);
+      if (!response) {
+        return null;
+      }
+
+      if (response.ok || response.type === 'opaque') {
+        return readResponseTextSafe(response.clone());
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  async function fetchPinkModeAssetFromCaches(requestOrUrl) {
+    if (
+      typeof caches === 'undefined' ||
+      !caches ||
+      typeof caches.match !== 'function' ||
+      !requestOrUrl
+    ) {
+      return null;
+    }
+
+    try {
+      const cached = await caches.match(requestOrUrl, { ignoreSearch: true });
+      if (!cached) {
+        return null;
+      }
+      return readResponseTextSafe(cached.clone());
+    } catch (error) {
+      console.warn('Could not load pink mode asset from cache storage', error);
+      return null;
+    }
+  }
+
+  async function fetchPinkModeAssetViaXHR(url) {
+    if (typeof XMLHttpRequest === 'undefined' || !url) {
+      return null;
+    }
+
+    return new Promise(resolve => {
+      try {
+        const request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onreadystatechange = function handleReadyStateChange() {
+          if (request.readyState !== 4) {
+            return;
+          }
+          if ((request.status >= 200 && request.status < 300) || request.status === 0) {
+            resolve(request.responseText || '');
+            return;
+          }
+          resolve(null);
+        };
+        request.onerror = function handleXHRError() {
+          resolve(null);
+        };
+        request.send();
+      } catch (error) {
+        void error;
+        resolve(null);
+      }
+    });
+  }
+
+  const pinkModeAssetTextCache = new Map();
+  const pinkModeAssetTextPromiseCache = new Map();
+
+  function loadPinkModeAssetText(path) {
+    const normalized = normalizePinkModeAssetKey(path);
+    if (!normalized) {
+      return Promise.resolve(null);
+    }
+
+    if (pinkModeAssetTextCache.has(normalized)) {
+      return Promise.resolve(pinkModeAssetTextCache.get(normalized));
+    }
+
+    if (pinkModeAssetTextPromiseCache.has(normalized)) {
+      return pinkModeAssetTextPromiseCache.get(normalized);
+    }
+
+    const promise = (async () => {
+      const resolvedUrl = resolvePinkModeAssetUrl(normalized);
+      const request = createPinkModeAssetRequest(resolvedUrl);
+
+      const networkResult = await fetchPinkModeAssetFromNetwork(request || resolvedUrl);
+      if (networkResult !== null) {
+        pinkModeAssetTextCache.set(normalized, networkResult);
+        return networkResult;
+      }
+
+      const cacheResult = await fetchPinkModeAssetFromCaches(request || resolvedUrl);
+      if (cacheResult !== null) {
+        pinkModeAssetTextCache.set(normalized, cacheResult);
+        return cacheResult;
+      }
+
+      if (request && request.url && request.url !== resolvedUrl) {
+        const secondaryCacheResult = await fetchPinkModeAssetFromCaches(request.url);
+        if (secondaryCacheResult !== null) {
+          pinkModeAssetTextCache.set(normalized, secondaryCacheResult);
+          return secondaryCacheResult;
+        }
+      }
+
+      const xhrResult = await fetchPinkModeAssetViaXHR(resolvedUrl || normalized);
+      if (xhrResult !== null) {
+        pinkModeAssetTextCache.set(normalized, xhrResult);
+        return xhrResult;
+      }
+
+      return null;
+    })()
+      .catch(error => {
+        console.warn('Could not load pink mode asset', error);
+        return null;
+      })
+      .finally(() => {
+        pinkModeAssetTextPromiseCache.delete(normalized);
+      });
+
+    pinkModeAssetTextPromiseCache.set(normalized, promise);
+    return promise;
+  }
+
   function fallbackEscapeHtml(value) {
     if (value === null || typeof value === "undefined") {
       return "";
@@ -538,20 +754,13 @@
   }
 
   async function loadPinkModeIconsFromFiles() {
-    if (typeof fetch !== 'function') {
-      ensurePinkModeFallbackIconSequence();
-      return;
-    }
-
     const responses = await Promise.all(
       PINK_MODE_ICON_FILES.map(path =>
-        fetch(path)
-          .then(response => (response.ok ? response.text() : null))
-          .catch(() => null)
+        loadPinkModeAssetText(path).catch(() => null)
       )
     );
 
-    const markupList = responses.filter(Boolean);
+    const markupList = responses.filter(response => typeof response === 'string' && response);
     if (markupList.length) {
       const applied = setPinkModeIconSequence(markupList);
       if (!applied) {
@@ -569,15 +778,9 @@
     if (pinkModeAnimatedIconTemplatesPromise) {
       return pinkModeAnimatedIconTemplatesPromise;
     }
-    if (typeof fetch !== 'function') {
-      pinkModeAnimatedIconTemplates = Object.freeze([]);
-      return pinkModeAnimatedIconTemplates;
-    }
     pinkModeAnimatedIconTemplatesPromise = Promise.all(
       PINK_MODE_ANIMATED_ICON_FILES.map(path =>
-        fetch(path)
-          .then(response => (response.ok ? response.text() : null))
-          .catch(() => null)
+        loadPinkModeAssetText(path).catch(() => null)
       )
     )
       .then(contents =>
