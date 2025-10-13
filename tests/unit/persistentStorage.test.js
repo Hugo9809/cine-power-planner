@@ -36,6 +36,21 @@ describe('requestPersistentStorage', () => {
     );
   });
 
+  test('resolves unsupported when persist method is missing', async () => {
+    global.navigator = {
+      storage: {},
+    };
+    const { requestPersistentStorage } = require('../../src/scripts/storage');
+    const result = await requestPersistentStorage();
+    expect(result).toEqual(
+      expect.objectContaining({
+        supported: false,
+        granted: false,
+        alreadyGranted: false,
+      })
+    );
+  });
+
   test('skips persist request when already granted', async () => {
     const persisted = jest.fn(() => Promise.resolve(true));
     const persist = jest.fn(() => Promise.resolve(false));

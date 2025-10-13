@@ -5531,7 +5531,7 @@ function requestPersistentStorage() {
 
   if (!supportsPersist) {
     return Promise.resolve({
-      supported: Boolean(storageManager),
+      supported: false,
       granted: false,
       alreadyGranted: false,
     });

@@ -9122,6 +9122,7 @@ function _refreshStoragePersistenceStatus() {
       fromRequest,
       checkToken,
       storageManager,
+      supportsPersist,
       persistedValue,
       usageValue,
       quotaValue,
@@ -9168,7 +9169,8 @@ function _refreshStoragePersistenceStatus() {
           renderStoragePersistenceStatus();
           return _context2.a(2);
         case 3:
-          storagePersistenceState.supported = true;
+          supportsPersist = typeof storageManager.persist === 'function';
+          storagePersistenceState.supported = supportsPersist;
           persistedValue = storagePersistenceState.persisted;
           if (!(typeof storageManager.persisted === 'function')) {
             _context2.n = 7;
@@ -9256,11 +9258,12 @@ function _handleStoragePersistenceRequest() {
         case 1:
           storageManager = getStorageManagerInstance();
           storagePersistenceState.requestAttempted = true;
-          if (!(!storageManager || typeof storageManager.persist !== 'function')) {
+          supportsPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
+          if (!supportsPersist) {
             _context3.n = 2;
             break;
           }
-          storagePersistenceState.supported = Boolean(storageManager);
+          storagePersistenceState.supported = supportsPersist;
           storagePersistenceState.lastRequestDenied = true;
           storagePersistenceState.lastError = null;
           renderStoragePersistenceStatus();
