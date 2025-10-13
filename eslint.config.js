@@ -21,7 +21,7 @@ const additionalGlobalsByKey = {
 };
 
 const additionalAppScriptFiles = {
-  'app-core': ['app-core-new-1', 'app-core-new-2', 'app-core-runtime-support'],
+  'app-core': ['app-core-new-1', 'app-core-enviroment', 'app-core-new-2', 'app-core-runtime-support'],
 };
 
 const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names]) => {

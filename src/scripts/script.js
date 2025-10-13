@@ -53,6 +53,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-runtime-support.js',
     'app-core-text.js',
     'app-core-new-1.js',
+    'app-core-enviroment.js',
     'app-core-new-2.js',
     'app-events.js',
     'app-setups.js',
