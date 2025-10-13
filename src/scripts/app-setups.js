@@ -20,6 +20,64 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+function resolveSetupRuntimeFunction(name) {
+    if (typeof name !== 'string' || !name) {
+        return null;
+    }
+
+    const candidates = [];
+    const registerCandidate = (scope) => {
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            return;
+        }
+        if (!candidates.includes(scope)) {
+            candidates.push(scope);
+        }
+    };
+
+    try { registerCandidate(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null); } catch { /* noop */ }
+    try { registerCandidate(typeof globalThis !== 'undefined' ? globalThis : null); } catch { /* noop */ }
+    try { registerCandidate(typeof window !== 'undefined' ? window : null); } catch { /* noop */ }
+    try { registerCandidate(typeof self !== 'undefined' ? self : null); } catch { /* noop */ }
+    try { registerCandidate(typeof global !== 'undefined' ? global : null); } catch { /* noop */ }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const scope = candidates[index];
+        try {
+            const candidate = scope[name];
+            if (typeof candidate === 'function') {
+                return candidate;
+            }
+        } catch (resolveError) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Failed to resolve runtime function from scope', name, resolveError);
+            }
+        }
+    }
+
+    return null;
+}
+
+function safeGetCurrentProjectName(defaultValue = '') {
+    const resolver = resolveSetupRuntimeFunction('getCurrentProjectName');
+    if (typeof resolver !== 'function') {
+        return defaultValue;
+    }
+
+    try {
+        const resolved = resolver();
+        if (typeof resolved === 'string' && resolved.trim()) {
+            return resolved;
+        }
+        return defaultValue;
+    } catch (projectNameError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('safeGetCurrentProjectName failed, falling back to default', projectNameError);
+        }
+        return defaultValue;
+    }
+}
+
 const CAMERA_LINK_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY = 'cameraPowerPlanner_cameraColors';
 
@@ -2871,7 +2929,7 @@ function downloadSharedProject(shareFileName, includeAutoGear, includeOwnedGear)
   const shareLinkMessage = shareContext.linkMessage;
   const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
   const shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
-  const setupName = getCurrentProjectName();
+  const setupName = safeGetCurrentProjectName();
   const readPowerSelectValue = (select) => (
     select && typeof select.value === 'string'
       ? normalizePowerSelectionString(select.value)
@@ -3705,7 +3763,7 @@ function handleShareSetupClick() {
   const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
   const shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
   saveCurrentGearList();
-  const setupName = getCurrentProjectName();
+  const setupName = safeGetCurrentProjectName();
   const defaultName = getDefaultShareFilename(setupName);
   const defaultFilename = ensureJsonExtension(defaultName);
 
@@ -4978,33 +5036,9 @@ function collectProjectFormData() {
         info.storageRequirements = storageEntries;
     }
 
-    const resolveProjectNameFn = () => {
-        if (typeof getCurrentProjectName === 'function') {
-            return getCurrentProjectName;
-        }
-        if (typeof CORE_GLOBAL_SCOPE !== 'undefined'
-            && CORE_GLOBAL_SCOPE
-            && typeof CORE_GLOBAL_SCOPE.getCurrentProjectName === 'function') {
-            return CORE_GLOBAL_SCOPE.getCurrentProjectName;
-        }
-        if (typeof globalThis !== 'undefined'
-            && typeof globalThis.getCurrentProjectName === 'function') {
-            return globalThis.getCurrentProjectName;
-        }
-        return null;
-    };
-    const projectNameFn = resolveProjectNameFn();
-    if (typeof projectNameFn === 'function') {
-        try {
-            const currentProjectName = projectNameFn();
-            if (currentProjectName) {
-                info.projectName = currentProjectName;
-            }
-        } catch (projectNameError) {
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                console.warn('Failed to resolve current project name during setup export', projectNameError);
-            }
-        }
+    const currentProjectName = safeGetCurrentProjectName();
+    if (currentProjectName) {
+        info.projectName = currentProjectName;
     }
 
     const snapshot = freezeProjectFormDataSnapshot(info);
@@ -10553,7 +10587,7 @@ function gearListGenerateHtmlImpl(info = {}) {
     delete projectInfo.viewfinderSettings;
     delete projectInfo.frameGuides;
     delete projectInfo.aspectMaskOpacity;
-    const projectTitleSource = getCurrentProjectName() || info.projectName || '';
+    const projectTitleSource = safeGetCurrentProjectName(info.projectName || '') || info.projectName || '';
     const projectTitle = escapeHtml(projectTitleSource);
     const excludedFields = new Set([
         'cameraHandle',
@@ -12231,7 +12265,7 @@ function gearListGetCurrentHtmlImpl() {
         return '';
     }
 
-    const projectName = getCurrentProjectName();
+    const projectName = safeGetCurrentProjectName();
     const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
     const combined = `${titleHtml}${projHtml}${gearHtml}`.trim();
     if (combined && typeof globalThis !== 'undefined') {
