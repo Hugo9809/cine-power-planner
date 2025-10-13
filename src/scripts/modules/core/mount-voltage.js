@@ -700,10 +700,39 @@
       existingNamespace[key] = namespace[key];
     }
 
-    Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: () => mountVoltageInputs,
-    });
+    const commitMountVoltageInputs = () => {
+      if (
+        !existingNamespace ||
+        (typeof existingNamespace !== 'object' && typeof existingNamespace !== 'function')
+      ) {
+        return false;
+      }
+
+      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(existingNamespace)) {
+        return false;
+      }
+
+      try {
+        Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
+          configurable: true,
+          enumerable: true,
+          get: () => mountVoltageInputs,
+        });
+        return true;
+      } catch (defineError) {
+        void defineError;
+      }
+
+      return false;
+    };
+
+    if (!commitMountVoltageInputs()) {
+      try {
+        existingNamespace.mountVoltageInputs = mountVoltageInputs;
+      } catch (assignInputsError) {
+        void assignInputsError;
+      }
+    }
 
     try {
       CORE_SCOPE[targetName] = existingNamespace;
@@ -743,10 +772,39 @@
       runtimeNamespace[key] = runtimeExports[key];
     }
 
-    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: () => mountVoltageInputs,
-    });
+    const commitRuntimeMountVoltageInputs = () => {
+      if (
+        !runtimeNamespace ||
+        (typeof runtimeNamespace !== 'object' && typeof runtimeNamespace !== 'function')
+      ) {
+        return false;
+      }
+
+      if (typeof Object.isExtensible === 'function' && !Object.isExtensible(runtimeNamespace)) {
+        return false;
+      }
+
+      try {
+        Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
+          configurable: true,
+          enumerable: true,
+          get: () => mountVoltageInputs,
+        });
+        return true;
+      } catch (defineRuntimeError) {
+        void defineRuntimeError;
+      }
+
+      return false;
+    };
+
+    if (!commitRuntimeMountVoltageInputs()) {
+      try {
+        runtimeNamespace.mountVoltageInputs = mountVoltageInputs;
+      } catch (assignRuntimeInputsError) {
+        void assignRuntimeInputsError;
+      }
+    }
 
     try {
       CORE_SCOPE[runtimeTargetName] = runtimeNamespace;

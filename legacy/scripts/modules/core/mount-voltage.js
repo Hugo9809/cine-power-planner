@@ -555,12 +555,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     getMountVoltageBackupStorageKey: getMountVoltageBackupStorageKey,
     runtimeExports: runtimeExports
   };
-  Object.defineProperty(namespace, 'mountVoltageInputs', {
-    enumerable: true,
-    get: function get() {
-      return mountVoltageInputs;
+  var namespaceMountVoltageInputsCommitted = false;
+  try {
+    if (
+      namespace &&
+      (typeof namespace === 'object' || typeof namespace === 'function') &&
+      (typeof Object.isExtensible !== 'function' || Object.isExtensible(namespace))
+    ) {
+      Object.defineProperty(namespace, 'mountVoltageInputs', {
+        configurable: true,
+        enumerable: true,
+        get: function get() {
+          return mountVoltageInputs;
+        }
+      });
+      namespaceMountVoltageInputsCommitted = true;
     }
-  });
+  } catch (namespaceDefineError) {
+    namespaceMountVoltageInputsCommitted = false;
+    void namespaceDefineError;
+  }
+
+  if (!namespaceMountVoltageInputsCommitted) {
+    try {
+      namespace.mountVoltageInputs = mountVoltageInputs;
+    } catch (namespaceAssignError) {
+      void namespaceAssignError;
+    }
+  }
   if (CORE_SCOPE && _typeof(CORE_SCOPE) === 'object') {
     var targetName = 'cineCoreMountVoltage';
     var existingNamespace = CORE_SCOPE[targetName] && _typeof(CORE_SCOPE[targetName]) === 'object' ? CORE_SCOPE[targetName] : {};
@@ -568,12 +590,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var key = _Object$keys[_i];
       existingNamespace[key] = namespace[key];
     }
-    Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: function get() {
-        return mountVoltageInputs;
+    var committedExistingNamespace = false;
+    try {
+      if (
+        existingNamespace &&
+        (typeof existingNamespace === 'object' || typeof existingNamespace === 'function') &&
+        (typeof Object.isExtensible !== 'function' || Object.isExtensible(existingNamespace))
+      ) {
+        Object.defineProperty(existingNamespace, 'mountVoltageInputs', {
+          configurable: true,
+          enumerable: true,
+          get: function get() {
+            return mountVoltageInputs;
+          }
+        });
+        committedExistingNamespace = true;
       }
-    });
+    } catch (existingNamespaceDefineError) {
+      committedExistingNamespace = false;
+      void existingNamespaceDefineError;
+    }
+
+    if (!committedExistingNamespace) {
+      try {
+        existingNamespace.mountVoltageInputs = mountVoltageInputs;
+      } catch (existingNamespaceAssignError) {
+        void existingNamespaceAssignError;
+      }
+    }
     try {
       CORE_SCOPE[targetName] = existingNamespace;
     } catch (assignError) {
@@ -612,12 +656,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       runtimeNamespace[runtimeKey] = runtimeExports[runtimeKey];
     });
 
-    Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
-      enumerable: true,
-      get: function get() {
-        return mountVoltageInputs;
+    var committedRuntimeNamespace = false;
+    try {
+      if (
+        runtimeNamespace &&
+        (typeof runtimeNamespace === 'object' || typeof runtimeNamespace === 'function') &&
+        (typeof Object.isExtensible !== 'function' || Object.isExtensible(runtimeNamespace))
+      ) {
+        Object.defineProperty(runtimeNamespace, 'mountVoltageInputs', {
+          configurable: true,
+          enumerable: true,
+          get: function get() {
+            return mountVoltageInputs;
+          }
+        });
+        committedRuntimeNamespace = true;
       }
-    });
+    } catch (runtimeNamespaceDefineError) {
+      committedRuntimeNamespace = false;
+      void runtimeNamespaceDefineError;
+    }
+
+    if (!committedRuntimeNamespace) {
+      try {
+        runtimeNamespace.mountVoltageInputs = mountVoltageInputs;
+      } catch (runtimeNamespaceAssignError) {
+        void runtimeNamespaceAssignError;
+      }
+    }
 
     try {
       CORE_SCOPE[runtimeTargetName] = runtimeNamespace;
