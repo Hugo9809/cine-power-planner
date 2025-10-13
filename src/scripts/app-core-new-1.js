@@ -10253,6 +10253,75 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   distance: 'FIZ distance devices',
 };
 
+function normalizeFocusScaleForLabel(value) {
+  if (typeof normalizeFocusScale === 'function') {
+    try {
+      const normalized = normalizeFocusScale(value);
+      if (normalized === 'imperial' || normalized === 'metric') {
+        return normalized;
+      }
+      if (normalized === '' || normalized === null) {
+        return '';
+      }
+    } catch (normalizeError) {
+      console.warn(
+        'normalizeFocusScale helper threw an error while resolving a focus scale label',
+        normalizeError,
+      );
+    }
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim().toLowerCase();
+    if (trimmed === 'imperial') {
+      return 'imperial';
+    }
+    if (trimmed === 'metric') {
+      return 'metric';
+    }
+    if (!trimmed) {
+      return '';
+    }
+  }
+  return '';
+}
+
+function getFocusScaleLabelForLang(lang = currentLang, scale) {
+  const normalized = normalizeFocusScaleForLabel(scale);
+  const textsForLang = getLanguageTexts(lang) || {};
+  const fallbackTexts = getLanguageTexts('en') || {};
+  const metricLabel =
+    textsForLang.focusScaleMetric ||
+    fallbackTexts.focusScaleMetric ||
+    textsForLang.focusScaleSetting ||
+    fallbackTexts.focusScaleSetting ||
+    'Metric';
+  const imperialLabel =
+    textsForLang.focusScaleImperial ||
+    fallbackTexts.focusScaleImperial ||
+    textsForLang.focusScaleSetting ||
+    fallbackTexts.focusScaleSetting ||
+    'Imperial';
+  if (normalized === 'imperial') {
+    return imperialLabel;
+  }
+  if (normalized === 'metric') {
+    return metricLabel;
+  }
+  if (typeof scale === 'string') {
+    const trimmed = scale.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+  return (
+    textsForLang.focusScaleSetting ||
+    textsForLang.lensFocusScaleLabel ||
+    fallbackTexts.focusScaleSetting ||
+    fallbackTexts.lensFocusScaleLabel ||
+    metricLabel
+  );
+}
+
 // Determine initial language (default English)
 var currentLang = DEFAULT_LANGUAGE;
 var updateHelpQuickLinksForLanguage;
