@@ -956,72 +956,57 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     if (typeof message !== 'string' || !message) {
       return null;
     }
-
     var trimmed = message.trim();
     if (!trimmed) {
       return null;
     }
-
     if (trimmed.length > 200) {
       return trimmed.slice(0, 200);
     }
-
     return trimmed;
   }
-
   function extractLegacyFallbackMessage(event) {
-    if (!event || typeof event !== 'object') {
+    if (!event || _typeof(event) !== 'object') {
       if (typeof event === 'string') {
         return event;
       }
       return null;
     }
-
     if (typeof event.message === 'string' && event.message) {
       return event.message;
     }
-
     if (event.error && typeof event.error.message === 'string' && event.error.message) {
       return event.error.message;
     }
-
     if (typeof event.type === 'string' && event.type) {
       return event.type;
     }
-
     return null;
   }
-
   function encodeLegacyPreferencePayload(options) {
     var timestamp = nowMilliseconds();
     var payload = {
-      timestamp: typeof timestamp === 'number' ? timestamp : null,
+      timestamp: typeof timestamp === 'number' ? timestamp : null
     };
-
-    if (options && typeof options === 'object') {
+    if (options && _typeof(options) === 'object') {
       if (typeof options.reason === 'string' && options.reason) {
         payload.reason = options.reason;
       }
-
       var message = normaliseLegacyFallbackMessage(options.message);
       if (message) {
         payload.message = message;
       }
     }
-
     try {
       return JSON.stringify(payload);
     } catch (error) {
       void error;
     }
-
     if (typeof payload.timestamp === 'number') {
       return String(payload.timestamp);
     }
-
     return 'true';
   }
-
   function rememberLegacyBundlePreference(options) {
     var storages = getLegacyFlagStorages();
     if (!storages.length) {
@@ -1109,43 +1094,52 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     if (typeof rawValue !== 'string' || !rawValue) {
       return null;
     }
-
     if (rawValue.charAt(0) === '{') {
       try {
         var parsed = JSON.parse(rawValue);
-        if (!parsed || typeof parsed !== 'object') {
-          return { timestamp: null, reason: null, invalid: true };
+        if (!parsed || _typeof(parsed) !== 'object') {
+          return {
+            timestamp: null,
+            reason: null,
+            invalid: true
+          };
         }
-
         var parsedTimestamp = null;
         if (typeof parsed.timestamp === 'number' && !isNaN(parsed.timestamp)) {
           parsedTimestamp = parsed.timestamp;
         }
-
         var parsedReason = null;
         if (typeof parsed.reason === 'string' && parsed.reason) {
           parsedReason = parsed.reason;
         }
-
         return {
           timestamp: parsedTimestamp,
           reason: parsedReason,
-          invalid: false,
+          invalid: false
         };
       } catch (parseError) {
         void parseError;
-        return { timestamp: null, reason: null, invalid: true };
+        return {
+          timestamp: null,
+          reason: null,
+          invalid: true
+        };
       }
     }
-
     var numeric = parseInt(rawValue, 10);
     if (!isNaN(numeric) && typeof numeric === 'number') {
-      return { timestamp: numeric, reason: null, invalid: false };
+      return {
+        timestamp: numeric,
+        reason: null,
+        invalid: false
+      };
     }
-
-    return { timestamp: null, reason: null, legacy: true };
+    return {
+      timestamp: null,
+      reason: null,
+      legacy: true
+    };
   }
-
   function shouldForceLegacyBundle() {
     if (typeof window === 'undefined') {
       return false;
@@ -1175,7 +1169,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       if (!decoded) {
         continue;
       }
-
       if (decoded.reason && decoded.reason === 'transient-error') {
         try {
           storage.removeItem(LEGACY_BUNDLE_STORAGE_KEY);
@@ -1184,7 +1177,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         }
         continue;
       }
-
       var timestamp = decoded.timestamp;
       if (timestamp !== null && typeof timestamp === 'number' && now !== null) {
         if (now - timestamp <= LEGACY_BUNDLE_MAX_AGE) {
@@ -1211,7 +1203,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     if (settings.rememberPreference !== false) {
       rememberLegacyBundlePreference({
         reason: settings.reason,
-        message: settings.message,
+        message: settings.message
       });
     }
     if (settings.markRetry === true) {
