@@ -99,182 +99,205 @@ const CORE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule(
   './modules/core/localization-fallbacks.js'
 );
 
-const LOCALIZATION_FALLBACK_NAMESPACE =
-  CORE_LOCALIZATION_FALLBACKS && typeof CORE_LOCALIZATION_FALLBACKS === 'object'
-    ? CORE_LOCALIZATION_FALLBACKS
-    : (function createInlineLocalizationFallbackNamespace() {
-        function inlineFallbackResolveLocaleModule(scope) {
-          if (
-            typeof cineLocale !== 'undefined' &&
-            cineLocale &&
-            typeof cineLocale === 'object'
-          ) {
-            return cineLocale;
-          }
+const CORE_INLINE_LOCALIZATION_FALLBACKS = resolveCoreSupportModule(
+  'cineCoreLocalizationInlineFallbacks',
+  './modules/core/localization-inline-fallbacks.js'
+);
 
-          const candidates = [];
-          if (scope && (typeof scope === 'object' || typeof scope === 'function')) {
-            candidates.push(scope);
-          }
-          if (typeof globalThis !== 'undefined') candidates.push(globalThis);
-          if (typeof window !== 'undefined') candidates.push(window);
-          if (typeof self !== 'undefined') candidates.push(self);
-          if (typeof global !== 'undefined') candidates.push(global);
+function resolveLocalizationFallbackNamespaceFromCandidate(candidate) {
+  if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+    return null;
+  }
 
-          for (let index = 0; index < candidates.length; index += 1) {
-            const candidate = candidates[index];
-            if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
-              continue;
+  if (typeof candidate.createInlineLocalizationFallbackNamespace === 'function') {
+    try {
+      const generated = candidate.createInlineLocalizationFallbackNamespace();
+      if (generated && typeof generated === 'object') {
+        return generated;
+      }
+    } catch (inlineNamespaceError) {
+      void inlineNamespaceError;
+    }
+  }
+
+  if (typeof candidate.createNamespace === 'function') {
+    try {
+      const created = candidate.createNamespace();
+      if (created && typeof created === 'object') {
+        return created;
+      }
+    } catch (namespaceCreateError) {
+      void namespaceCreateError;
+    }
+  }
+
+  if (
+    typeof candidate.fallbackResolveLocaleModule === 'function' &&
+    typeof candidate.createLocaleFallbacks === 'function'
+  ) {
+    return candidate;
+  }
+
+  return null;
+}
+
+function createMinimalLocalizationFallbackNamespace() {
+  function normalizeLanguageCodeValue(lang, defaultLanguage) {
+    if (!lang) {
+      return defaultLanguage;
+    }
+
+    try {
+      const normalized = String(lang).trim().toLowerCase();
+      return normalized || defaultLanguage;
+    } catch (languageNormalizeError) {
+      void languageNormalizeError;
+    }
+
+    return defaultLanguage;
+  }
+
+  function normalizeRtlCodes(options) {
+    if (options && Array.isArray(options.rtlLanguageCodes)) {
+      const collected = [];
+      for (let index = 0; index < options.rtlLanguageCodes.length; index += 1) {
+        const rawCode = options.rtlLanguageCodes[index];
+        if (typeof rawCode === 'string' || typeof rawCode === 'number') {
+          try {
+            const normalized = String(rawCode).trim().toLowerCase();
+            if (normalized && collected.indexOf(normalized) === -1) {
+              collected.push(normalized);
             }
-
-            try {
-              const moduleCandidate = candidate.cineLocale;
-              if (moduleCandidate && typeof moduleCandidate === 'object') {
-                return moduleCandidate;
-              }
-            } catch (localeLookupError) {
-              void localeLookupError;
-            }
+          } catch (rtlNormalizeError) {
+            void rtlNormalizeError;
           }
-
-          if (typeof require === 'function') {
-            try {
-              const required = require('./modules/localization.js');
-              if (required && typeof required === 'object') {
-                return required;
-              }
-            } catch (localeRequireError) {
-              void localeRequireError;
-            }
-          }
-
-          return null;
         }
+      }
+      if (collected.length > 0) {
+        return collected;
+      }
+    }
+    return ['ar', 'fa', 'he', 'ur'];
+  }
 
-        function inlineCreateLocaleFallbacks(options) {
-          const defaultLanguage = (function resolveDefaultLanguageOption() {
-            if (options && typeof options.defaultLanguage === 'string') {
-              try {
-                const normalized = options.defaultLanguage.trim().toLowerCase();
-                return normalized || 'en';
-              } catch (defaultLanguageNormalizeError) {
-                void defaultLanguageNormalizeError;
-              }
-            }
-            return 'en';
-          })();
-
-          const rtlLanguageCodes = (function resolveRtlCodesOption() {
-            if (options && Array.isArray(options.rtlLanguageCodes)) {
-              const collected = [];
-              for (let index = 0; index < options.rtlLanguageCodes.length; index += 1) {
-                const rawCode = options.rtlLanguageCodes[index];
-                if (typeof rawCode === 'string') {
-                  try {
-                    const normalized = rawCode.trim().toLowerCase();
-                    if (normalized && collected.indexOf(normalized) === -1) {
-                      collected.push(normalized);
-                    }
-                  } catch (rtlNormalizeError) {
-                    void rtlNormalizeError;
-                  }
-                }
-              }
-              if (collected.length > 0) {
-                return collected;
-              }
-            }
-            return ['ar', 'fa', 'he', 'ur'];
-          })();
-
-          function inlineNormalizeLanguageCode(lang) {
-            if (!lang) {
-              return defaultLanguage;
-            }
-
-            try {
-              const normalized = String(lang).trim().toLowerCase();
-              return normalized || defaultLanguage;
-            } catch (languageNormalizeError) {
-              void languageNormalizeError;
-            }
-
-            return defaultLanguage;
+  return {
+    fallbackResolveLocaleModule() {
+      return null;
+    },
+    createLocaleFallbacks(options) {
+      const defaultLanguage = (function resolveDefaultLanguage() {
+        if (options && typeof options.defaultLanguage === 'string') {
+          try {
+            const normalized = options.defaultLanguage.trim().toLowerCase();
+            return normalized || 'en';
+          } catch (defaultLanguageNormalizeError) {
+            void defaultLanguageNormalizeError;
           }
-
-          function inlineIsRtlLanguage(lang) {
-            const normalized = inlineNormalizeLanguageCode(lang);
-            const base = normalized.split('-')[0];
-            return rtlLanguageCodes.indexOf(base) !== -1;
-          }
-
-          function inlineResolveDocumentDirection(lang) {
-            if (typeof document !== 'undefined' && document && document.documentElement) {
-              try {
-                const docDir = document.documentElement.getAttribute('dir');
-                if (docDir === 'rtl' || docDir === 'ltr') {
-                  return docDir;
-                }
-              } catch (documentDirectionError) {
-                void documentDirectionError;
-              }
-            }
-
-            return inlineIsRtlLanguage(lang) ? 'rtl' : 'ltr';
-          }
-
-          function inlineApplyLocaleMetadata(target, lang, direction) {
-            if (!target) {
-              return;
-            }
-
-            if (lang) {
-              try {
-                target.lang = lang;
-              } catch (setLangError) {
-                void setLangError;
-              }
-            }
-
-            if (direction) {
-              try {
-                target.dir = direction;
-              } catch (setDirError) {
-                void setDirError;
-              }
-            }
-          }
-
-          return {
-            getDefaultLanguage() {
-              return defaultLanguage;
-            },
-            getRtlLanguageCodes() {
-              return rtlLanguageCodes.slice();
-            },
-            resolveLocaleModule(scope) {
-              return inlineFallbackResolveLocaleModule(scope);
-            },
-            normalizeLanguageCode(lang) {
-              return inlineNormalizeLanguageCode(lang);
-            },
-            isRtlLanguage(lang) {
-              return inlineIsRtlLanguage(lang);
-            },
-            resolveDocumentDirection(lang) {
-              return inlineResolveDocumentDirection(lang);
-            },
-            applyLocaleMetadata(target, lang, direction) {
-              return inlineApplyLocaleMetadata(target, lang, direction);
-            },
-          };
         }
-
-        return {
-          fallbackResolveLocaleModule: inlineFallbackResolveLocaleModule,
-          createLocaleFallbacks: inlineCreateLocaleFallbacks,
-        };
+        return 'en';
       })();
+
+      const rtlLanguageCodes = normalizeRtlCodes(options);
+
+      function normalizeLanguageCode(lang) {
+        return normalizeLanguageCodeValue(lang, defaultLanguage);
+      }
+
+      function isRtlLanguage(lang) {
+        const normalized = normalizeLanguageCode(lang);
+        const base = normalized.split('-')[0];
+        return rtlLanguageCodes.indexOf(base) !== -1;
+      }
+
+      function resolveDocumentDirection(lang) {
+        if (typeof document !== 'undefined' && document && document.documentElement) {
+          try {
+            const docDir = document.documentElement.getAttribute('dir');
+            if (docDir === 'rtl' || docDir === 'ltr') {
+              return docDir;
+            }
+          } catch (documentDirectionError) {
+            void documentDirectionError;
+          }
+        }
+
+        return isRtlLanguage(lang) ? 'rtl' : 'ltr';
+      }
+
+      function applyLocaleMetadata(target, lang, direction) {
+        if (!target) {
+          return;
+        }
+
+        if (lang) {
+          try {
+            target.lang = lang;
+          } catch (setLangError) {
+            void setLangError;
+          }
+        }
+
+        if (direction) {
+          try {
+            target.dir = direction;
+          } catch (setDirError) {
+            void setDirError;
+          }
+        }
+      }
+
+      return {
+        getDefaultLanguage() {
+          return defaultLanguage;
+        },
+        getRtlLanguageCodes() {
+          return rtlLanguageCodes.slice();
+        },
+        resolveLocaleModule() {
+          return null;
+        },
+        normalizeLanguageCode,
+        isRtlLanguage,
+        resolveDocumentDirection,
+        applyLocaleMetadata,
+      };
+    },
+  };
+}
+
+const LOCALIZATION_FALLBACK_NAMESPACE = (function resolveLocalizationFallbackNamespace() {
+  const directNamespace = resolveLocalizationFallbackNamespaceFromCandidate(
+    CORE_LOCALIZATION_FALLBACKS
+  );
+  if (directNamespace) {
+    return directNamespace;
+  }
+
+  const inlineNamespace = resolveLocalizationFallbackNamespaceFromCandidate(
+    CORE_INLINE_LOCALIZATION_FALLBACKS
+  );
+  if (inlineNamespace) {
+    return inlineNamespace;
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const requiredInline = require('./modules/core/localization-inline-fallbacks.js');
+      const requiredNamespace = resolveLocalizationFallbackNamespaceFromCandidate(
+        requiredInline
+      );
+      if (requiredNamespace) {
+        return requiredNamespace;
+      }
+    } catch (localizationInlineRequireError) {
+      void localizationInlineRequireError;
+    }
+  }
+
+  return resolveLocalizationFallbackNamespaceFromCandidate(
+    createMinimalLocalizationFallbackNamespace()
+  );
+})();
 
 const fallbackResolveLocaleModule =
   LOCALIZATION_FALLBACK_NAMESPACE &&
