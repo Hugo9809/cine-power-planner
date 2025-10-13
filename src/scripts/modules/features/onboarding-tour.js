@@ -526,6 +526,60 @@
     'completion',
   ];
 
+  function resolveOwnGearAccessHighlightSelectors() {
+    if (!DOCUMENT) {
+      return [];
+    }
+
+    let sideMenu = null;
+    try {
+      sideMenu = DOCUMENT.getElementById('sideMenu');
+    } catch (error) {
+      sideMenu = null;
+    }
+
+    let ownGearButton = null;
+    if (sideMenu && typeof sideMenu.querySelector === 'function') {
+      ownGearButton = sideMenu.querySelector('[data-sidebar-action="open-own-gear"]');
+    }
+    if (!ownGearButton && typeof DOCUMENT.querySelector === 'function') {
+      ownGearButton = DOCUMENT.querySelector('#sideMenu [data-sidebar-action="open-own-gear"]')
+        || DOCUMENT.querySelector('[data-sidebar-action="open-own-gear"]');
+    }
+
+    let menuToggle = null;
+    try {
+      menuToggle = DOCUMENT.getElementById('menuToggle');
+    } catch (error) {
+      menuToggle = null;
+    }
+
+    const menuOpen = Boolean(
+      sideMenu
+        && typeof sideMenu.classList === 'object'
+        && typeof sideMenu.classList.contains === 'function'
+        && sideMenu.classList.contains('open'),
+    );
+
+    if (menuOpen && ownGearButton) {
+      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+    }
+
+    if (!menuOpen && menuToggle) {
+      return ['#menuToggle'];
+    }
+
+    if (ownGearButton) {
+      return ['#sideMenu [data-sidebar-action="open-own-gear"]'];
+    }
+
+    if (menuToggle) {
+      return ['#menuToggle'];
+    }
+
+    return [];
+  }
+
   const DEFAULT_STEP_TEXTS = {
     intro: {
       title: 'Welcome to Cine Power Planner',
@@ -1910,7 +1964,9 @@
       },
       {
         key: 'ownGearAccess',
-        highlight: '[data-sidebar-action="open-own-gear"]',
+        highlight: '#sideMenu [data-sidebar-action="open-own-gear"]',
+        alternateHighlight: '#menuToggle',
+        resolveHighlight: resolveOwnGearAccessHighlightSelectors,
         focus: '[data-sidebar-action="open-own-gear"]',
       },
       {
@@ -2725,6 +2781,18 @@
     return [];
   }
 
+  function callSelectorResolver(resolver, label) {
+    if (typeof resolver !== 'function') {
+      return null;
+    }
+    try {
+      return resolver();
+    } catch (error) {
+      safeWarn(`cine.features.onboardingTour could not resolve ${label}.`, error);
+      return null;
+    }
+  }
+
   function resolveSelectorElements(selectors) {
     if (!Array.isArray(selectors) || selectors.length === 0) {
       return [];
@@ -2743,15 +2811,107 @@
     return elements;
   }
 
+  function isHighlightElementUsable(element) {
+    if (!element) {
+      return false;
+    }
+    if (typeof element.isConnected === 'boolean' && !element.isConnected) {
+      return false;
+    }
+    if (typeof element.getBoundingClientRect !== 'function') {
+      return true;
+    }
+    let rect = null;
+    try {
+      rect = element.getBoundingClientRect();
+    } catch (error) {
+      safeWarn('cine.features.onboardingTour could not measure highlight target.', error);
+      return false;
+    }
+    if (!rect) {
+      return false;
+    }
+    const width = Number.isFinite(rect.width) ? rect.width : rect.right - rect.left;
+    const height = Number.isFinite(rect.height) ? rect.height : rect.bottom - rect.top;
+    if ((Number.isFinite(width) && width > 0) || (Number.isFinite(height) && height > 0)) {
+      return true;
+    }
+    if (typeof element.getClientRects === 'function') {
+      try {
+        const rectList = element.getClientRects();
+        if (rectList && rectList.length > 0) {
+          for (let index = 0; index < rectList.length; index += 1) {
+            const entry = rectList[index];
+            const entryWidth = Number.isFinite(entry.width) ? entry.width : entry.right - entry.left;
+            const entryHeight = Number.isFinite(entry.height) ? entry.height : entry.bottom - entry.top;
+            if (
+              (Number.isFinite(entryWidth) && entryWidth > 0)
+              || (Number.isFinite(entryHeight) && entryHeight > 0)
+            ) {
+              return true;
+            }
+          }
+        }
+      } catch (error) {
+        safeWarn('cine.features.onboardingTour could not inspect highlight target rects.', error);
+      }
+    }
+    return false;
+  }
+
+  function filterUsableHighlightElements(elements) {
+    if (!Array.isArray(elements) || elements.length === 0) {
+      return [];
+    }
+    const filtered = [];
+    for (let index = 0; index < elements.length; index += 1) {
+      const element = elements[index];
+      if (!element) {
+        continue;
+      }
+      if (isHighlightElementUsable(element)) {
+        filtered.push(element);
+      }
+    }
+    return filtered;
+  }
+
   function getHighlightElements(step) {
     if (!step) {
       return [];
     }
-    let elements = resolveSelectorElements(toSelectorArray(step.highlight));
-    if (elements.length === 0) {
-      elements = resolveSelectorElements(toSelectorArray(step.alternateHighlight));
+    const sources = [
+      { value: step.resolveHighlight, label: 'highlight resolver' },
+      { value: step.highlight, label: 'highlight' },
+      { value: step.resolveAlternateHighlight, label: 'alternate highlight resolver' },
+      { value: step.alternateHighlight, label: 'alternate highlight' },
+    ];
+
+    let fallbackElements = [];
+
+    for (let index = 0; index < sources.length; index += 1) {
+      const source = sources[index];
+      if (!source.value) {
+        continue;
+      }
+      const resolvedSelectors = typeof source.value === 'function'
+        ? callSelectorResolver(source.value, source.label)
+        : source.value;
+      const selectors = toSelectorArray(resolvedSelectors);
+      if (!selectors.length) {
+        continue;
+      }
+      const resolvedElements = resolveSelectorElements(selectors);
+      const usableElements = filterUsableHighlightElements(resolvedElements);
+      if (usableElements.length > 0) {
+        return usableElements;
+      }
+      if (!fallbackElements.length && resolvedElements.length > 0) {
+        fallbackElements = resolvedElements;
+      }
     }
-    return elements;
+
+    return fallbackElements;
   }
 
   function resolveOverlayAnchorForElements(elements) {
