@@ -206,6 +206,14 @@
 @media (max-width: 600px) {
   :root {
     --page-padding: var(--spacing-sm);
+    --button-size: 44px;
+    --button-padding-block: var(--spacing-xs);
+    --button-padding-inline: calc(var(--spacing-lg) + var(--spacing-xs));
+    --button-link-padding-inline: calc(var(--spacing-lg) + var(--spacing-xs));
+    --button-line-height: 1.35;
+    --button-margin-block-start: var(--spacing-sm);
+    --button-margin-block-end: var(--spacing-sm);
+    --button-margin-inline: 0px;
   }
   main {
     max-width: none;
@@ -213,6 +221,23 @@
   }
   h2 {
     padding-bottom: 0.3em;
+  }
+
+  .button-row {
+    gap: var(--spacing-sm);
+    align-items: stretch;
+  }
+
+  .button-row > * {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .button-row button,
+  .button-row .button-link {
+    width: 100%;
+    margin-inline: 0;
+    text-align: center;
   }
 }
 
@@ -649,6 +674,8 @@ textarea:focus-visible {
 .button-row {
   display: flex;
   gap: var(--cluster-gap);
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .flex-1 {
