@@ -247,7 +247,7 @@
         try {
           const resolved = resolveSupportModule(
             'cineCoreLocalizationFallbackFactories',
-            './modules/core/localization-fallback-factories.js'
+            './localization-fallback-factories.js'
           );
           if (resolved && typeof resolved === 'object') {
             return resolved;
@@ -259,7 +259,7 @@
 
       if (typeof requireFn === 'function') {
         try {
-          const required = requireFn('./modules/core/localization-fallback-factories.js');
+          const required = requireFn('./localization-fallback-factories.js');
           if (required && typeof required === 'object') {
             return required;
           }
@@ -292,7 +292,7 @@
         try {
           const resolved = resolveSupportModule(
             'cineCoreLocalizationFallbackContext',
-            './modules/core/localization-fallback-context.js'
+            './localization-fallback-context.js'
           );
           if (resolved && typeof resolved === 'object') {
             return resolved;
@@ -304,7 +304,7 @@
 
       if (typeof requireFn === 'function') {
         try {
-          const required = requireFn('./modules/core/localization-fallback-context.js');
+          const required = requireFn('./localization-fallback-context.js');
           if (required && typeof required === 'object') {
             return required;
           }
