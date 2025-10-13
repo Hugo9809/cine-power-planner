@@ -473,13 +473,12 @@
     return trimmed;
   }
 
-  function setPinkModeIconSequence(markupList) {
+  function createPinkModeIconConfigs(markupList) {
     if (!Array.isArray(markupList) || !markupList.length) {
-      return false;
+      return [];
     }
-    const configs = markupList
-      .map(ensureSvgHasAriaHidden)
-      .map(normalizePinkModeIconMarkup)
+    return markupList
+      .map(markup => normalizePinkModeIconMarkup(ensureSvgHasAriaHidden(markup)))
       .filter(Boolean)
       .map(markup =>
         Object.freeze({
@@ -487,10 +486,16 @@
           markup
         })
       );
-    if (!configs.length) {
+  }
+
+  function applyPinkModeIconSequence(configs) {
+    if (!Array.isArray(configs) || !configs.length) {
       return false;
     }
-    pinkModeIcons.onSequence = Object.freeze(configs);
+
+    const sequence = Object.freeze(configs.slice());
+    pinkModeIcons.onSequence = sequence;
+
     if (
       typeof document !== 'undefined' &&
       document.body &&
@@ -501,19 +506,43 @@
       }
       pinkModeIconIndex = 0;
       if (typeof applyPinkModeIcon === 'function') {
-        applyPinkModeIcon(pinkModeIcons.onSequence[pinkModeIconIndex], { animate: false });
+        applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: false });
       }
       if (typeof startPinkModeIconRotation === 'function') {
         startPinkModeIconRotation();
       }
     }
+
     return true;
+  }
+
+  function setPinkModeIconSequence(markupList) {
+    const configs = createPinkModeIconConfigs(markupList);
+    if (!configs.length) {
+      return false;
+    }
+
+    return applyPinkModeIconSequence(configs);
+  }
+
+  function ensurePinkModeFallbackIconSequence() {
+    if (pinkModeIcons.onSequence && pinkModeIcons.onSequence.length) {
+      return false;
+    }
+
+    if (!Array.isArray(PINK_MODE_ICON_FALLBACK_MARKUP) || !PINK_MODE_ICON_FALLBACK_MARKUP.length) {
+      return false;
+    }
+
+    return setPinkModeIconSequence(PINK_MODE_ICON_FALLBACK_MARKUP);
   }
 
   async function loadPinkModeIconsFromFiles() {
     if (typeof fetch !== 'function') {
+      ensurePinkModeFallbackIconSequence();
       return;
     }
+
     const responses = await Promise.all(
       PINK_MODE_ICON_FILES.map(path =>
         fetch(path)
@@ -521,9 +550,15 @@
           .catch(() => null)
       )
     );
+
     const markupList = responses.filter(Boolean);
     if (markupList.length) {
-      setPinkModeIconSequence(markupList);
+      const applied = setPinkModeIconSequence(markupList);
+      if (!applied) {
+        ensurePinkModeFallbackIconSequence();
+      }
+    } else {
+      ensurePinkModeFallbackIconSequence();
     }
   }
 
@@ -1841,6 +1876,8 @@
       pinkModeIconIndex = value;
     }
   }
+
+  ensurePinkModeFallbackIconSequence();
 
   const exports = {
     pinkModeIcons,
