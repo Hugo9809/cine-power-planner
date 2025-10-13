@@ -220,19 +220,24 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
   return scopes;
 }
 
-const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandidateScopes() {
-  if (
-    typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
-    CORE_RUNTIME_CANDIDATE_SCOPES &&
-    typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
-  ) {
-    return CORE_RUNTIME_CANDIDATE_SCOPES;
-  }
+var CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED =
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED !== 'undefined' &&
+  CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED &&
+  typeof CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length === 'number'
+    ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED
+    : (function resolveCoreRuntimeCandidateScopes() {
+        if (
+          typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
+          CORE_RUNTIME_CANDIDATE_SCOPES &&
+          typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+        ) {
+          return CORE_RUNTIME_CANDIDATE_SCOPES;
+        }
 
-  return collectCoreRuntimeCandidateScopes(
-    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-  );
-})();
+        return collectCoreRuntimeCandidateScopes(
+          typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+        );
+      })();
 
 (function syncCoreRuntimeCandidateScopes(resolvedScopes) {
   const scope =
