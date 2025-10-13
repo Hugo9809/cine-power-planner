@@ -126,13 +126,21 @@
     if (!normalized) {
       return null;
     }
+
+    const encodedNormalized = encodeURI(normalized);
+
     if (normalized.slice(0, 2) === '//' || normalized.indexOf('://') !== -1) {
-      return normalized;
+      try {
+        return new URL(normalized).href;
+      } catch (error) {
+        void error;
+        return encodedNormalized;
+      }
     }
 
     const baseUrl = resolvePinkModeAssetBaseUrl();
     if (!baseUrl) {
-      return normalized;
+      return encodedNormalized;
     }
 
     try {
@@ -141,11 +149,21 @@
       void error;
     }
 
-    if (normalized.charAt(0) === '/') {
-      return normalized;
+    try {
+      return new URL(encodedNormalized, baseUrl).href;
+    } catch (encodedError) {
+      void encodedError;
     }
 
-    return baseUrl + normalized;
+    if (encodedNormalized.charAt(0) === '/') {
+      return encodedNormalized;
+    }
+
+    if (baseUrl.charAt(baseUrl.length - 1) === '/') {
+      return baseUrl + encodedNormalized;
+    }
+
+    return `${baseUrl}/${encodedNormalized}`;
   }
 
   function createPinkModeAssetRequest(url) {
@@ -328,15 +346,21 @@
 
     const promise = (async () => {
       const resolvedUrl = resolvePinkModeAssetUrl(normalized);
-      const request = createPinkModeAssetRequest(resolvedUrl);
+      const encodedNormalized = encodeURI(normalized);
+      const fallbackUrl = resolvedUrl || (encodedNormalized || normalized);
+      const request = createPinkModeAssetRequest(fallbackUrl);
 
-      const networkResult = await fetchPinkModeAssetFromNetwork(request || resolvedUrl);
+      const networkResult = await fetchPinkModeAssetFromNetwork(request || fallbackUrl);
       if (networkResult !== null) {
         pinkModeAssetTextCache.set(normalized, networkResult);
         return networkResult;
       }
 
-      const cacheVariants = createPinkModeCacheKeyVariants(normalized, resolvedUrl, request);
+      const cacheVariants = createPinkModeCacheKeyVariants(
+        normalized,
+        resolvedUrl || fallbackUrl,
+        request
+      );
       for (const variant of cacheVariants) {
         const cacheResult = await fetchPinkModeAssetFromCaches(variant);
         if (cacheResult !== null) {
@@ -345,7 +369,7 @@
         }
       }
 
-      const xhrResult = await fetchPinkModeAssetViaXHR(resolvedUrl || normalized);
+      const xhrResult = await fetchPinkModeAssetViaXHR(fallbackUrl || normalized);
       if (xhrResult !== null) {
         pinkModeAssetTextCache.set(normalized, xhrResult);
         return xhrResult;
