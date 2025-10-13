@@ -7379,7 +7379,7 @@ body.dark-mode .onboarding-hero-highlight-body {
 }
 
 .onboarding-hero-language-label {
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-light);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   color: var(--onboarding-label-color);
 }
@@ -8812,7 +8812,7 @@ body.high-contrast .feature-search-option mark.feature-search-highlight {
   height: var(--select-height);
   margin: 0;
   font-size: var(--font-size-relative-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-light);
   font-family: inherit;
   padding: 2px 4px;
   text-align: center;
