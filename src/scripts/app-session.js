@@ -5298,35 +5298,6 @@ function initializeAppearanceModule(factory) {
   return applyAppearanceModuleBindings(module);
 }
 
-const appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
-
-if (!appearanceModuleReady) {
-  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
-  }
-
-  whenGlobalValueAvailable(
-    'cineSettingsAppearance',
-    candidate => !!candidate && typeof candidate.initialize === 'function',
-    candidate => {
-      if (initializeAppearanceModule(candidate)) {
-        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
-          console.info('cineSettingsAppearance module became available after deferred load.');
-        }
-      }
-    },
-    {
-      interval: 200,
-      maxAttempts: 300,
-      onTimeout: () => {
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
-        }
-      },
-    },
-  );
-}
-
 const CAMERA_LETTERS = ['A', 'B', 'C', 'D', 'E'];
 const CAMERA_COLOR_STORAGE_KEY_SESSION = 'cameraPowerPlanner_cameraColors';
 
@@ -5662,6 +5633,35 @@ const appearanceContext = {
     },
   },
 };
+
+const appearanceModuleReady = initializeAppearanceModule(appearanceModuleFactory);
+
+if (!appearanceModuleReady) {
+  if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+    console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
+  }
+
+  whenGlobalValueAvailable(
+    'cineSettingsAppearance',
+    candidate => !!candidate && typeof candidate.initialize === 'function',
+    candidate => {
+      if (initializeAppearanceModule(candidate)) {
+        if (typeof console !== 'undefined' && console && typeof console.info === 'function') {
+          console.info('cineSettingsAppearance module became available after deferred load.');
+        }
+      }
+    },
+    {
+      interval: 200,
+      maxAttempts: 300,
+      onTimeout: () => {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('cineSettingsAppearance module failed to load after waiting. Appearance features remain limited.');
+        }
+      },
+    },
+  );
+}
 
 
 const themePreferenceGlobalScope = (typeof globalThis !== 'undefined'
