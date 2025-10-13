@@ -10330,6 +10330,50 @@ function setLanguage(lang) {
     }
     return "metric";
   };
+  const resolveFocusScalePreference = () => {
+    const tryNormalize = candidate => {
+      if (typeof candidate === "string" && candidate) {
+        return normalizeFocusScaleSafe(candidate);
+      }
+      return null;
+    };
+    const sources = [
+      () =>
+        typeof focusScalePreference !== "undefined"
+          ? focusScalePreference
+          : null,
+      () =>
+        typeof sessionFocusScale !== "undefined"
+          ? sessionFocusScale
+          : null,
+      () => {
+        try {
+          const getter =
+            runtimeScope &&
+            runtimeScope.preferences &&
+            typeof runtimeScope.preferences.getFocusScale === "function"
+              ? runtimeScope.preferences.getFocusScale
+              : null;
+          if (getter) {
+            return getter();
+          }
+        } catch (focusScaleError) {
+          console.warn(
+            "Failed to resolve focus scale preference from runtime scope; using fallback",
+            focusScaleError,
+          );
+        }
+        return null;
+      },
+    ];
+    for (const getSource of sources) {
+      const resolved = tryNormalize(getSource());
+      if (resolved) {
+        return resolved;
+      }
+    }
+    return "metric";
+  };
   const resolveLocaleString = key => {
     if (!key) return "";
     const bundle = texts[lang];
@@ -11724,7 +11768,7 @@ function setLanguage(lang) {
         const normalized = normalizeFocusScaleSafe(option.value);
         option.textContent = getFocusScaleLabelForLang(lang, normalized);
       });
-      settingsFocusScale.value = focusScalePreference;
+      settingsFocusScale.value = resolveFocusScalePreference();
     }
   }
   const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
