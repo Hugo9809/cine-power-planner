@@ -184,3 +184,16 @@
 - Extracted the runtime support resolvers into a dedicated bridge so the remaining app core split can focus on UI logic while preserving the autosave, backup, and restore fallbacks that guard offline data.【F:src/scripts/app-core-runtime-support.js†L1-L724】【F:src/scripts/app-core-new-1.js†L92-L162】
 - Legacy bundles load the mirrored bridge to keep older browsers aligned with the same defensive module resolution helpers during cold starts and cache restores.【F:legacy/scripts/app-core-runtime-support.js†L1-L458】【F:legacy/scripts/app-core-new-1.js†L392-L460】
 - Updated loaders, script aggregators, integrity tests, and the service worker manifest so the new bridge is always bundled and cached for offline use alongside the existing runtime scope helper.【F:src/scripts/script.js†L41-L50】【F:legacy/scripts/script.js†L1-L13】【F:src/scripts/loader.js†L2880-L2958】【F:tests/script/scriptIntegrity.test.js†L100-L123】【F:service-worker-assets.js†L23-L207】
+
+## Step 15 – Environment bootstrap separation
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/app-core-new-2.js` | 18002 | 16884 | -1118 |
+| `src/scripts/app-core-new-environment.js` | – | 1562 | +1562 |
+
+*Notes:*
+
+- Moved the shared environment guards, runtime state fallbacks, and connector summary helpers into `app-core-new-environment.js` so part 2 focuses on the interactive runtime while the bootstrap logic evolves independently.【F:src/scripts/app-core-new-environment.js†L1-L1562】【F:src/scripts/app-core-new-2.js†L1-L20】
+- Updated the loader manifests, service worker asset manifest, and script integrity tests to reference the new module, ensuring offline caching and Node bundling include the extracted helpers.【F:src/scripts/loader.js†L2870-L2895】【F:legacy/scripts/loader.js†L2394-L2406】【F:service-worker-assets.js†L176-L188】【F:tests/script/scriptIntegrity.test.js†L107-L121】
+

@@ -178,6 +178,7 @@
   "./src/scripts/app-core-runtime-scopes.js",
   "./src/scripts/app-core-runtime-support.js",
   "./src/scripts/app-core-new-1.js",
+  "./src/scripts/app-core-new-environment.js",
   "./src/scripts/app-core-new-2.js",
   "./src/scripts/app-events.js",
   "./src/scripts/app-session.js",
