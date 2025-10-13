@@ -3245,9 +3245,18 @@ function resolveAutoGearBackupRetentionMin() {
 
 function resolveAutoGearBackupRetentionDefault() {
   const minValue = resolveAutoGearBackupRetentionMin();
+
+  let localMaxCandidate;
+  try {
+    localMaxCandidate = AUTO_GEAR_BACKUP_RETENTION_MAX;
+  } catch (autoGearMaxReferenceError) {
+    void autoGearMaxReferenceError;
+    localMaxCandidate = undefined;
+  }
+
   const globalMaxCandidate =
-    typeof AUTO_GEAR_BACKUP_RETENTION_MAX !== 'undefined'
-      ? AUTO_GEAR_BACKUP_RETENTION_MAX
+    typeof localMaxCandidate !== 'undefined'
+      ? localMaxCandidate
       : readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MAX');
   const parsedMax = Number(globalMaxCandidate);
   const maxValue = Number.isFinite(parsedMax) && parsedMax >= minValue
@@ -3272,8 +3281,16 @@ function resolveAutoGearBackupRetentionDefault() {
 
   const candidates = [];
 
-  if (typeof AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'undefined') {
-    candidates.push(AUTO_GEAR_BACKUP_RETENTION_DEFAULT);
+  let localDefaultCandidate;
+  try {
+    localDefaultCandidate = AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  } catch (autoGearDefaultReferenceError) {
+    void autoGearDefaultReferenceError;
+    localDefaultCandidate = undefined;
+  }
+
+  if (typeof localDefaultCandidate !== 'undefined') {
+    candidates.push(localDefaultCandidate);
   }
 
   const globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_DEFAULT');
