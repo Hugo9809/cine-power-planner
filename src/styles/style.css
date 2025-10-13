@@ -7387,6 +7387,8 @@ body.dark-mode .onboarding-hero-highlight-body {
 .onboarding-hero-language-select {
   width: 100%;
   max-width: 100%;
+  font-family: inherit;
+  font-weight: var(--font-weight-light);
 }
 
 .onboarding-hero-language-hint {
@@ -8854,7 +8856,7 @@ body.light-mode #topBar .controls button:focus-visible {
 
 body.light-mode #topBar select {
   color: var(--accent-color);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-light);
 }
 
 body.light-mode #topBar select:hover,
