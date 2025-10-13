@@ -926,14 +926,35 @@
             return false;
           }
 
-          if (!reloadWarmupFailureLogged) {
-            reloadWarmupFailureLogged = true;
-            safeWarn('Reload warmup fetch failed', fallbackError || firstError);
-          }
-          return false;
-        }
+          let noCorsResponse = null;
+          let noCorsError = fallbackError;
 
-        response = fallbackResponse;
+          try {
+            noCorsResponse = await performFetch({
+              cache: 'default',
+              mode: 'no-cors',
+              credentials: 'omit',
+            });
+          } catch (thirdError) {
+            noCorsError = thirdError || fallbackError;
+          }
+
+          if (!noCorsResponse) {
+            if (isAborted()) {
+              return false;
+            }
+
+            if (!reloadWarmupFailureLogged) {
+              reloadWarmupFailureLogged = true;
+              safeWarn('Reload warmup fetch failed', noCorsError || fallbackError || firstError);
+            }
+            return false;
+          }
+
+          response = noCorsResponse;
+        } else {
+          response = fallbackResponse;
+        }
       }
 
       if (!response) {

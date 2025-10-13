@@ -236,6 +236,59 @@ describe('cineOffline module', () => {
     }
   });
 
+  test('reload warmup falls back to no-cors when standard fetch attempts fail', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const warmupResponse = {
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.reject(new TypeError('Opaque response'))),
+        clone: jest.fn(() => null),
+      };
+
+      const firstError = new TypeError('Load failed');
+      const secondError = new TypeError('CORS blocked');
+
+      const fetchMock = jest
+        .fn()
+        .mockImplementationOnce(() => Promise.reject(firstError))
+        .mockImplementationOnce(() => Promise.reject(secondError))
+        .mockImplementationOnce(() => Promise.resolve(warmupResponse));
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app?foo=bar',
+        navigator: { onLine: true },
+        window: {},
+        serviceWorkerPromise: Promise.resolve(true),
+        cachePromise: Promise.resolve(true),
+        allowCache: true,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+      await warmupHandle.promise;
+
+      jest.runOnlyPendingTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(fetchMock.mock.calls[0][1]).toEqual(
+        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow' }),
+      );
+      expect(fetchMock.mock.calls[1][1]).toEqual(
+        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow' }),
+      );
+      expect(fetchMock.mock.calls[2][1]).toEqual(
+        expect.objectContaining({ cache: 'default', mode: 'no-cors', credentials: 'omit' }),
+      );
+
+      const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
+      expect(warmupWarnings).toHaveLength(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   test('cleans up forceReload markers from the current URL during initialization', () => {
     if (harness) {
       harness.teardown();
