@@ -443,6 +443,266 @@ var CORE_GLOBAL_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_S
 var autoGearAddOwnGearSelect = typeof autoGearAddOwnGearSelect !== 'undefined' ? autoGearAddOwnGearSelect : __cineCommitGlobalValue('autoGearAddOwnGearSelect', null);
 var autoGearRemoveOwnGearSelect = typeof autoGearRemoveOwnGearSelect !== 'undefined' ? autoGearRemoveOwnGearSelect : __cineCommitGlobalValue('autoGearRemoveOwnGearSelect', null);
 var currentLang = typeof currentLang !== 'undefined' && typeof currentLang === 'string' ? currentLang : __cineCommitGlobalValue('currentLang', 'en');
+var getLanguageTexts = typeof getLanguageTexts === 'function' ? getLanguageTexts : function defineGetLanguageTextsFallback() {
+  function normalizeLanguageCode(candidate) {
+    if (typeof candidate === 'string' && candidate) {
+      try {
+        return candidate.trim().toLowerCase();
+      } catch (normalizeError) {
+        void normalizeError;
+      }
+    }
+    return '';
+  }
+  function resolveDefaultLanguage() {
+    var defaultLanguage = __cineResolveGlobalValue('DEFAULT_LANGUAGE', null);
+    if (typeof defaultLanguage === 'string' && defaultLanguage) {
+      return defaultLanguage;
+    }
+    return 'en';
+  }
+  function resolveTextsDictionary() {
+    var scopeTexts = __cineResolveGlobalValue('texts', null);
+    if (scopeTexts && _typeof(scopeTexts) === 'object') {
+      return scopeTexts;
+    }
+    return {};
+  }
+  function fallbackGetLanguageTexts(lang) {
+    var dictionary = resolveTextsDictionary();
+    if (!dictionary || _typeof(dictionary) !== 'object') {
+      return {};
+    }
+    var normalized = normalizeLanguageCode(lang);
+    var defaultLang = resolveDefaultLanguage();
+    var fallbackNormalized = normalizeLanguageCode(defaultLang);
+    if (normalized && Object.prototype.hasOwnProperty.call(dictionary, normalized)) {
+      var direct = dictionary[normalized];
+      if (direct && _typeof(direct) === 'object') {
+        return direct;
+      }
+    }
+    if (normalized && normalized.length > 2) {
+      var shortCode = normalized.slice(0, 2);
+      if (Object.prototype.hasOwnProperty.call(dictionary, shortCode)) {
+        var regionalMatch = dictionary[shortCode];
+        if (regionalMatch && _typeof(regionalMatch) === 'object') {
+          return regionalMatch;
+        }
+      }
+    }
+    if (fallbackNormalized && Object.prototype.hasOwnProperty.call(dictionary, fallbackNormalized)) {
+      var fallbackEntry = dictionary[fallbackNormalized];
+      if (fallbackEntry && _typeof(fallbackEntry) === 'object') {
+        return fallbackEntry;
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(dictionary, 'en')) {
+      var englishEntry = dictionary.en;
+      if (englishEntry && _typeof(englishEntry) === 'object') {
+        return englishEntry;
+      }
+    }
+    var firstKey = null;
+    try {
+      for (var key in dictionary) {
+        if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+          firstKey = key;
+          break;
+        }
+      }
+    } catch (iterateError) {
+      void iterateError;
+    }
+    if (firstKey) {
+      var firstEntry = dictionary[firstKey];
+      if (firstEntry && _typeof(firstEntry) === 'object') {
+        return firstEntry;
+      }
+    }
+    return {};
+  }
+  return __cineCommitGlobalValue('getLanguageTexts', fallbackGetLanguageTexts);
+}();
+var resolveTextEntry = typeof resolveTextEntry === 'function' ? resolveTextEntry : function defineResolveTextEntryFallback() {
+  function normalizeResolvedValue(value) {
+    if (typeof value === 'string') {
+      try {
+        var trimmed = value.trim();
+        if (trimmed) {
+          return trimmed;
+        }
+      } catch (trimError) {
+        void trimError;
+      }
+      return '';
+    }
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return String(value);
+    }
+    if (Array.isArray(value)) {
+      var filtered = value.map(function (entry) {
+        if (typeof entry === 'string') {
+          return entry.trim();
+        }
+        if (typeof entry === 'number' && Number.isFinite(entry)) {
+          return String(entry);
+        }
+        return '';
+      }).filter(Boolean);
+      if (filtered.length) {
+        return filtered.join(', ');
+      }
+    }
+    return '';
+  }
+  function fallbackResolveTextEntry(primary, fallback, key, defaultValue) {
+    var dictionaries = [];
+    if (primary && _typeof(primary) === 'object') {
+      dictionaries.push(primary);
+    }
+    if (fallback && _typeof(fallback) === 'object' && fallback !== primary) {
+      dictionaries.push(fallback);
+    }
+    for (var index = 0; index < dictionaries.length; index += 1) {
+      var dictionary = dictionaries[index];
+      if (!dictionary || _typeof(dictionary) !== 'object') {
+        continue;
+      }
+      var candidate = void 0;
+      try {
+        candidate = dictionary[key];
+      } catch (lookupError) {
+        candidate = undefined;
+        void lookupError;
+      }
+      var normalized = normalizeResolvedValue(candidate);
+      if (normalized) {
+        return normalized;
+      }
+    }
+    if (typeof defaultValue === 'string') {
+      return defaultValue;
+    }
+    if (typeof defaultValue === 'number' && Number.isFinite(defaultValue)) {
+      return String(defaultValue);
+    }
+    return '';
+  }
+  return __cineCommitGlobalValue('resolveTextEntry', fallbackResolveTextEntry);
+}();
+var TEMPERATURE_STORAGE_KEY = typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY ? TEMPERATURE_STORAGE_KEY : __cineCommitGlobalValue('TEMPERATURE_STORAGE_KEY', 'cameraPowerPlanner_temperatureUnit');
+var resolveTemperatureStorageKey = typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey : __cineCommitGlobalValue('resolveTemperatureStorageKey', function fallbackResolveTemperatureStorageKey() {
+  return TEMPERATURE_STORAGE_KEY;
+});
+function __cineNormalizeTemperatureUnits(candidate) {
+  var normalized = {};
+  if (candidate && _typeof(candidate) === 'object') {
+    if (typeof candidate.celsius === 'string' && candidate.celsius.trim()) {
+      normalized.celsius = candidate.celsius.trim().toLowerCase();
+    }
+    if (typeof candidate.fahrenheit === 'string' && candidate.fahrenheit.trim()) {
+      normalized.fahrenheit = candidate.fahrenheit.trim().toLowerCase();
+    }
+  }
+  if (!normalized.celsius) {
+    normalized.celsius = 'celsius';
+  }
+  if (!normalized.fahrenheit) {
+    normalized.fahrenheit = 'fahrenheit';
+  }
+  return normalized;
+}
+var TEMPERATURE_UNITS = typeof TEMPERATURE_UNITS !== 'undefined' && TEMPERATURE_UNITS && _typeof(TEMPERATURE_UNITS) === 'object' ? __cineCommitGlobalValue('TEMPERATURE_UNITS', __cineNormalizeTemperatureUnits(TEMPERATURE_UNITS)) : __cineCommitGlobalValue('TEMPERATURE_UNITS', __cineNormalizeTemperatureUnits({
+  celsius: 'celsius',
+  fahrenheit: 'fahrenheit'
+}));
+function __cineNormalizeTemperatureScenarios(candidate) {
+  if (!Array.isArray(candidate)) {
+    return [];
+  }
+  var entries = [];
+  for (var index = 0; index < candidate.length; index += 1) {
+    var entry = candidate[index];
+    if (!entry || _typeof(entry) !== 'object') {
+      continue;
+    }
+    var normalized = {};
+    if (typeof entry.id === 'string' && entry.id.trim()) {
+      normalized.id = entry.id.trim();
+    }
+    if (typeof entry.key === 'string' && entry.key.trim()) {
+      normalized.key = entry.key.trim();
+    }
+    if (typeof entry.label === 'string' && entry.label.trim()) {
+      normalized.label = entry.label.trim();
+    }
+    if (Object.keys(normalized).length) {
+      entries.push(normalized);
+    }
+  }
+  return entries;
+}
+var TEMPERATURE_SCENARIOS = typeof TEMPERATURE_SCENARIOS !== 'undefined' && Array.isArray(TEMPERATURE_SCENARIOS) ? __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', __cineNormalizeTemperatureScenarios(TEMPERATURE_SCENARIOS)) : __cineCommitGlobalValue('TEMPERATURE_SCENARIOS', []);
+var FEEDBACK_TEMPERATURE_MIN = typeof FEEDBACK_TEMPERATURE_MIN === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MIN) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', FEEDBACK_TEMPERATURE_MIN) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MIN', -20);
+var FEEDBACK_TEMPERATURE_MAX = typeof FEEDBACK_TEMPERATURE_MAX === 'number' && Number.isFinite(FEEDBACK_TEMPERATURE_MAX) ? __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', FEEDBACK_TEMPERATURE_MAX) : __cineCommitGlobalValue('FEEDBACK_TEMPERATURE_MAX', 50);
+var FOCUS_SCALE_STORAGE_KEY = typeof FOCUS_SCALE_STORAGE_KEY === 'string' && FOCUS_SCALE_STORAGE_KEY ? FOCUS_SCALE_STORAGE_KEY : __cineCommitGlobalValue('FOCUS_SCALE_STORAGE_KEY', 'cameraPowerPlanner_focusScale');
+var FOCUS_SCALE_VALUES = typeof FOCUS_SCALE_VALUES !== 'undefined' && Array.isArray(FOCUS_SCALE_VALUES) ? __cineCommitGlobalValue('FOCUS_SCALE_VALUES', FOCUS_SCALE_VALUES.slice()) : __cineCommitGlobalValue('FOCUS_SCALE_VALUES', ['metric', 'imperial']);
+var SUPPORTED_MOUNT_VOLTAGE_TYPES = typeof SUPPORTED_MOUNT_VOLTAGE_TYPES !== 'undefined' && Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) ? __cineCommitGlobalValue('SUPPORTED_MOUNT_VOLTAGE_TYPES', SUPPORTED_MOUNT_VOLTAGE_TYPES.slice()) : __cineCommitGlobalValue('SUPPORTED_MOUNT_VOLTAGE_TYPES', ['V-Mount', 'Gold-Mount', 'B-Mount']);
+function __cineNormalizeMountVoltageDefaults(candidate) {
+  var defaults = {};
+  var types = Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) ? SUPPORTED_MOUNT_VOLTAGE_TYPES : ['V-Mount', 'Gold-Mount', 'B-Mount'];
+  for (var index = 0; index < types.length; index += 1) {
+    var type = types[index];
+    var source = candidate && candidate[type] ? candidate[type] : null;
+    var high = source && typeof source.high === 'number' && Number.isFinite(source.high) ? source.high : type === 'B-Mount' ? 33.6 : 14.4;
+    var low = source && typeof source.low === 'number' && Number.isFinite(source.low) ? source.low : type === 'B-Mount' ? 21.6 : 12;
+    defaults[type] = {
+      high: high,
+      low: low
+    };
+  }
+  return defaults;
+}
+var DEFAULT_MOUNT_VOLTAGES = typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined' && DEFAULT_MOUNT_VOLTAGES && _typeof(DEFAULT_MOUNT_VOLTAGES) === 'object' ? __cineCommitGlobalValue('DEFAULT_MOUNT_VOLTAGES', __cineNormalizeMountVoltageDefaults(DEFAULT_MOUNT_VOLTAGES)) : __cineCommitGlobalValue('DEFAULT_MOUNT_VOLTAGES', __cineNormalizeMountVoltageDefaults({}));
+var MOUNT_VOLTAGE_RUNTIME_EXPORTS = typeof MOUNT_VOLTAGE_RUNTIME_EXPORTS !== 'undefined' && MOUNT_VOLTAGE_RUNTIME_EXPORTS && _typeof(MOUNT_VOLTAGE_RUNTIME_EXPORTS) === 'object' ? __cineCommitGlobalValue('MOUNT_VOLTAGE_RUNTIME_EXPORTS', MOUNT_VOLTAGE_RUNTIME_EXPORTS) : __cineCommitGlobalValue('MOUNT_VOLTAGE_RUNTIME_EXPORTS', {});
+var syncMountVoltageResetButtonGlobal = typeof syncMountVoltageResetButtonGlobal === 'function' ? syncMountVoltageResetButtonGlobal : function defineSyncMountVoltageResetButtonGlobalFallback() {
+  function resolveMountVoltageScope() {
+    var candidates = [__cineResolveGlobalValue('CORE_GLOBAL_SCOPE', null), typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
+        return scope;
+      }
+    }
+    return null;
+  }
+  function delegateToNamespace(scope, value) {
+    if (!scope) {
+      return;
+    }
+    var namespace = scope.cineCoreMountVoltage;
+    if (namespace && typeof namespace.syncMountVoltageResetButtonGlobal === 'function') {
+      try {
+        namespace.syncMountVoltageResetButtonGlobal(value);
+        return;
+      } catch (delegateError) {
+        void delegateError;
+      }
+    }
+    try {
+      scope.mountVoltageResetButton = value;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  function fallbackSyncMountVoltageResetButtonGlobal(value) {
+    var scope = resolveMountVoltageScope();
+    delegateToNamespace(scope, value);
+    return value;
+  }
+  return __cineCommitGlobalValue('syncMountVoltageResetButtonGlobal', fallbackSyncMountVoltageResetButtonGlobal);
+}();
 var totalPowerElem = typeof totalPowerElem !== 'undefined' && (totalPowerElem === null || _typeof(totalPowerElem) === 'object') ? totalPowerElem : function resolveTotalPowerElem() {
   var value = __cineResolveGlobalValue('totalPowerElem', null);
   var normalized = typeof value === 'undefined' || value === null || _typeof(value) === 'object' ? value : null;

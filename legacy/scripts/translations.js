@@ -7277,7 +7277,7 @@ var texts = {
         },
         settingsBackup: {
           title: "Maintenez Sauvegarde et restauration",
-          body: "L’onglet Sauvegarde et restauration gère les exports complets de l’application, les répétitions de restauration et la diagnostic. Effectuez des sauvegardes avant les changements majeurs, archivez les fichiers sur des supports externes et validez régulièrement les restaurations."
+          body: "L’onglet Sauvegarde et restauration gère les exports complets de l’application, les répétitions de restauration et le diagnostic. Effectuez des sauvegardes avant les changements majeurs, archivez les fichiers sur des supports externes et validez régulièrement les restaurations."
         },
         completion: {
           title: "Tutoriel terminé",

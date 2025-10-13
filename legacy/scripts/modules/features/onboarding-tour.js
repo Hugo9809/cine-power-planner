@@ -60,6 +60,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn(message, error);
     }
   };
+  function prefersReducedMotion() {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE.matchMedia !== 'function') {
+      return false;
+    }
+    try {
+      return GLOBAL_SCOPE.matchMedia('(prefers-reduced-motion: reduce)').matches === true;
+    } catch (error) {
+      void error;
+    }
+    return false;
+  }
   function collectCandidateScopes(primary) {
     if (typeof MODULE_BASE.collectCandidateScopes === 'function') {
       try {
@@ -121,6 +132,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     maxViewportRem: 26,
     marginRem: 0.75
   }];
+  var KEYBOARD_HEIGHT_THRESHOLD = 120;
+  var KEYBOARD_OFFSET_THRESHOLD = 24;
   function resolveHeroMarginPx(viewportWidth, rootFontSize) {
     var safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0 ? rootFontSize : 16;
     if (!Number.isFinite(viewportWidth) || viewportWidth <= 0) {
@@ -1578,7 +1591,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       highlight: '#batterySelect'
     }, {
       key: 'resultsTotalDraw',
-      highlight: ['#totalPowerLabel', '#totalPower', '#totalCurrent144Label', '#totalCurrent144', '#totalCurrent12Label', '#totalCurrent12']
+      highlight: ['#totalPowerLabel', '#totalPower', '#totalCurrent144Label', '#totalCurrent144', '#totalCurrent12Label', '#totalCurrent12'],
+      highlightPadding: {
+        right: 24
+      }
     }, {
       key: 'resultsBatteryPacks',
       highlight: ['#batteryLifeLabel', '#batteryLife', '#batteryCountLabel', '#batteryCount']
@@ -1753,6 +1769,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var activeInteractionCleanup = null;
   var lastCardPlacement = 'floating';
   var proxyControlId = 0;
+  var baselineViewportHeight = null;
   function getProxyControlId(prefix) {
     proxyControlId += 1;
     return "onboarding-".concat(prefix, "-").concat(proxyControlId);
@@ -1769,6 +1786,64 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       nextButton.setAttribute('aria-disabled', 'false');
       nextButton.classList.remove('onboarding-next-disabled');
     }
+  }
+  function updateBaselineViewportHeight(candidate, options) {
+    if (!Number.isFinite(candidate) || candidate <= 0) {
+      return;
+    }
+    var allowDecrease = Boolean(options && options.allowDecrease);
+    if (baselineViewportHeight === null) {
+      baselineViewportHeight = candidate;
+      return;
+    }
+    if (candidate > baselineViewportHeight) {
+      baselineViewportHeight = candidate;
+      return;
+    }
+    if (allowDecrease && candidate < baselineViewportHeight) {
+      baselineViewportHeight = candidate;
+    }
+  }
+  function isTextInputElement(element) {
+    if (!element) {
+      return false;
+    }
+    var nodeName = typeof element.nodeName === 'string' ? element.nodeName.toLowerCase() : '';
+    if (nodeName === 'textarea') {
+      return true;
+    }
+    if (nodeName === 'input') {
+      var type = typeof element.type === 'string' && element.type ? element.type.toLowerCase() : 'text';
+      switch (type) {
+        case 'button':
+        case 'checkbox':
+        case 'color':
+        case 'file':
+        case 'hidden':
+        case 'image':
+        case 'radio':
+        case 'range':
+        case 'reset':
+        case 'submit':
+          return false;
+        default:
+          return true;
+      }
+    }
+    if (element.isContentEditable) {
+      return true;
+    }
+    if (typeof element.getAttribute === 'function') {
+      var role = element.getAttribute('role');
+      if (role === 'textbox' || role === 'searchbox') {
+        return true;
+      }
+      var contentEditable = element.getAttribute('contenteditable');
+      if (contentEditable && contentEditable.toLowerCase() !== 'false') {
+        return true;
+      }
+    }
+    return false;
   }
   function teardownStepRequirement() {
     if (typeof activeRequirementCleanup === 'function') {
@@ -2175,6 +2250,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     lastCardPlacement = 'floating';
+    baselineViewportHeight = null;
   }
   function attachKeyboardListener() {
     if (!DOCUMENT || keyboardListenerAttached) {
@@ -2394,6 +2470,43 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     activeTargetElements = [];
   }
+  var DEFAULT_HIGHLIGHT_PADDING = 12;
+  function normalizeHighlightPaddingValue(value, fallback) {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return Math.max(0, value);
+    }
+    return fallback;
+  }
+  function resolveStepHighlightPadding(step) {
+    var fallback = {
+      top: DEFAULT_HIGHLIGHT_PADDING,
+      right: DEFAULT_HIGHLIGHT_PADDING,
+      bottom: DEFAULT_HIGHLIGHT_PADDING,
+      left: DEFAULT_HIGHLIGHT_PADDING
+    };
+    if (!step || _typeof(step) !== 'object') {
+      return fallback;
+    }
+    var custom = step.highlightPadding;
+    if (typeof custom === 'number' && Number.isFinite(custom)) {
+      var normalized = Math.max(0, custom);
+      return {
+        top: normalized,
+        right: normalized,
+        bottom: normalized,
+        left: normalized
+      };
+    }
+    if (custom && _typeof(custom) === 'object') {
+      return {
+        top: normalizeHighlightPaddingValue(custom.top, fallback.top),
+        right: normalizeHighlightPaddingValue(custom.right, fallback.right),
+        bottom: normalizeHighlightPaddingValue(custom.bottom, fallback.bottom),
+        left: normalizeHighlightPaddingValue(custom.left, fallback.left)
+      };
+    }
+    return fallback;
+  }
   function updateHighlightPosition() {
     if (!highlightEl) {
       return;
@@ -2445,14 +2558,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     combinedRect.width = Math.max(0, combinedRect.right - combinedRect.left);
     combinedRect.height = Math.max(0, combinedRect.bottom - combinedRect.top);
-    var padding = 12;
-    var width = Math.max(0, combinedRect.width + padding * 2);
-    var height = Math.max(0, combinedRect.height + padding * 2);
+    var padding = resolveStepHighlightPadding(currentStep);
+    var width = Math.max(0, combinedRect.width + padding.left + padding.right);
+    var height = Math.max(0, combinedRect.height + padding.top + padding.bottom);
     var _getOverlayMetrics = getOverlayMetrics(),
       offsetLeft = _getOverlayMetrics.offsetLeft,
       offsetTop = _getOverlayMetrics.offsetTop;
-    var left = combinedRect.left + offsetLeft - padding;
-    var top = combinedRect.top + offsetTop - padding;
+    var left = combinedRect.left + offsetLeft - padding.left;
+    var top = combinedRect.top + offsetTop - padding.top;
     highlightEl.style.width = "".concat(width, "px");
     highlightEl.style.height = "".concat(height, "px");
     highlightEl.style.transform = "translate(".concat(Math.max(0, left), "px, ").concat(Math.max(0, top), "px)");
@@ -2474,6 +2587,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     var forceFloating = Boolean(currentStep && currentStep.forceFloating);
     var cardRect = cardEl.getBoundingClientRect();
+    var visualViewport = GLOBAL_SCOPE && GLOBAL_SCOPE.visualViewport;
+    var activeElement = DOCUMENT && DOCUMENT.activeElement ? DOCUMENT.activeElement : null;
+    var hasActiveTextInput = isTextInputElement(activeElement);
+    var baselineCandidates = [];
+    if (Number.isFinite(viewportHeight) && viewportHeight > 0) {
+      baselineCandidates.push(viewportHeight);
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerHeight === 'number' && GLOBAL_SCOPE.innerHeight > 0) {
+      baselineCandidates.push(GLOBAL_SCOPE.innerHeight);
+    }
+    if (DOCUMENT && DOCUMENT.documentElement && typeof DOCUMENT.documentElement.clientHeight === 'number' && DOCUMENT.documentElement.clientHeight > 0) {
+      baselineCandidates.push(DOCUMENT.documentElement.clientHeight);
+    }
+    var candidateBaseline = baselineCandidates.length > 0 ? Math.max.apply(Math, baselineCandidates) : null;
+    updateBaselineViewportHeight(candidateBaseline, {
+      allowDecrease: !hasActiveTextInput
+    });
+    var baselineHeight = baselineViewportHeight || candidateBaseline || viewportHeight;
+    var rawViewportOffset = visualViewport ? Number.isFinite(visualViewport.offsetTop) ? visualViewport.offsetTop : Number.isFinite(visualViewport.pageTop) ? visualViewport.pageTop : 0 : 0;
+    var viewportOffsetTop = Number.isFinite(rawViewportOffset) ? rawViewportOffset : 0;
+    var keyboardHeightDelta = Number.isFinite(baselineHeight) && Number.isFinite(viewportHeight) ? baselineHeight - viewportHeight : 0;
+    var keyboardLikelyOpen = hasActiveTextInput && (keyboardHeightDelta > KEYBOARD_HEIGHT_THRESHOLD || viewportOffsetTop > KEYBOARD_OFFSET_THRESHOLD);
+    var activeRect = hasActiveTextInput && activeElement && typeof activeElement.getBoundingClientRect === 'function' ? activeElement.getBoundingClientRect() : null;
     var margin = 16;
     if (currentStep && currentStep.size === 'hero') {
       var heroMarginPx = resolveHeroMarginPx(viewportWidth, rootFontSize);
@@ -2564,11 +2700,47 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         placement = chosen.name;
       }
     }
-    cardEl.style.top = "".concat(Math.min(Math.max(top, minTop), maxTop), "px");
-    cardEl.style.left = "".concat(Math.min(Math.max(left, minLeft), maxLeft), "px");
-    if (placement !== lastCardPlacement) {
-      lastCardPlacement = placement;
-      cardEl.setAttribute('data-placement', placement);
+    var resolvedTop = Math.min(Math.max(top, minTop), maxTop);
+    var resolvedLeft = Math.min(Math.max(left, minLeft), maxLeft);
+    var resolvedPlacement = placement;
+    if (keyboardLikelyOpen && activeRect) {
+      var safeMargin = Math.max(8, margin);
+      var activeTop = activeRect.top + scrollY;
+      var activeBottom = activeTop + activeRect.height;
+      var cardBottom = resolvedTop + cardRect.height;
+      var overlapsActive = cardBottom > activeTop - safeMargin && resolvedTop < activeBottom + safeMargin;
+      if (overlapsActive) {
+        var safeTop = activeTop - safeMargin;
+        var safeBottom = activeBottom + safeMargin;
+        var spaceAbove = Math.max(0, safeTop - minTop);
+        var spaceBelow = Math.max(0, viewportBottom - safeBottom);
+        var computeOverlap = function computeOverlap(candidateTop) {
+          var candidateBottom = candidateTop + cardRect.height;
+          var overlapStart = Math.max(candidateTop, safeTop);
+          var overlapEnd = Math.min(candidateBottom, safeBottom);
+          return Math.max(0, overlapEnd - overlapStart);
+        };
+        var candidateTopAbove = Math.max(minTop, Math.min(maxTop, safeTop - cardRect.height));
+        var candidateTopBelow = Math.min(maxTop, Math.max(minTop, safeBottom));
+        var overlapAbove = computeOverlap(candidateTopAbove);
+        var overlapBelow = computeOverlap(candidateTopBelow);
+        var chosenTop;
+        if (spaceAbove > spaceBelow) {
+          chosenTop = overlapAbove <= overlapBelow ? candidateTopAbove : candidateTopBelow;
+        } else if (spaceBelow > spaceAbove) {
+          chosenTop = overlapBelow <= overlapAbove ? candidateTopBelow : candidateTopAbove;
+        } else {
+          chosenTop = overlapBelow < overlapAbove ? candidateTopBelow : candidateTopAbove;
+        }
+        resolvedTop = Math.min(Math.max(chosenTop, minTop), maxTop);
+        resolvedPlacement = 'floating';
+      }
+    }
+    cardEl.style.top = "".concat(resolvedTop, "px");
+    cardEl.style.left = "".concat(resolvedLeft, "px");
+    if (resolvedPlacement !== lastCardPlacement) {
+      lastCardPlacement = resolvedPlacement;
+      cardEl.setAttribute('data-placement', resolvedPlacement);
     }
   }
   function ensureSettingsForStep(step) {
@@ -4292,7 +4464,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     if (cardContentEl) {
-      cardContentEl.scrollTop = 0;
+      if (typeof cardContentEl.scrollTo === 'function' && !prefersReducedMotion()) {
+        try {
+          cardContentEl.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        } catch (scrollError) {
+          safeWarn('cine.features.onboardingTour could not smoothly reset card scroll.', scrollError);
+          cardContentEl.scrollTop = 0;
+        }
+      } else {
+        cardContentEl.scrollTop = 0;
+      }
     }
     var totalSteps = getCountableStepTotal(stepConfig);
     var countableIndex = getCountableStepIndex(stepConfig, index);
