@@ -19358,6 +19358,42 @@ function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
   return `${baseLabel} (${symbol})`;
 }
 
+function getFocusScaleLabelForLang(lang = currentLang, scale) {
+  const language = typeof lang === 'string' && lang.trim() ? lang : currentLang;
+  const textsForLang = getLanguageTexts(language);
+  const fallbackTexts = getLanguageTexts('en');
+
+  const resolveScale = () => {
+    const rawScale =
+      (typeof scale === 'string' && scale) ||
+      (typeof resolveGlobalFocusScalePreference === 'function'
+        ? resolveGlobalFocusScalePreference()
+        : typeof focusScalePreference === 'string'
+          ? focusScalePreference
+          : null);
+
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        const normalized = normalizeFocusScale(rawScale);
+        if (normalized === 'imperial' || normalized === 'metric') {
+          return normalized;
+        }
+      } catch (focusScaleNormalizeError) {
+        void focusScaleNormalizeError;
+      }
+    }
+
+    const fallbackValue = typeof rawScale === 'string' ? rawScale.trim().toLowerCase() : '';
+    return fallbackValue === 'imperial' ? 'imperial' : 'metric';
+  };
+
+  const normalizedScale = resolveScale();
+  const key = normalizedScale === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
+  const defaultLabel = normalizedScale === 'imperial' ? 'Imperial' : 'Metric';
+
+  return textsForLang[key] || fallbackTexts[key] || defaultLabel;
+}
+
 function formatTemperatureForDisplay(celsius, options = {}) {
   const {
     unit,
