@@ -1784,7 +1784,7 @@
         key: 'intro',
         highlight: null,
         preface: true,
-        size: 'hero',
+        size: 'large',
       },
       {
         key: 'userProfile',
