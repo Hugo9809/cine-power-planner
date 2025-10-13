@@ -18,6 +18,35 @@
   --control-hover-bg: #e0e0e0;
   --control-active-bg: #d0d0d0;
   --control-disabled-bg: #dddddd;
+  --control-border-strong: color-mix(in srgb, var(--control-border) 65%, transparent);
+  --control-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --control-hover-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  --control-active-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 1px 2px rgba(15, 23, 42, 0.24);
+  --control-focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent-color) 35%, transparent);
+  --control-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--control-bg) 92%, #ffffff 8%) 0%,
+    color-mix(in srgb, var(--control-bg) 86%, #000000 14%) 100%
+  );
+  --control-hover-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--control-hover-bg) 90%, #ffffff 10%) 0%,
+    color-mix(in srgb, var(--control-hover-bg) 82%, #000000 18%) 100%
+  );
+  --control-active-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--control-active-bg) 86%, #ffffff 14%) 0%,
+    color-mix(in srgb, var(--control-active-bg) 78%, #000000 22%) 100%
+  );
+  --control-disabled-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--control-disabled-bg) 95%, #ffffff 5%) 0%,
+    color-mix(in srgb, var(--control-disabled-bg) 88%, #000000 12%) 100%
+  );
+  --control-transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
   --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -821,24 +850,71 @@ main.legal-content {
   line-height: var(--button-line-height);
   padding: var(--button-link-padding-block) var(--button-link-padding-inline);
   border-radius: var(--border-radius);
-  background-color: var(--control-bg);
+  border: 1px solid var(--control-border-strong, var(--control-border));
+  background: var(--control-surface);
   color: var(--control-text);
   font-size: var(--form-control-font-size);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: var(--control-shadow);
+  transition: var(--control-transition);
 }
 
 .button-link:hover {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  transform: translateY(-2px);
+  background: var(--control-hover-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-hover-shadow);
 }
 
 .button-link:active {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  filter: brightness(0.9);
-  transform: translateY(0);
+  background: var(--control-active-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-active-shadow);
+}
+
+.button-link:focus-visible {
+  background: var(--control-hover-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-hover-shadow), var(--control-focus-ring);
+}
+
+select {
+  background: var(--control-surface);
+  border: 1px solid var(--control-border-strong, var(--control-border));
+  border-radius: var(--border-radius);
+  color: var(--control-text);
+  min-height: var(--select-height);
+  padding: var(--form-control-padding-block) var(--form-control-padding-inline);
+  font-size: var(--form-control-font-size);
+  line-height: var(--form-control-line-height);
+  box-shadow: var(--control-shadow);
+  transition: var(--control-transition);
+  background-clip: padding-box;
+}
+
+select:hover {
+  background: var(--control-hover-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-hover-shadow);
+}
+
+select:focus-visible {
+  background: var(--control-hover-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-hover-shadow), var(--control-focus-ring);
+}
+
+select:active {
+  background: var(--control-active-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-active-shadow);
+}
+
+select:disabled {
+  background: var(--control-disabled-surface);
+  border-color: color-mix(in srgb, var(--control-border-strong, var(--control-border)) 60%, transparent);
+  color: color-mix(in srgb, var(--control-text) 55%, transparent);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Form layout */
@@ -6801,22 +6877,23 @@ select {
 
 /* Ensure multi-select lists remain legible across themes, including dark mode on mobile */
 select[multiple] {
-  background-color: var(--control-bg);
+  background: var(--control-surface);
   color: var(--control-text);
   -webkit-text-fill-color: var(--control-text);
+  box-shadow: var(--control-shadow);
 }
 
 select[multiple] option {
-  background-color: var(--control-bg);
+  background: color-mix(in srgb, var(--control-bg) 92%, transparent);
   color: var(--control-text);
 }
 
 select[multiple] option:hover {
-  background-color: var(--control-hover-bg);
+  background: color-mix(in srgb, var(--control-hover-bg) 85%, transparent);
 }
 
 select[multiple] option:checked {
-  background-color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 70%, var(--control-bg));
   color: var(--inverse-text-color);
 }
 
@@ -6833,19 +6910,16 @@ body.high-contrast select[multiple] option:checked {
 }
 
 input:hover,
-select:hover,
 textarea:hover {
   background-color: var(--control-hover-bg);
 }
 
 input:active,
-select:active,
 textarea:active {
   background-color: var(--control-active-bg);
 }
 
 input:disabled,
-select:disabled,
 textarea:disabled {
   background-color: var(--control-disabled-bg);
   cursor: not-allowed;
@@ -6866,6 +6940,7 @@ textarea:disabled {
   line-height: 1;
   border-radius: var(--border-radius);
   color: inherit;
+  box-shadow: none;
 }
 
 .clear-input-btn:hover {
@@ -8337,9 +8412,9 @@ section:hover {
 
 /* All Buttons */
 button {
-  background-color: var(--control-bg);
+  background: var(--control-surface);
   color: var(--control-text);
-  border: none;
+  border: 1px solid var(--control-border-strong, var(--control-border));
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin: var(--button-margin-block-start) var(--button-margin-inline)
@@ -8353,15 +8428,20 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background-color 0.2s,
-    color 0.2s;
+  box-shadow: var(--control-shadow);
+  transition: var(--control-transition);
 }
 
-button:hover,
-button:focus-visible {
-  background-color: var(--control-hover-bg);
+button:hover {
+  background: var(--control-hover-surface);
   color: var(--control-text);
+  box-shadow: var(--control-hover-shadow);
+}
+
+button:focus-visible {
+  background: var(--control-hover-surface);
+  color: var(--control-text);
+  box-shadow: var(--control-hover-shadow), var(--control-focus-ring);
 }
 
 .share-import-group button {
@@ -8376,12 +8456,16 @@ button:focus-visible {
   align-self: center;
 }
 button:active {
-  background-color: var(--control-active-bg);
+  background: var(--control-active-surface);
   color: var(--control-text);
+  box-shadow: var(--control-active-shadow);
 }
 button:disabled {
-  background-color: var(--control-disabled-bg);
+  background: var(--control-disabled-surface);
+  border-color: color-mix(in srgb, var(--control-border-strong, var(--control-border)) 60%, transparent);
+  color: color-mix(in srgb, var(--control-text) 55%, transparent);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .ghost-button {
@@ -8392,6 +8476,7 @@ button:disabled {
   padding-inline: calc(var(--button-padding-inline) * 0.7);
   margin: 0;
   min-height: calc(var(--button-size) * 0.85);
+  box-shadow: none;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
@@ -8400,6 +8485,7 @@ button:disabled {
   background: color-mix(in srgb, var(--accent-color) 18%, transparent);
   color: var(--text-color);
   border-color: color-mix(in srgb, var(--accent-color) 45%, var(--panel-border));
+  box-shadow: none;
 }
 
 .ghost-button:disabled {
@@ -8419,6 +8505,7 @@ button:disabled {
   background: color-mix(in srgb, var(--accent-color) 28%, transparent);
   color: var(--inverse-text-color);
   border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  box-shadow: none;
 }
 
 .dark-mode .ghost-button:disabled {
@@ -8445,9 +8532,9 @@ body:not(.dark-mode) .button-link[aria-disabled='true'] .btn-icon.icon-glyph {
 /* Style file input buttons to match standard buttons */
 input[type="file"]::file-selector-button,
 input[type="file"]::-webkit-file-upload-button {
-  background-color: var(--control-bg);
+  background: var(--control-surface);
   color: var(--control-text);
-  border: none;
+  border: 1px solid var(--control-border-strong, var(--control-border));
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin-inline-end: var(--spacing-sm);
@@ -8458,25 +8545,31 @@ input[type="file"]::-webkit-file-upload-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: var(--control-shadow);
+  transition: var(--control-transition);
 }
 
 input[type="file"]::file-selector-button:hover,
 input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: var(--control-hover-bg);
+  background: var(--control-hover-surface);
   color: var(--control-text);
+  box-shadow: var(--control-hover-shadow);
 }
 
 input[type="file"]::file-selector-button:active,
 input[type="file"]::-webkit-file-upload-button:active {
-  background-color: var(--control-active-bg);
+  background: var(--control-active-surface);
   color: var(--control-text);
+  box-shadow: var(--control-active-shadow);
 }
 
 input[type="file"]:disabled::file-selector-button,
 input[type="file"]:disabled::-webkit-file-upload-button {
-  background-color: var(--control-disabled-bg);
+  background: var(--control-disabled-surface);
+  border-color: color-mix(in srgb, var(--control-border-strong, var(--control-border)) 60%, transparent);
+  color: color-mix(in srgb, var(--control-text) 55%, transparent);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 
@@ -8840,12 +8933,14 @@ body.high-contrast .feature-search-option mark.feature-search-highlight {
 }
 
 .controls button:hover {
-  background-color: var(--control-hover-bg);
+  background: var(--control-hover-surface);
   color: var(--control-text);
+  box-shadow: var(--control-hover-shadow);
 }
 .controls button:active {
-  background-color: var(--control-active-bg);
+  background: var(--control-active-surface);
   color: var(--control-text);
+  box-shadow: var(--control-active-shadow);
 }
 
 body.light-mode #topBar .controls button {
@@ -8859,8 +8954,8 @@ body.light-mode #topBar .controls button:active {
 }
 
 body.light-mode #topBar .controls button:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--control-hover-shadow), var(--control-focus-ring);
 }
 
 body.light-mode #topBar select {
@@ -8874,8 +8969,8 @@ body.light-mode #topBar select:focus {
 }
 
 body.light-mode #topBar select:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--control-hover-shadow), var(--control-focus-ring);
 }
 
 @supports (padding: env(safe-area-inset-top)) {
@@ -9722,6 +9817,34 @@ html.dark-mode,
   --control-hover-bg: #3a3a3d;
   --control-active-bg: #4a4a4d;
   --control-disabled-bg: #333;
+  --control-border-strong: color-mix(in srgb, var(--control-border) 55%, rgba(255, 255, 255, 0.18));
+  --control-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  --control-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --control-active-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.6);
+  --control-focus-ring: 0 0 0 3px
+    color-mix(in srgb, var(--accent-color) 45%, rgba(255, 255, 255, 0.2));
+  --control-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, rgba(255, 255, 255, 0.08) 22%, var(--control-bg) 78%) 0%,
+    color-mix(in srgb, rgba(0, 0, 0, 0.65) 18%, var(--control-bg) 82%) 100%
+  );
+  --control-hover-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, rgba(255, 255, 255, 0.12) 24%, var(--control-hover-bg) 76%) 0%,
+    color-mix(in srgb, rgba(0, 0, 0, 0.65) 22%, var(--control-hover-bg) 78%) 100%
+  );
+  --control-active-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, rgba(255, 255, 255, 0.1) 18%, var(--control-active-bg) 82%) 0%,
+    color-mix(in srgb, rgba(0, 0, 0, 0.75) 24%, var(--control-active-bg) 76%) 100%
+  );
+  --control-disabled-surface: linear-gradient(
+    180deg,
+    color-mix(in srgb, rgba(255, 255, 255, 0.05) 20%, var(--control-disabled-bg) 80%) 0%,
+    color-mix(in srgb, rgba(0, 0, 0, 0.65) 16%, var(--control-disabled-bg) 84%) 100%
+  );
   --panel-bg: #1c1c1e;
   --panel-border: #333;
   --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -9788,6 +9911,15 @@ body.high-contrast {
   --control-bg: #000;
   --control-text: #fff;
   --control-border: #fff;
+  --control-border-strong: #fff;
+  --control-shadow: none;
+  --control-hover-shadow: none;
+  --control-active-shadow: none;
+  --control-focus-ring: 0 0 0 3px currentColor;
+  --control-surface: var(--control-bg);
+  --control-hover-surface: var(--control-hover-bg);
+  --control-active-surface: var(--control-active-bg);
+  --control-disabled-surface: var(--control-disabled-bg);
   --panel-bg: #000;
   --panel-border: #fff;
   --link-color: #0ff;
@@ -9918,6 +10050,34 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     --control-hover-bg: #3a3a3d;
     --control-active-bg: #4a4a4d;
     --control-disabled-bg: #333;
+    --control-border-strong: color-mix(in srgb, var(--control-border) 55%, rgba(255, 255, 255, 0.18));
+    --control-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    --control-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --control-active-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 1px 3px rgba(0, 0, 0, 0.6);
+    --control-focus-ring: 0 0 0 3px
+      color-mix(in srgb, var(--accent-color) 45%, rgba(255, 255, 255, 0.2));
+    --control-surface: linear-gradient(
+      180deg,
+      color-mix(in srgb, rgba(255, 255, 255, 0.08) 22%, var(--control-bg) 78%) 0%,
+      color-mix(in srgb, rgba(0, 0, 0, 0.65) 18%, var(--control-bg) 82%) 100%
+    );
+    --control-hover-surface: linear-gradient(
+      180deg,
+      color-mix(in srgb, rgba(255, 255, 255, 0.12) 24%, var(--control-hover-bg) 76%) 0%,
+      color-mix(in srgb, rgba(0, 0, 0, 0.65) 22%, var(--control-hover-bg) 78%) 100%
+    );
+    --control-active-surface: linear-gradient(
+      180deg,
+      color-mix(in srgb, rgba(255, 255, 255, 0.1) 18%, var(--control-active-bg) 82%) 0%,
+      color-mix(in srgb, rgba(0, 0, 0, 0.75) 24%, var(--control-active-bg) 76%) 100%
+    );
+    --control-disabled-surface: linear-gradient(
+      180deg,
+      color-mix(in srgb, rgba(255, 255, 255, 0.05) 20%, var(--control-disabled-bg) 80%) 0%,
+      color-mix(in srgb, rgba(0, 0, 0, 0.65) 16%, var(--control-disabled-bg) 84%) 100%
+    );
     --panel-bg: #1c1c1e;
     --panel-border: #333;
     --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
