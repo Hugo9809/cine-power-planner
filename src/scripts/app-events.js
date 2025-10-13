@@ -3217,6 +3217,20 @@ function resetDeviceForm() {
 
 
 // Add/Update device logic
+function applyDynamicFieldsToDevice(container, key, categoryKey, excludedAttributes) {
+  if (!container || typeof container !== 'object' || !key) {
+    applyDynamicFieldValues(undefined, categoryKey, excludedAttributes);
+    return;
+  }
+
+  const currentEntry = container[key];
+  const updatedEntry = applyDynamicFieldValues(currentEntry, categoryKey, excludedAttributes);
+
+  if (updatedEntry && updatedEntry !== currentEntry) {
+    container[key] = updatedEntry;
+  }
+}
+
 addSafeEventListener(addDeviceBtn, "click", () => {
   const name = newNameInput.value.trim();
   const categorySelect = resolveNewCategorySelect();
@@ -3285,12 +3299,13 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     } else {
       targetCategory[name] = { ...existing, capacity: capacity, pinA: pinA, dtapA: dtapA };
     }
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "accessories.cables") {
     const existing = isEditing && originalDeviceData ? { ...originalDeviceData } : {};
     targetCategory[name] = { ...existing };
-    applyDynamicFieldValues(
-      targetCategory[name],
+    applyDynamicFieldsToDevice(
+      targetCategory,
+      name,
       `accessories.cables.${subcategory}`,
       categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []
     );
@@ -3330,7 +3345,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       lensMount: getLensMounts(),
       timecode: timecode
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
     updateMountTypeOptions();
   } else if (category === "lenses") {
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
@@ -3351,7 +3366,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       }
     }
     targetCategory[name] = existing;
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
     updateMountTypeOptions();
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
@@ -3380,7 +3395,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     const watt = parseFloat(viewfinderWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3407,7 +3422,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3422,7 +3437,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3437,7 +3452,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
       notes: motorNotesInput.value
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.controllers") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3452,7 +3467,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.distance") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3468,7 +3483,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -3477,7 +3492,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
     targetCategory[name] = { ...existing, powerDrawWatts: watt };
-    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
+    applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
   }
 
   if (isEditing) {
