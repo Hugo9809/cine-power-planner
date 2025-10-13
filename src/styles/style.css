@@ -7673,7 +7673,7 @@ body.dark-mode .onboarding-progress-fill {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 32px rgba(12, 18, 28, 0.16);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 75%, transparent);
 }
 
 .onboarding-avatar-preview img {
