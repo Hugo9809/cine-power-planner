@@ -1699,11 +1699,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!message) {
       message = "[console.".concat(method || level, "]");
     }
+    var sanitizedArguments = null;
     var detailPayload = null;
     if (rawArgs.length) {
       try {
+        sanitizedArguments = sanitizeForLog(rawArgs);
         detailPayload = {
-          arguments: sanitizeForLog(rawArgs)
+          arguments: sanitizedArguments
         };
       } catch (detailError) {
         detailPayload = {
@@ -1712,14 +1714,109 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void detailError;
       }
     }
+    var errorEntries = [];
+    var sanitizedArray = Array.isArray(sanitizedArguments) ? sanitizedArguments : null;
+    for (var _index8 = 0; _index8 < rawArgs.length; _index8 += 1) {
+      var rawValue = rawArgs[_index8];
+      var sanitizedValue = sanitizedArray ? sanitizedArray[_index8] : null;
+      var isErrorInstance = rawValue instanceof Error;
+      var hasSanitizedErrorShape = sanitizedValue && _typeof(sanitizedValue) === 'object' && sanitizedValue !== null ? Boolean(typeof sanitizedValue.stack === 'string' || typeof sanitizedValue.message === 'string' || typeof sanitizedValue.name === 'string') : false;
+      if (!isErrorInstance && !hasSanitizedErrorShape) {
+        continue;
+      }
+      var snapshot = hasSanitizedErrorShape ? sanitizedValue : null;
+      if (!snapshot) {
+        try {
+          snapshot = sanitizeForLog(rawValue);
+        } catch (argumentSanitizeError) {
+          snapshot = null;
+          void argumentSanitizeError;
+        }
+      }
+      if (!snapshot && isErrorInstance) {
+        snapshot = {
+          name: rawValue.name || null,
+          message: rawValue.message || coerceMessage(rawValue) || null
+        };
+        if (typeof rawValue.code !== 'undefined') {
+          snapshot.code = rawValue.code;
+        }
+        if (typeof rawValue.status !== 'undefined') {
+          snapshot.status = rawValue.status;
+        }
+        if (typeof rawValue.stack === 'string' && rawValue.stack) {
+          snapshot.stack = rawValue.stack;
+        }
+      }
+      var valueClone = snapshot;
+      if (valueClone && _typeof(valueClone) === 'object') {
+        try {
+          valueClone = LOGGING_DEEP_CLONE(valueClone);
+        } catch (cloneError) {
+          void cloneError;
+          try {
+            valueClone = Object.assign({}, valueClone);
+          } catch (assignError) {
+            valueClone = snapshot;
+            void assignError;
+          }
+        }
+      }
+      var entry = {
+        index: _index8
+      };
+      if (valueClone && _typeof(valueClone) === 'object') {
+        entry.value = valueClone;
+        if (typeof valueClone.name === 'string' && valueClone.name) {
+          entry.name = valueClone.name;
+        }
+        if (typeof valueClone.message === 'string' && valueClone.message) {
+          entry.message = valueClone.message;
+        }
+        if (typeof valueClone.code !== 'undefined') {
+          entry.code = valueClone.code;
+        }
+        if (typeof valueClone.status !== 'undefined') {
+          entry.status = valueClone.status;
+        }
+      } else if (typeof valueClone !== 'undefined') {
+        entry.value = valueClone;
+        var coercedMessage = coerceMessage(valueClone);
+        if (coercedMessage) {
+          entry.message = coercedMessage;
+        }
+      } else {
+        entry.value = null;
+      }
+      var rawType = rawValue === null ? 'null' : _typeof(rawValue);
+      if (rawType === 'object' || rawType === 'function') {
+        var ctorName = rawValue && rawValue.constructor && rawValue.constructor.name;
+        entry.argumentType = typeof ctorName === 'string' && ctorName ? ctorName : rawType;
+      } else {
+        entry.argumentType = rawType;
+      }
+      var stackSummary = isErrorInstance && typeof rawValue.stack === 'string' && rawValue.stack ? normaliseStackTrace(rawValue.stack) : valueClone && _typeof(valueClone) === 'object' && typeof valueClone.stack === 'string' ? normaliseStackTrace(valueClone.stack) : null;
+      if (stackSummary) {
+        if (typeof stackSummary.stack === 'string') {
+          entry.stack = stackSummary.stack;
+        }
+        if (Array.isArray(stackSummary.frames) && stackSummary.frames.length) {
+          entry.frames = stackSummary.frames;
+        }
+        if (stackSummary.truncated) {
+          entry.stackTruncated = true;
+        }
+      }
+      errorEntries.push(entry);
+    }
     var contextMeta = {
       channel: 'console',
       method: method || 'log'
     };
     if (meta && _typeof(meta) === 'object') {
       var metaKeys = Object.keys(meta);
-      for (var _index8 = 0; _index8 < metaKeys.length; _index8 += 1) {
-        var key = metaKeys[_index8];
+      for (var _index9 = 0; _index9 < metaKeys.length; _index9 += 1) {
+        var key = metaKeys[_index9];
         try {
           contextMeta[key] = sanitizeForLog(meta[key]);
         } catch (metaError) {
@@ -1728,10 +1825,47 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-    return logInternal(level, message, detailPayload, {
+    if (errorEntries.length) {
+      detailPayload = detailPayload || {};
+      var errorIndices = [];
+      for (var _index0 = 0; _index0 < errorEntries.length; _index0 += 1) {
+        var errorEntry = errorEntries[_index0];
+        errorIndices.push(errorEntry.index);
+      }
+      detailPayload.errors = errorEntries;
+      detailPayload.errorCount = errorEntries.length;
+      detailPayload.errorIndices = errorIndices;
+      detailPayload.primaryError = errorEntries[0];
+      contextMeta.errorCount = errorEntries.length;
+      contextMeta.errorIndices = errorIndices;
+      var primaryError = errorEntries[0];
+      if (primaryError) {
+        if (typeof primaryError.name === 'string' && primaryError.name) {
+          contextMeta.primaryErrorName = primaryError.name;
+        }
+        if (typeof primaryError.message === 'string' && primaryError.message) {
+          contextMeta.primaryErrorMessage = primaryError.message;
+        }
+        if (typeof primaryError.code !== 'undefined') {
+          contextMeta.primaryErrorCode = primaryError.code;
+        }
+        if (typeof primaryError.status !== 'undefined') {
+          contextMeta.primaryErrorStatus = primaryError.status;
+        }
+        if (primaryError.stack) {
+          contextMeta.primaryErrorHasStack = true;
+        }
+      }
+    }
+    var forceStackCapture = method === 'error' || errorEntries.length > 0;
+    var contextOptions = {
       namespace: 'console',
       meta: contextMeta
-    }, {
+    };
+    if (forceStackCapture) {
+      contextOptions.captureStack = true;
+    }
+    return logInternal(level, message, detailPayload, contextOptions, {
       silentConsole: true
     });
   }
@@ -2187,8 +2321,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       merged[key] = baseMeta[key];
     }
     var metaKeys = Object.keys(meta);
-    for (var _index9 = 0; _index9 < metaKeys.length; _index9 += 1) {
-      var _key = metaKeys[_index9];
+    for (var _index1 = 0; _index1 < metaKeys.length; _index1 += 1) {
+      var _key = metaKeys[_index1];
       merged[_key] = sanitizeForLog(meta[_key]);
     }
     return merged;

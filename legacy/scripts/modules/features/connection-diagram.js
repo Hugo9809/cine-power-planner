@@ -1384,6 +1384,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var popup = setupDiagramContainer.querySelector('#diagramPopup');
       var activePopupNode = null;
       var activePopupEntry = null;
+      var _normaliseTargetElement = function normaliseTargetElement(target) {
+        if (!target || _typeof(target) !== 'object') return null;
+        if (typeof target.closest === 'function') return target;
+        if ('parentElement' in target && target.parentElement) return target.parentElement;
+        if ('parentNode' in target && target.parentNode && target.parentNode !== target) {
+          return _normaliseTargetElement(target.parentNode);
+        }
+        return null;
+      };
       var hidePopup = function hidePopup() {
         if (!popup) return;
         popup.style.display = 'none';
@@ -1858,6 +1867,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (popup && (e.relatedTarget === popup || popup.contains(e.relatedTarget))) return;
         hidePopup();
       };
+      var onPointerDownOutsidePopup = function onPointerDownOutsidePopup(event) {
+        if (!popup || popup.hasAttribute('hidden')) return;
+        var element = _normaliseTargetElement((event === null || event === void 0 ? void 0 : event.target) || null);
+        if (!element) return;
+        if (element === popup || typeof popup.contains === 'function' && popup.contains(element)) return;
+        if (typeof element.closest === 'function' && element.closest('.diagram-node')) return;
+        hidePopup();
+      };
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, {
         passive: false
@@ -1936,6 +1953,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       svg.addEventListener('touchstart', updatePointerPosition, {
         passive: true
       });
+      if (document) {
+        document.addEventListener('mousedown', onPointerDownOutsidePopup);
+        document.addEventListener('touchstart', onPointerDownOutsidePopup, {
+          passive: true
+        });
+      }
       if (windowObj) {
         windowObj.addEventListener('resize', repositionActivePopup);
       }
@@ -1963,6 +1986,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         svg.removeEventListener('mousemove', updatePointerPosition);
         svg.removeEventListener('touchstart', updatePointerPosition);
         svg.removeEventListener('dblclick', onNodeDoubleClick);
+        if (document) {
+          document.removeEventListener('mousedown', onPointerDownOutsidePopup);
+          document.removeEventListener('touchstart', onPointerDownOutsidePopup, {
+            passive: true
+          });
+        }
         if (windowObj) {
           windowObj.removeEventListener('resize', repositionActivePopup);
         }

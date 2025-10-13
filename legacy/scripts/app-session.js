@@ -9243,7 +9243,7 @@ function handleStoragePersistenceRequest(_x3) {
 }
 function _handleStoragePersistenceRequest() {
   _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee3(event) {
-    var storageManager, granted, alreadyGranted, result, _t5;
+    var storageManager, supportsPersist, granted, alreadyGranted, result, _t5;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.p = _context3.n) {
         case 0:
@@ -9259,7 +9259,7 @@ function _handleStoragePersistenceRequest() {
           storageManager = getStorageManagerInstance();
           storagePersistenceState.requestAttempted = true;
           supportsPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
-          if (!supportsPersist) {
+          if (supportsPersist) {
             _context3.n = 2;
             break;
           }
@@ -15871,7 +15871,7 @@ function collectMountVoltageFormValues() {
 function handleMountVoltageInputChange() {
   var values = collectMountVoltageFormValues();
   applySessionMountVoltagePreferences(values, {
-    persist: false,
+    persist: true,
     triggerUpdate: true
   });
 }

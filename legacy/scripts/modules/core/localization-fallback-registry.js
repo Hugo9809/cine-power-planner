@@ -1,10 +1,9 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function resolveLocalizationFallbackNamespaceFromCandidate(candidate) {
-    if (!candidate || (_typeof(candidate) !== 'object' && typeof candidate !== 'function')) {
+    if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
       return null;
     }
-
     if (typeof candidate.createInlineLocalizationFallbackNamespace === 'function') {
       try {
         var generated = candidate.createInlineLocalizationFallbackNamespace();
@@ -15,7 +14,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void inlineNamespaceError;
       }
     }
-
     if (typeof candidate.createNamespace === 'function') {
       try {
         var created = candidate.createNamespace();
@@ -26,34 +24,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void namespaceCreateError;
       }
     }
-
     if (typeof candidate.fallbackResolveLocaleModule === 'function' && typeof candidate.createLocaleFallbacks === 'function') {
       return candidate;
     }
-
     return null;
   }
-
   function createMinimalLocalizationFallbackNamespace() {
     function normalizeLanguageCodeValue(lang, defaultLanguage) {
       if (!lang) {
         return defaultLanguage;
       }
-
       try {
         var normalized = String(lang).trim().toLowerCase();
         return normalized || defaultLanguage;
       } catch (languageNormalizeError) {
         void languageNormalizeError;
       }
-
       return defaultLanguage;
     }
-
     function normalizeRtlCodes(options) {
       if (options && Array.isArray(options.rtlLanguageCodes)) {
         var normalized = [];
-
         for (var index = 0; index < options.rtlLanguageCodes.length; index += 1) {
           var rawCode = options.rtlLanguageCodes[index];
           var code = normalizeLanguageCodeValue(String(rawCode || ''), '');
@@ -61,18 +52,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             normalized.push(code);
           }
         }
-
         if (normalized.length > 0) {
           return normalized;
         }
       }
-
       return ['ar', 'fa', 'he', 'ur'];
     }
-
     function fallbackResolveLocaleModule(scope) {
       var candidates = [];
-
       if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
         candidates.push(scope);
       }
@@ -80,13 +67,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof window !== 'undefined') candidates.push(window);
       if (typeof self !== 'undefined') candidates.push(self);
       if (typeof global !== 'undefined') candidates.push(global);
-
       for (var index = 0; index < candidates.length; index += 1) {
         var candidate = candidates[index];
-        if (!candidate || (_typeof(candidate) !== 'object' && typeof candidate !== 'function')) {
+        if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
           continue;
         }
-
         try {
           var moduleCandidate = candidate.cineLocale;
           if (moduleCandidate && _typeof(moduleCandidate) === 'object') {
@@ -96,7 +81,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void localeLookupError;
         }
       }
-
       if (typeof require === 'function') {
         try {
           var required = require('./localization.js');
@@ -107,24 +91,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void localeRequireError;
         }
       }
-
       return null;
     }
-
     function createLocaleFallbacks(options) {
       var defaultLanguage = normalizeLanguageCodeValue(options && options.defaultLanguage, 'en');
       var rtlLanguageCodes = normalizeRtlCodes(options);
-
       function normalizeLanguageCode(lang) {
         return normalizeLanguageCodeValue(lang, defaultLanguage);
       }
-
       function isRtlLanguage(lang) {
         var normalized = normalizeLanguageCodeValue(lang, defaultLanguage);
         var base = normalized.split('-')[0];
         return rtlLanguageCodes.indexOf(base) !== -1;
       }
-
       function resolveDocumentDirection(lang) {
         if (typeof document !== 'undefined' && document && document.documentElement) {
           try {
@@ -136,15 +115,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void documentDirectionError;
           }
         }
-
         return isRtlLanguage(lang) ? 'rtl' : 'ltr';
       }
-
       function applyLocaleMetadata(target, lang, direction) {
         if (!target) {
           return;
         }
-
         if (lang) {
           try {
             target.lang = lang;
@@ -152,7 +128,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             void setLangError;
           }
         }
-
         if (direction) {
           try {
             target.dir = direction;
@@ -161,7 +136,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         }
       }
-
       return {
         getDefaultLanguage: function getDefaultLanguage() {
           return defaultLanguage;
@@ -178,7 +152,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         applyLocaleMetadata: applyLocaleMetadata
       };
     }
-
     return {
       fallbackResolveLocaleModule: fallbackResolveLocaleModule,
       createLocaleFallbacks: createLocaleFallbacks,
@@ -190,7 +163,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
-
   function resolveInlineFallbackNamespace(options) {
     if (options && typeof options.requireInlineFallbackNamespace === 'function') {
       try {
@@ -199,7 +171,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void inlineRequireError;
       }
     }
-
     if (typeof require === 'function') {
       try {
         return require('./localization-inline-fallbacks.js');
@@ -207,30 +178,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void inlineRequireError;
       }
     }
-
     return null;
   }
-
   function resolveLocalizationFallbackNamespace(options) {
     var directNamespace = resolveLocalizationFallbackNamespaceFromCandidate(options && options.directNamespace);
     if (directNamespace) {
       return directNamespace;
     }
-
     var inlineNamespace = resolveLocalizationFallbackNamespaceFromCandidate(options && options.inlineNamespace);
     if (inlineNamespace) {
       return inlineNamespace;
     }
-
     var requiredInline = resolveLocalizationFallbackNamespaceFromCandidate(resolveInlineFallbackNamespace(options));
     if (requiredInline) {
       return requiredInline;
     }
-
     var createMinimal = options && typeof options.createMinimalNamespace === 'function' ? options.createMinimalNamespace : createMinimalLocalizationFallbackNamespace;
     return resolveLocalizationFallbackNamespaceFromCandidate(createMinimal());
   }
-
   function createFallbackResolvers(options) {
     var namespace = resolveLocalizationFallbackNamespace(options);
     function fallbackResolveLocaleModuleProxy(scope) {
@@ -241,7 +206,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void fallbackError;
         }
       }
-
       return null;
     }
     function createLocaleFallbacksProxy(fallbackOptions) {
@@ -252,7 +216,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           void createFallbackError;
         }
       }
-
       return null;
     }
     return {
@@ -261,23 +224,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       createLocaleFallbacks: createLocaleFallbacksProxy
     };
   }
-
   function detectGlobalScope() {
-    if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
+    if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
       return globalThis;
     }
-    if (typeof window !== 'undefined' && window && _typeof(window) === 'object') {
+    if (typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
       return window;
     }
-    if (typeof self !== 'undefined' && self && _typeof(self) === 'object') {
+    if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
       return self;
     }
-    if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
+    if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
       return global;
     }
     return null;
   }
-
   var namespace = {
     resolveLocalizationFallbackNamespaceFromCandidate: resolveLocalizationFallbackNamespaceFromCandidate,
     createMinimalLocalizationFallbackNamespace: createMinimalLocalizationFallbackNamespace,
@@ -288,12 +249,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var targetName = 'cineCoreLocalizationFallbackRegistry';
   var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
   var target = existing;
-  var keys = Object.keys(namespace);
-  for (var index = 0; index < keys.length; index += 1) {
-    var key = keys[index];
+  for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
+    var key = _Object$keys[_i];
     target[key] = namespace[key];
   }
-
   if (globalScope && _typeof(globalScope) === 'object') {
     try {
       globalScope[targetName] = target;
@@ -301,8 +260,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void assignError;
     }
   }
-
-  if (typeof module === 'object' && module && module.exports) {
+  if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
     module.exports = target;
   }
 })();

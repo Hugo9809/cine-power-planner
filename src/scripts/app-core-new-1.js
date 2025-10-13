@@ -9987,36 +9987,83 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   distance: 'FIZ distance devices',
 };
 
-function normalizeFocusScaleForLabel(value) {
-  if (typeof normalizeFocusScale === 'function') {
+function resolveFocusScalePreference() {
+  if (typeof resolveGlobalFocusScalePreference === 'function') {
     try {
-      const normalized = normalizeFocusScale(value);
-      if (normalized === 'imperial' || normalized === 'metric') {
-        return normalized;
+      const resolved = resolveGlobalFocusScalePreference();
+      if (resolved === 'imperial' || resolved === 'metric') {
+        return resolved;
       }
-      if (normalized === '' || normalized === null) {
-        return '';
+      if (typeof resolved === 'string') {
+        const trimmedResolved = resolved.trim().toLowerCase();
+        if (trimmedResolved === 'imperial' || trimmedResolved === 'metric') {
+          return trimmedResolved;
+        }
       }
-    } catch (normalizeError) {
+    } catch (focusScaleNormalizeError) {
       console.warn(
-        'normalizeFocusScale helper threw an error while resolving a focus scale label',
-        normalizeError,
+        'resolveGlobalFocusScalePreference helper threw an error while resolving a focus scale label',
+        focusScaleNormalizeError,
       );
     }
   }
-  if (typeof value === 'string') {
-    const trimmed = value.trim().toLowerCase();
-    if (trimmed === 'imperial') {
-      return 'imperial';
-    }
-    if (trimmed === 'metric') {
-      return 'metric';
-    }
-    if (!trimmed) {
-      return '';
+
+  if (typeof focusScalePreference === 'string') {
+    const trimmedPreference = focusScalePreference.trim().toLowerCase();
+    if (trimmedPreference === 'imperial' || trimmedPreference === 'metric') {
+      return trimmedPreference;
     }
   }
+
   return '';
+}
+
+function normalizeFocusScaleForLabel(value) {
+  const attemptNormalize = (candidate) => {
+    if (typeof normalizeFocusScale === 'function') {
+      try {
+        const normalized = normalizeFocusScale(candidate);
+        if (normalized === 'imperial' || normalized === 'metric') {
+          return normalized;
+        }
+        if (normalized === '' || normalized === null) {
+          return '';
+        }
+      } catch (normalizeError) {
+        console.warn(
+          'normalizeFocusScale helper threw an error while resolving a focus scale label',
+          normalizeError,
+        );
+      }
+    }
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim().toLowerCase();
+      if (trimmed === 'imperial') {
+        return 'imperial';
+      }
+      if (trimmed === 'metric') {
+        return 'metric';
+      }
+      if (!trimmed) {
+        return '';
+      }
+    }
+    return '';
+  };
+
+  const directNormalized = attemptNormalize(value);
+  if (
+    directNormalized === '' &&
+    (typeof value === 'undefined' || value === null || (typeof value === 'string' && !value.trim()))
+  ) {
+    const preference = resolveFocusScalePreference();
+    const normalizedPreference = attemptNormalize(preference);
+    if (normalizedPreference === 'imperial' || normalizedPreference === 'metric') {
+      return normalizedPreference;
+    }
+  }
+
+  return directNormalized;
 }
 
 function getFocusScaleLabelForLang(lang = currentLang, scale) {
@@ -19241,42 +19288,6 @@ function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
     typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
   );
   return `${baseLabel} (${symbol})`;
-}
-
-function getFocusScaleLabelForLang(lang = currentLang, scale) {
-  const language = typeof lang === 'string' && lang.trim() ? lang : currentLang;
-  const textsForLang = getLanguageTexts(language);
-  const fallbackTexts = getLanguageTexts('en');
-
-  const resolveScale = () => {
-    const rawScale =
-      (typeof scale === 'string' && scale) ||
-      (typeof resolveGlobalFocusScalePreference === 'function'
-        ? resolveGlobalFocusScalePreference()
-        : typeof focusScalePreference === 'string'
-          ? focusScalePreference
-          : null);
-
-    if (typeof normalizeFocusScale === 'function') {
-      try {
-        const normalized = normalizeFocusScale(rawScale);
-        if (normalized === 'imperial' || normalized === 'metric') {
-          return normalized;
-        }
-      } catch (focusScaleNormalizeError) {
-        void focusScaleNormalizeError;
-      }
-    }
-
-    const fallbackValue = typeof rawScale === 'string' ? rawScale.trim().toLowerCase() : '';
-    return fallbackValue === 'imperial' ? 'imperial' : 'metric';
-  };
-
-  const normalizedScale = resolveScale();
-  const key = normalizedScale === 'imperial' ? 'focusScaleImperial' : 'focusScaleMetric';
-  const defaultLabel = normalizedScale === 'imperial' ? 'Imperial' : 'Metric';
-
-  return textsForLang[key] || fallbackTexts[key] || defaultLabel;
 }
 
 function formatTemperatureForDisplay(celsius, options = {}) {
