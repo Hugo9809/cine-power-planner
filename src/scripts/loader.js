@@ -457,6 +457,132 @@ function resolveAssetUrl(url) {
   }
 }
 
+function loaderResolveTranslations() {
+  var scope = resolveCriticalGlobalScope();
+  var translations = null;
+
+  if (scope && typeof scope.texts === 'object' && scope.texts !== null) {
+    translations = scope.texts;
+  }
+
+  if (!translations && scope && scope.CORE_GLOBAL_SCOPE && typeof scope.CORE_GLOBAL_SCOPE === 'object') {
+    try {
+      var coreTexts = scope.CORE_GLOBAL_SCOPE.texts;
+      if (coreTexts && typeof coreTexts === 'object') {
+        translations = coreTexts;
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+  }
+
+  if (!translations) {
+    try {
+      var globalScope = resolveCriticalGlobalScope();
+      if (globalScope && globalScope !== scope && typeof globalScope.texts === 'object') {
+        translations = globalScope.texts;
+      }
+    } catch (globalScopeError) {
+      void globalScopeError;
+    }
+  }
+
+  return translations && typeof translations === 'object' ? translations : null;
+}
+
+function loaderSelectTranslationForLanguage(translations, requestedLanguage) {
+  if (!translations || typeof translations !== 'object') {
+    return {};
+  }
+
+  var languageKey = null;
+  var activeLang = null;
+  var defaultLanguage = null;
+  var translationScope = null;
+
+  try {
+    translationScope = resolveCriticalGlobalScope();
+  } catch (resolveScopeError) {
+    void resolveScopeError;
+    translationScope = null;
+  }
+
+  if (translationScope && typeof translationScope.currentLang === 'string') {
+    activeLang = translationScope.currentLang;
+  }
+
+  if (translationScope && typeof translationScope.DEFAULT_LANGUAGE === 'string') {
+    defaultLanguage = translationScope.DEFAULT_LANGUAGE;
+  }
+
+  if (requestedLanguage && Object.prototype.hasOwnProperty.call(translations, requestedLanguage)) {
+    var requested = translations[requestedLanguage];
+    if (requested && typeof requested === 'object') {
+      languageKey = requestedLanguage;
+    }
+  }
+
+  if (!languageKey) {
+    if (
+      activeLang &&
+      Object.prototype.hasOwnProperty.call(translations, activeLang) &&
+      translations[activeLang] &&
+      typeof translations[activeLang] === 'object'
+    ) {
+      languageKey = activeLang;
+    }
+  }
+
+  if (!languageKey) {
+    if (
+      defaultLanguage &&
+      Object.prototype.hasOwnProperty.call(translations, defaultLanguage) &&
+      translations[defaultLanguage] &&
+      typeof translations[defaultLanguage] === 'object'
+    ) {
+      languageKey = defaultLanguage;
+    }
+  }
+
+  if (!languageKey && Object.prototype.hasOwnProperty.call(translations, 'en')) {
+    var english = translations.en;
+    if (english && typeof english === 'object') {
+      languageKey = 'en';
+    }
+  }
+
+  if (!languageKey) {
+    try {
+      var keys = Object.keys(translations);
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        var value = translations[key];
+        if (value && typeof value === 'object') {
+          languageKey = key;
+          break;
+        }
+      }
+    } catch (enumerateError) {
+      void enumerateError;
+    }
+  }
+
+  if (!languageKey) {
+    return {};
+  }
+
+  try {
+    var resolved = translations[languageKey];
+    if (resolved && typeof resolved === 'object') {
+      return resolved;
+    }
+  } catch (resolveError) {
+    void resolveError;
+  }
+
+  return {};
+}
+
 var CRITICAL_GLOBAL_DEFINITIONS = [
   {
     name: 'autoGearAutoPresetId',
@@ -582,6 +708,53 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return typeof value === 'string' && value.length > 0;
   },
   fallback: 'en',
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getLanguageTexts',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderFallbackGetLanguageTexts(lang) {
+      var translations = loaderResolveTranslations();
+      if (!translations) {
+        return {};
+      }
+      return loaderSelectTranslationForLanguage(translations, lang);
+    };
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'syncMountVoltageResetButtonGlobal',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    return function loaderSyncMountVoltageResetButtonGlobal(value) {
+      var scope = resolveCriticalGlobalScope();
+      if (scope && (typeof scope === 'object' || typeof scope === 'function')) {
+        try {
+          scope.mountVoltageResetButton = value || null;
+        } catch (assignError) {
+          void assignError;
+          try {
+            Object.defineProperty(scope, 'mountVoltageResetButton', {
+              configurable: true,
+              enumerable: false,
+              writable: true,
+              value: value || null,
+            });
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+      }
+
+      return value || null;
+    };
+  },
 });
 
 function loaderFallbackSafeGenerateConnectorSummary(device) {
@@ -2471,6 +2644,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/core/runtime-state/local-runtime-state.js',
       'src/scripts/modules/core/runtime-state.js',
       'src/scripts/modules/core/persistence-guard.js',
+      'src/scripts/modules/core/mount-voltage.js',
       'src/scripts/modules/core/experience.js',
       'src/scripts/modules/logging.js',
       'src/scripts/modules/settings-and-appearance.js',
@@ -2535,6 +2709,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'legacy/scripts/modules/core/runtime-state/temperature-keys.js',
       'legacy/scripts/modules/core/runtime-state/local-runtime-state.js',
       'legacy/scripts/modules/core/runtime-state.js',
+      'legacy/scripts/modules/core/mount-voltage.js',
       'legacy/scripts/modules/logging.js',
       'legacy/scripts/modules/features/backup.js',
       'legacy/scripts/modules/features/onboarding-tour.js',
