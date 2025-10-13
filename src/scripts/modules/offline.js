@@ -1689,7 +1689,7 @@
     const expectedOrigin = readLocationOriginSafe(locationLike) || readLocationOriginSafe(fallbackLocation);
 
     if (!expectedOrigin) {
-      return true;
+      return false;
     }
 
     return targetOrigin === expectedOrigin;
