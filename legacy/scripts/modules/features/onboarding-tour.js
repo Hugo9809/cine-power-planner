@@ -105,7 +105,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
   var MAIN_ANCHOR_ID = 'mainContent';
   var HEADER_ANCHOR_ID = 'topBar';
-  var HERO_MAX_WIDTH_REM = 44;
   var HERO_MARGIN_REM = 1.5;
   var HERO_MIN_VIEWPORT_FRACTION = 0.92;
   var supportsDialogTopLayer = function detectDialogSupport() {
@@ -1940,11 +1939,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var rootFontSize = getRootFontSizePx();
-    var heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
     var heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
     var marginLimitedWidth = viewportWidth - heroMargin * 2;
     var fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
-    var widthCandidates = [heroMaxWidth, viewportWidth];
+    var widthCandidates = [viewportWidth];
     if (Number.isFinite(fractionLimitedWidth) && fractionLimitedWidth > 0) {
       widthCandidates.push(fractionLimitedWidth);
     }

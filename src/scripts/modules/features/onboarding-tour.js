@@ -118,7 +118,6 @@
   const HELP_STATUS_ID = 'helpOnboardingTutorialStatus';
   const MAIN_ANCHOR_ID = 'mainContent';
   const HEADER_ANCHOR_ID = 'topBar';
-  const HERO_MAX_WIDTH_REM = 44;
   const HERO_MARGIN_REM = 1.5;
   const HERO_MIN_VIEWPORT_FRACTION = 0.92;
 
@@ -2278,11 +2277,10 @@
     }
 
     const rootFontSize = getRootFontSizePx();
-    const heroMaxWidth = Math.max(0, HERO_MAX_WIDTH_REM * rootFontSize);
     const heroMargin = Math.max(0, HERO_MARGIN_REM * rootFontSize);
     const marginLimitedWidth = viewportWidth - (heroMargin * 2);
     const fractionLimitedWidth = viewportWidth * HERO_MIN_VIEWPORT_FRACTION;
-    const widthCandidates = [heroMaxWidth, viewportWidth];
+    const widthCandidates = [viewportWidth];
 
     if (Number.isFinite(fractionLimitedWidth) && fractionLimitedWidth > 0) {
       widthCandidates.push(fractionLimitedWidth);
