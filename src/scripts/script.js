@@ -50,6 +50,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/runtime-guard.js',
     'modules/results.js',
     'app-core-runtime-scopes.js',
+    'app-core-runtime-support.js',
     'app-core-text.js',
     'app-core-new-1.js',
     'app-core-new-2.js',

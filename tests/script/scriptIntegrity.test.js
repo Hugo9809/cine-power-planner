@@ -109,6 +109,7 @@ describe('script.js modular runtime', () => {
       'modules/core-shared.js',
       'modules/ui.js',
       'app-core-runtime-scopes.js',
+      'app-core-runtime-support.js',
       'app-core-new-1.js',
       'app-core-new-2.js',
       'app-events.js',
