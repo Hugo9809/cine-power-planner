@@ -1,3 +1,4 @@
+/* global texts, DEFAULT_LANGUAGE */
 /*
  * Ensure critical core runtime globals always exist before the loader
  * initialises the rest of the application. Some browsers, notably older
@@ -1043,6 +1044,125 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
     return createCoreFunctionProxy('deriveProjectInfo', {
       defaultValue: cloneProjectInfoFallback,
+    });
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getLanguageTexts',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    function loaderFallbackGetLanguageTexts(lang) {
+      var scope = resolveCriticalGlobalScope();
+      var languageBundles = null;
+
+      if (scope && scope.texts && typeof scope.texts === 'object') {
+        languageBundles = scope.texts;
+      } else {
+        try {
+          if (typeof texts === 'object' && texts) {
+            languageBundles = texts;
+          }
+        } catch (textsLookupError) {
+          void textsLookupError;
+        }
+      }
+
+      var defaultLanguage = 'en';
+
+      if (scope && typeof scope.DEFAULT_LANGUAGE === 'string' && scope.DEFAULT_LANGUAGE) {
+        defaultLanguage = scope.DEFAULT_LANGUAGE;
+      } else if (scope && scope.cineLocale && typeof scope.cineLocale === 'object') {
+        var localeModule = scope.cineLocale;
+        if (typeof localeModule.getDefaultLanguage === 'function') {
+          try {
+            defaultLanguage = localeModule.getDefaultLanguage(scope) || defaultLanguage;
+          } catch (getDefaultLanguageError) {
+            void getDefaultLanguageError;
+          }
+        } else if (typeof localeModule.DEFAULT_LANGUAGE === 'string' && localeModule.DEFAULT_LANGUAGE) {
+          defaultLanguage = localeModule.DEFAULT_LANGUAGE;
+        }
+      } else {
+        try {
+          if (typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE) {
+            defaultLanguage = DEFAULT_LANGUAGE;
+          }
+        } catch (defaultLanguageError) {
+          void defaultLanguageError;
+        }
+      }
+
+      var requested = typeof lang === 'string' && lang ? lang : defaultLanguage;
+      var normalized = requested;
+
+      try {
+        normalized = String(requested).trim().toLowerCase();
+      } catch (normalizeError) {
+        void normalizeError;
+        normalized = defaultLanguage;
+      }
+
+      var bundles = languageBundles && typeof languageBundles === 'object' ? languageBundles : {};
+      var result = bundles && Object.prototype.hasOwnProperty.call(bundles, normalized)
+        ? bundles[normalized]
+        : null;
+
+      if (!result && normalized && normalized.indexOf('-') !== -1) {
+        var base = normalized.split('-')[0];
+        if (base && Object.prototype.hasOwnProperty.call(bundles, base)) {
+          result = bundles[base];
+        }
+      }
+
+      if (!result && defaultLanguage && Object.prototype.hasOwnProperty.call(bundles, defaultLanguage)) {
+        result = bundles[defaultLanguage];
+      }
+
+      if (!result && Object.prototype.hasOwnProperty.call(bundles, 'en')) {
+        result = bundles.en;
+      }
+
+      return result && typeof result === 'object' ? result : {};
+    }
+
+    return createCoreFunctionProxy('getLanguageTexts', {
+      defaultValue: loaderFallbackGetLanguageTexts,
+    });
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'syncMountVoltageResetButtonGlobal',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    function loaderFallbackSyncMountVoltageResetButtonGlobal(button) {
+      var scope = resolveCriticalGlobalScope();
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+
+      try {
+        scope.mountVoltageResetButton = button;
+      } catch (assignError) {
+        void assignError;
+        try {
+          scope.mountVoltageResetButton = button;
+        } catch (finalAssignError) {
+          void finalAssignError;
+        }
+      }
+    }
+
+    return createCoreFunctionProxy('syncMountVoltageResetButtonGlobal', {
+      defaultValue: function (button) {
+        loaderFallbackSyncMountVoltageResetButtonGlobal(button);
+        return button;
+      },
     });
   },
 });

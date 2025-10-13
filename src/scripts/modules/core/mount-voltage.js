@@ -711,6 +711,17 @@
       void assignError;
     }
 
+    if (
+      typeof CORE_SCOPE.syncMountVoltageResetButtonGlobal !== 'function'
+      || CORE_SCOPE.syncMountVoltageResetButtonGlobal === syncMountVoltageResetButtonGlobal
+    ) {
+      try {
+        CORE_SCOPE.syncMountVoltageResetButtonGlobal = syncMountVoltageResetButtonGlobal;
+      } catch (syncAssignError) {
+        void syncAssignError;
+      }
+    }
+
     if (!CORE_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES) {
       try {
         CORE_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES = SUPPORTED_MOUNT_VOLTAGE_TYPES;

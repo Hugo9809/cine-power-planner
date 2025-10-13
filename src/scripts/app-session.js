@@ -50,6 +50,8 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 
+const missingMountVoltageWarnings = new Set();
+
 // Determine which global scope we can use for deep cloning. The order mirrors
 // the environments the planner needs to support: main window first, followed by
 // worker-like contexts and finally Node during testing.
@@ -17449,8 +17451,6 @@ if (typeof module !== "undefined" && module.exports) {
     },
   };
 }
-
-const missingMountVoltageWarnings = new Set();
 
 function warnMissingMountVoltageHelper(helperName, error) {
   const key = typeof helperName === 'string' && helperName ? helperName : 'unknown';

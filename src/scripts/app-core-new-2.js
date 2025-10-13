@@ -17941,6 +17941,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       fontSize,
       fontFamily,
       normalizeSearchValue,
+      resolveLanguageCode,
+      getLanguageTexts,
     };
 
 
