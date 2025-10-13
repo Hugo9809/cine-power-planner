@@ -3353,18 +3353,27 @@ const LEGAL_LINKS = {
   },
 };
 
-const AUTO_GEAR_RULES_KEY =
-  typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_RULES_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearRules';
+function resolveAutoGearStorageKey(symbolName, fallbackValue) {
+  const candidate = readGlobalAutoGearValue(symbolName);
+  if (typeof candidate === 'string' && candidate) {
+    return candidate;
+  }
+
+  return fallbackValue;
+}
+
+const AUTO_GEAR_RULES_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_RULES_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearRules'
+);
 const AUTO_GEAR_ANY_MOTOR_TOKEN = '__any__';
 if (typeof globalThis !== 'undefined') {
   globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN = AUTO_GEAR_ANY_MOTOR_TOKEN;
 }
-const AUTO_GEAR_SEEDED_KEY =
-  typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_SEEDED_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_SEEDED_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_SEEDED_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearSeeded'
+);
 const AUTO_GEAR_RETENTION_DEFAULT_FALLBACK = 36;
 const AUTO_GEAR_RETENTION_MIN_FALLBACK = 1;
 const AUTO_GEAR_RETENTION_MAX_FALLBACK = 50;
@@ -3407,13 +3416,9 @@ function readGlobalAutoGearValue(propertyName) {
 function resolveAutoGearBackupRetentionMin() {
   const candidates = [];
 
-  if (typeof AUTO_GEAR_BACKUP_RETENTION_MIN !== 'undefined') {
-    candidates.push(AUTO_GEAR_BACKUP_RETENTION_MIN);
-  }
-
-  const globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
-  if (typeof globalCandidate !== 'undefined') {
-    candidates.push(globalCandidate);
+  const declaredMinCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
+  if (typeof declaredMinCandidate !== 'undefined') {
+    candidates.push(declaredMinCandidate);
   }
 
   for (let index = 0; index < candidates.length; index += 1) {
@@ -3550,34 +3555,34 @@ function localeSort(a, b) {
   return 0;
 }
 
-const AUTO_GEAR_BACKUPS_KEY =
-  typeof AUTO_GEAR_BACKUPS_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_BACKUPS_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearBackups';
-const AUTO_GEAR_PRESETS_KEY =
-  typeof AUTO_GEAR_PRESETS_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_PRESETS_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearPresets';
-const AUTO_GEAR_ACTIVE_PRESET_KEY =
-  typeof AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearActivePreset';
-const AUTO_GEAR_AUTO_PRESET_KEY =
-  typeof AUTO_GEAR_AUTO_PRESET_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_AUTO_PRESET_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearAutoPreset';
-const AUTO_GEAR_BACKUP_VISIBILITY_KEY =
-  typeof AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearShowBackups';
-const AUTO_GEAR_BACKUP_RETENTION_KEY =
-  typeof AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearBackupRetention';
-const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
-  typeof AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY !== 'undefined'
-    ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
-    : 'cameraPowerPlanner_autoGearMonitorDefaults';
+const AUTO_GEAR_BACKUPS_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_BACKUPS_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearBackups'
+);
+const AUTO_GEAR_PRESETS_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_PRESETS_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearPresets'
+);
+const AUTO_GEAR_ACTIVE_PRESET_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearActivePreset'
+);
+const AUTO_GEAR_AUTO_PRESET_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_AUTO_PRESET_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearAutoPreset'
+);
+const AUTO_GEAR_BACKUP_VISIBILITY_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearShowBackups'
+);
+const AUTO_GEAR_BACKUP_RETENTION_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearBackupRetention'
+);
+const AUTO_GEAR_MONITOR_DEFAULTS_KEY = resolveAutoGearStorageKey(
+  'AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY',
+  'cameraPowerPlanner_autoGearMonitorDefaults'
+);
 var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolveAutoGearBackupRetentionDefault();
