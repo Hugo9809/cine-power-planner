@@ -1,3 +1,6 @@
+/* global CORE_GLOBAL_SCOPE */
+/* exported collectRuntimeScopeCandidates */
+
 /*
  * Cine Power Planner runtime scope helpers.
  *
