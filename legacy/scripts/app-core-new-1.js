@@ -11,7 +11,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
-function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -140,6 +140,143 @@ var CORE_RUNTIME_SUPPORT_RESOLUTION = function resolveRuntimeSupportResolution()
   }
   return null;
 }();
+var CORE_TEXT_ENTRY_SEPARATOR = '\n';
+function normaliseTextEntryValue(entry) {
+  if (typeof entry === 'string') {
+    return entry;
+  }
+  if (typeof entry === 'number' || typeof entry === 'boolean') {
+    try {
+      return String(entry);
+    } catch (stringifyPrimitiveError) {
+      void stringifyPrimitiveError;
+    }
+    return '';
+  }
+  if (Array.isArray(entry)) {
+    var parts = [];
+    for (var index = 0; index < entry.length; index += 1) {
+      var value = normaliseTextEntryValue(entry[index]);
+      if (value) {
+        parts.push(value);
+      }
+    }
+    return parts.join(CORE_TEXT_ENTRY_SEPARATOR);
+  }
+  if (entry && _typeof(entry) === 'object') {
+    if (typeof entry.text === 'string') {
+      return entry.text;
+    }
+    if (Array.isArray(entry.text)) {
+      return normaliseTextEntryValue(entry.text);
+    }
+    if (typeof entry.label === 'string') {
+      return entry.label;
+    }
+    try {
+      var objectString = String(entry);
+      if (objectString && objectString !== '[object Object]') {
+        return objectString;
+      }
+    } catch (stringifyObjectError) {
+      void stringifyObjectError;
+    }
+  }
+  return '';
+}
+function resolveTextEntry(primaryTexts, fallbackTexts, key) {
+  var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
+  var dictionaries = [];
+  if (primaryTexts && (_typeof(primaryTexts) === 'object' || typeof primaryTexts === 'function')) {
+    dictionaries.push(primaryTexts);
+  }
+  if (fallbackTexts && fallbackTexts !== primaryTexts && (_typeof(fallbackTexts) === 'object' || typeof fallbackTexts === 'function')) {
+    dictionaries.push(fallbackTexts);
+  }
+  for (var index = 0; index < dictionaries.length; index += 1) {
+    var dictionary = dictionaries[index];
+    var entry = void 0;
+    try {
+      entry = dictionary[key];
+    } catch (dictionaryLookupError) {
+      void dictionaryLookupError;
+      entry = undefined;
+    }
+    if (typeof entry === 'undefined' || entry === null) {
+      continue;
+    }
+    var resolved = normaliseTextEntryValue(entry);
+    if (typeof resolved === 'string') {
+      return resolved;
+    }
+  }
+  return normalizedDefault;
+}
+var CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
+function resolvePreferredTemperatureStorageKey() {
+  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+      return scope.TEMPERATURE_STORAGE_KEY;
+    }
+    if (typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' && scope.TEMPERATURE_UNIT_STORAGE_KEY) {
+      return scope.TEMPERATURE_UNIT_STORAGE_KEY;
+    }
+    if (scope.CORE_SHARED && _typeof(scope.CORE_SHARED) === 'object' && typeof scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY === 'string' && scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY) {
+      return scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY;
+    }
+    if (scope.__cineStorageApi && _typeof(scope.__cineStorageApi) === 'object') {
+      var storageApi = scope.__cineStorageApi;
+      if (typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' && storageApi.TEMPERATURE_STORAGE_KEY) {
+        return storageApi.TEMPERATURE_STORAGE_KEY;
+      }
+      if (typeof storageApi.getTemperaturePreferenceStorageKey === 'function') {
+        try {
+          var key = storageApi.getTemperaturePreferenceStorageKey();
+          if (typeof key === 'string' && key) {
+            return key;
+          }
+        } catch (temperaturePreferenceLookupError) {
+          void temperaturePreferenceLookupError;
+        }
+      }
+    }
+    if (typeof scope.resolveTemperatureStorageKey === 'function') {
+      try {
+        var resolved = scope.resolveTemperatureStorageKey();
+        if (typeof resolved === 'string' && resolved) {
+          return resolved;
+        }
+      } catch (resolveTemperatureStorageKeyError) {
+        void resolveTemperatureStorageKeyError;
+      }
+    }
+  }
+  return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
+}
+var TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
+(function ensureTemperatureStorageKeyGlobal(key) {
+  var candidates = [CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null];
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+      continue;
+    }
+    try {
+      scope.TEMPERATURE_STORAGE_KEY = key;
+    } catch (temperatureKeyAssignError) {
+      void temperatureKeyAssignError;
+    }
+  }
+})(TEMPERATURE_STORAGE_KEY);
 function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (_typeof(primaryScope) === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
@@ -664,6 +801,129 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
   }
   var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+  function resolveTranslationScopeCandidates() {
+    return [CORE_PART1_RUNTIME_SCOPE && _typeof(CORE_PART1_RUNTIME_SCOPE) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null];
+  }
+  function resolveTranslationDataset() {
+    var candidates = resolveTranslationScopeCandidates();
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+      var dataset = scope.texts;
+      if (dataset && _typeof(dataset) === 'object') {
+        return dataset;
+      }
+    }
+    if (typeof require === 'function') {
+      try {
+        var translationsModule = require('./translations.js');
+        if (translationsModule && _typeof(translationsModule) === 'object' && translationsModule.texts) {
+          return translationsModule.texts;
+        }
+      } catch (translationRequireError) {
+        void translationRequireError;
+      }
+    }
+    return {};
+  }
+  function fallbackGetLanguageTexts(lang) {
+    var dataset = resolveTranslationDataset();
+    var fallbackLang = typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE ? DEFAULT_LANGUAGE : 'en';
+    var normalized = null;
+    if (typeof lang === 'string' && lang) {
+      try {
+        normalized = String(lang).trim().toLowerCase();
+      } catch (normalizeError) {
+        void normalizeError;
+        normalized = null;
+      }
+    }
+    var resolved = normalized && Object.prototype.hasOwnProperty.call(dataset, normalized) ? normalized : '';
+    if (!resolved && normalized) {
+      var base = normalized.split('-')[0];
+      if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
+        resolved = base;
+      }
+    }
+    if (!resolved) {
+      resolved = fallbackLang;
+    }
+    var candidate = dataset && resolved && _typeof(dataset[resolved]) === 'object' ? dataset[resolved] : null;
+    if (candidate) {
+      return candidate;
+    }
+    if (resolved !== fallbackLang) {
+      var fallback = dataset && _typeof(dataset[fallbackLang]) === 'object' ? dataset[fallbackLang] : null;
+      if (fallback) {
+        return fallback;
+      }
+    }
+    if (dataset && _typeof(dataset.en) === 'object') {
+      return dataset.en;
+    }
+    var languages = dataset ? Object.keys(dataset) : [];
+    if (languages.length) {
+      var firstLang = languages[0];
+      var firstTexts = dataset[firstLang];
+      if (firstTexts && _typeof(firstTexts) === 'object') {
+        return firstTexts;
+      }
+    }
+    return {};
+  }
+  function resolveExistingGetLanguageTexts() {
+    var candidates = resolveTranslationScopeCandidates();
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+      var helper = scope.getLanguageTexts;
+      if (typeof helper === 'function') {
+        return helper;
+      }
+    }
+    return null;
+  }
+  var getLanguageTexts = function initialiseGetLanguageTexts() {
+    var existing = resolveExistingGetLanguageTexts();
+    if (existing) {
+      return function getLanguageTextsProxy(lang) {
+        try {
+          var result = existing.call(null, lang);
+          if (result && _typeof(result) === 'object') {
+            return result;
+          }
+        } catch (existingError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Existing getLanguageTexts helper failed. Falling back to local resolution.', existingError);
+          }
+        }
+        return fallbackGetLanguageTexts(lang);
+      };
+    }
+    return function getLanguageTextsFallback(lang) {
+      return fallbackGetLanguageTexts(lang);
+    };
+  }();
+  (function ensureGlobalGetLanguageTextsAvailability() {
+    var candidates = resolveTranslationScopeCandidates();
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+      if (typeof scope.getLanguageTexts !== 'function') {
+        try {
+          scope.getLanguageTexts = getLanguageTexts;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+    }
+  })();
   function fallbackGetCoreGlobalObject() {
     if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
       return CORE_GLOBAL_SCOPE;
@@ -2453,15 +2713,23 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       privacy: "legal/datenschutz-it.html"
     }
   };
-  var AUTO_GEAR_RULES_KEY = typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_RULES_STORAGE_KEY : 'cameraPowerPlanner_autoGearRules';
+  function resolveAutoGearStorageKey(symbolName, fallbackValue) {
+    var candidate = readGlobalAutoGearValue(symbolName);
+    if (typeof candidate === 'string' && candidate) {
+      return candidate;
+    }
+    return fallbackValue;
+  }
+  var AUTO_GEAR_RULES_KEY = resolveAutoGearStorageKey('AUTO_GEAR_RULES_STORAGE_KEY', 'cameraPowerPlanner_autoGearRules');
   var AUTO_GEAR_ANY_MOTOR_TOKEN = '__any__';
   if (typeof globalThis !== 'undefined') {
     globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN = AUTO_GEAR_ANY_MOTOR_TOKEN;
   }
-  var AUTO_GEAR_SEEDED_KEY = typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_SEEDED_STORAGE_KEY : 'cameraPowerPlanner_autoGearSeeded';
+  var AUTO_GEAR_SEEDED_KEY = resolveAutoGearStorageKey('AUTO_GEAR_SEEDED_STORAGE_KEY', 'cameraPowerPlanner_autoGearSeeded');
   var AUTO_GEAR_RETENTION_DEFAULT_FALLBACK = 36;
   var AUTO_GEAR_RETENTION_MIN_FALLBACK = 1;
   var AUTO_GEAR_RETENTION_MAX_FALLBACK = 50;
+  var AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
   function readGlobalAutoGearValue(propertyName) {
     var scopes = [CORE_PART1_RUNTIME_SCOPE && _typeof(CORE_PART1_RUNTIME_SCOPE) === 'object' ? CORE_PART1_RUNTIME_SCOPE : null, CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE && (_typeof(CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE) === 'object' || typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE === 'function') ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE : null, typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
     for (var index = 0; index < scopes.length; index += 1) {
@@ -2482,12 +2750,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function resolveAutoGearBackupRetentionMin() {
     var candidates = [];
-    if (typeof AUTO_GEAR_BACKUP_RETENTION_MIN !== 'undefined') {
-      candidates.push(AUTO_GEAR_BACKUP_RETENTION_MIN);
-    }
-    var globalCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
-    if (typeof globalCandidate !== 'undefined') {
-      candidates.push(globalCandidate);
+    var declaredMinCandidate = readGlobalAutoGearValue('AUTO_GEAR_BACKUP_RETENTION_MIN');
+    if (typeof declaredMinCandidate !== 'undefined') {
+      candidates.push(declaredMinCandidate);
     }
     for (var index = 0; index < candidates.length; index += 1) {
       var numeric = Number(candidates[index]);
@@ -2576,17 +2841,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (stringA > stringB) return 1;
     return 0;
   }
-  var AUTO_GEAR_BACKUPS_KEY = typeof AUTO_GEAR_BACKUPS_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_BACKUPS_STORAGE_KEY : 'cameraPowerPlanner_autoGearBackups';
-  var AUTO_GEAR_PRESETS_KEY = typeof AUTO_GEAR_PRESETS_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_PRESETS_STORAGE_KEY : 'cameraPowerPlanner_autoGearPresets';
-  var AUTO_GEAR_ACTIVE_PRESET_KEY = typeof AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY : 'cameraPowerPlanner_autoGearActivePreset';
-  var AUTO_GEAR_AUTO_PRESET_KEY = typeof AUTO_GEAR_AUTO_PRESET_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_AUTO_PRESET_STORAGE_KEY : 'cameraPowerPlanner_autoGearAutoPreset';
-  var AUTO_GEAR_BACKUP_VISIBILITY_KEY = typeof AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY : 'cameraPowerPlanner_autoGearShowBackups';
-  var AUTO_GEAR_BACKUP_RETENTION_KEY = typeof AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY : 'cameraPowerPlanner_autoGearBackupRetention';
-  var AUTO_GEAR_MONITOR_DEFAULTS_KEY = typeof AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY : 'cameraPowerPlanner_autoGearMonitorDefaults';
+  var AUTO_GEAR_BACKUPS_KEY = resolveAutoGearStorageKey('AUTO_GEAR_BACKUPS_STORAGE_KEY', 'cameraPowerPlanner_autoGearBackups');
+  var AUTO_GEAR_PRESETS_KEY = resolveAutoGearStorageKey('AUTO_GEAR_PRESETS_STORAGE_KEY', 'cameraPowerPlanner_autoGearPresets');
+  var AUTO_GEAR_ACTIVE_PRESET_KEY = resolveAutoGearStorageKey('AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY', 'cameraPowerPlanner_autoGearActivePreset');
+  var AUTO_GEAR_AUTO_PRESET_KEY = resolveAutoGearStorageKey('AUTO_GEAR_AUTO_PRESET_STORAGE_KEY', 'cameraPowerPlanner_autoGearAutoPreset');
+  var AUTO_GEAR_BACKUP_VISIBILITY_KEY = resolveAutoGearStorageKey('AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY', 'cameraPowerPlanner_autoGearShowBackups');
+  var AUTO_GEAR_BACKUP_RETENTION_KEY = resolveAutoGearStorageKey('AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY', 'cameraPowerPlanner_autoGearBackupRetention');
+  var AUTO_GEAR_MONITOR_DEFAULTS_KEY = resolveAutoGearStorageKey('AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY', 'cameraPowerPlanner_autoGearMonitorDefaults');
   var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
   var AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
   var AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolveAutoGearBackupRetentionDefault();
-  var AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
   var AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
   var AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
   var AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
@@ -20454,6 +20718,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeConstant('setupInstallBanner', setupInstallBanner);
   exposeCoreRuntimeConstant('maybeShowIosPwaHelp', maybeShowIosPwaHelp);
   exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+  exposeCoreRuntimeConstant('setLanguage', setLanguage);
+  exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
   var CORE_RUNTIME_CONSTANTS = {
     CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,

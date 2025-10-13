@@ -249,6 +249,202 @@ const CORE_RUNTIME_SUPPORT_RESOLUTION = (function resolveRuntimeSupportResolutio
   return null;
 })();
 
+const CORE_TEXT_ENTRY_SEPARATOR = '\n';
+
+function normaliseTextEntryValue(entry) {
+  if (typeof entry === 'string') {
+    return entry;
+  }
+
+  if (typeof entry === 'number' || typeof entry === 'boolean') {
+    try {
+      return String(entry);
+    } catch (stringifyPrimitiveError) {
+      void stringifyPrimitiveError;
+    }
+    return '';
+  }
+
+  if (Array.isArray(entry)) {
+    const parts = [];
+    for (let index = 0; index < entry.length; index += 1) {
+      const value = normaliseTextEntryValue(entry[index]);
+      if (value) {
+        parts.push(value);
+      }
+    }
+    return parts.join(CORE_TEXT_ENTRY_SEPARATOR);
+  }
+
+  if (entry && typeof entry === 'object') {
+    if (typeof entry.text === 'string') {
+      return entry.text;
+    }
+
+    if (Array.isArray(entry.text)) {
+      return normaliseTextEntryValue(entry.text);
+    }
+
+    if (typeof entry.label === 'string') {
+      return entry.label;
+    }
+
+    try {
+      const objectString = String(entry);
+      if (objectString && objectString !== '[object Object]') {
+        return objectString;
+      }
+    } catch (stringifyObjectError) {
+      void stringifyObjectError;
+    }
+  }
+
+  return '';
+}
+
+function resolveTextEntry(primaryTexts, fallbackTexts, key, defaultValue = '') {
+  const normalizedDefault = typeof defaultValue === 'string' ? defaultValue : '';
+  const dictionaries = [];
+
+  if (primaryTexts && (typeof primaryTexts === 'object' || typeof primaryTexts === 'function')) {
+    dictionaries.push(primaryTexts);
+  }
+
+  if (
+    fallbackTexts &&
+    fallbackTexts !== primaryTexts &&
+    (typeof fallbackTexts === 'object' || typeof fallbackTexts === 'function')
+  ) {
+    dictionaries.push(fallbackTexts);
+  }
+
+  for (let index = 0; index < dictionaries.length; index += 1) {
+    const dictionary = dictionaries[index];
+
+    let entry;
+    try {
+      entry = dictionary[key];
+    } catch (dictionaryLookupError) {
+      void dictionaryLookupError;
+      entry = undefined;
+    }
+
+    if (typeof entry === 'undefined' || entry === null) {
+      continue;
+    }
+
+    const resolved = normaliseTextEntryValue(entry);
+    if (typeof resolved === 'string') {
+      return resolved;
+    }
+  }
+
+  return normalizedDefault;
+}
+
+const CORE_TEMPERATURE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_temperatureUnit';
+
+function resolvePreferredTemperatureStorageKey() {
+  const candidates = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+      return scope.TEMPERATURE_STORAGE_KEY;
+    }
+
+    if (
+      typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' &&
+      scope.TEMPERATURE_UNIT_STORAGE_KEY
+    ) {
+      return scope.TEMPERATURE_UNIT_STORAGE_KEY;
+    }
+
+    if (
+      scope.CORE_SHARED &&
+      typeof scope.CORE_SHARED === 'object' &&
+      typeof scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY === 'string' &&
+      scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY
+    ) {
+      return scope.CORE_SHARED.TEMPERATURE_STORAGE_KEY;
+    }
+
+    if (
+      scope.__cineStorageApi &&
+      typeof scope.__cineStorageApi === 'object'
+    ) {
+      const storageApi = scope.__cineStorageApi;
+      if (
+        typeof storageApi.TEMPERATURE_STORAGE_KEY === 'string' &&
+        storageApi.TEMPERATURE_STORAGE_KEY
+      ) {
+        return storageApi.TEMPERATURE_STORAGE_KEY;
+      }
+
+      if (typeof storageApi.getTemperaturePreferenceStorageKey === 'function') {
+        try {
+          const key = storageApi.getTemperaturePreferenceStorageKey();
+          if (typeof key === 'string' && key) {
+            return key;
+          }
+        } catch (temperaturePreferenceLookupError) {
+          void temperaturePreferenceLookupError;
+        }
+      }
+    }
+
+    if (typeof scope.resolveTemperatureStorageKey === 'function') {
+      try {
+        const resolved = scope.resolveTemperatureStorageKey();
+        if (typeof resolved === 'string' && resolved) {
+          return resolved;
+        }
+      } catch (resolveTemperatureStorageKeyError) {
+        void resolveTemperatureStorageKeyError;
+      }
+    }
+  }
+
+  return CORE_TEMPERATURE_STORAGE_KEY_FALLBACK;
+}
+
+const TEMPERATURE_STORAGE_KEY = resolvePreferredTemperatureStorageKey();
+
+(function ensureTemperatureStorageKeyGlobal(key) {
+  const candidates = [
+    CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+  ];
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    if (typeof scope.TEMPERATURE_STORAGE_KEY === 'string' && scope.TEMPERATURE_STORAGE_KEY) {
+      continue;
+    }
+
+    try {
+      scope.TEMPERATURE_STORAGE_KEY = key;
+    } catch (temperatureKeyAssignError) {
+      void temperatureKeyAssignError;
+    }
+  }
+})(TEMPERATURE_STORAGE_KEY);
+
 function inlineFallbackDetectRuntimeScope(primaryScope) {
   if (primaryScope && (typeof primaryScope === 'object' || typeof primaryScope === 'function')) {
     return primaryScope;
