@@ -4212,6 +4212,90 @@ function resolveDevicesSnapshot() {
   }
 }
 
+function updateGlobalDevicesReference(nextDevices) {
+  const normalizedDevices =
+    nextDevices && typeof nextDevices === 'object'
+      ? nextDevices
+      : {};
+
+  const scopeCandidates = [];
+
+  const registerScope = scope => {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+    if (scopeCandidates.indexOf(scope) !== -1) {
+      return;
+    }
+    scopeCandidates.push(scope);
+  };
+
+  try {
+    if (typeof DEVICE_GLOBAL_SCOPE !== 'undefined') {
+      registerScope(DEVICE_GLOBAL_SCOPE);
+    }
+  } catch (scopeError) {
+    void scopeError;
+  }
+
+  registerScope(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
+  registerScope(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  registerScope(typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined'
+    ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+    : null);
+  registerScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  registerScope(typeof window !== 'undefined' ? window : null);
+  registerScope(typeof self !== 'undefined' ? self : null);
+  registerScope(typeof global !== 'undefined' ? global : null);
+
+  scopeCandidates.forEach(scope => {
+    try {
+      scope.devices = normalizedDevices;
+    } catch (assignError) {
+      void assignError;
+
+      try {
+        Object.defineProperty(scope, 'devices', {
+          configurable: true,
+          writable: true,
+          value: normalizedDevices,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    try {
+      const shared = scope.CORE_SHARED || scope.cineCoreShared;
+      if (shared && typeof shared === 'object') {
+        shared.devices = normalizedDevices;
+        if (typeof shared.updateDevices === 'function') {
+          try {
+            shared.updateDevices(normalizedDevices);
+          } catch (updateError) {
+            void updateError;
+          }
+        }
+      }
+    } catch (sharedError) {
+      void sharedError;
+    }
+  });
+
+  if (CORE_SHARED && typeof CORE_SHARED === 'object') {
+    try {
+      CORE_SHARED.devices = normalizedDevices;
+      if (typeof CORE_SHARED.updateDevices === 'function') {
+        CORE_SHARED.updateDevices(normalizedDevices);
+      }
+    } catch (sharedAssignError) {
+      void sharedAssignError;
+    }
+  }
+
+  return normalizedDevices;
+}
+
 function resolveTripodPreferenceSelect(type) {
   if (typeof document === 'undefined') return null;
   const id = AUTO_GEAR_TRIPOD_FIELD_IDS[type];
@@ -24381,6 +24465,7 @@ function getCrewRoleEntries() {
 exposeCoreRuntimeConstant('setupInstallBanner', setupInstallBanner);
 exposeCoreRuntimeConstant('maybeShowIosPwaHelp', maybeShowIosPwaHelp);
 exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+exposeCoreRuntimeConstant('updateGlobalDevicesReference', updateGlobalDevicesReference);
 exposeCoreRuntimeConstant('setLanguage', setLanguage);
 exposeCoreRuntimeConstant('configureIconOnlyButton', configureIconOnlyButton);
 const CORE_RUNTIME_CONSTANTS = {
