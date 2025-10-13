@@ -8998,21 +8998,56 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return TEMPERATURE_UNITS.celsius;
     }
-    
-    function convertCelsiusToUnit(value, unit = temperatureUnit) {
+
+    function getRuntimeTemperatureUnit() {
+      const fallbackUnitCandidates = [];
+      if (typeof temperatureUnit !== 'undefined') {
+        fallbackUnitCandidates.push(temperatureUnit);
+      }
+      if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+        fallbackUnitCandidates.push(CORE_GLOBAL_SCOPE.temperatureUnit);
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+        fallbackUnitCandidates.push(globalThis.temperatureUnit);
+      }
+      if (typeof window !== 'undefined' && window && typeof window === 'object') {
+        fallbackUnitCandidates.push(window.temperatureUnit);
+      }
+      if (typeof self !== 'undefined' && self && typeof self === 'object') {
+        fallbackUnitCandidates.push(self.temperatureUnit);
+      }
+      if (typeof global !== 'undefined' && global && typeof global === 'object') {
+        fallbackUnitCandidates.push(global.temperatureUnit);
+      }
+
+      for (let index = 0; index < fallbackUnitCandidates.length; index += 1) {
+        const candidate = fallbackUnitCandidates[index];
+        if (typeof candidate === 'string' && candidate) {
+          return candidate;
+        }
+      }
+
+      return 'celsius';
+    }
+
+    function convertCelsiusToUnit(value, unit) {
       const numeric = Number(value);
       if (!Number.isFinite(numeric)) {
         return Number.NaN;
       }
-      const resolvedUnit = normalizeTemperatureUnit(unit);
+      const resolvedUnit = normalizeTemperatureUnit(
+        typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+      );
       if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
         return (numeric * 9) / 5 + 32;
       }
       return numeric;
     }
-    
-    function getTemperatureUnitSymbolForLang(lang = currentLang, unit = temperatureUnit) {
-      const resolvedUnit = normalizeTemperatureUnit(unit);
+
+    function getTemperatureUnitSymbolForLang(lang = currentLang, unit) {
+      const resolvedUnit = normalizeTemperatureUnit(
+        typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+      );
       const textsForLang = getLanguageTexts(lang);
       const fallbackTexts = getLanguageTexts('en');
       const key =
@@ -9026,8 +9061,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       );
     }
     
-    function getTemperatureUnitLabelForLang(lang = currentLang, unit = temperatureUnit) {
-      const resolvedUnit = normalizeTemperatureUnit(unit);
+    function getTemperatureUnitLabelForLang(lang = currentLang, unit) {
+      const resolvedUnit = normalizeTemperatureUnit(
+        typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+      );
       const textsForLang = getLanguageTexts(lang);
       const fallbackTexts = getLanguageTexts('en');
       const key =
@@ -9041,22 +9078,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       );
     }
     
-    function getTemperatureColumnLabelForLang(lang = currentLang, unit = temperatureUnit) {
+    function getTemperatureColumnLabelForLang(lang = currentLang, unit) {
       const textsForLang = getLanguageTexts(lang);
       const fallbackTexts = getLanguageTexts('en');
       const baseLabel =
         textsForLang.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
-      const symbol = getTemperatureUnitSymbolForLang(lang, unit);
+      const symbol = getTemperatureUnitSymbolForLang(
+        lang,
+        typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+      );
       return `${baseLabel} (${symbol})`;
     }
-    
+
     function formatTemperatureForDisplay(celsius, options = {}) {
       const {
-        unit = temperatureUnit,
+        unit,
         lang = currentLang,
         includeSign = true
       } = options || {};
-      const resolvedUnit = normalizeTemperatureUnit(unit);
+      const resolvedUnit = normalizeTemperatureUnit(
+        typeof unit === 'undefined' ? getRuntimeTemperatureUnit() : unit
+      );
       let converted = convertCelsiusToUnit(celsius, resolvedUnit);
       if (!Number.isFinite(converted)) {
         return '';
