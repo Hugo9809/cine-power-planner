@@ -1955,7 +1955,7 @@ const texts = {
         resultsBatteryPacks: {
           title: "Power Summary pass: Battery runtimes",
           body:
-            "Expand each battery pack to review runtime projections, reserve margin highlights and device notes while making sure autosave captures the latest selections for offline safety.",
+            "Review each battery pack's projected runtime, reserve margin highlights and device notes while autosave keeps the latest selections ready for offline safety.",
         },
         resultsChangeover: {
           title: "Power Summary pass: Changeovers",
