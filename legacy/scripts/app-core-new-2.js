@@ -127,7 +127,27 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
       void collectRuntimeScopeError;
     }
   }
+
+  if (
+    typeof CORE_RUNTIME_SCOPE_SUPPORT !== 'undefined' &&
+    CORE_RUNTIME_SCOPE_SUPPORT &&
+    typeof CORE_RUNTIME_SCOPE_SUPPORT.collectCandidateScopes === 'function'
+  ) {
+    try {
+      var fallbackScopes = CORE_RUNTIME_SCOPE_SUPPORT.collectCandidateScopes(
+        primaryScope,
+        CORE_ENVIRONMENT_HELPERS
+      );
+      if (Array.isArray(fallbackScopes)) {
+        return fallbackScopes;
+      }
+    } catch (collectScopeSupportError) {
+      void collectScopeSupportError;
+    }
+  }
+
   var scopes = [];
+
   function registerScope(scope) {
     if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
       return;
@@ -136,46 +156,122 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
       scopes.push(scope);
     }
   }
-  if (CORE_ENVIRONMENT_HELPERS && typeof CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function') {
-    try {
-      var collectedScopes = CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primaryScope);
-      if (Array.isArray(collectedScopes)) {
-        for (var collectedIndex = 0; collectedIndex < collectedScopes.length; collectedIndex += 1) {
-          registerScope(collectedScopes[collectedIndex]);
-        }
-      }
-    } catch (collectScopeError) {
-      void collectScopeError;
-    }
-  }
+
   registerScope(primaryScope);
-  registerScope(typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null);
-  registerScope(typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null);
-  registerScope(typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null);
-  registerScope(typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null);
-  var detectedScope = null;
-  if (CORE_ENVIRONMENT_HELPERS && typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function') {
-    try {
-      detectedScope = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
-    } catch (detectScopeError) {
-      void detectScopeError;
-      detectedScope = null;
-    }
-  } else if (typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
-    detectedScope = globalThis;
-  } else if (typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
-    detectedScope = window;
-  } else if (typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
-    detectedScope = self;
-  } else if (typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
-    detectedScope = global;
-  }
-  registerScope(detectedScope);
+  registerScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  registerScope(typeof window !== 'undefined' ? window : null);
+  registerScope(typeof self !== 'undefined' ? self : null);
+  registerScope(typeof global !== 'undefined' ? global : null);
+
   return scopes;
 }
-if (typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' || !CORE_RUNTIME_CANDIDATE_SCOPES || typeof CORE_RUNTIME_CANDIDATE_SCOPES.length !== 'number') {
-  CORE_RUNTIME_CANDIDATE_SCOPES = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
-}
+
+var CORE_RUNTIME_CANDIDATE_SCOPES = function resolveCoreRuntimeCandidateScopesPart2() {
+  if (
+    typeof CORE_RUNTIME_CANDIDATE_SCOPES !== 'undefined' &&
+    CORE_RUNTIME_CANDIDATE_SCOPES &&
+    typeof CORE_RUNTIME_CANDIDATE_SCOPES.length === 'number'
+  ) {
+    return CORE_RUNTIME_CANDIDATE_SCOPES;
+  }
+
+  var resolvedScopes = null;
+  var primaryScope = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null;
+
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.resolveCandidateScopes === 'function') {
+    try {
+      resolvedScopes = CORE_RUNTIME_SHARED.resolveCandidateScopes(
+        primaryScope,
+        CORE_ENVIRONMENT_HELPERS
+      );
+    } catch (resolveCandidateScopesError) {
+      void resolveCandidateScopesError;
+      resolvedScopes = null;
+    }
+  }
+
+  if (!resolvedScopes) {
+    if (
+      typeof CORE_RUNTIME_SCOPE_SUPPORT !== 'undefined' &&
+      CORE_RUNTIME_SCOPE_SUPPORT &&
+      typeof CORE_RUNTIME_SCOPE_SUPPORT.resolveCandidateScopes === 'function'
+    ) {
+      try {
+        var supportedScopes = CORE_RUNTIME_SCOPE_SUPPORT.resolveCandidateScopes(
+          primaryScope,
+          CORE_ENVIRONMENT_HELPERS
+        );
+        if (Array.isArray(supportedScopes)) {
+          resolvedScopes = supportedScopes;
+        }
+      } catch (resolveScopeSupportError) {
+        void resolveScopeSupportError;
+        resolvedScopes = null;
+      }
+    }
+  }
+
+  if (!resolvedScopes) {
+    resolvedScopes = collectCoreRuntimeCandidateScopes(primaryScope);
+  }
+
+  if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.syncCandidateScopes === 'function') {
+    try {
+      CORE_RUNTIME_SHARED.syncCandidateScopes(
+        resolvedScopes,
+        primaryScope,
+        CORE_ENVIRONMENT_HELPERS
+      );
+    } catch (syncCandidateScopesError) {
+      void syncCandidateScopesError;
+    }
+  } else if (
+    typeof CORE_RUNTIME_SCOPE_SUPPORT !== 'undefined' &&
+    CORE_RUNTIME_SCOPE_SUPPORT &&
+    typeof CORE_RUNTIME_SCOPE_SUPPORT.syncCandidateScopes === 'function'
+  ) {
+    try {
+      CORE_RUNTIME_SCOPE_SUPPORT.syncCandidateScopes(
+        resolvedScopes,
+        primaryScope,
+        CORE_ENVIRONMENT_HELPERS
+      );
+    } catch (syncScopeSupportError) {
+      void syncScopeSupportError;
+    }
+  } else {
+    var scope =
+      (typeof globalThis !== 'undefined' && globalThis) ||
+      (typeof window !== 'undefined' && window) ||
+      (typeof self !== 'undefined' && self) ||
+      (typeof global !== 'undefined' && global) ||
+      null;
+
+    if (
+      scope &&
+      (!scope.CORE_RUNTIME_CANDIDATE_SCOPES || scope.CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes)
+    ) {
+      try {
+        scope.CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+      } catch (assignCandidateScopesError) {
+        void assignCandidateScopesError;
+      }
+    }
+
+    try {
+      if (
+        typeof CORE_RUNTIME_CANDIDATE_SCOPES === 'undefined' ||
+        CORE_RUNTIME_CANDIDATE_SCOPES !== resolvedScopes
+      ) {
+        CORE_RUNTIME_CANDIDATE_SCOPES = resolvedScopes;
+      }
+    } catch (candidateAssignError) {
+      void candidateAssignError;
+    }
+  }
+
+  return resolvedScopes;
+}();
 var CORE_RUNTIME_STATE_SUPPORT_PART2 = function resolveCoreRuntimeStateSupportPart2() {
   if (typeof CORE_RUNTIME_STATE_SUPPORT !== 'undefined' && CORE_RUNTIME_STATE_SUPPORT) {
     return CORE_RUNTIME_STATE_SUPPORT;

@@ -200,6 +200,75 @@ var CORE_RUNTIME_SHARED =
         return null;
       })();
 
+const CORE_RUNTIME_SCOPE_SUPPORT = (function resolveCoreRuntimeScopeSupport() {
+  let resolvedSupport = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    try {
+      resolvedSupport = resolveCoreSupportModule(
+        'cineCoreRuntimeStateScopes',
+        './modules/core/runtime-state/runtime-scopes.js'
+      );
+    } catch (runtimeScopeResolveError) {
+      void runtimeScopeResolveError;
+      resolvedSupport = null;
+    }
+  }
+
+  if (!resolvedSupport && typeof require === 'function') {
+    try {
+      const requiredRuntimeScopes = require('./modules/core/runtime-state/runtime-scopes.js');
+      if (requiredRuntimeScopes && typeof requiredRuntimeScopes === 'object') {
+        resolvedSupport = requiredRuntimeScopes;
+      }
+    } catch (runtimeScopeRequireError) {
+      void runtimeScopeRequireError;
+    }
+  }
+
+  if (resolvedSupport) {
+    return resolvedSupport;
+  }
+
+  const fallbackScopes = [
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' &&
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object'
+      ? globalThis
+      : null,
+    typeof window !== 'undefined' && typeof window === 'object'
+      ? window
+      : null,
+    typeof self !== 'undefined' && typeof self === 'object'
+      ? self
+      : null,
+    typeof global !== 'undefined' && typeof global === 'object'
+      ? global
+      : null,
+  ];
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const scope = fallbackScopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      const candidate = scope.cineCoreRuntimeStateScopes;
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    } catch (runtimeScopeLookupError) {
+      void runtimeScopeLookupError;
+    }
+  }
+
+  return null;
+})();
+
 const CORE_PINK_MODE_SUPPORT =
   resolveCoreSupportModule(
     'cineCorePinkModeSupport',
@@ -394,6 +463,23 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
     }
   }
 
+  if (
+    CORE_RUNTIME_SCOPE_SUPPORT &&
+    typeof CORE_RUNTIME_SCOPE_SUPPORT.collectCandidateScopes === 'function'
+  ) {
+    try {
+      const fallbackScopes = CORE_RUNTIME_SCOPE_SUPPORT.collectCandidateScopes(
+        primaryScope,
+        CORE_ENVIRONMENT_HELPERS
+      );
+      if (Array.isArray(fallbackScopes)) {
+        return fallbackScopes;
+      }
+    } catch (collectScopeSupportError) {
+      void collectScopeSupportError;
+    }
+  }
+
   const scopes = [];
 
   function registerScope(scope) {
@@ -442,6 +528,26 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandi
   }
 
   if (!resolvedScopes) {
+    if (
+      CORE_RUNTIME_SCOPE_SUPPORT &&
+      typeof CORE_RUNTIME_SCOPE_SUPPORT.resolveCandidateScopes === 'function'
+    ) {
+      try {
+        const supportedScopes = CORE_RUNTIME_SCOPE_SUPPORT.resolveCandidateScopes(
+          typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+          CORE_ENVIRONMENT_HELPERS
+        );
+        if (Array.isArray(supportedScopes)) {
+          resolvedScopes = supportedScopes;
+        }
+      } catch (resolveScopeSupportError) {
+        void resolveScopeSupportError;
+        resolvedScopes = null;
+      }
+    }
+  }
+
+  if (!resolvedScopes) {
     resolvedScopes = collectCoreRuntimeCandidateScopes(
       typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
     );
@@ -459,6 +565,19 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function resolveCoreRuntimeCandi
       );
     } catch (syncCandidateScopesError) {
       void syncCandidateScopesError;
+    }
+  } else if (
+    CORE_RUNTIME_SCOPE_SUPPORT &&
+    typeof CORE_RUNTIME_SCOPE_SUPPORT.syncCandidateScopes === 'function'
+  ) {
+    try {
+      CORE_RUNTIME_SCOPE_SUPPORT.syncCandidateScopes(
+        resolvedScopes,
+        typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+        CORE_ENVIRONMENT_HELPERS
+      );
+    } catch (syncScopeSupportError) {
+      void syncScopeSupportError;
     }
   } else {
     const scope =
