@@ -8951,6 +8951,22 @@ function updateBatteryLabel() {
   }
 }
 
+const parseBatteryCurrentLimit = value => {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const normalized = trimmed.replace(/,/g, '.');
+    const parsed = parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+};
+
 function updateBatteryOptions() {
   const current = batterySelect.value;
   const currentSwap = hotswapSelect.value;
@@ -8995,7 +9011,10 @@ function updateBatteryOptions() {
   const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
   if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
     swaps = Object.fromEntries(
-      Object.entries(swaps).filter(([, info]) => typeof info.pinA !== 'number' || info.pinA >= totalCurrentLow)
+      Object.entries(swaps).filter(([, info]) => {
+        const pinLimit = parseBatteryCurrentLimit(info && info.pinA);
+        return !Number.isFinite(pinLimit) || pinLimit >= totalCurrentLow;
+      })
     );
   }
 

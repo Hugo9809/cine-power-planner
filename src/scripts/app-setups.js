@@ -2519,6 +2519,22 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
     return anyPending ? false : anyMatch;
 }
 
+function parseBatteryCurrentLimit(value) {
+    if (typeof value === 'number') {
+        return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) {
+            return null;
+        }
+        const normalized = trimmed.replace(/,/g, '.');
+        const parsed = parseFloat(normalized);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+}
+
 // Generate a printable overview of the current selected setup in a new tab
 if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
     generateOverviewBtn.addEventListener('click', () => {
@@ -2536,7 +2552,9 @@ function batteryPinsSufficient() {
     const battData = devices.batteries[batt];
     const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
     if (!isFinite(totalCurrentLow)) return true;
-    return totalCurrentLow <= battData.pinA;
+    const pinLimit = parseBatteryCurrentLimit(battData.pinA);
+    if (!Number.isFinite(pinLimit) || pinLimit <= 0) return true;
+    return totalCurrentLow <= pinLimit;
 }
 
 function alertPinExceeded() {
@@ -2544,10 +2562,12 @@ function alertPinExceeded() {
     if (!batt || batt === 'None' || !devices.batteries[batt]) return;
     const battData = devices.batteries[batt];
     const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    const pinLimit = parseBatteryCurrentLimit(battData.pinA);
+    if (!Number.isFinite(pinLimit) || pinLimit <= 0) return;
     alert(
         texts[currentLang].warnPinExceeded
             .replace('{current}', totalCurrentLow.toFixed(2))
-            .replace('{max}', battData.pinA)
+            .replace('{max}', String(pinLimit))
     );
 }
 
@@ -4143,8 +4163,9 @@ function generateConnectorSummary(device) {
   if (typeof device.capacity === 'number') {
         specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}${renderInfoLabel('Capacity')}${device.capacity} Wh</span>`;
     }
-    if (typeof device.pinA === 'number') {
-        specHtml += `<span class="info-box power-conn">${renderInfoLabel('Pins')}${device.pinA}A</span>`;
+    const pinLimit = parseBatteryCurrentLimit(device.pinA);
+    if (Number.isFinite(pinLimit) && pinLimit > 0) {
+        specHtml += `<span class="info-box power-conn">${renderInfoLabel('Pins')}${pinLimit}A</span>`;
     }
     if (typeof device.dtapA === 'number') {
         specHtml += `<span class="info-box power-conn">${renderInfoLabel('D-Tap')}${device.dtapA}A</span>`;
