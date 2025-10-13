@@ -7379,7 +7379,7 @@ body.dark-mode .onboarding-hero-highlight-body {
 }
 
 .onboarding-hero-language-label {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-regular);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   color: var(--onboarding-label-color);
 }
