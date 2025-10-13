@@ -9957,7 +9957,7 @@ function gearListGenerateHtmlImpl() {
     arr.filter(Boolean).map(addArriKNumber).forEach(function (rawItem) {
       var item = rawItem.trim();
       if (!item) return;
-      var quantityMatch = item.match(/^(\d+)x\s+(.*)$/);
+      var quantityMatch = item.match(/^(\d+)x\s+(\S.*)$/);
       var parsedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : NaN;
       var quantity = Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
       var namePart = quantityMatch ? quantityMatch[2] : item;
