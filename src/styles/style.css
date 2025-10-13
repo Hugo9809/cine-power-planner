@@ -50,6 +50,7 @@
   --button-default-bg: var(--control-bg);
   --button-default-text: var(--control-text);
   --button-default-border: var(--control-border);
+  --button-border-width: 0;
   --button-primary-bg: color-mix(in srgb, var(--accent-color) 94%, var(--surface-color) 6%);
   --button-primary-border: color-mix(in srgb, var(--accent-color) 70%, transparent);
   --button-danger-bg: color-mix(in srgb, var(--danger-color) 92%, var(--surface-color) 8%);
@@ -833,7 +834,9 @@ main.legal-content {
   line-height: var(--button-line-height);
   padding: var(--button-link-padding-block) var(--button-link-padding-inline);
   border-radius: var(--border-radius);
-  border: 1px solid var(--button-border, var(--button-default-border));
+  border-width: var(--button-border-width, 0);
+  border-style: solid;
+  border-color: var(--button-border, var(--button-default-border));
   background-color: var(--button-bg, var(--button-default-bg));
   color: var(--button-text, var(--button-default-text));
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
@@ -8364,7 +8367,9 @@ section:hover {
 button {
   background-color: var(--button-bg, var(--button-default-bg));
   color: var(--button-text, var(--button-default-text));
-  border: 1px solid var(--button-border, var(--button-default-border));
+  border-width: var(--button-border-width, 0);
+  border-style: solid;
+  border-color: var(--button-border, var(--button-default-border));
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin: var(--button-margin-block-start) var(--button-margin-inline)
@@ -8473,6 +8478,7 @@ button.danger,
   --button-bg: transparent;
   --button-text: var(--muted-text-color);
   --button-border: color-mix(in srgb, var(--panel-border) 70%, transparent);
+  --button-border-width: 1px;
   --button-shadow: none;
   --button-hover-shadow: none;
   --button-hover-factor: 1;
@@ -8535,7 +8541,9 @@ input[type="file"]::file-selector-button,
 input[type="file"]::-webkit-file-upload-button {
   background-color: var(--button-default-bg);
   color: var(--button-default-text);
-  border: 1px solid var(--button-default-border);
+  border-width: var(--button-border-width, 0);
+  border-style: solid;
+  border-color: var(--button-default-border);
   border-radius: var(--border-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   margin-inline-end: var(--spacing-sm);
