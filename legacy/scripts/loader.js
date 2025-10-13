@@ -747,6 +747,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   fallback: 'en'
 });
 CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'crewRoles',
+  validator: Array.isArray,
+  fallback: function fallback() {
+    return [];
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'getLanguageTexts',
   validator: function validator(value) {
     return typeof value === 'function';
@@ -1136,6 +1143,261 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           font: normalizedFont
         };
       }
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'updateGlobalDevicesReference',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackUpdateGlobalDevicesReference(devices) {
+      if (!devices || _typeof(devices) !== 'object') {
+        return;
+      }
+      var normalized = devices;
+      try {
+        if (typeof structuredClone === 'function') {
+          normalized = structuredClone(devices);
+        } else {
+          normalized = JSON.parse(JSON.stringify(devices));
+        }
+      } catch (cloneError) {
+        void cloneError;
+        normalized = devices;
+      }
+      var scope = resolveCriticalGlobalScope();
+      var candidates = [];
+      if (scope) {
+        candidates.push(scope);
+        if (scope.CORE_GLOBAL_SCOPE) {
+          candidates.push(scope.CORE_GLOBAL_SCOPE);
+        }
+        if (scope.DEVICE_GLOBAL_SCOPE) {
+          candidates.push(scope.DEVICE_GLOBAL_SCOPE);
+        }
+      }
+      for (var index = 0; index < candidates.length; index += 1) {
+        var target = candidates[index];
+        if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
+          continue;
+        }
+        try {
+          target.devices = normalized;
+        } catch (assignError) {
+          void assignError;
+          try {
+            Object.defineProperty(target, 'devices', {
+              configurable: true,
+              writable: true,
+              value: normalized
+            });
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+      }
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'configureIconOnlyButton',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackConfigureIconOnlyButton(button, glyph, options) {
+      if (!button || _typeof(button) !== 'object' && typeof button !== 'function') {
+        return;
+      }
+      try {
+        if (typeof button.classList !== 'undefined' && button.classList.add) {
+          button.classList.add('icon-only-btn');
+        }
+      } catch (classError) {
+        void classError;
+      }
+      var glyphChar = null;
+      if (glyph && _typeof(glyph) === 'object' && typeof glyph.char === 'string') {
+        glyphChar = glyph.char;
+      } else if (typeof glyph === 'string') {
+        glyphChar = glyph;
+      }
+      if (glyphChar && typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('data-icon-glyph', glyphChar);
+        } catch (glyphError) {
+          void glyphError;
+        }
+      }
+      var fallbackContext = '';
+      if (options && _typeof(options) === 'object') {
+        if (typeof options.fallbackContext === 'string') {
+          fallbackContext = options.fallbackContext;
+        } else if (Array.isArray(options.contextPaths) && options.contextPaths.length) {
+          var contextPath = options.contextPaths[0];
+          if (typeof contextPath === 'string') {
+            fallbackContext = contextPath;
+          }
+        }
+      }
+      if (fallbackContext && typeof button.setAttribute === 'function') {
+        try {
+          button.setAttribute('aria-label', fallbackContext);
+          button.setAttribute('title', fallbackContext);
+        } catch (labelError) {
+          void labelError;
+        }
+      }
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getCurrentProjectName',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackGetCurrentProjectName() {
+      var scope = resolveCriticalGlobalScope();
+      var doc = scope && scope.document ? scope.document : null;
+      var typedName = '';
+      if (doc) {
+        var input = null;
+        try {
+          input = doc.getElementById('setupName');
+        } catch (inputError) {
+          void inputError;
+          input = null;
+        }
+        if (input && typeof input.value === 'string') {
+          typedName = input.value.trim();
+        }
+        if (typedName) {
+          return typedName;
+        }
+        var select = null;
+        try {
+          select = doc.getElementById('setupSelect');
+        } catch (selectError) {
+          void selectError;
+          select = null;
+        }
+        if (select && typeof select.value === 'string' && select.value) {
+          return select.value.trim();
+        }
+      }
+      var storageKey = 'cameraPowerPlanner_project';
+      if (scope && scope.localStorage && typeof scope.localStorage.getItem === 'function') {
+        try {
+          var stored = scope.localStorage.getItem(storageKey);
+          if (stored) {
+            var parsed = null;
+            try {
+              parsed = JSON.parse(stored);
+            } catch (parseError) {
+              void parseError;
+              parsed = null;
+            }
+            if (parsed && _typeof(parsed) === 'object' && typeof parsed.projectName === 'string' && parsed.projectName.trim()) {
+              return parsed.projectName.trim();
+            }
+          }
+        } catch (storageError) {
+          void storageError;
+        }
+      }
+      return '';
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'setLanguage',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackSetLanguage(candidate) {
+      var scope = resolveCriticalGlobalScope();
+      var requested = typeof candidate === 'string' && candidate ? candidate : 'en';
+      var translations = scope && scope.texts && _typeof(scope.texts) === 'object' ? scope.texts : {};
+      var normalized = requested;
+      if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
+        var lowerCase = requested.toLowerCase();
+        var keys = Object.keys(translations);
+        for (var index = 0; index < keys.length; index += 1) {
+          if (keys[index].toLowerCase() === lowerCase) {
+            normalized = keys[index];
+            break;
+          }
+        }
+        if (!Object.prototype.hasOwnProperty.call(translations, normalized)) {
+          normalized = 'en';
+        }
+      }
+      if (scope) {
+        scope.currentLang = normalized;
+      }
+      if (scope && scope.localStorage && typeof scope.localStorage.setItem === 'function') {
+        try {
+          scope.localStorage.setItem('language', normalized);
+        } catch (persistError) {
+          void persistError;
+        }
+      }
+      var doc = scope && scope.document ? scope.document : null;
+      if (doc && doc.documentElement) {
+        doc.documentElement.lang = normalized;
+      }
+      var updateSelectValue = function updateSelectValue(element) {
+        if (!element || _typeof(element) !== 'object') {
+          return;
+        }
+        try {
+          element.value = normalized;
+        } catch (assignValueError) {
+          void assignValueError;
+        }
+      };
+      if (doc) {
+        try {
+          updateSelectValue(doc.getElementById('languageSelect'));
+        } catch (languageSelectError) {
+          void languageSelectError;
+        }
+        try {
+          updateSelectValue(doc.getElementById('settingsLanguage'));
+        } catch (settingsLanguageError) {
+          void settingsLanguageError;
+        }
+        try {
+          var title = translations[normalized] && translations[normalized].appTitle;
+          if (typeof title === 'string' && title) {
+            doc.title = title;
+            var mainTitle = doc.getElementById('mainTitle');
+            if (mainTitle) {
+              mainTitle.textContent = title;
+            }
+          }
+        } catch (titleError) {
+          void titleError;
+        }
+      }
+      if (scope && typeof scope.dispatchEvent === 'function' && typeof scope.Event === 'function') {
+        try {
+          scope.dispatchEvent(new scope.Event('languagechange'));
+        } catch (eventError) {
+          void eventError;
+        }
+      } else if (scope && scope.window && typeof scope.window.dispatchEvent === 'function' && typeof scope.window.Event === 'function') {
+        try {
+          scope.window.dispatchEvent(new scope.window.Event('languagechange'));
+        } catch (windowEventError) {
+          void windowEventError;
+        }
+      }
+      return normalized;
     };
   }
 });
@@ -2397,13 +2659,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var modernScriptBundle = {
     core: ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/rental-houses.js', {
       parallel: ['src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js']
-    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/runtime-state/scope-utils.js', 'src/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'src/scripts/modules/core/runtime-state/temperature-keys.js', 'src/scripts/modules/core/runtime-state/local-runtime-state.js', 'src/scripts/modules/core/runtime-state.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/localization-support.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-enviroment.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/runtime-state/scope-utils.js', 'src/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'src/scripts/modules/core/runtime-state/temperature-keys.js', 'src/scripts/modules/core/runtime-state/local-runtime-state.js', 'src/scripts/modules/core/runtime-state.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/core/pink-mode-support.js', 'src/scripts/modules/core/pink-mode-animations.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/modules/app-core/localization-support.js', 'src/scripts/app-core-text.js', 'src/scripts/app-core-runtime-scopes.js', 'src/scripts/app-core-runtime-support.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-enviroment.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
     deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js']
   };
   var legacyScriptBundle = {
     core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/rental-houses.js', {
       parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js']
-    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/modules/app-core/localization-support.js', 'legacy/scripts/app-core-text.js', 'legacy/scripts/app-core-runtime-scopes.js', 'legacy/scripts/app-core-runtime-support.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
+    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/core/pink-mode-support.js', 'legacy/scripts/modules/core/pink-mode-animations.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-text.js', 'legacy/scripts/app-core-runtime-scopes.js', 'legacy/scripts/app-core-runtime-support.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
     deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
   };
   function startLoading() {

@@ -4154,37 +4154,44 @@ function updateGlobalDevicesReference(nextDevices) {
       ? nextDevices
       : {};
 
-  const scopeCandidates = [];
+  const seenScopes = new Set();
+  const scopes = [];
 
-  const registerScope = scope => {
+  const enqueueScope = scope => {
     if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
       return;
     }
-    if (scopeCandidates.indexOf(scope) !== -1) {
+    if (seenScopes.has(scope)) {
       return;
     }
-    scopeCandidates.push(scope);
+    seenScopes.add(scope);
+    scopes.push(scope);
   };
 
   try {
     if (typeof DEVICE_GLOBAL_SCOPE !== 'undefined') {
-      registerScope(DEVICE_GLOBAL_SCOPE);
+      enqueueScope(DEVICE_GLOBAL_SCOPE);
     }
   } catch (scopeError) {
     void scopeError;
   }
 
-  registerScope(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
-  registerScope(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
-  registerScope(typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined'
-    ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
-    : null);
-  registerScope(typeof globalThis !== 'undefined' ? globalThis : null);
-  registerScope(typeof window !== 'undefined' ? window : null);
-  registerScope(typeof self !== 'undefined' ? self : null);
-  registerScope(typeof global !== 'undefined' ? global : null);
+  enqueueScope(typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null);
+  enqueueScope(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  enqueueScope(
+    typeof CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE !== 'undefined'
+      ? CORE_RUNTIME_PRIMARY_SCOPE_CANDIDATE
+      : null,
+  );
+  enqueueScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  enqueueScope(typeof window !== 'undefined' ? window : null);
+  enqueueScope(typeof self !== 'undefined' ? self : null);
+  enqueueScope(typeof global !== 'undefined' ? global : null);
 
-  scopeCandidates.forEach(scope => {
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) continue;
+
     try {
       scope.devices = normalizedDevices;
     } catch (assignError) {
@@ -4216,7 +4223,20 @@ function updateGlobalDevicesReference(nextDevices) {
     } catch (sharedError) {
       void sharedError;
     }
-  });
+
+    if (scope && scope.global && scope.global !== scope) {
+      enqueueScope(scope.global);
+    }
+
+    const runtimeState = scope.__cineRuntimeState;
+    if (runtimeState && typeof runtimeState === 'object') {
+      try {
+        runtimeState.devices = normalizedDevices;
+      } catch (runtimeError) {
+        void runtimeError;
+      }
+    }
+  }
 
   if (CORE_SHARED && typeof CORE_SHARED === 'object') {
     try {
@@ -4226,6 +4246,19 @@ function updateGlobalDevicesReference(nextDevices) {
       }
     } catch (sharedAssignError) {
       void sharedAssignError;
+    }
+  }
+
+  if (
+    typeof module !== 'undefined'
+    && module
+    && typeof module.exports === 'object'
+    && module.exports
+  ) {
+    try {
+      module.exports.devices = normalizedDevices;
+    } catch (moduleError) {
+      void moduleError;
     }
   }
 
@@ -8611,90 +8644,6 @@ function unifyDevices(devicesData) {
       c.fizConnectors = [];
     }
   });
-}
-
-function updateGlobalDevicesReference(latestDevices) {
-  const normalizedDevices =
-    latestDevices && typeof latestDevices === 'object' ? latestDevices : null;
-  if (!normalizedDevices) {
-    return;
-  }
-
-  const seenScopes = new Set();
-  const scopes = [];
-  const enqueueScope = (scope) => {
-    if (!scope) return;
-    const scopeType = typeof scope;
-    if (scopeType !== 'object' && scopeType !== 'function') {
-      return;
-    }
-    if (seenScopes.has(scope)) {
-      return;
-    }
-    seenScopes.add(scope);
-    scopes.push(scope);
-  };
-
-  enqueueScope(
-    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
-      ? CORE_GLOBAL_SCOPE
-      : null,
-  );
-  enqueueScope(
-    typeof DEVICE_GLOBAL_SCOPE !== 'undefined' && DEVICE_GLOBAL_SCOPE
-      ? DEVICE_GLOBAL_SCOPE
-      : null,
-  );
-  enqueueScope(typeof globalThis !== 'undefined' ? globalThis : null);
-  enqueueScope(typeof window !== 'undefined' ? window : null);
-  enqueueScope(typeof self !== 'undefined' ? self : null);
-  enqueueScope(typeof global !== 'undefined' ? global : null);
-
-  for (let index = 0; index < scopes.length; index += 1) {
-    const scope = scopes[index];
-    if (!scope) continue;
-
-    try {
-      scope.devices = normalizedDevices;
-    } catch (assignError) {
-      void assignError;
-      try {
-        Object.defineProperty(scope, 'devices', {
-          configurable: true,
-          writable: true,
-          value: normalizedDevices,
-        });
-      } catch (defineError) {
-        void defineError;
-      }
-    }
-
-    if (scope && scope.global && scope.global !== scope) {
-      enqueueScope(scope.global);
-    }
-
-    const runtimeState = scope.__cineRuntimeState;
-    if (runtimeState && typeof runtimeState === 'object') {
-      try {
-        runtimeState.devices = normalizedDevices;
-      } catch (runtimeError) {
-        void runtimeError;
-      }
-    }
-  }
-
-  if (
-    typeof module !== 'undefined'
-    && module
-    && typeof module.exports === 'object'
-    && module.exports
-  ) {
-    try {
-      module.exports.devices = normalizedDevices;
-    } catch (moduleError) {
-      void moduleError;
-    }
-  }
 }
 
 function resolveUpdateDevicesReferenceFunction() {
