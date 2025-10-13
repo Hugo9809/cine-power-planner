@@ -7402,6 +7402,84 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     });
   }
+  function updateGlobalDevicesReference(latestDevices) {
+    var normalizedDevices =
+      latestDevices && _typeof(latestDevices) === 'object' ? latestDevices : null;
+    if (!normalizedDevices) {
+      return;
+    }
+
+    var scopes = [];
+
+    function enqueueScope(scope) {
+      if (!scope || scopes.indexOf(scope) !== -1) {
+        return;
+      }
+      var scopeType = _typeof(scope);
+      if (scopeType !== 'object' && scopeType !== 'function') {
+        return;
+      }
+      scopes.push(scope);
+    }
+
+    enqueueScope(
+      typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : null,
+    );
+    enqueueScope(
+      typeof DEVICE_GLOBAL_SCOPE !== 'undefined' && DEVICE_GLOBAL_SCOPE ? DEVICE_GLOBAL_SCOPE : null,
+    );
+    enqueueScope(typeof globalThis !== 'undefined' ? globalThis : null);
+    enqueueScope(typeof window !== 'undefined' ? window : null);
+    enqueueScope(typeof self !== 'undefined' ? self : null);
+    enqueueScope(typeof global !== 'undefined' ? global : null);
+
+    for (var scopeIndex = 0; scopeIndex < scopes.length; scopeIndex += 1) {
+      var scope = scopes[scopeIndex];
+      if (!scope) continue;
+
+      try {
+        scope.devices = normalizedDevices;
+      } catch (assignError) {
+        void assignError;
+        try {
+          Object.defineProperty(scope, 'devices', {
+            configurable: true,
+            writable: true,
+            value: normalizedDevices,
+          });
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+
+      if (scope && scope.global && scope.global !== scope) {
+        enqueueScope(scope.global);
+      }
+
+      var runtimeState = scope.__cineRuntimeState;
+      if (runtimeState && _typeof(runtimeState) === 'object') {
+        try {
+          runtimeState.devices = normalizedDevices;
+        } catch (runtimeError) {
+          void runtimeError;
+        }
+      }
+    }
+
+    if (
+      typeof module !== 'undefined' &&
+      module &&
+      module.exports &&
+      _typeof(module.exports) === 'object'
+    ) {
+      try {
+        module.exports.devices = normalizedDevices;
+      } catch (moduleError) {
+        void moduleError;
+      }
+    }
+  }
+
   if (window.defaultDevices === undefined) {
     window.defaultDevices = CORE_DEEP_CLONE(devices);
     unifyDevices(window.defaultDevices);

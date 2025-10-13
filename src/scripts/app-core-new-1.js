@@ -8676,6 +8676,90 @@ function unifyDevices(devicesData) {
   });
 }
 
+function updateGlobalDevicesReference(latestDevices) {
+  const normalizedDevices =
+    latestDevices && typeof latestDevices === 'object' ? latestDevices : null;
+  if (!normalizedDevices) {
+    return;
+  }
+
+  const seenScopes = new Set();
+  const scopes = [];
+  const enqueueScope = (scope) => {
+    if (!scope) return;
+    const scopeType = typeof scope;
+    if (scopeType !== 'object' && scopeType !== 'function') {
+      return;
+    }
+    if (seenScopes.has(scope)) {
+      return;
+    }
+    seenScopes.add(scope);
+    scopes.push(scope);
+  };
+
+  enqueueScope(
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+      ? CORE_GLOBAL_SCOPE
+      : null,
+  );
+  enqueueScope(
+    typeof DEVICE_GLOBAL_SCOPE !== 'undefined' && DEVICE_GLOBAL_SCOPE
+      ? DEVICE_GLOBAL_SCOPE
+      : null,
+  );
+  enqueueScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  enqueueScope(typeof window !== 'undefined' ? window : null);
+  enqueueScope(typeof self !== 'undefined' ? self : null);
+  enqueueScope(typeof global !== 'undefined' ? global : null);
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope) continue;
+
+    try {
+      scope.devices = normalizedDevices;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(scope, 'devices', {
+          configurable: true,
+          writable: true,
+          value: normalizedDevices,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+
+    if (scope && scope.global && scope.global !== scope) {
+      enqueueScope(scope.global);
+    }
+
+    const runtimeState = scope.__cineRuntimeState;
+    if (runtimeState && typeof runtimeState === 'object') {
+      try {
+        runtimeState.devices = normalizedDevices;
+      } catch (runtimeError) {
+        void runtimeError;
+      }
+    }
+  }
+
+  if (
+    typeof module !== 'undefined'
+    && module
+    && typeof module.exports === 'object'
+    && module.exports
+  ) {
+    try {
+      module.exports.devices = normalizedDevices;
+    } catch (moduleError) {
+      void moduleError;
+    }
+  }
+}
+
 // Store a deep copy of the initial 'devices' data as defined in the device files.
 // This 'defaultDevices' will be used when reverting the database.
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
