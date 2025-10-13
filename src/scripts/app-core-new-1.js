@@ -1411,7 +1411,7 @@ const resolvedGetLanguageTexts =
     ? CORE_LOCALIZATION_RUNTIME.getLanguageTexts
     : existingGetLanguageTexts || fallbackGetLanguageTextsProxy;
 
-let getLanguageTexts = resolvedGetLanguageTexts;
+var getLanguageTexts = resolvedGetLanguageTexts;
 
 if (
   typeof globalThis !== 'undefined' &&
