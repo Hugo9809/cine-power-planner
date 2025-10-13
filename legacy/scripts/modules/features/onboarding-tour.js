@@ -2365,12 +2365,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       activeTargetElements = [];
       return;
     }
-    for (var index = 0; index < activeTargetElements.length; index += 1) {
-      var element = activeTargetElements[index];
-      if (element && element.classList && typeof element.classList.remove === 'function') {
-        element.classList.remove('onboarding-active-target');
-      }
-    }
     activeTargetElements = [];
   }
   function updateHighlightPosition() {
@@ -2393,9 +2387,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var element = highlightElements[index];
       if (!element) {
         continue;
-      }
-      if (element.classList && typeof element.classList.add === 'function') {
-        element.classList.add('onboarding-active-target');
       }
       activeTargetElements.push(element);
     }

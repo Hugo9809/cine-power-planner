@@ -2797,16 +2797,6 @@
       activeTargetElements = [];
       return;
     }
-    for (let index = 0; index < activeTargetElements.length; index += 1) {
-      const element = activeTargetElements[index];
-      if (
-        element
-        && element.classList
-        && typeof element.classList.remove === 'function'
-      ) {
-        element.classList.remove('onboarding-active-target');
-      }
-    }
     activeTargetElements = [];
   }
 
@@ -2831,12 +2821,6 @@
       const element = highlightElements[index];
       if (!element) {
         continue;
-      }
-      if (
-        element.classList
-        && typeof element.classList.add === 'function'
-      ) {
-        element.classList.add('onboarding-active-target');
       }
       activeTargetElements.push(element);
     }
