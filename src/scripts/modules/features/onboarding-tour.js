@@ -618,7 +618,7 @@
     resultsWarnings: {
       title: 'Power Summary pass: Warnings and backups',
       body:
-        'Log any connector warnings when D-Tap or pins cannot handle the load, download the offline report for redundant backups and confirm the autosave banner so shares and exports mirror the same state.',
+        'Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the battery feed is near its limit, and red means the camera rig is pulling more power than the battery can supply.',
     },
     batteryComparison: {
       title: 'Compare battery options',
