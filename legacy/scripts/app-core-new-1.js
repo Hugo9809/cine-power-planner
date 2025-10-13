@@ -8627,6 +8627,36 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var doc = typeof document !== "undefined" ? document : null;
     var runtimeScope = getCoreGlobalObject();
     var fallbackLocale = texts[DEFAULT_LANGUAGE] || {};
+    var normalizeTemperatureUnitSafe = function(unit) {
+      if (typeof normalizeTemperatureUnit === "function") {
+        try {
+          return normalizeTemperatureUnit(unit);
+        } catch (normalizeError) {
+          console.warn(
+            "normalizeTemperatureUnit helper threw an error; falling back to safe normalization",
+            normalizeError
+          );
+        }
+      }
+      if (typeof unit === "string") {
+        var trimmed = unit.trim().toLowerCase();
+        if (
+          trimmed === ((TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.fahrenheit)) ||
+          trimmed === "fahrenheit" ||
+          trimmed === "f"
+        ) {
+          return (TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.fahrenheit) || "fahrenheit";
+        }
+        if (
+          trimmed === ((TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.celsius)) ||
+          trimmed === "celsius" ||
+          trimmed === "c"
+        ) {
+          return (TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.celsius) || "celsius";
+        }
+      }
+      return (TEMPERATURE_UNITS === null || TEMPERATURE_UNITS === void 0 ? void 0 : TEMPERATURE_UNITS.celsius) || "celsius";
+    };
     var resolveLocaleString = function resolveLocaleString(key) {
       if (!key) return "";
       var bundle = texts[lang];
@@ -9602,7 +9632,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         settingsTemperatureUnit.setAttribute('aria-label', texts[lang].temperatureUnitSetting);
         Array.from(settingsTemperatureUnit.options || []).forEach(function (option) {
           if (!option) return;
-          var normalized = normalizeTemperatureUnit(option.value);
+          var normalized = normalizeTemperatureUnitSafe(option.value);
           option.textContent = getTemperatureUnitLabelForLang(lang, normalized);
         });
         settingsTemperatureUnit.value = temperatureUnit;
