@@ -126,6 +126,9 @@
     { maxViewportRem: 26, marginRem: 0.75 },
   ];
 
+  const KEYBOARD_HEIGHT_THRESHOLD = 120;
+  const KEYBOARD_OFFSET_THRESHOLD = 24;
+
   function resolveHeroMarginPx(viewportWidth, rootFontSize) {
     const safeRootFont = Number.isFinite(rootFontSize) && rootFontSize > 0
       ? rootFontSize
@@ -2048,6 +2051,7 @@
   let activeInteractionCleanup = null;
   let lastCardPlacement = 'floating';
   let proxyControlId = 0;
+  let baselineViewportHeight = null;
 
   function getProxyControlId(prefix) {
     proxyControlId += 1;
@@ -2066,6 +2070,70 @@
       nextButton.setAttribute('aria-disabled', 'false');
       nextButton.classList.remove('onboarding-next-disabled');
     }
+  }
+
+  function updateBaselineViewportHeight(candidate, options) {
+    if (!Number.isFinite(candidate) || candidate <= 0) {
+      return;
+    }
+    const allowDecrease = Boolean(options && options.allowDecrease);
+    if (baselineViewportHeight === null) {
+      baselineViewportHeight = candidate;
+      return;
+    }
+    if (candidate > baselineViewportHeight) {
+      baselineViewportHeight = candidate;
+      return;
+    }
+    if (allowDecrease && candidate < baselineViewportHeight) {
+      baselineViewportHeight = candidate;
+    }
+  }
+
+  function isTextInputElement(element) {
+    if (!element) {
+      return false;
+    }
+    const nodeName = typeof element.nodeName === 'string'
+      ? element.nodeName.toLowerCase()
+      : '';
+    if (nodeName === 'textarea') {
+      return true;
+    }
+    if (nodeName === 'input') {
+      const type = typeof element.type === 'string' && element.type
+        ? element.type.toLowerCase()
+        : 'text';
+      switch (type) {
+        case 'button':
+        case 'checkbox':
+        case 'color':
+        case 'file':
+        case 'hidden':
+        case 'image':
+        case 'radio':
+        case 'range':
+        case 'reset':
+        case 'submit':
+          return false;
+        default:
+          return true;
+      }
+    }
+    if (element.isContentEditable) {
+      return true;
+    }
+    if (typeof element.getAttribute === 'function') {
+      const role = element.getAttribute('role');
+      if (role === 'textbox' || role === 'searchbox') {
+        return true;
+      }
+      const contentEditable = element.getAttribute('contenteditable');
+      if (contentEditable && contentEditable.toLowerCase() !== 'false') {
+        return true;
+      }
+    }
+    return false;
   }
 
   function teardownStepRequirement() {
@@ -2551,6 +2619,7 @@
     resumeStartIndex = null;
     activeInteractionCleanup = null;
     lastCardPlacement = 'floating';
+    baselineViewportHeight = null;
   }
 
   function attachKeyboardListener() {
@@ -2893,6 +2962,45 @@
     const resolvedRect = targetRect || (targetElement ? targetElement.getBoundingClientRect() : null);
     const forceFloating = Boolean(currentStep && currentStep.forceFloating);
     const cardRect = cardEl.getBoundingClientRect();
+    const visualViewport = GLOBAL_SCOPE && GLOBAL_SCOPE.visualViewport;
+    const activeElement = DOCUMENT && DOCUMENT.activeElement ? DOCUMENT.activeElement : null;
+    const hasActiveTextInput = isTextInputElement(activeElement);
+    const baselineCandidates = [];
+    if (Number.isFinite(viewportHeight) && viewportHeight > 0) {
+      baselineCandidates.push(viewportHeight);
+    }
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.innerHeight === 'number' && GLOBAL_SCOPE.innerHeight > 0) {
+      baselineCandidates.push(GLOBAL_SCOPE.innerHeight);
+    }
+    if (DOCUMENT && DOCUMENT.documentElement && typeof DOCUMENT.documentElement.clientHeight === 'number' && DOCUMENT.documentElement.clientHeight > 0) {
+      baselineCandidates.push(DOCUMENT.documentElement.clientHeight);
+    }
+    const candidateBaseline = baselineCandidates.length > 0
+      ? Math.max(...baselineCandidates)
+      : null;
+    updateBaselineViewportHeight(candidateBaseline, { allowDecrease: !hasActiveTextInput });
+    const baselineHeight = baselineViewportHeight || candidateBaseline || viewportHeight;
+    const rawViewportOffset = visualViewport
+      ? (Number.isFinite(visualViewport.offsetTop)
+        ? visualViewport.offsetTop
+        : Number.isFinite(visualViewport.pageTop)
+          ? visualViewport.pageTop
+          : 0)
+      : 0;
+    const viewportOffsetTop = Number.isFinite(rawViewportOffset) ? rawViewportOffset : 0;
+    const keyboardHeightDelta = Number.isFinite(baselineHeight) && Number.isFinite(viewportHeight)
+      ? baselineHeight - viewportHeight
+      : 0;
+    const keyboardLikelyOpen = hasActiveTextInput
+      && (
+        keyboardHeightDelta > KEYBOARD_HEIGHT_THRESHOLD
+        || viewportOffsetTop > KEYBOARD_OFFSET_THRESHOLD
+      );
+    const activeRect = hasActiveTextInput
+      && activeElement
+      && typeof activeElement.getBoundingClientRect === 'function'
+      ? activeElement.getBoundingClientRect()
+      : null;
     let margin = 16;
     if (currentStep && currentStep.size === 'hero') {
       const heroMarginPx = resolveHeroMarginPx(viewportWidth, rootFontSize);
@@ -3001,11 +3109,50 @@
       }
     }
 
-    cardEl.style.top = `${Math.min(Math.max(top, minTop), maxTop)}px`;
-    cardEl.style.left = `${Math.min(Math.max(left, minLeft), maxLeft)}px`;
-    if (placement !== lastCardPlacement) {
-      lastCardPlacement = placement;
-      cardEl.setAttribute('data-placement', placement);
+    let resolvedTop = Math.min(Math.max(top, minTop), maxTop);
+    let resolvedLeft = Math.min(Math.max(left, minLeft), maxLeft);
+    let resolvedPlacement = placement;
+
+    if (keyboardLikelyOpen && activeRect) {
+      const safeMargin = Math.max(8, margin);
+      const activeTop = activeRect.top + scrollY;
+      const activeBottom = activeTop + activeRect.height;
+      const cardBottom = resolvedTop + cardRect.height;
+      const overlapsActive = cardBottom > (activeTop - safeMargin)
+        && resolvedTop < (activeBottom + safeMargin);
+      if (overlapsActive) {
+        const safeTop = activeTop - safeMargin;
+        const safeBottom = activeBottom + safeMargin;
+        const spaceAbove = Math.max(0, safeTop - minTop);
+        const spaceBelow = Math.max(0, viewportBottom - safeBottom);
+        const computeOverlap = candidateTop => {
+          const candidateBottom = candidateTop + cardRect.height;
+          const overlapStart = Math.max(candidateTop, safeTop);
+          const overlapEnd = Math.min(candidateBottom, safeBottom);
+          return Math.max(0, overlapEnd - overlapStart);
+        };
+        const candidateTopAbove = Math.max(minTop, Math.min(maxTop, safeTop - cardRect.height));
+        const candidateTopBelow = Math.min(maxTop, Math.max(minTop, safeBottom));
+        const overlapAbove = computeOverlap(candidateTopAbove);
+        const overlapBelow = computeOverlap(candidateTopBelow);
+        let chosenTop;
+        if (spaceAbove > spaceBelow) {
+          chosenTop = overlapAbove <= overlapBelow ? candidateTopAbove : candidateTopBelow;
+        } else if (spaceBelow > spaceAbove) {
+          chosenTop = overlapBelow <= overlapAbove ? candidateTopBelow : candidateTopAbove;
+        } else {
+          chosenTop = overlapBelow < overlapAbove ? candidateTopBelow : candidateTopAbove;
+        }
+        resolvedTop = Math.min(Math.max(chosenTop, minTop), maxTop);
+        resolvedPlacement = 'floating';
+      }
+    }
+
+    cardEl.style.top = `${resolvedTop}px`;
+    cardEl.style.left = `${resolvedLeft}px`;
+    if (resolvedPlacement !== lastCardPlacement) {
+      lastCardPlacement = resolvedPlacement;
+      cardEl.setAttribute('data-placement', resolvedPlacement);
     }
   }
 
