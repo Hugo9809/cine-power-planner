@@ -161,6 +161,45 @@ const serviceWorkerLog = {
   },
 };
 
+function isInvalidStateError(error) {
+  if (!error) {
+    return false;
+  }
+
+  if (error.name === 'InvalidStateError') {
+    return true;
+  }
+
+  if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
+    return error.code === DOMException.INVALID_STATE_ERR;
+  }
+
+  return false;
+}
+
+function scheduleDeferredActivationTask(task) {
+  if (typeof task !== 'function' || typeof setTimeout !== 'function') {
+    return;
+  }
+
+  try {
+    setTimeout(() => {
+      try {
+        const result = task();
+        if (result && typeof result.then === 'function') {
+          result.catch(error => {
+            serviceWorkerLog.warn('Deferred activation task rejected.', error);
+          });
+        }
+      } catch (error) {
+        serviceWorkerLog.warn('Deferred activation task threw synchronously.', error);
+      }
+    }, 0);
+  } catch (error) {
+    serviceWorkerLog.warn('Unable to schedule deferred activation task.', error);
+  }
+}
+
 function resolveCacheVersion() {
   if (!SERVICE_WORKER_SCOPE || (typeof SERVICE_WORKER_SCOPE !== 'object' && typeof SERVICE_WORKER_SCOPE !== 'function')) {
     return null;
@@ -228,84 +267,6 @@ try {
   serviceWorkerLog.warn('Unable to expose service worker logger on global scope.', logExposeError);
 }
 
-async function waitForActivationState() {
-  if (typeof self === 'undefined' || !self) {
-    return;
-  }
-
-  const { registration } = self;
-  if (!registration) {
-    return;
-  }
-
-  const currentScriptUrl = (self.location && self.location.href) || null;
-
-  const possibleWorkers = [registration.installing, registration.waiting, registration.active].filter(
-    worker => worker
-  );
-
-  const candidateWorker = possibleWorkers.find(worker => {
-    try {
-      return worker && worker.scriptURL === currentScriptUrl;
-    } catch (error) {
-      serviceWorkerLog.warn('Unable to inspect worker script URL while waiting for activation.', error);
-      return false;
-    }
-  });
-
-  const targetWorker = candidateWorker || registration.active;
-
-  if (!targetWorker || typeof targetWorker.state !== 'string') {
-    return;
-  }
-
-  if (targetWorker.state === 'activated') {
-    return;
-  }
-
-  await new Promise(resolve => {
-    let timeoutId = null;
-
-    const cleanup = () => {
-      if (timeoutId !== null) {
-        try {
-          clearTimeout(timeoutId);
-        } catch (error) {
-          serviceWorkerLog.warn('Unable to clear activation wait timeout.', error);
-        }
-        timeoutId = null;
-      }
-      try {
-        targetWorker.removeEventListener('statechange', handleStateChange);
-      } catch (error) {
-        serviceWorkerLog.warn('Unable to remove activation statechange listener.', error);
-      }
-    };
-
-    const handleStateChange = () => {
-      if (targetWorker.state === 'activated') {
-        cleanup();
-        resolve();
-      }
-    };
-
-    try {
-      targetWorker.addEventListener('statechange', handleStateChange);
-    } catch (error) {
-      serviceWorkerLog.warn('Unable to observe activation state changes.', error);
-      resolve();
-      return;
-    }
-
-    timeoutId = setTimeout(() => {
-      serviceWorkerLog.warn('Activation wait timed out. Proceeding without confirmed activation.');
-      cleanup();
-      resolve();
-    }, 1000);
-
-    handleStateChange();
-  });
-}
 function loadServiceWorkerAssets() {
   if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
     try {
@@ -559,16 +520,33 @@ if (typeof self !== 'undefined') {
       }
 
       try {
-        await waitForActivationState();
         if (typeof self.clients !== 'undefined' && typeof self.clients.claim === 'function') {
           await self.clients.claim();
         }
       } catch (error) {
-        serviceWorkerLog.warn('Unable to claim clients during activation.', error);
+        if (isInvalidStateError(error)) {
+          serviceWorkerLog.info('Client claim deferred until activation completes.');
+          scheduleDeferredActivationTask(() => {
+            if (typeof self === 'undefined' || !self || !self.clients) {
+              return null;
+            }
+            if (typeof self.clients.claim !== 'function') {
+              return null;
+            }
+            const claim = self.clients.claim();
+            if (claim && typeof claim.then === 'function') {
+              return claim.catch(deferredError => {
+                serviceWorkerLog.warn('Deferred clients.claim() attempt failed.', deferredError);
+              });
+            }
+            return null;
+          });
+        } else {
+          serviceWorkerLog.warn('Unable to claim clients during activation.', error);
+        }
       }
 
       try {
-        await waitForActivationState();
         if (
           self.registration &&
           self.registration.navigationPreload &&
@@ -578,7 +556,33 @@ if (typeof self !== 'undefined') {
           serviceWorkerLog.info('Navigation preload enabled for faster reloads.');
         }
       } catch (error) {
-        serviceWorkerLog.warn('Unable to enable navigation preload.', error);
+        if (isInvalidStateError(error)) {
+          serviceWorkerLog.info('Navigation preload enable deferred until activation completes.');
+          scheduleDeferredActivationTask(() => {
+            if (
+              typeof self === 'undefined' ||
+              !self ||
+              !self.registration ||
+              !self.registration.navigationPreload ||
+              typeof self.registration.navigationPreload.enable !== 'function'
+            ) {
+              return null;
+            }
+            const enablePromise = self.registration.navigationPreload.enable();
+            if (enablePromise && typeof enablePromise.then === 'function') {
+              return enablePromise
+                .then(() => {
+                  serviceWorkerLog.info('Navigation preload enabled after activation.');
+                })
+                .catch(deferredError => {
+                  serviceWorkerLog.warn('Deferred navigation preload enable failed.', deferredError);
+                });
+            }
+            return null;
+          });
+        } else {
+          serviceWorkerLog.warn('Unable to enable navigation preload.', error);
+        }
       }
 
       serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
