@@ -1,6 +1,6 @@
 var _excluded = ["parsed", "timestamp"];
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
-function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
@@ -111,6 +111,53 @@ if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function'
     CORE_GLOBAL_SCOPE.__cineDeepClone = SESSION_DEEP_CLONE;
   } catch (sessionDeepCloneError) {
     void sessionDeepCloneError;
+  }
+}
+var missingMountVoltageWarnings = null;
+function resolveMissingMountVoltageWarnings() {
+  if (missingMountVoltageWarnings instanceof Set) {
+    return missingMountVoltageWarnings;
+  }
+  var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    try {
+      var existing = scope.__cineMissingMountVoltageWarnings;
+      if (existing instanceof Set) {
+        missingMountVoltageWarnings = existing;
+        return existing;
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+  var created = new Set();
+  for (var _index = 0; _index < candidateScopes.length; _index += 1) {
+    var _scope = candidateScopes[_index];
+    try {
+      _scope.__cineMissingMountVoltageWarnings = created;
+      break;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  missingMountVoltageWarnings = created;
+  return created;
+}
+function warnMissingMountVoltageHelper(helperName, error) {
+  var warnings = resolveMissingMountVoltageWarnings();
+  var key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
+  if (warnings.has(key)) {
+    return;
+  }
+  warnings.add(key);
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    var message = "Mount voltage helper \"".concat(key, "\" is unavailable; using defaults to protect user data.");
+    if (error) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
   }
 }
 function ensureSessionRuntimePlaceholder(name, fallbackValue) {
@@ -365,8 +412,8 @@ function resolveModuleApi(name, validator) {
     if (resolved) {
       return resolved;
     }
-    for (var _index = 0; _index < nestedKeys.length; _index += 1) {
-      var key = nestedKeys[_index];
+    for (var _index2 = 0; _index2 < nestedKeys.length; _index2 += 1) {
+      var key = nestedKeys[_index2];
       var nested = void 0;
       try {
         nested = scope[key];
@@ -444,8 +491,8 @@ function resolveKnownAppVersion(explicitVersion) {
     if (!candidate) {
       continue;
     }
-    for (var _index2 = 0; _index2 < versionKeys.length; _index2 += 1) {
-      var key = versionKeys[_index2];
+    for (var _index3 = 0; _index3 < versionKeys.length; _index3 += 1) {
+      var key = versionKeys[_index3];
       var value = void 0;
       try {
         value = candidate[key];
@@ -458,8 +505,8 @@ function resolveKnownAppVersion(explicitVersion) {
         return _normalized;
       }
     }
-    for (var _index3 = 0; _index3 < nestedKeys.length; _index3 += 1) {
-      var nestedKey = nestedKeys[_index3];
+    for (var _index4 = 0; _index4 < nestedKeys.length; _index4 += 1) {
+      var nestedKey = nestedKeys[_index4];
       var nestedValue = void 0;
       try {
         nestedValue = candidate[nestedKey];
@@ -477,8 +524,8 @@ function resolveKnownAppVersion(explicitVersion) {
       void keysError;
     }
     var limitedKeys = keys.length > 50 ? keys.slice(0, 50) : keys;
-    for (var _index4 = 0; _index4 < limitedKeys.length; _index4 += 1) {
-      var _key = limitedKeys[_index4];
+    for (var _index5 = 0; _index5 < limitedKeys.length; _index5 += 1) {
+      var _key = limitedKeys[_index5];
       if (!/(version|core|cine|shared|global|app)/i.test(_key)) {
         continue;
       }
@@ -1502,8 +1549,8 @@ for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   });
 }
 var AUTO_GEAR_RUNTIME_FUNCTIONS = ['setAutoGearSummaryFocus', 'focusAutoGearRuleById', 'setAutoGearSearchQuery', 'setAutoGearScenarioFilter', 'clearAutoGearFilters'];
-for (var _index5 = 0; _index5 < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index5 += 1) {
-  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index5];
+for (var _index6 = 0; _index6 < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index6 += 1) {
+  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index6];
   ensureSessionRuntimeFunction(functionName, {
     defer: true
   });
@@ -2082,8 +2129,8 @@ function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
   }
-  for (var _index6 = 0; _index6 < keys.length; _index6 += 1) {
-    var key = keys[_index6];
+  for (var _index7 = 0; _index7 < keys.length; _index7 += 1) {
+    var key = keys[_index7];
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       return true;
     }
@@ -3840,8 +3887,8 @@ function persistImportedProjectWithFallback(payload, nameCandidates) {
   }
   var candidates = Array.isArray(nameCandidates) ? nameCandidates : [];
   var baseName = '';
-  for (var _index7 = 0; _index7 < candidates.length; _index7 += 1) {
-    var candidate = typeof candidates[_index7] === 'string' ? candidates[_index7].trim() : '';
+  for (var _index8 = 0; _index8 < candidates.length; _index8 += 1) {
+    var candidate = typeof candidates[_index8] === 'string' ? candidates[_index8].trim() : '';
     if (candidate) {
       baseName = candidate;
       break;
@@ -4229,8 +4276,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var _index8 = 0; _index8 < pairs.length; _index8 += 1) {
-    var pair = pairs[_index8];
+  for (var _index9 = 0; _index9 < pairs.length; _index9 += 1) {
+    var pair = pairs[_index9];
     if (!pair) {
       continue;
     }
@@ -5356,8 +5403,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var _index9 = 0; _index9 < candidateScopes.length; _index9 += 1) {
-    var scope = candidateScopes[_index9];
+  for (var _index0 = 0; _index0 < candidateScopes.length; _index0 += 1) {
+    var scope = candidateScopes[_index0];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -6102,11 +6149,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var _index0 = list.findIndex(function (item) {
+        var _index1 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (_index0 >= 0) {
-          list.splice(_index0, 1);
+        if (_index1 >= 0) {
+          list.splice(_index1, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -6919,12 +6966,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index1 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index1) || _index1 < 0) {
+    var _index10 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index10) || _index10 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index1 + 1));
+    return template.replace('%s', formatNumberForComparison(_index10 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -7108,26 +7155,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index10 = 0; _index10 < maxLength; _index10 += 1) {
-        var hasBase = _index10 < baseValue.length;
-        var hasCompare = _index10 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index10, "]"));
+      for (var _index11 = 0; _index11 < maxLength; _index11 += 1) {
+        var hasBase = _index11 < baseValue.length;
+        var hasCompare = _index11 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index11, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index10]
+            after: compareValue[_index11]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index10],
+            before: baseValue[_index11],
             after: undefined
           });
         } else {
-          walk(baseValue[_index10], compareValue[_index10], nextPath);
+          walk(baseValue[_index11], compareValue[_index11], nextPath);
         }
       }
       return;
@@ -8301,13 +8348,13 @@ function resolveLoggingApi() {
   if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
   if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
   if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
-  for (var _index11 = 0; _index11 < scopes.length; _index11 += 1) {
-    var _scope = scopes[_index11];
-    if (!_scope || _typeof(_scope) !== 'object' && typeof _scope !== 'function') {
+  for (var _index12 = 0; _index12 < scopes.length; _index12 += 1) {
+    var _scope2 = scopes[_index12];
+    if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
       continue;
     }
     try {
-      var candidate = _scope.cineLogging;
+      var candidate = _scope2.cineLogging;
       if (candidate && _typeof(candidate) === 'object' && typeof candidate.getHistory === 'function' && typeof candidate.subscribe === 'function') {
         loggingState.loggingApi = candidate;
         return candidate;
@@ -10322,13 +10369,13 @@ function clearUiCacheEntriesFallback() {
 var CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
 function resolveCineCacheNameForReload() {
   var scopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
-  for (var _index12 = 0; _index12 < scopes.length; _index12 += 1) {
-    var _scope2 = scopes[_index12];
-    if (!_scope2 || _typeof(_scope2) !== 'object' && typeof _scope2 !== 'function') {
+  for (var _index13 = 0; _index13 < scopes.length; _index13 += 1) {
+    var _scope3 = scopes[_index13];
+    if (!_scope3 || _typeof(_scope3) !== 'object' && typeof _scope3 !== 'function') {
       continue;
     }
     try {
-      var name = _scope2.CINE_CACHE_NAME;
+      var name = _scope3.CINE_CACHE_NAME;
       if (typeof name === 'string' && name) {
         return name;
       }
@@ -10346,8 +10393,8 @@ function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
     return true;
   }
   var lowerKey = key.toLowerCase();
-  for (var _index13 = 0; _index13 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index13 += 1) {
-    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index13])) {
+  for (var _index14 = 0; _index14 < CACHE_KEY_TOKENS_FOR_RELOAD.length; _index14 += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[_index14])) {
       return true;
     }
   }
@@ -10479,10 +10526,10 @@ function buildForceReloadHref(locationLike, paramName) {
   }
   if (typeof URL === 'function') {
     var urlCandidates = [originalHref].concat(_toConsumableArray(baseCandidates));
-    for (var _index14 = 0; _index14 < urlCandidates.length; _index14 += 1) {
-      var candidate = urlCandidates[_index14];
+    for (var _index15 = 0; _index15 < urlCandidates.length; _index15 += 1) {
+      var candidate = urlCandidates[_index15];
       try {
-        var url = _index14 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        var url = _index15 === 0 ? new URL(candidate) : new URL(originalHref, candidate);
         url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
@@ -10512,8 +10559,8 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "?".concat(param, "=").concat(timestamp);
   }
   if (typeof URL === 'function') {
-    for (var _index15 = 0; _index15 < baseCandidates.length; _index15 += 1) {
-      var _candidate = baseCandidates[_index15];
+    for (var _index16 = 0; _index16 < baseCandidates.length; _index16 += 1) {
+      var _candidate = baseCandidates[_index16];
       try {
         var absolute = new URL(href + hash, _candidate).toString();
         return {
@@ -13640,16 +13687,16 @@ function registerRequiredScenarioOptionEntriesGetter(getter) {
     return;
   }
   var scopes = getSessionRuntimeScopes();
-  for (var _index16 = 0; _index16 < scopes.length; _index16 += 1) {
-    var _scope3 = scopes[_index16];
-    if (!_scope3 || _typeof(_scope3) !== 'object') {
+  for (var _index17 = 0; _index17 < scopes.length; _index17 += 1) {
+    var _scope4 = scopes[_index17];
+    if (!_scope4 || _typeof(_scope4) !== 'object') {
       continue;
     }
     try {
-      _scope3.getRequiredScenarioOptionEntries = getter;
+      _scope4.getRequiredScenarioOptionEntries = getter;
     } catch (assignError) {
       try {
-        Object.defineProperty(_scope3, 'getRequiredScenarioOptionEntries', {
+        Object.defineProperty(_scope4, 'getRequiredScenarioOptionEntries', {
           configurable: true,
           writable: true,
           value: getter
@@ -14093,9 +14140,9 @@ function populateLensDropdown() {
   var lensNames = Object.keys(lensData);
   var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
   lensNames.sort(sortFn);
-  for (var _index17 = 0; _index17 < lensNames.length; _index17 += 1) {
+  for (var _index18 = 0; _index18 < lensNames.length; _index18 += 1) {
     var _ref25, _lens$minFocusMeters;
-    var name = lensNames[_index17];
+    var name = lensNames[_index18];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -14525,8 +14572,8 @@ function populateFilterDropdown() {
       emptyOpt.value = '';
       fragment.appendChild(emptyOpt);
     }
-    for (var _index18 = 0; _index18 < devices.filterOptions.length; _index18 += 1) {
-      var value = devices.filterOptions[_index18];
+    for (var _index19 = 0; _index19 < devices.filterOptions.length; _index19 += 1) {
+      var value = devices.filterOptions[_index19];
       var opt = document.createElement('option');
       opt.value = value;
       opt.textContent = value;
@@ -14621,8 +14668,8 @@ function createFilterValueSelect(type, selected) {
   };
   var optionsByValue = new Map();
   var optionFragment = document.createDocumentFragment();
-  for (var _index19 = 0; _index19 < opts.length; _index19 += 1) {
-    var value = opts[_index19];
+  for (var _index20 = 0; _index20 < opts.length; _index20 += 1) {
+    var value = opts[_index20];
     var opt = document.createElement('option');
     opt.value = value;
     opt.textContent = value;
@@ -14639,7 +14686,7 @@ function createFilterValueSelect(type, selected) {
   var checkboxFragment = document.createDocumentFragment();
   var checkboxesByValue = new Map();
   var _loop = function _loop() {
-    var value = opts[_index20];
+    var value = opts[_index21];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
@@ -14660,7 +14707,7 @@ function createFilterValueSelect(type, selected) {
     checkboxesByValue.set(value, cb);
     checkboxFragment.appendChild(lbl);
   };
-  for (var _index20 = 0; _index20 < opts.length; _index20 += 1) {
+  for (var _index21 = 0; _index21 < opts.length; _index21 += 1) {
     _loop();
   }
   container.appendChild(checkboxFragment);
@@ -15459,8 +15506,8 @@ function populateUserButtonDropdowns() {
       return opt.value;
     }));
     var fragment = document.createDocumentFragment();
-    for (var _index21 = 0; _index21 < items.length; _index21 += 1) {
-      var _items$_index = items[_index21],
+    for (var _index22 = 0; _index22 < items.length; _index22 += 1) {
+      var _items$_index = items[_index22],
         value = _items$_index.value,
         label = _items$_index.label;
       if (!value) {
@@ -15681,22 +15728,6 @@ if (typeof module !== "undefined" && module.exports) {
       clearAutoGearDefaultsSeeded: clearAutoGearDefaultsSeeded
     }
   };
-}
-var missingMountVoltageWarnings = new Set();
-function warnMissingMountVoltageHelper(helperName, error) {
-  var key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
-  if (missingMountVoltageWarnings.has(key)) {
-    return;
-  }
-  missingMountVoltageWarnings.add(key);
-  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-    var message = "Mount voltage helper \"".concat(key, "\" is unavailable; using defaults to protect user data.");
-    if (error) {
-      console.warn(message, error);
-    } else {
-      console.warn(message);
-    }
-  }
 }
 function fallbackParseVoltageValue(value, fallback) {
   var toNumeric = function toNumeric(candidate) {

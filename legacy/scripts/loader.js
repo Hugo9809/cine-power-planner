@@ -544,6 +544,104 @@ function resolveAssetUrl(url) {
     return baseUrl + url;
   }
 }
+function loaderResolveTranslations() {
+  var scope = resolveCriticalGlobalScope();
+  var translations = null;
+  if (scope && _typeof(scope.texts) === 'object' && scope.texts !== null) {
+    translations = scope.texts;
+  }
+  if (!translations && scope && scope.CORE_GLOBAL_SCOPE && _typeof(scope.CORE_GLOBAL_SCOPE) === 'object') {
+    try {
+      var coreTexts = scope.CORE_GLOBAL_SCOPE.texts;
+      if (coreTexts && _typeof(coreTexts) === 'object') {
+        translations = coreTexts;
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+  }
+  if (!translations) {
+    try {
+      var globalScope = resolveCriticalGlobalScope();
+      if (globalScope && globalScope !== scope && _typeof(globalScope.texts) === 'object') {
+        translations = globalScope.texts;
+      }
+    } catch (globalScopeError) {
+      void globalScopeError;
+    }
+  }
+  return translations && _typeof(translations) === 'object' ? translations : null;
+}
+function loaderSelectTranslationForLanguage(translations, requestedLanguage) {
+  if (!translations || _typeof(translations) !== 'object') {
+    return {};
+  }
+  var languageKey = null;
+  var activeLang = null;
+  var defaultLanguage = null;
+  var translationScope = null;
+  try {
+    translationScope = resolveCriticalGlobalScope();
+  } catch (resolveScopeError) {
+    void resolveScopeError;
+    translationScope = null;
+  }
+  if (translationScope && typeof translationScope.currentLang === 'string') {
+    activeLang = translationScope.currentLang;
+  }
+  if (translationScope && typeof translationScope.DEFAULT_LANGUAGE === 'string') {
+    defaultLanguage = translationScope.DEFAULT_LANGUAGE;
+  }
+  if (requestedLanguage && Object.prototype.hasOwnProperty.call(translations, requestedLanguage)) {
+    var requested = translations[requestedLanguage];
+    if (requested && _typeof(requested) === 'object') {
+      languageKey = requestedLanguage;
+    }
+  }
+  if (!languageKey) {
+    if (activeLang && Object.prototype.hasOwnProperty.call(translations, activeLang) && translations[activeLang] && _typeof(translations[activeLang]) === 'object') {
+      languageKey = activeLang;
+    }
+  }
+  if (!languageKey) {
+    if (defaultLanguage && Object.prototype.hasOwnProperty.call(translations, defaultLanguage) && translations[defaultLanguage] && _typeof(translations[defaultLanguage]) === 'object') {
+      languageKey = defaultLanguage;
+    }
+  }
+  if (!languageKey && Object.prototype.hasOwnProperty.call(translations, 'en')) {
+    var english = translations.en;
+    if (english && _typeof(english) === 'object') {
+      languageKey = 'en';
+    }
+  }
+  if (!languageKey) {
+    try {
+      var keys = Object.keys(translations);
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        var value = translations[key];
+        if (value && _typeof(value) === 'object') {
+          languageKey = key;
+          break;
+        }
+      }
+    } catch (enumerateError) {
+      void enumerateError;
+    }
+  }
+  if (!languageKey) {
+    return {};
+  }
+  try {
+    var resolved = translations[languageKey];
+    if (resolved && _typeof(resolved) === 'object') {
+      return resolved;
+    }
+  } catch (resolveError) {
+    void resolveError;
+  }
+  return {};
+}
 var CRITICAL_GLOBAL_DEFINITIONS = [{
   name: 'autoGearAutoPresetId',
   validator: function validator(value) {
@@ -647,6 +745,50 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return typeof value === 'string' && value.length > 0;
   },
   fallback: 'en'
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'getLanguageTexts',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderFallbackGetLanguageTexts(lang) {
+      var translations = loaderResolveTranslations();
+      if (!translations) {
+        return {};
+      }
+      return loaderSelectTranslationForLanguage(translations, lang);
+    };
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'syncMountVoltageResetButtonGlobal',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: function fallback() {
+    return function loaderSyncMountVoltageResetButtonGlobal(value) {
+      var scope = resolveCriticalGlobalScope();
+      if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
+        try {
+          scope.mountVoltageResetButton = value || null;
+        } catch (assignError) {
+          void assignError;
+          try {
+            Object.defineProperty(scope, 'mountVoltageResetButton', {
+              configurable: true,
+              enumerable: false,
+              writable: true,
+              value: value || null
+            });
+          } catch (defineError) {
+            void defineError;
+          }
+        }
+      }
+      return value || null;
+    };
+  }
 });
 function loaderFallbackSafeGenerateConnectorSummary(device) {
   if (!device || _typeof(device) !== 'object') {
@@ -2255,13 +2397,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   var modernScriptBundle = {
     core: ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/rental-houses.js', {
       parallel: ['src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js']
-    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/runtime-state/scope-utils.js', 'src/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'src/scripts/modules/core/runtime-state/temperature-keys.js', 'src/scripts/modules/core/runtime-state/local-runtime-state.js', 'src/scripts/modules/core/runtime-state.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
+    }, 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/localization.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/core/device-schema.js', 'src/scripts/modules/core/project-intelligence.js', 'src/scripts/modules/core/runtime-state/scope-utils.js', 'src/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'src/scripts/modules/core/runtime-state/temperature-keys.js', 'src/scripts/modules/core/runtime-state/local-runtime-state.js', 'src/scripts/modules/core/runtime-state.js', 'src/scripts/modules/core/persistence-guard.js', 'src/scripts/modules/core/mount-voltage.js', 'src/scripts/modules/core/experience.js', 'src/scripts/modules/logging.js', 'src/scripts/modules/settings-and-appearance.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/connection-diagram.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/onboarding-tour.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/runtime-guard.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js'],
     deferred: ['src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js']
   };
   var legacyScriptBundle = {
     core: ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'src/vendor/regenerator-runtime-fallback.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/rental-houses.js', {
       parallel: ['legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js']
-    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
+    }, 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/environment-bridge.js', 'legacy/scripts/modules/globals.js', 'legacy/scripts/modules/localization.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/core/runtime-state/scope-utils.js', 'legacy/scripts/modules/core/runtime-state/safe-freeze-registry.js', 'legacy/scripts/modules/core/runtime-state/temperature-keys.js', 'legacy/scripts/modules/core/runtime-state/local-runtime-state.js', 'legacy/scripts/modules/core/runtime-state.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/logging.js', 'legacy/scripts/modules/core/mount-voltage.js', 'legacy/scripts/modules/features/backup.js', 'legacy/scripts/modules/features/onboarding-tour.js', 'legacy/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/modules/runtime-guard.js', 'legacy/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js'],
     deferred: ['legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js']
   };
   function startLoading() {
