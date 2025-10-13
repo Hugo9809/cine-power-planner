@@ -981,20 +981,54 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       data: isPlainObject(dataSection) ? dataSection : null
     };
   }
+  function isUnsupportedDownloadPermissionError(error) {
+    if (!error) return false;
+    var name = typeof error.name === 'string' ? error.name : '';
+    if (name === 'TypeError' || name === 'NotSupportedError') {
+      return true;
+    }
+    if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
+      if (error.code === DOMException.NOT_SUPPORTED_ERR) {
+        return true;
+      }
+    }
+    if (typeof error.message === 'string') {
+      var lowerMessage = error.message.toLowerCase();
+      if (lowerMessage.indexOf('automatic-download') !== -1 && lowerMessage.indexOf('not a valid enum') !== -1) {
+        return true;
+      }
+      if (lowerMessage.indexOf('downloads') !== -1 && lowerMessage.indexOf('not a valid enum') !== -1) {
+        return true;
+      }
+    }
+    return false;
+  }
   function monitorAutomaticDownloadPermission() {
     if (typeof navigator === 'undefined' || !navigator.permissions || typeof navigator.permissions.query !== 'function') {
       return null;
     }
+    var candidateNames = ['automatic-downloads', 'downloads'];
     var statusPromise = null;
-    try {
-      statusPromise = navigator.permissions.query({
-        name: 'automatic-downloads'
-      });
-    } catch (error) {
-      if (!error || error.name !== 'TypeError') {
-        console.warn('Failed to query automatic download permission', error);
+    var permissionNameUsed = null;
+    for (var index = 0; index < candidateNames.length; index += 1) {
+      var permissionName = candidateNames[index];
+      try {
+        var queryResult = navigator.permissions.query({
+          name: permissionName
+        });
+        if (!queryResult || typeof queryResult.then !== 'function') {
+          continue;
+        }
+        statusPromise = queryResult;
+        permissionNameUsed = permissionName;
+        break;
+      } catch (error) {
+        if (isUnsupportedDownloadPermissionError(error)) {
+          continue;
+        }
+        console.warn('Failed to query automatic download permission (' + permissionName + ')', error);
+        return null;
       }
-      return null;
     }
     if (!statusPromise || typeof statusPromise.then !== 'function') {
       return null;
@@ -1002,6 +1036,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var permissionStatusRef = null;
     var monitor = {
       state: 'unknown',
+      name: permissionNameUsed,
+      supported: true,
       initial: statusPromise.then(function (status) {
         permissionStatusRef = status;
         if (!status || typeof status.state !== 'string') {
@@ -1011,7 +1047,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         monitor.state = status.state;
         return monitor.state;
       }).catch(function (error) {
-        console.warn('Failed to query automatic download permission', error);
+        if (isUnsupportedDownloadPermissionError(error)) {
+          monitor.supported = false;
+          monitor.state = 'unknown';
+          return monitor.state;
+        }
+        console.warn('Failed to query automatic download permission (' + (permissionNameUsed || 'unknown') + ')', error);
         monitor.state = 'unknown';
         return monitor.state;
       }),
@@ -1023,9 +1064,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (initialState === 'prompt') {
         return new Promise(function (resolve) {
-          var _finalize = function finalize() {
+          var _finalize2 = function finalize() {
             try {
-              permissionStatusRef.removeEventListener('change', _finalize);
+              permissionStatusRef.removeEventListener('change', _finalize2);
             } catch (removeError) {
               void removeError;
             }
@@ -1033,7 +1074,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             resolve(monitor.state);
           };
           try {
-            permissionStatusRef.addEventListener('change', _finalize);
+            permissionStatusRef.addEventListener('change', _finalize2);
           } catch (listenerError) {
             console.warn('Failed to observe automatic download permission changes', listenerError);
             resolve('unknown');
@@ -1042,7 +1083,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return initialState;
     }).catch(function (error) {
-      console.warn('Failed to observe automatic download permission changes', error);
+      if (!isUnsupportedDownloadPermissionError(error)) {
+        console.warn('Failed to observe automatic download permission changes', error);
+      }
       monitor.state = 'unknown';
       return monitor.state;
     });
