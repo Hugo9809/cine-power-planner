@@ -821,6 +821,17 @@
       return null;
     }
 
+    const locationLike =
+      options.location && typeof options.location === 'object'
+        ? options.location
+        : win && win.location
+          ? win.location
+          : null;
+
+    if (!isSameOriginReloadTarget(locationLike, nextHref)) {
+      return null;
+    }
+
     const nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
@@ -1568,6 +1579,56 @@
 
     const originMatch = href.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
     return originMatch && originMatch[1] ? originMatch[1] : '';
+  }
+
+  function resolveHrefOrigin(targetHref, referenceHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return '';
+    }
+
+    const reference = typeof referenceHref === 'string' && referenceHref ? referenceHref : undefined;
+
+    if (typeof URL === 'function') {
+      try {
+        const url = new URL(targetHref, reference);
+        if (url && typeof url.origin === 'string') {
+          return url.origin;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const originMatch = targetHref.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
+    return originMatch && originMatch[1] ? originMatch[1] : '';
+  }
+
+  function isSameOriginReloadTarget(locationLike, targetHref) {
+    if (typeof targetHref !== 'string' || !targetHref) {
+      return false;
+    }
+
+    const fallbackLocation =
+      locationLike && typeof locationLike === 'object'
+        ? locationLike
+        : typeof window !== 'undefined' && window && window.location
+          ? window.location
+          : null;
+
+    const referenceHref = readLocationHrefSafe(locationLike) || readLocationHrefSafe(fallbackLocation);
+    const targetOrigin = resolveHrefOrigin(targetHref, referenceHref);
+
+    if (!targetOrigin) {
+      return true;
+    }
+
+    const expectedOrigin = readLocationOriginSafe(locationLike) || readLocationOriginSafe(fallbackLocation);
+
+    if (!expectedOrigin) {
+      return true;
+    }
+
+    return targetOrigin === expectedOrigin;
   }
 
   function getForceReloadBaseCandidates(locationLike, originalHref) {
