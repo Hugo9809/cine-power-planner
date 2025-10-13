@@ -404,7 +404,7 @@ const normaliseTextEntryValue =
       }
     : inlineNormaliseTextEntryValue;
 
-const resolveTextEntry =
+var resolveTextEntry =
   CORE_TEXT_ENTRY_TOOLS && typeof CORE_TEXT_ENTRY_TOOLS.resolveTextEntry === 'function'
     ? function resolveTextEntryProxy(
         primaryTexts,
