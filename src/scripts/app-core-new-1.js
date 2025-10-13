@@ -1398,10 +1398,20 @@ function fallbackGetLanguageTextsProxy(lang) {
   return {};
 }
 
-const getLanguageTexts =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.getLanguageTexts
+const existingGetLanguageTexts =
+  typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
+
+const resolvedGetLanguageTexts =
+  CORE_LOCALIZATION_RUNTIME &&
+  typeof CORE_LOCALIZATION_RUNTIME.getLanguageTexts === 'function'
     ? CORE_LOCALIZATION_RUNTIME.getLanguageTexts
-    : fallbackGetLanguageTextsProxy;
+    : existingGetLanguageTexts || fallbackGetLanguageTextsProxy;
+
+try {
+  getLanguageTexts = resolvedGetLanguageTexts;
+} catch (assignGetLanguageTextsError) {
+  void assignGetLanguageTextsError;
+}
 
 if (
   CORE_LOCALIZATION_RUNTIME &&
