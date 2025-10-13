@@ -420,6 +420,47 @@ var CRITICAL_GLOBAL_DEFINITIONS = [{
   },
   fallback: null
 }];
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'CORE_GLOBAL_SCOPE',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object' || typeof value === 'function';
+  },
+  fallback: function fallback() {
+    var scope = resolveCriticalGlobalScope();
+    if (scope && (_typeof(scope) === 'object' || typeof scope === 'function')) {
+      return scope;
+    }
+    return {};
+  }
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'CORE_RUNTIME_SHARED',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+  },
+  fallback: null
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'autoGearAddOwnGearSelect',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+  },
+  fallback: null
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'autoGearRemoveOwnGearSelect',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+  },
+  fallback: null
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'currentLang',
+  validator: function validator(value) {
+    return typeof value === 'string' && value.length > 0;
+  },
+  fallback: 'en'
+});
 function loaderFallbackSafeGenerateConnectorSummary(device) {
   if (!device || _typeof(device) !== 'object') {
     return '';
