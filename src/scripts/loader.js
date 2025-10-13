@@ -2280,6 +2280,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/localization.js',
       'src/scripts/modules/offline.js',
       'src/scripts/modules/core-shared.js',
+      'src/scripts/modules/core/device-schema.js',
       'src/scripts/modules/core/project-intelligence.js',
       'src/scripts/modules/core/runtime-state/scope-utils.js',
       'src/scripts/modules/core/runtime-state/safe-freeze-registry.js',

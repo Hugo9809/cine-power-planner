@@ -2975,8 +2975,154 @@ function resolveOwnGearModule() {
 
 const helpModuleApi = resolveHelpModuleApi();
 
-const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
-const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
+var deviceSchema = null;
+
+const deviceSchemaManager = (function initializeDeviceSchemaManager() {
+  if (
+    CORE_DEVICE_SCHEMA &&
+    typeof CORE_DEVICE_SCHEMA.createDeviceSchemaManager === 'function'
+  ) {
+    try {
+      return CORE_DEVICE_SCHEMA.createDeviceSchemaManager({
+        onSchemaChange: schema => {
+          deviceSchema = schema;
+        },
+        populateCategoryOptions: () => {
+          try {
+            populateCategoryOptions();
+          } catch (error) {
+            console.error('populateCategoryOptions failed during scheduled execution', error);
+          }
+        },
+      });
+    } catch (deviceSchemaManagerError) {
+      console.warn(
+        'Failed to initialize device schema manager from core module',
+        deviceSchemaManagerError
+      );
+    }
+  }
+  return null;
+})();
+
+const DEVICE_SCHEMA_PATH =
+  (deviceSchemaManager && deviceSchemaManager.DEVICE_SCHEMA_PATH) ||
+  'src/data/schema.json';
+
+const loadDeviceSchemaFromCacheStorage =
+  deviceSchemaManager && typeof deviceSchemaManager.loadDeviceSchemaFromCacheStorage === 'function'
+    ? deviceSchemaManager.loadDeviceSchemaFromCacheStorage
+    : async () => null;
+
+const finalizeDeviceSchemaLoad =
+  deviceSchemaManager && typeof deviceSchemaManager.finalizeDeviceSchemaLoad === 'function'
+    ? deviceSchemaManager.finalizeDeviceSchemaLoad
+    : () => {};
+
+const isValidDeviceSchema =
+  deviceSchemaManager && typeof deviceSchemaManager.isValidDeviceSchema === 'function'
+    ? deviceSchemaManager.isValidDeviceSchema
+    : candidate => candidate && typeof candidate === 'object' && !Array.isArray(candidate);
+
+const cachedDeviceSchema =
+  deviceSchemaManager && typeof deviceSchemaManager.getCachedDeviceSchema === 'function'
+    ? deviceSchemaManager.getCachedDeviceSchema()
+    : null;
+
+if (deviceSchemaManager && typeof deviceSchemaManager.getDeviceSchema === 'function') {
+  const initialSchema = deviceSchemaManager.getDeviceSchema();
+  if (initialSchema) {
+    deviceSchema = initialSchema;
+  }
+}
+
+const applyDeviceSchema =
+  deviceSchemaManager && typeof deviceSchemaManager.setDeviceSchema === 'function'
+    ? schema => deviceSchemaManager.setDeviceSchema(schema)
+    : schema => {
+        if (isValidDeviceSchema(schema)) {
+          deviceSchema = schema;
+        } else if (!deviceSchema) {
+          deviceSchema = {};
+        }
+        return deviceSchema;
+      };
+
+try {
+  const bundledSchema = require('../data/schema.json');
+  const appliedSchema = applyDeviceSchema(bundledSchema);
+  if (appliedSchema) {
+    deviceSchema = appliedSchema;
+  }
+} catch (requireError) {
+  void requireError;
+
+  if (!deviceSchema && cachedDeviceSchema) {
+    const appliedCachedSchema = applyDeviceSchema(cachedDeviceSchema);
+    if (appliedCachedSchema) {
+      deviceSchema = appliedCachedSchema;
+    }
+  }
+
+  // Falling back to the cached copy allows the app to keep functioning when
+  // users are offline, which is critical for field usage.
+  if (typeof fetch === 'function') {
+    fetch(DEVICE_SCHEMA_PATH)
+      .then(response => {
+        if (!response || !response.ok) {
+          throw new Error(
+            `Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`
+          );
+        }
+        return response.json();
+      })
+      .then(candidate => {
+        finalizeDeviceSchemaLoad(candidate);
+      })
+      .catch(error => {
+        console.warn('Failed to fetch schema.json', error);
+
+        loadDeviceSchemaFromCacheStorage()
+          .then(schemaFromCache => {
+            if (isValidDeviceSchema(schemaFromCache)) {
+              finalizeDeviceSchemaLoad(schemaFromCache);
+            } else {
+              finalizeDeviceSchemaLoad(deviceSchema);
+            }
+          })
+          .catch(cacheError => {
+            console.warn('Failed to load schema.json from cache storage', cacheError);
+            finalizeDeviceSchemaLoad(deviceSchema);
+          });
+      });
+  } else {
+    finalizeDeviceSchemaLoad(deviceSchema);
+  }
+}
+
+const LEGAL_LINKS = {
+  de: {
+    imprint: "legal/impressum.html",
+    privacy: "legal/datenschutz.html",
+  },
+  en: {
+    imprint: "legal/impressum-en.html",
+    privacy: "legal/datenschutz-en.html",
+  },
+  es: {
+    imprint: "legal/impressum-es.html",
+    privacy: "legal/datenschutz-es.html",
+  },
+  fr: {
+    imprint: "legal/impressum-fr.html",
+    privacy: "legal/datenschutz-fr.html",
+  },
+  it: {
+    imprint: "legal/impressum-it.html",
+    privacy: "legal/datenschutz-it.html",
+  },
+};
+
 const AUTO_GEAR_RULES_KEY =
   typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_RULES_STORAGE_KEY
@@ -3024,1123 +3170,6 @@ const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
 const AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
-function resolveAutoGearBackupRetentionMin() {
-  const fallback = 1;
-  const scopeCandidates = [];
-
-  if (typeof globalThis !== 'undefined') scopeCandidates.push(globalThis);
-  if (typeof window !== 'undefined') scopeCandidates.push(window);
-  if (typeof global !== 'undefined') scopeCandidates.push(global);
-  if (typeof self !== 'undefined') scopeCandidates.push(self);
-
-  for (const scope of scopeCandidates) {
-    if (scope && typeof scope.AUTO_GEAR_BACKUP_RETENTION_MIN === 'number') {
-      return scope.AUTO_GEAR_BACKUP_RETENTION_MIN;
-    }
-  }
-
-  for (const scope of scopeCandidates) {
-    if (!scope) continue;
-    try {
-      scope.AUTO_GEAR_BACKUP_RETENTION_MIN = fallback;
-      return fallback;
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to persist auto gear backup retention minimum to scope.', error);
-      }
-    }
-  }
-
-  return fallback;
-}
-
-function resolveAutoGearBackupRetentionDefault() {
-  const fallback = 36;
-  const min = AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE || 1;
-  const max = 50;
-  const normalizedFallback = Math.min(Math.max(Math.round(fallback), min), max);
-  const scopeCandidates = [];
-
-  if (typeof globalThis !== 'undefined') scopeCandidates.push(globalThis);
-  if (typeof window !== 'undefined') scopeCandidates.push(window);
-  if (typeof global !== 'undefined') scopeCandidates.push(global);
-  if (typeof self !== 'undefined') scopeCandidates.push(self);
-
-  for (const scope of scopeCandidates) {
-    if (!scope || typeof scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'number') {
-      continue;
-    }
-    const candidate = scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
-    if (!Number.isFinite(candidate)) {
-      continue;
-    }
-    const normalized = Math.min(Math.max(Math.round(candidate), min), max);
-    if (normalized !== candidate) {
-      try {
-        scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = normalized;
-      } catch (error) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Unable to normalize auto gear backup retention default globally.', error);
-        }
-      }
-    }
-    return normalized;
-  }
-
-  for (const scope of scopeCandidates) {
-    if (!scope) {
-      continue;
-    }
-    try {
-      scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = normalizedFallback;
-      return normalizedFallback;
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to persist auto gear backup retention default to scope.', error);
-      }
-    }
-  }
-
-  return normalizedFallback;
-}
-
-function resolveTemperatureStorageKey() {
-  const scope =
-    typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof global !== 'undefined'
-          ? global
-          : undefined;
-
-  const fallback = 'cameraPowerPlanner_temperatureUnit';
-  const existing =
-    scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string'
-      ? scope.TEMPERATURE_UNIT_STORAGE_KEY
-      : fallback;
-
-  if (scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY !== 'string') {
-    try {
-      scope.TEMPERATURE_UNIT_STORAGE_KEY = existing;
-    } catch (error) {
-      void error;
-    }
-  }
-
-  return existing;
-}
-
-const TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
-const FOCUS_SCALE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_focusScale';
-
-function resolveFocusScaleStorageKey() {
-  const scope =
-    typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof global !== 'undefined'
-          ? global
-          : undefined;
-
-  const fallback = FOCUS_SCALE_STORAGE_KEY_FALLBACK;
-  const existing =
-    scope && typeof scope.FOCUS_SCALE_STORAGE_KEY === 'string'
-      ? scope.FOCUS_SCALE_STORAGE_KEY
-      : fallback;
-
-  if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY !== 'string') {
-    try {
-      scope.FOCUS_SCALE_STORAGE_KEY = existing;
-    } catch (error) {
-      void error;
-    }
-  }
-
-  if (scope && typeof scope.FOCUS_SCALE_STORAGE_KEY_NAME !== 'string') {
-    try {
-      scope.FOCUS_SCALE_STORAGE_KEY_NAME = existing;
-    } catch (error) {
-      void error;
-    }
-  }
-
-  return existing;
-}
-
-const FOCUS_SCALE_STORAGE_KEY = resolveFocusScaleStorageKey();
-const TEMPERATURE_UNITS = {
-  celsius: 'celsius',
-  fahrenheit: 'fahrenheit'
-};
-const TEMPERATURE_SCENARIOS = [
-  { celsius: 40, factor: 1.0, color: '#d9534f' },
-  { celsius: 25, factor: 1.0, color: '#5cb85c' },
-  { celsius: 0, factor: 0.8, color: '#f0ad4e' },
-  { celsius: -10, factor: 0.625, color: '#5bc0de' },
-  { celsius: -20, factor: 0.5, color: '#0275d8' }
-];
-
-const FOCUS_SCALE_VALUES = Object.freeze({
-  metric: 'metric',
-  imperial: 'imperial',
-});
-
-function normalizeFocusScale(value) {
-  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
-  if (normalized === FOCUS_SCALE_VALUES.imperial) {
-    return FOCUS_SCALE_VALUES.imperial;
-  }
-  return FOCUS_SCALE_VALUES.metric;
-}
-
-function getFocusScalePreference() {
-  return focusScalePreference;
-}
-
-function getFocusScaleLabelForLang(lang = currentLang, scale = focusScalePreference) {
-  const normalized = normalizeFocusScale(scale);
-  const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts(DEFAULT_LANGUAGE);
-  const key = normalized === FOCUS_SCALE_VALUES.imperial ? 'focusScaleImperial' : 'focusScaleMetric';
-  const valueFromLang = langTexts && typeof langTexts[key] === 'string' ? langTexts[key].trim() : '';
-  if (valueFromLang) {
-    return valueFromLang;
-  }
-  const valueFromFallback =
-    fallbackTexts && typeof fallbackTexts[key] === 'string' ? fallbackTexts[key].trim() : '';
-  if (valueFromFallback) {
-    return valueFromFallback;
-  }
-  return normalized === FOCUS_SCALE_VALUES.imperial ? 'Imperial' : 'Metric';
-}
-
-function resolveLanguageCode(lang) {
-  if (typeof lang === 'string' && lang.trim()) {
-    return lang.trim();
-  }
-  if (typeof currentLang === 'string' && currentLang.trim()) {
-    return currentLang;
-  }
-  return 'en';
-}
-
-function getAllTranslations() {
-  if (typeof texts !== 'undefined' && texts && typeof texts === 'object') {
-    return texts;
-  }
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.texts === 'object' && CORE_GLOBAL_SCOPE.texts) {
-    return CORE_GLOBAL_SCOPE.texts;
-  }
-  if (typeof window !== 'undefined' && typeof window.texts === 'object' && window.texts) {
-    return window.texts;
-  }
-  return {};
-}
-
-function getLanguageTexts(lang) {
-  const resolved = resolveLanguageCode(lang);
-  const allTexts = getAllTranslations();
-  if (allTexts && typeof allTexts[resolved] === 'object') {
-    return allTexts[resolved] || {};
-  }
-  if (allTexts && typeof allTexts.en === 'object') {
-    return allTexts.en || {};
-  }
-  return {};
-}
-
-function resolveTextEntry(langTexts, fallbackTexts, key, defaultValue = '') {
-  if (langTexts && typeof langTexts[key] === 'string' && langTexts[key]) {
-    return langTexts[key];
-  }
-  if (fallbackTexts && typeof fallbackTexts[key] === 'string' && fallbackTexts[key]) {
-    return fallbackTexts[key];
-  }
-  return defaultValue;
-}
-
-function formatNumberForLang(lang, value, options) {
-  const resolved = resolveLanguageCode(lang);
-  try {
-    return new Intl.NumberFormat(resolved, options).format(value);
-  } catch (firstError) {
-    try {
-      return new Intl.NumberFormat('en', options).format(value);
-    } catch (fallbackError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Number formatting failed', firstError, fallbackError);
-      }
-      return String(value);
-    }
-  }
-}
-
-function normalizeTemperatureUnit(unit) {
-  if (typeof unit === 'string') {
-    const normalized = unit.trim().toLowerCase();
-    if (normalized === TEMPERATURE_UNITS.fahrenheit) {
-      return TEMPERATURE_UNITS.fahrenheit;
-    }
-    if (normalized === TEMPERATURE_UNITS.celsius) {
-      return TEMPERATURE_UNITS.celsius;
-    }
-  }
-  if (unit === TEMPERATURE_UNITS.fahrenheit) {
-    return TEMPERATURE_UNITS.fahrenheit;
-  }
-  return TEMPERATURE_UNITS.celsius;
-}
-
-function convertCelsiusToUnit(value, unit = temperatureUnit) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) {
-    return Number.NaN;
-  }
-  const resolvedUnit = normalizeTemperatureUnit(unit);
-  if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
-    return (numeric * 9) / 5 + 32;
-  }
-  return numeric;
-}
-
-function getTemperatureUnitSymbolForLang(lang = currentLang, unit = temperatureUnit) {
-  const resolvedUnit = normalizeTemperatureUnit(unit);
-  const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts('en');
-  const key =
-    resolvedUnit === TEMPERATURE_UNITS.fahrenheit
-      ? 'temperatureUnitSymbolFahrenheit'
-      : 'temperatureUnitSymbolCelsius';
-  return (
-    langTexts[key]
-    || fallbackTexts[key]
-    || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C')
-  );
-}
-
-function getTemperatureUnitLabelForLang(lang = currentLang, unit = temperatureUnit) {
-  const resolvedUnit = normalizeTemperatureUnit(unit);
-  const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts('en');
-  const key =
-    resolvedUnit === TEMPERATURE_UNITS.fahrenheit
-      ? 'temperatureUnitFahrenheit'
-      : 'temperatureUnitCelsius';
-  return (
-    langTexts[key]
-    || fallbackTexts[key]
-    || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)')
-  );
-}
-
-function getTemperatureColumnLabelForLang(lang = currentLang, unit = temperatureUnit) {
-  const langTexts = getLanguageTexts(lang);
-  const fallbackTexts = getLanguageTexts('en');
-  const baseLabel = langTexts.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
-  const symbol = getTemperatureUnitSymbolForLang(lang, unit);
-  return `${baseLabel} (${symbol})`;
-}
-
-function formatTemperatureForDisplay(celsius, options = {}) {
-  const { unit = temperatureUnit, lang = currentLang, includeSign = true } = options || {};
-  const resolvedUnit = normalizeTemperatureUnit(unit);
-  let converted = convertCelsiusToUnit(celsius, resolvedUnit);
-  if (!Number.isFinite(converted)) {
-    return '';
-  }
-  if (Math.abs(converted) < 1e-6) {
-    converted = 0;
-  }
-  const isNegative = converted < 0;
-  const isPositive = converted > 0;
-  const absolute = Math.abs(converted);
-  const isInteger = Math.abs(absolute - Math.round(absolute)) < 1e-6;
-  const fractionDigits =
-    resolvedUnit === TEMPERATURE_UNITS.fahrenheit && !isInteger ? 1 : 0;
-  const formatted = formatNumberForLang(lang, absolute, {
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  });
-  let prefix = '';
-  if (includeSign === 'none') {
-    prefix = '';
-  } else if (includeSign === false || includeSign === 'negative') {
-    if (isNegative) {
-      prefix = '–';
-    }
-  } else if (isPositive) {
-    prefix = '+';
-  } else if (isNegative) {
-    prefix = '–';
-  }
-  const symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
-  return `${prefix}${formatted} ${symbol}`;
-}
-
-function renderTemperatureNote(baseHours) {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const container = document.getElementById('temperatureNote');
-  if (!container) {
-    return;
-  }
-  const langTexts = getLanguageTexts(currentLang);
-  const fallbackTexts = getLanguageTexts('en');
-  const heading = langTexts.temperatureNoteHeading || fallbackTexts.temperatureNoteHeading || '';
-  let html = heading ? `<p>${heading}</p>` : '';
-  if (!baseHours || !Number.isFinite(baseHours)) {
-    container.innerHTML = html;
-    return;
-  }
-  const temperatureHeader = getTemperatureColumnLabelForLang(currentLang, temperatureUnit);
-  const runtimeHeader = langTexts.runtimeLabel || fallbackTexts.runtimeLabel || 'Runtime';
-  const batteryHeader = langTexts.batteryCountTempLabel || fallbackTexts.batteryCountTempLabel || 'Batteries';
-  html += `<table><tr><th>${temperatureHeader}</th><th>${runtimeHeader}</th><th>${batteryHeader}</th></tr>`;
-  TEMPERATURE_SCENARIOS.forEach(scenario => {
-    const runtime = baseHours * scenario.factor;
-    const runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
-    let batteries = '–';
-    if (Number.isFinite(runtime) && runtime > 0) {
-      batteries = String(Math.ceil(10 / runtime));
-    }
-    const temperatureCell = formatTemperatureForDisplay(scenario.celsius);
-    html += `<tr><td style="color:${scenario.color}">${temperatureCell}</td><td>${runtimeCell}</td><td>${batteries}</td></tr>`;
-  });
-  html += '</table>';
-  container.innerHTML = html;
-}
-
-function ensureFeedbackTemperatureOptions(select) {
-  if (!select) return;
-  const expectedOptions = FEEDBACK_TEMPERATURE_MAX - FEEDBACK_TEMPERATURE_MIN + 2;
-  if (select.options.length === expectedOptions) {
-    return;
-  }
-  const previousValue = select.value;
-  select.innerHTML = '';
-  const emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  emptyOpt.textContent = '';
-  select.appendChild(emptyOpt);
-  for (let temp = FEEDBACK_TEMPERATURE_MIN; temp <= FEEDBACK_TEMPERATURE_MAX; temp += 1) {
-    const opt = document.createElement('option');
-    opt.value = String(temp);
-    select.appendChild(opt);
-  }
-  if (previousValue) {
-    select.value = previousValue;
-  }
-}
-
-function updateFeedbackTemperatureOptions(lang = currentLang, unit = temperatureUnit) {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const tempSelect = document.getElementById('fbTemperature');
-  if (!tempSelect) return;
-  ensureFeedbackTemperatureOptions(tempSelect);
-  Array.from(tempSelect.options).forEach(option => {
-    if (!option) return;
-    if (option.value === '') {
-      option.textContent = '';
-      return;
-    }
-    const celsiusValue = Number(option.value);
-    if (!Number.isFinite(celsiusValue)) return;
-    option.textContent = formatTemperatureForDisplay(celsiusValue, {
-      lang,
-      unit,
-      includeSign: 'negative',
-    });
-  });
-}
-
-function updateFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-  if (typeof document === 'undefined') {
-    return;
-  }
-  const labelTextElem = document.getElementById('fbTemperatureLabelText');
-  const labelElem = document.getElementById('fbTemperatureLabel');
-  const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-  if (labelTextElem) {
-    labelTextElem.textContent = label;
-  } else if (labelElem) {
-    labelElem.textContent = label;
-  }
-}
-
-function refreshFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-  let handled = false;
-  try {
-    if (typeof updateFeedbackTemperatureLabel === 'function') {
-      updateFeedbackTemperatureLabel(lang, unit);
-      handled = true;
-    }
-  } catch (error) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Fallback applied while updating feedback temperature label', error);
-    }
-  }
-
-  if (handled) {
-    return;
-  }
-
-  const labelTextElem = typeof document !== 'undefined'
-    ? document.getElementById('fbTemperatureLabelText')
-    : null;
-  const labelElem = typeof document !== 'undefined'
-    ? document.getElementById('fbTemperatureLabel')
-    : null;
-  if (!labelTextElem && !labelElem) {
-    return;
-  }
-  const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-  if (labelTextElem) {
-    labelTextElem.textContent = label;
-  } else if (labelElem) {
-    labelElem.textContent = label;
-  }
-}
-
-function applyTemperatureUnitPreference(unit, options = {}) {
-  const normalized = normalizeTemperatureUnit(unit);
-  const { persist = true, reRender = true, forceUpdate = false } = options || {};
-  if (!forceUpdate && temperatureUnit === normalized) {
-    return;
-  }
-  temperatureUnit = normalized;
-  if (persist && typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Could not save temperature unit preference', error);
-      }
-    }
-  }
-  if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
-    settingsTemperatureUnit.value = temperatureUnit;
-  }
-  if (reRender) {
-    refreshFeedbackTemperatureLabel();
-    updateFeedbackTemperatureOptions();
-    renderTemperatureNote(lastRuntimeHours);
-  }
-}
-
-function applyFocusScalePreference(scale, options = {}) {
-  const normalized = normalizeFocusScale(scale);
-  const { persist = true, forceUpdate = false, reRender = true } = options || {};
-  if (!forceUpdate && focusScalePreference === normalized) {
-    return;
-  }
-  focusScalePreference = normalized;
-  updateGlobalFocusScalePreference(focusScalePreference);
-  if (persist && typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Could not save focus scale preference', error);
-      }
-    }
-  }
-  if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
-    settingsFocusScale.value = focusScalePreference;
-  }
-  if (reRender && typeof refreshGearListIfVisible === 'function') {
-    try {
-      refreshGearListIfVisible();
-    } catch (refreshError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Failed to refresh gear list after focus scale preference change', refreshError);
-      }
-    }
-  }
-}
-
-const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-var localeSort = (a, b) => collator.compare(a, b);
-
-const DEVICE_GLOBAL_SCOPE =
-  typeof globalThis !== 'undefined'
-    ? globalThis
-    : typeof window !== 'undefined'
-      ? window
-      : typeof global !== 'undefined'
-        ? global
-        : typeof self !== 'undefined'
-          ? self
-          : undefined;
-
-function updateGlobalDevicesReference(value) {
-  if (!DEVICE_GLOBAL_SCOPE) {
-    return;
-  }
-
-  try {
-    DEVICE_GLOBAL_SCOPE.devices = value;
-  } catch (assignError) {
-    try {
-      Object.defineProperty(DEVICE_GLOBAL_SCOPE, 'devices', {
-        configurable: true,
-        writable: true,
-        value
-      });
-    } catch (defineError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to expose device database globally.', defineError);
-      }
-    }
-  }
-
-  // Ensure dependent UI components refresh once the device database is ready.
-  // The defer flag guarantees the session layer can react even if it has not
-  // been initialised yet (for example, when this runs before app-session.js
-  // loads during boot).
-  callCoreFunctionIfAvailable('populateLensDropdown', [], { defer: true });
-}
-
-function updateGlobalFocusScalePreference(value) {
-  if (!DEVICE_GLOBAL_SCOPE) {
-    return;
-  }
-
-  try {
-    DEVICE_GLOBAL_SCOPE.focusScalePreference = value;
-  } catch (assignError) {
-    try {
-      Object.defineProperty(DEVICE_GLOBAL_SCOPE, 'focusScalePreference', {
-        configurable: true,
-        writable: true,
-        value,
-      });
-    } catch (defineError) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to expose focus scale preference globally.', defineError);
-      }
-    }
-  }
-
-  try {
-    updateLensFocusScaleSelectOptions(undefined, { preserveValue: true });
-  } catch (focusScaleOptionError) {
-    void focusScaleOptionError;
-  }
-}
-
-function initializeDeviceDatabase() {
-  if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
-    return DEVICE_GLOBAL_SCOPE.devices;
-  }
-
-  if (typeof require === 'function') {
-    try {
-      const requiredDevices = require('../data');
-      if (requiredDevices && typeof requiredDevices === 'object') {
-        updateGlobalDevicesReference(requiredDevices);
-        return requiredDevices;
-      }
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to load bundled device data.', error);
-      }
-    }
-  }
-
-  const fallback = {};
-  updateGlobalDevicesReference(fallback);
-  return fallback;
-}
-
-// Ensure the global `devices` reference always exists before any other logic
-// accesses it. This avoids temporal dead zone errors in browsers that treat
-// top-level bindings as lexical declarations.
-var devices = initializeDeviceDatabase();
-
-const FEEDBACK_TEMPERATURE_MIN = -20;
-const FEEDBACK_TEMPERATURE_MAX = 50;
-var temperatureUnit = TEMPERATURE_UNITS.celsius;
-var focusScalePreference = FOCUS_SCALE_VALUES.metric;
-var autoGearBackupDateFormatter =
-  typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
-    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-    : null;
-
-var newCategorySelect;
-var newSubcategorySelect;
-var subcategoryFieldDiv;
-var newNameInput;
-var newWattInput;
-var wattFieldDiv;
-let dynamicFieldsDiv;
-var cameraFieldsDiv;
-var cameraWattInput;
-var cameraVoltageInput;
-var cameraPortTypeInput;
-var monitorFieldsDiv;
-var monitorScreenSizeInput;
-var monitorBrightnessInput;
-var monitorWattInput;
-var monitorVoltageInput;
-var monitorPortTypeInput;
-let monitorVideoInputsContainer;
-var lensFieldsDiv;
-let lensMountOptionsContainer;
-
-try {
-  if (typeof localStorage !== 'undefined') {
-    const storedTemperatureUnit = localStorage.getItem(TEMPERATURE_STORAGE_KEY);
-    if (storedTemperatureUnit) {
-      temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
-    }
-    const storedFocusScale = localStorage.getItem(FOCUS_SCALE_STORAGE_KEY);
-    if (storedFocusScale) {
-      focusScalePreference = normalizeFocusScale(storedFocusScale);
-    } else {
-      try {
-        localStorage.setItem(FOCUS_SCALE_STORAGE_KEY, focusScalePreference);
-      } catch (focusScaleStoreError) {
-        console.warn('Could not persist default focus scale preference', focusScaleStoreError);
-      }
-    }
-  }
-} catch (error) {
-  console.warn('Could not load temperature or focus scale preference', error);
-}
-
-updateGlobalFocusScalePreference(focusScalePreference);
-
-const CORE_MOUNT_VOLTAGE = (function resolveCoreMountVoltageModule() {
-  let moduleApi = null;
-
-  if (typeof resolveCoreSupportModule === 'function') {
-    try {
-      moduleApi = resolveCoreSupportModule(
-        'cineCoreMountVoltage',
-        './modules/core/mount-voltage.js'
-      );
-    } catch (mountVoltageResolveError) {
-      void mountVoltageResolveError;
-      moduleApi = null;
-    }
-  }
-
-  if (!moduleApi && typeof require === 'function') {
-    try {
-      const requiredModule = require('./modules/core/mount-voltage.js');
-      if (requiredModule && typeof requiredModule === 'object') {
-        moduleApi = requiredModule;
-      }
-    } catch (mountVoltageRequireError) {
-      void mountVoltageRequireError;
-    }
-  }
-
-  if (!moduleApi) {
-    const fallbackScopes = collectCoreRuntimeCandidateScopes(CORE_GLOBAL_SCOPE);
-    for (let index = 0; index < fallbackScopes.length; index += 1) {
-      const candidateScope = fallbackScopes[index];
-      if (!candidateScope || typeof candidateScope !== 'object') {
-        continue;
-      }
-
-      try {
-        const candidateModule = candidateScope.cineCoreMountVoltage;
-        if (candidateModule && typeof candidateModule === 'object') {
-          moduleApi = candidateModule;
-          break;
-        }
-      } catch (candidateScopeError) {
-        void candidateScopeError;
-      }
-    }
-  }
-
-  return moduleApi;
-})();
-
-function createMountVoltageFallbackModule() {
-  const supported = Object.freeze(['V-Mount', 'Gold-Mount', 'B-Mount']);
-  const defaults = Object.freeze({
-    'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
-    'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
-    'B-Mount': Object.freeze({ high: 33.6, low: 21.6 }),
-  });
-
-  function fallbackParseVoltageValue(value, fallback) {
-    let numeric = Number.NaN;
-    if (typeof value === 'number') {
-      numeric = value;
-    } else if (typeof value === 'string') {
-      const normalized = value.replace(',', '.');
-      numeric = Number.parseFloat(normalized);
-    }
-    if (!Number.isFinite(numeric) || numeric <= 0) {
-      return fallback;
-    }
-    const clamped = Math.min(1000, Math.max(0.1, numeric));
-    return Math.round(clamped * 100) / 100;
-  }
-
-  function fallbackCloneMountVoltageMap(source = defaults) {
-    const result = {};
-    supported.forEach(type => {
-      const entry = source && source[type] ? source[type] : defaults[type];
-      const high = fallbackParseVoltageValue(entry && entry.high, defaults[type].high);
-      const low = fallbackParseVoltageValue(entry && entry.low, defaults[type].low);
-      result[type] = { high, low };
-    });
-    return result;
-  }
-
-  function fallbackNormaliseMountVoltageSource(source) {
-    if (!source || typeof source !== 'object') {
-      return fallbackCloneMountVoltageMap(defaults);
-    }
-    return fallbackCloneMountVoltageMap(source);
-  }
-
-  function fallbackParseStoredMountVoltages(raw) {
-    if (!raw) {
-      return null;
-    }
-    try {
-      if (typeof raw === 'string') {
-        const parsed = JSON.parse(raw);
-        return fallbackNormaliseMountVoltageSource(parsed);
-      }
-      return fallbackNormaliseMountVoltageSource(raw);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
-
-  let preferences = fallbackCloneMountVoltageMap(defaults);
-
-  function fallbackGetMountVoltagePreferencesClone() {
-    return fallbackCloneMountVoltageMap(preferences);
-  }
-
-  function fallbackGetMountVoltageConfig(mount) {
-    const key = supported.includes(mount) ? mount : 'V-Mount';
-    const entry = preferences[key] || defaults[key];
-    return {
-      high: fallbackParseVoltageValue(entry && entry.high, defaults[key].high),
-      low: fallbackParseVoltageValue(entry && entry.low, defaults[key].low),
-    };
-  }
-
-  function fallbackGetActiveMountVoltageConfig() {
-    const plate = typeof getSelectedPlate === 'function' ? getSelectedPlate() : 'V-Mount';
-    return fallbackGetMountVoltageConfig(plate);
-  }
-
-  function fallbackApplyMountVoltagePreferences(preferencesInput, options = {}) {
-    void options;
-    preferences = fallbackNormaliseMountVoltageSource(preferencesInput);
-  }
-
-  function fallbackResetMountVoltagePreferences(options = {}) {
-    void options;
-    fallbackApplyMountVoltagePreferences(defaults);
-  }
-
-  const noop = () => {};
-
-  const runtimeExports = {
-    SUPPORTED_MOUNT_VOLTAGE_TYPES: supported,
-    DEFAULT_MOUNT_VOLTAGES: defaults,
-    parseVoltageValue: fallbackParseVoltageValue,
-    cloneMountVoltageMap: fallbackCloneMountVoltageMap,
-    getMountVoltagePreferencesClone: fallbackGetMountVoltagePreferencesClone,
-    applyMountVoltagePreferences: fallbackApplyMountVoltagePreferences,
-    parseStoredMountVoltages: fallbackParseStoredMountVoltages,
-    resetMountVoltagePreferences: fallbackResetMountVoltagePreferences,
-    updateMountVoltageInputsFromState: noop,
-    persistMountVoltagePreferences: noop,
-  };
-
-  Object.defineProperty(runtimeExports, 'mountVoltageInputs', {
-    enumerable: true,
-    get: () => null,
-  });
-
-  Object.freeze(runtimeExports);
-
-  const api = {
-    SUPPORTED_MOUNT_VOLTAGE_TYPES: supported,
-    DEFAULT_MOUNT_VOLTAGES: defaults,
-    parseVoltageValue: fallbackParseVoltageValue,
-    cloneMountVoltageMap: fallbackCloneMountVoltageMap,
-    getMountVoltagePreferencesClone: fallbackGetMountVoltagePreferencesClone,
-    applyMountVoltagePreferences: fallbackApplyMountVoltagePreferences,
-    parseStoredMountVoltages: fallbackParseStoredMountVoltages,
-    resetMountVoltagePreferences: fallbackResetMountVoltagePreferences,
-    updateMountVoltageInputsFromState: noop,
-    persistMountVoltagePreferences: noop,
-    refreshTotalCurrentLabels: noop,
-    updateMountVoltageSettingLabels: noop,
-    getMountVoltageConfig: fallbackGetMountVoltageConfig,
-    getActiveMountVoltageConfig: fallbackGetActiveMountVoltageConfig,
-    syncMountVoltageResetButtonGlobal: noop,
-    setMountVoltageDomReferences: () => ({}),
-    reloadMountVoltagePreferencesFromStorage: noop,
-    runtimeExports,
-  };
-
-  Object.defineProperty(api, 'mountVoltageInputs', {
-    enumerable: true,
-    get: () => null,
-  });
-
-  return api;
-}
-
-const CORE_MOUNT_VOLTAGE_API =
-  CORE_MOUNT_VOLTAGE && typeof CORE_MOUNT_VOLTAGE === 'object'
-    ? CORE_MOUNT_VOLTAGE
-    : createMountVoltageFallbackModule();
-
-const SUPPORTED_MOUNT_VOLTAGE_TYPES = CORE_MOUNT_VOLTAGE_API.SUPPORTED_MOUNT_VOLTAGE_TYPES;
-const DEFAULT_MOUNT_VOLTAGES = CORE_MOUNT_VOLTAGE_API.DEFAULT_MOUNT_VOLTAGES;
-const parseVoltageValue = CORE_MOUNT_VOLTAGE_API.parseVoltageValue;
-const cloneMountVoltageMap = CORE_MOUNT_VOLTAGE_API.cloneMountVoltageMap;
-const getMountVoltagePreferencesClone = CORE_MOUNT_VOLTAGE_API.getMountVoltagePreferencesClone;
-const applyMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.applyMountVoltagePreferences;
-const parseStoredMountVoltages = CORE_MOUNT_VOLTAGE_API.parseStoredMountVoltages;
-const resetMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.resetMountVoltagePreferences;
-const updateMountVoltageInputsFromState = CORE_MOUNT_VOLTAGE_API.updateMountVoltageInputsFromState;
-const persistMountVoltagePreferences = CORE_MOUNT_VOLTAGE_API.persistMountVoltagePreferences;
-const refreshTotalCurrentLabels = CORE_MOUNT_VOLTAGE_API.refreshTotalCurrentLabels;
-const updateMountVoltageSettingLabels = CORE_MOUNT_VOLTAGE_API.updateMountVoltageSettingLabels;
-const getMountVoltageConfig = CORE_MOUNT_VOLTAGE_API.getMountVoltageConfig;
-const getActiveMountVoltageConfig = CORE_MOUNT_VOLTAGE_API.getActiveMountVoltageConfig;
-const syncMountVoltageResetButtonGlobal = CORE_MOUNT_VOLTAGE_API.syncMountVoltageResetButtonGlobal;
-const setMountVoltageDomReferences = CORE_MOUNT_VOLTAGE_API.setMountVoltageDomReferences;
-const reloadMountVoltagePreferencesFromStorage =
-  typeof CORE_MOUNT_VOLTAGE_API.reloadMountVoltagePreferencesFromStorage === 'function'
-    ? CORE_MOUNT_VOLTAGE_API.reloadMountVoltagePreferencesFromStorage
-    : () => {};
-
-const MOUNT_VOLTAGE_RUNTIME_EXPORTS =
-  CORE_MOUNT_VOLTAGE_API.runtimeExports && typeof CORE_MOUNT_VOLTAGE_API.runtimeExports === 'object'
-    ? CORE_MOUNT_VOLTAGE_API.runtimeExports
-    : (function createMountVoltageRuntimeExportsFallback() {
-        const exports = {
-          SUPPORTED_MOUNT_VOLTAGE_TYPES,
-          DEFAULT_MOUNT_VOLTAGES,
-          parseVoltageValue,
-          cloneMountVoltageMap,
-          getMountVoltagePreferencesClone,
-          applyMountVoltagePreferences,
-          parseStoredMountVoltages,
-          resetMountVoltagePreferences,
-          updateMountVoltageInputsFromState,
-          persistMountVoltagePreferences,
-        };
-        Object.defineProperty(exports, 'mountVoltageInputs', {
-          enumerable: true,
-          get: () =>
-            (CORE_MOUNT_VOLTAGE_API && CORE_MOUNT_VOLTAGE_API.mountVoltageInputs) || null,
-        });
-        return Object.freeze(exports);
-      })();
-
-reloadMountVoltagePreferencesFromStorage();
-
-// Immediately expose mount voltage helpers so downstream layers can recover even if
-// subsequent refactors adjust the consolidated runtime export list. This keeps
-// autosave/share/backup flows functional when the runtime is split across files.
-exposeCoreRuntimeConstants(MOUNT_VOLTAGE_RUNTIME_EXPORTS);
-
-const schemaStorage = (() => {
-  if (typeof window === 'undefined') return null;
-  try {
-    if (!('localStorage' in window)) return null;
-    const { localStorage } = window;
-    const testKey = '__schema_cache__';
-    localStorage.setItem(testKey, '1');
-    localStorage.removeItem(testKey);
-    return localStorage;
-  } catch (error) {
-    console.warn('Device schema cache disabled', error);
-    return null;
-  }
-})();
-
-function loadCachedDeviceSchema() {
-  if (!schemaStorage) return null;
-  try {
-    const raw = schemaStorage.getItem(DEVICE_SCHEMA_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch (error) {
-    console.warn('Failed to read cached device schema', error);
-    try {
-      schemaStorage.removeItem(DEVICE_SCHEMA_STORAGE_KEY);
-    } catch (removeError) {
-      console.warn('Failed to clear invalid cached device schema', removeError);
-    }
-    return null;
-  }
-}
-
-function persistDeviceSchema(schema) {
-  if (!schemaStorage) return;
-  try {
-    schemaStorage.setItem(DEVICE_SCHEMA_STORAGE_KEY, JSON.stringify(schema));
-  } catch (error) {
-    console.warn('Failed to cache device schema', error);
-  }
-}
-
-function isValidDeviceSchema(candidate) {
-  return candidate && typeof candidate === 'object' && !Array.isArray(candidate);
-}
-
-async function loadDeviceSchemaFromCacheStorage() {
-  if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
-    return null;
-  }
-
-  const candidates = new Set([DEVICE_SCHEMA_PATH]);
-  if (!DEVICE_SCHEMA_PATH.startsWith('./')) {
-    candidates.add(`./${DEVICE_SCHEMA_PATH}`);
-  }
-
-  if (typeof window !== 'undefined' && window.location) {
-    try {
-      candidates.add(new URL(DEVICE_SCHEMA_PATH, window.location.href).toString());
-    } catch (error) {
-      console.warn('Failed to resolve schema.json cache URL', error);
-    }
-  }
-
-  for (const url of candidates) {
-    try {
-      const response = await caches.match(url, { ignoreSearch: true });
-      if (response) {
-        return await response.clone().json();
-      }
-    } catch (error) {
-      console.warn('Failed to read schema.json from cache entry', url, error);
-    }
-  }
-
-  return null;
-}
-
-/**
- * Final step once a schema candidate has been retrieved.
- *
- * The schema can come from different places (bundled JSON, fetch, cache
- * storage, localStorage fallback). Centralizing the logic in a single helper
- * keeps the success path easy to reason about and guarantees that we only
- * call `populateCategoryOptions` once we have a valid object to work with.
- *
- * @param {unknown} candidate Potentially parsed schema object.
- */
-function finalizeDeviceSchemaLoad(candidate) {
-  if (isValidDeviceSchema(candidate)) {
-    deviceSchema = candidate;
-    persistDeviceSchema(candidate);
-  } else if (!deviceSchema) {
-    deviceSchema = cachedDeviceSchema || {};
-  }
-
-  schedulePopulateCategoryOptions();
-}
-
-function schedulePopulateCategoryOptions() {
-  const triggerPopulate = () => {
-    try {
-      populateCategoryOptions();
-    } catch (error) {
-      console.error('populateCategoryOptions failed during scheduled execution', error);
-    }
-  };
-
-  if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
-    window.setTimeout(triggerPopulate, 0);
-  } else if (typeof setTimeout === 'function') {
-    setTimeout(triggerPopulate, 0);
-  } else {
-    triggerPopulate();
-  }
-}
-
-const cachedDeviceSchema = loadCachedDeviceSchema();
-
-var deviceSchema;
-try {
-  deviceSchema = require('../data/schema.json');
-} catch {
-  // Falling back to the cached copy allows the app to keep functioning when
-  // users are offline, which is critical for field usage.
-  deviceSchema = cachedDeviceSchema;
-  if (typeof fetch === 'function') {
-    fetch(DEVICE_SCHEMA_PATH)
-      .then(response => {
-        if (!response || !response.ok) {
-          throw new Error(`Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`);
-        }
-        return response.json();
-      })
-      .then(finalizeDeviceSchemaLoad)
-      .catch(error => {
-        console.warn('Failed to fetch schema.json', error);
-        if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
-          finalizeDeviceSchemaLoad(deviceSchema);
-          return;
-        }
-
-        loadDeviceSchemaFromCacheStorage()
-          .then(schemaFromCache => {
-            if (isValidDeviceSchema(schemaFromCache)) {
-              finalizeDeviceSchemaLoad(schemaFromCache);
-            } else {
-              finalizeDeviceSchemaLoad(deviceSchema);
-            }
-          })
-          .catch(cacheError => {
-            console.warn('Failed to load schema.json from cache storage', cacheError);
-            finalizeDeviceSchemaLoad(deviceSchema);
-          });
-      });
-  } else {
-    finalizeDeviceSchemaLoad(deviceSchema);
-  }
-}
-
-const LEGAL_LINKS = {
-  de: {
-    imprint: "legal/impressum.html",
-    privacy: "legal/datenschutz.html",
-  },
-  en: {
-    imprint: "legal/impressum-en.html",
-    privacy: "legal/datenschutz-en.html",
-  },
-  es: {
-    imprint: "legal/impressum-es.html",
-    privacy: "legal/datenschutz-es.html",
-  },
-  fr: {
-    imprint: "legal/impressum-fr.html",
-    privacy: "legal/datenschutz-fr.html",
-  },
-  it: {
-    imprint: "legal/impressum-it.html",
-    privacy: "legal/datenschutz-it.html",
-  },
-};
 
 var AUTO_GEAR_CUSTOM_CATEGORY = '';
 const GEAR_LIST_CATEGORIES = [
