@@ -385,6 +385,10 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
       if (typeof console !== 'undefined' && typeof console.error === 'function') {
         console.error(`Failed to invoke ${functionName}`, invokeError);
       }
+
+      if (options && options.propagateErrors) {
+        throw invokeError;
+      }
     }
     return undefined;
   }
@@ -406,7 +410,10 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
 const CORE_FUNCTION_MISSING_SENTINEL = Object.freeze({ missing: true });
 
 function invokeCoreFunctionStrict(functionName, args = []) {
-  const result = callEventsCoreFunction(functionName, args, { defaultValue: CORE_FUNCTION_MISSING_SENTINEL });
+  const result = callEventsCoreFunction(functionName, args, {
+    defaultValue: CORE_FUNCTION_MISSING_SENTINEL,
+    propagateErrors: true,
+  });
   if (result === CORE_FUNCTION_MISSING_SENTINEL) {
     const error = new ReferenceError(`Missing core function: ${functionName}`);
     if (eventsLogger && typeof eventsLogger.error === 'function') {
