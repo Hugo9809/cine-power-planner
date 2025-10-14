@@ -1,8 +1,8 @@
 # Power Summary Warning Reference
 
-## "Power Summary pass: Warnings and backups"
+## "Power Summary: Warnings and backups"
 
-This checklist step fires whenever the **Power Summary** detects a mismatch between the load your connectors can safely deliver and the draw you have scheduled. It highlights four safeguard areas you must review before marking the pass complete:
+This checklist step fires whenever the **Power Summary** detects a mismatch between the load your connectors can safely deliver and the draw you have scheduled. It highlights four safeguard areas you must review before marking the step complete:
 
 1. **Color-coded connector status (Pins and D-Tap)**
    Two warning boxes appear in Power Summary—one for *Pin* connectors and one for *D-Tap*. Each uses the same color scale: **green** confirms the battery feed is operating safely, **yellow** shows the battery feed is approaching its maximum rating, and **red** indicates the camera rig is pulling more power than the battery can provide. Record which box changed color and capture a screenshot or note in the offline incident log.
@@ -20,9 +20,9 @@ This checklist step fires whenever the **Power Summary** detects a mismatch betw
 
 - Capture the connector warning details in the offline incident log (source battery feed, expected load, mitigation).
 - Reassign or shed load until every connector operates within its rated continuous current.
-- Confirm the Pin and D-Tap warning boxes both return to green before closing the pass.
+- Confirm the Pin and D-Tap warning boxes both return to green before closing the step.
 - Stage and verify redundant backups that can assume the load without manual rewiring.
 - Confirm the autosave banner timestamp matches the share/export preview before distributing the plan.
-- Re-run the Power Summary pass to ensure the warning clears and the updated state is synced across offline caches.
+- Re-run the Power Summary check to ensure the warning clears and the updated state is synced across offline caches.
 
 Keeping this step green protects equipment, preserves data integrity across offline workflows, and ensures crews receive the latest, fully backed-up plan—even without network access.

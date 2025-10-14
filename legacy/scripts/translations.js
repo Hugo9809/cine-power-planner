@@ -1668,19 +1668,19 @@ var texts = {
           body: "Select the battery system that powers the rig. Runtime projections update immediately and the selection is stored with your offline project snapshots and backups."
         },
         resultsTotalDraw: {
-          title: "Power Summary pass: Total draw",
+          title: "Power Summary: Total draw",
           body: "Start your Power Summary review by confirming the Total Draw card and peak load so the demand math stays accurate before moving on to deeper checks."
         },
         resultsBatteryPacks: {
-          title: "Power Summary pass: Battery runtimes",
+          title: "Power Summary: Battery runtimes",
           body: "Review each battery pack's projected runtime, reserve margin highlights and device notes while autosave keeps the latest selections ready for offline safety."
         },
         resultsChangeover: {
-          title: "Power Summary pass: Changeovers",
+          title: "Power Summary: Changeovers",
           body: "Step through the changeover list to check remaining runtime, confirm the next charged pack is staged and mark swaps as complete so the saved snapshot reflects the current handoff plan."
         },
         resultsWarnings: {
-          title: "Power Summary pass: Warnings and backups",
+          title: "Power Summary: Warnings and backups",
           body: "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the battery feed is near its limit, and red means the camera rig is pulling more power than the battery can supply."
         },
         batteryComparison: {
@@ -3513,19 +3513,19 @@ var texts = {
           body: "Seleziona il sistema batteria che alimenta il rig. Le stime di autonomia si aggiornano subito e la scelta viene salvata con gli snapshot e i backup offline del progetto."
         },
         resultsTotalDraw: {
-          title: "Passaggio Power Summary: Carico totale",
+          title: "Power Summary: Carico totale",
           body: "Avvia la revisione in Power Summary confermando la scheda Carico totale e il picco previsto così i calcoli della domanda restano accurati prima di approfondire."
         },
         resultsBatteryPacks: {
-          title: "Passaggio Power Summary: Autonomie delle batterie",
+          title: "Power Summary: Autonomie delle batterie",
           body: "Espandi ogni pacco batteria per verificare proiezioni di autonomia, evidenziazioni del margine di riserva e note dei dispositivi assicurandoti che l'autosalvataggio catturi le ultime scelte per la sicurezza offline."
         },
         resultsChangeover: {
-          title: "Passaggio Power Summary: Cambi turno",
+          title: "Power Summary: Cambi turno",
           body: "Scorri l'elenco dei cambi per controllare l'autonomia residua, confermare che il prossimo pacco carico sia pronto e segnare i cambi completati così lo snapshot salvato riflette il piano aggiornato."
         },
         resultsWarnings: {
-          title: "Passaggio Power Summary: Avvisi e backup",
+          title: "Power Summary: Avvisi e backup",
           body: "Controlla i riquadri di avviso dei connettori: il verde indica che l'alimentazione della batteria pin o D-Tap è sicura, il giallo che l'alimentazione della batteria è vicina al limite e il rosso che il rig di camera sta assorbendo più potenza di quanta la batteria possa fornire."
         },
         batteryComparison: {
@@ -5358,19 +5358,19 @@ var texts = {
           body: "Selecciona el sistema de baterías que alimenta el equipo. Las proyecciones de autonomía se actualizan al instante y la elección se guarda con las instantáneas y copias de seguridad offline del proyecto."
         },
         resultsTotalDraw: {
-          title: "Pasada por Power Summary: Consumo total",
+          title: "Power Summary: Consumo total",
           body: "Inicia la revisión en Power Summary confirmando la tarjeta de Consumo total y la carga pico para que las matemáticas de demanda sigan precisas antes de profundizar."
         },
         resultsBatteryPacks: {
-          title: "Pasada por Power Summary: Autonomías de baterías",
+          title: "Power Summary: Autonomías de baterías",
           body: "Expande cada grupo de baterías para revisar proyecciones de autonomía, márgenes de reserva resaltados y notas de dispositivos asegurándote de que el autoguardado capture las últimas selecciones para la seguridad offline."
         },
         resultsChangeover: {
-          title: "Pasada por Power Summary: Cambios",
+          title: "Power Summary: Cambios",
           body: "Recorre la lista de cambios para revisar la autonomía restante, confirmar que la siguiente batería cargada esté preparada y marcar cada relevo completado para que la instantánea guardada refleje el plan actualizado."
         },
         resultsWarnings: {
-          title: "Pasada por Power Summary: Avisos y copias",
+          title: "Power Summary: Avisos y copias",
           body: "Revisa los cuadros de alerta de conectores: el verde muestra que la alimentación de batería de pines o D-Tap es segura, el amarillo indica que la alimentación de batería está cerca de su máximo y el rojo que el rig de cámara demanda más potencia de la que el paquete de baterías puede entregar."
         },
         batteryComparison: {
@@ -7203,19 +7203,19 @@ var texts = {
           body: "Sélectionnez le système de batteries qui alimente la configuration. Les projections d’autonomie se mettent à jour immédiatement et la sélection est enregistrée avec vos captures et sauvegardes hors ligne."
         },
         resultsTotalDraw: {
-          title: "Passage Power Summary : Consommation totale",
+          title: "Power Summary : Consommation totale",
           body: "Commencez la revue dans Power Summary en confirmant la carte Consommation totale et la charge de pointe afin que le calcul de la demande reste exact avant d’aller plus loin."
         },
         resultsBatteryPacks: {
-          title: "Passage Power Summary : Autonomie des batteries",
+          title: "Power Summary : Autonomie des batteries",
           body: "Dépliez chaque groupe de batteries pour examiner les projections d’autonomie, les marges de réserve mises en évidence et les notes d’équipement en vérifiant que l’enregistrement automatique capture les derniers choix pour la sécurité hors ligne."
         },
         resultsChangeover: {
-          title: "Passage Power Summary : Basculements",
+          title: "Power Summary : Basculements",
           body: "Parcourez la liste des basculements pour vérifier l’autonomie restante, confirmer que la prochaine batterie chargée est prête et valider chaque échange afin que l’instantané enregistré reflète le plan actualisé."
         },
         resultsWarnings: {
-          title: "Passage Power Summary : Alertes et sauvegardes",
+          title: "Power Summary : Alertes et sauvegardes",
           body: "Vérifiez les encadrés d’alerte des connecteurs : le vert signifie que l’alimentation de batterie à broches ou D-Tap est sûre, le jaune que l’alimentation de batterie approche de sa limite maximale et le rouge que le rig caméra demande plus de puissance que le pack ne peut fournir."
         },
         batteryComparison: {
@@ -9048,19 +9048,19 @@ var texts = {
           body: "Wähle das Batteriesystem, das das Rig versorgt. Laufzeitprognosen aktualisieren sich sofort und die Auswahl wird zusammen mit deinen Offline-Snapshots und Backups gespeichert."
         },
         resultsTotalDraw: {
-          title: "Power Summary-Durchgang: Gesamtverbrauch",
+          title: "Power Summary: Gesamtverbrauch",
           body: "Starte die Prüfung in der Leistungsübersicht, indem du die Karte Gesamtverbrauch und die Spitzenlast bestätigst, damit die Bedarfsberechnung stimmt, bevor du tiefer einsteigst."
         },
         resultsBatteryPacks: {
-          title: "Power Summary-Durchgang: Batterielaufzeiten",
+          title: "Power Summary: Batterielaufzeiten",
           body: "Klappe jede Batteriegruppe auf, um Laufzeitprognosen, hervorgehobene Reservemargen und Gerätehinweise zu prüfen und vergewissere dich, dass das Autosave die letzten Entscheidungen für die Offline-Sicherheit erfasst."
         },
         resultsChangeover: {
-          title: "Power Summary-Durchgang: Umschaltungen",
+          title: "Power Summary: Umschaltungen",
           body: "Gehe die Wechselübersicht durch, prüfe die verbleibende Laufzeit, bestätige, dass der nächste geladene Akku bereitliegt, und markiere abgeschlossene Wechsel, damit der gespeicherte Snapshot den aktuellen Übergabeplan abbildet."
         },
         resultsWarnings: {
-          title: "Power Summary-Durchgang: Warnungen und Backups",
+          title: "Power Summary: Warnungen und Backups",
           body: "Prüfe die Warnfelder für die Anschlüsse: Grün bedeutet, dass die Pin- oder D-Tap-Batterieversorgung sicher ist, Gelb, dass die Batterieversorgung nahe ihrer Maximalbelastung liegt, und Rot, dass das Kamerarig mehr Leistung zieht, als das Pack liefern kann."
         },
         batteryComparison: {
