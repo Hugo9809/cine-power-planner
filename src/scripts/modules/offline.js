@@ -983,6 +983,23 @@
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
 
+    const warmupRequestHref = (() => {
+      const referenceHref = readLocationHrefSafe(locationLike);
+      const originHref = typeof referenceHref === 'string' && referenceHref ? referenceHref : nextHref;
+      const enforcedHref = enforceSameOriginNextHref(locationLike, originHref, nextHref);
+
+      if (typeof enforcedHref !== 'string' || !enforcedHref) {
+        return '';
+      }
+
+      const relativeHref = normaliseHrefForHistory(enforcedHref, referenceHref);
+      if (typeof relativeHref === 'string' && relativeHref) {
+        return relativeHref;
+      }
+
+      return enforcedHref;
+    })();
+
     const executeWarmup = async () => {
       try {
         await Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
@@ -1015,7 +1032,8 @@
 
       const performFetch = async (overrides = {}) => {
         const requestInit = buildRequestInit(overrides);
-        return fetchFn.call(win || undefined, nextHref, requestInit);
+        const targetHref = warmupRequestHref || nextHref;
+        return fetchFn.call(win || undefined, targetHref, requestInit);
       };
 
       const isAborted = () => controller && controller.signal && controller.signal.aborted === true;
