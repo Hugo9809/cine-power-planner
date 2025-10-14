@@ -15135,6 +15135,7 @@ var avatarEditCancelButton = null;
 var avatarEditApplyButton = null;
 var avatarOptionsContext = null;
 var avatarEditState = null;
+var avatarEditLastViewportSize = 0;
 
 function resolveContactsDomRefs() {
   if (typeof document === 'undefined') return;
@@ -15993,6 +15994,46 @@ function updateAvatarEditMetrics(state) {
   }
 }
 
+function measureAvatarEditViewportSize() {
+  resolveContactsDomRefs();
+  if (!avatarEditViewport) return 0;
+  let restoreHidden = false;
+  let previousVisibility = '';
+  let previousPointerEvents = '';
+  if (avatarEditSection && avatarEditSection.classList.contains('hidden')) {
+    restoreHidden = true;
+    previousVisibility = avatarEditSection.style.visibility || '';
+    previousPointerEvents = avatarEditSection.style.pointerEvents || '';
+    avatarEditSection.style.visibility = 'hidden';
+    avatarEditSection.style.pointerEvents = 'none';
+    avatarEditSection.classList.remove('hidden');
+  }
+  let viewportSize = 0;
+  try {
+    const viewportRect = avatarEditViewport.getBoundingClientRect();
+    viewportSize = Math.round(
+      Math.max(
+        avatarEditViewport.offsetWidth || 0,
+        viewportRect.width || 0,
+        viewportRect.height || 0
+      )
+    );
+  } finally {
+    if (restoreHidden && avatarEditSection) {
+      avatarEditSection.classList.add('hidden');
+      avatarEditSection.style.visibility = previousVisibility;
+      avatarEditSection.style.pointerEvents = previousPointerEvents;
+    }
+  }
+  if (!viewportSize && avatarEditLastViewportSize) {
+    return avatarEditLastViewportSize;
+  }
+  if (viewportSize) {
+    avatarEditLastViewportSize = viewportSize;
+  }
+  return viewportSize;
+}
+
 function initializeAvatarEditState(dataUrl) {
   resolveContactsDomRefs();
   if (!avatarEditViewport || !avatarEditImage) return;
@@ -16000,10 +16041,7 @@ function initializeAvatarEditState(dataUrl) {
     announceContactsMessage(getContactsText('avatarMissingImage', 'Add a photo before editing.'));
     return;
   }
-  const viewportRect = avatarEditViewport.getBoundingClientRect();
-  const viewportSize = Math.round(
-    Math.max(avatarEditViewport.offsetWidth || 0, viewportRect.width || 0, viewportRect.height || 0)
-  );
+  const viewportSize = measureAvatarEditViewportSize();
   if (!viewportSize) {
     announceContactsMessage(getContactsText('avatarEditUnavailable', 'Photo editor unavailable.'));
     return;
