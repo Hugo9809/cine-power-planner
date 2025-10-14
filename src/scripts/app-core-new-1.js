@@ -9311,13 +9311,170 @@ var DEFAULT_FILTER_SIZE = '4x5.65';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
+function collectAutoBackupLoggingScopes() {
+  const scopes = [];
+
+  function enqueue(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+    if (scopes.indexOf(scope) === -1) {
+      scopes.push(scope);
+    }
+  }
+
+  try {
+    enqueue(typeof getCoreGlobalObject === 'function' ? getCoreGlobalObject() : null);
+  } catch (scopeError) {
+    void scopeError;
+  }
+
+  try {
+    enqueue(typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null);
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  enqueue(typeof globalThis !== 'undefined' ? globalThis : null);
+  enqueue(typeof window !== 'undefined' ? window : null);
+  enqueue(typeof self !== 'undefined' ? self : null);
+  enqueue(typeof global !== 'undefined' ? global : null);
+
+  return scopes;
+}
+
+function resolveAutoBackupLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      const required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (resolverRequireError) {
+      void resolverRequireError;
+    }
+  }
+
+  const scopes = collectAutoBackupLoggingScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return null;
+}
+
+function resolveLegacyAutoBackupLogger() {
+  const scopes = collectAutoBackupLoggingScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const logging = scope.cineLogging;
+      if (logging && typeof logging.createLogger === 'function') {
+        try {
+          return logging.createLogger('auto-backup', { meta: { source: 'app-core-new-1' } });
+        } catch (creationError) {
+          try {
+            if (typeof logging.error === 'function') {
+              logging.error('Failed to create auto backup logger', creationError, { namespace: 'auto-backup-bootstrap' });
+            }
+          } catch (logError) {
+            void logError;
+          }
+        }
+      }
+    } catch (legacyResolveError) {
+      void legacyResolveError;
+    }
+  }
+
+  return null;
+}
+
+const autoBackupLogger = (() => {
+  const resolver = resolveAutoBackupLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      const logger = resolver.resolveLogger('auto-backup', { meta: { source: 'app-core-new-1' } });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+
+  return resolveLegacyAutoBackupLogger();
+})();
+
+function logAutoBackupEvent(level, message, detail, meta) {
+  const normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+  let handled = false;
+
+  if (autoBackupLogger && typeof autoBackupLogger[normalizedLevel] === 'function') {
+    try {
+      autoBackupLogger[normalizedLevel](message, detail, meta);
+      handled = true;
+    } catch (loggingError) {
+      handled = false;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        try {
+          console.warn('Auto backup logger invocation failed', loggingError);
+        } catch (consoleLoggingError) {
+          void consoleLoggingError;
+        }
+      }
+    }
+  }
+
+  if (handled || typeof console === 'undefined' || !console) {
+    return;
+  }
+
+  let fallback = null;
+  if (normalizedLevel === 'error' && typeof console.error === 'function') {
+    fallback = console.error;
+  } else if (normalizedLevel === 'warn' && typeof console.warn === 'function') {
+    fallback = console.warn;
+  } else if (normalizedLevel === 'info' && typeof console.info === 'function') {
+    fallback = console.info;
+  } else if (normalizedLevel === 'debug' && typeof console.debug === 'function') {
+    fallback = console.debug;
+  } else if (typeof console.log === 'function') {
+    fallback = console.log;
+  }
+
+  if (typeof fallback === 'function') {
+    try {
+      fallback.call(console, `[auto-backup] ${message}`, detail || null, meta || null);
+    } catch (consoleFallbackError) {
+      void consoleFallbackError;
+    }
+  }
+}
+
 var showAutoBackups = false;
 try {
   if (typeof localStorage !== 'undefined') {
     showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
   }
 } catch (e) {
-  console.warn('Could not load auto backup visibility preference', e);
+  logAutoBackupEvent('warn', 'Could not load auto backup visibility preference', e);
 }
 function cloneProjectEntryForSetup(projectEntry) {
   if (!projectEntry || typeof projectEntry !== 'object') {
@@ -9331,7 +9488,7 @@ function cloneProjectEntryForSetup(projectEntry) {
     try {
       snapshot.projectInfo = CORE_DEEP_CLONE(projectInfo);
     } catch (error) {
-      console.warn('Failed to clone project info for auto backup import', error);
+      logAutoBackupEvent('warn', 'Failed to clone project info for auto backup import', error);
       snapshot.projectInfo = projectInfo;
     }
   }
@@ -9339,7 +9496,7 @@ function cloneProjectEntryForSetup(projectEntry) {
     try {
       snapshot.powerSelection = CORE_DEEP_CLONE(projectEntry.powerSelection);
     } catch (error) {
-      console.warn('Failed to clone project power selection for auto backup import', error);
+      logAutoBackupEvent('warn', 'Failed to clone project power selection for auto backup import', error);
       snapshot.powerSelection = projectEntry.powerSelection;
     }
   }
@@ -9352,7 +9509,7 @@ function cloneProjectEntryForSetup(projectEntry) {
     try {
       snapshot.autoGearRules = CORE_DEEP_CLONE(autoGearRules);
     } catch (error) {
-      console.warn('Failed to clone auto gear rules for auto backup import', error);
+      logAutoBackupEvent('warn', 'Failed to clone auto gear rules for auto backup import', error);
       snapshot.autoGearRules = autoGearRules.slice();
     }
   }
@@ -9395,7 +9552,7 @@ function ensureAutoBackupsFromProjects() {
   try {
     projects = loadProject();
   } catch (error) {
-    console.warn('Failed to read projects while syncing auto backups', error);
+    logAutoBackupEvent('warn', 'Failed to read projects while syncing auto backups', error);
     return false;
   }
 
@@ -9405,6 +9562,7 @@ function ensureAutoBackupsFromProjects() {
 
   const setups = getSetups();
   let changed = false;
+  let importedCount = 0;
 
   Object.keys(projects).forEach((name) => {
     if (typeof name !== 'string' || !name) return;
@@ -9416,13 +9574,20 @@ function ensureAutoBackupsFromProjects() {
     const snapshot = cloneProjectEntryForSetup(projects[name]);
     setups[name] = snapshot;
     changed = true;
+    importedCount += 1;
   });
 
   if (changed) {
     try {
       storeSetups(setups);
+      logAutoBackupEvent(
+        'info',
+        'Auto backup snapshots imported from project storage',
+        null,
+        { importedCount },
+      );
     } catch (error) {
-      console.warn('Failed to persist imported auto backups from projects', error);
+      logAutoBackupEvent('warn', 'Failed to persist imported auto backups from projects', error);
       return false;
     }
   }
@@ -9434,7 +9599,7 @@ if (showAutoBackups) {
   try {
     ensureAutoBackupsFromProjects();
   } catch (error) {
-    console.warn('Failed to prepare auto backups from project storage', error);
+    logAutoBackupEvent('warn', 'Failed to prepare auto backups from project storage', error);
   }
 }
 
