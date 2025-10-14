@@ -12199,6 +12199,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
   border: none;
   color: var(--text-color);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-weight: inherit;
   text-align: left;
   cursor: pointer;
 }
