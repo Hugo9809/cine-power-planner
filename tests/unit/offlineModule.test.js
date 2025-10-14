@@ -206,11 +206,18 @@ describe('cineOffline module', () => {
         .mockImplementationOnce(() => Promise.reject(fetchError))
         .mockImplementationOnce(() => Promise.resolve(warmupResponse));
 
+      const windowMock = {
+        location: {
+          href: 'https://example.test/app/index.html',
+          origin: 'https://example.test',
+        },
+      };
+
       const warmupHandle = internal.scheduleReloadWarmup({
         fetch: fetchMock,
         nextHref: 'https://example.test/app?foo=bar',
         navigator: { onLine: true },
-        window: {},
+        window: windowMock,
         serviceWorkerPromise: Promise.resolve(true),
         cachePromise: Promise.resolve(true),
         allowCache: true,
@@ -223,10 +230,65 @@ describe('cineOffline module', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(fetchMock.mock.calls[0][1]).toEqual(
-        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow', mode: 'same-origin' }),
       );
       expect(fetchMock.mock.calls[1][1]).toEqual(
-        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow', mode: 'same-origin' }),
+      );
+
+      const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
+      expect(warmupWarnings).toHaveLength(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('reload warmup retries with CORS mode when reload fetch fails due to access control', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const responseClone = { bodyUsed: false, text: jest.fn(() => Promise.resolve('<html></html>')) };
+      const warmupResponse = {
+        ok: true,
+        bodyUsed: false,
+        text: jest.fn(() => Promise.resolve('<html></html>')),
+        clone: jest.fn(() => responseClone),
+      };
+
+      const fetchError = new TypeError('Failed to fetch because of access control checks.');
+      const fetchMock = jest
+        .fn()
+        .mockImplementationOnce(() => Promise.reject(fetchError))
+        .mockImplementationOnce(() => Promise.resolve(warmupResponse));
+
+      const windowMock = {
+        location: {
+          href: 'https://example.test/app/index.html',
+          origin: 'https://example.test',
+        },
+      };
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app?foo=bar',
+        navigator: { onLine: true },
+        window: windowMock,
+        serviceWorkerPromise: Promise.resolve(true),
+        cachePromise: Promise.resolve(true),
+        allowCache: true,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+      await warmupHandle.promise;
+
+      jest.runOnlyPendingTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock.mock.calls[0][1]).toEqual(
+        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow', mode: 'same-origin' }),
+      );
+      expect(fetchMock.mock.calls[1][1]).toEqual(
+        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow', mode: 'cors' }),
       );
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');

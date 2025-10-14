@@ -705,7 +705,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (targetOrigin && expectedOrigin && targetOrigin !== expectedOrigin) {
       return null;
     }
-    var requestMode = 'same-origin';
     var nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
@@ -731,92 +730,162 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     var shouldAllowCache = options.allowCache === true;
     var includeCredentials = !!expectedOrigin && (!targetOrigin || targetOrigin === expectedOrigin);
-    var executeWarmup = function () {
-      var _ref = _asyncToGenerator(_regenerator().m(function _callee() {
-        var allowCachePopulation, requestInit, response, aborted, body, _t, _t2, _t3, _t4;
-        return _regenerator().w(function (_context) {
-          while (1) switch (_context.p = _context.n) {
-            case 0:
-              _context.p = 0;
-              _context.n = 1;
-              return Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
-            case 1:
-              _context.n = 3;
-              break;
-            case 2:
-              _context.p = 2;
-              _t = _context.v;
-              void _t;
-            case 3:
-              _context.p = 3;
-              _context.n = 4;
-              return Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)]);
-            case 4:
-              _context.n = 6;
-              break;
-            case 5:
-              _context.p = 5;
-              _t2 = _context.v;
-              void _t2;
-            case 6:
-              allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
-              requestInit = {
-                cache: allowCachePopulation ? 'reload' : 'no-store',
-                credentials: includeCredentials ? 'same-origin' : 'omit',
-                mode: requestMode,
-                redirect: 'follow'
-              };
-              if (controller && controller.signal) {
-                requestInit.signal = controller.signal;
+    var requestMode = includeCredentials ? 'same-origin' : 'cors';
+    var executeWarmup = function executeWarmup() {
+      var preparation = Promise.race([serviceWorkerPromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])
+        .catch(function () {
+          return false;
+        })
+        .then(function () {
+          return Promise.race([cachePromise, createDelay(RELOAD_WARMUP_MAX_WAIT_MS)])
+            .catch(function () {
+              return false;
+            });
+        })
+        .then(function () {
+          var allowCachePopulation = shouldAllowCache && serviceWorkerSettled && cachesSettled;
+
+          var buildRequestInit = function buildRequestInit(overrides) {
+            var requestInit = {
+              cache: allowCachePopulation ? 'reload' : 'no-store',
+              credentials: includeCredentials ? 'same-origin' : 'omit',
+              mode: requestMode,
+              redirect: 'follow'
+            };
+
+            if (controller && controller.signal) {
+              requestInit.signal = controller.signal;
+            }
+
+            if (overrides && _typeof(overrides) === 'object') {
+              for (var key in overrides) {
+                if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+                  requestInit[key] = overrides[key];
+                }
               }
-              response = null;
-              _context.p = 7;
-              _context.n = 8;
-              return fetchFn.call(win || undefined, nextHref, requestInit);
-            case 8:
-              response = _context.v;
-              _context.n = 10;
-              break;
-            case 9:
-              _context.p = 9;
-              _t3 = _context.v;
-              aborted = controller && controller.signal && controller.signal.aborted;
-              if (!aborted && !isAccessControlReloadWarmupError(_t3) && !reloadWarmupFailureLogged) {
-                reloadWarmupFailureLogged = true;
-                safeWarn('Reload warmup fetch failed', _t3);
+            }
+
+            return requestInit;
+          };
+
+          var performFetch = function performFetch(overrides) {
+            var requestInit = buildRequestInit(overrides);
+            return fetchFn.call(win || undefined, nextHref, requestInit);
+          };
+
+          var isAborted = function isAborted() {
+            return !!(controller && controller.signal && controller.signal.aborted);
+          };
+
+          var firstError = null;
+
+          var attemptAccessControlFallback = function attemptAccessControlFallback() {
+            var fallbackModes = [];
+            if (requestMode !== 'cors') {
+              fallbackModes.push('cors');
+            }
+
+            if (!fallbackModes.length) {
+              return Promise.resolve(null);
+            }
+
+            var sequence = Promise.resolve(null);
+
+            fallbackModes.forEach(function (mode) {
+              sequence = sequence.then(function (existing) {
+                if (existing) {
+                  return existing;
+                }
+
+                if (isAborted()) {
+                  return null;
+                }
+
+                return performFetch({ cache: 'default', mode: mode })
+                  .then(function (result) {
+                    return result || null;
+                  })
+                  .catch(function (fallbackError) {
+                    firstError = fallbackError || firstError;
+                    return null;
+                  });
+              });
+            });
+
+            return sequence.then(function (result) {
+              return result || null;
+            });
+          };
+
+          return performFetch()
+            .catch(function (error) {
+              firstError = error;
+
+              if (isAborted()) {
+                return null;
               }
-              return _context.a(2, false);
-            case 10:
-              if (response) {
-                _context.n = 11;
-                break;
+
+              if (isAccessControlReloadWarmupError(firstError)) {
+                return attemptAccessControlFallback();
               }
-              return _context.a(2, false);
-            case 11:
-              _context.p = 11;
-              body = typeof response.clone === 'function' ? response.clone() : response;
-              if (!(body && typeof body.text === 'function' && body.bodyUsed !== true)) {
-                _context.n = 12;
-                break;
-              }
-              _context.n = 12;
-              return body.text();
-            case 12:
-              _context.n = 14;
-              break;
-            case 13:
-              _context.p = 13;
-              _t4 = _context.v;
-              void _t4;
-            case 14:
-              return _context.a(2, true);
+
+              return performFetch({ cache: 'default' })
+                .catch(function (secondError) {
+                  var fallbackError = secondError || firstError;
+
+                  if (isAborted()) {
+                    return null;
+                  }
+
+                  var suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
+
+                  if (!reloadWarmupFailureLogged && !suppressWarning) {
+                    reloadWarmupFailureLogged = true;
+                    safeWarn('Reload warmup fetch failed', fallbackError || firstError);
+                  }
+
+                  return null;
+                });
+            });
+        });
+
+      return preparation
+        .then(function (response) {
+          if (!response) {
+            return false;
           }
-        }, _callee, null, [[11, 13], [7, 9], [3, 5], [0, 2]]);
-      }));
-      return function executeWarmup() {
-        return _ref.apply(this, arguments);
-      };
-    }();
+
+          var responseType = '';
+
+          try {
+            responseType = typeof response.type === 'string' ? response.type.toLowerCase() : '';
+          } catch (typeError) {
+            void typeError;
+            responseType = '';
+          }
+
+          if (responseType === 'opaque' || responseType === 'opaqueredirect') {
+            return true;
+          }
+
+          var body = typeof response.clone === 'function' ? response.clone() : response;
+
+          if (body && typeof body.text === 'function' && body.bodyUsed !== true) {
+            return body.text()
+              .then(function () {
+                return true;
+              })
+              .catch(function () {
+                return true;
+              });
+          }
+
+          return true;
+        })
+        .catch(function () {
+          return false;
+        });
+    };
     var warmupTask = executeWarmup();
     if (warmupTask && typeof warmupTask.catch === 'function') {
       warmupTask.catch(function () {});

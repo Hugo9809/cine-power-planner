@@ -940,8 +940,6 @@
       return null;
     }
 
-    const requestMode = 'same-origin';
-
     const nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
@@ -982,6 +980,8 @@
       const targetOrigin = resolveHrefOrigin(nextHref, referenceHref);
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
+
+    const requestMode = includeCredentials ? 'same-origin' : 'cors';
 
     const warmupRequestHref = (() => {
       const referenceHref = readLocationHrefSafe(locationLike);
@@ -1053,34 +1053,61 @@
         }
 
         if (isAccessControlReloadWarmupError(firstError)) {
-          return false;
+          const fallbackModes = [];
+
+          if (requestMode !== 'cors') {
+            fallbackModes.push('cors');
+          }
+
+          for (let index = 0; index < fallbackModes.length && !response; index += 1) {
+            const fallbackMode = fallbackModes[index];
+            try {
+              const fallbackResponse = await performFetch({ cache: 'default', mode: fallbackMode });
+              if (fallbackResponse) {
+                response = fallbackResponse;
+                break;
+              }
+            } catch (fallbackError) {
+              firstError = fallbackError || firstError;
+            }
+
+            if (isAborted()) {
+              return false;
+            }
+          }
+
+          if (!response) {
+            return false;
+          }
         }
 
-        let fallbackResponse = null;
-        let fallbackError = firstError;
+        if (!response) {
+          let fallbackResponse = null;
+          let fallbackError = firstError;
 
-        try {
-          fallbackResponse = await performFetch({ cache: 'default' });
-        } catch (secondError) {
-          fallbackError = secondError || firstError;
-        }
+          try {
+            fallbackResponse = await performFetch({ cache: 'default' });
+          } catch (secondError) {
+            fallbackError = secondError || firstError;
+          }
 
-        if (!fallbackResponse) {
-          if (isAborted()) {
+          if (!fallbackResponse) {
+            if (isAborted()) {
+              return false;
+            }
+
+            const suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
+
+            if (!reloadWarmupFailureLogged && !suppressWarning) {
+              reloadWarmupFailureLogged = true;
+              safeWarn('Reload warmup fetch failed', fallbackError || firstError);
+            }
+
             return false;
           }
 
-          const suppressWarning = shouldSuppressReloadWarmupFailure(fallbackError || firstError, nextHref);
-
-          if (!reloadWarmupFailureLogged && !suppressWarning) {
-            reloadWarmupFailureLogged = true;
-            safeWarn('Reload warmup fetch failed', fallbackError || firstError);
-          }
-
-          return false;
+          response = fallbackResponse;
         }
-
-        response = fallbackResponse;
       }
 
       if (!response) {
@@ -1088,9 +1115,21 @@
       }
 
       try {
-        const body = typeof response.clone === 'function' ? response.clone() : response;
-        if (body && typeof body.text === 'function' && body.bodyUsed !== true) {
-          await body.text();
+        let responseType = '';
+        try {
+          responseType = typeof response.type === 'string' ? response.type.toLowerCase() : '';
+        } catch (typeReadError) {
+          void typeReadError;
+          responseType = '';
+        }
+
+        const shouldConsumeBody = responseType !== 'opaque' && responseType !== 'opaqueredirect';
+
+        if (shouldConsumeBody) {
+          const body = typeof response.clone === 'function' ? response.clone() : response;
+          if (body && typeof body.text === 'function' && body.bodyUsed !== true) {
+            await body.text();
+          }
         }
       } catch (consumeError) {
         void consumeError;
