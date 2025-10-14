@@ -841,6 +841,14 @@
       return true;
     }
 
+    if (
+      normalisedMessage.includes('access control')
+      || normalisedMessage.includes('cors')
+      || normalisedMessage.includes('cross-origin')
+    ) {
+      return true;
+    }
+
     if (normalisedMessage.includes('cancelled') || normalisedMessage.includes('canceled')) {
       return true;
     }
@@ -942,6 +950,7 @@
         const requestInit = {
           cache: allowCachePopulation ? 'reload' : 'no-store',
           credentials: 'same-origin',
+          mode: 'same-origin',
           redirect: 'follow',
         };
 

@@ -223,10 +223,20 @@ describe('cineOffline module', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(fetchMock.mock.calls[0][1]).toEqual(
-        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({
+          cache: 'reload',
+          credentials: 'same-origin',
+          mode: 'same-origin',
+          redirect: 'follow',
+        }),
       );
       expect(fetchMock.mock.calls[1][1]).toEqual(
-        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({
+          cache: 'default',
+          credentials: 'same-origin',
+          mode: 'same-origin',
+          redirect: 'follow',
+        }),
       );
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
@@ -258,7 +268,54 @@ describe('cineOffline module', () => {
       jest.runOnlyPendingTimers();
 
       expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock.mock.calls[0][1]).toEqual(
+        expect.objectContaining({
+          cache: 'reload',
+          credentials: 'same-origin',
+          mode: 'same-origin',
+          redirect: 'follow',
+        }),
+      );
+      expect(fetchMock.mock.calls[1][1]).toEqual(
+        expect.objectContaining({
+          cache: 'default',
+          credentials: 'same-origin',
+          mode: 'same-origin',
+          redirect: 'follow',
+        }),
+      );
 
+      const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
+      expect(warmupWarnings).toHaveLength(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('reload warmup suppresses warning when fetch fails due to access control enforcement', async () => {
+    jest.useFakeTimers();
+
+    try {
+      const fetchMock = jest.fn(() =>
+        Promise.reject(new TypeError('Fetch API cannot load https://example.test/app due to access control checks.')),
+      );
+
+      const warmupHandle = internal.scheduleReloadWarmup({
+        fetch: fetchMock,
+        nextHref: 'https://example.test/app?foo=bar',
+        navigator: { onLine: true },
+        window: {},
+        serviceWorkerPromise: Promise.resolve(true),
+        cachePromise: Promise.resolve(true),
+        allowCache: true,
+      });
+
+      expect(warmupHandle).not.toBeNull();
+      await expect(warmupHandle.promise).resolves.toBe(false);
+
+      jest.runOnlyPendingTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
       expect(warmupWarnings).toHaveLength(0);
     } finally {
