@@ -223,10 +223,20 @@ describe('cineOffline module', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(fetchMock.mock.calls[0][1]).toEqual(
-        expect.objectContaining({ cache: 'reload', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({
+          cache: 'reload',
+          credentials: 'same-origin',
+          mode: 'cors',
+          redirect: 'follow',
+        }),
       );
       expect(fetchMock.mock.calls[1][1]).toEqual(
-        expect.objectContaining({ cache: 'default', credentials: 'same-origin', redirect: 'follow' }),
+        expect.objectContaining({
+          cache: 'default',
+          credentials: 'same-origin',
+          mode: 'cors',
+          redirect: 'follow',
+        }),
       );
 
       const warmupWarnings = consoleWarnSpy.mock.calls.filter(call => call[0] === 'Reload warmup fetch failed');
