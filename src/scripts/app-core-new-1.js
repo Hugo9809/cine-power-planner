@@ -91,7 +91,7 @@
 // on orchestration while smaller modules handle the heavy lifting.
 const LOCALIZATION_RUNTIME_BRIDGE_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationRuntimeBridge',
-  './modules/app-core/localization-runtime-bridge.js'
+  '../app-core/localization-runtime-bridge.js'
 );
 
 const createLocalizationRuntimeBridge =
