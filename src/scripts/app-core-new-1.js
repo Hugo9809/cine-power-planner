@@ -10769,6 +10769,14 @@ try {
   console.warn("Could not load language from localStorage", e);
 }
 
+try {
+  if (typeof document !== "undefined" && document && document.documentElement) {
+    document.documentElement.lang = currentLang;
+  }
+} catch (setLangError) {
+  void setLangError;
+}
+
 // Helper to apply translations to all UI text
 function setLanguage(lang) {
   const requested = typeof lang === "string" ? lang : "";
