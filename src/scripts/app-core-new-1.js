@@ -86,154 +86,107 @@
 // This defensive dance keeps offline builds and automated backups aligned.
 
 // All localisation strings live in a dedicated bridge so that translations can
-// be refreshed without touching the heavy runtime bundle. We resolve the
-// localisation runtime through a dedicated helper module which keeps this file
-// focused on orchestration while smaller modules handle the heavy lifting.
-function createInlineFallbackLocalizationRuntimeSetup() {
-  return {
-    localizationRuntimeEnvironment: null,
-    localizationBridge: null,
-    localizationFallbacks: null,
-    inlineLocalizationFallbacks: null,
-    localizationFallbackSupport: null,
-    createBasicLocalizationFallbackResolvers() {
-      return null;
-    },
-    localizationFallbackRegistry: {
-      createFallbackResolvers() {
-        return null;
-      },
-    },
-    localizationFallbackResolvers: null,
-    localizationFallbackNamespace: null,
-    fallbackResolveLocaleModule() {
-      return null;
-    },
-    createLocaleFallbacks() {
-      return null;
-    },
-  };
-}
-
-function fallbackInlineLocalizationRuntimeSetup() {
-  return createInlineFallbackLocalizationRuntimeSetup();
-}
-
-const LOCALIZATION_RUNTIME_RESOLVER_TOOLS = resolveCoreSupportModule(
-  'cineCoreAppRuntimeLocalizationResolver',
-  './modules/app-core/runtime-localization-resolver.js'
+// be refreshed without touching the heavy runtime bundle. The modern refactor
+// resolves that bridge through the lightweight localisation support module so
+// this file can focus on orchestration.
+const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppLocalizationSupport',
+  './modules/app-core/localization-support.js'
 );
 
-const resolveLocalizationRuntimeSetup =
-  (LOCALIZATION_RUNTIME_RESOLVER_TOOLS &&
-  typeof LOCALIZATION_RUNTIME_RESOLVER_TOOLS.resolveLocalizationRuntimeSetup === 'function'
-    ? LOCALIZATION_RUNTIME_RESOLVER_TOOLS.resolveLocalizationRuntimeSetup
-    : null) ||
-  (function fallbackResolveLocalizationRuntimeSetup() {
-    if (typeof require === 'function') {
-      try {
-        const requiredRuntimeLocalizationResolver = require(
-          './modules/app-core/runtime-localization-resolver.js'
-        );
-        if (
-          requiredRuntimeLocalizationResolver &&
-          typeof requiredRuntimeLocalizationResolver.resolveLocalizationRuntimeSetup === 'function'
-        ) {
-          return requiredRuntimeLocalizationResolver.resolveLocalizationRuntimeSetup;
-        }
-        if (
-          requiredRuntimeLocalizationResolver &&
-          typeof requiredRuntimeLocalizationResolver.createInlineFallbackLocalizationRuntimeSetup === 'function'
-        ) {
-          return function inlineResolver() {
-            return requiredRuntimeLocalizationResolver.createInlineFallbackLocalizationRuntimeSetup();
-          };
-        }
-      } catch (runtimeLocalizationResolverRequireError) {
-        void runtimeLocalizationResolverRequireError;
-      }
-    }
-
-    const fallbackScopes = [
-      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
-      typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
-      typeof globalThis !== 'undefined' ? globalThis : null,
-      typeof window !== 'undefined' ? window : null,
-      typeof self !== 'undefined' ? self : null,
-      typeof global !== 'undefined' ? global : null,
-    ];
-
-    for (let index = 0; index < fallbackScopes.length; index += 1) {
-      const scope = fallbackScopes[index];
-      if (!scope || typeof scope !== 'object') {
-        continue;
-      }
-
-      try {
-        const candidate = scope.cineCoreAppRuntimeLocalizationResolver;
-        if (
-          candidate &&
-          typeof candidate.resolveLocalizationRuntimeSetup === 'function'
-        ) {
-          return candidate.resolveLocalizationRuntimeSetup;
-        }
-        if (
-          candidate &&
-          typeof candidate.createInlineFallbackLocalizationRuntimeSetup === 'function'
-        ) {
-          return function scopeInlineResolver() {
-            return candidate.createInlineFallbackLocalizationRuntimeSetup();
-          };
-        }
-      } catch (fallbackLocalizationResolverLookupError) {
-        void fallbackLocalizationResolverLookupError;
-      }
-    }
-
-    return fallbackInlineLocalizationRuntimeSetup;
-  })();
-
-const LOCALIZATION_RUNTIME_SETUP =
-  (typeof resolveLocalizationRuntimeSetup === 'function'
-    ? resolveLocalizationRuntimeSetup({
+const APP_CORE_LOCALIZATION_SUPPORT =
+  APP_CORE_LOCALIZATION_SUPPORT_TOOLS &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT_TOOLS.createAppLocalizationSupport === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT_TOOLS.createAppLocalizationSupport({
         resolveCoreSupportModule,
         requireFn: typeof require === 'function' ? require : null,
         runtimeScope:
           typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
         coreGlobalScope: typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
       })
-    : null) ||
-  fallbackInlineLocalizationRuntimeSetup();
+    : null;
 
 const localizationRuntimeEnvironment =
-  LOCALIZATION_RUNTIME_SETUP.localizationRuntimeEnvironment;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.localizationRuntimeEnvironment
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationRuntimeEnvironment
+    : null;
 
-const CORE_LOCALIZATION_BRIDGE = LOCALIZATION_RUNTIME_SETUP.localizationBridge;
+const CORE_LOCALIZATION_BRIDGE =
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationBridge
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationBridge
+    : null;
 
-const CORE_LOCALIZATION_FALLBACKS = LOCALIZATION_RUNTIME_SETUP.localizationFallbacks;
+const CORE_LOCALIZATION_FALLBACKS =
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationFallbacks
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbacks
+    : null;
 
 const CORE_INLINE_LOCALIZATION_FALLBACKS =
-  LOCALIZATION_RUNTIME_SETUP.inlineLocalizationFallbacks;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  APP_CORE_LOCALIZATION_SUPPORT.inlineLocalizationFallbacks
+    ? APP_CORE_LOCALIZATION_SUPPORT.inlineLocalizationFallbacks
+    : null;
 
 const LOCALIZATION_FALLBACK_SUPPORT =
-  LOCALIZATION_RUNTIME_SETUP.localizationFallbackSupport;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackSupport !== 'undefined'
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackSupport
+    : null;
 
 const createBasicLocalizationFallbackResolvers =
-  LOCALIZATION_RUNTIME_SETUP.createBasicLocalizationFallbackResolvers;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.createBasicLocalizationFallbackResolvers ===
+    'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.createBasicLocalizationFallbackResolvers
+    : function createBasicLocalizationFallbackResolversProxy() {
+        return null;
+      };
 
 const LOCALIZATION_FALLBACK_REGISTRY =
-  LOCALIZATION_RUNTIME_SETUP.localizationFallbackRegistry;
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackRegistry
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackRegistry
+    : {
+        createFallbackResolvers(fallbackOptions) {
+          return createBasicLocalizationFallbackResolvers(fallbackOptions);
+        },
+      };
 
 const LOCALIZATION_FALLBACK_RESOLVERS =
-  LOCALIZATION_RUNTIME_SETUP.localizationFallbackResolvers;
+  APP_CORE_LOCALIZATION_SUPPORT && APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackResolvers
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackResolvers
+    : LOCALIZATION_FALLBACK_REGISTRY &&
+        typeof LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers === 'function'
+      ? LOCALIZATION_FALLBACK_REGISTRY.createFallbackResolvers({
+          directNamespace: CORE_LOCALIZATION_FALLBACKS,
+          inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
+        })
+      : createBasicLocalizationFallbackResolvers({
+          directNamespace: CORE_LOCALIZATION_FALLBACKS,
+          inlineNamespace: CORE_INLINE_LOCALIZATION_FALLBACKS,
+        });
 
 const LOCALIZATION_FALLBACK_NAMESPACE =
-  LOCALIZATION_RUNTIME_SETUP.localizationFallbackNamespace;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackNamespace !== 'undefined'
+    ? APP_CORE_LOCALIZATION_SUPPORT.localizationFallbackNamespace
+    : null;
 
 const fallbackResolveLocaleModule =
-  LOCALIZATION_RUNTIME_SETUP.fallbackResolveLocaleModule;
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.fallbackResolveLocaleModule === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.fallbackResolveLocaleModule
+    : function fallbackResolveLocaleModuleProxy() {
+        return null;
+      };
 
-const createLocaleFallbacks = LOCALIZATION_RUNTIME_SETUP.createLocaleFallbacks;
+const createLocaleFallbacks =
+  APP_CORE_LOCALIZATION_SUPPORT &&
+  typeof APP_CORE_LOCALIZATION_SUPPORT.createLocaleFallbacks === 'function'
+    ? APP_CORE_LOCALIZATION_SUPPORT.createLocaleFallbacks
+    : function createLocaleFallbacksProxy() {
+        return null;
+      };
 
 const CORE_RUNTIME_TOOLS = resolveCoreSupportModule(
   'cineCoreRuntimeTools',
