@@ -28,6 +28,9 @@ offline bundles safe and documentation consistent.
    - Use bilingual reviewers to validate accuracy.
    - Run the planner in each locale, rehearse save/share/import/backup/restore
      workflows and confirm text matches documentation.
+   - Confirm the onboarding welcome language selector works even when the
+     header/settings language controls are absent so the overview step fallback
+     remains documented.
 5. **Archive evidence**
    - Store signed approval notes in the verification packet.
    - Update the [Documentation Coverage Matrix](documentation-coverage-matrix.md)

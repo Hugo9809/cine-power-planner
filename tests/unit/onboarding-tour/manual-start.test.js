@@ -229,6 +229,100 @@ describe('onboarding tour manual start', () => {
     expect(helpDialog.hidden).toBe(true);
   });
 
+  test('welcome language selector remains interactive without header controls', async () => {
+    loadModule();
+
+    const headerLanguage = document.getElementById('languageSelect');
+    if (headerLanguage && typeof headerLanguage.remove === 'function') {
+      headerLanguage.remove();
+    }
+    const settingsLanguage = document.getElementById('settingsLanguage');
+    if (settingsLanguage && typeof settingsLanguage.remove === 'function') {
+      settingsLanguage.remove();
+    }
+
+    const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+    expect(trigger).not.toBeNull();
+
+    const helpDialog = document.getElementById('helpDialog');
+    helpDialog.removeAttribute('hidden');
+    helpDialog.setAttribute('open', '');
+
+    trigger.click();
+
+    await new Promise(resolve => setTimeout(resolve, 40));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+
+    const languageProxy = overlay.querySelector('.onboarding-hero-language-select');
+    expect(languageProxy).not.toBeNull();
+    expect(languageProxy.disabled).toBe(false);
+    expect(languageProxy.options.length).toBeGreaterThan(1);
+
+    const originalValue = languageProxy.value;
+    const nextOption = Array.from(languageProxy.options).find(option => option.value !== originalValue);
+    expect(nextOption).toBeDefined();
+
+    languageProxy.value = nextOption.value;
+    languageProxy.dispatchEvent(new Event('change', { bubbles: true }));
+
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    expect(global.setLanguage).toHaveBeenCalledWith(nextOption.value);
+    expect(global.currentLang).toBe(nextOption.value);
+  });
+
+  test('units preferences language proxy applies the selected locale', async () => {
+    loadModule();
+
+    const trigger = document.querySelector('[data-onboarding-tour-trigger]');
+    const helpDialog = document.getElementById('helpDialog');
+    expect(trigger).not.toBeNull();
+    expect(helpDialog).not.toBeNull();
+
+    helpDialog.removeAttribute('hidden');
+    helpDialog.setAttribute('open', '');
+
+    trigger.click();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const overlay = document.getElementById('onboardingTutorialOverlay');
+    expect(overlay).not.toBeNull();
+
+    const nextButton = overlay.querySelector('.onboarding-next-button');
+    expect(nextButton).not.toBeNull();
+
+    nextButton.click();
+    await new Promise(resolve => setTimeout(resolve, 70));
+    nextButton.click();
+    await new Promise(resolve => setTimeout(resolve, 70));
+
+    const languageLabel = Array.from(
+      overlay.querySelectorAll('.onboarding-field-label')
+    ).find(label => label.textContent.trim() === 'Language');
+    expect(languageLabel).toBeDefined();
+
+    const proxyId = languageLabel.getAttribute('for');
+    expect(proxyId).toBeTruthy();
+    const proxySelect = document.getElementById(proxyId);
+    expect(proxySelect).not.toBeNull();
+
+    const originalValue = proxySelect.value;
+    const alternativeOption = Array.from(proxySelect.options).find(
+      option => option.value !== originalValue
+    );
+    expect(alternativeOption).toBeDefined();
+
+    proxySelect.value = alternativeOption.value;
+    proxySelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+    await new Promise(resolve => setTimeout(resolve, 40));
+
+    expect(global.setLanguage).toHaveBeenCalledWith(alternativeOption.value);
+    expect(global.currentLang).toBe(alternativeOption.value);
+  });
+
   test('activates overlay for help triggers injected after initialization', async () => {
     loadModule();
 
