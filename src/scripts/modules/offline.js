@@ -1859,14 +1859,25 @@
       return nextHref;
     }
 
-    const fallbackHref = typeof originalHref === 'string' && originalHref ? originalHref : '';
-    const baseHref = readLocationHrefSafe(locationLike) || fallbackHref;
+    const locationHref = readLocationHrefSafe(locationLike);
+    const fallbackCandidate = typeof originalHref === 'string' && originalHref ? originalHref : '';
+    const sameOriginCandidates = [];
+
+    if (locationHref && isSameOriginReloadTarget(locationLike, locationHref)) {
+      sameOriginCandidates.push(locationHref);
+    }
+
+    if (fallbackCandidate && isSameOriginReloadTarget(locationLike, fallbackCandidate)) {
+      sameOriginCandidates.push(fallbackCandidate);
+    }
+
+    const baseHref = sameOriginCandidates.length ? sameOriginCandidates[0] : locationHref;
+    const origin = readLocationOriginSafe(locationLike);
 
     if (typeof URL === 'function' && baseHref) {
       try {
-        const base = new URL(baseHref, fallbackHref || undefined);
         const candidate = new URL(nextHref, baseHref);
-        const rebuilt = `${base.origin || ''}${candidate.pathname || ''}${candidate.search || ''}${candidate.hash || ''}`;
+        const rebuilt = `${candidate.origin || ''}${candidate.pathname || ''}${candidate.search || ''}${candidate.hash || ''}`;
         if (rebuilt && isSameOriginReloadTarget(locationLike, rebuilt)) {
           return rebuilt;
         }
@@ -1875,11 +1886,10 @@
       }
     }
 
-    if (typeof nextHref === 'string') {
+    if (typeof nextHref === 'string' && origin) {
       const originPattern = /^[a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+(.*)$/;
       const match = nextHref.match(originPattern);
-      const origin = readLocationOriginSafe(locationLike);
-      if (match && match[1] && origin) {
+      if (match && match[1]) {
         const rebuilt = `${origin}${match[1]}`;
         if (isSameOriginReloadTarget(locationLike, rebuilt)) {
           return rebuilt;
@@ -1887,7 +1897,15 @@
       }
     }
 
-    return fallbackHref || baseHref || '';
+    if (sameOriginCandidates.length) {
+      return sameOriginCandidates[0];
+    }
+
+    if (origin) {
+      return origin;
+    }
+
+    return '';
   }
 
   function coerceForceReloadUrlDescriptor(locationLike, descriptor, defaultParam = 'forceReload') {
