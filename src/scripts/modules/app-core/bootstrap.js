@@ -21,6 +21,19 @@
     return Array.isArray(value) ? value.slice() : [];
   }
 
+  function collectBootstrapFallbackScopes(options) {
+    const runtimeScope =
+      options && isObject(options.runtimeScope) ? options.runtimeScope : null;
+    const coreGlobalScope =
+      options && isObject(options.coreGlobalScope) ? options.coreGlobalScope : null;
+
+    return appendFallbackScopes(
+      ensureArray(options && options.fallbackScopes),
+      runtimeScope,
+      coreGlobalScope
+    );
+  }
+
   function appendFallbackScopes(scopes, runtimeScope, coreGlobalScope) {
     if (!Array.isArray(scopes)) {
       return [];
@@ -56,6 +69,77 @@
     }
 
     return list;
+  }
+
+  function resolveNamespace(namespaceName, requirePath, options) {
+    const directNamespace =
+      options && isObject(options.directNamespace) ? options.directNamespace : null;
+
+    if (directNamespace) {
+      return directNamespace;
+    }
+
+    const resolveCoreSupportModule =
+      options && typeof options.resolveCoreSupportModule === 'function'
+        ? options.resolveCoreSupportModule
+        : null;
+
+    if (resolveCoreSupportModule) {
+      try {
+        const resolved = resolveCoreSupportModule(namespaceName, requirePath);
+        if (resolved && isObject(resolved)) {
+          return resolved;
+        }
+      } catch (resolveError) {
+        void resolveError;
+      }
+    }
+
+    const requireFn = ensureRequireFn(options && options.requireFn);
+
+    if (typeof requireFn === 'function' && requirePath) {
+      try {
+        const required = requireFn(requirePath);
+        if (required && isObject(required)) {
+          return required;
+        }
+      } catch (requireError) {
+        void requireError;
+      }
+    }
+
+    const fallbackScopes = collectBootstrapFallbackScopes(options);
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+
+      if (!scope || !isObject(scope)) {
+        continue;
+      }
+
+      try {
+        const candidate = scope[namespaceName];
+        if (candidate && isObject(candidate)) {
+          return candidate;
+        }
+      } catch (lookupError) {
+        void lookupError;
+      }
+    }
+
+    return null;
+  }
+
+  function resolveBootstrapTools(options) {
+    return resolveNamespace('cineCoreAppCoreBootstrap', './modules/app-core/bootstrap.js', options);
+  }
+
+  function resolveBootstrapFallbackTools(options) {
+    return resolveNamespace(
+      'cineCoreAppCoreBootstrapFallbacks',
+      './modules/app-core/bootstrap-fallbacks.js',
+      options
+    );
   }
 
   function createLocalizationBootstrapFallback() {
@@ -175,6 +259,36 @@
     return result;
   }
 
+  function createInlineLocalizationFallback(options) {
+    const fallbackTools = resolveBootstrapFallbackTools({
+      directNamespace: options && options.fallbackTools,
+      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+      requireFn: options && options.requireFn,
+      runtimeScope: options && options.runtimeScope,
+      coreGlobalScope: options && options.coreGlobalScope,
+      fallbackScopes: options && options.fallbackScopes,
+    });
+
+    if (
+      fallbackTools &&
+      typeof fallbackTools.createLocalizationBootstrapFallback === 'function'
+    ) {
+      try {
+        const generated = fallbackTools.createLocalizationBootstrapFallback(
+          options && options.localizationFallbackOptions
+        );
+
+        if (generated && isObject(generated)) {
+          return generated;
+        }
+      } catch (localizationFallbackError) {
+        void localizationFallbackError;
+      }
+    }
+
+    return createLocalizationBootstrapFallback();
+  }
+
   function createRuntimeSharedBootstrapFallback(options) {
     const runtimeScope = options && isObject(options.runtimeScope) ? options.runtimeScope : null;
     const coreGlobalScope =
@@ -232,6 +346,33 @@
       runtimeShared,
       fallbackResolveRuntimeSharedFromGlobal,
     };
+  }
+
+  function createInlineRuntimeSharedFallback(options) {
+    const fallbackTools = resolveBootstrapFallbackTools({
+      directNamespace: options && options.fallbackTools,
+      resolveCoreSupportModule: options && options.resolveCoreSupportModule,
+      requireFn: options && options.requireFn,
+      runtimeScope: options && options.runtimeScope,
+      coreGlobalScope: options && options.coreGlobalScope,
+      fallbackScopes: options && options.fallbackScopes,
+    });
+
+    if (
+      fallbackTools &&
+      typeof fallbackTools.createRuntimeSharedBootstrapFallback === 'function'
+    ) {
+      try {
+        const generated = fallbackTools.createRuntimeSharedBootstrapFallback(options);
+        if (generated && isObject(generated)) {
+          return generated;
+        }
+      } catch (runtimeSharedFallbackError) {
+        void runtimeSharedFallbackError;
+      }
+    }
+
+    return createRuntimeSharedBootstrapFallback(options);
   }
 
   function createRuntimeSharedBootstrapResult(options) {
@@ -383,6 +524,10 @@
     createLocalizationBootstrapFallback,
     createRuntimeSharedBootstrapResult,
     createRuntimeSharedBootstrapFallback,
+    resolveBootstrapTools,
+    resolveBootstrapFallbackTools,
+    createInlineLocalizationFallback,
+    createInlineRuntimeSharedFallback,
   };
 
   const namespaceName = 'cineCoreAppCoreBootstrap';
@@ -392,11 +537,32 @@
 
   Object.assign(existing, namespace);
 
+  const resolverNamespace = {
+    resolveBootstrapTools,
+    resolveBootstrapFallbackTools,
+    createInlineLocalizationFallback,
+    createInlineRuntimeSharedFallback,
+  };
+
+  const resolverNamespaceName = 'cineCoreAppCoreBootstrapResolver';
+  const existingResolver =
+    isObject(globalScope) && isObject(globalScope[resolverNamespaceName])
+      ? globalScope[resolverNamespaceName]
+      : existing;
+
+  Object.assign(existingResolver, resolverNamespace);
+
   if (isObject(globalScope)) {
     try {
       globalScope[namespaceName] = existing;
     } catch (assignError) {
       void assignError;
+    }
+
+    try {
+      globalScope[resolverNamespaceName] = existingResolver;
+    } catch (resolverAssignError) {
+      void resolverAssignError;
     }
   }
 
