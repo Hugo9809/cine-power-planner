@@ -7893,7 +7893,80 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   });
 }
 
+const INITIAL_LOADING_INDICATOR_IDLE_TIMEOUT_MS = 480;
+let initialLoadingIndicatorHide = null;
+let initialLoadingIndicatorStarted = false;
+let initialLoadingIndicatorSettled = false;
 
+const ensureInitialLoadingIndicatorVisible = () => {
+  if (initialLoadingIndicatorStarted || initialLoadingIndicatorSettled) {
+    return;
+  }
+  if (typeof showGlobalLoadingIndicator !== 'function') {
+    return;
+  }
+  try {
+    const hide = showGlobalLoadingIndicator();
+    if (typeof hide === 'function') {
+      initialLoadingIndicatorHide = hide;
+    } else {
+      initialLoadingIndicatorHide = null;
+    }
+    initialLoadingIndicatorStarted = true;
+  } catch (initialIndicatorError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to show initial global loading indicator', initialIndicatorError);
+    }
+    initialLoadingIndicatorHide = null;
+    initialLoadingIndicatorStarted = false;
+  }
+};
+
+const hideInitialLoadingIndicatorSafely = () => {
+  const hide = initialLoadingIndicatorHide;
+  initialLoadingIndicatorHide = null;
+  initialLoadingIndicatorStarted = false;
+  if (typeof hide === 'function') {
+    try {
+      hide();
+    } catch (initialIndicatorHideError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to hide initial global loading indicator', initialIndicatorHideError);
+      }
+    }
+  }
+};
+
+const finalizeInitialLoadingIndicator = () => {
+  if (initialLoadingIndicatorSettled) {
+    return;
+  }
+  initialLoadingIndicatorSettled = true;
+
+  if (!initialLoadingIndicatorStarted && !initialLoadingIndicatorHide) {
+    return;
+  }
+
+  const scheduleHide = () => {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(hideInitialLoadingIndicatorSafely, {
+        timeout: INITIAL_LOADING_INDICATOR_IDLE_TIMEOUT_MS,
+      });
+      return;
+    }
+    if (typeof setTimeout === 'function') {
+      setTimeout(hideInitialLoadingIndicatorSafely, GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS);
+      return;
+    }
+    hideInitialLoadingIndicatorSafely();
+  };
+
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(scheduleHide);
+  } else {
+    scheduleHide();
+  }
+};
 
 function getDiffText(key, fallbackValue = '') {
   if (typeof key !== 'string' || !key) {
@@ -17676,10 +17749,25 @@ function populateUserButtonDropdowns() {
   });
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
+const runInitAppWithInitialLoadingIndicator = () => {
+  ensureInitialLoadingIndicatorVisible();
+  try {
+    initApp();
+  } finally {
+    finalizeInitialLoadingIndicator();
+  }
+};
+
+ensureInitialLoadingIndicatorVisible();
+
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
+  } else {
+    runInitAppWithInitialLoadingIndicator();
+  }
 } else {
-  initApp();
+  finalizeInitialLoadingIndicator();
 }
 
 // Export functions for testing in Node environment
