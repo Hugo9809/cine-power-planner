@@ -219,7 +219,7 @@
       try {
         const tools = resolveCoreSupportModule(
           'cineCoreAppPinkModeSupportBridge',
-          './pink-mode-support-bridge.js'
+          './modules/app-core/pink-mode-support-bridge.js'
         );
         if (isObject(tools) && typeof tools.createPinkModeSupportBridge === 'function') {
           factory = tools.createPinkModeSupportBridge;
@@ -288,7 +288,7 @@
       try {
         const tools = resolveCoreSupportModule(
           'cineCoreAppPinkModeFallback',
-          './pink-mode-fallback.js'
+          './modules/app-core/pink-mode-fallback.js'
         );
         if (isObject(tools) && typeof tools.createPinkModeFallbackApi === 'function') {
           factory = tools.createPinkModeFallbackApi;
