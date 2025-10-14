@@ -21,16 +21,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/localization.js',
     'modules/offline.js',
     'modules/core-shared.js',
-    'modules/core/runtime-tools.js',
-    'modules/core/runtime-support-bootstrap.js',
-    'modules/core/runtime-state/scope-utils.js',
-    'modules/core/runtime-state/safe-freeze-registry.js',
-    'modules/core/runtime-state/temperature-keys.js',
-    'modules/core/runtime-state/local-runtime-state.js',
-    'modules/core/runtime-state.js',
-    'modules/core/localization-bridge.js',
-    'modules/core/pink-mode-support.js',
-    'modules/core/pink-mode-animations.js',
+    'modules/core/runtime.js',
+    'modules/core/localization.js',
+    'modules/core/pink-mode.js',
     'modules/core/project-intelligence.js',
     'modules/core/persistence-guard.js',
     'modules/core/mount-voltage.js',
@@ -118,9 +111,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
-  ensureModule('modules/core/runtime-tools.js');
-  ensureModule('modules/core/runtime-support-bootstrap.js');
-  ensureModule('modules/core/localization-bridge.js');
+  ensureModule('modules/core/runtime.js');
+  ensureModule('modules/core/localization.js');
+  ensureModule('modules/core/pink-mode.js');
   ensureModule('modules/runtime-guard.js');
   ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');
