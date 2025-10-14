@@ -7320,9 +7320,8 @@ function updateInstallBannerPosition() {
   }
 
   const offlineIndicator = document.getElementById('offlineIndicator');
-  const offlineHeight = offlineIndicator && offlineIndicator.style.display !== 'none'
-    ? getElementHeight(offlineIndicator)
-    : 0;
+  const offlineVisible = Boolean(offlineIndicator && !offlineIndicator.hasAttribute('hidden'));
+  const offlineHeight = offlineVisible ? getElementHeight(offlineIndicator) : 0;
 
   if (offlineHeight > 0) {
     installBanner.style.top = `${offlineHeight}px`;
@@ -7362,7 +7361,13 @@ function setupOfflineIndicator() {
 
   const updateOnlineStatus = () => {
     const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
-    offlineIndicator.style.display = isOnline ? 'none' : 'block';
+    if (isOnline) {
+      if (!offlineIndicator.hasAttribute('hidden')) {
+        offlineIndicator.setAttribute('hidden', '');
+      }
+    } else {
+      offlineIndicator.removeAttribute('hidden');
+    }
     if (typeof updateInstallBannerPosition === 'function') {
       updateInstallBannerPosition();
     }

@@ -378,13 +378,31 @@ textarea {
   text-align: center;
   padding: 10px 16px;
   z-index: 1000;
-  display: none;
   border-bottom: 1px solid var(--offline-indicator-border);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   font-size: calc(var(--font-size-base) * var(--font-scale-xs));
   font-weight: var(--font-weight-medium);
+}
+
+#offlineIndicator[hidden] {
+  display: none !important;
+}
+
+#offlineIndicator:not([hidden]) ~ #topBar {
+  margin-top: var(--install-banner-offset, 0px);
+  --top-bar-offset: var(--install-banner-offset, 0px);
+}
+
+#offlineIndicator:not([hidden]) ~ #sideMenu {
+  top: var(--install-banner-offset, 0px);
+  height: calc(100% - var(--install-banner-offset, 0px));
+}
+
+#offlineIndicator:not([hidden]) ~ #menuOverlay {
+  top: var(--install-banner-offset, 0px);
+  height: calc(100% - var(--install-banner-offset, 0px));
 }
 
 #installPromptBanner {
