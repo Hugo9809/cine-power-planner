@@ -3372,7 +3372,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.23';
+var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.24';
 
 resolvePinkModeLottieRuntime();
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';

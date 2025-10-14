@@ -55,7 +55,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  var APP_VERSION = "1.0.23";
+  var APP_VERSION = "1.0.24";
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error("Combined app version (".concat(combinedAppVersion, ") does not match script marker (").concat(APP_VERSION, ")."));
   }
