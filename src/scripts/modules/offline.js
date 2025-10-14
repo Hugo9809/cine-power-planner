@@ -981,7 +981,7 @@
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
 
-    const requestMode = includeCredentials ? 'same-origin' : 'cors';
+    const requestMode = 'same-origin';
 
     const warmupRequestHref = (() => {
       const referenceHref = readLocationHrefSafe(locationLike);
@@ -1018,7 +1018,7 @@
       const buildRequestInit = (overrides = {}) => {
         const requestInit = {
           cache: allowCachePopulation ? 'reload' : 'no-store',
-          credentials: includeCredentials ? 'same-origin' : 'omit',
+          credentials: includeCredentials ? 'include' : 'omit',
           mode: requestMode,
           redirect: 'follow',
         };
