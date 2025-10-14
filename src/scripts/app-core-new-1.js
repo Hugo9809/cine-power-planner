@@ -1083,7 +1083,7 @@ const collectRuntimeCandidateScopesFromGlobal =
     ? COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes
     : null;
 
-var collectCoreRuntimeCandidateScopes =
+const collectCoreRuntimeCandidateScopes =
   collectRuntimeCandidateScopesFromGlobal || collectRuntimeCandidateScopesFromResolvers;
 
 if (
