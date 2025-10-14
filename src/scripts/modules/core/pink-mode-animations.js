@@ -724,18 +724,18 @@
     'src/animations/slippers.json',
     'src/animations/sunglasses.json',
     'src/animations/unicorn.json',
-    'animated icons 3/camera.json',
-    'animated icons 3/director-chair.json',
-    'animated icons 3/dog.json',
-    'animated icons 3/fox.json',
-    'animated icons 3/fox-2.json',
-    'animated icons 3/fox-3.json',
-    'animated icons 3/horse.json',
-    'animated icons 3/mountains.json',
-    'animated icons 3/movie-camera.json',
-    'animated icons 3/pinata.json',
-    'animated icons 3/script.json',
-    'animated icons 3/video-camera.json'
+    '../../../../animated icons 3/camera.json',
+    '../../../../animated icons 3/director-chair.json',
+    '../../../../animated icons 3/dog.json',
+    '../../../../animated icons 3/fox.json',
+    '../../../../animated icons 3/fox-2.json',
+    '../../../../animated icons 3/fox-3.json',
+    '../../../../animated icons 3/horse.json',
+    '../../../../animated icons 3/mountains.json',
+    '../../../../animated icons 3/movie-camera.json',
+    '../../../../animated icons 3/pinata.json',
+    '../../../../animated icons 3/script.json',
+    '../../../../animated icons 3/video-camera.json'
   ]);
 
   const PINK_MODE_ICON_RAIN_MIN_COUNT = 18;
