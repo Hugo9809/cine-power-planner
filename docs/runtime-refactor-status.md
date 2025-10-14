@@ -212,3 +212,17 @@
 - Added the mirrored legacy bridge so older bundles reuse the same orchestration without regressing ES5 compatibility during offline cache hydration.【F:legacy/scripts/modules/app-core/pink-mode-support-bridge.js†L1-L449】【F:legacy/scripts/app-core-new-1.js†L73-L155】
 - Updated the bundler manifests, loader, script aggregator, and service worker asset list to ship the bridge in all environments, preserving offline availability and script integrity checks.【F:src/scripts/script.js†L39-L47】【F:legacy/scripts/script.js†L1-L4】【F:src/scripts/loader.js†L3176-L3193】【F:legacy/scripts/loader.js†L2662-L2666】【F:service-worker-assets.js†L80-L118】【F:service-worker-assets.js†L236-L270】
 
+
+
+## Step 17 – Helper consolidation
+
+| File | Previous lines | Current lines | Delta |
+| --- | --- | --- | --- |
+| `src/scripts/modules/app-core/localization.js` | – | 2605 | +2605 |
+| `src/scripts/modules/app-core/runtime.js` | – | 4240 | +4240 |
+| `src/scripts/modules/app-core/pink-mode.js` | – | 2110 | +2110 |
+
+*Notes:*
+
+- Merged the localisation bridge, runtime wiring, and pink mode orchestration into dedicated consolidated helpers so the refactor can continue without juggling dozens of tiny files. The new files preserve every existing safeguard around offline storage, translations, and UI theming while reducing loader complexity.【F:src/scripts/modules/app-core/localization.js†L1-L2605】【F:src/scripts/modules/app-core/runtime.js†L1-L4240】【F:src/scripts/modules/app-core/pink-mode.js†L1-L2110】
+- Updated the modern loader, script aggregator, and service worker manifest so the consolidated helpers stay cached and available alongside the existing legacy mirrors. Documentation now tracks the new entry point names for future steps.【F:src/scripts/loader.js†L3188-L3196】【F:src/scripts/script.js†L41-L55】【F:service-worker-assets.js†L220-L236】
