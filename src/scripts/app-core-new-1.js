@@ -208,6 +208,11 @@ const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
   './modules/app-core/runtime-shared-namespace.js'
 );
 
+const SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppSettingsDocumentationTracker',
+  './modules/app-core/settings-documentation-tracker.js'
+);
+
 function attemptResolveRuntimeSharedNamespaceFromScope(scope, namespaceOptions) {
   if (!scope || typeof scope !== 'object') {
     return null;
@@ -12025,40 +12030,13 @@ function setLanguage(lang) {
         generalBrandingHeading.textContent;
       generalBrandingHeading.textContent = sectionHeading;
     }
-    if (documentationTrackerHeadingEl) {
-      const heading =
-        texts[lang].documentationTrackerHeading ||
-        texts.en?.documentationTrackerHeading ||
-        documentationTrackerHeadingEl.textContent;
-      documentationTrackerHeadingEl.textContent = heading;
-    }
-    if (documentationTrackerDescriptionEl) {
-      const description =
-        texts[lang].documentationTrackerDescription ||
-        texts.en?.documentationTrackerDescription ||
-        documentationTrackerDescriptionEl.textContent;
-      documentationTrackerDescriptionEl.textContent = description;
-    }
-    if (documentationTrackerAddButton) {
-      documentationTrackerAddButton.textContent =
-        texts[lang].documentationTrackerAddRelease ||
-        texts.en?.documentationTrackerAddRelease ||
-        documentationTrackerAddButton.textContent;
-    }
-    if (documentationTrackerEmptyEl) {
-      documentationTrackerEmptyEl.textContent =
-        texts[lang].documentationTrackerEmpty ||
-        texts.en?.documentationTrackerEmpty ||
-        documentationTrackerEmptyEl.textContent;
-    }
-    if (documentationTrackerSummaryEl && documentationTrackerSummaryEl.hasAttribute('hidden')) {
-      documentationTrackerSummaryEl.textContent =
-        texts[lang].documentationTrackerSummaryIntro ||
-        texts.en?.documentationTrackerSummaryIntro ||
-        documentationTrackerSummaryEl.textContent;
-    }
-    if (documentationTrackerInitialized) {
-      renderDocumentationTracker();
+    documentationTrackerController.updateLocalization({
+      language: lang,
+      texts: texts[lang] || {},
+      fallbackTexts: texts[DEFAULT_LANGUAGE] || texts.en || {},
+    });
+    if (documentationTrackerController.isInitialized()) {
+      documentationTrackerController.render();
     }
   }
   applySettingsTabLabel(
@@ -21969,57 +21947,80 @@ const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
 var settingsLogo = document.getElementById("settingsLogo");
 var settingsLogoPreview = document.getElementById("settingsLogoPreview");
-const documentationTrackerCard = document.getElementById('documentationTrackerCard');
-const documentationTrackerHeadingEl = document.getElementById('documentationTrackerHeading');
-const documentationTrackerDescriptionEl = document.getElementById('documentationTrackerDescription');
-const documentationTrackerAddButton = document.getElementById('documentationTrackerAddRelease');
-const documentationTrackerListEl = document.getElementById('documentationTrackerList');
-const documentationTrackerEmptyEl = document.getElementById('documentationTrackerEmpty');
-const documentationTrackerSummaryEl = document.getElementById('documentationTrackerSummary');
+const documentationTrackerController = (() => {
+  const manager =
+    SETTINGS_DOCUMENTATION_TRACKER_TOOLS &&
+    typeof SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager === 'function'
+      ? (() => {
+          try {
+            return SETTINGS_DOCUMENTATION_TRACKER_TOOLS.createDocumentationTrackerManager({
+              document: typeof document !== 'undefined' ? document : null,
+            });
+          } catch (documentationTrackerCreateError) {
+            console.warn(
+              'Failed to create documentation tracker manager',
+              documentationTrackerCreateError,
+            );
+            return null;
+          }
+        })()
+      : null;
 
-const DOCUMENTATION_TRACKER_SECTION_ORDER = ['locales', 'helpTopics', 'printGuides'];
-const DOCUMENTATION_TRACKER_SECTION_CONFIG = Object.freeze({
-  locales: {
-    headingKey: 'documentationTrackerLocalesHeading',
-    items: [
-      { id: 'en', labelKey: 'documentationTrackerLocaleEnglish' },
-      { id: 'de', labelKey: 'documentationTrackerLocaleGerman' },
-      { id: 'es', labelKey: 'documentationTrackerLocaleSpanish' },
-      { id: 'fr', labelKey: 'documentationTrackerLocaleFrench' },
-      { id: 'it', labelKey: 'documentationTrackerLocaleItalian' },
-    ],
-  },
-  helpTopics: {
-    headingKey: 'documentationTrackerHelpHeading',
-    items: [
-      { id: 'help-start', labelKey: 'documentationTrackerHelpStart' },
-      { id: 'help-save', labelKey: 'documentationTrackerHelpSave' },
-      { id: 'help-backup', labelKey: 'documentationTrackerHelpBackup' },
-      { id: 'help-own-gear', labelKey: 'documentationTrackerHelpOwnGear' },
-      { id: 'help-offline', labelKey: 'documentationTrackerHelpOffline' },
-    ],
-  },
-  printGuides: {
-    headingKey: 'documentationTrackerPrintHeading',
-    items: [
-      { id: 'guide-checklist', labelKey: 'documentationTrackerPrintChecklist' },
-      { id: 'guide-maintenance', labelKey: 'documentationTrackerPrintMaintenance' },
-      { id: 'guide-save-share', labelKey: 'documentationTrackerPrintSaveShare' },
-      { id: 'guide-offline', labelKey: 'documentationTrackerPrintOffline' },
-    ],
-  },
-});
+  if (manager) {
+    return {
+      initialize() {
+        try {
+          manager.initialize();
+        } catch (documentationTrackerInitError) {
+          console.warn(
+            'Failed to initialise documentation tracker',
+            documentationTrackerInitError,
+          );
+        }
+      },
+      updateLocalization(localization) {
+        try {
+          manager.updateLocalization(localization);
+        } catch (documentationTrackerLocaleError) {
+          console.warn(
+            'Failed to update documentation tracker localisation',
+            documentationTrackerLocaleError,
+          );
+        }
+      },
+      render() {
+        try {
+          manager.render();
+        } catch (documentationTrackerRenderError) {
+          console.warn(
+            'Failed to render documentation tracker',
+            documentationTrackerRenderError,
+          );
+        }
+      },
+      isInitialized() {
+        try {
+          return typeof manager.isInitialized === 'function'
+            ? manager.isInitialized() === true
+            : false;
+        } catch (documentationTrackerStateError) {
+          void documentationTrackerStateError;
+        }
+        return false;
+      },
+    };
+  }
 
-const DOCUMENTATION_TRACKER_ID_PREFIX = 'documentationRelease';
-const DOCUMENTATION_TRACKER_MAX_NOTES_LENGTH = 8000;
-
-let documentationTrackerState = {
-  version: 1,
-  releases: [],
-};
-let documentationTrackerFocusTargetId = '';
-let documentationTrackerPendingHighlightId = '';
-let documentationTrackerInitialized = false;
+  const noop = () => {};
+  return {
+    initialize: noop,
+    updateLocalization: noop,
+    render: noop,
+    isInitialized() {
+      return false;
+    },
+  };
+})();
 
 var activeSettingsTabId = '';
 if (settingsTabButtons.length) {
@@ -22095,893 +22096,7 @@ function activateSettingsTab(tabId, options = {}) {
     console.warn('Could not save settings tab preference', e);
   }
 }
-
-function documentationTrackerIsoNow() {
-  try {
-    return new Date().toISOString();
-  } catch (error) {
-    void error;
-  }
-  return '';
-}
-
-function createDocumentationTrackerReleaseId() {
-  const now = documentationTrackerIsoNow();
-  const numeric = now ? now.replace(/\D+/g, '') : String(Date.now());
-  let random = '';
-  try {
-    random = Math.random().toString(36).slice(2, 8);
-  } catch (error) {
-    random = String(Math.floor(Math.random() * 1e6));
-    void error;
-  }
-  return `${DOCUMENTATION_TRACKER_ID_PREFIX}-${numeric}-${random}`;
-}
-
-function normalizeDocumentationTrackerStatusEntryApp(entry) {
-  if (entry && typeof entry === 'object') {
-    const completed =
-      entry.completed === true
-      || entry.checked === true
-      || entry.value === true
-      || entry.done === true;
-    let updatedAt = null;
-    if (typeof entry.updatedAt === 'string' && entry.updatedAt.trim()) {
-      updatedAt = entry.updatedAt.trim();
-    } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
-      updatedAt = entry.timestamp.trim();
-    } else if (typeof entry.completedAt === 'string' && entry.completedAt.trim()) {
-      updatedAt = entry.completedAt.trim();
-    }
-    return { completed, updatedAt };
-  }
-  if (typeof entry === 'boolean') {
-    return { completed: entry, updatedAt: null };
-  }
-  if (typeof entry === 'string') {
-    const normalized = entry.trim().toLowerCase();
-    if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'done') {
-      return { completed: true, updatedAt: null };
-    }
-  }
-  return { completed: false, updatedAt: null };
-}
-
-function cloneDocumentationTrackerRelease(release) {
-  if (!release || typeof release !== 'object') {
-    return null;
-  }
-
-  const cloned = {
-    id:
-      typeof release.id === 'string' && release.id.trim()
-        ? release.id.trim()
-        : createDocumentationTrackerReleaseId(),
-    name: typeof release.name === 'string' ? release.name.trim() : '',
-    targetDate: typeof release.targetDate === 'string' ? release.targetDate.trim() : '',
-    createdAt:
-      typeof release.createdAt === 'string' && release.createdAt.trim()
-        ? release.createdAt.trim()
-        : documentationTrackerIsoNow(),
-    updatedAt:
-      typeof release.updatedAt === 'string' && release.updatedAt.trim()
-        ? release.updatedAt.trim()
-        : null,
-    notes: typeof release.notes === 'string' ? release.notes : '',
-    archived: release.archived === true,
-    statuses: {},
-  };
-
-  if (!cloned.updatedAt) {
-    if (typeof release.timestamp === 'string' && release.timestamp.trim()) {
-      cloned.updatedAt = release.timestamp.trim();
-    } else if (typeof release.modifiedAt === 'string' && release.modifiedAt.trim()) {
-      cloned.updatedAt = release.modifiedAt.trim();
-    } else {
-      cloned.updatedAt = cloned.createdAt;
-    }
-  }
-
-  if (cloned.notes.length > DOCUMENTATION_TRACKER_MAX_NOTES_LENGTH) {
-    cloned.notes = cloned.notes.slice(0, DOCUMENTATION_TRACKER_MAX_NOTES_LENGTH);
-  }
-
-  const rawStatuses = release.statuses && typeof release.statuses === 'object' ? release.statuses : {};
-  Object.keys(rawStatuses).forEach(sectionKey => {
-    const sectionValue = rawStatuses[sectionKey];
-    if (!sectionValue || typeof sectionValue !== 'object') {
-      return;
-    }
-    const map = {};
-    if (Array.isArray(sectionValue)) {
-      sectionValue.forEach(item => {
-        if (typeof item === 'string' && item.trim()) {
-          map[item.trim()] = { completed: true, updatedAt: null };
-        } else if (item && typeof item === 'object') {
-          const identifier =
-            (typeof item.id === 'string' && item.id.trim())
-              ? item.id.trim()
-              : (typeof item.key === 'string' && item.key.trim())
-                ? item.key.trim()
-                : null;
-          if (!identifier) {
-            return;
-          }
-          map[identifier] = normalizeDocumentationTrackerStatusEntryApp(item);
-        }
-      });
-    } else {
-      Object.keys(sectionValue).forEach(itemId => {
-        if (itemId === null || itemId === undefined) {
-          return;
-        }
-        const id = typeof itemId === 'string' ? itemId.trim() : String(itemId).trim();
-        if (!id) {
-          return;
-        }
-        map[id] = normalizeDocumentationTrackerStatusEntryApp(sectionValue[itemId]);
-      });
-    }
-    cloned.statuses[sectionKey] = map;
-  });
-
-  DOCUMENTATION_TRACKER_SECTION_ORDER.forEach(sectionKey => {
-    const config = DOCUMENTATION_TRACKER_SECTION_CONFIG[sectionKey];
-    const map = cloned.statuses[sectionKey] || {};
-    if (config && Array.isArray(config.items)) {
-      config.items.forEach(item => {
-        if (!Object.prototype.hasOwnProperty.call(map, item.id)) {
-          map[item.id] = { completed: false, updatedAt: null };
-        } else {
-          const entry = map[item.id];
-          map[item.id] = {
-            completed: entry && entry.completed === true,
-            updatedAt:
-              entry && typeof entry.updatedAt === 'string' && entry.updatedAt.trim()
-                ? entry.updatedAt.trim()
-                : null,
-          };
-        }
-      });
-    }
-    cloned.statuses[sectionKey] = map;
-  });
-
-  return cloned;
-}
-
-function loadDocumentationTrackerStateFromStorage() {
-  if (typeof loadDocumentationTracker !== 'function') {
-    documentationTrackerState = { version: 1, releases: [] };
-    return;
-  }
-
-  try {
-    const loaded = loadDocumentationTracker();
-    if (!loaded || !Array.isArray(loaded.releases)) {
-      documentationTrackerState = { version: 1, releases: [] };
-      return;
-    }
-    documentationTrackerState = {
-      version:
-        typeof loaded.version === 'number' && Number.isFinite(loaded.version)
-          ? loaded.version
-          : 1,
-      releases: loaded.releases.map(cloneDocumentationTrackerRelease).filter(Boolean),
-    };
-    sortDocumentationTrackerReleases();
-  } catch (error) {
-    console.warn('Failed to load documentation tracker state', error);
-    documentationTrackerState = { version: 1, releases: [] };
-  }
-}
-
-function sortDocumentationTrackerReleases() {
-  if (!documentationTrackerState || !Array.isArray(documentationTrackerState.releases)) {
-    return;
-  }
-  documentationTrackerState.releases.sort((a, b) => {
-    const archivedA = a && a.archived === true;
-    const archivedB = b && b.archived === true;
-    if (archivedA !== archivedB) {
-      return archivedA ? 1 : -1;
-    }
-    const timeA = (a && (a.updatedAt || a.createdAt)) || '';
-    const timeB = (b && (b.updatedAt || b.createdAt)) || '';
-    if (timeA && timeB) {
-      return timeB.localeCompare(timeA);
-    }
-    if (timeB) return 1;
-    if (timeA) return -1;
-    return 0;
-  });
-}
-
-function persistDocumentationTrackerState(options = {}) {
-  const { skipSort = false } = options || {};
-  if (!skipSort) {
-    sortDocumentationTrackerReleases();
-  }
-  if (typeof saveDocumentationTracker !== 'function') {
-    return;
-  }
-  try {
-    saveDocumentationTracker(documentationTrackerState);
-  } catch (error) {
-    console.warn('Failed to save documentation tracker state', error);
-  }
-}
-
-function getDocumentationReleaseForElement(element) {
-  if (!element || typeof element.closest !== 'function') {
-    return null;
-  }
-  const releaseEl = element.closest('.documentation-release');
-  if (!releaseEl) {
-    return null;
-  }
-  const releaseId = releaseEl.getAttribute('data-release-id');
-  if (!releaseId) {
-    return null;
-  }
-  const release = documentationTrackerState.releases.find(entry => entry && entry.id === releaseId);
-  if (!release) {
-    return null;
-  }
-  return { release, releaseId };
-}
-
-function getDocumentationTrackerItemLabel(sectionKey, itemId) {
-  const config = DOCUMENTATION_TRACKER_SECTION_CONFIG[sectionKey];
-  if (config && Array.isArray(config.items)) {
-    const item = config.items.find(candidate => candidate.id === itemId);
-    if (item) {
-      const label = resolveLocaleString(item.labelKey);
-      if (label) {
-        return label;
-      }
-    }
-  }
-  return itemId;
-}
-
-function computeDocumentationSectionStats(release, sectionKey) {
-  const config = DOCUMENTATION_TRACKER_SECTION_CONFIG[sectionKey];
-  const items = config && Array.isArray(config.items) ? config.items : [];
-  const map = release && release.statuses && release.statuses[sectionKey]
-    ? release.statuses[sectionKey]
-    : {};
-  let total = 0;
-  let completed = 0;
-  items.forEach(item => {
-    total += 1;
-    if (map[item.id] && map[item.id].completed === true) {
-      completed += 1;
-    }
-  });
-  return { total, completed, remaining: Math.max(total - completed, 0) };
-}
-
-function computeDocumentationReleaseStats(release) {
-  const sections = {};
-  let total = 0;
-  let completed = 0;
-  DOCUMENTATION_TRACKER_SECTION_ORDER.forEach(sectionKey => {
-    const stats = computeDocumentationSectionStats(release, sectionKey);
-    sections[sectionKey] = stats;
-    total += stats.total;
-    completed += stats.completed;
-  });
-  return {
-    total,
-    completed,
-    remaining: Math.max(total - completed, 0),
-    sections,
-  };
-}
-
-function formatDocumentationTrackerTimestamp(value, options = {}) {
-  if (!value) {
-    return '';
-  }
-  const { includeTime = false, dateOnly = false } = options || {};
-  try {
-    let date;
-    if (dateOnly && typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      const parts = value.split('-').map(Number);
-      date = new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1);
-    } else {
-      date = new Date(value);
-    }
-    if (!date || Number.isNaN(date.getTime())) {
-      return '';
-    }
-    const locale =
-      (typeof currentLang === 'string' && currentLang)
-        ? currentLang
-        : (typeof navigator !== 'undefined' && navigator && navigator.language)
-          ? navigator.language
-          : 'en';
-    const formatOptions = includeTime && !dateOnly
-      ? { dateStyle: 'medium', timeStyle: 'short' }
-      : { dateStyle: 'medium' };
-    const formatter = new Intl.DateTimeFormat(locale, formatOptions);
-    return formatter.format(date);
-  } catch (error) {
-    void error;
-  }
-  return '';
-}
-
-function formatDocumentationTrackerProgress(completed, total) {
-  if (!total) {
-    return '';
-  }
-  const template = resolveLocaleString('documentationTrackerProgress')
-    || '{completed}/{total} complete';
-  return template
-    .replace('{completed}', String(completed))
-    .replace('{total}', String(total));
-}
-
-function formatDocumentationTrackerSectionProgress(completed, total) {
-  if (!total) {
-    return '';
-  }
-  const template = resolveLocaleString('documentationTrackerSectionProgress')
-    || '{completed}/{total}';
-  return template
-    .replace('{completed}', String(completed))
-    .replace('{total}', String(total));
-}
-
-function documentationTrackerFormatDefaultReleaseName(template, isoTimestamp) {
-  const dateText = formatDocumentationTrackerTimestamp(isoTimestamp, { dateOnly: true }) || '';
-  if (typeof template === 'string' && template.includes('{date}')) {
-    return template.replace('{date}', dateText || isoTimestamp || '');
-  }
-  if (typeof template === 'string' && template.trim()) {
-    return template;
-  }
-  if (dateText) {
-    return `Release ${dateText}`;
-  }
-  return resolveLocaleString('documentationTrackerFallbackReleaseName') || 'Release log';
-}
-
-function createDocumentationTrackerRelease() {
-  const createdAt = documentationTrackerIsoNow();
-  const release = {
-    id: createDocumentationTrackerReleaseId(),
-    name: documentationTrackerFormatDefaultReleaseName(
-      resolveLocaleString('documentationTrackerDefaultReleaseName'),
-      createdAt,
-    ),
-    targetDate: '',
-    createdAt,
-    updatedAt: createdAt,
-    notes: '',
-    archived: false,
-    statuses: {},
-  };
-  DOCUMENTATION_TRACKER_SECTION_ORDER.forEach(sectionKey => {
-    const config = DOCUMENTATION_TRACKER_SECTION_CONFIG[sectionKey];
-    const map = {};
-    if (config && Array.isArray(config.items)) {
-      config.items.forEach(item => {
-        map[item.id] = { completed: false, updatedAt: null };
-      });
-    }
-    release.statuses[sectionKey] = map;
-  });
-  return release;
-}
-
-function createDocumentationReleaseElement(release) {
-  const stats = computeDocumentationReleaseStats(release);
-  const container = document.createElement('article');
-  container.className = 'documentation-release';
-  container.setAttribute('data-release-id', release.id);
-  container.setAttribute('role', 'listitem');
-  if (release.archived) {
-    container.setAttribute('data-archived', 'true');
-  }
-
-  const header = document.createElement('div');
-  header.className = 'documentation-release-header';
-  container.appendChild(header);
-
-  const headingGroup = document.createElement('div');
-  headingGroup.className = 'documentation-release-heading';
-  header.appendChild(headingGroup);
-
-  const nameInputId = `${DOCUMENTATION_TRACKER_ID_PREFIX}Name-${release.id}`;
-  const nameLabel = document.createElement('label');
-  nameLabel.setAttribute('for', nameInputId);
-  nameLabel.textContent =
-    resolveLocaleString('documentationTrackerReleaseNameLabel') || 'Release name';
-  headingGroup.appendChild(nameLabel);
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.id = nameInputId;
-  nameInput.value = release.name || '';
-  nameInput.dataset.field = 'name';
-  nameInput.autocomplete = 'off';
-  nameInput.maxLength = 160;
-  if (release.archived) {
-    nameInput.disabled = true;
-  }
-  headingGroup.appendChild(nameInput);
-
-  const meta = document.createElement('div');
-  meta.className = 'documentation-release-meta';
-  header.appendChild(meta);
-
-  const targetWrapper = document.createElement('div');
-  targetWrapper.className = 'settings-field';
-  meta.appendChild(targetWrapper);
-
-  const targetInputId = `${DOCUMENTATION_TRACKER_ID_PREFIX}Date-${release.id}`;
-  const targetLabel = document.createElement('label');
-  targetLabel.setAttribute('for', targetInputId);
-  targetLabel.textContent =
-    resolveLocaleString('documentationTrackerReleaseDateLabel') || 'Target release date';
-  targetWrapper.appendChild(targetLabel);
-
-  const targetInput = document.createElement('input');
-  targetInput.type = 'date';
-  targetInput.id = targetInputId;
-  targetInput.value = release.targetDate || '';
-  targetInput.dataset.field = 'date';
-  if (release.archived) {
-    targetInput.disabled = true;
-  }
-  targetWrapper.appendChild(targetInput);
-
-  const actions = document.createElement('div');
-  actions.className = 'documentation-release-actions';
-  meta.appendChild(actions);
-
-  const markAllButton = document.createElement('button');
-  markAllButton.type = 'button';
-  markAllButton.dataset.role = 'mark-all-complete';
-  markAllButton.textContent =
-    resolveLocaleString('documentationTrackerMarkAllComplete') || 'Mark all complete';
-  if (release.archived) {
-    markAllButton.disabled = true;
-  }
-  actions.appendChild(markAllButton);
-
-  const archiveButton = document.createElement('button');
-  archiveButton.type = 'button';
-  archiveButton.dataset.role = 'toggle-archive';
-  archiveButton.textContent = release.archived
-    ? (resolveLocaleString('documentationTrackerRestoreRelease') || 'Reopen release')
-    : (resolveLocaleString('documentationTrackerArchiveRelease') || 'Archive release');
-  actions.appendChild(archiveButton);
-
-  if (release.archived) {
-    const archivedBadge = document.createElement('span');
-    archivedBadge.className = 'documentation-release-archived-badge';
-    archivedBadge.textContent =
-      resolveLocaleString('documentationTrackerArchivedBadge') || 'Archived';
-    meta.appendChild(archivedBadge);
-  }
-
-  const body = document.createElement('div');
-  body.className = 'documentation-release-body';
-  container.appendChild(body);
-
-  DOCUMENTATION_TRACKER_SECTION_ORDER.forEach(sectionKey => {
-    const config = DOCUMENTATION_TRACKER_SECTION_CONFIG[sectionKey];
-    if (!config || !Array.isArray(config.items)) {
-      return;
-    }
-    const group = document.createElement('section');
-    group.className = 'documentation-release-group';
-    group.dataset.section = sectionKey;
-
-    const sectionHeading = document.createElement('h5');
-    const baseHeading = resolveLocaleString(config.headingKey) || sectionKey;
-    sectionHeading.textContent = baseHeading;
-    const sectionStats = stats.sections[sectionKey] || { total: 0, completed: 0 };
-    if (sectionStats.total > 0) {
-      const countSpan = document.createElement('span');
-      countSpan.className = 'documentation-release-count';
-      countSpan.textContent = formatDocumentationTrackerSectionProgress(
-        sectionStats.completed,
-        sectionStats.total,
-      );
-      sectionHeading.appendChild(countSpan);
-    }
-    group.appendChild(sectionHeading);
-
-    const itemsContainer = document.createElement('div');
-    itemsContainer.className = 'documentation-release-items';
-    group.appendChild(itemsContainer);
-
-    const statusMap = release.statuses[sectionKey] || {};
-    config.items.forEach(item => {
-      const itemLabel = document.createElement('label');
-      itemLabel.className = 'documentation-release-item';
-      itemLabel.setAttribute('data-item', item.id);
-
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.dataset.section = sectionKey;
-      checkbox.dataset.item = item.id;
-      checkbox.id = `${DOCUMENTATION_TRACKER_ID_PREFIX}-${sectionKey}-${item.id}-${release.id}`;
-      checkbox.checked = statusMap[item.id] && statusMap[item.id].completed === true;
-      if (release.archived) {
-        checkbox.disabled = true;
-      }
-      itemLabel.appendChild(checkbox);
-
-      const itemText = document.createElement('span');
-      itemText.textContent = getDocumentationTrackerItemLabel(sectionKey, item.id);
-      itemLabel.appendChild(itemText);
-
-      itemsContainer.appendChild(itemLabel);
-    });
-
-    body.appendChild(group);
-  });
-
-  const notesGroup = document.createElement('div');
-  notesGroup.className = 'documentation-release-group documentation-release-notes';
-  const notesLabel = document.createElement('label');
-  const notesInputId = `${DOCUMENTATION_TRACKER_ID_PREFIX}Notes-${release.id}`;
-  notesLabel.setAttribute('for', notesInputId);
-  notesLabel.textContent =
-    resolveLocaleString('documentationTrackerNotesLabel') || 'Verification notes';
-  notesGroup.appendChild(notesLabel);
-
-  const notesArea = document.createElement('textarea');
-  notesArea.id = notesInputId;
-  notesArea.value = release.notes || '';
-  notesArea.dataset.field = 'notes';
-  notesArea.maxLength = DOCUMENTATION_TRACKER_MAX_NOTES_LENGTH;
-  const notesPlaceholder = resolveLocaleString('documentationTrackerNotesPlaceholder');
-  if (notesPlaceholder) {
-    notesArea.placeholder = notesPlaceholder;
-  }
-  if (release.archived) {
-    notesArea.disabled = true;
-  }
-  notesGroup.appendChild(notesArea);
-  body.appendChild(notesGroup);
-
-  const footer = document.createElement('footer');
-  container.appendChild(footer);
-
-  const progressSpan = document.createElement('span');
-  progressSpan.className = 'documentation-release-progress';
-  progressSpan.textContent = formatDocumentationTrackerProgress(stats.completed, stats.total);
-  footer.appendChild(progressSpan);
-
-  const updatedText = formatDocumentationTrackerTimestamp(release.updatedAt || release.createdAt, {
-    includeTime: true,
-  });
-  if (updatedText) {
-    const updatedSpan = document.createElement('span');
-    updatedSpan.className = 'documentation-release-updated';
-    const updatedTemplate = resolveLocaleString('documentationTrackerUpdatedAt') || 'Updated {time}';
-    updatedSpan.textContent = updatedTemplate.replace('{time}', updatedText);
-    footer.appendChild(updatedSpan);
-  }
-
-  if (release.targetDate) {
-    const targetText = formatDocumentationTrackerTimestamp(release.targetDate, { dateOnly: true })
-      || release.targetDate;
-    const targetSpan = document.createElement('span');
-    targetSpan.className = 'documentation-release-updated';
-    const targetTemplate = resolveLocaleString('documentationTrackerTargetSummary') || 'Target {date}';
-    targetSpan.textContent = targetTemplate.replace('{date}', targetText);
-    footer.appendChild(targetSpan);
-  }
-
-  return container;
-}
-
-function renderDocumentationTracker() {
-  if (!documentationTrackerListEl) {
-    return;
-  }
-
-  sortDocumentationTrackerReleases();
-
-  while (documentationTrackerListEl.firstChild) {
-    documentationTrackerListEl.removeChild(documentationTrackerListEl.firstChild);
-  }
-
-  if (!documentationTrackerState.releases.length) {
-    documentationTrackerListEl.setAttribute('hidden', '');
-    if (documentationTrackerEmptyEl) {
-      documentationTrackerEmptyEl.removeAttribute('hidden');
-    }
-    if (documentationTrackerSummaryEl) {
-      documentationTrackerSummaryEl.setAttribute('hidden', '');
-      documentationTrackerSummaryEl.textContent = '';
-    }
-    return;
-  }
-
-  documentationTrackerListEl.removeAttribute('hidden');
-  if (documentationTrackerEmptyEl) {
-    documentationTrackerEmptyEl.setAttribute('hidden', '');
-  }
-
-  documentationTrackerState.releases.forEach(release => {
-    const element = createDocumentationReleaseElement(release);
-    documentationTrackerListEl.appendChild(element);
-  });
-
-  updateDocumentationTrackerSummary();
-
-  if (documentationTrackerFocusTargetId) {
-    const focusEl = document.getElementById(documentationTrackerFocusTargetId);
-    if (focusEl && typeof focusEl.focus === 'function') {
-      try {
-        focusEl.focus({ preventScroll: true });
-      } catch (error) {
-        focusEl.focus();
-        void error;
-      }
-    }
-    documentationTrackerFocusTargetId = '';
-  }
-}
-
-function updateDocumentationTrackerSummary() {
-  if (!documentationTrackerSummaryEl) {
-    return;
-  }
-  if (!documentationTrackerState.releases.length) {
-    documentationTrackerSummaryEl.setAttribute('hidden', '');
-    documentationTrackerSummaryEl.textContent = '';
-    return;
-  }
-  const activeRelease = documentationTrackerState.releases.find(release => release && release.archived !== true)
-    || documentationTrackerState.releases[0];
-  if (!activeRelease) {
-    documentationTrackerSummaryEl.setAttribute('hidden', '');
-    documentationTrackerSummaryEl.textContent = '';
-    return;
-  }
-  const stats = computeDocumentationReleaseStats(activeRelease);
-  const name = activeRelease.name
-    || resolveLocaleString('documentationTrackerFallbackReleaseName')
-    || 'Release';
-  let summary;
-  if (stats.remaining > 0) {
-    const template = resolveLocaleString('documentationTrackerSummaryPending')
-      || '{remaining} of {total} documentation tasks remain for "{name}".';
-    summary = template
-      .replace('{remaining}', String(stats.remaining))
-      .replace('{total}', String(stats.total))
-      .replace('{name}', name);
-  } else {
-    const template = resolveLocaleString('documentationTrackerSummaryComplete')
-      || 'All documentation tasks for "{name}" are complete.';
-    summary = template.replace('{name}', name).replace('{total}', String(stats.total));
-  }
-  documentationTrackerSummaryEl.textContent = summary;
-  documentationTrackerSummaryEl.removeAttribute('hidden');
-}
-
-function handleDocumentationTrackerAddRelease(event) {
-  if (event) {
-    event.preventDefault();
-  }
-  if (documentationTrackerInitialized && documentationTrackerState.releases.length >= 200) {
-    console.warn('Maximum documentation tracker entries reached.');
-  }
-  const release = createDocumentationTrackerRelease();
-  documentationTrackerState.releases.unshift(release);
-  documentationTrackerFocusTargetId = `${DOCUMENTATION_TRACKER_ID_PREFIX}Name-${release.id}`;
-  persistDocumentationTrackerState();
-  renderDocumentationTracker();
-}
-
-function handleDocumentationTrackerChange(event) {
-  const target = event && event.target;
-  if (!target || !target.dataset) {
-    return;
-  }
-  if (target.dataset.section && target.type === 'checkbox') {
-    const info = getDocumentationReleaseForElement(target);
-    if (!info || !info.release || info.release.archived) {
-      return;
-    }
-    const { release } = info;
-    const sectionKey = target.dataset.section;
-    const itemId = target.dataset.item;
-    if (!sectionKey || !itemId) {
-      return;
-    }
-    if (!release.statuses[sectionKey]) {
-      release.statuses[sectionKey] = {};
-    }
-    release.statuses[sectionKey][itemId] = {
-      completed: target.checked,
-      updatedAt: documentationTrackerIsoNow(),
-    };
-    release.updatedAt = documentationTrackerIsoNow();
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState();
-    renderDocumentationTracker();
-    return;
-  }
-  if (target.dataset.field === 'date') {
-    const info = getDocumentationReleaseForElement(target);
-    if (!info || !info.release || info.release.archived) {
-      return;
-    }
-    const { release } = info;
-    release.targetDate = target.value;
-    release.updatedAt = documentationTrackerIsoNow();
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState();
-    renderDocumentationTracker();
-  }
-}
-
-function handleDocumentationTrackerInput(event) {
-  const target = event && event.target;
-  if (!target || !target.dataset) {
-    return;
-  }
-  const field = target.dataset.field;
-  if (!field) {
-    return;
-  }
-  const info = getDocumentationReleaseForElement(target);
-  if (!info || !info.release || info.release.archived) {
-    return;
-  }
-  const { release } = info;
-
-  if (field === 'name') {
-    release.name = target.value.slice(0, 160);
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState({ skipSort: true });
-    updateDocumentationTrackerSummary();
-    return;
-  }
-
-  if (field === 'notes') {
-    release.notes = target.value.slice(0, DOCUMENTATION_TRACKER_MAX_NOTES_LENGTH);
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState({ skipSort: true });
-    return;
-  }
-
-  if (field === 'date') {
-    release.targetDate = target.value;
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState();
-    renderDocumentationTracker();
-  }
-}
-
-function handleDocumentationTrackerBlur(event) {
-  const target = event && event.target;
-  if (!target || !target.dataset) {
-    return;
-  }
-  const field = target.dataset.field;
-  if (!field) {
-    return;
-  }
-  const info = getDocumentationReleaseForElement(target);
-  if (!info || !info.release || info.release.archived) {
-    return;
-  }
-  const { release } = info;
-  if (field === 'name' || field === 'notes') {
-    release.updatedAt = documentationTrackerIsoNow();
-    documentationTrackerFocusTargetId = target.id || '';
-    persistDocumentationTrackerState();
-    renderDocumentationTracker();
-  }
-}
-
-function handleDocumentationTrackerClick(event) {
-  const target = event && event.target;
-  if (!target || !target.dataset) {
-    return;
-  }
-  const role = target.dataset.role;
-  if (!role) {
-    return;
-  }
-  const info = getDocumentationReleaseForElement(target);
-  if (!info || !info.release) {
-    return;
-  }
-  const { release } = info;
-  if (role === 'mark-all-complete') {
-    if (release.archived) {
-      return;
-    }
-    documentationTrackerFocusTargetId = target.id || '';
-    markDocumentationReleaseComplete(release, true);
-    persistDocumentationTrackerState();
-    renderDocumentationTracker();
-    return;
-  }
-  if (role === 'toggle-archive') {
-    toggleDocumentationReleaseArchiveState(release);
-  }
-}
-
-function markDocumentationReleaseComplete(release, completed) {
-  if (!release || !release.statuses) {
-    return;
-  }
-  const timestamp = documentationTrackerIsoNow();
-  DOCUMENTATION_TRACKER_SECTION_ORDER.forEach(sectionKey => {
-    const map = release.statuses[sectionKey];
-    if (!map || typeof map !== 'object') {
-      return;
-    }
-    Object.keys(map).forEach(itemId => {
-      map[itemId] = {
-        completed,
-        updatedAt: timestamp,
-      };
-    });
-  });
-  release.updatedAt = timestamp;
-}
-
-function toggleDocumentationReleaseArchiveState(release, options = {}) {
-  if (!release) {
-    return;
-  }
-  const { confirmArchive = true } = options || {};
-  if (!release.archived && confirmArchive && typeof confirm === 'function') {
-    const template = resolveLocaleString('documentationTrackerArchiveConfirm')
-      || 'Archive "{name}"? Completed items stay logged for future audits.';
-    const name = release.name
-      || resolveLocaleString('documentationTrackerFallbackReleaseName')
-      || 'Release';
-    const message = template.replace('{name}', name);
-    if (!confirm(message)) {
-      return;
-    }
-  }
-  release.archived = !release.archived;
-  release.updatedAt = documentationTrackerIsoNow();
-  persistDocumentationTrackerState();
-  renderDocumentationTracker();
-}
-
-function initializeDocumentationTracker() {
-  if (documentationTrackerInitialized) {
-    return;
-  }
-  if (!documentationTrackerCard || !documentationTrackerListEl) {
-    return;
-  }
-  documentationTrackerInitialized = true;
-  loadDocumentationTrackerStateFromStorage();
-  renderDocumentationTracker();
-
-  if (documentationTrackerAddButton) {
-    documentationTrackerAddButton.addEventListener('click', handleDocumentationTrackerAddRelease);
-  }
-  if (documentationTrackerListEl) {
-    documentationTrackerListEl.addEventListener('change', handleDocumentationTrackerChange);
-    documentationTrackerListEl.addEventListener('input', handleDocumentationTrackerInput);
-    documentationTrackerListEl.addEventListener('blur', handleDocumentationTrackerBlur, true);
-    documentationTrackerListEl.addEventListener('click', handleDocumentationTrackerClick);
-  }
-}
-
-initializeDocumentationTracker();
-
+documentationTrackerController.initialize();
 if (settingsTabButtons.length) {
   activateSettingsTab(activeSettingsTabId);
   settingsTabButtons.forEach(button => {
