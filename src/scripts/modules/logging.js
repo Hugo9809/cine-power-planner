@@ -3586,6 +3586,38 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
       requestId,
     };
 
+    const closeMessageChannel = channel => {
+      if (!channel) {
+        return;
+      }
+
+      try {
+        channel.port1.onmessage = null;
+      } catch (clearHandlerError) {
+        void clearHandlerError;
+      }
+
+      if (typeof channel.port1.onmessageerror !== 'undefined') {
+        try {
+          channel.port1.onmessageerror = null;
+        } catch (clearErrorHandlerError) {
+          void clearErrorHandlerError;
+        }
+      }
+
+      try {
+        channel.port1.close();
+      } catch (closePort1Error) {
+        void closePort1Error;
+      }
+
+      try {
+        channel.port2.close();
+      } catch (closePort2Error) {
+        void closePort2Error;
+      }
+    };
+
     const readyPromise = serviceWorker.ready && typeof serviceWorker.ready.then === 'function'
       ? serviceWorker.ready.then(registration => (registration && registration.active) || serviceWorker.controller || null)
       : Promise.resolve(serviceWorker.controller || null);
@@ -3599,13 +3631,20 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
         }
 
         let settled = false;
+        let channel = null;
 
         const finalize = () => {
           if (settled) {
             return;
           }
           settled = true;
+          closeMessageChannel(channel);
           finalizeServiceWorkerLogRequest(requestId);
+        };
+
+        const finalizeWithPoll = () => {
+          finalize();
+          scheduleServiceWorkerLogPoll();
         };
 
         const handleResponse = event => {
@@ -3613,22 +3652,17 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
           handleServiceWorkerLogMessage(event);
         };
 
-        if (typeof MessageChannel === 'function') {
-          const channel = new MessageChannel();
-          channel.port1.onmessage = handleResponse;
+        const handleChannelError = () => {
+          safeWarn('cineLogging: Service worker diagnostics channel closed before a response was received', { requestId });
+          finalizeWithPoll();
+        };
 
+        const postWithoutChannel = () => {
           try {
-            worker.postMessage(message, [channel.port2]);
+            worker.postMessage(message);
           } catch (error) {
-            channel.port1.onmessage = null;
-            try {
-              channel.port1.close();
-            } catch (closeError) {
-              void closeError;
-            }
-            finalize();
-            safeWarn('cineLogging: Unable to request service worker diagnostics', error);
-            scheduleServiceWorkerLogPoll();
+            safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
+            finalizeWithPoll();
             return;
           }
 
@@ -3638,33 +3672,66 @@ const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
                 if (settled) {
                   return;
                 }
-                finalize();
-                safeWarn('cineLogging: Service worker diagnostics request timed out', { requestId });
-                scheduleServiceWorkerLogPoll();
+                finalizeWithPoll();
               }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
             } catch (error) {
               void error;
             }
           }
-        } else {
-          try {
-            worker.postMessage(message);
-          } catch (error) {
-            finalize();
-            safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
-            scheduleServiceWorkerLogPoll();
-            return;
+        };
+
+        const shouldUseMessageChannel = () => {
+          if (typeof MessageChannel !== 'function') {
+            return false;
           }
 
-          if (typeof setTimeout === 'function') {
-            try {
-              serviceWorkerBridgeState.requestTimer = setTimeout(() => {
-                finalize();
-                scheduleServiceWorkerLogPoll();
-              }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
-            } catch (error) {
-              void error;
-            }
+          if (serviceWorker.controller) {
+            return true;
+          }
+
+          return Boolean(worker && typeof worker.state === 'string' && worker.state === 'activated');
+        };
+
+        if (!shouldUseMessageChannel()) {
+          postWithoutChannel();
+          return;
+        }
+
+        channel = new MessageChannel();
+        channel.port1.onmessage = handleResponse;
+
+        if (typeof channel.port1.onmessageerror !== 'undefined') {
+          channel.port1.onmessageerror = handleChannelError;
+        }
+
+        if (typeof channel.port1.start === 'function') {
+          try {
+            channel.port1.start();
+          } catch (startError) {
+            void startError;
+          }
+        }
+
+        try {
+          worker.postMessage(message, [channel.port2]);
+        } catch (error) {
+          closeMessageChannel(channel);
+          channel = null;
+          safeWarn('cineLogging: Unable to request service worker diagnostics', error);
+          postWithoutChannel();
+          return;
+        }
+
+        if (typeof setTimeout === 'function') {
+          try {
+            serviceWorkerBridgeState.requestTimer = setTimeout(() => {
+              if (settled) {
+                return;
+              }
+              handleChannelError();
+            }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
+          } catch (error) {
+            void error;
           }
         }
       })
