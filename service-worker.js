@@ -5,6 +5,245 @@ const SERVICE_WORKER_SCOPE =
   null;
 
 const LOG_HISTORY_LIMIT = 50;
+const LOG_BROADCAST_CHANNEL_NAME = 'cine-sw-logs';
+const LOG_ENTRY_MESSAGE_TYPE = 'cine-sw:log-entry';
+const LOG_STATE_REQUEST_TYPE = 'cine-sw:log-state-request';
+const LOG_STATE_RESPONSE_TYPE = 'cine-sw:log-state';
+
+let logEntryCounter = 0;
+let logBroadcastChannel = null;
+let logBroadcastChannelFailed = false;
+let cachedCacheName = null;
+let cachedCacheVersion = null;
+
+function createLogEntryId(level, timestamp) {
+  const safeLevel = typeof level === 'string' && level ? level.toLowerCase() : 'log';
+  const timeComponent = typeof timestamp === 'number' && Number.isFinite(timestamp)
+    ? timestamp
+    : Date.now();
+  logEntryCounter = (logEntryCounter + 1) % Number.MAX_SAFE_INTEGER;
+  const counterComponent = logEntryCounter.toString(36);
+  return `sw-${safeLevel}-${timeComponent.toString(36)}-${counterComponent}`;
+}
+
+function cloneLogEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const clone = {
+    id: typeof entry.id === 'string' && entry.id ? entry.id : null,
+    level: entry.level,
+    message: entry.message,
+    timestamp: entry.timestamp,
+    isoTimestamp: entry.isoTimestamp,
+    channel: entry.channel || 'service-worker',
+    namespace: entry.namespace || 'service-worker',
+  };
+
+  if (typeof entry.detail !== 'undefined') {
+    clone.detail = sanitizeLogDetail(entry.detail);
+  }
+
+  if (typeof entry.meta !== 'undefined') {
+    clone.meta = sanitizeLogDetail(entry.meta);
+  }
+
+  if (typeof entry.origin !== 'undefined') {
+    clone.origin = sanitizeLogDetail(entry.origin);
+  }
+
+  return clone;
+}
+
+function getLogBroadcastChannel() {
+  if (logBroadcastChannelFailed) {
+    return null;
+  }
+
+  if (logBroadcastChannel) {
+    return logBroadcastChannel;
+  }
+
+  if (typeof BroadcastChannel !== 'function') {
+    logBroadcastChannelFailed = true;
+    return null;
+  }
+
+  try {
+    logBroadcastChannel = new BroadcastChannel(LOG_BROADCAST_CHANNEL_NAME);
+    return logBroadcastChannel;
+  } catch (error) {
+    logBroadcastChannelFailed = true;
+    try {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('[cine-sw] Unable to create log broadcast channel.', error);
+      }
+    } catch (consoleError) {
+      void consoleError;
+    }
+    return null;
+  }
+}
+
+function broadcastLogEntry(entry) {
+  if (!entry) {
+    return;
+  }
+
+  const channel = getLogBroadcastChannel();
+  if (!channel) {
+    return;
+  }
+
+  try {
+    channel.postMessage({
+      type: LOG_ENTRY_MESSAGE_TYPE,
+      entry: cloneLogEntry(entry),
+    });
+  } catch (error) {
+    try {
+      channel.close();
+    } catch (closeError) {
+      void closeError;
+    }
+    logBroadcastChannel = null;
+    logBroadcastChannelFailed = true;
+    try {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('[cine-sw] Unable to broadcast log entry.', error);
+      }
+    } catch (consoleError) {
+      void consoleError;
+    }
+  }
+}
+
+function getCacheMetadataSnapshot() {
+  const meta = {
+    channel: 'service-worker',
+    scope: 'service-worker',
+  };
+
+  if (typeof cachedCacheName === 'string' && cachedCacheName) {
+    meta.cacheName = cachedCacheName;
+  }
+
+  if (cachedCacheVersion) {
+    meta.cacheVersion = cachedCacheVersion;
+  }
+
+  return meta;
+}
+
+function cloneHistoryForTransfer(history, limit) {
+  if (!Array.isArray(history) || history.length === 0) {
+    return [];
+  }
+
+  const effectiveLimit = typeof limit === 'number' && Number.isFinite(limit)
+    ? Math.max(0, Math.floor(limit))
+    : history.length;
+
+  const startIndex = Math.max(0, history.length - effectiveLimit);
+  const slice = history.slice(startIndex);
+  const clones = [];
+  for (let index = 0; index < slice.length; index += 1) {
+    const cloned = cloneLogEntry(slice[index]);
+    if (cloned) {
+      clones.push(cloned);
+    }
+  }
+  return clones;
+}
+
+function createLogStateSnapshot(limit) {
+  const diagnostics = ensureDiagnosticState();
+  const history = diagnostics && Array.isArray(diagnostics.history)
+    ? diagnostics.history
+    : [];
+
+  const snapshot = {
+    history: cloneHistoryForTransfer(history, limit),
+    cacheName: cachedCacheName,
+    cacheVersion: cachedCacheVersion,
+    generatedAt: Date.now(),
+    historyLength: history.length,
+    lastEntry: diagnostics && diagnostics.lastEntry ? cloneLogEntry(diagnostics.lastEntry) : null,
+  };
+
+  return snapshot;
+}
+
+function respondWithLogState(event, request) {
+  if (!event) {
+    return;
+  }
+
+  const limit = request && typeof request.limit === 'number' ? request.limit : null;
+  const snapshot = createLogStateSnapshot(limit);
+  const message = {
+    type: LOG_STATE_RESPONSE_TYPE,
+    requestId: request && typeof request.requestId === 'string' ? request.requestId : null,
+    state: snapshot,
+  };
+
+  let handled = false;
+
+  if (event.ports && event.ports.length) {
+    const port = event.ports[0];
+    if (port && typeof port.postMessage === 'function') {
+      try {
+        port.postMessage(message);
+        handled = true;
+      } catch (portError) {
+        void portError;
+      }
+    }
+  }
+
+  if (!handled && event.source && typeof event.source.postMessage === 'function') {
+    try {
+      event.source.postMessage(message);
+      handled = true;
+    } catch (sourceError) {
+      void sourceError;
+    }
+  }
+
+  if (!handled) {
+    const channel = getLogBroadcastChannel();
+    if (channel) {
+      try {
+        channel.postMessage(message);
+      } catch (broadcastError) {
+        void broadcastError;
+      }
+    }
+  }
+}
+
+function handleServiceWorkerMessage(event) {
+  if (!event) {
+    return;
+  }
+
+  let data = null;
+  try {
+    data = event.data || null;
+  } catch (error) {
+    void error;
+    data = null;
+  }
+
+  if (!data || typeof data !== 'object') {
+    return;
+  }
+
+  if (data.type === LOG_STATE_REQUEST_TYPE) {
+    respondWithLogState(event, data);
+  }
+}
 
 function sanitizeLogDetail(detail, seen = new WeakSet()) {
   if (detail === null || typeof detail === 'undefined') {
@@ -128,23 +367,29 @@ function recordLogEntry(level, message, detail) {
   }
 
   const entry = {
+    id: createLogEntryId(level, timestamp),
     level,
     message,
     timestamp,
     isoTimestamp,
     detail: sanitizeLogDetail(detail),
+    channel: 'service-worker',
+    namespace: 'service-worker',
+    meta: sanitizeLogDetail(getCacheMetadataSnapshot()),
+    origin: sanitizeLogDetail({ runtime: 'service-worker' }),
   };
 
   const diagnostics = ensureDiagnosticState();
   if (diagnostics && diagnostics.history) {
     diagnostics.history.push(entry);
     while (diagnostics.history.length > LOG_HISTORY_LIMIT) {
-      diagnostics.history.shift();
+    diagnostics.history.shift();
     }
     diagnostics.lastEntry = entry;
   }
 
   outputToConsole(level, `${isoTimestamp} ${message}`, detail);
+  broadcastLogEntry(entry);
 
   return entry;
 }
@@ -245,10 +490,13 @@ if (!CACHE_VERSION) {
 
 const CACHE_NAME = `cine-power-planner-v${CACHE_VERSION}`;
 
+cachedCacheVersion = CACHE_VERSION;
+cachedCacheName = CACHE_NAME;
+
 try {
-  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
-    SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
-  }
+if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
+  SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
+}
 } catch (cacheExposeError) {
   serviceWorkerLog.warn('Unable to expose computed cache name for diagnostics.', cacheExposeError);
 }
@@ -265,6 +513,14 @@ try {
   }
 } catch (logExposeError) {
   serviceWorkerLog.warn('Unable to expose service worker logger on global scope.', logExposeError);
+}
+
+if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.addEventListener === 'function') {
+  try {
+    SERVICE_WORKER_SCOPE.addEventListener('message', handleServiceWorkerMessage);
+  } catch (messageListenerError) {
+    serviceWorkerLog.warn('Unable to attach service worker message listener for diagnostics.', messageListenerError);
+  }
 }
 
 function loadServiceWorkerAssets() {

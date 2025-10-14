@@ -859,7 +859,10 @@ Use Cine Power Planner end-to-end with the following routine:
   with stored diagnostics even if the structured logger is unavailable. Overview
   print and export attempts now stream their warnings and fallback usage into
   this log so share rehearsals capture exactly when the dialog had to open the
-  backup window. A live enablement summary now shows whether each severity will
+  backup window. Service worker cache activity now reports into the same log so
+  offline precache issues, navigation fallbacks and update deferrals show up
+  alongside UI diagnostics without leaving the app. A live enablement summary
+  now shows whether each severity will
   reach the console mirror or the retained history before you dispatch
   heavyweight diagnostics, making it safer to toggle verbose traces during
   offline shoots.

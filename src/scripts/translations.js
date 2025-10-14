@@ -927,7 +927,7 @@ const texts = {
     storageStatusLastAutoBackupLabel: "Latest auto backup",
     autoBackupInProgressNotice: "Auto backup running. Performance may pause briefly.",
     storageStatusLastFullBackupLabel: "Latest full app backup",
-    loggingSectionHelp: "Review runtime diagnostics without leaving Settings.",
+    loggingSectionHelp: "Review runtime diagnostics without leaving Settings. Service worker entries stream in automatically so offline cache and activation events stay visible.",
     loggingHeading: "Diagnostics log",
     loggingHeadingHelp: "Review runtime diagnostics without leaving Settings.",
     loggingIntro:
@@ -3770,7 +3770,7 @@ const texts = {
     autoBackupInProgressNotice:
       "Backup automatico in esecuzione. Le prestazioni potrebbero rallentare per un momento.",
     storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
-    loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
+    loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni. Le voci del Service Worker arrivano automaticamente così cache offline e attivazioni differite restano visibili.",
     loggingHeading: "Registro diagnostico",
     loggingHeadingHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingIntro:
@@ -5968,7 +5968,7 @@ const texts = {
     autoBackupInProgressNotice:
       "Copia de seguridad automática en ejecución. El rendimiento puede pausarse brevemente.",
     storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
-    loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
+    loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes. Las entradas del Service Worker llegan automáticamente para que los incidentes de caché sin conexión y las reclamaciones diferidas sigan visibles.",
     loggingHeading: "Registro de diagnósticos",
     loggingHeadingHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingIntro:
@@ -8177,7 +8177,7 @@ const texts = {
     autoBackupInProgressNotice:
       "Sauvegarde automatique en cours d’exécution. Les performances peuvent se mettre en pause un instant.",
     storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
-    loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
+    loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres. Les journaux du Service Worker arrivent automatiquement pour que les soucis de cache hors ligne et les reprises différées restent visibles.",
     loggingHeading: "Journal de diagnostics",
     loggingHeadingHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingIntro:
@@ -10391,7 +10391,7 @@ const texts = {
     autoBackupInProgressNotice:
       "Automatische Sicherung läuft gerade. Die Leistung kann kurzzeitig beeinträchtigt sein.",
     storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
-    loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
+    loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen. Service-Worker-Protokolle werden automatisch gespiegelt, damit Offline-Caches und verschobene Aktivierungen sichtbar bleiben.",
     loggingHeading: "Diagnoseprotokoll",
     loggingHeadingHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingIntro:
