@@ -211,6 +211,7 @@
   "./src/scripts/autosave-overlay.js",
   "./src/scripts/console-helpers.js",
   "./src/scripts/globals-bootstrap.js",
+  "./src/scripts/commonjs-shim.js",
   "./src/scripts/globals-legacy-shim.js",
   "./src/scripts/globalthis-polyfill.js",
   "./src/scripts/legal-topbar.js",
