@@ -238,11 +238,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }));
     return _fetchPinkModeAssetFromCaches.apply(this, arguments);
   }
+  function createPinkModeXhrUrlVariants(url) {
+    var variants = [];
+    var registerVariant = function registerVariant(candidate) {
+      if (typeof candidate !== 'string' || !candidate) {
+        return;
+      }
+      if (variants.indexOf(candidate) === -1) {
+        variants.push(candidate);
+      }
+    };
+
+    registerVariant(url);
+
+    if (typeof url === 'string') {
+      try {
+        var decoded = decodeURI(url);
+        registerVariant(decoded);
+      } catch (decodeError) {
+        void decodeError;
+      }
+    }
+
+    return variants;
+  }
   function fetchPinkModeAssetViaXHR(_x4) {
     return _fetchPinkModeAssetViaXHR.apply(this, arguments);
   }
   function _fetchPinkModeAssetViaXHR() {
     _fetchPinkModeAssetViaXHR = _asyncToGenerator(_regenerator().m(function _callee5(url) {
+      var candidates, index, candidateUrl, result;
       return _regenerator().w(function (_context5) {
         while (1) switch (_context5.n) {
           case 0:
@@ -252,10 +277,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
             return _context5.a(2, null);
           case 1:
+            candidates = createPinkModeXhrUrlVariants(url);
+            index = 0;
+          case 2:
+            if (!(index < candidates.length)) {
+              _context5.n = 9;
+              break;
+            }
+            candidateUrl = candidates[index];
+            _context5.n = 5;
             return _context5.a(2, new Promise(function (resolve) {
               try {
                 var request = new XMLHttpRequest();
-                request.open('GET', url, true);
+                request.open('GET', candidateUrl, true);
                 request.onreadystatechange = function handleReadyStateChange() {
                   if (request.readyState !== 4) {
                     return;
@@ -275,6 +309,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 resolve(null);
               }
             }));
+          case 5:
+            result = _context5.v;
+            if (!(result !== null)) {
+              _context5.n = 7;
+              break;
+            }
+            return _context5.a(2, result);
+          case 7:
+            index += 1;
+            _context5.n = 2;
+            break;
+          case 9:
+            return _context5.a(2, null);
         }
       }, _callee5);
     }));
