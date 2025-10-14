@@ -22,7 +22,7 @@ offline.
 | Safeguard | Runtime implementation | Verification evidence |
 | --- | --- | --- |
 | Manual save | `src/scripts/app-session.js` dispatches structured save events to `modules/persistence.js`, which clones payloads and records timeline entries. | Screenshot of save confirmation, diff export. |
-| Autosave cadence | `modules/persistence.js` triggers background saves every ~50 changes or 10 minutes, logging each run in the autosave ledger. | Ledger export plus timestamped console log. |
+| Autosave cadence | `modules/persistence.js` triggers background saves every ~50 changes or 10 minutes, logging each run in the autosave ledger. The logger is resolved through `modules/logging-resolver.js` so diagnostics are captured even when the structured logging module is unavailable. | Ledger export plus timestamped console log. |
 | Planner backup | `storage.js` serialises all projects, favorites, settings, automatic gear rules and history into `planner-backup.json`. | Hash log, verification packet attachment. |
 | Backup guardian | `storage.js` runs `ensureCriticalStorageBackups()` to mirror every critical key into redundant backup slots and exposes the result via `getLastCriticalStorageGuardResult()`. | **Settings → Data & Storage** screenshot showing the **Backup guardian** row plus console log if issues appear. |
 | Project bundle export | `modules/offline.js` packages a single project with scenario presets, runtime estimates and checksum metadata. | Bundle JSON, hash log, restore rehearsal notes. |

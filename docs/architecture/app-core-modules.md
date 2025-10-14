@@ -55,7 +55,10 @@ persistence and rehearsal tooling.
   `index.html` directly.
 - **Diagnostics:** `modules/logging.js` streams events to both the console and
   an in-memory log consumed by the Verification Log Template so releases can be
-  audited offline.
+  audited offline. `modules/logging-resolver.js` exposes a safe helper that
+  surfaces the structured logger (or a console-backed fallback) to every
+  runtime, making log exports and autosave investigations reliable even when
+  workers, Node tools or browser previews load the planner in isolation.
 
 ## Maintenance workflow
 

@@ -16,15 +16,65 @@
 // Locate a logging helper without assuming a specific runtime. The application
 // runs in browsers, service workers and occasionally Node based tooling, so we
 // patiently walk through every known global scope until we find the shared
-// cineLogging helper. Keeping this logic centralised makes it far easier for
-// on-call engineers to diagnose sync or autosave issues when working offline.
-const eventsLogger = (function resolveEventsLogger() {
+// cineLogging helper. When the dedicated logging resolver module is available
+// we reuse it to guarantee consistent metadata and console fallbacks.
+function collectLoggingResolverScopes() {
   const scopes = [];
 
-  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
-  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
-  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
-  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+  const primary = getGlobalScope();
+  if (primary && scopes.indexOf(primary) === -1) {
+    scopes.push(primary);
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && scopes.indexOf(globalThis) === -1) {
+    scopes.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) {
+    scopes.push(window);
+  }
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) {
+    scopes.push(self);
+  }
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) {
+    scopes.push(global);
+  }
+
+  return scopes;
+}
+
+function resolveLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      const required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const scopes = collectLoggingResolverScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return null;
+}
+
+function resolveLegacyEventsLogger() {
+  const scopes = collectLoggingResolverScopes();
 
   for (let index = 0; index < scopes.length; index += 1) {
     const scope = scopes[index];
@@ -55,6 +105,22 @@ const eventsLogger = (function resolveEventsLogger() {
   }
 
   return null;
+}
+
+const eventsLogger = (function resolveEventsLogger() {
+  const resolver = resolveLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      const logger = resolver.resolveLogger('events', { meta: { source: 'app-events' } });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+
+  return resolveLegacyEventsLogger();
 })();
 
 const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =

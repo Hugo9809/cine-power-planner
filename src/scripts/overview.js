@@ -56,17 +56,51 @@ let triggerOverviewPrintWorkflowModule = null;
     }
 })();
 
-const overviewLogger = (() => {
-    // Logging is optional so we attempt to reuse whichever diagnostics system
-    // the host injected. By looping through the common globals we avoid
-    // breaking the overview dialog when embedded into iframes or worker
-    // contexts where `console` might be absent or locked down.
+function collectOverviewLoggingScopes() {
     const scopes = [];
 
-    if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+    if (typeof globalThis !== 'undefined' && globalThis && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
     if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
     if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
     if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+    return scopes;
+}
+
+function resolveOverviewLoggingResolver() {
+    if (typeof require === 'function') {
+        try {
+            const required = require('./modules/logging-resolver.js');
+            if (required && typeof required.resolveLogger === 'function') {
+                return required;
+            }
+        } catch (error) {
+            void error;
+        }
+    }
+
+    const scopes = collectOverviewLoggingScopes();
+    for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+        }
+
+        try {
+            const resolver = scope.cineLoggingResolver;
+            if (resolver && typeof resolver.resolveLogger === 'function') {
+                return resolver;
+            }
+        } catch (resolveError) {
+            void resolveError;
+        }
+    }
+
+    return null;
+}
+
+function resolveLegacyOverviewLogger() {
+    const scopes = collectOverviewLoggingScopes();
 
     for (let index = 0; index < scopes.length; index += 1) {
         const scope = scopes[index];
@@ -98,6 +132,22 @@ const overviewLogger = (() => {
     }
 
     return null;
+}
+
+const overviewLogger = (() => {
+    const resolver = resolveOverviewLoggingResolver();
+    if (resolver && typeof resolver.resolveLogger === 'function') {
+        try {
+            const logger = resolver.resolveLogger('overview', { meta: { source: 'overview-dialog' } });
+            if (logger) {
+                return logger;
+            }
+        } catch (resolverError) {
+            void resolverError;
+        }
+    }
+
+    return resolveLegacyOverviewLogger();
 })();
 
 const overviewConsoleFallback = (typeof console === 'object' && console) ? console : null;
