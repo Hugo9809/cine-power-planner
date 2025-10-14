@@ -91,6 +91,7 @@ drive without phoning home.
 - **Reference the workflows.** Keep the [Save, Share & Import Drill](#save-share--import-drill) and the detailed [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md) nearby when training teams or auditing data safety.
 - **Prove offline readiness.** Pair the [Offline Readiness Runbook](docs/offline-readiness.md) with the [Operational Checklist](docs/operations-checklist.md) so documented rehearsals stay synchronized with the app and bundled assets.
 - **Re-certify cached bundles.** Follow the [Offline Cache & Safeguard Verification Drill](docs/offline-cache-verification-drill.md) whenever you regenerate service-worker assets, ship new icons or touch persistence code so cached builds keep matching the repository and user data remains fully protected offline.
+- **Audit power connector safety.** Pair the [Power Summary Warning Reference](docs/power-summary-warning-reference.md) with each Power Summary rehearsal to log connector limits, redundant backups and autosave/share alignment before distributing plans offline.
 - **Protect user data deliberately.** Follow the [Data Protection Playbook](docs/data-protection-playbook.md) when you scope changes, rehearse daily guardrails, prepare releases and respond to incidents. It consolidates the save/share/import/backup/restore routines, guard outputs and archival expectations so offline crews always preserve every project.
 - **Update documentation deliberately.** Use the [Documentation Update Checklist](docs/documentation-update-checklist.md) and [Documentation Coverage Matrix](docs/documentation-coverage-matrix.md) every time you ship new behavior so help topics, translations and manuals stay in lockstep with the runtime.
 - **Log verification rehearsals.** Pair each release or workstation audit with the [Documentation Verification Packet](docs/documentation-verification-packet.md) and file copies of the [Verification Log Template](docs/verification-log-template.md) so every save/share/import/backup/restore drill is documented alongside the assets that shipped. Maintaining these records keeps help topics, translation notes and workflow screenshots provably in sync with the builds crews run offline.
@@ -344,7 +345,12 @@ same online or offline.
    paused mid-tour so offline progress is never lost, and the checklist row
    surfaces an offline status message showing how many steps are complete, when
    the most recent step finished and the next workflow to cover before you
-   relaunch the tour.
+   relaunch the tour. When the tutorial spotlights the Power Summary, cross-check
+   the colour-coded warnings against the
+   [Power Summary Warning Reference](docs/power-summary-warning-reference.md),
+   record any pin or D-Tap overloads, confirm redundant backups and verify the
+   autosave banner timestamp matches the share/export preview before you complete
+   the step.
 6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
