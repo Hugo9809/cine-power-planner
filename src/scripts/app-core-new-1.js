@@ -1089,13 +1089,36 @@ const runtimeCandidateScopeResolvers =
     fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
   });
 
-const collectCoreRuntimeCandidateScopes =
+const COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE =
+  (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE) ||
+  (typeof globalThis !== 'undefined' && typeof globalThis === 'object' && globalThis) ||
+  (typeof window !== 'undefined' && typeof window === 'object' && window) ||
+  (typeof self !== 'undefined' && typeof self === 'object' && self) ||
+  (typeof global !== 'undefined' && typeof global === 'object' && global) ||
+  null;
+
+const collectRuntimeCandidateScopesFromResolvers =
   runtimeCandidateScopeResolvers &&
   typeof runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes === 'function'
     ? runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes
-    : function fallbackCollectCoreRuntimeCandidateScopes() {
-        return [];
-      };
+    : inlineCollectCoreRuntimeCandidateScopes;
+
+const collectRuntimeCandidateScopesFromGlobal =
+  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE &&
+  typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes === 'function'
+    ? COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes
+    : null;
+
+var collectCoreRuntimeCandidateScopes =
+  collectRuntimeCandidateScopesFromGlobal || collectRuntimeCandidateScopesFromResolvers;
+
+if (
+  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE &&
+  typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes !== 'function'
+) {
+  COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes =
+    collectCoreRuntimeCandidateScopes;
+}
 
 const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
   const primaryScope =
