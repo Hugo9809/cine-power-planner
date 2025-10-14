@@ -1542,6 +1542,7 @@ var AUTO_BACKUP_METADATA_PROPERTY = '__cineAutoBackupMetadata';
 var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
 var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
 var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
+var AUTO_BACKUP_CYCLE_PLACEHOLDER = '__cineCircular__';
 var PROJECT_ACTIVITY_WINDOW_MS = 30 * 60 * 1000;
 var projectActivityTimestamps = new Map();
 var forcedCompressedProjectKeys = typeof Set === 'function' ? new Set() : null;
@@ -1681,37 +1682,75 @@ function copyAutoBackupMetadata(source, target) {
   }
 }
 
-function cloneAutoBackupValue(value, options) {
+function cloneAutoBackupValue(value, options, state) {
   const opts = options || {};
+  const cloneState = state || (typeof WeakSet === 'function'
+    ? { stack: new WeakSet(), reportedCycle: false }
+    : null);
+
+  const handleCircularClone = (input, compute) => {
+    if (!cloneState || !cloneState.stack) {
+      return compute();
+    }
+    if (cloneState.stack.has(input)) {
+      if (!cloneState.reportedCycle
+        && typeof console !== 'undefined'
+        && console
+        && typeof console.warn === 'function') {
+        console.warn(
+          'Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.',
+        );
+      }
+      if (cloneState) {
+        cloneState.reportedCycle = true;
+      }
+      return AUTO_BACKUP_CYCLE_PLACEHOLDER;
+    }
+    cloneState.stack.add(input);
+    try {
+      return compute();
+    } finally {
+      cloneState.stack.delete(input);
+    }
+  };
+
   if (value === null || typeof value !== 'object') {
     return value;
-  }
-
-  if (Array.isArray(value)) {
-    return value.map((item) => cloneAutoBackupValue(item, opts));
   }
 
   if (value instanceof Date) {
     return new Date(value.getTime());
   }
 
-  const clone = {};
-  Object.keys(value).forEach((key) => {
-    clone[key] = cloneAutoBackupValue(value[key], opts);
-  });
-
-  if (!opts.stripMetadata) {
-    const metadata = getAutoBackupMetadata(value);
-    if (metadata) {
-      defineAutoBackupMetadata(clone, metadata);
-    }
+  if (Array.isArray(value)) {
+    return handleCircularClone(value, () => value.map((item) => cloneAutoBackupValue(item, opts, cloneState)));
   }
 
-  return clone;
+  return handleCircularClone(value, () => {
+    const clone = {};
+    Object.keys(value).forEach((key) => {
+      if (opts.stripMetadata && key === AUTO_BACKUP_METADATA_PROPERTY) {
+        return;
+      }
+      clone[key] = cloneAutoBackupValue(value[key], opts, cloneState);
+    });
+
+    if (!opts.stripMetadata) {
+      const metadata = getAutoBackupMetadata(value);
+      if (metadata) {
+        defineAutoBackupMetadata(clone, metadata);
+      }
+    }
+
+    return clone;
+  });
 }
 
 function cloneAutoBackupValueWithLegacyNormalization(value, options) {
-  const cloned = cloneAutoBackupValue(value, options);
+  const cloneState = typeof WeakSet === 'function'
+    ? { stack: new WeakSet(), reportedCycle: false }
+    : null;
+  const cloned = cloneAutoBackupValue(value, options, cloneState);
   const normalized = normalizeLegacyLongGopStructure(cloned);
   return normalized !== cloned ? normalized : cloned;
 }
@@ -6101,7 +6140,36 @@ function getAutoBackupEntrySignature(container, entry) {
   }
 }
 
-function createStableValueSignature(value) {
+function createStableValueSignature(value, state) {
+  const signatureState = state || (typeof WeakSet === 'function'
+    ? { seen: new WeakSet(), reportedCycle: false }
+    : null);
+  const seenSet = signatureState && signatureState.seen ? signatureState.seen : null;
+
+  const handleCircularSignature = (input, compute) => {
+    if (!seenSet) {
+      return compute();
+    }
+    if (seenSet.has(input)) {
+      if (!signatureState.reportedCycle
+        && typeof console !== 'undefined'
+        && console
+        && typeof console.warn === 'function') {
+        console.warn(
+          'Detected circular reference while computing automatic backup signature. Using a placeholder token to keep backups stable.',
+        );
+      }
+      signatureState.reportedCycle = true;
+      return AUTO_BACKUP_CYCLE_PLACEHOLDER;
+    }
+    seenSet.add(input);
+    try {
+      return compute();
+    } finally {
+      seenSet.delete(input);
+    }
+  };
+
   if (value === null) {
     return 'null';
   }
@@ -6109,35 +6177,44 @@ function createStableValueSignature(value) {
     return 'undefined';
   }
   if (Array.isArray(value)) {
-    let signature = '[';
-    for (let index = 0; index < value.length; index += 1) {
-      if (index > 0) {
-        signature += ',';
+    return handleCircularSignature(value, () => {
+      let signature = '[';
+      for (let index = 0; index < value.length; index += 1) {
+        if (index > 0) {
+          signature += ',';
+        }
+        signature += createStableValueSignature(value[index], signatureState);
       }
-      signature += createStableValueSignature(value[index]);
-    }
-    signature += ']';
-    return signature;
+      signature += ']';
+      return signature;
+    });
   }
   if (value instanceof Date) {
-    const timestamp = value.getTime();
-    if (Number.isNaN(timestamp)) {
-      return 'date:invalid';
-    }
-    return `date:${timestamp}`;
+    return handleCircularSignature(value, () => {
+      const timestamp = value.getTime();
+      if (Number.isNaN(timestamp)) {
+        return 'date:invalid';
+      }
+      return `date:${timestamp}`;
+    });
   }
   if (isPlainObject(value)) {
-    const keys = Object.keys(value).sort();
-    let signature = '{';
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      if (index > 0) {
-        signature += ',';
+    return handleCircularSignature(value, () => {
+      const keys = Object.keys(value).sort();
+      let signature = '{';
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        if (index > 0) {
+          signature += ',';
+        }
+        signature += `${JSON.stringify(key)}:${createStableValueSignature(value[key], signatureState)}`;
       }
-      signature += `${JSON.stringify(key)}:${createStableValueSignature(value[key])}`;
-    }
-    signature += '}';
-    return signature;
+      signature += '}';
+      return signature;
+    });
+  }
+  if (value && typeof value === 'object') {
+    return handleCircularSignature(value, () => `${typeof value}:${String(value)}`);
   }
   if (typeof value === 'number') {
     if (Number.isNaN(value)) {
@@ -6159,7 +6236,7 @@ function createStableValueSignature(value) {
     if (decoded.success && typeof decoded.value === 'string') {
       try {
         const parsed = JSON.parse(decoded.value);
-        return createStableValueSignature(parsed);
+        return createStableValueSignature(parsed, signatureState);
       } catch (signatureParseError) {
         console.warn(
           'Unable to decode compressed string while computing stable value signature',

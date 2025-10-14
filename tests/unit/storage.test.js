@@ -615,6 +615,27 @@ describe('setup storage', () => {
     expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
 
+  test('saveSetups replaces circular references in auto backups with a safe placeholder', () => {
+    const cycleKey = 'auto-backup-2024-02-02-00-00-Cycle';
+    const cycleEntry = { label: 'Cycle Entry' };
+    cycleEntry.self = cycleEntry;
+
+    saveSetups({ [cycleKey]: cycleEntry });
+
+    const stored = parseLocalStorageJSON(SETUP_KEY);
+    expect(stored).toHaveProperty(cycleKey);
+    const snapshot = stored[cycleKey] && stored[cycleKey].__cineAutoBackupSnapshot;
+    expect(snapshot).toBeDefined();
+    let payload = snapshot ? snapshot.payload : null;
+    if (payload && typeof payload === 'string') {
+      payload = JSON.parse(payload);
+    } else if (payload && typeof payload === 'object') {
+      payload = decompressStorageEnvelope(payload);
+    }
+    expect(payload && typeof payload === 'object').toBe(true);
+    expect(payload.self).toBe('__cineCircular__');
+  });
+
   test('saveSetups keeps auto backups with identical data when labels differ', () => {
     const shared = {
       camera: 'Shared Camera',
