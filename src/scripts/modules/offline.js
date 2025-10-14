@@ -940,8 +940,6 @@
       return null;
     }
 
-    const requestMode = 'cors';
-
     const nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
@@ -982,6 +980,8 @@
       const targetOrigin = resolveHrefOrigin(nextHref, referenceHref);
       return !!targetOrigin && targetOrigin === expectedOrigin;
     })();
+
+    const requestMode = includeCredentials ? 'same-origin' : 'cors';
 
     const warmupRequestHref = (() => {
       const referenceHref = readLocationHrefSafe(locationLike);
