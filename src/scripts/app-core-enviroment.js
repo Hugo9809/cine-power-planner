@@ -233,27 +233,23 @@ var CORE_RUNTIME_SHARED =
         return null;
       })();
 
-function collectCoreRuntimeCandidateScopes(primaryScope) {
+var collectCoreRuntimeCandidateScopes = (function initialiseCollectCoreRuntimeCandidateScopes() {
+  var sharedScope =
+    (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE) ||
+    (typeof globalThis !== 'undefined' && typeof globalThis === 'object' && globalThis) ||
+    (typeof window !== 'undefined' && typeof window === 'object' && window) ||
+    (typeof self !== 'undefined' && typeof self === 'object' && self) ||
+    (typeof global !== 'undefined' && typeof global === 'object' && global) ||
+    null;
+
   if (
-    CORE_RUNTIME_SHARED &&
-    typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function'
+    sharedScope &&
+    typeof sharedScope.collectCoreRuntimeCandidateScopes === 'function'
   ) {
-    try {
-      var sharedScopes = CORE_RUNTIME_SHARED.collectCandidateScopes(
-        primaryScope,
-        CORE_ENVIRONMENT_HELPERS
-      );
-      if (Array.isArray(sharedScopes)) {
-        return sharedScopes;
-      }
-    } catch (collectRuntimeScopeError) {
-      void collectRuntimeScopeError;
-    }
+    return sharedScope.collectCoreRuntimeCandidateScopes;
   }
 
-  var scopes = [];
-
-  function registerScope(scope) {
+  function registerScope(scopes, scope) {
     if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
       return;
     }
@@ -263,62 +259,97 @@ function collectCoreRuntimeCandidateScopes(primaryScope) {
     }
   }
 
-  if (
-    CORE_ENVIRONMENT_HELPERS &&
-    typeof CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
-  ) {
-    try {
-      var collectedScopes = CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primaryScope);
-      if (Array.isArray(collectedScopes)) {
-        for (var collectedIndex = 0; collectedIndex < collectedScopes.length; collectedIndex += 1) {
-          registerScope(collectedScopes[collectedIndex]);
+  function collectCandidateScopes(primaryScope) {
+    if (
+      CORE_RUNTIME_SHARED &&
+      typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function'
+    ) {
+      try {
+        var sharedScopes = CORE_RUNTIME_SHARED.collectCandidateScopes(
+          primaryScope,
+          CORE_ENVIRONMENT_HELPERS
+        );
+        if (Array.isArray(sharedScopes)) {
+          return sharedScopes;
         }
+      } catch (collectRuntimeScopeError) {
+        void collectRuntimeScopeError;
       }
-    } catch (collectScopeError) {
-      void collectScopeError;
     }
+
+    var scopes = [];
+
+    if (
+      CORE_ENVIRONMENT_HELPERS &&
+      typeof CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes === 'function'
+    ) {
+      try {
+        var collectedScopes = CORE_ENVIRONMENT_HELPERS.fallbackCollectCandidateScopes(primaryScope);
+        if (Array.isArray(collectedScopes)) {
+          for (var collectedIndex = 0; collectedIndex < collectedScopes.length; collectedIndex += 1) {
+            registerScope(scopes, collectedScopes[collectedIndex]);
+          }
+        }
+      } catch (collectScopeError) {
+        void collectScopeError;
+      }
+    }
+
+    registerScope(scopes, primaryScope);
+    registerScope(
+      scopes,
+      typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null
+    );
+    registerScope(
+      scopes,
+      typeof window !== 'undefined' && typeof window === 'object' ? window : null
+    );
+    registerScope(
+      scopes,
+      typeof self !== 'undefined' && typeof self === 'object' ? self : null
+    );
+    registerScope(
+      scopes,
+      typeof global !== 'undefined' && typeof global === 'object' ? global : null
+    );
+
+    var detectedScope = null;
+
+    if (
+      CORE_ENVIRONMENT_HELPERS &&
+      typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
+    ) {
+      try {
+        detectedScope = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
+      } catch (detectScopeError) {
+        void detectScopeError;
+        detectedScope = null;
+      }
+    } else if (typeof globalThis !== 'undefined' && typeof globalThis === 'object') {
+      detectedScope = globalThis;
+    } else if (typeof window !== 'undefined' && typeof window === 'object') {
+      detectedScope = window;
+    } else if (typeof self !== 'undefined' && typeof self === 'object') {
+      detectedScope = self;
+    } else if (typeof global !== 'undefined' && typeof global === 'object') {
+      detectedScope = global;
+    }
+
+    registerScope(scopes, detectedScope);
+
+    return scopes;
   }
 
-  registerScope(primaryScope);
-  registerScope(
-    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null
-  );
-  registerScope(
-    typeof window !== 'undefined' && typeof window === 'object' ? window : null
-  );
-  registerScope(
-    typeof self !== 'undefined' && typeof self === 'object' ? self : null
-  );
-  registerScope(
-    typeof global !== 'undefined' && typeof global === 'object' ? global : null
-  );
-
-  var detectedScope = null;
-
-  if (
-    CORE_ENVIRONMENT_HELPERS &&
-    typeof CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope === 'function'
-  ) {
+  if (sharedScope) {
     try {
-      detectedScope = CORE_ENVIRONMENT_HELPERS.fallbackDetectGlobalScope();
-    } catch (detectScopeError) {
-      void detectScopeError;
-      detectedScope = null;
+      sharedScope.collectCoreRuntimeCandidateScopes = collectCandidateScopes;
+    } catch (assignCollectScopeError) {
+      void assignCollectScopeError;
     }
-  } else if (typeof globalThis !== 'undefined' && typeof globalThis === 'object') {
-    detectedScope = globalThis;
-  } else if (typeof window !== 'undefined' && typeof window === 'object') {
-    detectedScope = window;
-  } else if (typeof self !== 'undefined' && typeof self === 'object') {
-    detectedScope = self;
-  } else if (typeof global !== 'undefined' && typeof global === 'object') {
-    detectedScope = global;
   }
 
-  registerScope(detectedScope);
-
-  return scopes;
-}
+  return collectCandidateScopes;
+})();
 
 // The runtime needs a predictable list of global scopes so that background
 // workers, offline tabs and legacy frames all share the same configuration. We
