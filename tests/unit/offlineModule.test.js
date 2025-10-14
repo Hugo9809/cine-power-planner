@@ -403,6 +403,30 @@ describe('cineOffline module', () => {
       });
     });
 
+    test('coerceForceReloadUrlDescriptor enforces same-origin nextHref values', () => {
+      const location = {
+        href: 'https://example.test/app/index.html',
+        origin: 'https://example.test',
+        pathname: '/app/index.html',
+      };
+
+      const descriptor = {
+        originalHref: 'https://othersite.test/app/index.html',
+        nextHref: 'https://othersite.test/app/index.html?forceReload=token123',
+        param: 'forceReload',
+        timestamp: 'token123',
+      };
+
+      const coerced = internal.coerceForceReloadUrlDescriptor(location, descriptor, 'forceReload');
+
+      expect(coerced).toEqual({
+        originalHref: 'https://othersite.test/app/index.html',
+        nextHref: 'https://example.test/app/index.html?forceReload=token123',
+        param: 'forceReload',
+        timestamp: 'token123',
+      });
+    });
+
   test('triggerReload appends a forceReload query parameter and prefers location.replace', () => {
     const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1234567890000);
 
@@ -422,6 +446,41 @@ describe('cineOffline module', () => {
     expect(location.reload).not.toHaveBeenCalled();
 
     nowSpy.mockRestore();
+  });
+
+  test('triggerReload sanitises precomputed nextHref values to current origin', () => {
+    const location = {
+      href: 'https://example.test/app/index.html',
+      origin: 'https://example.test',
+      replace: jest.fn((url) => {
+        location.href = url;
+      }),
+      assign: jest.fn((url) => {
+        location.href = url;
+      }),
+      reload: jest.fn(),
+    };
+
+    const history = {
+      replaceState: jest.fn(),
+      state: null,
+    };
+
+    const windowMock = { location, history };
+
+    const precomputed = {
+      originalHref: 'https://example.test/app/index.html',
+      nextHref: 'https://othersite.test/app/index.html?forceReload=abc123',
+      param: 'forceReload',
+      timestamp: 'abc123',
+    };
+
+    const result = internal.triggerReload(windowMock, precomputed);
+
+    expect(result).toBe(true);
+    expect(location.replace).toHaveBeenCalledTimes(1);
+    expect(location.replace).toHaveBeenCalledWith('https://example.test/app/index.html?forceReload=abc123');
+    expect(location.assign).not.toHaveBeenCalled();
   });
 
   test('triggerReload resolves relative location hrefs using origin and pathname', () => {
