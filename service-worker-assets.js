@@ -218,6 +218,7 @@
   "./src/scripts/loader.js",
   "./src/scripts/modern-support-check.js",
   "./src/scripts/modern-support-check.mjs",
+  "./src/scripts/modules/app-core/bootstrap-fallbacks.js",
   "./src/scripts/modules/app-core/localization.js",
   "./src/scripts/modules/app-core/pink-mode.js",
   "./src/scripts/modules/app-core/runtime.js",
