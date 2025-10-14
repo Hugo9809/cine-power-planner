@@ -796,6 +796,291 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return '';
     };
   }
+
+  var TEMPERATURE_NOTE_PROFILES = freezeDeep([
+    { celsius: 25, multiplier: 1 },
+    { celsius: 0, multiplier: 1.25 },
+    { celsius: -10, multiplier: 1.6 },
+    { celsius: -20, multiplier: 2 }
+  ]);
+
+  function resolveEscapeHtml() {
+    var escapeHtmlFn = runtimeFeedbackState && runtimeFeedbackState.dependencies ? runtimeFeedbackState.dependencies.escapeHtml : null;
+    if (!escapeHtmlFn && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.escapeHtml === 'function') {
+      escapeHtmlFn = GLOBAL_SCOPE.escapeHtml;
+    }
+    if (typeof escapeHtmlFn === 'function') {
+      return escapeHtmlFn;
+    }
+    return function escapeHtmlFallback(value) {
+      var text = value == null ? '' : String(value);
+      return text.replace(/[&<>"']/g, function replaceChar(ch) {
+        switch (ch) {
+          case '&':
+            return '&amp;';
+          case '<':
+            return '&lt;';
+          case '>':
+            return '&gt;';
+          case '"':
+            return '&quot;';
+          case '\'':
+            return '&#39;';
+          default:
+            return ch;
+        }
+      });
+    };
+  }
+
+  function normaliseTemperatureUnitPreference(unit) {
+    if (typeof unit !== 'string') {
+      return 'celsius';
+    }
+    var value = unit.trim().toLowerCase();
+    if (value === 'fahrenheit' || value === 'f' || value === '°f') {
+      return 'fahrenheit';
+    }
+    if (value === 'kelvin' || value === 'k') {
+      return 'kelvin';
+    }
+    return 'celsius';
+  }
+
+  function resolveTemperatureUnitPreference() {
+    var candidates = [];
+    if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+      if (typeof runtimeFeedbackState.dependencies.temperatureUnit === 'string') {
+        candidates.push(runtimeFeedbackState.dependencies.temperatureUnit);
+      }
+      if (runtimeFeedbackState.dependencies.sessionGlobalScope && typeof runtimeFeedbackState.dependencies.sessionGlobalScope.temperatureUnit === 'string') {
+        candidates.push(runtimeFeedbackState.dependencies.sessionGlobalScope.temperatureUnit);
+      }
+    }
+    if (GLOBAL_SCOPE) {
+      if (typeof GLOBAL_SCOPE.temperatureUnit === 'string') {
+        candidates.push(GLOBAL_SCOPE.temperatureUnit);
+      }
+      if (GLOBAL_SCOPE.sessionGlobalScope && typeof GLOBAL_SCOPE.sessionGlobalScope.temperatureUnit === 'string') {
+        candidates.push(GLOBAL_SCOPE.sessionGlobalScope.temperatureUnit);
+      }
+      if (typeof GLOBAL_SCOPE.localTemperatureUnit === 'string') {
+        candidates.push(GLOBAL_SCOPE.localTemperatureUnit);
+      }
+    }
+
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      var normalised = normaliseTemperatureUnitPreference(candidate);
+      if (normalised) {
+        if (normalised === 'kelvin') {
+          return 'celsius';
+        }
+        return normalised;
+      }
+    }
+
+    return 'celsius';
+  }
+
+  function createNumberFormatter(lang, options, fallbackDigits) {
+    try {
+      var formatter = new Intl.NumberFormat(lang || 'en', options || {});
+      return function formatNumber(value) {
+        return formatter.format(value);
+      };
+    } catch (error) {
+      void error;
+    }
+
+    var digits = typeof fallbackDigits === 'number' ? fallbackDigits : 0;
+    return function fallbackFormatNumber(value) {
+      if (typeof value !== 'number' || !Number.isFinite(value)) {
+        return String(value);
+      }
+      try {
+        return value.toFixed(digits);
+      } catch (formatError) {
+        void formatError;
+      }
+      return String(value);
+    };
+  }
+
+  function resolveLanguageFromContext(doc) {
+    var lang = null;
+    if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+      var getCurrentLang = runtimeFeedbackState.dependencies.getCurrentLang;
+      if (typeof getCurrentLang === 'function') {
+        try {
+          lang = getCurrentLang();
+        } catch (langError) {
+          void langError;
+        }
+      }
+    }
+    if (!lang && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.currentLang === 'string') {
+      lang = GLOBAL_SCOPE.currentLang;
+    }
+    if (!lang && doc && doc.documentElement && typeof doc.documentElement.lang === 'string') {
+      lang = doc.documentElement.lang;
+    }
+    if (!lang && typeof navigator !== 'undefined' && navigator && typeof navigator.language === 'string') {
+      lang = navigator.language;
+    }
+    if (typeof lang !== 'string' || !lang) {
+      return 'en';
+    }
+    return lang;
+  }
+
+  function resolveLanguageTexts(lang) {
+    var dictionaries = null;
+    if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+      var getTexts = runtimeFeedbackState.dependencies.getTexts;
+      if (typeof getTexts === 'function') {
+        try {
+          dictionaries = getTexts();
+        } catch (textsError) {
+          void textsError;
+        }
+      }
+    }
+    if (!dictionaries && GLOBAL_SCOPE && GLOBAL_SCOPE.texts && _typeof(GLOBAL_SCOPE.texts) === 'object') {
+      dictionaries = GLOBAL_SCOPE.texts;
+    }
+
+    var fallback = dictionaries && dictionaries.en ? dictionaries.en : {};
+    if (!lang || !dictionaries) {
+      return { langTexts: fallback, fallbackTexts: fallback };
+    }
+
+    if (dictionaries[lang]) {
+      return { langTexts: dictionaries[lang], fallbackTexts: fallback };
+    }
+
+    var dashIndex = lang.indexOf('-');
+    if (dashIndex !== -1) {
+      var baseLang = lang.slice(0, dashIndex);
+      if (dictionaries[baseLang]) {
+        return { langTexts: dictionaries[baseLang], fallbackTexts: fallback };
+      }
+    }
+
+    return { langTexts: fallback, fallbackTexts: fallback };
+  }
+
+  function convertCelsiusToUnit(celsius, unit) {
+    if (unit === 'fahrenheit') {
+      return celsius * 9 / 5 + 32;
+    }
+    return celsius;
+  }
+
+  function renderTemperatureNote(hours) {
+    var doc = resolveDocument({});
+    var container = runtimeFeedbackState && runtimeFeedbackState.elements ? runtimeFeedbackState.elements.tempNote : null;
+    if (!container && doc) {
+      try {
+        container = doc.getElementById('temperatureNote');
+      } catch (lookupError) {
+        void lookupError;
+      }
+      if (container && runtimeFeedbackState && runtimeFeedbackState.elements) {
+        runtimeFeedbackState.elements.tempNote = container;
+      }
+    }
+
+    if (!container || _typeof(container) !== 'object') {
+      return false;
+    }
+
+    var lang = resolveLanguageFromContext(doc);
+    var textBundles = resolveLanguageTexts(lang);
+    var resolveText = createTextResolver(textBundles.langTexts, textBundles.fallbackTexts);
+    var escapeHtmlFn = resolveEscapeHtml();
+
+    var headingText = resolveText('temperatureNoteHeading') || 'Temperature impact on runtime:';
+    var temperatureLabel = resolveText('temperatureLabel') || 'Temperature';
+    var runtimeLabel = resolveText('runtimeLabel') || 'Estimated Runtime (h)';
+    var batteryCountLabel = resolveText('batteryCountTempLabel') || 'Batteries needed';
+    var runtimeUnit = resolveText('batteryLifeUnit');
+
+    var unitPreference = resolveTemperatureUnitPreference();
+    var unitSymbolKey = unitPreference === 'fahrenheit' ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
+    var unitSymbol = resolveText(unitSymbolKey) || (unitPreference === 'fahrenheit' ? '°F' : '°C');
+
+    var runtimeFormatter = createNumberFormatter(lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 }, 2);
+    var integerFormatter = createNumberFormatter(lang, { maximumFractionDigits: 0 }, 0);
+    var temperatureFormatter = createNumberFormatter(lang, { maximumFractionDigits: unitPreference === 'fahrenheit' ? 0 : 0, signDisplay: 'exceptZero' }, 0);
+
+    var rowsHtml = '';
+    var numericHours = Number.isFinite(hours) ? hours : Number(hours);
+    if (!Number.isFinite(numericHours) && hours !== Infinity) {
+      numericHours = null;
+    }
+    var isInfinite = hours === Infinity;
+
+    for (var index = 0; index < TEMPERATURE_NOTE_PROFILES.length; index += 1) {
+      var profile = TEMPERATURE_NOTE_PROFILES[index];
+      var displayTemp = convertCelsiusToUnit(profile.celsius, unitPreference);
+      var formattedTemp = temperatureFormatter(displayTemp);
+      var runtimeValue = null;
+      var batteryValue = null;
+
+      if (isInfinite) {
+        runtimeValue = Infinity;
+        batteryValue = 1;
+      } else if (Number.isFinite(numericHours) && numericHours > 0) {
+        var adjustedRuntime = numericHours / profile.multiplier;
+        if (Number.isFinite(adjustedRuntime) && adjustedRuntime > 0) {
+          runtimeValue = adjustedRuntime;
+          var count = 10 / adjustedRuntime;
+          if (Number.isFinite(count) && count > 0) {
+            batteryValue = Math.max(1, Math.ceil(count));
+          }
+        }
+      }
+
+      var runtimeDisplay = '–';
+      if (runtimeValue === Infinity) {
+        runtimeDisplay = '∞';
+      } else if (Number.isFinite(runtimeValue) && runtimeValue > 0) {
+        runtimeDisplay = runtimeFormatter(runtimeValue);
+        if (runtimeUnit) {
+          runtimeDisplay += ' ' + runtimeUnit;
+        }
+      }
+
+      var batteryDisplay = '–';
+      if (Number.isFinite(batteryValue) && batteryValue > 0) {
+        batteryDisplay = integerFormatter(batteryValue);
+      }
+
+      rowsHtml += '<tr>' +
+        '<td>' + escapeHtmlFn(formattedTemp + ' ' + unitSymbol) + '</td>' +
+        '<td>' + escapeHtmlFn(runtimeDisplay) + '</td>' +
+        '<td>' + escapeHtmlFn(batteryDisplay) + '</td>' +
+        '</tr>';
+    }
+
+    var tableHtml = '<table><thead><tr>' +
+      '<th>' + escapeHtmlFn(temperatureLabel + ' (' + unitSymbol + ')') + '</th>' +
+      '<th>' + escapeHtmlFn(runtimeLabel) + '</th>' +
+      '<th>' + escapeHtmlFn(batteryCountLabel) + '</th>' +
+      '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+
+    var headingHtml = '<h3>' + escapeHtmlFn(headingText) + '</h3>';
+
+    try {
+      container.innerHTML = headingHtml + tableHtml;
+    } catch (assignError) {
+      void assignError;
+      container.innerHTML = headingHtml + tableHtml;
+    }
+
+    return true;
+  }
   function localizeResultsSection(options) {
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
@@ -2415,9 +2700,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     localizeResultsSection: localizeResultsSection,
     localizeBatteryComparisonSection: localizeBatteryComparisonSection,
     updateCalculations: updateCalculations,
-    setupRuntimeFeedback: setupRuntimeFeedback
+    setupRuntimeFeedback: setupRuntimeFeedback,
+    renderTemperatureNote: renderTemperatureNote
   };
   freezeDeep(resultsAPI);
+  if (runtimeFeedbackState && runtimeFeedbackState.dependencies) {
+    runtimeFeedbackState.dependencies.renderTemperatureNote = renderTemperatureNote;
+  }
+  exposeGlobal('renderTemperatureNote', renderTemperatureNote, {
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
   registerOrQueueModule('cineResults', resultsAPI, {
     category: 'ui',
     description: 'Power summary localisation and runtime feedback coordination.',
