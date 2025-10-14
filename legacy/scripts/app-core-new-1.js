@@ -5453,7 +5453,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!offlineIndicator) return;
     var updateOnlineStatus = function updateOnlineStatus() {
       var isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
-      offlineIndicator.style.display = isOnline ? 'none' : 'block';
+      if (isOnline) {
+        if (!offlineIndicator.hasAttribute('hidden')) {
+          offlineIndicator.setAttribute('hidden', '');
+        }
+        offlineIndicator.style.display = 'none';
+      } else {
+        offlineIndicator.removeAttribute('hidden');
+        offlineIndicator.style.display = 'block';
+      }
       if (typeof updateInstallBannerPosition === 'function') {
         updateInstallBannerPosition();
       }
