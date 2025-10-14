@@ -1969,9 +1969,9 @@ const texts = {
             "Check the connector warning boxes: green shows the pin or D-Tap battery feed is safe, yellow means the battery feed is near its limit, and red means the camera rig is pulling more power than the battery can supply.",
         },
         batteryComparison: {
-          title: "Compare battery options",
+          title: "Battery Comparison",
           body:
-            "Open Battery Comparison to evaluate alternate packs side by side and lock in the safest runtime margin for the day.",
+            "Battery Comparison evaluates alternate packs side by side so you can lock in the safest runtime margin. The table shows which batteries can power the rig—green pins and D-Tap feeds are safe, orange pins-only outputs cover the rig without D-Tap support—and how long each pack runs.",
         },
         runtimeFeedback: {
           title: "Submit runtime feedback",
