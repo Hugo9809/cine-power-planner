@@ -89,6 +89,10 @@
 // be refreshed without touching the heavy runtime bundle. We resolve the
 // localisation runtime through a dedicated helper module which keeps this file
 // focused on orchestration while smaller modules handle the heavy lifting.
+function isObject(candidate) {
+  return !!candidate && (typeof candidate === 'object' || typeof candidate === 'function');
+}
+
 function createInlineFallbackLocalizationRuntimeSetup() {
   return {
     localizationRuntimeEnvironment: null,
@@ -117,6 +121,133 @@ function createInlineFallbackLocalizationRuntimeSetup() {
 
 function fallbackInlineLocalizationRuntimeSetup() {
   return createInlineFallbackLocalizationRuntimeSetup();
+}
+
+function isLocalizationRuntimeSetup(candidate) {
+  if (!isObject(candidate)) {
+    return false;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(candidate, 'localizationRuntimeEnvironment')) {
+    return true;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(candidate, 'localizationBridge')) {
+    return true;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(candidate, 'localizationFallbacks')) {
+    return true;
+  }
+
+  return false;
+}
+
+function pushScopeIfMissing(scopes, scope) {
+  if (!isObject(scope)) {
+    return;
+  }
+
+  if (scopes.indexOf(scope) === -1) {
+    scopes.push(scope);
+  }
+}
+
+function resolveExistingLocalizationRuntimeSetup(options, fallbackScopes) {
+  const candidateScopes = [];
+
+  if (options) {
+    pushScopeIfMissing(candidateScopes, options.runtimeScope);
+    pushScopeIfMissing(candidateScopes, options.coreGlobalScope);
+  }
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    pushScopeIfMissing(candidateScopes, fallbackScopes[index]);
+  }
+
+  const requireFn =
+    options && typeof options.requireFn === 'function'
+      ? options.requireFn
+      : typeof require === 'function'
+      ? require
+      : null;
+
+  const resolveCoreSupportModule =
+    options && typeof options.resolveCoreSupportModule === 'function'
+      ? options.resolveCoreSupportModule
+      : null;
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+
+    let legacyNamespace = null;
+
+    try {
+      legacyNamespace = scope.cineCoreAppRuntimeLocalization;
+    } catch (legacyLookupError) {
+      void legacyLookupError;
+      legacyNamespace = null;
+    }
+
+    if (!isObject(legacyNamespace)) {
+      continue;
+    }
+
+    if (typeof legacyNamespace.resolveRuntimeLocalization === 'function') {
+      const candidateOptions = [
+        {
+          currentLocalization: legacyNamespace.currentLocalization,
+          resolveCoreSupportModule,
+          requireFn,
+          runtimeScope: options && options.runtimeScope ? options.runtimeScope : scope,
+          coreGlobalScope:
+            options && options.coreGlobalScope ? options.coreGlobalScope : scope,
+        },
+        {
+          resolveCoreSupportModule,
+          requireFn,
+          runtimeScope: options && options.runtimeScope ? options.runtimeScope : scope,
+          coreGlobalScope:
+            options && options.coreGlobalScope ? options.coreGlobalScope : scope,
+        },
+      ];
+
+      for (let optionIndex = 0; optionIndex < candidateOptions.length; optionIndex += 1) {
+        const legacyOptions = candidateOptions[optionIndex];
+
+        try {
+          const resolved = legacyNamespace.resolveRuntimeLocalization(legacyOptions);
+          if (isLocalizationRuntimeSetup(resolved)) {
+            return resolved;
+          }
+        } catch (legacyResolveError) {
+          void legacyResolveError;
+        }
+      }
+
+      try {
+        const resolved = legacyNamespace.resolveRuntimeLocalization();
+        if (isLocalizationRuntimeSetup(resolved)) {
+          return resolved;
+        }
+      } catch (legacyResolveError) {
+        void legacyResolveError;
+      }
+    }
+
+    if (typeof legacyNamespace.createFallbackLocalizationRuntimeSetup === 'function') {
+      try {
+        const inlineSetup = legacyNamespace.createFallbackLocalizationRuntimeSetup();
+        if (isLocalizationRuntimeSetup(inlineSetup)) {
+          return inlineSetup;
+        }
+      } catch (legacyInlineError) {
+        void legacyInlineError;
+      }
+    }
+  }
+
+  return null;
 }
 
 const LOCALIZATION_RUNTIME_RESOLVER_TOOLS = resolveCoreSupportModule(
@@ -190,7 +321,18 @@ const resolveLocalizationRuntimeSetup =
       }
     }
 
-    return fallbackInlineLocalizationRuntimeSetup;
+    return function legacyLocalizationRuntimeResolver(options) {
+      const legacyRuntime = resolveExistingLocalizationRuntimeSetup(
+        options,
+        fallbackScopes
+      );
+
+      if (legacyRuntime) {
+        return legacyRuntime;
+      }
+
+      return fallbackInlineLocalizationRuntimeSetup();
+    };
   })();
 
 const LOCALIZATION_RUNTIME_SETUP =
