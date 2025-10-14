@@ -42,6 +42,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/gear-list.js',
     'modules/runtime-guard.js',
     'modules/results.js',
+    'modules/app-core/bootstrap-fallbacks.js',
     'modules/app-core/pink-mode.js',
     'modules/app-core/localization.js',
     'app-core-runtime-scopes.js',
