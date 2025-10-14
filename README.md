@@ -102,6 +102,10 @@ drive without phoning home.
   whenever you regenerate service-worker assets, ship new icons or touch
   persistence code so cached builds keep matching the repository and user data
   remains fully protected offline.
+- **Plan redundant rotations.** Use the
+  [Backup Rotation Guide](docs/backup-rotation-guide.md) to map daily, weekly
+  and cold-storage copies so autosave snapshots, manual exports and shareable
+  bundles always have off-device redundancy before crews leave for set.
 - **Audit power connector safety.** Pair the
   [Power Summary Warning Reference](docs/power-summary-warning-reference.md)
   with each Power Summary rehearsal to log connector limits, redundant backups
