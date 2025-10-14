@@ -91,7 +91,7 @@
 // on orchestration while smaller modules handle the heavy lifting.
 const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationSupport',
-  '../app-core/localization-support.js'
+  './modules/app-core/localization-support.js'
 );
 
 const APP_CORE_LOCALIZATION_SUPPORT =
