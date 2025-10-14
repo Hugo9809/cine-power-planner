@@ -6288,6 +6288,9 @@ body.dark-mode .help-callout {
   width: 1em;
   height: 1em;
   display: block;
+}
+
+.icon-glyph.icon-svg:not(.pink-mode-icon) svg {
   stroke: currentColor;
   fill: none;
 }
