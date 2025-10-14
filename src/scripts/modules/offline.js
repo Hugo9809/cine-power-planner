@@ -917,6 +917,51 @@
     return false;
   }
 
+  function isLikelySafariFamilyBrowser(nav, windowLike) {
+    const win = windowLike || resolveWindow();
+
+    if (win && typeof win.safari === 'object' && win.safari && typeof win.safari.pushNotification === 'object') {
+      return true;
+    }
+
+    const vendor = nav && typeof nav.vendor === 'string' ? nav.vendor : '';
+    const userAgent = nav && typeof nav.userAgent === 'string' ? nav.userAgent : '';
+
+    if (!vendor && !userAgent) {
+      return false;
+    }
+
+    const normalisedVendor = vendor.toLowerCase();
+    const normalisedUserAgent = userAgent.toLowerCase();
+
+    if (!normalisedVendor.includes('apple')) {
+      return false;
+    }
+
+    if (!normalisedUserAgent.includes('safari')) {
+      return false;
+    }
+
+    const exclusionTokens = ['crios', 'fxios', 'edgios', 'edga', 'edge', 'opr/', 'opt/', 'opera', 'chrome', 'chromium'];
+    for (let index = 0; index < exclusionTokens.length; index += 1) {
+      const token = exclusionTokens[index];
+      if (normalisedUserAgent.includes(token)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function shouldPreferXmlHttpWarmup(nav, windowLike) {
+    const xhrCtor = resolveXmlHttpRequest(windowLike);
+    if (typeof xhrCtor !== 'function') {
+      return false;
+    }
+
+    return isLikelySafariFamilyBrowser(nav, windowLike);
+  }
+
   function scheduleReloadWarmup(options = {}) {
     const nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
     if (!nextHref) {
@@ -945,6 +990,8 @@
       return null;
     }
 
+    const preferXmlHttpWarmup = shouldPreferXmlHttpWarmup(nav, win);
+
     let controller = null;
     if (typeof AbortController === 'function') {
       try {
@@ -957,6 +1004,16 @@
 
     let serviceWorkerSettled = false;
     let cachesSettled = false;
+
+    const cancelHandlers = [];
+
+    const registerCancelHandler = handler => {
+      if (typeof handler !== 'function') {
+        return;
+      }
+
+      cancelHandlers.push(handler);
+    };
 
     const serviceWorkerPromise = settlePromise(options.serviceWorkerPromise).then((result) => {
       serviceWorkerSettled = true;
@@ -1036,15 +1093,161 @@
         return fetchFn.call(win || undefined, targetHref, requestInit);
       };
 
+      if (controller) {
+        registerCancelHandler(() => {
+          try {
+            controller.abort();
+          } catch (abortError) {
+            void abortError;
+          }
+        });
+      }
+
+      const attemptXmlHttpWarmup = () => {
+        if (!preferXmlHttpWarmup) {
+          return null;
+        }
+
+        const xhrCtor = resolveXmlHttpRequest(win);
+        if (typeof xhrCtor !== 'function') {
+          return null;
+        }
+
+        const targetHref = warmupRequestHref || nextHref;
+        if (!targetHref) {
+          return null;
+        }
+
+        let xhrInstance;
+        try {
+          xhrInstance = new xhrCtor();
+        } catch (creationError) {
+          void creationError;
+          xhrInstance = null;
+        }
+
+        if (!xhrInstance) {
+          return null;
+        }
+
+        let aborted = false;
+
+        registerCancelHandler(() => {
+          if (!xhrInstance) {
+            return;
+          }
+
+          aborted = true;
+          try {
+            xhrInstance.abort();
+          } catch (abortError) {
+            void abortError;
+          }
+        });
+
+        const result = new Promise(resolve => {
+          const conclude = success => {
+            if (resolve) {
+              resolve(success);
+            }
+          };
+
+          xhrInstance.addEventListener('load', () => {
+            if (aborted) {
+              conclude(false);
+              return;
+            }
+
+            try {
+              void xhrInstance.responseText;
+            } catch (consumeError) {
+              void consumeError;
+            }
+
+            const status = typeof xhrInstance.status === 'number' ? xhrInstance.status : 0;
+            if (!status) {
+              conclude(true);
+              return;
+            }
+
+            conclude(status >= 200 && status < 400);
+          });
+
+          xhrInstance.addEventListener('error', () => {
+            conclude(false);
+          });
+
+          xhrInstance.addEventListener('abort', () => {
+            conclude(false);
+          });
+
+          xhrInstance.addEventListener('timeout', () => {
+            conclude(false);
+          });
+        });
+
+        try {
+          xhrInstance.open('GET', targetHref, true);
+        } catch (openError) {
+          void openError;
+          return null;
+        }
+
+        try {
+          xhrInstance.withCredentials = includeCredentials;
+        } catch (withCredentialsError) {
+          void withCredentialsError;
+        }
+
+        try {
+          xhrInstance.responseType = 'text';
+        } catch (responseTypeError) {
+          void responseTypeError;
+        }
+
+        try {
+          const cacheDirective = allowCachePopulation ? 'no-cache' : 'no-store';
+          xhrInstance.setRequestHeader('Cache-Control', cacheDirective);
+          xhrInstance.setRequestHeader('Pragma', cacheDirective);
+        } catch (headerError) {
+          void headerError;
+        }
+
+        try {
+          xhrInstance.send(null);
+        } catch (sendError) {
+          void sendError;
+          return null;
+        }
+
+        return result.then(value => !!value);
+      };
+
       const isAborted = () => controller && controller.signal && controller.signal.aborted === true;
 
       let response = null;
       let firstError = null;
 
-      try {
-        response = await performFetch();
-      } catch (error) {
-        firstError = error;
+      let shouldAttemptFetch = !preferXmlHttpWarmup;
+      if (preferXmlHttpWarmup) {
+        try {
+          const xmlHttpResult = await attemptXmlHttpWarmup();
+          if (xmlHttpResult === true) {
+            return true;
+          }
+          shouldAttemptFetch = true;
+        } catch (xmlHttpError) {
+          void xmlHttpError;
+          shouldAttemptFetch = true;
+        }
+      }
+
+      if (shouldAttemptFetch) {
+        try {
+          response = await performFetch();
+        } catch (error) {
+          firstError = error;
+        }
       }
 
       if (!response) {
@@ -1106,11 +1309,16 @@
 
     return {
       cancel() {
-        if (controller && typeof controller.abort === 'function') {
+        for (let index = 0; index < cancelHandlers.length; index += 1) {
+          const handler = cancelHandlers[index];
+          if (typeof handler !== 'function') {
+            continue;
+          }
+
           try {
-            controller.abort();
-          } catch (abortError) {
-            void abortError;
+            handler();
+          } catch (error) {
+            void error;
           }
         }
       },
@@ -1355,6 +1563,21 @@
 
     const globalFetch = resolveGlobal('fetch');
     return typeof globalFetch === 'function' ? globalFetch : null;
+  }
+
+  function resolveXmlHttpRequest(windowLike) {
+    const win = windowLike || resolveWindow();
+
+    if (win && typeof win.XMLHttpRequest === 'function') {
+      return win.XMLHttpRequest;
+    }
+
+    if (typeof XMLHttpRequest === 'function') {
+      return XMLHttpRequest;
+    }
+
+    const globalXmlHttpRequest = resolveGlobal('XMLHttpRequest');
+    return typeof globalXmlHttpRequest === 'function' ? globalXmlHttpRequest : null;
   }
 
   function registerFallbackStorage(storages, candidate, label) {
