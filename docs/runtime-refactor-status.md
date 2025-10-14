@@ -135,25 +135,20 @@
 | File | Previous lines | Current lines | Delta |
 | --- | --- | --- | --- |
 | `src/scripts/app-core-new-1.js` | 23449 | 23454 | +5 |
-| `src/scripts/modules/core/pink-mode-support.js` | – | 243 | +243 |
 | `legacy/scripts/modules/core/pink-mode-support.js` | – | 194 | +194 |
 
 *Notes:*
 
-- Added `cineCorePinkModeSupport` to centralise the pink mode fallbacks, exposing the animation helpers when present and preserving resilient defaults for offline and cold-start contexts.【F:src/scripts/modules/core/pink-mode-support.js†L1-L243】
+- Added `cineCorePinkModeSupport` to the aggregated core module, exposing the animation helpers when present and preserving resilient defaults for offline and cold-start contexts while keeping the export available through the shared module map.【F:src/scripts/modules/core/pink-mode.js†L2426-L2604】
 - App core now resolves the shared support bridge before touching local fallbacks, trimming duplicate promise helpers while keeping the offline-safe behaviour that protects autosave and icon rotation state.【F:src/scripts/app-core-new-1.js†L203-L324】
 - Updated the module manifests so both the modern and legacy loaders, along with the service worker cache rehearsal, ship the new bridge for consistent offline coverage.【F:src/scripts/script.js†L33-L47】【F:legacy/scripts/script.js†L13-L32】【F:service-worker-assets.js†L41-L84】
 
 ## Step 12 – Pink mode animation asset resilience
 
-| File | Previous lines | Current lines | Delta |
-| --- | --- | --- | --- |
-| `src/scripts/modules/core/pink-mode-animations.js` | 1899 | 2055 | +156 |
-
 *Notes:*
 
-- Pink mode animations now resolve asset URLs relative to the active document base, preserving correct lookups when the planner runs from custom subdirectories or offline mirrors.【F:src/scripts/modules/core/pink-mode-animations.js†L29-L116】
-- Asset fetches reuse the service worker cache first and fall back to XHR when `fetch` is blocked, keeping the animated icon library available even for strict offline launches that previously rendered static placeholders.【F:src/scripts/modules/core/pink-mode-animations.js†L118-L243】【F:src/scripts/modules/core/pink-mode-animations.js†L756-L809】
+- Pink mode animations resolve asset URLs relative to the active document base from within the aggregated pink mode module, preserving correct lookups when the planner runs from custom subdirectories or offline mirrors.【F:src/scripts/modules/core/pink-mode.js†L29-L524】
+- Asset fetches reuse the service worker cache first and fall back to XHR when `fetch` is blocked, keeping the animated icon library available even for strict offline launches that previously rendered static placeholders.【F:src/scripts/modules/core/pink-mode.js†L524-L1024】【F:src/scripts/modules/core/pink-mode.js†L1744-L2055】
 
 ## Step 13 – Runtime scope helper extraction
 
