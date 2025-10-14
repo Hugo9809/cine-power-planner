@@ -548,7 +548,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return;
       }
       var script = document.createElement('script');
-      script.src = 'src/vendor/lottie-light.min.js';
+      script.src = 'src/vendor/lottie.min.js';
       script.async = true;
       script.setAttribute('data-loader', 'pink-mode-lottie');
       var _handleLoad = function handleLoad() {
