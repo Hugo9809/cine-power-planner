@@ -7,6 +7,73 @@
  * previous files so the UI polish and accessibility safeguards keep working
  * across offline sessions and restores.
  */
+
+const CINE_CORE_APP_PINK_MODE_EXPORT_NAMESPACE_KEY =
+  '__cineCoreAppPinkModeNamespaces';
+
+function registerAppCorePinkModeNamespace(namespaceName, namespace) {
+  if (typeof namespaceName !== 'string' || !namespaceName) {
+    return;
+  }
+
+  if (!namespace || typeof namespace !== 'object') {
+    return;
+  }
+
+  if (typeof module !== 'object' || !module || !module.exports) {
+    return;
+  }
+
+  let exportsTarget = module.exports;
+
+  if (!exportsTarget || typeof exportsTarget !== 'object') {
+    exportsTarget = {};
+  }
+
+  if (module.exports !== exportsTarget) {
+    module.exports = exportsTarget;
+  }
+
+  let namespaceBucket = exportsTarget[CINE_CORE_APP_PINK_MODE_EXPORT_NAMESPACE_KEY];
+
+  if (!namespaceBucket || typeof namespaceBucket !== 'object') {
+    namespaceBucket = {};
+
+    try {
+      Object.defineProperty(exportsTarget, CINE_CORE_APP_PINK_MODE_EXPORT_NAMESPACE_KEY, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespaceBucket,
+      });
+    } catch (defineBucketError) {
+      void defineBucketError;
+      exportsTarget[CINE_CORE_APP_PINK_MODE_EXPORT_NAMESPACE_KEY] = namespaceBucket;
+    }
+  }
+
+  namespaceBucket[namespaceName] = namespace;
+
+  if (!Object.prototype.hasOwnProperty.call(exportsTarget, namespaceName)) {
+    try {
+      Object.defineProperty(exportsTarget, namespaceName, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: namespace,
+      });
+    } catch (defineNamespaceError) {
+      void defineNamespaceError;
+      exportsTarget[namespaceName] = namespace;
+    }
+  } else {
+    exportsTarget[namespaceName] = namespace;
+  }
+
+  for (const key of Object.keys(namespace)) {
+    exportsTarget[key] = namespace[key];
+  }
+}
 /*
  * Moves the pink mode support orchestration into a standalone helper so the
  * main app core bundle stays lean. The helper keeps the resilient fallback
@@ -342,9 +409,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
 /*
  * Moves the pink mode support resolver into a dedicated module. The extraction
@@ -653,9 +718,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
 /*
  * Provides a loader that resolves the pink mode support API for the modern app
@@ -1123,9 +1186,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
 /*
  * Centralises the pink mode runtime helpers. The modern app core used to carry
@@ -1518,9 +1579,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
 /*
  * Provides a shared fallback implementation for the pink mode runtime. During
@@ -1654,9 +1713,7 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
 /*
  * Provides a bridge that resolves the pink mode runtime helpers while keeping
@@ -2104,7 +2161,5 @@
     }
   }
 
-  if (typeof module === 'object' && module && module.exports) {
-    module.exports = existing;
-  }
+  registerAppCorePinkModeNamespace(namespaceName, existing);
 })();
