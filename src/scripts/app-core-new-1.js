@@ -679,59 +679,6 @@ const {
   PINK_MODE_ICON_FALLBACK_MARKUP,
 } = PINK_MODE_SUPPORT_API;
 
-const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
-  let resolvedSupport = null;
-
-  if (typeof resolveCoreSupportModule === 'function') {
-    try {
-      resolvedSupport = resolveCoreSupportModule(
-        'cineCoreRuntimeState',
-        './modules/core/runtime-state.js'
-      );
-    } catch (runtimeStateResolveError) {
-      void runtimeStateResolveError;
-      resolvedSupport = null;
-    }
-  }
-
-  if (!resolvedSupport && typeof require === 'function') {
-    try {
-      const requiredRuntimeState = require('./modules/core/runtime-state.js');
-      if (requiredRuntimeState && typeof requiredRuntimeState === 'object') {
-        resolvedSupport = requiredRuntimeState;
-      }
-    } catch (runtimeStateRequireError) {
-      void runtimeStateRequireError;
-    }
-  }
-
-  if (resolvedSupport) {
-    return resolvedSupport;
-  }
-
-  const fallbackScopes = collectCoreRuntimeCandidateScopes(
-    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
-  );
-
-  for (let index = 0; index < fallbackScopes.length; index += 1) {
-    const candidateScope = fallbackScopes[index];
-    if (!candidateScope || typeof candidateScope !== 'object') {
-      continue;
-    }
-
-    try {
-      const candidate = candidateScope.cineCoreRuntimeState;
-      if (candidate && typeof candidate === 'object') {
-        return candidate;
-      }
-    } catch (runtimeStateLookupError) {
-      void runtimeStateLookupError;
-    }
-  }
-
-  return null;
-})();
-
 const CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = resolveCoreSupportModule(
   'cineCoreRuntimeCandidateScopes',
   './modules/core/runtime-candidate-scopes.js'
@@ -962,43 +909,141 @@ const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT =
       })
     : null) || FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT;
 
-function collectCoreRuntimeCandidateScopes(primaryScope) {
-  const support = CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT;
-  const fallbackSupport = FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT;
+const RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppRuntimeCandidateScopeResolvers',
+  './modules/app-core/runtime-candidate-scope-resolvers.js'
+);
 
-  if (support && typeof support.collectCandidateScopes === 'function') {
+const createRuntimeCandidateScopeResolvers =
+  (RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS &&
+  typeof RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers ===
+    'function'
+    ? RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS.createRuntimeCandidateScopeResolvers
+    : (function resolveRuntimeCandidateScopeResolversFactory() {
+        if (typeof require === 'function') {
+          try {
+            const requiredRuntimeCandidateScopeResolvers = require(
+              './modules/app-core/runtime-candidate-scope-resolvers.js'
+            );
+            if (
+              requiredRuntimeCandidateScopeResolvers &&
+              typeof requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers ===
+                'function'
+            ) {
+              return requiredRuntimeCandidateScopeResolvers.createRuntimeCandidateScopeResolvers;
+            }
+          } catch (runtimeCandidateScopeResolversRequireError) {
+            void runtimeCandidateScopeResolversRequireError;
+          }
+        }
+
+        return null;
+      })());
+
+function createInlineRuntimeCandidateScopeResolvers(resolverOptions) {
+  const runtimeSupport =
+    resolverOptions && resolverOptions.runtimeCandidateScopeSupport
+      ? resolverOptions.runtimeCandidateScopeSupport
+      : null;
+  const fallbackSupport =
+    resolverOptions && resolverOptions.fallbackRuntimeCandidateScopeSupport
+      ? resolverOptions.fallbackRuntimeCandidateScopeSupport
+      : null;
+
+  function tryCollectWithSupport(support, primaryScope) {
+    if (!support || typeof support.collectCandidateScopes !== 'function') {
+      return null;
+    }
+
     try {
       const collected = support.collectCandidateScopes(primaryScope);
-      if (Array.isArray(collected)) {
-        return collected;
-      }
+      return Array.isArray(collected) ? collected : null;
     } catch (collectCandidateScopesError) {
       void collectCandidateScopesError;
     }
+
+    return null;
   }
 
-  if (fallbackSupport && typeof fallbackSupport.collectCandidateScopes === 'function') {
-    try {
-      const collected = fallbackSupport.collectCandidateScopes(primaryScope);
-      if (Array.isArray(collected)) {
-        return collected;
-      }
-    } catch (fallbackCollectError) {
-      void fallbackCollectError;
+  function tryEnsureWithSupport(support, options) {
+    if (!support || typeof support.ensureCandidateScopes !== 'function') {
+      return null;
     }
+
+    try {
+      const ensured = support.ensureCandidateScopes(options);
+      return Array.isArray(ensured) ? ensured : null;
+    } catch (ensureCandidateScopesError) {
+      void ensureCandidateScopesError;
+    }
+
+    return null;
   }
 
-  return [];
+  function inlineCollectCoreRuntimeCandidateScopes(primaryScope) {
+    const collected = tryCollectWithSupport(runtimeSupport, primaryScope);
+    if (collected) {
+      return collected;
+    }
+
+    const fallbackCollected = tryCollectWithSupport(fallbackSupport, primaryScope);
+    if (fallbackCollected) {
+      return fallbackCollected;
+    }
+
+    return [];
+  }
+
+  function inlineEnsureCoreRuntimeCandidateScopes(ensureOptions) {
+    const options = ensureOptions && typeof ensureOptions === 'object' ? ensureOptions : {};
+
+    const ensured = tryEnsureWithSupport(runtimeSupport, options);
+    if (ensured && ensured.length) {
+      return ensured;
+    }
+
+    const fallbackEnsured = tryEnsureWithSupport(fallbackSupport, options);
+    if (fallbackEnsured && fallbackEnsured.length) {
+      return fallbackEnsured;
+    }
+
+    return inlineCollectCoreRuntimeCandidateScopes(options.primaryScope);
+  }
+
+  return {
+    collectCoreRuntimeCandidateScopes: inlineCollectCoreRuntimeCandidateScopes,
+    ensureCoreRuntimeCandidateScopes: inlineEnsureCoreRuntimeCandidateScopes,
+  };
 }
+
+const runtimeCandidateScopeResolvers =
+  (typeof createRuntimeCandidateScopeResolvers === 'function'
+    ? createRuntimeCandidateScopeResolvers({
+        runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+        fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+      })
+    : null) ||
+  createInlineRuntimeCandidateScopeResolvers({
+    runtimeCandidateScopeSupport: CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+    fallbackRuntimeCandidateScopeSupport: FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT,
+  });
+
+const collectCoreRuntimeCandidateScopes =
+  runtimeCandidateScopeResolvers &&
+  typeof runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes === 'function'
+    ? runtimeCandidateScopeResolvers.collectCoreRuntimeCandidateScopes
+    : function fallbackCollectCoreRuntimeCandidateScopes() {
+        return [];
+      };
 
 const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
   const primaryScope =
     typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null;
 
-  const ensureSupport =
-    CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT &&
-    typeof CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT.ensureCandidateScopes === 'function'
-      ? CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT.ensureCandidateScopes
+  const ensureFn =
+    runtimeCandidateScopeResolvers &&
+    typeof runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes === 'function'
+      ? runtimeCandidateScopeResolvers.ensureCoreRuntimeCandidateScopes
       : null;
 
   const ensureOptions = {
@@ -1024,36 +1069,71 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandid
     },
   };
 
-  let ensuredScopes = null;
-
-  if (typeof ensureSupport === 'function') {
+  if (typeof ensureFn === 'function') {
     try {
-      ensuredScopes = ensureSupport(ensureOptions);
+      const ensuredScopes = ensureFn(ensureOptions);
+      if (Array.isArray(ensuredScopes)) {
+        return ensuredScopes;
+      }
     } catch (ensureCandidateScopesError) {
       void ensureCandidateScopesError;
-      ensuredScopes = null;
     }
-  }
-
-  if (
-    (!Array.isArray(ensuredScopes) || !ensuredScopes.length) &&
-    FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT &&
-    typeof FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT.ensureCandidateScopes === 'function'
-  ) {
-    try {
-      ensuredScopes =
-        FALLBACK_RUNTIME_CANDIDATE_SCOPE_SUPPORT.ensureCandidateScopes(ensureOptions);
-    } catch (fallbackEnsureError) {
-      void fallbackEnsureError;
-      ensuredScopes = null;
-    }
-  }
-
-  if (Array.isArray(ensuredScopes)) {
-    return ensuredScopes;
   }
 
   return collectCoreRuntimeCandidateScopes(primaryScope);
+})();
+
+const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
+  let resolvedSupport = null;
+
+  if (typeof resolveCoreSupportModule === 'function') {
+    try {
+      resolvedSupport = resolveCoreSupportModule(
+        'cineCoreRuntimeState',
+        './modules/core/runtime-state.js'
+      );
+    } catch (runtimeStateResolveError) {
+      void runtimeStateResolveError;
+      resolvedSupport = null;
+    }
+  }
+
+  if (!resolvedSupport && typeof require === 'function') {
+    try {
+      const requiredRuntimeState = require('./modules/core/runtime-state.js');
+      if (requiredRuntimeState && typeof requiredRuntimeState === 'object') {
+        resolvedSupport = requiredRuntimeState;
+      }
+    } catch (runtimeStateRequireError) {
+      void runtimeStateRequireError;
+    }
+  }
+
+  if (resolvedSupport) {
+    return resolvedSupport;
+  }
+
+  const fallbackScopes = collectCoreRuntimeCandidateScopes(
+    typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
+  );
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const candidateScope = fallbackScopes[index];
+    if (!candidateScope || typeof candidateScope !== 'object') {
+      continue;
+    }
+
+    try {
+      const candidate = candidateScope.cineCoreRuntimeState;
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    } catch (runtimeStateLookupError) {
+      void runtimeStateLookupError;
+    }
+  }
+
+  return null;
 })();
 
 const CORE_RUNTIME_LOCALIZATION = (function resolveCoreRuntimeLocalization() {
