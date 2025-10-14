@@ -44,7 +44,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var path = typeof url.pathname === 'string' ? url.pathname : '';
       var baseAdjusted = false;
       if (path) {
-        var stripSegments = Object.freeze(['/src/scripts/', '/scripts/', '/legacy/scripts/']);
+        var stripSegments = Object.freeze(['/legacy/scripts/', '/src/scripts/', '/scripts/']);
         for (var index = 0; index < stripSegments.length; index += 1) {
           var marker = stripSegments[index];
           var markerIndex = path.indexOf(marker);
