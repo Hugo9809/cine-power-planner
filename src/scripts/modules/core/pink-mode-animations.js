@@ -34,6 +34,20 @@
     return trimmed;
   }
 
+  function encodePinkModeAssetUrlCandidate(url) {
+    if (typeof url !== 'string' || !url) {
+      return '';
+    }
+
+    try {
+      return encodeURI(url);
+    } catch (error) {
+      void error;
+    }
+
+    return '';
+  }
+
   function normalizePinkModeBaseHref(href) {
     if (typeof href !== 'string' || !href) {
       return '';
@@ -132,7 +146,8 @@
 
     const baseUrl = resolvePinkModeAssetBaseUrl();
     if (!baseUrl) {
-      return normalized;
+      const encodedNormalized = encodePinkModeAssetUrlCandidate(normalized);
+      return encodedNormalized || normalized;
     }
 
     try {
@@ -142,10 +157,13 @@
     }
 
     if (normalized.charAt(0) === '/') {
-      return normalized;
+      const encodedLeading = encodePinkModeAssetUrlCandidate(normalized);
+      return encodedLeading || normalized;
     }
 
-    return baseUrl + normalized;
+    const joined = `${baseUrl}${normalized}`;
+    const encodedJoined = encodePinkModeAssetUrlCandidate(joined);
+    return encodedJoined || joined;
   }
 
   function createPinkModeAssetRequest(url) {
@@ -157,8 +175,20 @@
       return new Request(url, { credentials: 'same-origin' });
     } catch (error) {
       void error;
-      return null;
     }
+
+    if (typeof url === 'string') {
+      const encoded = encodePinkModeAssetUrlCandidate(url);
+      if (encoded && encoded !== url) {
+        try {
+          return new Request(encoded, { credentials: 'same-origin' });
+        } catch (encodedError) {
+          void encodedError;
+        }
+      }
+    }
+
+    return null;
   }
 
   async function readResponseTextSafe(response) {
@@ -225,7 +255,30 @@
     return new Promise(resolve => {
       try {
         const request = new XMLHttpRequest();
-        request.open('GET', url, true);
+        let requestUrl = url;
+        if (typeof requestUrl === 'string' && requestUrl) {
+          const encodedUrl = encodePinkModeAssetUrlCandidate(requestUrl);
+          if (encodedUrl) {
+            requestUrl = encodedUrl;
+          }
+        }
+        try {
+          request.open('GET', requestUrl, true);
+        } catch (openError) {
+          void openError;
+          try {
+            const fallbackUrl = encodePinkModeAssetUrlCandidate(resolvePinkModeAssetUrl(url));
+            if (fallbackUrl) {
+              request.open('GET', fallbackUrl, true);
+            } else {
+              request.open('GET', requestUrl, true);
+            }
+          } catch (fallbackOpenError) {
+            void fallbackOpenError;
+            resolve(null);
+            return;
+          }
+        }
         request.onreadystatechange = function handleReadyStateChange() {
           if (request.readyState !== 4) {
             return;
