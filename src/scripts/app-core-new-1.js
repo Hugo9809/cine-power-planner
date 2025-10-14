@@ -158,7 +158,79 @@ function resolveAppCoreBootstrapTools() {
   return null;
 }
 
+function resolveAppCoreBootstrapFallbackTools() {
+  const fallbackNamespace = resolveCoreSupportModule(
+    'cineCoreAppCoreBootstrapFallbacks',
+    './modules/app-core/bootstrap-fallbacks.js'
+  );
+
+  if (fallbackNamespace && typeof fallbackNamespace === 'object') {
+    return fallbackNamespace;
+  }
+
+  const requireFn = typeof require === 'function' ? require : null;
+
+  if (typeof requireFn === 'function') {
+    try {
+      const requiredFallback = requireFn('./modules/app-core/bootstrap-fallbacks.js');
+
+      if (requiredFallback && typeof requiredFallback === 'object') {
+        return requiredFallback;
+      }
+    } catch (bootstrapFallbackRequireError) {
+      void bootstrapFallbackRequireError;
+    }
+  }
+
+  const fallbackScopes = [
+    typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const scope = fallbackScopes[index];
+
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      const candidate = scope.cineCoreAppCoreBootstrapFallbacks;
+
+      if (candidate && typeof candidate === 'object') {
+        return candidate;
+      }
+    } catch (bootstrapFallbackLookupError) {
+      void bootstrapFallbackLookupError;
+    }
+  }
+
+  return null;
+}
+
+const APP_CORE_BOOTSTRAP_FALLBACK_TOOLS = resolveAppCoreBootstrapFallbackTools();
+
 function createInlineLocalizationFallback() {
+  if (
+    APP_CORE_BOOTSTRAP_FALLBACK_TOOLS &&
+    typeof APP_CORE_BOOTSTRAP_FALLBACK_TOOLS.createLocalizationBootstrapFallback ===
+      'function'
+  ) {
+    try {
+      const moduleFallback = APP_CORE_BOOTSTRAP_FALLBACK_TOOLS.createLocalizationBootstrapFallback();
+
+      if (moduleFallback && typeof moduleFallback === 'object') {
+        return moduleFallback;
+      }
+    } catch (localizationFallbackError) {
+      void localizationFallbackError;
+    }
+  }
+
   return {
     localizationSupport: null,
     localizationRuntimeEnvironment: null,
@@ -186,6 +258,24 @@ function createInlineLocalizationFallback() {
 }
 
 function createInlineRuntimeSharedFallback(fallbackOptions) {
+  if (
+    APP_CORE_BOOTSTRAP_FALLBACK_TOOLS &&
+    typeof APP_CORE_BOOTSTRAP_FALLBACK_TOOLS.createRuntimeSharedBootstrapFallback ===
+      'function'
+  ) {
+    try {
+      const moduleFallback = APP_CORE_BOOTSTRAP_FALLBACK_TOOLS.createRuntimeSharedBootstrapFallback(
+        fallbackOptions
+      );
+
+      if (moduleFallback && typeof moduleFallback === 'object') {
+        return moduleFallback;
+      }
+    } catch (runtimeSharedFallbackError) {
+      void runtimeSharedFallbackError;
+    }
+  }
+
   const runtimeScope =
     fallbackOptions && typeof fallbackOptions.runtimeScope === 'object'
       ? fallbackOptions.runtimeScope
