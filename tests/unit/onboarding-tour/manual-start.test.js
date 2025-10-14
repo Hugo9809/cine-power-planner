@@ -5,7 +5,29 @@
 const path = require('path');
 
 describe('onboarding tour manual start', () => {
-  const modulePath = path.resolve(__dirname, '../../../src/scripts/modules/features/onboarding-tour.js');
+  const modulePath = path.resolve(
+    __dirname,
+    '../../../src/scripts/modules/features/onboarding-tour.js',
+  );
+  const minimalTexts = {
+    en: {
+      onboardingTour: {
+        prefaceIndicator: 'Welcome',
+        stepIndicator: 'Step {current} of {total}',
+      },
+    },
+    de: {
+      onboardingTour: {
+        prefaceIndicator: 'Willkommen',
+      },
+    },
+    fr: {
+      onboardingTour: {
+        prefaceIndicator: 'Bienvenue',
+        stepIndicator: 'Étape {current} sur {total}',
+      },
+    },
+  };
 
   function loadModule(options = {}) {
     jest.resetModules();
@@ -26,6 +48,7 @@ describe('onboarding tour manual start', () => {
     if (options.currentLang) {
       global.currentLang = options.currentLang;
     }
+
     if (options.texts) {
       global.texts = options.texts;
     }
@@ -493,12 +516,14 @@ describe('onboarding tour manual start', () => {
   });
 
   test('language step counts from one and stays synchronized', async () => {
-    loadModule();
+    loadModule({ texts: minimalTexts });
 
     const trigger = document.querySelector('[data-onboarding-tour-trigger]');
     const helpDialog = document.getElementById('helpDialog');
     expect(trigger).not.toBeNull();
     expect(helpDialog).not.toBeNull();
+
+    expect(global.texts.fr.onboardingTour.prefaceIndicator).toBe('Bienvenue');
 
     helpDialog.removeAttribute('hidden');
     helpDialog.setAttribute('open', '');
@@ -513,13 +538,15 @@ describe('onboarding tour manual start', () => {
     expect(progress).not.toBeNull();
     expect(progress.textContent).toBe('Welcome');
 
-    const onboardingLanguage = overlay.querySelector('select.onboarding-hero-language-select');
+    let onboardingLanguage = overlay.querySelector('select.onboarding-hero-language-select');
     expect(onboardingLanguage).not.toBeNull();
     expect(onboardingLanguage.value).toBe('en');
 
     onboardingLanguage.value = 'de';
     onboardingLanguage.dispatchEvent(new Event('change', { bubbles: true }));
     await new Promise(resolve => setTimeout(resolve, 30));
+
+    expect(progress.textContent).toBe('Willkommen');
 
     const headerLanguage = document.getElementById('languageSelect');
     const settingsLanguage = document.getElementById('settingsLanguage');
@@ -532,15 +559,21 @@ describe('onboarding tour manual start', () => {
     await new Promise(resolve => setTimeout(resolve, 30));
 
     // Ensure the welcome language selector mirrors header updates.
+    onboardingLanguage = overlay.querySelector('select.onboarding-hero-language-select');
+    expect(onboardingLanguage).not.toBeNull();
     expect(onboardingLanguage.value).toBe('fr');
     expect(settingsLanguage.value).toBe('fr');
     expect(global.currentLang).toBe('fr');
+
+    await new Promise(resolve => setTimeout(resolve, 30));
+
+    expect(progress.textContent).toBe('Bienvenue');
 
     const nextButton = overlay.querySelector('.onboarding-next-button');
     expect(nextButton).not.toBeNull();
     nextButton.click();
     await new Promise(resolve => setTimeout(resolve, 60));
 
-    expect(progress.textContent).toBe('Step 1 of 31');
+    expect(progress.textContent).toBe('Étape 1 sur 32');
   });
 });

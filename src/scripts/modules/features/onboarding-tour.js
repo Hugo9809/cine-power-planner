@@ -4270,17 +4270,65 @@
     const handleLanguageProxyChange = () => {
       const value = languageProxy.value;
       const applied = applyLanguagePreference(value);
-      if (applied) {
-        return;
-      }
+
       for (let index = 0; index < languageTargets.length; index += 1) {
         const target = languageTargets[index];
-        if (!target || target.value === value) {
+        if (!target) {
           continue;
         }
-        target.value = value;
-        dispatchSyntheticEvent(target, 'change');
+        if (typeof target.value === 'string' && target.value !== value) {
+          target.value = value;
+        }
+        if (!applied) {
+          dispatchSyntheticEvent(target, 'change');
+        }
       }
+
+      const runLanguageSync = () => {
+        try {
+          syncLanguageProxyFromTargets();
+        } catch (syncError) {
+          void syncError;
+        }
+        if (applied) {
+          try {
+            handleLanguageChange();
+          } catch (languageError) {
+            void languageError;
+          }
+        }
+      };
+
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
+        try {
+          GLOBAL_SCOPE.requestAnimationFrame(() => {
+            runLanguageSync();
+          });
+          return;
+        } catch (rafError) {
+          void rafError;
+        }
+      }
+
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.queueMicrotask === 'function') {
+        try {
+          GLOBAL_SCOPE.queueMicrotask(runLanguageSync);
+          return;
+        } catch (microtaskError) {
+          void microtaskError;
+        }
+      }
+
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.setTimeout === 'function') {
+        try {
+          GLOBAL_SCOPE.setTimeout(runLanguageSync, 0);
+          return;
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+
+      runLanguageSync();
     };
 
     languageProxy.addEventListener('change', handleLanguageProxyChange);
@@ -4290,6 +4338,11 @@
 
     const handleTargetChange = () => {
       syncLanguageProxyFromTargets();
+      try {
+        handleLanguageChange();
+      } catch (targetSyncError) {
+        void targetSyncError;
+      }
     };
 
     for (let index = 0; index < languageTargets.length; index += 1) {
