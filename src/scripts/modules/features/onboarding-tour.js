@@ -1914,6 +1914,8 @@
         highlight: [
           '#batteryLifeLabel',
           '#batteryLife',
+          '#batteryLifeUnit',
+          '#runtimeAverageNote',
           '#batteryCountLabel',
           '#batteryCount',
         ],
