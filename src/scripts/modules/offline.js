@@ -940,6 +940,8 @@
       return null;
     }
 
+    const requestMode = 'same-origin';
+
     const nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
@@ -1000,6 +1002,7 @@
         const requestInit = {
           cache: allowCachePopulation ? 'reload' : 'no-store',
           credentials: includeCredentials ? 'same-origin' : 'omit',
+          mode: requestMode,
           redirect: 'follow',
         };
 
