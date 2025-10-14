@@ -141,7 +141,7 @@ var CORE_RUNTIME_SHARED = typeof CORE_RUNTIME_SHARED !== 'undefined' && CORE_RUN
   }
   return null;
 }();
-function collectCoreRuntimeCandidateScopes(primaryScope) {
+function collectEnvironmentRuntimeCandidateScopes(primaryScope) {
   if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.collectCandidateScopes === 'function') {
     try {
       var sharedScopes = CORE_RUNTIME_SHARED.collectCandidateScopes(primaryScope, CORE_ENVIRONMENT_HELPERS);
@@ -212,7 +212,7 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = function resolveCoreRuntimeCandidateScopesPa
     }
   }
   if (!resolvedScopes) {
-    resolvedScopes = collectCoreRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
+    resolvedScopes = collectEnvironmentRuntimeCandidateScopes(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null);
   }
   if (CORE_RUNTIME_SHARED && typeof CORE_RUNTIME_SHARED.syncCandidateScopes === 'function') {
     try {
