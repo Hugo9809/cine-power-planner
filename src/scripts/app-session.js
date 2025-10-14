@@ -903,7 +903,39 @@ function getSessionRuntimeFunction(name) {
   return null;
 }
 
-const settingsLogger = (() => {
+function resolveSettingsLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      const required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return null;
+}
+
+function resolveLegacySettingsLogger() {
   const scopes = getSessionRuntimeScopes();
   for (let index = 0; index < scopes.length; index += 1) {
     const scope = scopes[index];
@@ -934,6 +966,22 @@ const settingsLogger = (() => {
     }
   }
   return null;
+}
+
+const settingsLogger = (() => {
+  const resolver = resolveSettingsLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      const logger = resolver.resolveLogger('settings', { meta: { source: 'app-session' } });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+
+  return resolveLegacySettingsLogger();
 })();
 
 function logSettingsEvent(level, message, detail, meta) {
