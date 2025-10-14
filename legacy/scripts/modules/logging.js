@@ -809,6 +809,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     stackTraces: true
   };
   var DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
+  var SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+  var SERVICE_WORKER_LOG_ENTRY_TYPE = 'cine-sw:log-entry';
+  var SERVICE_WORKER_LOG_STATE_REQUEST = 'cine-sw:log-state-request';
+  var SERVICE_WORKER_LOG_STATE_RESPONSE = 'cine-sw:log-state';
+  var SERVICE_WORKER_LOG_REQUEST_TIMEOUT = 5000;
+  var SERVICE_WORKER_LOG_POLL_INTERVAL = 60 * 1000;
+  var SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
   function cloneDefaultConfig() {
     return {
       level: DEFAULT_CONFIG_VALUES.level,
@@ -832,6 +839,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var droppedLevelCounters = createLevelCounters();
   var totalEntriesDropped = 0;
   var lastHistoryDrop = null;
+  var serviceWorkerBridgeState = {
+    initialised: false,
+    supported: false,
+    requestInFlight: false,
+    lastRequestId: null,
+    pollTimer: null,
+    requestTimer: null,
+    broadcastChannel: null,
+    broadcastFailed: false,
+    seenIds: typeof Set === 'function' ? new Set() : null,
+    fallbackSeenIds: typeof Set !== 'function' ? [] : null,
+    lastSnapshotMeta: null
+  };
   function normalizeLevel(value, fallbackLevel) {
     var fallback = typeof fallbackLevel === 'string' ? fallbackLevel : activeConfig.level;
     if (typeof value === 'string') {
@@ -2785,6 +2805,399 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       origin: typeof entry.origin === 'undefined' ? null : normaliseOriginSnapshot(entry.origin)
     });
   }
+  function getGlobalNavigator() {
+    if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.navigator) === 'object' && GLOBAL_SCOPE.navigator) {
+      return GLOBAL_SCOPE.navigator;
+    }
+    if (typeof navigator !== 'undefined' && navigator) {
+      return navigator;
+    }
+    if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis.navigator) === 'object') {
+      return globalThis.navigator;
+    }
+    return null;
+  }
+  function getNavigatorServiceWorker() {
+    var nav = getGlobalNavigator();
+    if (!nav || _typeof(nav) !== 'object') {
+      return null;
+    }
+    if (!nav.serviceWorker) {
+      return null;
+    }
+    return nav.serviceWorker;
+  }
+  function markServiceWorkerEntrySeen(id) {
+    if (!id) {
+      return true;
+    }
+    if (serviceWorkerBridgeState.seenIds) {
+      if (serviceWorkerBridgeState.seenIds.has(id)) {
+        return false;
+      }
+      serviceWorkerBridgeState.seenIds.add(id);
+      return true;
+    }
+    if (Array.isArray(serviceWorkerBridgeState.fallbackSeenIds)) {
+      if (serviceWorkerBridgeState.fallbackSeenIds.indexOf(id) !== -1) {
+        return false;
+      }
+      serviceWorkerBridgeState.fallbackSeenIds.push(id);
+      return true;
+    }
+    return true;
+  }
+  function mergeServiceWorkerEntryMeta(entry, snapshotMeta) {
+    var merged = {};
+    if (entry && typeof entry.meta !== 'undefined') {
+      if (entry.meta && _typeof(entry.meta) === 'object') {
+        for (var key in entry.meta) {
+          if (Object.prototype.hasOwnProperty.call(entry.meta, key)) {
+            merged[key] = entry.meta[key];
+          }
+        }
+      } else {
+        merged.value = entry.meta;
+      }
+    }
+    var channel = entry && typeof entry.channel === 'string' && entry.channel ? entry.channel : merged.channel;
+    if (channel) {
+      merged.channel = channel;
+    } else {
+      merged.channel = 'service-worker';
+    }
+    if (snapshotMeta && _typeof(snapshotMeta) === 'object') {
+      if (snapshotMeta.cacheName && !merged.cacheName) {
+        merged.cacheName = snapshotMeta.cacheName;
+      }
+      if (snapshotMeta.cacheVersion && !merged.cacheVersion) {
+        merged.cacheVersion = snapshotMeta.cacheVersion;
+      }
+      if (typeof snapshotMeta.generatedAt === 'number' && Number.isFinite(snapshotMeta.generatedAt)) {
+        if (!merged.snapshotTimestamp) {
+          merged.snapshotTimestamp = snapshotMeta.generatedAt;
+        }
+      }
+      if (typeof snapshotMeta.historyLength === 'number' && Number.isFinite(snapshotMeta.historyLength)) {
+        if (!merged.snapshotSize) {
+          merged.snapshotSize = snapshotMeta.historyLength;
+        }
+      }
+    }
+    return merged;
+  }
+  function importServiceWorkerLogEntries(entries, snapshotMeta) {
+    if (!Array.isArray(entries) || !entries.length) {
+      return;
+    }
+    for (var index = 0; index < entries.length; index += 1) {
+      var rawEntry = entries[index];
+      if (!rawEntry || _typeof(rawEntry) !== 'object') {
+        continue;
+      }
+      var entryId = typeof rawEntry.id === 'string' && rawEntry.id ? rawEntry.id : null;
+      if (!markServiceWorkerEntrySeen(entryId)) {
+        continue;
+      }
+      var origin = rawEntry.origin && _typeof(rawEntry.origin) === 'object' ? rawEntry.origin : {
+        runtime: 'service-worker'
+      };
+      var normalized = normaliseStoredEntry({
+        id: entryId || undefined,
+        level: rawEntry.level,
+        message: rawEntry.message,
+        namespace: typeof rawEntry.namespace === 'string' && rawEntry.namespace ? rawEntry.namespace : 'service-worker',
+        detail: typeof rawEntry.detail === 'undefined' ? null : rawEntry.detail,
+        meta: mergeServiceWorkerEntryMeta(rawEntry, snapshotMeta),
+        timestamp: rawEntry.timestamp,
+        isoTimestamp: rawEntry.isoTimestamp,
+        origin: origin
+      });
+      if (normalized) {
+        appendEntry(normalized);
+      }
+    }
+  }
+  function finalizeServiceWorkerLogRequest(requestId) {
+    if (!serviceWorkerBridgeState.requestInFlight) {
+      return;
+    }
+    if (requestId && serviceWorkerBridgeState.lastRequestId && requestId !== serviceWorkerBridgeState.lastRequestId) {
+      return;
+    }
+    serviceWorkerBridgeState.requestInFlight = false;
+    serviceWorkerBridgeState.lastRequestId = null;
+    if (serviceWorkerBridgeState.requestTimer && typeof clearTimeout === 'function') {
+      try {
+        clearTimeout(serviceWorkerBridgeState.requestTimer);
+      } catch (error) {
+        void error;
+      }
+    }
+    serviceWorkerBridgeState.requestTimer = null;
+  }
+  function scheduleServiceWorkerLogPoll() {
+    if (serviceWorkerBridgeState.broadcastChannel || serviceWorkerBridgeState.broadcastFailed) {
+      return;
+    }
+    if (serviceWorkerBridgeState.pollTimer || typeof setTimeout !== 'function') {
+      return;
+    }
+    try {
+      serviceWorkerBridgeState.pollTimer = setTimeout(function () {
+        serviceWorkerBridgeState.pollTimer = null;
+        requestServiceWorkerLogSnapshot('poll');
+      }, SERVICE_WORKER_LOG_POLL_INTERVAL);
+    } catch (error) {
+      void error;
+    }
+  }
+  function ensureServiceWorkerBroadcastChannel() {
+    if (serviceWorkerBridgeState.broadcastFailed) {
+      return null;
+    }
+    if (serviceWorkerBridgeState.broadcastChannel) {
+      return serviceWorkerBridgeState.broadcastChannel;
+    }
+    if (typeof BroadcastChannel !== 'function') {
+      serviceWorkerBridgeState.broadcastFailed = true;
+      return null;
+    }
+    try {
+      var channel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+      channel.addEventListener('message', handleServiceWorkerLogMessage);
+      serviceWorkerBridgeState.broadcastChannel = channel;
+      if (serviceWorkerBridgeState.pollTimer && typeof clearTimeout === 'function') {
+        try {
+          clearTimeout(serviceWorkerBridgeState.pollTimer);
+        } catch (error) {
+          void error;
+        }
+        serviceWorkerBridgeState.pollTimer = null;
+      }
+      return channel;
+    } catch (error) {
+      serviceWorkerBridgeState.broadcastFailed = true;
+      safeWarn('cineLogging: Unable to open service worker diagnostics channel', error);
+      return null;
+    }
+  }
+  function handleServiceWorkerLogMessage(event) {
+    if (!event) {
+      return;
+    }
+    var data = null;
+    try {
+      data = event.data || null;
+    } catch (error) {
+      void error;
+      data = null;
+    }
+    if (!data || _typeof(data) !== 'object') {
+      return;
+    }
+    if (data.type === SERVICE_WORKER_LOG_ENTRY_TYPE) {
+      importServiceWorkerLogEntries([data.entry], serviceWorkerBridgeState.lastSnapshotMeta);
+      scheduleServiceWorkerLogPoll();
+      return;
+    }
+    if (data.type === SERVICE_WORKER_LOG_STATE_RESPONSE) {
+      finalizeServiceWorkerLogRequest(data.requestId || null);
+      var state = data.state && _typeof(data.state) === 'object' ? data.state : null;
+      if (!state) {
+        scheduleServiceWorkerLogPoll();
+        return;
+      }
+      serviceWorkerBridgeState.lastSnapshotMeta = {
+        cacheName: typeof state.cacheName === 'string' && state.cacheName ? state.cacheName : null,
+        cacheVersion: state.cacheVersion || null,
+        generatedAt: typeof state.generatedAt === 'number' && Number.isFinite(state.generatedAt) ? state.generatedAt : Date.now(),
+        historyLength: typeof state.historyLength === 'number' && Number.isFinite(state.historyLength) ? state.historyLength : null
+      };
+      importServiceWorkerLogEntries(state.history, serviceWorkerBridgeState.lastSnapshotMeta);
+      scheduleServiceWorkerLogPoll();
+    }
+  }
+  function requestServiceWorkerLogSnapshot(reason) {
+    if (serviceWorkerBridgeState.requestInFlight) {
+      return;
+    }
+    var serviceWorker = getNavigatorServiceWorker();
+    if (!serviceWorker) {
+      return;
+    }
+    serviceWorkerBridgeState.supported = true;
+    var requestId = "sw-log-".concat(Date.now(), "-").concat(Math.random().toString(36).slice(2, 10));
+    serviceWorkerBridgeState.requestInFlight = true;
+    serviceWorkerBridgeState.lastRequestId = requestId;
+    var message = {
+      type: SERVICE_WORKER_LOG_STATE_REQUEST,
+      limit: SERVICE_WORKER_LOG_HISTORY_LIMIT,
+      reason: typeof reason === 'string' && reason ? reason : 'sync',
+      requestId: requestId
+    };
+    var closeMessageChannel = function closeMessageChannel(channel) {
+      if (!channel) {
+        return;
+      }
+      try {
+        channel.port1.onmessage = null;
+      } catch (clearHandlerError) {
+        void clearHandlerError;
+      }
+      if (typeof channel.port1.onmessageerror !== 'undefined') {
+        try {
+          channel.port1.onmessageerror = null;
+        } catch (clearErrorHandlerError) {
+          void clearErrorHandlerError;
+        }
+      }
+      try {
+        channel.port1.close();
+      } catch (closePort1Error) {
+        void closePort1Error;
+      }
+      try {
+        channel.port2.close();
+      } catch (closePort2Error) {
+        void closePort2Error;
+      }
+    };
+    var readyPromise = serviceWorker.ready && typeof serviceWorker.ready.then === 'function' ? serviceWorker.ready.then(function (registration) {
+      return registration && registration.active || serviceWorker.controller || null;
+    }) : Promise.resolve(serviceWorker.controller || null);
+    Promise.resolve(readyPromise).then(function (worker) {
+      if (!worker || typeof worker.postMessage !== 'function') {
+        finalizeServiceWorkerLogRequest(requestId);
+        scheduleServiceWorkerLogPoll();
+        return;
+      }
+      var settled = false;
+      var channel = null;
+      var finalize = function finalize() {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        closeMessageChannel(channel);
+        finalizeServiceWorkerLogRequest(requestId);
+      };
+      var finalizeWithPoll = function finalizeWithPoll() {
+        finalize();
+        scheduleServiceWorkerLogPoll();
+      };
+      var handleResponse = function handleResponse(event) {
+        finalize();
+        handleServiceWorkerLogMessage(event);
+      };
+      var handleChannelError = function handleChannelError() {
+        safeWarn('cineLogging: Service worker diagnostics channel closed before a response was received', {
+          requestId: requestId
+        });
+        finalizeWithPoll();
+      };
+      var postWithoutChannel = function postWithoutChannel() {
+        try {
+          worker.postMessage(message);
+        } catch (error) {
+          safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
+          finalizeWithPoll();
+          return;
+        }
+        if (typeof setTimeout === 'function') {
+          try {
+            serviceWorkerBridgeState.requestTimer = setTimeout(function () {
+              if (settled) {
+                return;
+              }
+              finalizeWithPoll();
+            }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
+          } catch (error) {
+            void error;
+          }
+        }
+      };
+      var shouldUseMessageChannel = function shouldUseMessageChannel() {
+        if (typeof MessageChannel !== 'function') {
+          return false;
+        }
+        if (serviceWorker.controller) {
+          return true;
+        }
+        return Boolean(worker && typeof worker.state === 'string' && worker.state === 'activated');
+      };
+      if (!shouldUseMessageChannel()) {
+        postWithoutChannel();
+        return;
+      }
+      channel = new MessageChannel();
+      channel.port1.onmessage = handleResponse;
+      if (typeof channel.port1.onmessageerror !== 'undefined') {
+        channel.port1.onmessageerror = handleChannelError;
+      }
+      if (typeof channel.port1.start === 'function') {
+        try {
+          channel.port1.start();
+        } catch (startError) {
+          void startError;
+        }
+      }
+      try {
+        worker.postMessage(message, [channel.port2]);
+      } catch (error) {
+        closeMessageChannel(channel);
+        channel = null;
+        safeWarn('cineLogging: Unable to request service worker diagnostics', error);
+        postWithoutChannel();
+        return;
+      }
+      if (typeof setTimeout === 'function') {
+        try {
+          serviceWorkerBridgeState.requestTimer = setTimeout(function () {
+            if (settled) {
+              return;
+            }
+            handleChannelError();
+          }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
+        } catch (error) {
+          void error;
+        }
+      }
+    }).catch(function (error) {
+      finalizeServiceWorkerLogRequest(requestId);
+      safeWarn('cineLogging: Unable to await service worker for diagnostics', error);
+      scheduleServiceWorkerLogPoll();
+    });
+  }
+  function setupServiceWorkerLogBridge() {
+    if (serviceWorkerBridgeState.initialised) {
+      return;
+    }
+    serviceWorkerBridgeState.initialised = true;
+    var serviceWorker = getNavigatorServiceWorker();
+    if (!serviceWorker) {
+      return;
+    }
+    serviceWorkerBridgeState.supported = true;
+    ensureServiceWorkerBroadcastChannel();
+    if (typeof serviceWorker.addEventListener === 'function') {
+      try {
+        serviceWorker.addEventListener('message', handleServiceWorkerLogMessage);
+      } catch (error) {
+        safeWarn('cineLogging: Unable to attach service worker diagnostics listener', error);
+      }
+    } else if (typeof serviceWorker.onmessage === 'undefined') {
+      try {
+        serviceWorker.onmessage = handleServiceWorkerLogMessage;
+      } catch (error) {
+        void error;
+      }
+    }
+    requestServiceWorkerLogSnapshot('initial-sync');
+    if (!serviceWorkerBridgeState.broadcastChannel) {
+      scheduleServiceWorkerLogPoll();
+    }
+  }
   function loadPersistedHistory() {
     if (!activeConfig.persistSession) {
       return;
@@ -2832,6 +3245,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   initialiseConfig();
   loadPersistedHistory();
+  setupServiceWorkerLogBridge();
   syncConsoleCaptureState();
   if (activeConfig.captureGlobalErrors) {
     attachGlobalErrorListeners();

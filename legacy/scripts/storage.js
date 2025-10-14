@@ -1207,6 +1207,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
   var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
   var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
+  var AUTO_BACKUP_CYCLE_PLACEHOLDER = '__cineCircular__';
   var PROJECT_ACTIVITY_WINDOW_MS = 30 * 60 * 1000;
   var projectActivityTimestamps = new Map();
   var forcedCompressedProjectKeys = typeof Set === 'function' ? new Set() : null;
@@ -1321,33 +1322,68 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       defineAutoBackupMetadata(target, metadata);
     }
   }
-  function cloneAutoBackupValue(value, options) {
+  function cloneAutoBackupValue(value, options, state) {
     var opts = options || {};
+    var cloneState = state || (typeof WeakSet === 'function' ? {
+      stack: new WeakSet(),
+      reportedCycle: false
+    } : null);
+    var handleCircularClone = function handleCircularClone(input, compute) {
+      if (!cloneState || !cloneState.stack) {
+        return compute();
+      }
+      if (cloneState.stack.has(input)) {
+        if (!cloneState.reportedCycle && typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Detected circular reference while cloning automatic backup data. Using a placeholder to keep serialization stable.');
+        }
+        if (cloneState) {
+          cloneState.reportedCycle = true;
+        }
+        return AUTO_BACKUP_CYCLE_PLACEHOLDER;
+      }
+      cloneState.stack.add(input);
+      try {
+        return compute();
+      } finally {
+        cloneState.stack.delete(input);
+      }
+    };
     if (value === null || _typeof(value) !== 'object') {
       return value;
-    }
-    if (Array.isArray(value)) {
-      return value.map(function (item) {
-        return cloneAutoBackupValue(item, opts);
-      });
     }
     if (value instanceof Date) {
       return new Date(value.getTime());
     }
-    var clone = {};
-    Object.keys(value).forEach(function (key) {
-      clone[key] = cloneAutoBackupValue(value[key], opts);
-    });
-    if (!opts.stripMetadata) {
-      var metadata = getAutoBackupMetadata(value);
-      if (metadata) {
-        defineAutoBackupMetadata(clone, metadata);
-      }
+    if (Array.isArray(value)) {
+      return handleCircularClone(value, function () {
+        return value.map(function (item) {
+          return cloneAutoBackupValue(item, opts, cloneState);
+        });
+      });
     }
-    return clone;
+    return handleCircularClone(value, function () {
+      var clone = {};
+      Object.keys(value).forEach(function (key) {
+        if (opts.stripMetadata && key === AUTO_BACKUP_METADATA_PROPERTY) {
+          return;
+        }
+        clone[key] = cloneAutoBackupValue(value[key], opts, cloneState);
+      });
+      if (!opts.stripMetadata) {
+        var metadata = getAutoBackupMetadata(value);
+        if (metadata) {
+          defineAutoBackupMetadata(clone, metadata);
+        }
+      }
+      return clone;
+    });
   }
   function cloneAutoBackupValueWithLegacyNormalization(value, options) {
-    var cloned = cloneAutoBackupValue(value, options);
+    var cloneState = typeof WeakSet === 'function' ? {
+      stack: new WeakSet(),
+      reportedCycle: false
+    } : null;
+    var cloned = cloneAutoBackupValue(value, options, cloneState);
     var normalized = normalizeLegacyLongGopStructure(cloned);
     return normalized !== cloned ? normalized : cloned;
   }
@@ -5231,7 +5267,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return 'undefined';
     }
   }
-  function createStableValueSignature(value) {
+  function createStableValueSignature(value, state) {
+    var signatureState = state || (typeof WeakSet === 'function' ? {
+      seen: new WeakSet(),
+      reportedCycle: false
+    } : null);
+    var seenSet = signatureState && signatureState.seen ? signatureState.seen : null;
+    var handleCircularSignature = function handleCircularSignature(input, compute) {
+      if (!seenSet) {
+        return compute();
+      }
+      if (seenSet.has(input)) {
+        if (!signatureState.reportedCycle && typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Detected circular reference while computing automatic backup signature. Using a placeholder token to keep backups stable.');
+        }
+        signatureState.reportedCycle = true;
+        return AUTO_BACKUP_CYCLE_PLACEHOLDER;
+      }
+      seenSet.add(input);
+      try {
+        return compute();
+      } finally {
+        seenSet.delete(input);
+      }
+    };
     if (value === null) {
       return 'null';
     }
@@ -5239,35 +5298,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return 'undefined';
     }
     if (Array.isArray(value)) {
-      var signature = '[';
-      for (var index = 0; index < value.length; index += 1) {
-        if (index > 0) {
-          signature += ',';
+      return handleCircularSignature(value, function () {
+        var signature = '[';
+        for (var index = 0; index < value.length; index += 1) {
+          if (index > 0) {
+            signature += ',';
+          }
+          signature += createStableValueSignature(value[index], signatureState);
         }
-        signature += createStableValueSignature(value[index]);
-      }
-      signature += ']';
-      return signature;
+        signature += ']';
+        return signature;
+      });
     }
     if (value instanceof Date) {
-      var timestamp = value.getTime();
-      if (Number.isNaN(timestamp)) {
-        return 'date:invalid';
-      }
-      return "date:".concat(timestamp);
+      return handleCircularSignature(value, function () {
+        var timestamp = value.getTime();
+        if (Number.isNaN(timestamp)) {
+          return 'date:invalid';
+        }
+        return "date:".concat(timestamp);
+      });
     }
     if (isPlainObject(value)) {
-      var keys = Object.keys(value).sort();
-      var _signature = '{';
-      for (var _index4 = 0; _index4 < keys.length; _index4 += 1) {
-        var key = keys[_index4];
-        if (_index4 > 0) {
-          _signature += ',';
+      return handleCircularSignature(value, function () {
+        var keys = Object.keys(value).sort();
+        var signature = '{';
+        for (var index = 0; index < keys.length; index += 1) {
+          var key = keys[index];
+          if (index > 0) {
+            signature += ',';
+          }
+          signature += "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key], signatureState));
         }
-        _signature += "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
-      }
-      _signature += '}';
-      return _signature;
+        signature += '}';
+        return signature;
+      });
+    }
+    if (value && _typeof(value) === 'object') {
+      return handleCircularSignature(value, function () {
+        return "".concat(_typeof(value), ":").concat(String(value));
+      });
     }
     if (typeof value === 'number') {
       if (Number.isNaN(value)) {
@@ -5289,7 +5359,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (decoded.success && typeof decoded.value === 'string') {
         try {
           var parsed = JSON.parse(decoded.value);
-          return createStableValueSignature(parsed);
+          return createStableValueSignature(parsed, signatureState);
         } catch (signatureParseError) {
           console.warn('Unable to decode compressed string while computing stable value signature', signatureParseError);
         }
@@ -5393,8 +5463,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     for (var i = removable.length - 1; i >= 0 && entries.length > limit; i -= 1) {
-      var _index5 = removable[i];
-      var _entry = entries[_index5];
+      var _index4 = removable[i];
+      var _entry = entries[_index4];
       if (!_entry || typeof _entry.key !== 'string') {
         continue;
       }
@@ -5402,7 +5472,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         continue;
       }
       delete container[_entry.key];
-      entries.splice(_index5, 1);
+      entries.splice(_index4, 1);
       removedKeys.push(_entry.key);
     }
     if (entries.length > limit) {
@@ -8516,8 +8586,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var nameCandidates = [value.name, value.lensName, value.label, value.title, value.text, value.lens];
-      for (var _index6 = 0; _index6 < nameCandidates.length; _index6 += 1) {
-        var _candidate3 = nameCandidates[_index6];
+      for (var _index5 = 0; _index5 < nameCandidates.length; _index5 += 1) {
+        var _candidate3 = nameCandidates[_index5];
         if (typeof _candidate3 === 'string') {
           var _trimmed = _candidate3.trim();
           if (_trimmed) {
@@ -8542,8 +8612,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       var nestedEntries = Object.values(value);
-      for (var _index7 = 0; _index7 < nestedEntries.length; _index7 += 1) {
-        var nested = normalizeProjectLensNameCandidate(nestedEntries[_index7]);
+      for (var _index6 = 0; _index6 < nestedEntries.length; _index6 += 1) {
+        var nested = normalizeProjectLensNameCandidate(nestedEntries[_index6]);
         if (nested) {
           return nested;
         }
@@ -8744,8 +8814,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
       var _mount = '';
-      for (var _index8 = 0; _index8 < mountCandidates.length; _index8 += 1) {
-        var _candidate4 = mountCandidates[_index8];
+      for (var _index7 = 0; _index7 < mountCandidates.length; _index7 += 1) {
+        var _candidate4 = mountCandidates[_index7];
         if (typeof _candidate4 === 'string') {
           var trimmed = _candidate4.trim();
           if (trimmed) {
@@ -8820,8 +8890,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         selection.name = name;
         var _mount2 = '';
         var mountFields = ['mount', 'mountLabel', 'mountName'];
-        for (var _index9 = 0; _index9 < mountFields.length; _index9 += 1) {
-          var field = mountFields[_index9];
+        for (var _index8 = 0; _index8 < mountFields.length; _index8 += 1) {
+          var field = mountFields[_index8];
           if (typeof selection[field] !== 'string') {
             continue;
           }
@@ -11520,8 +11590,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       clearOnboardingTutorialState(storageCandidates[index]);
     }
     var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
-    for (var _index0 = 0; _index0 < sessionCandidates.length; _index0 += 1) {
-      clearOnboardingTutorialState(sessionCandidates[_index0]);
+    for (var _index9 = 0; _index9 < sessionCandidates.length; _index9 += 1) {
+      clearOnboardingTutorialState(sessionCandidates[_index9]);
     }
     var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
     var collectStorageKeys = function collectStorageKeys(storage) {
@@ -11533,10 +11603,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var keys = [];
       if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-        for (var _index1 = 0; _index1 < storage.length; _index1 += 1) {
+        for (var _index0 = 0; _index0 < storage.length; _index0 += 1) {
           var candidateKey = null;
           try {
-            candidateKey = storage.key(_index1);
+            candidateKey = storage.key(_index0);
           } catch (error) {
             console.warn('Unable to inspect storage key during factory reset', error);
           }

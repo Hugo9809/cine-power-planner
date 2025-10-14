@@ -1,147 +1,73 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  function isValidScope(scope) {
-    return !!scope && (_typeof(scope) === 'object' || typeof scope === 'function');
-  }
-  function isScopeList(candidate) {
-    return !!candidate && typeof candidate.length === 'number';
-  }
-  function registerScope(scopes, seenScopes, scope) {
-    if (!Array.isArray(scopes)) {
-      return;
-    }
-    if (!isValidScope(scope)) {
-      return;
-    }
-    if (seenScopes) {
-      if (seenScopes.has(scope)) {
-        return;
-      }
-      seenScopes.add(scope);
-      scopes.push(scope);
-      return;
-    }
-    if (scopes.indexOf(scope) !== -1) {
-      return;
-    }
-    scopes.push(scope);
-  }
-  function detectFallbackGlobalScope(primaryScope) {
-    if (isValidScope(primaryScope)) {
-      return primaryScope;
-    }
-    if (typeof globalThis !== 'undefined' && isValidScope(globalThis)) {
+  var MODULE_ID = 'modules/core/runtime-candidate-scopes.js';
+  var GLOBAL_KEY = 'cineCoreRuntimeModules';
+  var HAS = Object.prototype.hasOwnProperty;
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
-    if (typeof window !== 'undefined' && isValidScope(window)) {
+    if (typeof window !== 'undefined') {
       return window;
     }
-    if (typeof self !== 'undefined' && isValidScope(self)) {
+    if (typeof self !== 'undefined') {
       return self;
     }
-    if (typeof global !== 'undefined' && isValidScope(global)) {
+    if (typeof global !== 'undefined') {
       return global;
     }
     return null;
   }
-  function collectCandidateScopesWithFallback(primaryScope, runtimeShared, environmentHelpers) {
-    if (runtimeShared && typeof runtimeShared.collectCandidateScopes === 'function') {
-      try {
-        var sharedScopes = runtimeShared.collectCandidateScopes(primaryScope, environmentHelpers);
-        if (Array.isArray(sharedScopes)) {
-          return sharedScopes;
+  var globalScope = detectGlobalScope();
+  function resolveNamespace() {
+    if (typeof require === 'function') {
+      var candidates = ['./runtime.js', '../runtime.js'];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        try {
+          var _namespace = require(candidate);
+          if (_namespace && _typeof(_namespace) === 'object') {
+            return _namespace;
+          }
+        } catch (error) {
+          void error;
         }
-      } catch (collectRuntimeScopesError) {
-        void collectRuntimeScopesError;
       }
     }
-    var scopes = [];
-    var seenScopes = typeof Set === 'function' ? new Set() : null;
-    registerScope(scopes, seenScopes, primaryScope);
-    registerScope(scopes, seenScopes, typeof globalThis !== 'undefined' ? globalThis : null);
-    registerScope(scopes, seenScopes, typeof window !== 'undefined' ? window : null);
-    registerScope(scopes, seenScopes, typeof self !== 'undefined' ? self : null);
-    registerScope(scopes, seenScopes, typeof global !== 'undefined' ? global : null);
-    return scopes;
+    if (globalScope && _typeof(globalScope[GLOBAL_KEY]) === 'object' && globalScope[GLOBAL_KEY]) {
+      return globalScope[GLOBAL_KEY];
+    }
+    return null;
   }
-  function resolveCandidateScopes(options) {
-    var primaryScope = options && options.primaryScope;
-    var runtimeShared = options && options.runtimeShared;
-    var environmentHelpers = options && options.environmentHelpers;
-    var currentCandidateScopes = options && options.currentCandidateScopes;
-    if (isScopeList(currentCandidateScopes)) {
-      return currentCandidateScopes;
+  var namespace = resolveNamespace();
+  function ensureGlobalTarget() {
+    if (!globalScope) {
+      return null;
     }
-    var resolvedScopes = null;
-    if (runtimeShared && typeof runtimeShared.resolveCandidateScopes === 'function') {
-      try {
-        resolvedScopes = runtimeShared.resolveCandidateScopes(primaryScope, environmentHelpers);
-      } catch (resolveCandidateScopesError) {
-        void resolveCandidateScopesError;
-        resolvedScopes = null;
-      }
+    var current = globalScope[GLOBAL_KEY];
+    if (current && _typeof(current) === 'object') {
+      return current;
     }
-    if (!resolvedScopes) {
-      resolvedScopes = collectCandidateScopesWithFallback(primaryScope, runtimeShared, environmentHelpers);
-    }
-    return resolvedScopes;
-  }
-  function syncCandidateScopes(candidateScopes, options) {
-    var runtimeShared = options && options.runtimeShared;
-    var environmentHelpers = options && options.environmentHelpers;
-    var primaryScope = options && options.primaryScope;
-    var globalScope = options && options.globalScope || detectFallbackGlobalScope(primaryScope);
-    var assignCurrentCandidateScopes = options && options.assignCurrentCandidateScopes;
-    if (runtimeShared && typeof runtimeShared.syncCandidateScopes === 'function') {
-      try {
-        runtimeShared.syncCandidateScopes(candidateScopes, primaryScope, environmentHelpers);
-        return candidateScopes;
-      } catch (syncCandidateScopesError) {
-        void syncCandidateScopesError;
-      }
-    }
-    if (isValidScope(globalScope) && (!globalScope.CORE_RUNTIME_CANDIDATE_SCOPES || globalScope.CORE_RUNTIME_CANDIDATE_SCOPES !== candidateScopes)) {
-      try {
-        globalScope.CORE_RUNTIME_CANDIDATE_SCOPES = candidateScopes;
-      } catch (assignError) {
-        void assignError;
-      }
-    }
-    if (typeof assignCurrentCandidateScopes === 'function') {
-      try {
-        assignCurrentCandidateScopes(candidateScopes);
-      } catch (candidateAssignError) {
-        void candidateAssignError;
-      }
-    }
-    return candidateScopes;
-  }
-  function ensureCandidateScopes(options) {
-    var candidateScopes = resolveCandidateScopes(options || {});
-    return syncCandidateScopes(candidateScopes, options || {});
-  }
-  var namespace = {
-    collectCandidateScopesWithFallback: collectCandidateScopesWithFallback,
-    resolveCandidateScopes: resolveCandidateScopes,
-    syncCandidateScopes: syncCandidateScopes,
-    ensureCandidateScopes: ensureCandidateScopes
-  };
-  var globalScope = detectFallbackGlobalScope();
-  var targetName = 'cineCoreRuntimeCandidateScopes';
-  var existing = globalScope && _typeof(globalScope[targetName]) === 'object' ? globalScope[targetName] : {};
-  var target = existing;
-  for (var _i = 0, _Object$keys = Object.keys(namespace); _i < _Object$keys.length; _i++) {
-    var key = _Object$keys[_i];
-    target[key] = namespace[key];
-  }
-  if (isValidScope(globalScope)) {
     try {
-      globalScope[targetName] = target;
-    } catch (assignError) {
-      void assignError;
+      var created = {};
+      globalScope[GLOBAL_KEY] = created;
+      return created;
+    } catch (error) {
+      void error;
     }
+    return null;
   }
+  var existingExport = globalScope && globalScope[GLOBAL_KEY] && _typeof(globalScope[GLOBAL_KEY]) === 'object' && HAS.call(globalScope[GLOBAL_KEY], MODULE_ID) ? globalScope[GLOBAL_KEY][MODULE_ID] : undefined;
+  var moduleExport = namespace && HAS.call(namespace, MODULE_ID) ? namespace[MODULE_ID] : existingExport;
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
-    module.exports = target;
+    module.exports = moduleExport;
+    return;
+  }
+  var target = ensureGlobalTarget();
+  if (!target) {
+    return;
+  }
+  if (typeof moduleExport !== 'undefined') {
+    target[MODULE_ID] = moduleExport;
   }
 })();

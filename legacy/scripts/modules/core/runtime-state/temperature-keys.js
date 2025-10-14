@@ -1,97 +1,73 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  function detectAmbientScope() {
-    if (typeof globalThis !== 'undefined' && globalThis && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object') {
+  var MODULE_ID = 'modules/core/runtime-state/temperature-keys.js';
+  var GLOBAL_KEY = 'cineCoreRuntimeModules';
+  var HAS = Object.prototype.hasOwnProperty;
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
-    if (typeof window !== 'undefined' && window && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object') {
+    if (typeof window !== 'undefined') {
       return window;
     }
-    if (typeof self !== 'undefined' && self && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object') {
+    if (typeof self !== 'undefined') {
       return self;
     }
-    if (typeof global !== 'undefined' && global && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object') {
+    if (typeof global !== 'undefined') {
       return global;
     }
     return null;
   }
-  function fallbackDetectScope(primary) {
-    if (primary && (_typeof(primary) === 'object' || typeof primary === 'function')) {
-      return primary;
-    }
-    return detectAmbientScope();
-  }
-  function resolveScopeUtils() {
-    var scopeUtils = null;
+  var globalScope = detectGlobalScope();
+  function resolveNamespace() {
     if (typeof require === 'function') {
-      try {
-        scopeUtils = require('./scope-utils.js');
-      } catch (scopeUtilsRequireError) {
-        void scopeUtilsRequireError;
-      }
-    }
-    if (scopeUtils) {
-      return scopeUtils;
-    }
-    var scope = detectAmbientScope();
-    if (scope && _typeof(scope) === 'object') {
-      try {
-        var registry = scope.cineCoreRuntimeStateModules;
-        if (registry && _typeof(registry) === 'object' && registry.scopeUtils) {
-          return registry.scopeUtils;
+      var candidates = ['./runtime.js', '../runtime.js'];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        try {
+          var _namespace = require(candidate);
+          if (_namespace && _typeof(_namespace) === 'object') {
+            return _namespace;
+          }
+        } catch (error) {
+          void error;
         }
-      } catch (scopeLookupError) {
-        void scopeLookupError;
       }
+    }
+    if (globalScope && _typeof(globalScope[GLOBAL_KEY]) === 'object' && globalScope[GLOBAL_KEY]) {
+      return globalScope[GLOBAL_KEY];
     }
     return null;
   }
-  var scopeUtils = resolveScopeUtils();
-  var detectScope = scopeUtils && typeof scopeUtils.detectScope === 'function' ? scopeUtils.detectScope : fallbackDetectScope;
-  function resolveTemperatureKeyDefaults() {
-    var defaults = {
-      queueKey: '__cinePendingTemperatureNote',
-      renderName: 'renderTemperatureNote'
-    };
-    var scope = detectScope();
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      return defaults;
+  var namespace = resolveNamespace();
+  function ensureGlobalTarget() {
+    if (!globalScope) {
+      return null;
+    }
+    var current = globalScope[GLOBAL_KEY];
+    if (current && _typeof(current) === 'object') {
+      return current;
     }
     try {
-      if (typeof scope.CORE_TEMPERATURE_QUEUE_KEY === 'string') {
-        defaults.queueKey = scope.CORE_TEMPERATURE_QUEUE_KEY;
-      }
-    } catch (readQueueKeyError) {
-      void readQueueKeyError;
+      var created = {};
+      globalScope[GLOBAL_KEY] = created;
+      return created;
+    } catch (error) {
+      void error;
     }
-    try {
-      if (typeof scope.CORE_TEMPERATURE_RENDER_NAME === 'string') {
-        defaults.renderName = scope.CORE_TEMPERATURE_RENDER_NAME;
-      }
-    } catch (readRenderNameError) {
-      void readRenderNameError;
-    }
-    return defaults;
+    return null;
   }
-  function assignToGlobal(namespace) {
-    var scope = detectAmbientScope();
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      return;
-    }
-    var registryName = 'cineCoreRuntimeStateModules';
-    var existing = scope[registryName] && _typeof(scope[registryName]) === 'object' ? scope[registryName] : {};
-    existing.temperatureKeys = namespace;
-    try {
-      scope[registryName] = existing;
-    } catch (assignError) {
-      void assignError;
-    }
-  }
-  var namespace = {
-    resolveTemperatureKeyDefaults: resolveTemperatureKeyDefaults
-  };
-  assignToGlobal(namespace);
+  var existingExport = globalScope && globalScope[GLOBAL_KEY] && _typeof(globalScope[GLOBAL_KEY]) === 'object' && HAS.call(globalScope[GLOBAL_KEY], MODULE_ID) ? globalScope[GLOBAL_KEY][MODULE_ID] : undefined;
+  var moduleExport = namespace && HAS.call(namespace, MODULE_ID) ? namespace[MODULE_ID] : existingExport;
   if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === 'object' && module && module.exports) {
-    module.exports = namespace;
+    module.exports = moduleExport;
+    return;
+  }
+  var target = ensureGlobalTarget();
+  if (!target) {
+    return;
+  }
+  if (typeof moduleExport !== 'undefined') {
+    target[MODULE_ID] = moduleExport;
   }
 })();

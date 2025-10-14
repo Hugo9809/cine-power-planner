@@ -665,7 +665,35 @@ function getSessionRuntimeFunction(name) {
   }
   return null;
 }
-var settingsLogger = function () {
+function resolveSettingsLoggingResolver() {
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/logging-resolver.js');
+      if (required && typeof required.resolveLogger === 'function') {
+        return required;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  var scopes = getSessionRuntimeScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    try {
+      var resolver = scope.cineLoggingResolver;
+      if (resolver && typeof resolver.resolveLogger === 'function') {
+        return resolver;
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+function resolveLegacySettingsLogger() {
   var scopes = getSessionRuntimeScopes();
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
@@ -698,6 +726,24 @@ var settingsLogger = function () {
     }
   }
   return null;
+}
+var settingsLogger = function () {
+  var resolver = resolveSettingsLoggingResolver();
+  if (resolver && typeof resolver.resolveLogger === 'function') {
+    try {
+      var logger = resolver.resolveLogger('settings', {
+        meta: {
+          source: 'app-session'
+        }
+      });
+      if (logger) {
+        return logger;
+      }
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+  return resolveLegacySettingsLogger();
 }();
 function logSettingsEvent(level, message, detail, meta) {
   var normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
@@ -1712,6 +1758,66 @@ function resolveInitialTemperatureUnit() {
   return 'celsius';
 }
 var localTemperatureUnit = resolveInitialTemperatureUnit();
+function resolveTemperatureUnitPreferenceController() {
+  if (typeof applyTemperatureUnitPreference === 'function') {
+    return applyTemperatureUnitPreference;
+  }
+  if (sessionGlobalScope && typeof sessionGlobalScope.applyTemperatureUnitPreference === 'function') {
+    return sessionGlobalScope.applyTemperatureUnitPreference;
+  }
+  if (typeof globalThis !== 'undefined') {
+    try {
+      var candidate = globalThis.applyTemperatureUnitPreference;
+      if (typeof candidate === 'function') {
+        return candidate;
+      }
+    } catch (globalReadError) {
+      void globalReadError;
+    }
+  }
+  return null;
+}
+function applyTemperatureUnitPreferenceWithFallback(preferredUnit) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var normalized = normalizeTemperatureUnitValue(preferredUnit);
+  var shouldPersist = !(options && _typeof(options) === 'object' && Object.prototype.hasOwnProperty.call(options, 'persist') && options.persist === false);
+  var controller = resolveTemperatureUnitPreferenceController();
+  if (controller) {
+    try {
+      controller(preferredUnit, options);
+    } catch (controllerError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not apply temperature unit preference via controller', controllerError);
+      }
+    }
+  }
+  try {
+    localTemperatureUnit = normalized;
+  } catch (assignError) {
+    void assignError;
+  }
+  if (sessionGlobalScope && _typeof(sessionGlobalScope) === 'object') {
+    try {
+      sessionGlobalScope.temperatureUnit = normalized;
+    } catch (temperatureScopeError) {
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug('Unable to propagate temperature unit preference to session scope', temperatureScopeError);
+      }
+    }
+  }
+  if (shouldPersist) {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem(temperaturePreferenceStorageKey, normalized);
+      }
+    } catch (temperaturePersistError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Could not save temperature unit preference', temperaturePersistError);
+      }
+    }
+  }
+  return normalized;
+}
 if (sessionGlobalScope && _typeof(sessionGlobalScope) === 'object') {
   try {
     Object.defineProperty(sessionGlobalScope, 'temperatureUnit', {
@@ -4603,8 +4709,20 @@ forEachTrackedSelect(controllerSelects, function (sel) {
   if (sel) sel.addEventListener('change', autoSaveCurrentSetup);
 });
 if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSetup);
-var flushProjectAutoSaveOnExit = function flushProjectAutoSaveOnExit() {
+function flushProjectAutoSaveOnExit(eventOrOptions) {
   if (factoryResetInProgress) return;
+  var event = null;
+  var options = null;
+  if (eventOrOptions && _typeof(eventOrOptions) === 'object') {
+    if (typeof eventOrOptions.type === 'string') {
+      event = eventOrOptions;
+    } else {
+      options = eventOrOptions;
+    }
+  }
+  var providedReason = options && typeof options.reason === 'string' && options.reason.trim() ? options.reason.trim() : null;
+  var eventReason = event && typeof event.type === 'string' && event.type ? "before-".concat(event.type) : null;
+  var flushReason = providedReason || eventReason || 'before-exit';
   var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null;
   var hideIndicator = null;
   if (scope && typeof scope.__cineShowAutoBackupIndicator === 'function') {
@@ -4620,7 +4738,7 @@ var flushProjectAutoSaveOnExit = function flushProjectAutoSaveOnExit() {
   }
   notifyAutoBackupChange({
     immediate: true,
-    reason: 'before-exit',
+    reason: flushReason,
     pending: true
   });
   try {
@@ -4643,16 +4761,18 @@ var flushProjectAutoSaveOnExit = function flushProjectAutoSaveOnExit() {
     }
   }
   scheduleProjectAutoSave(true);
-};
+}
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'hidden') {
-      flushProjectAutoSaveOnExit();
+      flushProjectAutoSaveOnExit({
+        reason: 'before-visibility-hidden'
+      });
     }
   });
 }
 if (typeof window !== 'undefined') {
-  ['pagehide', 'beforeunload'].forEach(function (eventName) {
+  ['pagehide', 'beforeunload', 'freeze'].forEach(function (eventName) {
     window.addEventListener(eventName, flushProjectAutoSaveOnExit);
   });
 }
@@ -4690,8 +4810,12 @@ var rememberSettingsMountVoltagesBaseline = function rememberSettingsMountVoltag
 var revertSettingsMountVoltagesIfNeeded = function revertSettingsMountVoltagesIfNeeded() {};
 var handlePinkModeIconPress = function handlePinkModeIconPress() {};
 var triggerPinkModeIconAnimation = function triggerPinkModeIconAnimation() {};
+var FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN = function FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN() {};
+var sessionTriggerPinkModeIconRain = typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function' ? window.triggerPinkModeIconRain : FALLBACK_TRIGGER_PINK_MODE_ICON_RAIN;
 var startPinkModeIconRotation = function startPinkModeIconRotation() {};
 var stopPinkModeIconRotation = function stopPinkModeIconRotation() {};
+var sessionStartPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function' ? window.startPinkModeAnimatedIcons : function () {};
+var sessionStopPinkModeAnimatedIcons = typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function' ? window.stopPinkModeAnimatedIcons : function () {};
 var startPinkModeAnimatedIconRotation = function startPinkModeAnimatedIconRotation() {};
 var stopPinkModeAnimatedIconRotation = function stopPinkModeAnimatedIconRotation() {};
 var applyPinkModeIcon = function applyPinkModeIcon() {};
@@ -4854,9 +4978,18 @@ var appearanceContext = {
     } : null,
     ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
     pinkModeIcons: (typeof pinkModeIcons === "undefined" ? "undefined" : _typeof(pinkModeIcons)) === 'object' ? pinkModeIcons : null,
-    startPinkModeAnimatedIcons: typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null,
-    stopPinkModeAnimatedIcons: typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null,
-    triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null
+    startPinkModeAnimatedIcons: function startPinkModeAnimatedIcons() {
+      var impl = (typeof window !== 'undefined' && typeof window.startPinkModeAnimatedIcons === 'function' ? window.startPinkModeAnimatedIcons : null) || sessionStartPinkModeAnimatedIcons;
+      return typeof impl === 'function' ? impl.apply(void 0, arguments) : undefined;
+    },
+    stopPinkModeAnimatedIcons: function stopPinkModeAnimatedIcons() {
+      var impl = (typeof window !== 'undefined' && typeof window.stopPinkModeAnimatedIcons === 'function' ? window.stopPinkModeAnimatedIcons : null) || sessionStopPinkModeAnimatedIcons;
+      return typeof impl === 'function' ? impl.apply(void 0, arguments) : undefined;
+    },
+    triggerPinkModeIconRain: function triggerPinkModeIconRain() {
+      var impl = (typeof window !== 'undefined' && typeof window.triggerPinkModeIconRain === 'function' ? window.triggerPinkModeIconRain : null) || sessionTriggerPinkModeIconRain;
+      return typeof impl === 'function' ? impl.apply(void 0, arguments) : undefined;
+    }
   },
   storage: {
     getLocalStorage: function getLocalStorage() {
@@ -4911,7 +5044,7 @@ var appearanceContext = {
     setTemperatureUnit: function setTemperatureUnit(value) {
       localTemperatureUnit = normalizeTemperatureUnitValue(value);
     },
-    applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    applyTemperatureUnitPreference: applyTemperatureUnitPreferenceWithFallback,
     getFocusScale: function getFocusScale() {
       var globalScale = typeof focusScalePreference === 'string' ? focusScalePreference : sessionFocusScale;
       sessionFocusScale = typeof normalizeFocusScale === 'function' ? normalizeFocusScale(globalScale) : globalScale;
@@ -5018,12 +5151,25 @@ function applyAppearanceModuleBindings(module) {
   revertSettingsMountVoltagesIfNeeded = module.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
   handlePinkModeIconPress = module.handlePinkModeIconPress || handlePinkModeIconPress;
   triggerPinkModeIconAnimation = module.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
+  sessionTriggerPinkModeIconRain = module.triggerPinkModeIconRain || sessionTriggerPinkModeIconRain;
   startPinkModeIconRotation = module.startPinkModeIconRotation || startPinkModeIconRotation;
   stopPinkModeIconRotation = module.stopPinkModeIconRotation || stopPinkModeIconRotation;
+  sessionStartPinkModeAnimatedIcons = module.startPinkModeAnimatedIcons || sessionStartPinkModeAnimatedIcons;
+  sessionStopPinkModeAnimatedIcons = module.stopPinkModeAnimatedIcons || sessionStopPinkModeAnimatedIcons;
   startPinkModeAnimatedIconRotation = module.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
   stopPinkModeAnimatedIconRotation = module.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
   applyPinkModeIcon = module.applyPinkModeIcon || applyPinkModeIcon;
   isPinkModeActive = module.isPinkModeActive || isPinkModeActive;
+  if (typeof window !== 'undefined') {
+    window.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+    window.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+    window.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
+  }
+  if (appearanceContext && appearanceContext.icons) {
+    appearanceContext.icons.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+    appearanceContext.icons.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
+    appearanceContext.icons.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+  }
   var controller = buildThemePreferenceController(module);
   if (controller) {
     themePreferenceController = controller;
@@ -5446,6 +5592,9 @@ try {
 applyHighContrast(highContrastEnabled);
 if (typeof window !== 'undefined') {
   window.handlePinkModeIconPress = handlePinkModeIconPress;
+  window.triggerPinkModeIconRain = sessionTriggerPinkModeIconRain;
+  window.startPinkModeAnimatedIcons = sessionStartPinkModeAnimatedIcons;
+  window.stopPinkModeAnimatedIcons = sessionStopPinkModeAnimatedIcons;
 }
 var pinkModeEnabled = false;
 try {
@@ -5479,11 +5628,9 @@ if (settingsShowAutoBackups) {
 }
 if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', function () {
-    if (typeof applyTemperatureUnitPreference === 'function') {
-      applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
-        persist: false
-      });
-    }
+    applyTemperatureUnitPreferenceWithFallback(settingsTemperatureUnit.value, {
+      persist: false
+    });
   });
 }
 if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
@@ -5759,7 +5906,8 @@ if (settingsButton && settingsDialog) {
         }
       });
       if (settingsTemperatureUnit) {
-        applyTemperatureUnitPreference(settingsTemperatureUnit.value);
+        var selectedTemperatureUnit = typeof settingsTemperatureUnit.value === 'string' ? settingsTemperatureUnit.value : 'celsius';
+        applyTemperatureUnitPreferenceWithFallback(selectedTemperatureUnit);
         rememberSettingsTemperatureUnitBaseline();
       }
       if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
@@ -6015,14 +6163,10 @@ if (settingsButton && settingsDialog) {
     var initialHandler = resolveResetAutoGearRulesHandler();
     var attachHandlerIfAvailable = function attachHandlerIfAvailable(handler) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
       if (!attachResetHandler(handler)) {
         return false;
       }
-
-      if (options.logReenabledReason === 'deferredModuleLoad'
-        && typeof console !== 'undefined'
-        && typeof console.info === 'function') {
+      if (options.logReenabledReason === 'deferredModuleLoad' && typeof console !== 'undefined' && typeof console.info === 'function') {
         console.info('Automatic gear reset action re-enabled after deferred module load.');
       }
       return true;
@@ -6696,6 +6840,74 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     }
   });
 }
+var INITIAL_LOADING_INDICATOR_IDLE_TIMEOUT_MS = 480;
+var initialLoadingIndicatorHide = null;
+var initialLoadingIndicatorStarted = false;
+var initialLoadingIndicatorSettled = false;
+var ensureInitialLoadingIndicatorVisible = function ensureInitialLoadingIndicatorVisible() {
+  if (initialLoadingIndicatorStarted || initialLoadingIndicatorSettled) {
+    return;
+  }
+  if (typeof showGlobalLoadingIndicator !== 'function') {
+    return;
+  }
+  try {
+    var hide = showGlobalLoadingIndicator();
+    if (typeof hide === 'function') {
+      initialLoadingIndicatorHide = hide;
+    } else {
+      initialLoadingIndicatorHide = null;
+    }
+    initialLoadingIndicatorStarted = true;
+  } catch (initialIndicatorError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Failed to show initial global loading indicator', initialIndicatorError);
+    }
+    initialLoadingIndicatorHide = null;
+    initialLoadingIndicatorStarted = false;
+  }
+};
+var hideInitialLoadingIndicatorSafely = function hideInitialLoadingIndicatorSafely() {
+  var hide = initialLoadingIndicatorHide;
+  initialLoadingIndicatorHide = null;
+  initialLoadingIndicatorStarted = false;
+  if (typeof hide === 'function') {
+    try {
+      hide();
+    } catch (initialIndicatorHideError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to hide initial global loading indicator', initialIndicatorHideError);
+      }
+    }
+  }
+};
+var finalizeInitialLoadingIndicator = function finalizeInitialLoadingIndicator() {
+  if (initialLoadingIndicatorSettled) {
+    return;
+  }
+  initialLoadingIndicatorSettled = true;
+  if (!initialLoadingIndicatorStarted && !initialLoadingIndicatorHide) {
+    return;
+  }
+  var scheduleHide = function scheduleHide() {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(hideInitialLoadingIndicatorSafely, {
+        timeout: INITIAL_LOADING_INDICATOR_IDLE_TIMEOUT_MS
+      });
+      return;
+    }
+    if (typeof setTimeout === 'function') {
+      setTimeout(hideInitialLoadingIndicatorSafely, GLOBAL_LOADING_INDICATOR_MIN_DISPLAY_MS);
+      return;
+    }
+    hideInitialLoadingIndicatorSafely();
+  };
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(scheduleHide);
+  } else {
+    scheduleHide();
+  }
+};
 function getDiffText(key) {
   var fallbackValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   if (typeof key !== 'string' || !key) {
@@ -7761,7 +7973,7 @@ function applyPreferencesFromStorage(safeGetItem) {
   var restoredTemperatureUnit = safeGetItem(temperaturePreferenceStorageKey);
   if (restoredTemperatureUnit) {
     try {
-      applyTemperatureUnitPreference(restoredTemperatureUnit, {
+      applyTemperatureUnitPreferenceWithFallback(restoredTemperatureUnit, {
         persist: false
       });
     } catch (error) {
@@ -11327,6 +11539,13 @@ function _clearCachesAndReload() {
     return _regenerator().w(function (_context6) {
       while (1) switch (_context6.p = _context6.n) {
         case 0:
+          try {
+            flushProjectAutoSaveOnExit({
+              reason: 'before-manual-reload'
+            });
+          } catch (flushError) {
+            console.warn('Failed to flush auto save before manual reload', flushError);
+          }
           reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
@@ -15715,10 +15934,23 @@ function populateUserButtonDropdowns() {
     sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
+var runInitAppWithInitialLoadingIndicator = function runInitAppWithInitialLoadingIndicator() {
+  ensureInitialLoadingIndicatorVisible();
+  try {
+    initApp();
+  } finally {
+    finalizeInitialLoadingIndicator();
+  }
+};
+ensureInitialLoadingIndicatorVisible();
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runInitAppWithInitialLoadingIndicator);
+  } else {
+    runInitAppWithInitialLoadingIndicator();
+  }
 } else {
-  initApp();
+  finalizeInitialLoadingIndicator();
 }
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -15934,6 +16166,23 @@ function fallbackParseVoltageValue(value, fallback) {
   }
   return 0;
 }
+function resolveSupportedMountVoltageTypes() {
+  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) && SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0) {
+    return SUPPORTED_MOUNT_VOLTAGE_TYPES;
+  }
+  var inputKeys = mountVoltageInputs && (typeof mountVoltageInputs === "undefined" ? "undefined" : _typeof(mountVoltageInputs)) === 'object' ? Object.keys(mountVoltageInputs) : [];
+  if (inputKeys.length > 0) {
+    return inputKeys;
+  }
+  if (DEFAULT_MOUNT_VOLTAGES && (typeof DEFAULT_MOUNT_VOLTAGES === "undefined" ? "undefined" : _typeof(DEFAULT_MOUNT_VOLTAGES)) === 'object') {
+    try {
+      return Object.keys(DEFAULT_MOUNT_VOLTAGES);
+    } catch (defaultKeysError) {
+      void defaultKeysError;
+    }
+  }
+  return [];
+}
 function cloneMountVoltageDefaultsForSession() {
   var runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
   if (runtimeCloneMountVoltageMap) {
@@ -15958,16 +16207,14 @@ function cloneMountVoltageDefaultsForSession() {
   } : function (value, fallback) {
     return fallbackParseVoltageValue(value, fallback);
   };
-  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
-    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
-      var _DEFAULT_MOUNT_VOLTAG;
-      var defaults = ((_DEFAULT_MOUNT_VOLTAG = DEFAULT_MOUNT_VOLTAGES) === null || _DEFAULT_MOUNT_VOLTAG === void 0 ? void 0 : _DEFAULT_MOUNT_VOLTAG[type]) || {};
-      clone[type] = {
-        high: parse(defaults.high, defaults.high),
-        low: parse(defaults.low, defaults.low)
-      };
-    });
-  }
+  resolveSupportedMountVoltageTypes().forEach(function (type) {
+    var _DEFAULT_MOUNT_VOLTAG;
+    var defaults = ((_DEFAULT_MOUNT_VOLTAG = DEFAULT_MOUNT_VOLTAGES) === null || _DEFAULT_MOUNT_VOLTAG === void 0 ? void 0 : _DEFAULT_MOUNT_VOLTAG[type]) || {};
+    clone[type] = {
+      high: parse(defaults.high, defaults.high),
+      low: parse(defaults.low, defaults.low)
+    };
+  });
   return clone;
 }
 function getSessionMountVoltagePreferencesClone() {
@@ -16018,7 +16265,8 @@ function collectMountVoltageFormValues() {
     return fallbackParseVoltageValue(value, fallback);
   };
   var defaultClones = cloneMountVoltageDefaultsForSession();
-  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+  var supportedTypes = resolveSupportedMountVoltageTypes();
+  supportedTypes.forEach(function (type) {
     var _mountVoltageInputs, _DEFAULT_MOUNT_VOLTAG2;
     var fields = (_mountVoltageInputs = mountVoltageInputs) === null || _mountVoltageInputs === void 0 ? void 0 : _mountVoltageInputs[type];
     if (!fields) return;
