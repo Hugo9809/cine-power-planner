@@ -91,12 +91,12 @@
 // this file can focus on orchestration.
 const APP_CORE_LOCALIZATION_SUPPORT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationSupport',
-  './modules/app-core/localization-support.js'
+  './modules/app-core/localization.js'
 );
 
 const APP_CORE_LOCALIZATION_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationBootstrap',
-  './modules/app-core/localization-bootstrap.js'
+  './modules/app-core/localization.js'
 );
 
 const localizationBootstrapResult = (function resolveLocalizationBootstrapResult() {
@@ -169,7 +169,7 @@ const localizationBootstrapResult = (function resolveLocalizationBootstrapResult
 
   if (!result && typeof requireFn === 'function') {
     try {
-      const requiredTools = requireFn('./modules/app-core/localization-bootstrap.js');
+      const requiredTools = requireFn('./modules/app-core/localization.js');
       result = attemptResolve(requiredTools);
     } catch (localizationBootstrapRequireError) {
       void localizationBootstrapRequireError;
@@ -309,12 +309,12 @@ const CORE_RUNTIME_TOOL_FALLBACK_NAMESPACE = resolveCoreSupportModule(
 
 const RUNTIME_TOOL_INLINE_FALLBACK_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeToolInlineFallbacks',
-  './modules/app-core/runtime-tool-inline-fallbacks.js'
+  './modules/app-core/runtime.js'
 );
 
 const CORE_RUNTIME_SHARED_NAMESPACE_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedNamespace',
-  './modules/app-core/runtime-shared-namespace.js'
+  './modules/app-core/runtime.js'
 );
 
 const SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule(
@@ -324,42 +324,42 @@ const SETTINGS_DOCUMENTATION_TRACKER_TOOLS = resolveCoreSupportModule(
 
 const RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrap',
-  './modules/app-core/runtime-shared-bootstrap.js'
+  './modules/app-core/runtime.js'
 );
 
 const LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule(
   'cineCoreAppLocalizationAccessors',
-  './modules/app-core/localization-accessors.js'
+  './modules/app-core/localization.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_INLINE_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapInline',
-  './modules/app-core/runtime-shared-bootstrap-inline.js'
+  './modules/app-core/runtime.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_RESULT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapResult',
-  './modules/app-core/runtime-shared-bootstrap-result.js'
+  './modules/app-core/runtime.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_LOADER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapLoader',
-  './modules/app-core/runtime-shared-bootstrap-loader.js'
+  './modules/app-core/runtime.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_MANAGER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapManager',
-  './modules/app-core/runtime-shared-bootstrap-manager.js'
+  './modules/app-core/runtime.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_RESOLVER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapResolver',
-  './modules/app-core/runtime-shared-bootstrap-resolver.js'
+  './modules/app-core/runtime.js'
 );
 
 const RUNTIME_SHARED_BOOTSTRAP_CONTEXT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeSharedBootstrapContext',
-  './modules/app-core/runtime-shared-bootstrap-context.js'
+  './modules/app-core/runtime.js'
 );
 
 const runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResult() {
@@ -474,7 +474,7 @@ const runtimeSharedBootstrapResult = (function resolveRuntimeSharedBootstrapResu
   if (!result && typeof requireFn === 'function') {
     try {
       const requiredTools = requireFn(
-        './modules/app-core/runtime-shared-bootstrap-context.js'
+        './modules/app-core/runtime.js'
       );
       result = attemptResolve(requiredTools);
     } catch (runtimeSharedBootstrapContextRequireError) {
@@ -585,17 +585,17 @@ var CORE_RUNTIME_SHARED =
 
 const PINK_MODE_SUPPORT_LOADER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppPinkModeSupportLoader',
-  './modules/app-core/pink-mode-support-loader.js'
+  './modules/app-core/pink-mode.js'
 );
 
 const PINK_MODE_SUPPORT_API_TOOLS = resolveCoreSupportModule(
   'cineCoreAppPinkModeSupportApi',
-  './modules/app-core/pink-mode-support-api.js'
+  './modules/app-core/pink-mode.js'
 );
 
 const PINK_MODE_SUPPORT_RESOLVER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppPinkModeSupportResolver',
-  './modules/app-core/pink-mode-support-resolver.js'
+  './modules/app-core/pink-mode.js'
 );
 
 const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
@@ -619,7 +619,7 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
     if (typeof requireFn === 'function') {
       try {
         const requiredResolverTools = requireFn(
-          './modules/app-core/pink-mode-support-resolver.js'
+          './modules/app-core/pink-mode.js'
         );
         if (
           requiredResolverTools &&
@@ -705,8 +705,8 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
       typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
       typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
     ],
-    loaderPath: './modules/app-core/pink-mode-support-loader.js',
-    apiRequirePath: './modules/app-core/pink-mode-support-api.js',
+    loaderPath: './modules/app-core/pink-mode.js',
+    apiRequirePath: './modules/app-core/pink-mode.js',
     lastResortFactory: createInlinePinkModeLastResortApi,
   };
 
@@ -739,7 +739,7 @@ const PINK_MODE_SUPPORT_API = (function resolvePinkModeSupportApi() {
   if (!api && typeof requireFn === 'function') {
     try {
       const requiredResolverTools = requireFn(
-        './modules/app-core/pink-mode-support-resolver.js'
+        './modules/app-core/pink-mode.js'
       );
       api = attemptResolve(requiredResolverTools);
     } catch (pinkModeSupportResolverRequireError) {
@@ -811,7 +811,7 @@ const CORE_RUNTIME_CANDIDATE_SCOPE_BRIDGE = resolveCoreSupportModule(
 
 const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeSupport',
-  './modules/app-core/runtime-candidate-scope-support.js'
+  './modules/app-core/runtime.js'
 );
 
 const resolveRuntimeCandidateScopeSupport =
@@ -823,7 +823,7 @@ const resolveRuntimeCandidateScopeSupport =
     if (typeof require === 'function') {
       try {
         const required = require(
-          './modules/app-core/runtime-candidate-scope-support.js'
+          './modules/app-core/runtime.js'
         );
         if (
           required &&
@@ -876,7 +876,7 @@ const createFallbackRuntimeCandidateScopeSupport =
     if (typeof require === 'function') {
       try {
         const required = require(
-          './modules/app-core/runtime-candidate-scope-support.js'
+          './modules/app-core/runtime.js'
         );
         if (
           required &&
@@ -922,7 +922,7 @@ const createFallbackRuntimeCandidateScopeSupport =
 
 const RUNTIME_CANDIDATE_SCOPE_FALLBACK_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeFallback',
-  './modules/app-core/runtime-candidate-scope-fallback.js'
+  './modules/app-core/runtime.js'
 );
 
 const createRuntimeCandidateScopeSupportFallback =
@@ -933,7 +933,7 @@ const createRuntimeCandidateScopeSupportFallback =
         if (typeof require === 'function') {
           try {
             const requiredRuntimeCandidateScopeFallback = require(
-              './modules/app-core/runtime-candidate-scope-fallback.js'
+              './modules/app-core/runtime.js'
             );
             if (
               requiredRuntimeCandidateScopeFallback &&
@@ -1036,7 +1036,7 @@ const CORE_RUNTIME_CANDIDATE_SCOPE_SUPPORT =
 
 const RUNTIME_CANDIDATE_SCOPE_RESOLVER_TOOLS = resolveCoreSupportModule(
   'cineCoreAppRuntimeCandidateScopeResolvers',
-  './modules/app-core/runtime-candidate-scope-resolvers.js'
+  './modules/app-core/runtime.js'
 );
 
 const createRuntimeCandidateScopeResolvers =
@@ -1048,7 +1048,7 @@ const createRuntimeCandidateScopeResolvers =
         if (typeof require === 'function') {
           try {
             const requiredRuntimeCandidateScopeResolvers = require(
-              './modules/app-core/runtime-candidate-scope-resolvers.js'
+              './modules/app-core/runtime.js'
             );
             if (
               requiredRuntimeCandidateScopeResolvers &&
@@ -1768,7 +1768,7 @@ const createLocalizationAccessors =
   (function fallbackResolveLocalizationAccessorsFactory() {
     if (typeof require === 'function') {
       try {
-        const required = require('./modules/app-core/localization-accessors.js');
+        const required = require('./modules/app-core/localization.js');
         if (
           required &&
           typeof required.createLocalizationAccessors === 'function'
@@ -2005,7 +2005,7 @@ const createInlineRuntimeToolFallbacks = (function resolveInlineRuntimeToolFallb
   if (typeof require === 'function') {
     try {
       const requiredInlineFallbacks = require(
-        './modules/app-core/runtime-tool-inline-fallbacks.js'
+        './modules/app-core/runtime.js'
       );
       if (
         requiredInlineFallbacks &&

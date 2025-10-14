@@ -247,7 +247,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const CORE_RUNTIME_SCOPE_BRIDGE_TOOLS = resolveCoreSupportModule(
       'cineCoreAppRuntimeScopeBridge',
-      './modules/app-core/runtime-scope-bridge.js'
+      './modules/app-core/runtime.js'
     );
 
     const runtimeScopeBridge =
@@ -596,7 +596,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     const AUTO_GEAR_CREW_OPTION_TOOLS = resolveCoreSupportModule(
       'cineCoreAppRuntimeAutoGearCrew',
-      './modules/app-core/runtime-auto-gear-crew.js'
+      './modules/app-core/runtime.js'
     );
 
     const AUTO_GEAR_CREW_OPTION_NAMESPACE =
@@ -608,7 +608,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || (typeof require === 'function'
           ? (function requireAutoGearCrewHelpers() {
               try {
-                return require('./modules/app-core/runtime-auto-gear-crew.js');
+                return require('./modules/app-core/runtime.js');
               } catch (autoGearCrewRequireError) {
                 void autoGearCrewRequireError;
                 return null;
