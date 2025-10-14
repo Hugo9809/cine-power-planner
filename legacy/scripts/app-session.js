@@ -4844,7 +4844,7 @@ var appearanceContext = {
       return getCameraLetterColorsSafeSession();
     },
     setColors: function setColors(palette) {
-      return setCameraLetterColors(palette);
+      return applyCameraLetterColors(palette);
     }
   },
   icons: {
@@ -5233,7 +5233,7 @@ function getCameraLetterColorsSafeSession() {
   var colors = loadCameraLetterColors();
   return _objectSpread({}, colors);
 }
-function setCameraLetterColors() {
+function applyCameraLetterColors() {
   var newColors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var current = _objectSpread({}, loadCameraLetterColors());
   var changed = false;
@@ -5311,7 +5311,7 @@ try {
       return getCameraLetterColorsSafeSession();
     };
     window.setCameraLetterColors = function (palette) {
-      return setCameraLetterColors(palette);
+      return applyCameraLetterColors(palette);
     };
   }
 } catch (cameraColorExposeError) {
@@ -5750,7 +5750,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       var cameraPalette = collectCameraColorInputValues();
-      var normalizedPalette = setCameraLetterColors(cameraPalette);
+      var normalizedPalette = applyCameraLetterColors(cameraPalette);
       var colorEntries = getCameraColorInputElements();
       colorEntries.forEach(function (entry) {
         var normalized = normalizedPalette[entry.letter];
