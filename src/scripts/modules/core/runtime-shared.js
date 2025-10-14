@@ -32,7 +32,19 @@
             return namespace;
           }
         } catch (error) {
-          void error;
+          const code = error && error.code;
+          if (
+            code === 'MODULE_NOT_FOUND' ||
+            code === 'ERR_MODULE_NOT_FOUND' ||
+            (typeof error === 'object' &&
+              error !== null &&
+              typeof error.message === 'string' &&
+              error.message.indexOf(`Cannot find module '${candidate}'`) !== -1)
+          ) {
+            continue;
+          }
+
+          throw error;
         }
       }
     }
