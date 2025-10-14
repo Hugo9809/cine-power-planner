@@ -1,5 +1,5 @@
 (function exposeAppVersion(globalScope) {
-  var version = '1.0.25';
+  var version = '1.0.26';
 
   function safelyAssign(target, key, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
@@ -18,7 +18,7 @@
     try {
       Object.defineProperty(target, key, {
         configurable: true,
-        enumerable: key === 'APP_VERSION',
+        enumerable: key === 'APP_VERSION' || key === 'CPP_APP_VERSION',
         writable: true,
         value: value,
       });
@@ -36,9 +36,37 @@
   safelyAssign(globalScope, 'CPP_APP_VERSION', version);
 
   if (typeof module === 'object' && module && typeof module.exports !== 'undefined') {
-    module.exports = version;
-    module.exports.APP_VERSION = version;
-    module.exports.default = version;
+    var exportContainer = module.exports;
+
+    if (!exportContainer || (typeof exportContainer !== 'object' && typeof exportContainer !== 'function')) {
+      exportContainer = {};
+    }
+
+    exportContainer.APP_VERSION = version;
+    exportContainer.CPP_APP_VERSION = version;
+    exportContainer.default = version;
+    exportContainer.version = version;
+
+    try {
+      exportContainer.toString = function toString() {
+        return version;
+      };
+      exportContainer.valueOf = function valueOf() {
+        return version;
+      };
+      if (typeof Symbol === 'function' && Symbol && typeof Symbol.toPrimitive === 'symbol') {
+        Object.defineProperty(exportContainer, Symbol.toPrimitive, {
+          configurable: true,
+          value: function toPrimitive() {
+            return version;
+          },
+        });
+      }
+    } catch (enhanceError) {
+      void enhanceError;
+    }
+
+    module.exports = exportContainer;
   }
 
   return version;

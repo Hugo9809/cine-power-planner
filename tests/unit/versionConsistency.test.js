@@ -64,6 +64,8 @@ describe('application version consistency', () => {
         : null;
 
     expect(resolvedAppVersion).toBe(version);
+    expect(appVersionModule.APP_VERSION).toBe(version);
+    expect(appVersionModule.CPP_APP_VERSION).toBe(version);
 
     const scriptSource = read('src/scripts/script.js');
     expect(scriptSource.includes("require('../../app-version.js')")).toBe(true);
