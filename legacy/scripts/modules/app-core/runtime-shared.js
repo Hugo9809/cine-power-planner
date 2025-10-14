@@ -134,7 +134,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     if (resolveCoreSupportModule) {
       try {
-        shared = resolveCoreSupportModule('cineCoreRuntimeShared', './modules/core/runtime-shared.js');
+        shared = resolveCoreSupportModule('cineCoreRuntimeShared', '../core/runtime-shared.js');
       } catch (runtimeSharedResolveError) {
         void runtimeSharedResolveError;
         shared = null;
@@ -143,7 +143,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     if (!isObject(shared) && typeof requireFn === 'function') {
       try {
-        var requiredShared = requireFn('./modules/core/runtime-shared.js');
+        var requiredShared = requireFn('../core/runtime-shared.js');
         if (isObject(requiredShared)) {
           shared = requiredShared;
         }
