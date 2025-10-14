@@ -53,7 +53,7 @@
       options.resolveCoreSupportModule,
       options.requireFn,
       'cineCoreLocalizationFallbackInlineSupport',
-      './modules/core/localization-fallback-inline-support.js'
+      './localization-fallback-inline-support.js'
     );
 
     if (!isObject(inlineSupport)) {
@@ -82,7 +82,7 @@
       options.resolveCoreSupportModule,
       options.requireFn,
       'cineCoreLocalizationFallbackEnvironment',
-      './modules/core/localization-fallback-environment.js'
+      './localization-fallback-environment.js'
     );
 
     if (
@@ -130,41 +130,41 @@
       resolver,
       requireFn,
       'cineCoreLocalizationFallbacks',
-      './modules/core/localization-fallbacks.js'
+      './localization-fallbacks.js'
     );
 
     const inlineLocalizationFallbacks = resolveModule(
       resolver,
       requireFn,
       'cineCoreLocalizationInlineFallbacks',
-      './modules/core/localization-inline-fallbacks.js'
+      './localization-inline-fallbacks.js'
     );
 
     const localizationFallbackRegistry = resolveModule(
       resolver,
       requireFn,
       'cineCoreLocalizationFallbackRegistry',
-      './modules/core/localization-fallback-registry.js'
+      './localization-fallback-registry.js'
     );
 
     const localizationFallbackResolution = resolveModule(
       resolver,
       requireFn,
       'cineCoreLocalizationFallbackResolution',
-      './modules/core/localization-fallback-resolution.js'
+      './localization-fallback-resolution.js'
     );
 
     let localizationFallbackSupportLite = resolveModule(
       resolver,
       requireFn,
       'cineCoreLocalizationFallbackSupportLite',
-      './modules/core/localization-fallback-support-lite.js'
+      './localization-fallback-support-lite.js'
     );
 
     if (!localizationFallbackSupportLite) {
       localizationFallbackSupportLite = safeRequire(
         requireFn,
-        './modules/core/localization-fallback-support-lite.js'
+        './localization-fallback-support-lite.js'
       );
     }
 
@@ -172,7 +172,7 @@
       resolver,
       requireFn,
       'cineCoreLocalizationFallbackFactories',
-      './modules/core/localization-fallback-factories.js'
+      './localization-fallback-factories.js'
     );
 
     const inlineSupport = ensureInlineSupport({
@@ -262,7 +262,7 @@
       resolver,
       requireFn,
       'cineCoreLocalizationBridge',
-      './modules/core/localization-bridge.js'
+      './localization-bridge.js'
     );
 
     return {
