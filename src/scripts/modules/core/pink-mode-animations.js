@@ -567,7 +567,7 @@
       }
 
       const script = document.createElement('script');
-      script.src = 'src/vendor/lottie-light.min.js';
+      script.src = 'src/vendor/lottie.min.js';
       script.async = true;
       script.setAttribute('data-loader', 'pink-mode-lottie');
 
