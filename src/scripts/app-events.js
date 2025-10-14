@@ -2990,7 +2990,7 @@ addSafeEventListener(deviceManagerSection, "click", (event) => {
       viewfinderTypeOptions = syncCoreOptionsArray('viewfinderTypeOptions', 'getAllViewfinderTypes', viewfinderTypeOptions);
       viewfinderConnectorOptions = syncCoreOptionsArray('viewfinderConnectorOptions', 'getAllViewfinderConnectors', viewfinderConnectorOptions);
       refreshDeviceLists();
-      updateMountTypeOptions();
+      callCoreFunctionIfAvailable('updateMountTypeOptions', [], { defer: true });
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
       populateMonitorSelect();
@@ -3346,7 +3346,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
       timecode: timecode
     };
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
-    updateMountTypeOptions();
+    callCoreFunctionIfAvailable('updateMountTypeOptions', [], { defer: true });
   } else if (category === "lenses") {
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
     const mountOptions = getLensDeviceMountOptions();
@@ -3367,7 +3367,7 @@ addSafeEventListener(addDeviceBtn, "click", () => {
     }
     targetCategory[name] = existing;
     applyDynamicFieldsToDevice(targetCategory, name, category, categoryExcludedAttrs[category] || []);
-    updateMountTypeOptions();
+    callCoreFunctionIfAvailable('updateMountTypeOptions', [], { defer: true });
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
