@@ -649,6 +649,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof fetchFn !== 'function') {
       return null;
     }
+    var locationLike = options.location && _typeof(options.location) === 'object' ? options.location : win && win.location ? win.location : null;
+    if (!isSameOriginReloadTarget(locationLike, nextHref)) {
+      return null;
+    }
     var nav = resolveNavigator(options.navigator);
     if (nav && nav.onLine === false) {
       return null;
