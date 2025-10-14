@@ -1041,6 +1041,14 @@ main.legal-content {
   background-color: transparent;
 }
 
+@media (forced-colors: active) {
+  .person-avatar button:focus-visible {
+    outline: 1px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
 .person-contact-select {
   min-height: var(--button-size);
   grid-column: 2;
@@ -1359,6 +1367,14 @@ main.legal-content {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent-color);
   background-color: transparent;
+}
+
+@media (forced-colors: active) {
+  .contact-card-avatar button:focus-visible {
+    outline: 1px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }
 
 .avatar-change-icon {
