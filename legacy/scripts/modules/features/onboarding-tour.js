@@ -3432,15 +3432,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var languageGroup = DOCUMENT.createElement('div');
     languageGroup.className = 'onboarding-hero-language';
-    var languageSelect = DOCUMENT.getElementById('languageSelect');
-    var settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
     var languageTargets = [];
-    if (languageSelect) {
-      languageTargets.push(languageSelect);
-    }
-    if (settingsLanguage && settingsLanguage !== languageSelect) {
-      languageTargets.push(settingsLanguage);
-    }
+    var registeredLanguageTargets = [];
     var languageControlId = getProxyControlId('intro-language');
     var labelEl = DOCUMENT.createElement('label');
     labelEl.className = 'onboarding-hero-language-label';
@@ -3458,8 +3451,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var sourceOptions = source && source.options ? Array.from(source.options) : [];
       if (sourceOptions.length) {
-        for (var _index8 = 0; _index8 < sourceOptions.length; _index8 += 1) {
-          languageProxy.appendChild(sourceOptions[_index8].cloneNode(true));
+        for (var _index2 = 0; _index2 < sourceOptions.length; _index2 += 1) {
+          languageProxy.appendChild(sourceOptions[_index2].cloneNode(true));
         }
       } else if (typeof source.value === 'string') {
         var option = DOCUMENT.createElement('option');
@@ -3472,8 +3465,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     var getActiveLanguageValue = function getActiveLanguageValue() {
-      for (var _index9 = 0; _index9 < languageTargets.length; _index9 += 1) {
-        var target = languageTargets[_index9];
+      for (var _index3 = 0; _index3 < languageTargets.length; _index3 += 1) {
+        var target = languageTargets[_index3];
         if (target && typeof target.value === 'string' && target.value) {
           return target.value;
         }
@@ -3493,78 +3486,221 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     };
-    if (languageTargets.length) {
-      copyOptionsFromSource(languageTargets[0]);
-      var initialValue = getActiveLanguageValue();
-      if (initialValue) {
-        languageProxy.value = initialValue;
-      } else if (languageProxy.options && languageProxy.options.length && languageTargets[0]) {
-        languageProxy.value = languageTargets[0].value || languageProxy.options[0].value;
+    var resolveFallbackLanguageOptions = function resolveFallbackLanguageOptions() {
+      var fallbackLabels = {
+        en: 'English',
+        de: 'Deutsch',
+        es: 'Español',
+        fr: 'Français',
+        it: 'Italiano'
+      };
+      var options = [];
+      var seen = [];
+      var addOption = function addOption(code) {
+        var normalized = typeof code === 'string' ? code.trim() : '';
+        if (!normalized || seen.indexOf(normalized) !== -1) {
+          return;
+        }
+        seen.push(normalized);
+        options.push({
+          value: normalized,
+          label: fallbackLabels[normalized] || normalized
+        });
+      };
+      if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE.texts) === 'object' && GLOBAL_SCOPE.texts) {
+        try {
+          Object.keys(GLOBAL_SCOPE.texts).forEach(addOption);
+        } catch (error) {
+          void error;
+        }
       }
-    } else {
-      languageProxy.disabled = true;
-      languageProxy.setAttribute('aria-disabled', 'true');
-    }
+      Object.keys(fallbackLabels).forEach(addOption);
+      if (!options.length) {
+        addOption('en');
+      }
+      return options;
+    };
+    var applyFallbackLanguageOptions = function applyFallbackLanguageOptions() {
+      var preserveValue = languageProxy.value;
+      languageProxy.textContent = '';
+      var options = resolveFallbackLanguageOptions();
+      for (var _index4 = 0; _index4 < options.length; _index4 += 1) {
+        var currentOption = DOCUMENT.createElement('option');
+        currentOption.value = options[_index4].value;
+        currentOption.textContent = options[_index4].label;
+        languageProxy.appendChild(currentOption);
+      }
+      var active = preserveValue || resolveLanguage();
+      if (active) {
+        languageProxy.value = active;
+      }
+    };
     var handleLanguageProxyChange = function handleLanguageProxyChange() {
       var value = languageProxy.value;
       var applied = applyLanguagePreference(value);
-      if (applied) {
-        return;
-      }
       for (var _index0 = 0; _index0 < languageTargets.length; _index0 += 1) {
         var target = languageTargets[_index0];
-        if (!target || target.value === value) {
+        if (!target) {
           continue;
         }
-        target.value = value;
-        dispatchSyntheticEvent(target, 'change');
+        if (typeof target.value === 'string' && target.value !== value) {
+          target.value = value;
+        }
+        if (!applied) {
+          dispatchSyntheticEvent(target, 'change');
+        }
       }
+      var runLanguageSync = function runLanguageSync() {
+        try {
+          syncLanguageProxyFromTargets();
+        } catch (syncError) {
+          void syncError;
+        }
+        if (applied) {
+          try {
+            handleLanguageChange();
+          } catch (languageError) {
+            void languageError;
+          }
+        }
+      };
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.requestAnimationFrame === 'function') {
+        try {
+          GLOBAL_SCOPE.requestAnimationFrame(function () {
+            runLanguageSync();
+          });
+          return;
+        } catch (rafError) {
+          void rafError;
+        }
+      }
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.queueMicrotask === 'function') {
+        try {
+          GLOBAL_SCOPE.queueMicrotask(runLanguageSync);
+          return;
+        } catch (microtaskError) {
+          void microtaskError;
+        }
+      }
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.setTimeout === 'function') {
+        try {
+          GLOBAL_SCOPE.setTimeout(runLanguageSync, 0);
+          return;
+        } catch (timeoutError) {
+          void timeoutError;
+        }
+      }
+      runLanguageSync();
     };
+    languageProxy.disabled = false;
+    languageProxy.removeAttribute('aria-disabled');
     languageProxy.addEventListener('change', handleLanguageProxyChange);
     registerCleanup(function () {
       languageProxy.removeEventListener('change', handleLanguageProxyChange);
     });
     var handleTargetChange = function handleTargetChange() {
       syncLanguageProxyFromTargets();
+      try {
+        handleLanguageChange();
+      } catch (targetSyncError) {
+        void targetSyncError;
+      }
     };
-    var _loop4 = function _loop4() {
-        var target = languageTargets[_index1];
-        if (!target) {
-          return 0;
+    var registerLanguageTarget = function registerLanguageTarget(target) {
+      if (!target || registeredLanguageTargets.indexOf(target) !== -1) {
+        return;
+      }
+      registeredLanguageTargets.push(target);
+      languageTargets.push(target);
+      var targetChangeListener = function targetChangeListener() {
+        handleTargetChange();
+      };
+      target.addEventListener('change', targetChangeListener);
+      target.addEventListener('input', targetChangeListener);
+      var targetObserver = null;
+      if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+        try {
+          targetObserver = new GLOBAL_SCOPE.MutationObserver(function () {
+            syncLanguageProxyFromTargets();
+          });
+          targetObserver.observe(target, {
+            childList: true
+          });
+        } catch (error) {
+          targetObserver = null;
+          void error;
         }
-        target.addEventListener('change', handleTargetChange);
-        target.addEventListener('input', handleTargetChange);
-        registerCleanup(function () {
-          target.removeEventListener('change', handleTargetChange);
-          target.removeEventListener('input', handleTargetChange);
-        });
-        if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+      }
+      registerCleanup(function () {
+        target.removeEventListener('change', targetChangeListener);
+        target.removeEventListener('input', targetChangeListener);
+        if (targetObserver) {
           try {
-            var observer = new GLOBAL_SCOPE.MutationObserver(function () {
-              syncLanguageProxyFromTargets();
-            });
-            observer.observe(target, {
-              childList: true
-            });
-            registerCleanup(function () {
-              try {
-                observer.disconnect();
-              } catch (error) {
-                void error;
-              }
-            });
-          } catch (error) {
-            void error;
+            targetObserver.disconnect();
+          } catch (observerError) {
+            void observerError;
           }
-          return 1;
         }
-      },
-      _ret2;
-    for (var _index1 = 0; _index1 < languageTargets.length; _index1 += 1) {
-      _ret2 = _loop4();
-      if (_ret2 === 0) continue;
-      if (_ret2 === 1) break;
+        var registryIndex = registeredLanguageTargets.indexOf(target);
+        if (registryIndex !== -1) {
+          registeredLanguageTargets.splice(registryIndex, 1);
+        }
+        var listIndex = languageTargets.indexOf(target);
+        if (listIndex !== -1) {
+          languageTargets.splice(listIndex, 1);
+        }
+      });
+      syncLanguageProxyFromTargets();
+      languageProxy.disabled = false;
+      languageProxy.removeAttribute('aria-disabled');
+    };
+    var discoverLanguageTargets = function discoverLanguageTargets() {
+      if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
+        return;
+      }
+      var headerLanguage = DOCUMENT.getElementById('languageSelect');
+      if (headerLanguage) {
+        registerLanguageTarget(headerLanguage);
+      }
+      var settingsLanguageEl = DOCUMENT.getElementById('settingsLanguage');
+      if (settingsLanguageEl && settingsLanguageEl !== headerLanguage) {
+        registerLanguageTarget(settingsLanguageEl);
+      }
+    };
+    discoverLanguageTargets();
+    if (!languageTargets.length) {
+      applyFallbackLanguageOptions();
     }
+    var languageTargetObserver = null;
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+      try {
+        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver(function () {
+          var previousCount = languageTargets.length;
+          discoverLanguageTargets();
+          if (!languageTargets.length) {
+            applyFallbackLanguageOptions();
+          } else if (!previousCount) {
+            syncLanguageProxyFromTargets();
+          }
+        });
+        languageTargetObserver.observe(DOCUMENT.documentElement || DOCUMENT, {
+          childList: true,
+          subtree: true
+        });
+      } catch (observerError) {
+        languageTargetObserver = null;
+        void observerError;
+      }
+    }
+    registerCleanup(function () {
+      if (languageTargetObserver) {
+        try {
+          languageTargetObserver.disconnect();
+        } catch (observerError) {
+          void observerError;
+        }
+      }
+    });
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       var handleLanguageEvent = function handleLanguageEvent() {
         syncLanguageProxyFromTargets();
@@ -3984,9 +4120,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       };
       var syncToTarget = function syncToTarget() {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
+        var value = proxySelect.value;
+        var applied = applyLanguagePreference(value);
+        if (languageSelect.value !== value) {
+          languageSelect.value = value;
+        }
+        dispatchSyntheticEvent(languageSelect, 'change');
+        if (!applied) {
+          try {
+            syncFromTarget();
+          } catch (syncError) {
+            void syncError;
+          }
         }
       };
       proxySelect.addEventListener('change', syncToTarget);
