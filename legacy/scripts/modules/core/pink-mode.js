@@ -33,6 +33,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return MODULE_CACHE[moduleId].exports;
     }
     var source = MODULE_SOURCES[moduleId];
+    if (Array.isArray(source)) {
+      source = source.join('\n');
+      MODULE_SOURCES[moduleId] = source;
+    }
     if (typeof source !== 'string') {
       throw new Error('Unknown pink mode module: ' + moduleId);
     }
