@@ -5882,7 +5882,7 @@ const appearanceContext = {
   },
   cameraColors: {
     getColors: () => getCameraLetterColorsSafeSession(),
-    setColors: palette => setCameraLetterColors(palette),
+    setColors: palette => applyCameraLetterColors(palette),
   },
   icons: {
     registry: typeof ICON_GLYPHS === 'object' ? ICON_GLYPHS : null,
@@ -6327,7 +6327,7 @@ function getCameraLetterColorsSafeSession() {
   return { ...colors };
 }
 
-function setCameraLetterColors(newColors = {}) {
+function applyCameraLetterColors(newColors = {}) {
   const current = { ...loadCameraLetterColors() };
   let changed = false;
   CAMERA_LETTERS.forEach(letter => {
@@ -6406,7 +6406,7 @@ function collectCameraColorInputValues() {
 try {
   if (typeof window !== 'undefined') {
     window.getCameraLetterColors = () => getCameraLetterColorsSafeSession();
-    window.setCameraLetterColors = palette => setCameraLetterColors(palette);
+    window.setCameraLetterColors = palette => applyCameraLetterColors(palette);
   }
 } catch (cameraColorExposeError) {
   console.warn('Unable to expose camera color helpers', cameraColorExposeError);
@@ -6888,7 +6888,7 @@ const mountVoltageResetButtonRef = (() => {
         }
       }
       const cameraPalette = collectCameraColorInputValues();
-      const normalizedPalette = setCameraLetterColors(cameraPalette);
+      const normalizedPalette = applyCameraLetterColors(cameraPalette);
       const colorEntries = getCameraColorInputElements();
       colorEntries.forEach(entry => {
         const normalized = normalizedPalette[entry.letter];
