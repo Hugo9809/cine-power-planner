@@ -17807,6 +17807,29 @@ function fallbackParseVoltageValue(value, fallback) {
   return 0;
 }
 
+function resolveSupportedMountVoltageTypes() {
+  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES) && SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0) {
+    return SUPPORTED_MOUNT_VOLTAGE_TYPES;
+  }
+
+  const inputKeys = mountVoltageInputs && typeof mountVoltageInputs === 'object'
+    ? Object.keys(mountVoltageInputs)
+    : [];
+  if (inputKeys.length > 0) {
+    return inputKeys;
+  }
+
+  if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
+    try {
+      return Object.keys(DEFAULT_MOUNT_VOLTAGES);
+    } catch (defaultKeysError) {
+      void defaultKeysError;
+    }
+  }
+
+  return [];
+}
+
 function cloneMountVoltageDefaultsForSession() {
   const runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
   if (runtimeCloneMountVoltageMap) {
@@ -17829,15 +17852,13 @@ function cloneMountVoltageDefaultsForSession() {
   const parse = typeof parseVoltageValue === 'function'
     ? (value, fallback) => parseVoltageValue(value, fallback)
     : (value, fallback) => fallbackParseVoltageValue(value, fallback);
-  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
-    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
-      const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || {};
-      clone[type] = {
-        high: parse(defaults.high, defaults.high),
-        low: parse(defaults.low, defaults.low),
-      };
-    });
-  }
+  resolveSupportedMountVoltageTypes().forEach(type => {
+    const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || {};
+    clone[type] = {
+      high: parse(defaults.high, defaults.high),
+      low: parse(defaults.low, defaults.low),
+    };
+  });
   return clone;
 }
 
@@ -17888,7 +17909,8 @@ function collectMountVoltageFormValues() {
     ? (value, fallback) => parseVoltageValue(value, fallback)
     : (value, fallback) => fallbackParseVoltageValue(value, fallback);
   const defaultClones = cloneMountVoltageDefaultsForSession();
-  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
+  const supportedTypes = resolveSupportedMountVoltageTypes();
+  supportedTypes.forEach(type => {
     const fields = mountVoltageInputs?.[type];
     if (!fields) return;
     const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || { high: 0, low: 0 };
