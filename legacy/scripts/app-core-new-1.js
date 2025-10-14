@@ -2163,7 +2163,76 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var _require = require('./overview.js');
     generatePrintableOverview = _require.generatePrintableOverview;
   } catch (_unused) {}
-  var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.24';
+  function resolveAppVersionScope() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  }
+
+  function extractAppVersion(candidate) {
+    if (!candidate) {
+      return null;
+    }
+
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+
+    if (candidate && typeof candidate.APP_VERSION === 'string') {
+      return candidate.APP_VERSION;
+    }
+
+    if (candidate && typeof candidate.default === 'string') {
+      return candidate.default;
+    }
+
+    if (candidate && typeof candidate.version === 'string') {
+      return candidate.version;
+    }
+
+    return null;
+  }
+
+  function resolveAppVersionValue() {
+    if (typeof CORE_SHARED.APP_VERSION === 'string' && CORE_SHARED.APP_VERSION) {
+      return CORE_SHARED.APP_VERSION;
+    }
+
+    var scope = resolveAppVersionScope();
+    if (scope && typeof scope.CPP_APP_VERSION === 'string' && scope.CPP_APP_VERSION) {
+      return scope.CPP_APP_VERSION;
+    }
+
+    if (scope && typeof scope.APP_VERSION === 'string' && scope.APP_VERSION) {
+      return scope.APP_VERSION;
+    }
+
+    if (typeof require === 'function') {
+      try {
+        var moduleCandidate = require('../../app-version.js');
+        var resolvedCandidate = extractAppVersion(moduleCandidate);
+        if (resolvedCandidate) {
+          return resolvedCandidate;
+        }
+      } catch (appVersionError) {
+        void appVersionError;
+      }
+    }
+
+    return '0.0.0';
+  }
+
+  var APP_VERSION = resolveAppVersionValue();
   resolvePinkModeLottieRuntime();
   var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
   var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';

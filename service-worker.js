@@ -16,6 +16,20 @@ let logBroadcastChannelFailed = false;
 let cachedCacheName = null;
 let cachedCacheVersion = null;
 
+if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
+  try {
+    SERVICE_WORKER_SCOPE.importScripts('./app-version.js');
+  } catch (appVersionImportError) {
+    try {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('[cine-sw] Unable to preload app-version.js.', appVersionImportError);
+      }
+    } catch (consoleError) {
+      void consoleError;
+    }
+  }
+}
+
 function createLogEntryId(level, timestamp) {
   const safeLevel = typeof level === 'string' && level ? level.toLowerCase() : 'log';
   const timeComponent = typeof timestamp === 'number' && Number.isFinite(timestamp)
@@ -470,22 +484,32 @@ function resolveCacheVersion() {
     serviceWorkerLog.warn('Unable to read APP_VERSION from global scope.', directReadError);
   }
 
+  try {
+    const cppVersion = SERVICE_WORKER_SCOPE.CPP_APP_VERSION;
+    if (typeof cppVersion === 'string' && cppVersion) {
+      return cppVersion;
+    }
+  } catch (cppReadError) {
+    serviceWorkerLog.warn('Unable to read CPP_APP_VERSION from global scope.', cppReadError);
+  }
+
   return null;
 }
 
-let CACHE_VERSION = null;
+let CACHE_VERSION = resolveCacheVersion();
 
-  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
-    try {
-      SERVICE_WORKER_SCOPE.importScripts('./src/scripts/modules/core-shared.js');
-      CACHE_VERSION = resolveCacheVersion();
-    } catch (versionImportError) {
-      serviceWorkerLog.warn('Falling back to bundled cache version after importScripts failure.', versionImportError);
-    }
+if (!CACHE_VERSION && SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
+  try {
+    SERVICE_WORKER_SCOPE.importScripts('./src/scripts/modules/core-shared.js');
+    CACHE_VERSION = resolveCacheVersion();
+  } catch (versionImportError) {
+    serviceWorkerLog.warn('Falling back to bundled cache version after importScripts failure.', versionImportError);
   }
+}
 
 if (!CACHE_VERSION) {
-  CACHE_VERSION = '1.0.24';
+  CACHE_VERSION = '0.0.0';
+  serviceWorkerLog.warn('APP_VERSION not available; defaulting cache version to 0.0.0.');
 }
 
 const CACHE_NAME = `cine-power-planner-v${CACHE_VERSION}`;

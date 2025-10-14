@@ -55,12 +55,83 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  var APP_VERSION = "1.0.24";
+
+  function resolveGlobalScope() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  }
+
+  function extractAppVersion(candidate) {
+    if (!candidate) {
+      return null;
+    }
+
+    if (typeof candidate === 'string') {
+      return candidate;
+    }
+
+    if (candidate && typeof candidate.APP_VERSION === 'string') {
+      return candidate.APP_VERSION;
+    }
+
+    if (candidate && typeof candidate.default === 'string') {
+      return candidate.default;
+    }
+
+    if (candidate && typeof candidate.version === 'string') {
+      return candidate.version;
+    }
+
+    return null;
+  }
+
+  function resolveAppVersion() {
+    var scope = resolveGlobalScope();
+    if (scope && typeof scope.CPP_APP_VERSION === 'string' && scope.CPP_APP_VERSION) {
+      return scope.CPP_APP_VERSION;
+    }
+
+    if (scope && typeof scope.APP_VERSION === 'string' && scope.APP_VERSION) {
+      return scope.APP_VERSION;
+    }
+
+    if (typeof require === 'function') {
+      try {
+        var moduleCandidate = require('../../app-version.js');
+        var resolvedCandidate = extractAppVersion(moduleCandidate);
+        if (resolvedCandidate) {
+          return resolvedCandidate;
+        }
+      } catch (appVersionError) {
+        void appVersionError;
+      }
+    }
+
+    return null;
+  }
+
+  var moduleAppVersion = resolveAppVersion();
+  var APP_VERSION = moduleAppVersion && typeof moduleAppVersion === 'string' && moduleAppVersion || combinedAppVersion && typeof combinedAppVersion === 'string' && combinedAppVersion || '0.0.0';
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error("Combined app version (".concat(combinedAppVersion, ") does not match script marker (").concat(APP_VERSION, ")."));
   }
-  if (aggregatedExports && !aggregatedExports.APP_VERSION) {
-    aggregatedExports.APP_VERSION = APP_VERSION;
+  if (aggregatedExports) {
+    if (moduleAppVersion && typeof moduleAppVersion === 'string') {
+      aggregatedExports.APP_VERSION = moduleAppVersion;
+    } else if (!aggregatedExports.APP_VERSION) {
+      aggregatedExports.APP_VERSION = APP_VERSION;
+    }
   }
 }
 var GLOBAL_RUNTIME_SCOPE = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
