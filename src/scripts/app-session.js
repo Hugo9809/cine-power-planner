@@ -6767,7 +6767,39 @@ const mountVoltageResetButtonRef = (() => {
         }
       });
       if (settingsTemperatureUnit) {
-        applyTemperatureUnitPreference(settingsTemperatureUnit.value);
+        const selectedTemperatureUnit =
+          typeof settingsTemperatureUnit.value === 'string'
+            ? settingsTemperatureUnit.value
+            : 'celsius';
+
+        if (typeof applyTemperatureUnitPreference === 'function') {
+          applyTemperatureUnitPreference(selectedTemperatureUnit);
+        } else {
+          const normalizedTemperatureUnit = normalizeTemperatureUnitValue(selectedTemperatureUnit);
+
+          try {
+            localTemperatureUnit = normalizedTemperatureUnit;
+          } catch (temperatureAssignError) {
+            void temperatureAssignError;
+          }
+
+          if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
+            try {
+              sessionGlobalScope.temperatureUnit = normalizedTemperatureUnit;
+            } catch (temperatureScopeError) {
+              void temperatureScopeError;
+            }
+          }
+
+          try {
+            if (typeof localStorage !== 'undefined' && localStorage) {
+              localStorage.setItem(temperaturePreferenceStorageKey, normalizedTemperatureUnit);
+            }
+          } catch (temperaturePersistError) {
+            console.warn('Could not save temperature unit preference', temperaturePersistError);
+          }
+        }
+
         rememberSettingsTemperatureUnitBaseline();
       }
       if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
