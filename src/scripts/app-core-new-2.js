@@ -16699,6 +16699,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['setLensDeviceMountOptions', () => setLensDeviceMountOptions],
       ['getLensDeviceMountOptions', () => getLensDeviceMountOptions],
       ['clearLensDeviceMountOptions', () => clearLensDeviceMountOptions],
+      ['updateMountTypeOptions', () => updateMountTypeOptions],
       ['clearPowerDistribution', () => clearPowerDistribution],
       ['clearVideoOutputs', () => clearVideoOutputs],
       ['setFizConnectors', () => setFizConnectors],
