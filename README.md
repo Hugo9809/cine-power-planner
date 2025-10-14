@@ -102,6 +102,10 @@ drive without phoning home.
   whenever you regenerate service-worker assets, ship new icons or touch
   persistence code so cached builds keep matching the repository and user data
   remains fully protected offline.
+- **Audit power connector safety.** Pair the
+  [Power Summary Warning Reference](docs/power-summary-warning-reference.md)
+  with each Power Summary rehearsal to log connector limits, redundant backups
+  and autosave/share alignment before distributing plans offline.
 - **Protect user data deliberately.** Follow the new
   [Data Protection Playbook](docs/data-protection-playbook.md) when you scope
   changes, rehearse daily guardrails, prepare releases and respond to
@@ -431,7 +435,12 @@ same online or offline.
    mid-tour so progress never goes missing offline, and the checklist row
    surfaces an offline progress status message showing how many steps are
    complete, when the most recent step finished and the next workflow to cover
-   before you relaunch the tour.
+   before you relaunch the tour. When the tutorial highlights the Power
+   Summary, cross-check the colour-coded warnings against the
+   [Power Summary Warning Reference](docs/power-summary-warning-reference.md),
+   log any pin or D-Tap overloads, confirm redundant backups and ensure the
+   autosave banner timestamp matches the share/export preview before you mark
+   the step complete.
 1. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
