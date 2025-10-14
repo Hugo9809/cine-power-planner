@@ -534,7 +534,7 @@
     let sideMenu = null;
     try {
       sideMenu = DOCUMENT.getElementById('sideMenu');
-    } catch (error) {
+    } catch {
       sideMenu = null;
     }
 
@@ -550,7 +550,7 @@
     let menuToggle = null;
     try {
       menuToggle = DOCUMENT.getElementById('menuToggle');
-    } catch (error) {
+    } catch {
       menuToggle = null;
     }
 

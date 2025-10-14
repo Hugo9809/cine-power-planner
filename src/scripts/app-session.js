@@ -2282,6 +2282,100 @@ if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
   }
 }
 
+function applyTemperatureUnitPreferenceInternal(preference, options = {}) {
+  const config = options && typeof options === 'object' ? options : {};
+  const persist = config.persist !== false;
+  const forceUpdate = config.forceUpdate === true;
+  const nextUnit = normalizeTemperatureUnitValue(preference);
+  const previousUnit = localTemperatureUnit;
+
+  if (!forceUpdate && nextUnit === previousUnit) {
+    return previousUnit;
+  }
+
+  localTemperatureUnit = nextUnit;
+
+  if (sessionGlobalScope && typeof sessionGlobalScope === 'object') {
+    try {
+      sessionGlobalScope.temperatureUnit = nextUnit;
+    } catch (assignTemperatureError) {
+      void assignTemperatureError;
+    }
+  }
+
+  if (persist) {
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem(temperaturePreferenceStorageKey, nextUnit);
+      }
+    } catch (persistError) {
+      console.warn('Could not save temperature unit preference', persistError);
+    }
+  }
+
+  if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
+    try {
+      settingsTemperatureUnit.value = nextUnit;
+    } catch (setPreferenceError) {
+      void setPreferenceError;
+    }
+  }
+
+  if (
+    typeof document !== 'undefined'
+    && typeof document.dispatchEvent === 'function'
+    && typeof CustomEvent === 'function'
+  ) {
+    try {
+      document.dispatchEvent(
+        new CustomEvent('temperature-unit-preference-changed', {
+          detail: {
+            unit: nextUnit,
+            previousUnit,
+            persisted: persist,
+          },
+        }),
+      );
+    } catch (dispatchTemperatureError) {
+      console.warn('Failed to broadcast temperature unit preference change', dispatchTemperatureError);
+    }
+  }
+
+  return nextUnit;
+}
+
+const applyTemperatureUnitPreferenceSafe = (() => {
+  const implementation = applyTemperatureUnitPreferenceInternal;
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (scope) {
+    try {
+      scope.applyTemperatureUnitPreference = implementation;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(scope, 'applyTemperatureUnitPreference', {
+          configurable: true,
+          writable: true,
+          value: implementation,
+        });
+      } catch (defineError) {
+        console.warn(
+          'Could not expose temperature unit preference helper globally',
+          defineError,
+        );
+      }
+    }
+  }
+
+  return implementation;
+})();
+
 let recordFullBackupHistoryEntryFn = () => {};
 let ensureCriticalStorageBackupsFn = () => ({ ensured: [], skipped: [], errors: [] });
 try {
@@ -5814,7 +5908,10 @@ const appearanceContext = {
     setTemperatureUnit: value => {
       localTemperatureUnit = normalizeTemperatureUnitValue(value);
     },
-    applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    applyTemperatureUnitPreference:
+      typeof applyTemperatureUnitPreferenceSafe === 'function'
+        ? applyTemperatureUnitPreferenceSafe
+        : null,
     getFocusScale: () => {
       const globalScale = typeof focusScalePreference === 'string'
         ? focusScalePreference
@@ -6461,9 +6558,9 @@ if (settingsShowAutoBackups) {
 
 if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', () => {
-    if (typeof applyTemperatureUnitPreference === 'function') {
-      applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
-        persist: false
+    if (typeof applyTemperatureUnitPreferenceSafe === 'function') {
+      applyTemperatureUnitPreferenceSafe(settingsTemperatureUnit.value, {
+        persist: false,
       });
     }
   });
@@ -6766,8 +6863,8 @@ const mountVoltageResetButtonRef = (() => {
           entry.element.value = normalized;
         }
       });
-      if (settingsTemperatureUnit) {
-        applyTemperatureUnitPreference(settingsTemperatureUnit.value);
+      if (settingsTemperatureUnit && typeof applyTemperatureUnitPreferenceSafe === 'function') {
+        applyTemperatureUnitPreferenceSafe(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
       if (typeof settingsFocusScale !== 'undefined' && settingsFocusScale) {
@@ -8921,7 +9018,7 @@ function applyPreferencesFromStorage(safeGetItem) {
   const restoredTemperatureUnit = safeGetItem(temperaturePreferenceStorageKey);
   if (restoredTemperatureUnit) {
     try {
-      applyTemperatureUnitPreference(restoredTemperatureUnit, { persist: false });
+      applyTemperatureUnitPreferenceSafe(restoredTemperatureUnit, { persist: false });
     } catch (error) {
       console.warn('Failed to apply restored temperature unit preference', error);
     }
