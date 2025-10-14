@@ -11584,7 +11584,7 @@ if (factoryResetButton) {
       }
       try {
         stopPinkModeIconRotation();
-        stopPinkModeAnimatedIcons();
+        sessionStopPinkModeAnimatedIcons();
       } catch (animationError) {
         console.warn('Failed to stop pink mode animations during factory reset', animationError);
       }
