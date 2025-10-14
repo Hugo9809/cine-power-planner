@@ -267,6 +267,110 @@
 
   const pinkModeAssetTextCache = new Map();
   const pinkModeAssetTextPromiseCache = new Map();
+  const pinkModeEmbeddedAssetCache = new Map();
+
+  function decodePinkModeEmbeddedAsset(base64) {
+    if (typeof base64 !== 'string' || !base64) {
+      return null;
+    }
+
+    try {
+      if (typeof atob === 'function') {
+        const binary = atob(base64);
+        if (typeof TextDecoder === 'function') {
+          try {
+            const decoder = new TextDecoder('utf-8');
+            const buffer = new Uint8Array(binary.length);
+            for (let index = 0; index < binary.length; index += 1) {
+              buffer[index] = binary.charCodeAt(index);
+            }
+            return decoder.decode(buffer);
+          } catch (decodeError) {
+            void decodeError;
+          }
+        }
+        return binary;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    if (typeof Buffer !== 'undefined') {
+      try {
+        return Buffer.from(base64, 'base64').toString('utf8');
+      } catch (bufferError) {
+        void bufferError;
+      }
+    }
+
+    return null;
+  }
+
+  function readPinkModeEmbeddedAsset(normalized) {
+    if (typeof normalized !== 'string' || !normalized) {
+      return null;
+    }
+
+    if (pinkModeEmbeddedAssetCache.has(normalized)) {
+      return pinkModeEmbeddedAssetCache.get(normalized);
+    }
+
+    const assets =
+      (GLOBAL_SCOPE && GLOBAL_SCOPE.cinePinkModeAnimationAssets) ||
+      (typeof window !== 'undefined' && window && window.cinePinkModeAnimationAssets) ||
+      null;
+
+    if (!assets || typeof assets !== 'object') {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+
+    const candidates = [normalized];
+    try {
+      const encoded = encodeURI(normalized);
+      if (encoded && encoded !== normalized) {
+        candidates.push(encoded);
+      }
+    } catch (encodeError) {
+      void encodeError;
+    }
+
+    try {
+      const decoded = decodeURI(normalized);
+      if (decoded && decoded !== normalized) {
+        candidates.push(decoded);
+      }
+    } catch (decodeError) {
+      void decodeError;
+    }
+
+    let base64 = null;
+    for (let index = 0; index < candidates.length; index += 1) {
+      const key = candidates[index];
+      if (!key) {
+        continue;
+      }
+      const value = assets[key];
+      if (typeof value === 'string' && value) {
+        base64 = value;
+        break;
+      }
+    }
+
+    if (!base64) {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+
+    const text = decodePinkModeEmbeddedAsset(base64);
+    if (typeof text !== 'string') {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+
+    pinkModeEmbeddedAssetCache.set(normalized, text);
+    return text;
+  }
 
   function createPinkModeCacheKeyVariants(normalized, resolvedUrl, request) {
     const variants = [];
@@ -373,6 +477,12 @@
       if (xhrResult !== null) {
         pinkModeAssetTextCache.set(normalized, xhrResult);
         return xhrResult;
+      }
+
+      const embeddedResult = readPinkModeEmbeddedAsset(normalized);
+      if (embeddedResult !== null) {
+        pinkModeAssetTextCache.set(normalized, embeddedResult);
+        return embeddedResult;
       }
 
       return null;

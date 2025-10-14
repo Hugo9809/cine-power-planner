@@ -29,6 +29,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/core/runtime-state/local-runtime-state.js',
     'modules/core/runtime-state.js',
     'modules/core/localization-bridge.js',
+    'modules/core/pink-mode-animations-inline-assets.js',
     'modules/core/pink-mode-support.js',
     'modules/core/pink-mode-animations.js',
     'modules/core/project-intelligence.js',

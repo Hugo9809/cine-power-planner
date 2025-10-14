@@ -282,6 +282,96 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var pinkModeAssetTextCache = new Map();
   var pinkModeAssetTextPromiseCache = new Map();
+  var pinkModeEmbeddedAssetCache = new Map();
+  function decodePinkModeEmbeddedAsset(base64) {
+    if (typeof base64 !== 'string' || !base64) {
+      return null;
+    }
+
+    try {
+      if (typeof atob === 'function') {
+        var binary = atob(base64);
+        if (typeof TextDecoder === 'function') {
+          try {
+            var decoder = new TextDecoder('utf-8');
+            var buffer = new Uint8Array(binary.length);
+            for (var index = 0; index < binary.length; index += 1) {
+              buffer[index] = binary.charCodeAt(index);
+            }
+            return decoder.decode(buffer);
+          } catch (decodeError) {
+            void decodeError;
+          }
+        }
+        return binary;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    if (typeof Buffer !== 'undefined') {
+      try {
+        return Buffer.from(base64, 'base64').toString('utf8');
+      } catch (bufferError) {
+        void bufferError;
+      }
+    }
+
+    return null;
+  }
+  function readPinkModeEmbeddedAsset(normalized) {
+    if (typeof normalized !== 'string' || !normalized) {
+      return null;
+    }
+    if (pinkModeEmbeddedAssetCache.has(normalized)) {
+      return pinkModeEmbeddedAssetCache.get(normalized);
+    }
+    var assets = GLOBAL_SCOPE && GLOBAL_SCOPE.cinePinkModeAnimationAssets || typeof window !== 'undefined' && window && window.cinePinkModeAnimationAssets || null;
+    if (!assets || typeof assets !== 'object') {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+    var candidates = [normalized];
+    try {
+      var encoded = encodeURI(normalized);
+      if (encoded && encoded !== normalized) {
+        candidates.push(encoded);
+      }
+    } catch (encodeError) {
+      void encodeError;
+    }
+    try {
+      var decoded = decodeURI(normalized);
+      if (decoded && decoded !== normalized) {
+        candidates.push(decoded);
+      }
+    } catch (decodeError) {
+      void decodeError;
+    }
+    var base64 = null;
+    for (var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+      var key = candidates[candidateIndex];
+      if (!key) {
+        continue;
+      }
+      var value = assets[key];
+      if (typeof value === 'string' && value) {
+        base64 = value;
+        break;
+      }
+    }
+    if (!base64) {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+    var text = decodePinkModeEmbeddedAsset(base64);
+    if (typeof text !== 'string') {
+      pinkModeEmbeddedAssetCache.set(normalized, null);
+      return null;
+    }
+    pinkModeEmbeddedAssetCache.set(normalized, text);
+    return text;
+  }
   function createPinkModeCacheKeyVariants(normalized, resolvedUrl, request) {
     var variants = [];
     if (request) {
@@ -347,7 +437,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return pinkModeAssetTextPromiseCache.get(normalized);
     }
     var promise = _asyncToGenerator(_regenerator().m(function _callee() {
-      var resolvedUrl, request, networkResult, cacheVariants, _iterator, _step, variant, cacheResult, xhrResult, _t;
+      var resolvedUrl, request, networkResult, cacheVariants, _iterator, _step, variant, cacheResult, xhrResult, embeddedResult, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
@@ -410,6 +500,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             pinkModeAssetTextCache.set(normalized, xhrResult);
             return _context.a(2, xhrResult);
           case 12:
+            embeddedResult = readPinkModeEmbeddedAsset(normalized);
+            if (!(embeddedResult !== null)) {
+              _context.n = 13;
+              break;
+            }
+            pinkModeAssetTextCache.set(normalized, embeddedResult);
+            return _context.a(2, embeddedResult);
+          case 13:
             return _context.a(2, null);
         }
       }, _callee, null, [[3, 8, 9, 10]]);

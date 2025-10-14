@@ -3176,6 +3176,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       'src/scripts/modules/core/persistence-guard.js',
       'src/scripts/modules/core/mount-voltage.js',
       'src/scripts/modules/core/experience.js',
+      'src/scripts/modules/core/pink-mode-animations-inline-assets.js',
       'src/scripts/modules/core/pink-mode-support.js',
       'src/scripts/modules/core/pink-mode-animations.js',
       'src/scripts/modules/logging.js',

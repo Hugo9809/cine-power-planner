@@ -154,6 +154,7 @@
 
 - Pink mode animations now resolve asset URLs relative to the active document base, preserving correct lookups when the planner runs from custom subdirectories or offline mirrors.【F:src/scripts/modules/core/pink-mode-animations.js†L29-L116】
 - Asset fetches reuse the service worker cache first and fall back to XHR when `fetch` is blocked, keeping the animated icon library available even for strict offline launches that previously rendered static placeholders.【F:src/scripts/modules/core/pink-mode-animations.js†L118-L243】【F:src/scripts/modules/core/pink-mode-animations.js†L756-L809】
+- Embedded base64 bundles mirror every pink mode animation JSON file so the runtime can decode them instantly when network, cache and XHR paths are unavailable, protecting offline archives and `file://` deployments from blank icon states.【F:src/scripts/modules/core/pink-mode-animations-inline-assets.js†L1-L153】【F:src/scripts/modules/core/pink-mode-animations.js†L270-L437】
 
 ## Step 13 – Runtime scope helper extraction
 
