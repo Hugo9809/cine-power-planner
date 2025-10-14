@@ -218,6 +218,11 @@ const RUNTIME_SHARED_BOOTSTRAP_TOOLS = resolveCoreSupportModule(
   './modules/app-core/runtime-shared-bootstrap.js'
 );
 
+const LOCALIZATION_ACCESSORS_TOOLS = resolveCoreSupportModule(
+  'cineCoreAppLocalizationAccessors',
+  './modules/app-core/localization-accessors.js'
+);
+
 function createRuntimeSharedBootstrap(options) {
   if (
     RUNTIME_SHARED_BOOTSTRAP_TOOLS &&
@@ -1132,284 +1137,581 @@ const CORE_LOCALIZATION_RUNTIME =
       })
     : null;
 
-const LOCALE_MODULE =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.localeModule
-    ? CORE_LOCALIZATION_RUNTIME.localeModule
-    : fallbackResolveLocaleModule(CORE_PART1_RUNTIME_SCOPE);
-
-const DEFAULT_LANGUAGE =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.defaultLanguage
-    ? CORE_LOCALIZATION_RUNTIME.defaultLanguage
-    : (function resolveFallbackDefaultLanguage() {
-        if (LOCALE_MODULE && typeof LOCALE_MODULE.DEFAULT_LANGUAGE === 'string') {
-          return LOCALE_MODULE.DEFAULT_LANGUAGE;
-        }
-        return 'en';
-      })();
-
-const RTL_LANGUAGE_CODES =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.rtlLanguageCodes
-    ? CORE_LOCALIZATION_RUNTIME.rtlLanguageCodes
-    : (function resolveFallbackRtlCodes() {
-        if (
-          LOCALE_MODULE &&
-          Array.isArray(LOCALE_MODULE.RTL_LANGUAGE_CODES) &&
-          LOCALE_MODULE.RTL_LANGUAGE_CODES.length > 0
-        ) {
-          return LOCALE_MODULE.RTL_LANGUAGE_CODES;
-        }
-        return ['ar', 'fa', 'he', 'ur'];
-      })();
-
-function fallbackNormalizeLanguageCodeProxy(lang) {
-  if (!lang) {
-    return DEFAULT_LANGUAGE;
+function createInlineLocalizationAccessors(options) {
+  function isObject(value) {
+    return !!value && (typeof value === 'object' || typeof value === 'function');
   }
 
-  try {
-    const normalized = String(lang).trim().toLowerCase();
-    return normalized || DEFAULT_LANGUAGE;
-  } catch (languageNormalizeError) {
-    void languageNormalizeError;
-  }
+  const runtime =
+    options && options.coreLocalizationRuntime &&
+    (typeof options.coreLocalizationRuntime === 'object' ||
+      typeof options.coreLocalizationRuntime === 'function')
+      ? options.coreLocalizationRuntime
+      : null;
+  const localizationBridge =
+    options && options.coreLocalizationBridge &&
+    (typeof options.coreLocalizationBridge === 'object' ||
+      typeof options.coreLocalizationBridge === 'function')
+      ? options.coreLocalizationBridge
+      : null;
+  const runtimeScope = options && options.corePartRuntimeScope;
+  const coreGlobalScope = options && options.coreGlobalScope;
+  const fallbackResolveLocaleModule =
+    options && typeof options.fallbackResolveLocaleModule === 'function'
+      ? options.fallbackResolveLocaleModule
+      : null;
+  const requireFn =
+    options && typeof options.requireFn === 'function'
+      ? options.requireFn
+      : typeof require === 'function'
+      ? require
+      : null;
+  const translationsRequirePath =
+    options && typeof options.translationsRequirePath === 'string' && options.translationsRequirePath
+      ? options.translationsRequirePath
+      : './translations.js';
 
-  return DEFAULT_LANGUAGE;
-}
+  const fallbackScopes = (function collectInlineLocalizationScopes() {
+    const scopes = [];
+    const seen = typeof Set === 'function' ? new Set() : null;
 
-const normalizeLanguageCode =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.normalizeLanguageCode
-    ? CORE_LOCALIZATION_RUNTIME.normalizeLanguageCode
-    : CORE_LOCALIZATION_BRIDGE &&
-      typeof CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode === 'function'
-    ? function normalizeLanguageCodeProxy(lang) {
-        try {
-          return CORE_LOCALIZATION_BRIDGE.normalizeLanguageCode(
-            lang,
-            CORE_PART1_RUNTIME_SCOPE
-          );
-        } catch (normalizeError) {
-          void normalizeError;
-        }
-
-        return fallbackNormalizeLanguageCodeProxy(lang);
+    function register(scope) {
+      if (!isObject(scope)) {
+        return;
       }
-    : fallbackNormalizeLanguageCodeProxy;
 
-function fallbackIsRtlLanguageProxy(lang) {
-  const normalized = normalizeLanguageCode(lang);
-  const base = normalized.split('-')[0];
-  return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
-}
+      if (seen) {
+        if (seen.has(scope)) {
+          return;
+        }
 
-const isRtlLanguage =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.isRtlLanguage
-    ? CORE_LOCALIZATION_RUNTIME.isRtlLanguage
-    : CORE_LOCALIZATION_BRIDGE &&
-      typeof CORE_LOCALIZATION_BRIDGE.isRtlLanguage === 'function'
-    ? function isRtlLanguageProxy(lang) {
+        seen.add(scope);
+        scopes.push(scope);
+        return;
+      }
+
+      if (scopes.indexOf(scope) !== -1) {
+        return;
+      }
+
+      scopes.push(scope);
+    }
+
+    register(runtimeScope);
+    register(coreGlobalScope);
+    register(typeof globalThis !== 'undefined' ? globalThis : null);
+    register(typeof window !== 'undefined' ? window : null);
+    register(typeof self !== 'undefined' ? self : null);
+    register(typeof global !== 'undefined' ? global : null);
+
+    return scopes;
+  })();
+
+  const localeModule =
+    (runtime && runtime.localeModule) ||
+    (fallbackResolveLocaleModule ? fallbackResolveLocaleModule(runtimeScope) : null);
+
+  const defaultLanguage =
+    (runtime && runtime.defaultLanguage) ||
+    (localeModule && typeof localeModule.DEFAULT_LANGUAGE === 'string'
+      ? localeModule.DEFAULT_LANGUAGE
+      : 'en');
+
+  const rtlLanguageCodes =
+    (runtime && runtime.rtlLanguageCodes) ||
+    (localeModule &&
+    Array.isArray(localeModule.RTL_LANGUAGE_CODES) &&
+    localeModule.RTL_LANGUAGE_CODES.length > 0
+      ? localeModule.RTL_LANGUAGE_CODES
+      : ['ar', 'fa', 'he', 'ur']);
+
+  function fallbackNormalizeLanguageCodeProxy(lang) {
+    if (!lang) {
+      return defaultLanguage;
+    }
+
+    try {
+      const normalized = String(lang).trim().toLowerCase();
+      return normalized || defaultLanguage;
+    } catch (languageNormalizeError) {
+      void languageNormalizeError;
+    }
+
+    return defaultLanguage;
+  }
+
+  const normalizeLanguageCode = runtime &&
+    typeof runtime.normalizeLanguageCode === 'function'
+      ? function runtimeNormalizeLanguageCodeProxy(lang) {
+          try {
+            return runtime.normalizeLanguageCode(lang);
+          } catch (runtimeNormalizeError) {
+            void runtimeNormalizeError;
+          }
+
+          return fallbackNormalizeLanguageCodeProxy(lang);
+        }
+      : localizationBridge &&
+        typeof localizationBridge.normalizeLanguageCode === 'function'
+      ? function bridgeNormalizeLanguageCodeProxy(lang) {
+          try {
+            return localizationBridge.normalizeLanguageCode(lang, runtimeScope);
+          } catch (bridgeNormalizeError) {
+            void bridgeNormalizeError;
+          }
+
+          return fallbackNormalizeLanguageCodeProxy(lang);
+        }
+      : fallbackNormalizeLanguageCodeProxy;
+
+  function fallbackIsRtlLanguageProxy(lang) {
+    const normalized = normalizeLanguageCode(lang);
+    const base = normalized.split('-')[0];
+    return rtlLanguageCodes.indexOf(base) !== -1;
+  }
+
+  const isRtlLanguage = runtime && typeof runtime.isRtlLanguage === 'function'
+    ? function runtimeIsRtlLanguageProxy(lang) {
         try {
-          return CORE_LOCALIZATION_BRIDGE.isRtlLanguage(lang, CORE_PART1_RUNTIME_SCOPE);
-        } catch (isRtlError) {
-          void isRtlError;
+          return runtime.isRtlLanguage(lang);
+        } catch (runtimeIsRtlError) {
+          void runtimeIsRtlError;
+        }
+
+        return fallbackIsRtlLanguageProxy(lang);
+      }
+    : localizationBridge && typeof localizationBridge.isRtlLanguage === 'function'
+    ? function bridgeIsRtlLanguageProxy(lang) {
+        try {
+          return localizationBridge.isRtlLanguage(lang, runtimeScope);
+        } catch (bridgeIsRtlError) {
+          void bridgeIsRtlError;
         }
 
         return fallbackIsRtlLanguageProxy(lang);
       }
     : fallbackIsRtlLanguageProxy;
 
-function fallbackResolveDocumentDirectionProxy(lang) {
-  if (typeof document !== 'undefined' && document && document.documentElement) {
-    try {
-      const docDir = document.documentElement.getAttribute('dir');
-      if (docDir) {
-        return docDir;
-      }
-    } catch (resolveDirectionError) {
-      void resolveDirectionError;
-    }
-  }
-
-  return isRtlLanguage(lang) ? 'rtl' : 'ltr';
-}
-
-const resolveDocumentDirection =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.resolveDocumentDirection
-    ? CORE_LOCALIZATION_RUNTIME.resolveDocumentDirection
-    : CORE_LOCALIZATION_BRIDGE &&
-      typeof CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection === 'function'
-    ? function resolveDocumentDirectionProxy(lang) {
-        try {
-          return CORE_LOCALIZATION_BRIDGE.resolveDocumentDirection(
-            lang,
-            CORE_PART1_RUNTIME_SCOPE
-          );
-        } catch (resolveDirectionError) {
-          void resolveDirectionError;
+  function fallbackResolveDocumentDirectionProxy(lang) {
+    if (typeof document !== 'undefined' && document && document.documentElement) {
+      try {
+        const docDir = document.documentElement.getAttribute('dir');
+        if (docDir) {
+          return docDir;
         }
-
-        return fallbackResolveDocumentDirectionProxy(lang);
+      } catch (resolveDirectionError) {
+        void resolveDirectionError;
       }
-    : fallbackResolveDocumentDirectionProxy;
-
-function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
-  if (!target) {
-    return;
-  }
-
-  if (lang) {
-    try {
-      target.lang = lang;
-    } catch (setLangError) {
-      void setLangError;
     }
+
+    return isRtlLanguage(lang) ? 'rtl' : 'ltr';
   }
 
-  if (direction) {
-    try {
-      target.dir = direction;
-    } catch (setDirError) {
-      void setDirError;
-    }
-  }
-}
+  const resolveDocumentDirection = runtime &&
+    typeof runtime.resolveDocumentDirection === 'function'
+      ? function runtimeResolveDocumentDirectionProxy(lang) {
+          try {
+            return runtime.resolveDocumentDirection(lang);
+          } catch (runtimeResolveDirectionError) {
+            void runtimeResolveDirectionError;
+          }
 
-const applyLocaleMetadata =
-  CORE_LOCALIZATION_RUNTIME && CORE_LOCALIZATION_RUNTIME.applyLocaleMetadata
-    ? CORE_LOCALIZATION_RUNTIME.applyLocaleMetadata
-    : CORE_LOCALIZATION_BRIDGE &&
-      typeof CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata === 'function'
-    ? function applyLocaleMetadataProxy(target, lang, direction) {
-        try {
-          return CORE_LOCALIZATION_BRIDGE.applyLocaleMetadata(
-            target,
-            lang,
-            direction,
-            CORE_PART1_RUNTIME_SCOPE
-          );
-        } catch (applyLocaleError) {
-          void applyLocaleError;
+          return fallbackResolveDocumentDirectionProxy(lang);
         }
+      : localizationBridge &&
+        typeof localizationBridge.resolveDocumentDirection === 'function'
+      ? function bridgeResolveDocumentDirectionProxy(lang) {
+          try {
+            return localizationBridge.resolveDocumentDirection(lang, runtimeScope);
+          } catch (bridgeResolveDirectionError) {
+            void bridgeResolveDirectionError;
+          }
 
-        return fallbackApplyLocaleMetadataProxy(target, lang, direction);
-      }
-    : fallbackApplyLocaleMetadataProxy;
+          return fallbackResolveDocumentDirectionProxy(lang);
+        }
+      : fallbackResolveDocumentDirectionProxy;
 
-function fallbackResolveTranslationDataset() {
-  const scopeCandidates = [
-    CORE_PART1_RUNTIME_SCOPE && typeof CORE_PART1_RUNTIME_SCOPE === 'object'
-      ? CORE_PART1_RUNTIME_SCOPE
-      : null,
-    typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object'
-      ? globalThis
-      : null,
-    typeof window !== 'undefined' && window && typeof window === 'object' ? window : null,
-    typeof self !== 'undefined' && self && typeof self === 'object' ? self : null,
-    typeof global !== 'undefined' && global && typeof global === 'object' ? global : null,
-  ];
-
-  for (let index = 0; index < scopeCandidates.length; index += 1) {
-    const scope = scopeCandidates[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
+  function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
+    if (!target) {
+      return;
     }
 
-    const dataset = scope.texts;
-    if (dataset && typeof dataset === 'object') {
-      return dataset;
+    if (lang) {
+      try {
+        target.lang = lang;
+      } catch (setLangError) {
+        void setLangError;
+      }
+    }
+
+    if (direction) {
+      try {
+        target.dir = direction;
+      } catch (setDirError) {
+        void setDirError;
+      }
     }
   }
 
-  if (typeof require === 'function') {
-    try {
-      const translationsModule = require('./translations.js');
-      if (
-        translationsModule &&
-        typeof translationsModule === 'object' &&
-        translationsModule.texts
-      ) {
-        return translationsModule.texts;
+  const applyLocaleMetadata = runtime &&
+    typeof runtime.applyLocaleMetadata === 'function'
+      ? function runtimeApplyLocaleMetadataProxy(target, lang, direction) {
+          try {
+            return runtime.applyLocaleMetadata(target, lang, direction);
+          } catch (runtimeApplyLocaleError) {
+            void runtimeApplyLocaleError;
+          }
+
+          return fallbackApplyLocaleMetadataProxy(target, lang, direction);
+        }
+      : localizationBridge &&
+        typeof localizationBridge.applyLocaleMetadata === 'function'
+      ? function bridgeApplyLocaleMetadataProxy(target, lang, direction) {
+          try {
+            return localizationBridge.applyLocaleMetadata(
+              target,
+              lang,
+              direction,
+              runtimeScope
+            );
+          } catch (bridgeApplyLocaleError) {
+            void bridgeApplyLocaleError;
+          }
+
+          return fallbackApplyLocaleMetadataProxy(target, lang, direction);
+        }
+      : fallbackApplyLocaleMetadataProxy;
+
+  function fallbackResolveTranslationDataset() {
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!isObject(scope)) {
+        continue;
       }
-    } catch (translationRequireError) {
-      void translationRequireError;
+
+      const dataset = scope.texts;
+      if (isObject(dataset)) {
+        return dataset;
+      }
     }
+
+    if (typeof requireFn === 'function') {
+      try {
+        const translationsModule = requireFn(translationsRequirePath);
+        if (
+          isObject(translationsModule) &&
+          isObject(translationsModule.texts)
+        ) {
+          return translationsModule.texts;
+        }
+      } catch (translationRequireError) {
+        void translationRequireError;
+      }
+    }
+
+    return {};
   }
 
-  return {};
-}
-
-function fallbackGetLanguageTextsProxy(lang) {
-  const dataset = fallbackResolveTranslationDataset();
-  const fallbackLang =
-    typeof DEFAULT_LANGUAGE === 'string' && DEFAULT_LANGUAGE
-      ? DEFAULT_LANGUAGE
+  function fallbackGetLanguageTextsProxy(lang) {
+    const dataset = fallbackResolveTranslationDataset();
+    const fallbackLang = typeof defaultLanguage === 'string' && defaultLanguage
+      ? defaultLanguage
       : 'en';
 
-  let normalized = null;
-  if (typeof lang === 'string' && lang) {
-    try {
-      normalized = String(lang).trim().toLowerCase();
-    } catch (normalizeError) {
-      void normalizeError;
-      normalized = null;
+    let normalized = null;
+    if (typeof lang === 'string' && lang) {
+      try {
+        normalized = String(lang).trim().toLowerCase();
+      } catch (normalizeError) {
+        void normalizeError;
+        normalized = null;
+      }
+    }
+
+    let resolved =
+      normalized && Object.prototype.hasOwnProperty.call(dataset, normalized)
+        ? normalized
+        : '';
+
+    if (!resolved && normalized) {
+      const base = normalized.split('-')[0];
+      if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
+        resolved = base;
+      }
+    }
+
+    if (!resolved) {
+      resolved = fallbackLang;
+    }
+
+    const candidate =
+      dataset && resolved && typeof dataset[resolved] === 'object'
+        ? dataset[resolved]
+        : null;
+    if (candidate) {
+      return candidate;
+    }
+
+    if (resolved !== fallbackLang) {
+      const fallbackCandidate =
+        dataset && typeof dataset[fallbackLang] === 'object' ? dataset[fallbackLang] : null;
+      if (fallbackCandidate) {
+        return fallbackCandidate;
+      }
+    }
+
+    if (dataset && typeof dataset.en === 'object') {
+      return dataset.en;
+    }
+
+    const languages = dataset ? Object.keys(dataset) : [];
+    if (languages.length) {
+      const firstLang = languages[0];
+      const firstTexts = dataset[firstLang];
+      if (firstTexts && typeof firstTexts === 'object') {
+        return firstTexts;
+      }
+    }
+
+    return {};
+  }
+
+  const getLanguageTexts = runtime && typeof runtime.getLanguageTexts === 'function'
+    ? function runtimeGetLanguageTextsProxy(lang) {
+        try {
+          return runtime.getLanguageTexts(lang);
+        } catch (runtimeGetLanguageTextsError) {
+          void runtimeGetLanguageTextsError;
+        }
+
+        return fallbackGetLanguageTextsProxy(lang);
+      }
+    : fallbackGetLanguageTextsProxy;
+
+  function ensureGlobalGetLanguageTextsAvailability(getLanguageTextsFn) {
+    if (
+      runtime &&
+      typeof runtime.ensureGlobalGetLanguageTextsAvailability === 'function'
+    ) {
+      try {
+        runtime.ensureGlobalGetLanguageTextsAvailability();
+        return;
+      } catch (ensureError) {
+        void ensureError;
+      }
+    }
+
+    const assignableFunction =
+      typeof getLanguageTextsFn === 'function' ? getLanguageTextsFn : getLanguageTexts;
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!isObject(scope)) {
+        continue;
+      }
+
+      if (typeof scope.getLanguageTexts !== 'function') {
+        try {
+          scope.getLanguageTexts = assignableFunction;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
     }
   }
 
-  let resolved =
-    normalized && Object.prototype.hasOwnProperty.call(dataset, normalized)
-      ? normalized
-      : '';
-
-  if (!resolved && normalized) {
-    const base = normalized.split('-')[0];
-    if (base && Object.prototype.hasOwnProperty.call(dataset, base)) {
-      resolved = base;
-    }
-  }
-
-  if (!resolved) {
-    resolved = fallbackLang;
-  }
-
-  const candidate =
-    dataset && resolved && typeof dataset[resolved] === 'object'
-      ? dataset[resolved]
-      : null;
-  if (candidate) {
-    return candidate;
-  }
-
-  if (resolved !== fallbackLang) {
-    const fallback =
-      dataset && typeof dataset[fallbackLang] === 'object' ? dataset[fallbackLang] : null;
-    if (fallback) {
-      return fallback;
-    }
-  }
-
-  if (dataset && typeof dataset.en === 'object') {
-    return dataset.en;
-  }
-
-  const languages = dataset ? Object.keys(dataset) : [];
-  if (languages.length) {
-    const firstLang = languages[0];
-    const firstTexts = dataset[firstLang];
-    if (firstTexts && typeof firstTexts === 'object') {
-      return firstTexts;
-    }
-  }
-
-  return {};
+  return {
+    localeModule: isObject(localeModule) ? localeModule : null,
+    defaultLanguage: typeof defaultLanguage === 'string' && defaultLanguage ? defaultLanguage : 'en',
+    rtlLanguageCodes:
+      Array.isArray(rtlLanguageCodes) && rtlLanguageCodes.length
+        ? rtlLanguageCodes
+        : ['ar', 'fa', 'he', 'ur'],
+    normalizeLanguageCode,
+    isRtlLanguage,
+    resolveDocumentDirection,
+    applyLocaleMetadata,
+    getLanguageTexts,
+    ensureGlobalGetLanguageTextsAvailability,
+    fallbackResolveTranslationDataset,
+  };
 }
+
+const createLocalizationAccessors =
+  (LOCALIZATION_ACCESSORS_TOOLS &&
+  typeof LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors === 'function'
+    ? LOCALIZATION_ACCESSORS_TOOLS.createLocalizationAccessors
+    : null) ||
+  (function fallbackResolveLocalizationAccessorsFactory() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./modules/app-core/localization-accessors.js');
+        if (
+          required &&
+          typeof required.createLocalizationAccessors === 'function'
+        ) {
+          return required.createLocalizationAccessors;
+        }
+      } catch (localizationAccessorsRequireError) {
+        void localizationAccessorsRequireError;
+      }
+    }
+
+    const fallbackScopes = [
+      typeof CORE_PART1_RUNTIME_SCOPE !== 'undefined' ? CORE_PART1_RUNTIME_SCOPE : null,
+      typeof CORE_GLOBAL_SCOPE !== 'undefined' ? CORE_GLOBAL_SCOPE : null,
+      typeof globalThis !== 'undefined' ? globalThis : null,
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (!scope || typeof scope !== 'object') {
+        continue;
+      }
+
+      try {
+        const candidate = scope.cineCoreAppLocalizationAccessors;
+        if (
+          candidate &&
+          typeof candidate.createLocalizationAccessors === 'function'
+        ) {
+          return candidate.createLocalizationAccessors;
+        }
+      } catch (localizationAccessorsLookupError) {
+        void localizationAccessorsLookupError;
+      }
+    }
+
+    return null;
+  })();
+
+const ACTIVE_LOCALIZATION_ACCESSORS =
+  (typeof createLocalizationAccessors === 'function'
+    ? createLocalizationAccessors({
+        coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
+        coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
+        corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
+        coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
+        fallbackResolveLocaleModule,
+        requireFn: typeof require === 'function' ? require : null,
+        translationsRequirePath: './translations.js',
+      })
+    : null) ||
+  createInlineLocalizationAccessors({
+    coreLocalizationRuntime: CORE_LOCALIZATION_RUNTIME,
+    coreLocalizationBridge: CORE_LOCALIZATION_BRIDGE,
+    corePartRuntimeScope: CORE_PART1_RUNTIME_SCOPE,
+    coreGlobalScope: CORE_PART1_RUNTIME_SCOPE,
+    fallbackResolveLocaleModule,
+    requireFn: typeof require === 'function' ? require : null,
+    translationsRequirePath: './translations.js',
+  });
+
+const LOCALE_MODULE =
+  ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.localeModule
+    ? ACTIVE_LOCALIZATION_ACCESSORS.localeModule
+    : null;
+
+const DEFAULT_LANGUAGE =
+  ACTIVE_LOCALIZATION_ACCESSORS && ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
+    ? ACTIVE_LOCALIZATION_ACCESSORS.defaultLanguage
+    : 'en';
+
+const RTL_LANGUAGE_CODES =
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  Array.isArray(ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes) &&
+  ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes.length > 0
+    ? ACTIVE_LOCALIZATION_ACCESSORS.rtlLanguageCodes
+    : ['ar', 'fa', 'he', 'ur'];
+
+const normalizeLanguageCode =
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode === 'function'
+    ? ACTIVE_LOCALIZATION_ACCESSORS.normalizeLanguageCode
+    : function fallbackNormalizeLanguageCodeProxy(lang) {
+        if (!lang) {
+          return DEFAULT_LANGUAGE;
+        }
+
+        try {
+          const normalized = String(lang).trim().toLowerCase();
+          return normalized || DEFAULT_LANGUAGE;
+        } catch (languageNormalizeError) {
+          void languageNormalizeError;
+        }
+
+        return DEFAULT_LANGUAGE;
+      };
+
+const isRtlLanguage =
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage === 'function'
+    ? ACTIVE_LOCALIZATION_ACCESSORS.isRtlLanguage
+    : function fallbackIsRtlLanguageProxy(lang) {
+        const normalized = normalizeLanguageCode(lang);
+        const base = normalized.split('-')[0];
+        return RTL_LANGUAGE_CODES.indexOf(base) !== -1;
+      };
+
+const resolveDocumentDirection =
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection === 'function'
+    ? ACTIVE_LOCALIZATION_ACCESSORS.resolveDocumentDirection
+    : function fallbackResolveDocumentDirectionProxy(lang) {
+        if (typeof document !== 'undefined' && document && document.documentElement) {
+          try {
+            const docDir = document.documentElement.getAttribute('dir');
+            if (docDir) {
+              return docDir;
+            }
+          } catch (resolveDirectionError) {
+            void resolveDirectionError;
+          }
+        }
+
+        return isRtlLanguage(lang) ? 'rtl' : 'ltr';
+      };
+
+const applyLocaleMetadata =
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata === 'function'
+    ? ACTIVE_LOCALIZATION_ACCESSORS.applyLocaleMetadata
+    : function fallbackApplyLocaleMetadataProxy(target, lang, direction) {
+        if (!target) {
+          return;
+        }
+
+        if (lang) {
+          try {
+            target.lang = lang;
+          } catch (setLangError) {
+            void setLangError;
+          }
+        }
+
+        if (direction) {
+          try {
+            target.dir = direction;
+          } catch (setDirError) {
+            void setDirError;
+          }
+        }
+      };
 
 const existingGetLanguageTexts =
   typeof getLanguageTexts === 'function' ? getLanguageTexts : null;
 
 const resolvedGetLanguageTexts =
-  CORE_LOCALIZATION_RUNTIME &&
-  typeof CORE_LOCALIZATION_RUNTIME.getLanguageTexts === 'function'
-    ? CORE_LOCALIZATION_RUNTIME.getLanguageTexts
-    : existingGetLanguageTexts || fallbackGetLanguageTextsProxy;
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts === 'function'
+    ? ACTIVE_LOCALIZATION_ACCESSORS.getLanguageTexts
+    : existingGetLanguageTexts ||
+      function fallbackGetLanguageTextsProxy() {
+        return {};
+      };
 
 try {
   getLanguageTexts = resolvedGetLanguageTexts;
@@ -1418,38 +1720,16 @@ try {
 }
 
 if (
-  CORE_LOCALIZATION_RUNTIME &&
-  typeof CORE_LOCALIZATION_RUNTIME.ensureGlobalGetLanguageTextsAvailability === 'function'
+  ACTIVE_LOCALIZATION_ACCESSORS &&
+  typeof ACTIVE_LOCALIZATION_ACCESSORS.ensureGlobalGetLanguageTextsAvailability ===
+    'function'
 ) {
-  CORE_LOCALIZATION_RUNTIME.ensureGlobalGetLanguageTextsAvailability();
-}
-
-if (!CORE_LOCALIZATION_RUNTIME) {
-  const fallbackScopes = [
-    CORE_PART1_RUNTIME_SCOPE && typeof CORE_PART1_RUNTIME_SCOPE === 'object'
-      ? CORE_PART1_RUNTIME_SCOPE
-      : null,
-    typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object'
-      ? globalThis
-      : null,
-    typeof window !== 'undefined' && window && typeof window === 'object' ? window : null,
-    typeof self !== 'undefined' && self && typeof self === 'object' ? self : null,
-    typeof global !== 'undefined' && global && typeof global === 'object' ? global : null,
-  ];
-
-  for (let index = 0; index < fallbackScopes.length; index += 1) {
-    const scope = fallbackScopes[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
-    }
-
-    if (typeof scope.getLanguageTexts !== 'function') {
-      try {
-        scope.getLanguageTexts = getLanguageTexts;
-      } catch (assignError) {
-        void assignError;
-      }
-    }
+  try {
+    ACTIVE_LOCALIZATION_ACCESSORS.ensureGlobalGetLanguageTextsAvailability(
+      resolvedGetLanguageTexts
+    );
+  } catch (ensureGetLanguageTextsAvailabilityError) {
+    void ensureGetLanguageTextsAvailabilityError;
   }
 }
 
