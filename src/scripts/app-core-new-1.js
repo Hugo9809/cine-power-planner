@@ -1083,7 +1083,7 @@ const collectRuntimeCandidateScopesFromGlobal =
     ? COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes
     : null;
 
-const collectCoreRuntimeCandidateScopes =
+const resolvedCollectCoreRuntimeCandidateScopes =
   collectRuntimeCandidateScopesFromGlobal || collectRuntimeCandidateScopesFromResolvers;
 
 if (
@@ -1091,7 +1091,7 @@ if (
   typeof COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes !== 'function'
 ) {
   COLLECT_RUNTIME_CANDIDATE_SCOPES_GLOBAL_SCOPE.collectCoreRuntimeCandidateScopes =
-    collectCoreRuntimeCandidateScopes;
+    resolvedCollectCoreRuntimeCandidateScopes;
 }
 
 const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandidateScopes() {
@@ -1138,7 +1138,7 @@ const CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED = (function ensureCoreRuntimeCandid
     }
   }
 
-  return collectCoreRuntimeCandidateScopes(primaryScope);
+  return resolvedCollectCoreRuntimeCandidateScopes(primaryScope);
 })();
 
 const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
@@ -1171,7 +1171,7 @@ const CORE_RUNTIME_STATE_SUPPORT = (function resolveCoreRuntimeStateSupport() {
     return resolvedSupport;
   }
 
-  const fallbackScopes = collectCoreRuntimeCandidateScopes(
+  const fallbackScopes = resolvedCollectCoreRuntimeCandidateScopes(
     typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
   );
 
@@ -3053,7 +3053,7 @@ function createCoreRuntimeState(candidateScopes) {
 const CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', () => {
   const candidateScopes = CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED.length
     ? CORE_RUNTIME_CANDIDATE_SCOPES_RESOLVED
-    : collectCoreRuntimeCandidateScopes(
+    : resolvedCollectCoreRuntimeCandidateScopes(
         typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null
       );
 
