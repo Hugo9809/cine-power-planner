@@ -721,10 +721,12 @@ Use Cine Power Planner end-to-end with the following routine:
   reloads when you enable session storage. Each entry now records an ISO
   timestamp, millisecond marker, event ID and channel indicator so teams can
   align console fallbacks with stored diagnostics even when the structured
-  logger is unavailable. A live enablement summary now shows whether each
-  severity will reach the console mirror or the retained history before you
-  dispatch heavyweight diagnostics, making it safer to toggle verbose traces
-  during offline shoots.
+  logger is unavailable. Service worker cache updates and offline recoveries now
+  stream straight into this view so background precache issues, navigation
+  fallbacks and deferred client claims are visible during audits. A live
+  enablement summary now shows whether each severity will reach the console
+  mirror or the retained history before you dispatch heavyweight diagnostics,
+  making it safer to toggle verbose traces during offline shoots.
 - The **Latest activity** timeline now posts **safety reminders** beneath the
   three timestamps. They highlight when manual saves, automatic snapshots or
   full-app archives grow stale and include the captured time so you know exactly

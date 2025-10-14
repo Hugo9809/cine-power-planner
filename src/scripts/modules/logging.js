@@ -973,7 +973,15 @@
     stackTraces: true,
   };
 
-  const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
+const DEFAULT_CONFIG = freezeDeep(DEFAULT_CONFIG_VALUES);
+
+const SERVICE_WORKER_LOG_CHANNEL = 'cine-sw-logs';
+const SERVICE_WORKER_LOG_ENTRY_TYPE = 'cine-sw:log-entry';
+const SERVICE_WORKER_LOG_STATE_REQUEST = 'cine-sw:log-state-request';
+const SERVICE_WORKER_LOG_STATE_RESPONSE = 'cine-sw:log-state';
+const SERVICE_WORKER_LOG_REQUEST_TIMEOUT = 5000;
+const SERVICE_WORKER_LOG_POLL_INTERVAL = 60 * 1000;
+const SERVICE_WORKER_LOG_HISTORY_LIMIT = 200;
 
   function cloneDefaultConfig() {
     return {
@@ -999,6 +1007,19 @@
   const droppedLevelCounters = createLevelCounters();
   let totalEntriesDropped = 0;
   let lastHistoryDrop = null;
+  const serviceWorkerBridgeState = {
+    initialised: false,
+    supported: false,
+    requestInFlight: false,
+    lastRequestId: null,
+    pollTimer: null,
+    requestTimer: null,
+    broadcastChannel: null,
+    broadcastFailed: false,
+    seenIds: typeof Set === 'function' ? new Set() : null,
+    fallbackSeenIds: typeof Set !== 'function' ? [] : null,
+    lastSnapshotMeta: null,
+  };
 
   function normalizeLevel(value, fallbackLevel) {
     const fallback = typeof fallbackLevel === 'string' ? fallbackLevel : activeConfig.level;
@@ -3284,6 +3305,412 @@
     });
   }
 
+  function getGlobalNavigator() {
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.navigator === 'object' && GLOBAL_SCOPE.navigator) {
+      return GLOBAL_SCOPE.navigator;
+    }
+    if (typeof navigator !== 'undefined' && navigator) {
+      return navigator;
+    }
+    if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.navigator === 'object') {
+      return globalThis.navigator;
+    }
+    return null;
+  }
+
+  function getNavigatorServiceWorker() {
+    const nav = getGlobalNavigator();
+    if (!nav || typeof nav !== 'object') {
+      return null;
+    }
+    if (!nav.serviceWorker) {
+      return null;
+    }
+    return nav.serviceWorker;
+  }
+
+  function markServiceWorkerEntrySeen(id) {
+    if (!id) {
+      return true;
+    }
+
+    if (serviceWorkerBridgeState.seenIds) {
+      if (serviceWorkerBridgeState.seenIds.has(id)) {
+        return false;
+      }
+      serviceWorkerBridgeState.seenIds.add(id);
+      return true;
+    }
+
+    if (Array.isArray(serviceWorkerBridgeState.fallbackSeenIds)) {
+      if (serviceWorkerBridgeState.fallbackSeenIds.indexOf(id) !== -1) {
+        return false;
+      }
+      serviceWorkerBridgeState.fallbackSeenIds.push(id);
+      return true;
+    }
+
+    return true;
+  }
+
+  function mergeServiceWorkerEntryMeta(entry, snapshotMeta) {
+    const merged = {};
+
+    if (entry && typeof entry.meta !== 'undefined') {
+      if (entry.meta && typeof entry.meta === 'object') {
+        for (const key in entry.meta) {
+          if (Object.prototype.hasOwnProperty.call(entry.meta, key)) {
+            merged[key] = entry.meta[key];
+          }
+        }
+      } else {
+        merged.value = entry.meta;
+      }
+    }
+
+    const channel = entry && typeof entry.channel === 'string' && entry.channel
+      ? entry.channel
+      : merged.channel;
+    if (channel) {
+      merged.channel = channel;
+    } else {
+      merged.channel = 'service-worker';
+    }
+
+    if (snapshotMeta && typeof snapshotMeta === 'object') {
+      if (snapshotMeta.cacheName && !merged.cacheName) {
+        merged.cacheName = snapshotMeta.cacheName;
+      }
+      if (snapshotMeta.cacheVersion && !merged.cacheVersion) {
+        merged.cacheVersion = snapshotMeta.cacheVersion;
+      }
+      if (typeof snapshotMeta.generatedAt === 'number' && Number.isFinite(snapshotMeta.generatedAt)) {
+        if (!merged.snapshotTimestamp) {
+          merged.snapshotTimestamp = snapshotMeta.generatedAt;
+        }
+      }
+      if (typeof snapshotMeta.historyLength === 'number' && Number.isFinite(snapshotMeta.historyLength)) {
+        if (!merged.snapshotSize) {
+          merged.snapshotSize = snapshotMeta.historyLength;
+        }
+      }
+    }
+
+    return merged;
+  }
+
+  function importServiceWorkerLogEntries(entries, snapshotMeta) {
+    if (!Array.isArray(entries) || !entries.length) {
+      return;
+    }
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const rawEntry = entries[index];
+      if (!rawEntry || typeof rawEntry !== 'object') {
+        continue;
+      }
+
+      const entryId = typeof rawEntry.id === 'string' && rawEntry.id ? rawEntry.id : null;
+      if (!markServiceWorkerEntrySeen(entryId)) {
+        continue;
+      }
+
+      const origin = rawEntry.origin && typeof rawEntry.origin === 'object'
+        ? rawEntry.origin
+        : { runtime: 'service-worker' };
+
+      const normalized = normaliseStoredEntry({
+        id: entryId || undefined,
+        level: rawEntry.level,
+        message: rawEntry.message,
+        namespace: typeof rawEntry.namespace === 'string' && rawEntry.namespace
+          ? rawEntry.namespace
+          : 'service-worker',
+        detail: typeof rawEntry.detail === 'undefined' ? null : rawEntry.detail,
+        meta: mergeServiceWorkerEntryMeta(rawEntry, snapshotMeta),
+        timestamp: rawEntry.timestamp,
+        isoTimestamp: rawEntry.isoTimestamp,
+        origin,
+      });
+
+      if (normalized) {
+        appendEntry(normalized);
+      }
+    }
+  }
+
+  function finalizeServiceWorkerLogRequest(requestId) {
+    if (!serviceWorkerBridgeState.requestInFlight) {
+      return;
+    }
+
+    if (requestId && serviceWorkerBridgeState.lastRequestId && requestId !== serviceWorkerBridgeState.lastRequestId) {
+      return;
+    }
+
+    serviceWorkerBridgeState.requestInFlight = false;
+    serviceWorkerBridgeState.lastRequestId = null;
+
+    if (serviceWorkerBridgeState.requestTimer && typeof clearTimeout === 'function') {
+      try {
+        clearTimeout(serviceWorkerBridgeState.requestTimer);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    serviceWorkerBridgeState.requestTimer = null;
+  }
+
+  function scheduleServiceWorkerLogPoll() {
+    if (serviceWorkerBridgeState.broadcastChannel || serviceWorkerBridgeState.broadcastFailed) {
+      return;
+    }
+
+    if (serviceWorkerBridgeState.pollTimer || typeof setTimeout !== 'function') {
+      return;
+    }
+
+    try {
+      serviceWorkerBridgeState.pollTimer = setTimeout(() => {
+        serviceWorkerBridgeState.pollTimer = null;
+        requestServiceWorkerLogSnapshot('poll');
+      }, SERVICE_WORKER_LOG_POLL_INTERVAL);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function ensureServiceWorkerBroadcastChannel() {
+    if (serviceWorkerBridgeState.broadcastFailed) {
+      return null;
+    }
+
+    if (serviceWorkerBridgeState.broadcastChannel) {
+      return serviceWorkerBridgeState.broadcastChannel;
+    }
+
+    if (typeof BroadcastChannel !== 'function') {
+      serviceWorkerBridgeState.broadcastFailed = true;
+      return null;
+    }
+
+    try {
+      const channel = new BroadcastChannel(SERVICE_WORKER_LOG_CHANNEL);
+      channel.addEventListener('message', handleServiceWorkerLogMessage);
+      serviceWorkerBridgeState.broadcastChannel = channel;
+      if (serviceWorkerBridgeState.pollTimer && typeof clearTimeout === 'function') {
+        try {
+          clearTimeout(serviceWorkerBridgeState.pollTimer);
+        } catch (error) {
+          void error;
+        }
+        serviceWorkerBridgeState.pollTimer = null;
+      }
+      return channel;
+    } catch (error) {
+      serviceWorkerBridgeState.broadcastFailed = true;
+      safeWarn('cineLogging: Unable to open service worker diagnostics channel', error);
+      return null;
+    }
+  }
+
+  function handleServiceWorkerLogMessage(event) {
+    if (!event) {
+      return;
+    }
+
+    let data = null;
+    try {
+      data = event.data || null;
+    } catch (error) {
+      void error;
+      data = null;
+    }
+
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+
+    if (data.type === SERVICE_WORKER_LOG_ENTRY_TYPE) {
+      importServiceWorkerLogEntries([data.entry], serviceWorkerBridgeState.lastSnapshotMeta);
+      scheduleServiceWorkerLogPoll();
+      return;
+    }
+
+    if (data.type === SERVICE_WORKER_LOG_STATE_RESPONSE) {
+      finalizeServiceWorkerLogRequest(data.requestId || null);
+
+      const state = data.state && typeof data.state === 'object' ? data.state : null;
+      if (!state) {
+        scheduleServiceWorkerLogPoll();
+        return;
+      }
+
+      serviceWorkerBridgeState.lastSnapshotMeta = {
+        cacheName: typeof state.cacheName === 'string' && state.cacheName ? state.cacheName : null,
+        cacheVersion: state.cacheVersion || null,
+        generatedAt: typeof state.generatedAt === 'number' && Number.isFinite(state.generatedAt)
+          ? state.generatedAt
+          : Date.now(),
+        historyLength: typeof state.historyLength === 'number' && Number.isFinite(state.historyLength)
+          ? state.historyLength
+          : null,
+      };
+
+      importServiceWorkerLogEntries(state.history, serviceWorkerBridgeState.lastSnapshotMeta);
+      scheduleServiceWorkerLogPoll();
+    }
+  }
+
+  function requestServiceWorkerLogSnapshot(reason) {
+    if (serviceWorkerBridgeState.requestInFlight) {
+      return;
+    }
+
+    const serviceWorker = getNavigatorServiceWorker();
+    if (!serviceWorker) {
+      return;
+    }
+
+    serviceWorkerBridgeState.supported = true;
+
+    const requestId = `sw-log-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    serviceWorkerBridgeState.requestInFlight = true;
+    serviceWorkerBridgeState.lastRequestId = requestId;
+
+    const message = {
+      type: SERVICE_WORKER_LOG_STATE_REQUEST,
+      limit: SERVICE_WORKER_LOG_HISTORY_LIMIT,
+      reason: typeof reason === 'string' && reason ? reason : 'sync',
+      requestId,
+    };
+
+    const readyPromise = serviceWorker.ready && typeof serviceWorker.ready.then === 'function'
+      ? serviceWorker.ready.then(registration => (registration && registration.active) || serviceWorker.controller || null)
+      : Promise.resolve(serviceWorker.controller || null);
+
+    Promise.resolve(readyPromise)
+      .then(worker => {
+        if (!worker || typeof worker.postMessage !== 'function') {
+          finalizeServiceWorkerLogRequest(requestId);
+          scheduleServiceWorkerLogPoll();
+          return;
+        }
+
+        let settled = false;
+
+        const finalize = () => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          finalizeServiceWorkerLogRequest(requestId);
+        };
+
+        const handleResponse = event => {
+          finalize();
+          handleServiceWorkerLogMessage(event);
+        };
+
+        if (typeof MessageChannel === 'function') {
+          const channel = new MessageChannel();
+          channel.port1.onmessage = handleResponse;
+
+          try {
+            worker.postMessage(message, [channel.port2]);
+          } catch (error) {
+            channel.port1.onmessage = null;
+            try {
+              channel.port1.close();
+            } catch (closeError) {
+              void closeError;
+            }
+            finalize();
+            safeWarn('cineLogging: Unable to request service worker diagnostics', error);
+            scheduleServiceWorkerLogPoll();
+            return;
+          }
+
+          if (typeof setTimeout === 'function') {
+            try {
+              serviceWorkerBridgeState.requestTimer = setTimeout(() => {
+                if (settled) {
+                  return;
+                }
+                finalize();
+                safeWarn('cineLogging: Service worker diagnostics request timed out', { requestId });
+                scheduleServiceWorkerLogPoll();
+              }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
+            } catch (error) {
+              void error;
+            }
+          }
+        } else {
+          try {
+            worker.postMessage(message);
+          } catch (error) {
+            finalize();
+            safeWarn('cineLogging: Unable to post service worker diagnostics request', error);
+            scheduleServiceWorkerLogPoll();
+            return;
+          }
+
+          if (typeof setTimeout === 'function') {
+            try {
+              serviceWorkerBridgeState.requestTimer = setTimeout(() => {
+                finalize();
+                scheduleServiceWorkerLogPoll();
+              }, SERVICE_WORKER_LOG_REQUEST_TIMEOUT);
+            } catch (error) {
+              void error;
+            }
+          }
+        }
+      })
+      .catch(error => {
+        finalizeServiceWorkerLogRequest(requestId);
+        safeWarn('cineLogging: Unable to await service worker for diagnostics', error);
+        scheduleServiceWorkerLogPoll();
+      });
+  }
+
+  function setupServiceWorkerLogBridge() {
+    if (serviceWorkerBridgeState.initialised) {
+      return;
+    }
+
+    serviceWorkerBridgeState.initialised = true;
+
+    const serviceWorker = getNavigatorServiceWorker();
+    if (!serviceWorker) {
+      return;
+    }
+
+    serviceWorkerBridgeState.supported = true;
+
+    ensureServiceWorkerBroadcastChannel();
+
+    if (typeof serviceWorker.addEventListener === 'function') {
+      try {
+        serviceWorker.addEventListener('message', handleServiceWorkerLogMessage);
+      } catch (error) {
+        safeWarn('cineLogging: Unable to attach service worker diagnostics listener', error);
+      }
+    } else if (typeof serviceWorker.onmessage === 'undefined') {
+      try {
+        serviceWorker.onmessage = handleServiceWorkerLogMessage;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    requestServiceWorkerLogSnapshot('initial-sync');
+    if (!serviceWorkerBridgeState.broadcastChannel) {
+      scheduleServiceWorkerLogPoll();
+    }
+  }
+
   function loadPersistedHistory() {
     if (!activeConfig.persistSession) {
       return;
@@ -3337,6 +3764,7 @@
 
   initialiseConfig();
   loadPersistedHistory();
+  setupServiceWorkerLogBridge();
 
   syncConsoleCaptureState();
 
