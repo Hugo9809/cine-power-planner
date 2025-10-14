@@ -3233,6 +3233,8 @@
       }
     }
 
+    const topPlacementMargin = margin + Math.max(8, margin * 0.5);
+
     const viewportRight = scrollX + viewportWidth;
     const viewportBottom = scrollY + viewportHeight;
     const minLeft = scrollX + margin;
@@ -3266,6 +3268,7 @@
       const rightOverlapOffset = rect.width * overlapRightFraction;
       const bottomOverlapOffset = rect.height * overlapBottomFraction;
       const leftOverlapOffset = rect.width * overlapLeftFraction;
+      const effectiveTopMargin = overlapTopFraction > 0 ? margin : topPlacementMargin;
       const topMarginOffset = overlapTopFraction > 0 ? margin : 0;
       const rightMarginOffset = overlapRightFraction > 0 ? margin : 0;
       const bottomMarginOffset = overlapBottomFraction > 0 ? margin : 0;
@@ -3282,9 +3285,12 @@
         },
         {
           name: 'top',
-          top: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset,
+          top:
+            targetTop - cardRect.height - effectiveTopMargin + topOverlapOffset + topMarginOffset,
           left: targetCenterX - cardRect.width / 2,
-          fits: targetTop - cardRect.height - margin + topOverlapOffset + topMarginOffset >= minTop,
+          fits:
+            targetTop - cardRect.height - effectiveTopMargin + topOverlapOffset + topMarginOffset
+              >= minTop,
         },
         {
           name: 'right',
