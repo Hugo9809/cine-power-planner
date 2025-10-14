@@ -282,6 +282,35 @@ production day.
   Verification logs and checksum notes travel with every archive to prove
   integrity even when you stay offline.
 
+## Data Preservation Promise
+
+Protecting crew workflows and their data is the highest priority. When you
+build plans with Cine Power Planner, you benefit from the same layered
+safeguards we rehearse before every release:
+
+- **Verified safeguards only.** Save/share/import/backup/restore workflows ship
+  with rehearsals recorded in the
+  [Documentation Verification Packet](docs/documentation-verification-packet.md)
+  so field crews can confirm each safeguard before traveling offline.
+- **Help & translations updated in lockstep.** The
+  [Documentation Update Checklist](docs/documentation-update-checklist.md) and
+  [Translation Guide](docs/translation-guide.md) make sure refreshed behavior is
+  reflected in help topics, localized READMEs and printed guides before bundles
+  ship.
+- **Backups everywhere you need them.** The
+  [Backup Rotation Guide](docs/backup-rotation-guide.md) and
+  [Operations Checklist](docs/operations-checklist.md) outline how to stage
+  redundant archives, rehearsal artifacts and verification logs so no project is
+  ever left without a recovery path.
+- **Evidence you can audit.** We capture console exports from
+  `window.__cineRuntimeIntegrity`, signed rehearsal logs and bundle hashes to
+  make auditing data protection straightforward for compliance teams and crews.
+
+If a change touches saving, sharing, importing, backups, restore workflows or
+documentation, it is considered blocking until these protections are exercised
+and recorded. That discipline keeps user data safe, even when the app is run on
+air-gapped machines.
+
 ## Table of Contents
 
 - [Key Features](#key-features)
@@ -294,6 +323,7 @@ production day.
 - [Release & Documentation Checklist](#release--documentation-checklist)
 - [Overview](#overview)
 - [Core Principles](#core-principles)
+- [Data Preservation Promise](#data-preservation-promise)
 - [Translations](#translations)
 - [What’s New](#whats-new)
 - [Quick Start](#quick-start)
