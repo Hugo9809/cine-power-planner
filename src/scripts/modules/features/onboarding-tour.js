@@ -4187,15 +4187,8 @@
     const languageGroup = DOCUMENT.createElement('div');
     languageGroup.className = 'onboarding-hero-language';
 
-    const languageSelect = DOCUMENT.getElementById('languageSelect');
-    const settingsLanguage = DOCUMENT.getElementById('settingsLanguage');
     const languageTargets = [];
-    if (languageSelect) {
-      languageTargets.push(languageSelect);
-    }
-    if (settingsLanguage && settingsLanguage !== languageSelect) {
-      languageTargets.push(settingsLanguage);
-    }
+    const registeredLanguageTargets = new Set();
 
     const languageControlId = getProxyControlId('intro-language');
     const labelEl = DOCUMENT.createElement('label');
@@ -4254,18 +4247,60 @@
       }
     };
 
-    if (languageTargets.length) {
-      copyOptionsFromSource(languageTargets[0]);
-      const initialValue = getActiveLanguageValue();
-      if (initialValue) {
-        languageProxy.value = initialValue;
-      } else if (languageProxy.options && languageProxy.options.length && languageTargets[0]) {
-        languageProxy.value = languageTargets[0].value || languageProxy.options[0].value;
+    const resolveFallbackLanguageOptions = () => {
+      const fallbackLabels = {
+        en: 'English',
+        de: 'Deutsch',
+        es: 'Español',
+        fr: 'Français',
+        it: 'Italiano',
+      };
+      const options = [];
+      const seen = new Set();
+      const addOption = code => {
+        const normalized = typeof code === 'string' ? code.trim() : '';
+        if (!normalized || seen.has(normalized)) {
+          return;
+        }
+        seen.add(normalized);
+        options.push({
+          value: normalized,
+          label: fallbackLabels[normalized] || normalized,
+        });
+      };
+
+      if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.texts === 'object' && GLOBAL_SCOPE.texts) {
+        try {
+          Object.keys(GLOBAL_SCOPE.texts).forEach(addOption);
+        } catch (error) {
+          void error;
+        }
       }
-    } else {
-      languageProxy.disabled = true;
-      languageProxy.setAttribute('aria-disabled', 'true');
-    }
+
+      Object.keys(fallbackLabels).forEach(addOption);
+
+      if (!options.length) {
+        addOption('en');
+      }
+
+      return options;
+    };
+
+    const applyFallbackLanguageOptions = () => {
+      const preserveValue = languageProxy.value;
+      languageProxy.textContent = '';
+      const options = resolveFallbackLanguageOptions();
+      for (let index = 0; index < options.length; index += 1) {
+        const option = DOCUMENT.createElement('option');
+        option.value = options[index].value;
+        option.textContent = options[index].label;
+        languageProxy.appendChild(option);
+      }
+      const active = preserveValue || resolveLanguage();
+      if (active) {
+        languageProxy.value = active;
+      }
+    };
 
     const handleLanguageProxyChange = () => {
       const value = languageProxy.value;
@@ -4331,6 +4366,9 @@
       runLanguageSync();
     };
 
+    languageProxy.disabled = false;
+    languageProxy.removeAttribute('aria-disabled');
+
     languageProxy.addEventListener('change', handleLanguageProxyChange);
     registerCleanup(() => {
       languageProxy.removeEventListener('change', handleLanguageProxyChange);
@@ -4345,36 +4383,106 @@
       }
     };
 
-    for (let index = 0; index < languageTargets.length; index += 1) {
-      const target = languageTargets[index];
-      if (!target) {
-        continue;
+    const registerLanguageTarget = target => {
+      if (!target || registeredLanguageTargets.has(target)) {
+        return;
       }
-      target.addEventListener('change', handleTargetChange);
-      target.addEventListener('input', handleTargetChange);
-      registerCleanup(() => {
-        target.removeEventListener('change', handleTargetChange);
-        target.removeEventListener('input', handleTargetChange);
-      });
+      registeredLanguageTargets.add(target);
+      languageTargets.push(target);
+
+      const targetChangeListener = () => {
+        handleTargetChange();
+      };
+
+      target.addEventListener('change', targetChangeListener);
+      target.addEventListener('input', targetChangeListener);
+
+      let targetObserver = null;
       if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
         try {
-          const observer = new GLOBAL_SCOPE.MutationObserver(() => {
+          targetObserver = new GLOBAL_SCOPE.MutationObserver(() => {
             syncLanguageProxyFromTargets();
           });
-          observer.observe(target, { childList: true });
-          registerCleanup(() => {
-            try {
-              observer.disconnect();
-            } catch (error) {
-              void error;
-            }
-          });
+          targetObserver.observe(target, { childList: true });
         } catch (error) {
+          targetObserver = null;
           void error;
         }
-        break;
+      }
+
+      registerCleanup(() => {
+        target.removeEventListener('change', targetChangeListener);
+        target.removeEventListener('input', targetChangeListener);
+        if (targetObserver) {
+          try {
+            targetObserver.disconnect();
+          } catch (observerError) {
+            void observerError;
+          }
+        }
+        registeredLanguageTargets.delete(target);
+        const index = languageTargets.indexOf(target);
+        if (index !== -1) {
+          languageTargets.splice(index, 1);
+        }
+      });
+
+      syncLanguageProxyFromTargets();
+      languageProxy.disabled = false;
+      languageProxy.removeAttribute('aria-disabled');
+    };
+
+    const discoverLanguageTargets = () => {
+      if (!DOCUMENT || typeof DOCUMENT.getElementById !== 'function') {
+        return;
+      }
+      const headerLanguage = DOCUMENT.getElementById('languageSelect');
+      if (headerLanguage) {
+        registerLanguageTarget(headerLanguage);
+      }
+      const settingsLanguageEl = DOCUMENT.getElementById('settingsLanguage');
+      if (settingsLanguageEl && settingsLanguageEl !== headerLanguage) {
+        registerLanguageTarget(settingsLanguageEl);
+      }
+    };
+
+    discoverLanguageTargets();
+
+    if (!languageTargets.length) {
+      applyFallbackLanguageOptions();
+    }
+
+    let languageTargetObserver = null;
+    if (GLOBAL_SCOPE && GLOBAL_SCOPE.MutationObserver && typeof GLOBAL_SCOPE.MutationObserver === 'function') {
+      try {
+        languageTargetObserver = new GLOBAL_SCOPE.MutationObserver(() => {
+          const previousCount = languageTargets.length;
+          discoverLanguageTargets();
+          if (!languageTargets.length) {
+            applyFallbackLanguageOptions();
+          } else if (!previousCount) {
+            syncLanguageProxyFromTargets();
+          }
+        });
+        languageTargetObserver.observe(
+          DOCUMENT.documentElement || DOCUMENT,
+          { childList: true, subtree: true },
+        );
+      } catch (observerError) {
+        languageTargetObserver = null;
+        void observerError;
       }
     }
+
+    registerCleanup(() => {
+      if (languageTargetObserver) {
+        try {
+          languageTargetObserver.disconnect();
+        } catch (observerError) {
+          void observerError;
+        }
+      }
+    });
 
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.addEventListener === 'function') {
       const handleLanguageEvent = () => {
@@ -4852,9 +4960,18 @@
       };
 
       const syncToTarget = () => {
-        if (languageSelect.value !== proxySelect.value) {
-          languageSelect.value = proxySelect.value;
-          dispatchSyntheticEvent(languageSelect, 'change');
+        const value = proxySelect.value;
+        const applied = applyLanguagePreference(value);
+        if (languageSelect.value !== value) {
+          languageSelect.value = value;
+        }
+        dispatchSyntheticEvent(languageSelect, 'change');
+        if (!applied) {
+          try {
+            syncFromTarget();
+          } catch (syncError) {
+            void syncError;
+          }
         }
       };
 
