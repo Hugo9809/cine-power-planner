@@ -26,6 +26,7 @@ offline.
 | Planner backup | `storage.js` serialises all projects, favorites, settings, automatic gear rules and history into `planner-backup.json`. | Hash log, verification packet attachment. |
 | Backup guardian | `storage.js` runs `ensureCriticalStorageBackups()` to mirror every critical key into redundant backup slots and exposes the result via `getLastCriticalStorageGuardResult()`. | **Settings → Data & Storage** screenshot showing the **Backup guardian** row plus console log if issues appear. |
 | Project bundle export | `modules/offline.js` packages a single project with scenario presets, runtime estimates and checksum metadata. | Bundle JSON, hash log, restore rehearsal notes. |
+| Reload warmup safety | `modules/offline.js` now limits reload warmup fetches to same-origin requests so browsers never block data hydration behind CORS errors. | Console log showing "Reload warmup fetch resolved" plus service worker cache inspection. |
 | Restore sandbox | `restore-verification.js` loads backups into an isolated workspace that can be discarded or promoted. | Screenshot of sandbox prompt, before/after project list. |
 
 ## Release checklist
