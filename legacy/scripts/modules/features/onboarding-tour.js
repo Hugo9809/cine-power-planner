@@ -440,19 +440,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         badgeIcon: "\uE9C3",
         badgeLabel: 'Offline-first & private',
         badgeDescription: 'No servers, no accounts, no risk. Saves, autosaves, backups, restores, shares and imports never leave this device.',
-        highlights: [{
-          icon: "\uE1A9",
-          title: 'Plan safe power loads',
-          body: 'Model draw, runtime and changeovers to lock in battery safety margins with confidence.'
-        }, {
-          icon: "\uE467",
-          title: 'AutoGear builds reusable kits',
-          body: 'Assemble full gear lists, adjust automation rules on the fly and reuse presets across projects.'
-        }, {
-          icon: "\uE469",
-          title: 'Safeguard and share with context',
-          body: 'Capture deliverables, crew coverage and rental notes, then export PDFs and restore bundles crews can trust.'
-        }],
+          highlights: [{
+            icon: "\uE1A6",
+            title: 'Lock in power, safety, and backups',
+            body: 'Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.'
+          }, {
+            icon: "\uE8AF",
+            title: 'AutoGear builds reusable kits',
+            body: 'Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.'
+          }, {
+            icon: "\uE7AB",
+            title: 'Project requirements ready to hand off',
+            body: 'Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.'
+          }],
         languageLabel: 'Choose your language',
         languageHint: 'Switch languages now—the tutorial, help and exports update instantly across offline saves.',
         offlineSummary: 'Install the Cine Power Planner PWA to mirror safeguarded saves, backups, shares and restore rehearsals on set without subscriptions.'

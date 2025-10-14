@@ -1875,24 +1875,24 @@ const texts = {
             badgeDescription:
               "No servers, no accounts, no subscriptions. Every save, autosave, backup, restore, share, and import lives on this device.",
             highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Lock in power, safety, and backups",
-                body:
-                  "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.",
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear builds reusable kits",
-                body:
-                  "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.",
-              },
-              {
-                icon: "\uE469",
-                title: "Project requirements ready to hand off",
-                body:
-                  "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production can trust.",
-              },
+                {
+                  icon: "\uE1A6",
+                  title: "Lock in power, safety, and backups",
+                  body:
+                    "Model draw, runtime, changeovers, and redundant pack coverage so battery safety margins are confirmed before rolling.",
+                },
+                {
+                  icon: "\uE8AF",
+                  title: "AutoGear builds reusable kits",
+                  body:
+                    "Generate full gear lists from shooting scenarios with AutoGear rules, adjust those rules for the day, and reuse the presets.",
+                },
+                {
+                  icon: "\uE7AB",
+                  title: "Project requirements ready to hand off",
+                  body:
+                    "Track requirements, crew coverage, and rental notes, then export PDF packets the crew, rental houses, and production rely on.",
+                },
               {
                 icon: "\uE9D4",
                 title: "Offline-first, subscription-free PWA",
@@ -4060,24 +4060,24 @@ const texts = {
             badgeDescription:
               "Nessun server, nessun account, nessun abbonamento. Ogni salvataggio, autosalvataggio, backup, ripristino, condivisione e importazione resta su questo dispositivo.",
             highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Metti al sicuro potenza, safety e backup",
-                body:
-                  "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare.",
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear crea kit riutilizzabili",
-                body:
-                  "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset.",
-              },
-              {
-                icon: "\uE469",
-                title: "Requisiti di progetto pronti alla consegna",
-                body:
-                  "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF affidabili per troupe, rental e produzione.",
-              },
+                {
+                  icon: "\uE1A6",
+                  title: "Metti al sicuro potenza, safety e backup",
+                  body:
+                    "Modella assorbimento, runtime, cambi turno e coperture ridondanti così i margini di sicurezza delle batterie sono confermati prima di girare.",
+                },
+                {
+                  icon: "\uE8AF",
+                  title: "AutoGear crea kit riutilizzabili",
+                  body:
+                    "Genera liste complete partendo dagli scenari di ripresa con le regole AutoGear, ritoccale per la giornata e riusa i preset.",
+                },
+                {
+                  icon: "\uE7AB",
+                  title: "Requisiti di progetto pronti alla consegna",
+                  body:
+                    "Traccia requisiti, copertura crew e note per il noleggio, quindi esporta pacchetti PDF pronti per troupe, rental e produzione.",
+                },
               {
                 icon: "\uE9D4",
                 title: "PWA offline e senza abbonamento",
@@ -6258,24 +6258,24 @@ const texts = {
             badgeDescription:
               "Sin servidores, sin cuentas, sin suscripciones. Cada guardado, autosave, copia de seguridad, restauración, compartición e importación permanece en este dispositivo.",
             highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Protege potencia, seguridad y respaldos",
-                body:
-                  "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar.",
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear crea kits reutilizables",
-                body:
-                  "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets.",
-              },
-              {
-                icon: "\uE469",
-                title: "Requisitos del proyecto listos para el handoff",
-                body:
-                  "Controla requisitos, cobertura del equipo y notas de alquiler; después exporta paquetes PDF confiables para el equipo, las casas de renta y producción.",
-              },
+                {
+                  icon: "\uE1A6",
+                  title: "Protege potencia, seguridad y respaldos",
+                  body:
+                    "Modela consumo, autonomía, cambios y cobertura redundante de baterías para confirmar los márgenes de seguridad antes de rodar.",
+                },
+                {
+                  icon: "\uE8AF",
+                  title: "AutoGear crea kits reutilizables",
+                  body:
+                    "Genera listas completas a partir de escenarios de rodaje con reglas AutoGear, ajústalas para la jornada y reutiliza los presets.",
+                },
+                {
+                  icon: "\uE7AB",
+                  title: "Requisitos del proyecto listos para el handoff",
+                  body:
+                    "Controla requisitos, cobertura del equipo y notas de alquiler; después exporta paquetes PDF listos para el equipo, las casas de renta y producción.",
+                },
               {
                 icon: "\uE9D4",
                 title: "PWA sin conexión y sin suscripciones",
@@ -8469,24 +8469,24 @@ const texts = {
             badgeDescription:
               "Pas de serveurs, pas de comptes, pas d’abonnement. Chaque sauvegarde, autosave, backup, restauration, partage et import reste sur cet appareil.",
             highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Sécuriser puissance, sécurité et backups",
-                body:
-                  "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner.",
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear compose des kits réutilisables",
-                body:
-                  "Générez des listes complètes depuis des scénarios de tournage avec les règles AutoGear, ajustez-les pour la journée et réutilisez les presets.",
-              },
-              {
-                icon: "\uE469",
-                title: "Exigences projet prêtes à transmettre",
-                body:
-                  "Suivez exigences, couverture équipe et notes de location puis exportez des PDF fiables pour l’équipe, les loueurs et la production.",
-              },
+                {
+                  icon: "\uE1A6",
+                  title: "Sécuriser puissance, sécurité et backups",
+                  body:
+                    "Modélisez consommation, autonomie, changements et redondance des packs afin de valider les marges de sécurité batterie avant de tourner.",
+                },
+                {
+                  icon: "\uE8AF",
+                  title: "AutoGear compose des kits réutilisables",
+                  body:
+                    "Générez des listes complètes depuis des scénarios de tournage avec les règles AutoGear, ajustez-les pour la journée et réutilisez les presets.",
+                },
+                {
+                  icon: "\uE7AB",
+                  title: "Exigences projet prêtes à transmettre",
+                  body:
+                    "Suivez exigences, couverture équipe et notes de location puis exportez des PDF prêts pour l’équipe, les loueurs et la production.",
+                },
               {
                 icon: "\uE9D4",
                 title: "PWA hors ligne, sans abonnement",
@@ -10683,24 +10683,24 @@ const texts = {
             badgeDescription:
               "Keine Server, keine Konten, keine Abos. Jeder Speicherstand, jedes Autosave, jedes Backup, Restore, Teilen und Import bleibt auf diesem Gerät.",
             highlights: [
-              {
-                icon: "\uE1A9",
-                title: "Leistung, Sicherheit und Backups absichern",
-                body:
-                  "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind.",
-              },
-              {
-                icon: "\uE467",
-                title: "AutoGear baut wiederverwendbare Kits",
-                body:
-                  "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden.",
-              },
-              {
-                icon: "\uE469",
-                title: "Projektanforderungen übergabebereit",
-                body:
-                  "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion exportieren.",
-              },
+                {
+                  icon: "\uE1A6",
+                  title: "Leistung, Sicherheit und Backups absichern",
+                  body:
+                    "Last, Laufzeit, Wechsel und redundante Packs planen, damit Batteriesicherheitsreserven vor Drehbeginn bestätigt sind.",
+                },
+                {
+                  icon: "\uE8AF",
+                  title: "AutoGear baut wiederverwendbare Kits",
+                  body:
+                    "Vollständige Gear-Listen aus Drehszenarien mit AutoGear-Regeln erzeugen, Regeln für den Tag anpassen und Presets wiederverwenden.",
+                },
+                {
+                  icon: "\uE7AB",
+                  title: "Projektanforderungen übergabebereit",
+                  body:
+                    "Anforderungen, Crew-Abdeckung und Vermietnotizen verfolgen und PDF-Pakete für Crew, Verleih und Produktion bereitstellen.",
+                },
               {
                 icon: "\uE9D4",
                 title: "Offline-first, abofreie PWA",
