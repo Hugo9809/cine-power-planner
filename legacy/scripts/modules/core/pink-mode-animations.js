@@ -946,32 +946,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return layer;
   }
   function resolvePinkModeScrollHeight(host) {
-    if (!host || _typeof(host) !== 'object') {
+    var globalDocument = typeof document !== 'undefined' ? document : null;
+    var candidateHost = host && _typeof(host) === 'object' ? host : globalDocument && globalDocument.body ? globalDocument.body : globalDocument && globalDocument.documentElement ? globalDocument.documentElement : null;
+    if (!candidateHost || _typeof(candidateHost) !== 'object') {
       return null;
     }
-    try {
-      var value = host.scrollHeight;
-      if (typeof value === 'number' && value > 0) {
-        return value;
+    var directValue = typeof candidateHost.scrollHeight === 'number' ? candidateHost.scrollHeight : null;
+    if (typeof directValue === 'number' && directValue > 0) {
+      return directValue;
+    }
+    var ownerDocument = candidateHost && typeof candidateHost.ownerDocument !== 'undefined' && candidateHost.ownerDocument || globalDocument || null;
+    if (!ownerDocument || _typeof(ownerDocument) !== 'object') {
+      return null;
+    }
+    var fallbacks = [ownerDocument.scrollingElement, ownerDocument.body, ownerDocument.documentElement];
+    for (var index = 0; index < fallbacks.length; index += 1) {
+      var fallback = fallbacks[index];
+      if (!fallback || _typeof(fallback) !== 'object' || fallback === candidateHost) {
+        continue;
       }
-    } catch (error) {
-      void error;
-    }
-    var doc = typeof host.ownerDocument !== 'undefined' && host.ownerDocument || typeof document !== 'undefined' && document || null;
-    if (!doc || _typeof(doc) !== 'object') {
-      return null;
-    }
-    var scrollingElement = typeof doc.scrollingElement !== 'undefined' && doc.scrollingElement || doc.documentElement || null;
-    if (!scrollingElement || scrollingElement === host) {
-      return null;
-    }
-    try {
-      var fallbackValue = scrollingElement.scrollHeight;
-      if (typeof fallbackValue === 'number' && fallbackValue > 0) {
-        return fallbackValue;
+      var fallbackHeight = typeof fallback.scrollHeight === 'number' ? fallback.scrollHeight : null;
+      if (typeof fallbackHeight === 'number' && fallbackHeight > 0) {
+        return fallbackHeight;
       }
-    } catch (fallbackError) {
-      void fallbackError;
     }
     return null;
   }
