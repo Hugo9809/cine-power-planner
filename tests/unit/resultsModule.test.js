@@ -102,6 +102,11 @@ describe('cineResults module', () => {
       runtimeUserCountNote: 'Used by {count}',
       batteryLifeHelp: 'Life help',
       runtimeAverageNote: 'Average note',
+      temperatureNoteHeading: 'Temperature impact on runtime:',
+      temperatureLabel: 'Temperature',
+      batteryCountTempLabel: 'Batteries needed',
+      temperatureUnitSymbolCelsius: '°C',
+      temperatureUnitSymbolFahrenheit: '°F',
       resultsPlainSummaryTitle: 'Quick summary',
       resultsPlainSummaryHelp: 'Plain summary help',
       resultsPlainSummaryPrompt: 'Add devices and choose a battery to see a plain-language summary of runtime and consumption.',
@@ -302,6 +307,81 @@ describe('cineResults module', () => {
     expect(description.textContent).toBe('Review the estimated runtime versus weight.');
     expect(description.attributes['data-help']).toBe('Explains how to read the comparison.');
     expect(table.attributes['data-help']).toBe('Detailed battery performance table.');
+  });
+
+  test('renderTemperatureNote renders the temperature adjustment table', () => {
+    const texts = JSON.parse(JSON.stringify(BASE_TEXTS));
+    const tempNote = createElement('');
+    const doc = {
+      documentElement: { lang: 'en' },
+      getElementById: jest.fn((id) => (id === 'temperatureNote' ? tempNote : null)),
+    };
+
+    const elements = {
+      resultsPlainSummaryElem: createElement(''),
+      resultsPlainSummaryTitleElem: createElement(''),
+      resultsPlainSummaryTextElem: createElement(''),
+      resultsPlainSummaryNoteElem: createElement(''),
+      breakdownListElem: createElement(''),
+      totalPowerLabel: createElement(''),
+      batteryCountLabel: createElement(''),
+      batteryLifeLabel: createElement(''),
+      batteryLifeUnit: createElement(''),
+      runtimeAverageNote: createElement(''),
+      tempNote,
+      pinWarning: createElement(''),
+      dtapWarning: createElement(''),
+      hotswapWarning: createElement(''),
+      powerWarningTitle: createElement(''),
+      powerWarningAdvice: createElement(''),
+      powerWarningLimitsHeading: createElement(''),
+      powerWarningCloseBtn: createInteractiveElement('Close'),
+    };
+
+    const refreshTotalCurrentLabels = jest.fn();
+    const updateMountVoltageSettingLabels = jest.fn();
+    const dispatchTemperatureNoteRender = jest.fn();
+    const refreshFeedbackTemperatureLabel = jest.fn();
+    const updateFeedbackTemperatureOptions = jest.fn();
+    const setButtonLabelWithIcon = jest.fn();
+    const renderFeedbackTable = jest.fn().mockReturnValue({ count: 0 });
+    const getCurrentSetupKey = jest.fn().mockReturnValue('setup-temp');
+
+    cineResults.localizeResultsSection({
+      document: doc,
+      lang: 'en',
+      langTexts: texts.en,
+      fallbackTexts: texts.en,
+      elements,
+      refreshTotalCurrentLabels,
+      updateMountVoltageSettingLabels,
+      dispatchTemperatureNoteRender,
+      refreshFeedbackTemperatureLabel,
+      updateFeedbackTemperatureOptions,
+      setButtonLabelWithIcon,
+      iconGlyphs: { check: '✔' },
+      renderFeedbackTable,
+      getCurrentSetupKey,
+      getTexts: () => texts,
+      getCurrentLang: () => 'en',
+      getCollator: () => null,
+    });
+
+    global.temperatureUnit = 'celsius';
+    cineResults.renderTemperatureNote(3.2);
+
+    expect(tempNote.innerHTML).toContain('<table');
+    expect(tempNote.innerHTML).toContain('Temperature (°C)');
+    expect(tempNote.innerHTML).toContain('Batteries needed');
+    expect(tempNote.innerHTML).toContain('3.20');
+
+    global.temperatureUnit = 'fahrenheit';
+    cineResults.renderTemperatureNote(3.2);
+
+    expect(tempNote.innerHTML).toContain('Temperature (°F)');
+    expect(tempNote.innerHTML).toContain('°F');
+
+    delete global.temperatureUnit;
   });
 
   test('updateCalculations delegates power and runtime processing', () => {
