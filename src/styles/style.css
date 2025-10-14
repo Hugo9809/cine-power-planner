@@ -134,7 +134,7 @@
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
-  --selected-row-bg: #e6f7ff;
+  --selected-row-bg: color-mix(in srgb, var(--accent-color) 18%, #ffffff 82%);
   --favorite-inactive-color: var(--control-text);
   --link-color: var(--accent-color);
   --muted-text-color: #555555;
@@ -9813,7 +9813,7 @@ body.pink-mode #userFeedbackTable th {
 }
 
 .selectedBatteryRow {
-    background-color: var(--selected-row-bg); /* Light blue background for selected row */
+    background-color: var(--selected-row-bg); /* Mild accent highlight for selected row */
     font-weight: var(--font-weight-bold);
 }
 
@@ -9866,7 +9866,7 @@ html.dark-mode,
   --motor-color: #ce93d8;
   --controller-color: #ff8a65;
   --distance-color: #a1887f;
-  --selected-row-bg: #003366;
+  --selected-row-bg: color-mix(in srgb, var(--accent-color) 42%, var(--surface-color) 58%);
   --power-conn-bg: rgba(255, 102, 102, 0.3);
   --fiz-conn-bg: rgba(102, 187, 106, 0.3);
   --video-conn-bg: rgba(126, 200, 255, 0.3);
