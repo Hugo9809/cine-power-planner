@@ -235,34 +235,70 @@
     }
   }
 
+  function createPinkModeXhrUrlVariants(url) {
+    const variants = [];
+    const registerVariant = candidate => {
+      if (typeof candidate !== 'string' || !candidate) {
+        return;
+      }
+      if (variants.indexOf(candidate) === -1) {
+        variants.push(candidate);
+      }
+    };
+
+    registerVariant(url);
+
+    if (typeof url === 'string') {
+      try {
+        const decoded = decodeURI(url);
+        registerVariant(decoded);
+      } catch (decodeError) {
+        void decodeError;
+      }
+    }
+
+    return variants;
+  }
+
   async function fetchPinkModeAssetViaXHR(url) {
     if (typeof XMLHttpRequest === 'undefined' || !url) {
       return null;
     }
 
-    return new Promise(resolve => {
-      try {
-        const request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.onreadystatechange = function handleReadyStateChange() {
-          if (request.readyState !== 4) {
-            return;
-          }
-          if ((request.status >= 200 && request.status < 300) || request.status === 0) {
-            resolve(request.responseText || '');
-            return;
-          }
+    const candidates = createPinkModeXhrUrlVariants(url);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidateUrl = candidates[index];
+      const result = await new Promise(resolve => {
+        try {
+          const request = new XMLHttpRequest();
+          request.open('GET', candidateUrl, true);
+          request.onreadystatechange = function handleReadyStateChange() {
+            if (request.readyState !== 4) {
+              return;
+            }
+            if ((request.status >= 200 && request.status < 300) || request.status === 0) {
+              resolve(request.responseText || '');
+              return;
+            }
+            resolve(null);
+          };
+          request.onerror = function handleXHRError() {
+            resolve(null);
+          };
+          request.send();
+        } catch (error) {
+          void error;
           resolve(null);
-        };
-        request.onerror = function handleXHRError() {
-          resolve(null);
-        };
-        request.send();
-      } catch (error) {
-        void error;
-        resolve(null);
+        }
+      });
+
+      if (result !== null) {
+        return result;
       }
-    });
+    }
+
+    return null;
   }
 
   const pinkModeAssetTextCache = new Map();
