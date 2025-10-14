@@ -42,10 +42,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     try {
       var url = fallbackBase ? new URL(href, fallbackBase) : new URL(href);
       var path = typeof url.pathname === 'string' ? url.pathname : '';
-      if (path && path.indexOf('/src/scripts/') !== -1) {
-        var basePath = path.slice(0, path.indexOf('/src/scripts/'));
-        url.pathname = basePath.endsWith('/') ? basePath : "".concat(basePath, "/");
-      } else if (path && !path.endsWith('/')) {
+      var baseAdjusted = false;
+      if (path) {
+        var stripSegments = Object.freeze(['/src/scripts/', '/scripts/', '/legacy/scripts/']);
+        for (var index = 0; index < stripSegments.length; index += 1) {
+          var marker = stripSegments[index];
+          var markerIndex = path.indexOf(marker);
+          if (markerIndex === -1) {
+            continue;
+          }
+          var basePath = path.slice(0, markerIndex);
+          if (basePath) {
+            url.pathname = basePath.endsWith('/') ? basePath : "".concat(basePath, "/");
+          } else {
+            url.pathname = '/';
+          }
+          baseAdjusted = true;
+          break;
+        }
+      }
+      if (!baseAdjusted && path && !path.endsWith('/')) {
         var lastSlash = path.lastIndexOf('/');
         var lastSegment = lastSlash !== -1 ? path.slice(lastSlash + 1) : path;
         if (lastSegment && lastSegment.indexOf('.') === -1) {
@@ -94,22 +110,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!normalized) {
       return null;
     }
+    var encodedNormalized = encodeURI(normalized);
     if (normalized.slice(0, 2) === '//' || normalized.indexOf('://') !== -1) {
-      return normalized;
+      try {
+        return new URL(normalized).href;
+      } catch (error) {
+        void error;
+        return encodedNormalized;
+      }
     }
     var baseUrl = resolvePinkModeAssetBaseUrl();
     if (!baseUrl) {
-      return normalized;
+      return encodedNormalized;
     }
     try {
       return new URL(normalized, baseUrl).href;
     } catch (error) {
       void error;
     }
-    if (normalized.charAt(0) === '/') {
-      return normalized;
+    try {
+      return new URL(encodedNormalized, baseUrl).href;
+    } catch (encodedError) {
+      void encodedError;
     }
-    return baseUrl + normalized;
+    if (encodedNormalized.charAt(0) === '/') {
+      return encodedNormalized;
+    }
+    if (baseUrl.charAt(baseUrl.length - 1) === '/') {
+      return "".concat(baseUrl, encodedNormalized);
+    }
+    return "".concat(baseUrl, "/").concat(encodedNormalized);
   }
   function createPinkModeAssetRequest(url) {
     if (typeof Request !== 'function' || !url) {
